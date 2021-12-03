@@ -280,6 +280,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2942350706960889382">Mahkamlangan lupa</translation>
 <translation id="2942516765047364088">Javon o‘rni</translation>
 <translation id="2946119680249604491">Ulanish qo‘shish</translation>
+<translation id="2960314608273155470">Tasvirga olish rejimi, standart: <ph name="SOURCE" /> <ph name="TYPE" />. Klaviaturada harakatlanish uchun tab tugmasini bosing.</translation>
 <translation id="2961963223658824723">Xatolik yuz berdi. Bir necha soniyadan keyin qayta urining.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi</translation>
@@ -884,6 +885,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="7042322267639375032">Holat panelini yopish</translation>
 <translation id="7045033600005038336">Andoza almashtirilsinmi?</translation>
 <translation id="7045595904618419789">Lupani yoqish</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> uzildi</translation>
 <translation id="7055381872777910864">C</translation>
 <translation id="7055910611768509537">Stilus bir haftadan beri ishlatilmagan</translation>
 <translation id="7066646422045619941">Bu tarmoq administrator tomonidan o‘chirib qo‘yilgan.</translation>
@@ -1076,6 +1078,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8394567579869570560">Ota-onangiz bu qurilmani qulfladi</translation>
 <translation id="8412677897383510995">Displey sozlamalarini ochish</translation>
 <translation id="8413272770729657668">Yozib olish boshlanmoqda: 3, 2, 1</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> bu qurilmada emas.</translation>
 <translation id="8425213833346101688">O‘zgartirish</translation>
 <translation id="8426708595819210923">Xayrli kech, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Sozlamalar</translation>

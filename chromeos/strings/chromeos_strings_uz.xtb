@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
+<translation id="3924044641767672375">Taʼmirlash jarayoni oson boʻlishi uchun Wi-Fi orqali ulanish tavsiya etiladi. Tarmoq saqlanib qoladi.</translation>
 <translation id="3932043219784172185">Hech qaysi qurilma ulanmagan!</translation>
 <translation id="3941014780699102620">Host aniqlanmadi</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Boshlash</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ikkilamchi tarmoq shlyuzi ping qilinmadi</translation>
+<translation id="4485626319513081846">Agar qurilma qayta ishlab chiqarilib, boshqa yangi mijozga sotilsa, shu parametrni tanlang.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subyektning muqobil nomi topildi</translation>
 <translation id="4536864596629708641">IP konfiguratsiyasi</translation>
@@ -416,6 +418,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6957231940976260713">Xizmat nomi</translation>
 <translation id="6961170852793647506">Boshlash uchun hujjatni skanerga joylang</translation>
 <translation id="6977381486153291903">Mikrodastur versiyasi</translation>
+<translation id="6992266763844448459">Qurilma egasi oʻzgarmasa, shu parametrni tanlang. Masalan, qurilma tashkilotning boshqa xodimiga berilayotgan boʻlsa.</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Tugatish va saqlash</translation>

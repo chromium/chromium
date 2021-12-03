@@ -995,6 +995,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7868900307798234037">Odomyká sa pomocou odtlačku prsta</translation>
 <translation id="7872786842639831132">Vypnuté</translation>
 <translation id="7875575368831396199">Rozhranie Bluetooth je v zariadení <ph name="DEVICE_TYPE" /> zrejme vypnuté. Ak chcete použiť Telefónne centrum, zapnite ho.</translation>
+<translation id="7877557217297072640">{0,plural, =0{Obnovte v zariadení predchádzajúcu verziu}=1{Do sekundy obnovte v zariadení predchádzajúcu verziu}few{Do # sekúnd obnovte v zariadení predchádzajúcu verziu}many{Do # sekundy obnovte v zariadení predchádzajúcu verziu}other{Do # sekúnd obnovte v zariadení predchádzajúcu verziu}}</translation>
 <translation id="7886169021410746335">Upravte nastavenia ochrany súkromia</translation>
 <translation id="7886277072580235377">Vaša internetová relácia sa vymaže, keď sa odhlásite. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">Odoslať správu</translation>

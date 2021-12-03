@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">Суурилуулсан томруулагч</translation>
 <translation id="2942516765047364088">Шельфийн байрлал</translation>
 <translation id="2946119680249604491">Холболт нэмэх</translation>
+<translation id="2960314608273155470">Зураг авах горим. Өгөгдмөл нь <ph name="SOURCE" /> <ph name="TYPE" /> байна. Гарын навигац ашиглах бол tab дээр дарна уу.</translation>
 <translation id="2961963223658824723">Алдаа гарлаа. Хэдэн секундын дараа дахин оролдоно уу.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татаж чадсангүй</translation>
@@ -885,6 +886,7 @@
 <translation id="7042322267639375032">Төлөв байдал илэрхийлэгчийг буулгах</translation>
 <translation id="7045033600005038336">Загварыг солих уу?</translation>
 <translation id="7045595904618419789">Томруулагчийг эхлүүлэх</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> салсан</translation>
 <translation id="7055381872777910864">Лх</translation>
 <translation id="7055910611768509537">Мэдрэгч үзгийг долоо хоног гаруй ашиглаагүй байна</translation>
 <translation id="7066646422045619941">Таны админ энэ сүлжээг идэвхгүй болгосон.</translation>
@@ -1077,6 +1079,7 @@
 <translation id="8394567579869570560">Таны эцэг эх энэ төхөөрөмжийг түгжсэн</translation>
 <translation id="8412677897383510995">Дэлгэцийн тохиргоог харуулах</translation>
 <translation id="8413272770729657668">Гурав тоолсны дараа бичиж эхэлнэ</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> энэ төхөөрөмж дээр байхгүй байна.</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8426708595819210923">Оройн мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>

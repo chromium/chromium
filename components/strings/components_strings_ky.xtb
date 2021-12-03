@@ -649,6 +649,7 @@
 <translation id="3087734570205094154">Аягы</translation>
 <translation id="3095940652251934233">Билдирүү</translation>
 <translation id="3096100844101284527">Алып кете турган жердин дарегин кошуу</translation>
+<translation id="3098513225387949945">Өчүрүү тизмесинде саясатты өчүргөн "*" үлгүсү камтылгандыктан, этибарга алынган жок.</translation>
 <translation id="3105172416063519923">Менчик объектисинин ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Коопсуз DNS конфигурациясын текшерүү<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Ортонку түпкүч</translation>
@@ -1560,6 +1561,7 @@
 <translation id="6008122969617370890">N–1 ирети</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Сырсөздөрүңүздү текшериңиз</translation>
+<translation id="6014851866995737824">"Иштетүү" же "өчүрүү" тизмеси берилбегендиктен, этибарга алынган жок.</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6017514345406065928">Жашыл</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындагы чабуулчулар башка колдонмолордун кейпин кийген жасалма колдонмолорду орнотуп коюшу же сизге көз салуу үчүн дайындарды чогултуп алышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>

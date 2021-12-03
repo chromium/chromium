@@ -36,6 +36,7 @@
 <translation id="1177863135347784049">E personalizuar</translation>
 <translation id="1197267115302279827">Zhvendos faqeshënuesit</translation>
 <translation id="1201402288615127009">Para</translation>
+<translation id="1202892408424955784">Produktet e monitoruara</translation>
 <translation id="1204037785786432551">Lidhja e shkarkimit</translation>
 <translation id="1206892813135768548">Kopjo tekstin e lidhjes</translation>
 <translation id="1208340532756947324">Për të sinkronizuar dhe personalizuar mes pajisjeve, aktivizo sinkronizimin</translation>
@@ -82,6 +83,7 @@
 <translation id="1414981605391750300">Po kontakton me Google. Kjo mund të zgjasë një minutë...</translation>
 <translation id="1416550906796893042">Versioni i aplikacionit</translation>
 <translation id="1430915738399379752">Printo</translation>
+<translation id="1448440926884431741">Organizo produktet e tua të monitoruara te "Faqeshënuesit"</translation>
 <translation id="1450753235335490080">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Zgjidh gjuhën e Chrome</translation>
 <translation id="147113415845704694">Provo "Si është moti sot?"</translation>
@@ -134,6 +136,7 @@
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
 <translation id="1883903952484604915">Skedarët e mi</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
+<translation id="1894023287452300670">Monitoro çmimin këtu</translation>
 <translation id="1905320231301365059">Skedarët që shkarkon në "Modalitetin 'e fshehtë'" janë ende të dukshëm për këdo që përdor këtë pajisje.</translation>
 <translation id="1910950723001426294">Lista e opsioneve të shpërndarjes është e mbyllur.</translation>
 <translation id="1918175104945982129">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit" e hapur në gjysmë lartësi</translation>
@@ -344,6 +347,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3029704984691124060">Frazat e kalimit nuk përputhen</translation>
 <translation id="3031225630520268969">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit"</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kërko ndihmë<ph name="END_LINK" /></translation>
+<translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037517125981011456">Shfaq kërkesa për t'u identifikuar në Chrome</translation>
 <translation id="3046945242843292318">Shko më shpejt te ky sajt herën tjetër</translation>
 <translation id="305593374596241526">Vendndodhja është joaktive. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
@@ -501,6 +505,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
 <translation id="4045764304651014138">Të dhënat e përdorimit</translation>
+<translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4060598801229743805">Opsionet janë të disponueshme pranë kreut të ekranit</translation>
 <translation id="4062305924942672200">Informacioni ligjor</translation>
@@ -554,6 +559,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4409271659088619928">Motori yt i kërkimit është <ph name="DSE" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="4411535500181276704">Modaliteti i lehtë</translation>
 <translation id="4415276339145661267">Menaxho "Llogarinë tënde të Google"</translation>
+<translation id="4425140285732600465">Çmimi po monitorohet. Merr sinjalizime nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4450672886426705087">Rezultatet e kërkimit nga Google.</translation>
 <translation id="4452411734226507615">Mbyll skedën <ph name="TAB_TITLE" /></translation>
@@ -751,6 +757,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5548606607480005320">Kontrolli i sigurisë</translation>
 <translation id="5555525474779371165">Zgjidh mbrojtjen me "Shfletimin e sigurt"</translation>
 <translation id="5556459405103347317">Ringarko</translation>
+<translation id="555816257274242153">Monitorimi i çmimit u ndalua</translation>
 <translation id="5561549206367097665">Në pritje të rrjetit…</translation>
 <translation id="5568069709869097550">Nuk mund të identifkohet</translation>
 <translation id="55737423895878184">Vendndodhja dhe njoftimet janë të lejuara</translation>
@@ -802,9 +809,11 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5833984609253377421">Ndaj lidhjen</translation>
 <translation id="5834764604050996579">Për të skanuar një kod QR, lejo që Chrome të përdorë kamerën tënde</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5842437907245493289">Organizo produktet e tua të monitoruara te "Faqeshënuesit" nga ikona e dosjes</translation>
 <translation id="5853623416121554550">në pauzë</translation>
 <translation id="5854512288214985237">Asnjë statistikë apo raport ndërprerjeje aksidentale nuk i dërgohet Google</translation>
 <translation id="5855546874025048181">Detajo: <ph name="REFINE_TEXT" /></translation>
+<translation id="5857447844686706637">Ndodhi një gabim. Veçoria "Monitoro çmimin" nuk mund të përditësohej.</translation>
 <translation id="5860033963881614850">Çaktivizuar</translation>
 <translation id="5860491529813859533">Aktivizo</translation>
 <translation id="5862731021271217234">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo sinkronizimin</translation>
@@ -861,6 +870,7 @@ Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone
 <translation id="6140912465461743537">Shteti/rajoni</translation>
 <translation id="6141988275892716286">Konfirmo shkarkimin</translation>
 <translation id="614940544461990577">Provo:</translation>
+<translation id="6150320133806434356">Faqeshënuesi u ruajt</translation>
 <translation id="6154478581116148741">Aktivizo kyçjen e ekranit te "Cilësimet" për të eksportuar fjalëkalime e tua nga kjo pajisje</translation>
 <translation id="6159335304067198720">Kursimi i të dhënave: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Pastron historikun nga të gjitha pajisjet e sinkronizuara.</translation>
@@ -875,6 +885,7 @@ Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone
 Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në sajtet e tjera të uebit që ke vizituar. Shumë sajte uebi do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
+<translation id="6277722725779679269">Veçoria "Monitoro çmimin" nuk mund të përditësohej</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6292420053234093573">Duke përdorur Chrome, ti pranon <ph name="BEGIN_LINK1" />Kushtet e shërbimit të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />Kushtet shtesë të shërbimit të Google Chrome dhe të sistemit operativ Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Mund të dërgosh skeda ndërmjet pajisjeve që janë të identifikuara me të njëjtën "Llogari të Google"</translation>
@@ -908,6 +919,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6411219469806822692">Nuk mund të shkosh më lart. Provo të fillosh më lart në faqe.</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="641643625718530986">Printo…</translation>
+<translation id="6422857128426228781">Produktet e tua të monitoruara do t'i gjesh këtu</translation>
 <translation id="6433501201775827830">Zgjidh motorin e kërkimit</translation>
 <translation id="6434309073475700221">Hidhe</translation>
 <translation id="6437478888915024427">Informacionet e faqes</translation>
@@ -985,6 +997,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6817747507826986771">Ndaje me shpejtësi këtë faqe. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6824899148643461612">Skeda <ph name="TAB_TITLE" /> është zgjedhur</translation>
+<translation id="6828070228333235514">Ndalo monitorimin e çmimit</translation>
 <translation id="6846298663435243399">Po ngarkohet...</translation>
 <translation id="6850409657436465440">Shkarkimi yt është ende në vazhdim</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> skeda janë mbyllur</translation>
@@ -1306,6 +1319,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8571213806525832805">4 javët e fundit</translation>
 <translation id="8572344201470131220">Imazhi u kopjua</translation>
 <translation id="8583805026567836021">Po pastron të dhënat e llogarisë</translation>
+<translation id="859046281437143747">Monitoro çmimin nga butoni "Opsione të tjera"</translation>
 <translation id="860043288473659153">Emri i mbajtësit të kartës</translation>
 <translation id="8602358303461588329">"Identifikohu në Chrome", i mbyllur</translation>
 <translation id="860282621117673749">Alarme sinjalizuese për rënie çmimi</translation>

@@ -690,6 +690,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1692115862433274081">Gumamit ng ibang account</translation>
 <translation id="1692118695553449118">Naka-on ang pag-sync</translation>
 <translation id="1692210323591458290">Dark purple</translation>
+<translation id="1695487653372841667">Makokontrol mo kung anong data ang ibinabahagi sa Google. Puwede mo itong baguhin anumang oras sa Mga Setting.</translation>
 <translation id="169675691788639886">May naka-configure na server ng SSH ang device. Huwag mag-sign in gamit ang mga sensitibong account.</translation>
 <translation id="1697150536837697295">Sining</translation>
 <translation id="1697686431566694143">I-edit ang file</translation>
@@ -1754,6 +1755,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2757338480560142065">Tiyaking ang password na sine-save mo ay tumutugma sa iyong password para sa <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Naka-block ang camera</translation>
 <translation id="2764786626780673772">Mga detalye ng VPN</translation>
+<translation id="2765100602267695013">Makipag-ugnayan sa iyong provider sa mobile</translation>
 <translation id="2765217105034171413">Maliit</translation>
 <translation id="2766006623206032690">Pa&amp;ste at umalis</translation>
 <translation id="2766161002040448006">Hilingin sa magulang</translation>
@@ -2316,6 +2318,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3370260763947406229">Awtomatikong pagwawasto</translation>
 <translation id="3371140690572404006">USB-C device (port sa kanang bahagi sa harap)</translation>
 <translation id="337286756654493126">Mag-read ng mga folder na iyong bubuksan sa application</translation>
+<translation id="3374294321938930390">Inilipat ang '<ph name="BOOKMARK_TITLE" />' sa '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3378572629723696641">Maaaring nasira ang extension na ito.</translation>
 <translation id="337920581046691015">Ang <ph name="PRODUCT_NAME" /> ay maiinstall.</translation>
 <translation id="3380365263193509176">Hindi kilalang error</translation>
@@ -5150,6 +5153,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6385994920693662133">Babala - Naka-enable ang detalyadong pag-log; posibleng maglaman ang mga log sa ibaba ng mga URL o iba pang sensitibong impormasyon. Pakitingnan ulit at tiyaking kumportable kang isumite ang impormasyong ito.</translation>
 <translation id="6387674443318562538">I-split nang Patayo</translation>
 <translation id="6388429472088318283">Maghanap sa mga wika</translation>
+<translation id="6388577073199278153">Hindi ma-access ang iyong mobile account</translation>
 <translation id="6390020764191254941">Ilipat ang Tab sa Bagong Window</translation>
 <translation id="6393156038355142111">Magmungkahi ng malakas na password</translation>
 <translation id="6393550101331051049">Pinapayagang magpakita ng hindi secure na content</translation>
@@ -5476,6 +5480,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="67269783048918309">Magpadala ng data ng paggamit at diagnostic na data. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> na ito. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, maaaring ma-save ang data na ito sa kanyang Google account. <ph name="BEGIN_LINK2" />Matuto Pa<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Nakakonekta, <ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
+<translation id="6733620523445262364">Nagawa ang '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="6735304988756581115">Magpakita ng cookies at iba pang data ng site...</translation>
 <translation id="6736243959894955139">Address</translation>
 <translation id="6737663862851963468">Alisin ang ticket ng Kerberos</translation>
@@ -6731,6 +6736,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8006630792898017994">Space o Tab</translation>
 <translation id="8008356846765065031">Nadiskonekta ang Internet. Pakisuri ang iyong koneksyon sa internet.</translation>
 <translation id="8009225694047762179">Pamahalaan ang Mga Password</translation>
+<translation id="8011372169388649948">Inilipat ang '<ph name="BOOKMARK_TITLE" />.'</translation>
 <translation id="8012647001091218357">Hindi namin makaugnayan ang iyong mga magulang sa sandaling ito. Pakisubukang muli.</translation>
 <translation id="8013993649590906847">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chrome na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
 <translation id="8014154204619229810">Kasalukuyang tumatakbo ang updater. I-refresh pagkatapos ng isang minuto upang muling suriin.</translation>

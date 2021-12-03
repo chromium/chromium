@@ -403,6 +403,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ta manzil}other{# ta manzil}}</translation>
 <translation id="2187317261103489799">Aniqlansin (standart parametr)</translation>
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
+<translation id="2188852899391513400">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Google Parollar menejeri uni hoziroq almashtirishni va saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
 <translation id="2202020181578195191">Muddati tugaydigan yilni xatosiz kiriting</translation>
 <translation id="22081806969704220">Tarnov 3</translation>
 <translation id="2212735316055980242">Bu qoida topilmadi</translation>
@@ -893,6 +894,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3827112369919217609">Mutlaq</translation>
 <translation id="3827475930221174051">“<ph name="SEARCH_TERM" />” soʻroviga aloqador faollik asosida</translation>
 <translation id="3828924085048779000">Parol jumlasini bo‘sh qoldirib bo‘lmaydi.</translation>
+<translation id="3831065134033923230">Saqlangan parollarni tekshiring</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> tomonidan qoʻshimcha funksiyali kengaytmalar oʻrnatildi. Kengaytmalarda ayrim maʼlumotlaringizga ruxsat bor.</translation>
 <translation id="3832522519263485449">Chapdan bir nechta teshik ochish</translation>
 <translation id="3835233591525155343">Qurilmadan foydalanish</translation>
@@ -1092,6 +1094,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="443673843213245140">Proksi-server o‘chiq, lekin uning sozlamalari aniq belgilangan.</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="4451135742916150903">HID qurilmalarga ulanish uchun ruxsat soʻrashi mumkin</translation>
+<translation id="4452328064229197696">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Google Parollar menejeri saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
 <translation id="4455222631300069614">Parolingizni hoziroq almashtiring</translation>
 <translation id="4460315069258617173">Bu sayt uchun varaqlar yopilmaguncha ruxsat etilgan</translation>
 <translation id="4464826014807964867">Tashkilotingiz axborot yuborgan saytlar</translation>
@@ -1581,6 +1584,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6051221802930200923"><ph name="SITE" /> sayti ochilmadi, bu sayt taqilgan sertifikatdan foydalanayotgan bo‘lishi mumkin. Bunday xatolik tarmoq xatoligi va saytga hujumlar bo‘layotganda yuz beradi, lekin keyinroq sayt ishlab ketishi mumkin.</translation>
 <translation id="6051898664905071243">Sahifalar soni:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Hozirgina siz foydalangan parol oshkor qilingan. Google Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="6055888660316801977">Xavfsiz toʻlov maʼlumotlari jadvaldagi maʼlumotlarga mos kelmadi</translation>
 <translation id="6058977677006700226">Kartalaringiz barcha qurilmalaringizda ishlatilsinmi?</translation>
 <translation id="6059925163896151826">USB qurilmalar</translation>

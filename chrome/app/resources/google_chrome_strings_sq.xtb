@@ -52,6 +52,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2123055963409958220">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Rinise Chrome tani</translation>
 <translation id="2189289170880510015">Personalizo disa nga zgjedhjet më të rëndësishme të privatësisë të Chrome</translation>
+<translation id="2258103955319320201">Për t'u qasur te gjërat e shfletuesit Chrome nëpër të gjitha pajisjet e tua, identifikohu dhe më pas aktivizo sinkronizimin</translation>
 <translation id="2290014774651636340">Çelësat API të Google mungojnë. Disa funksione të Chrome do të çaktivizohen.</translation>
 <translation id="2290095356545025170">Je i sigurt që dëshiron ta çinstalosh Google Chrome?</translation>
 <translation id="2309047409763057870">Ky është instalim dytësor i Google Chrome dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
@@ -202,6 +203,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome sapo është përmirësuar</translation>
 <translation id="6145313976051292476">Hap PDF-të në Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -215,6 +217,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6506909944137591434">Chrome ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistemi Chrome OS</translation>
+<translation id="6594121454516132231">Shiko se si planifikon Chrome të të mbrojë nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
 <translation id="6679975945624592337">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="6696915334902295848">Chrome ka nevojë për lejen e mikrofonit për këtë sajt</translation>
@@ -229,6 +232,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6989339256997917931">Google Chrome është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
 <translation id="7062128746136194023">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet shtimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7098166902387133879">Google Chrome po përdor mikrofonin tënd.</translation>
 <translation id="7106741999175697885">Menaxheri i detyrave - Google Chrome</translation>
@@ -253,6 +257,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7651907282515937834">Logoja e Chrome Enterprise</translation>
 <translation id="7665553140559834626">Nise përsëri për të përditësuar &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
+<translation id="7748512868279796735">Llogaritë e mëposhtme janë të disponueshme për këtë profil të Chrome</translation>
 <translation id="7761834446675418963">Kliko tek emri yt për të hapur Chrome dhe fillo shfletimin.</translation>
 <translation id="7777080907402804672">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="7781002470561365167">Ofrohet një version i ri i Google Chrome.</translation>
@@ -284,6 +289,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8556340503434111824">Ofrohet një version i ri i Google Chrome dhe është më i shpejtë se kurrë.</translation>
+<translation id="8571790202382503603">Me profilet e Chrome mund t'i mbash veçmas të gjitha gjërat e tua të Chrome. Kjo e bën më të lehtë ta ndash punën nga argëtimi.</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>

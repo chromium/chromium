@@ -127,6 +127,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1746730358044914197">Metodat e hyrjes konfigurohen nga administratori yt.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
 <translation id="1749109475624620922">Dritarja <ph name="WINDOW_TITLE" /> u caktua për të gjitha tavolinat e punës</translation>
+<translation id="1750088060796401187">Lejohen vetëm <ph name="MAX_DESK_LIMIT" /> tavolina pune. Hiq një tavolinë pune për të hapur një të re.</translation>
 <translation id="1761222317188459878">Aktivizo/çaktivizo lidhjen e rrjetit. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Është zhvendosur në rreshtin <ph name="ROW_NUMBER" />, kolonën <ph name="COLUMN_NUMBER" />.</translation>
@@ -398,6 +399,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3630697955794050612">çaktivizuar</translation>
 <translation id="3631369015426612114">Lejo njoftimet nga më poshtë</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
+<translation id="3640092422335864171">Ruaj <ph name="NAME" /></translation>
 <translation id="3649505501900178324">Afati i përditësimit ka kaluar</translation>
 <translation id="366222428570480733">Përdorues i menaxhuar (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3665889125180354336">Regjistro me mikrofonin</translation>
@@ -482,6 +484,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4215497585250573029">Cilësimet e VPN-së</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplikacioni i instaluar, në pauzë</translation>
+<translation id="4223947355273782392">Ruaj <ph name="NAME" /> te <ph name="EMAIL" /> për një çiftim më të shpejtë me pajisjet e tua të tjera</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>

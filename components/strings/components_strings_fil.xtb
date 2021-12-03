@@ -404,6 +404,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}one{# address}other{# na address}}</translation>
 <translation id="2187317261103489799">Tukuyin (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
+<translation id="2188852899391513400">Nakita sa isang paglabag sa data ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Google Password Manager na palitan na ito ngayon at pagkatapos ay tingnan ang mga naka-save mong password.</translation>
 <translation id="2202020181578195191">Maglagay ng wastong taon ng pag-expire</translation>
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2212735316055980242">Hindi nahanap ang patakaran</translation>
@@ -649,6 +650,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Magdagdag ng Address sa Pag-pick up</translation>
+<translation id="3098513225387949945">Binalewala ito dahil naglalaman ang listahan ng naka-disable ng pattern na katumbas ng '*', na katumbas ng pag-disable sa patakaran.</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Suriin ang configuration ng secure na DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Gitnang Tray</translation>
@@ -897,6 +899,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3827112369919217609">Absolute</translation>
 <translation id="3827475930221174051">Batay sa aktibidad na nauugnay sa "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Hindi pinapayagan ang walang laman na passphrase.</translation>
+<translation id="3831065134033923230">Tingnan ang iyong mga naka-save na password</translation>
 <translation id="3831915413245941253">Nag-install ang <ph name="ENROLLMENT_DOMAIN" /> ng mga extension para sa mga karagdagang function. May access ang mga extension sa ilan sa iyong data.</translation>
 <translation id="3832522519263485449">Multiple punch left</translation>
 <translation id="3835233591525155343">Iyong paggamit ng device</translation>
@@ -1096,6 +1099,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="443673843213245140">Hindi pinagana ang paggamit ng isang proxy ngunit tinutukoy ang isang tahasang configuration ng proxy.</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="4451135742916150903">Puwedeng hilinging kumonekta sa mga HID device</translation>
+<translation id="4452328064229197696">Nakita sa isang paglabag sa data ang password na kakagamit mo lang. Para ma-secure ang iyong mga account, inirerekomenda ng Google Password Manager na tingnan mo ang iyong mga naka-save na password.</translation>
 <translation id="4455222631300069614">Palitan na ang iyong password</translation>
 <translation id="4460315069258617173">Pinapayagan hanggang sa isara mo ang mga tab para sa site na ito</translation>
 <translation id="4464826014807964867">Mga website na may impormasyon mula sa iyong organisasyon</translation>
@@ -1561,6 +1565,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6008122969617370890">N-to-1 na pagkakasunod-sunod</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Suriin ang iyong mga password</translation>
+<translation id="6014851866995737824">Binalewala ito dahil wala ang listahan ng "naka-enable" o "naka-disable".</translation>
 <translation id="6015796118275082299">Taon</translation>
 <translation id="6017514345406065928">Berde</translation>
 <translation id="6017850046339264347">Ang mga umaatake sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ay maaaring mag-install ng mga mapanlinlang na app na nagpapanggap na ibang bagay o nangongolekta ng data na maaaring gamitin upang subaybayan ka. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1584,6 +1589,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6051221802930200923">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil gumagamit ng pag-pin ng certificate ang website. Karaniwang pansamantala lang ang mga error at pag-atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="6051898664905071243">Bilang ng page:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Nakita sa isang paglabag sa data ang password na kakagamit mo lang. Inirerekomenda ng Google Password Manager na palitan na ngayon ang password na ito.</translation>
 <translation id="6055888660316801977">Sheet na walang tumutugmang kredensyal sa kredensyal sa secure na pagbabayad</translation>
 <translation id="6058977677006700226">Gamitin ang iyong mga card sa lahat ng device mo?</translation>
 <translation id="6059925163896151826">Mga USB device</translation>

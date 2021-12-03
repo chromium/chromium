@@ -646,6 +646,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Alınacağı Adres Ekle</translation>
+<translation id="3098513225387949945">Devre dışı bırakma listesinde "*" öğesine eşdeğer bir kalıp olduğundan politika yoksayıldı. "*" öğesi, politikayı devre dışı bırakmayla eşdeğerdir.</translation>
 <translation id="3105172416063519923">Öğe Kimliği:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Güvenli DNS yapılandırması kontrol etme<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Orta Tepsi</translation>
@@ -1554,6 +1555,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6008122969617370890">N'den 1'e sıralı</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Şifrelerinizi kontrol edin</translation>
+<translation id="6014851866995737824">"Etkinleştirme" veya "devre dışı bırakma" listelerinden biri eksik olduğundan politika yoksayıldı.</translation>
 <translation id="6015796118275082299">Yıl</translation>
 <translation id="6017514345406065928">Yeşil</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> öğesini kullanan saldırganlar başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilirler. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>

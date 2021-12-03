@@ -649,6 +649,7 @@
 <translation id="3087734570205094154">پایین</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">افزودن نشانی تحویل گرفتن</translation>
+<translation id="3098513225387949945">نادیده گرفته شد زیرا فهرستِ غیرفعال کردن حاوی الگویی مساوی با «*» است؛ این الگو معادل غیرفعال کردن خط‌مشی است.</translation>
 <translation id="3105172416063519923">شناسه دارایی:</translation>
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />بررسی پیکربندی DNS امن<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">سینی وسط</translation>
@@ -1561,6 +1562,7 @@
 <translation id="6008122969617370890">‏ترتیب N تا ۱</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">بررسی گذرواژه</translation>
+<translation id="6014851866995737824">نادیده گرفته شد زیرا فهرست «فعال کردن» یا «غیرفعال کردن» موجود نیست.</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6017514345406065928">سبز</translation>
 <translation id="6017850046339264347">مهاجم‌ها در <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> می‌توانند برنامه‌های فریب‌دهنده‌ای نصب کنند که وانمود می‌کنند چیز دیگری هستند یا داده‌هایی جمع‌آوری کنند که ممکن است برای ردیابی شما استفاده شوند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
