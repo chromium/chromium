@@ -95,7 +95,7 @@ const char* LocationToString(ManifestLocation loc) {
 
 base::Value CreationFlagsToList(int creation_flags) {
   base::Value flags_value(base::Value::Type::LIST);
-  if (creation_flags & extensions::Extension::NO_FLAGS)
+  if (creation_flags == extensions::Extension::NO_FLAGS)
     flags_value.Append("NO_FLAGS");
   if (creation_flags & extensions::Extension::REQUIRE_KEY)
     flags_value.Append("REQUIRE_KEY");
