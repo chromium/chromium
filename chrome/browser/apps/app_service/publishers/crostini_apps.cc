@@ -257,10 +257,12 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
   }
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    crostini::AddTerminalMenuShortcuts(profile_, &menu_items,
-                                       ash::LAUNCH_APP_SHORTCUT_FIRST);
+    crostini::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
+                                       std::move(menu_items),
+                                       std::move(callback));
+  } else {
+    std::move(callback).Run(std::move(menu_items));
   }
-  std::move(callback).Run(std::move(menu_items));
 }
 
 void CrostiniApps::ExecuteContextMenuCommand(const std::string& app_id,

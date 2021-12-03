@@ -407,11 +407,12 @@ void WebApps::GetMenuModel(const std::string& app_id,
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
     DCHECK(base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH));
-    crostini::AddTerminalMenuShortcuts(profile_, &menu_items,
-                                       ash::LAUNCH_APP_SHORTCUT_FIRST);
+    crostini::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
+                                       std::move(menu_items),
+                                       std::move(callback));
+  } else {
+    GetAppShortcutMenuModel(app_id, std::move(menu_items), std::move(callback));
   }
-
-  GetAppShortcutMenuModel(app_id, std::move(menu_items), std::move(callback));
 }
 
 void WebApps::GetAppShortcutMenuModel(const std::string& app_id,

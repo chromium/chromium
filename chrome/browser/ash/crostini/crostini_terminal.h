@@ -9,6 +9,7 @@
 
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
@@ -133,9 +134,12 @@ void AddTerminalMenuItems(Profile* profile,
                           apps::mojom::MenuItemsPtr* menu_items);
 
 // Add terminal shortcut items in menu.
-void AddTerminalMenuShortcuts(Profile* profile,
-                              apps::mojom::MenuItemsPtr* menu_items,
-                              int next_command_id);
+void AddTerminalMenuShortcuts(
+    Profile* profile,
+    int next_command_id,
+    apps::mojom::MenuItemsPtr menu_items,
+    apps::mojom::Publisher::GetMenuModelCallback callback,
+    std::vector<gfx::ImageSkia> icons = {});
 
 // Called when user clicks on terminal menu items. Returns true if |shortcut_id|
 // is recognized and handled.

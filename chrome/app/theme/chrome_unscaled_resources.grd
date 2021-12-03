@@ -108,8 +108,9 @@
         <include name="IDR_LOGO_BOREALIS_DEFAULT_192" file="borealis/logo_borealis_default_192.png" type="BINDATA" />
         <!-- Crostini icons -->
         <include name="IDR_LOGO_CROSTINI_TERMINAL" file="crostini/ic_terminal_256.png" type="BINDATA" />
+        <include name="IDR_LOGO_CROSTINI_TERMINAL_SSH" file="crostini/terminal_ssh_256.png" type="BINDATA" />
         <include name="IDR_LOGO_CROSTINI_DEFAULT" file="crostini/ic_linux_256.png" type="BINDATA" />
-        <include name="IDR_CROSTINI_MASCOT" file="crostini/crostini_mascot_1x.svg" type="BINDATA" />
+        <include name="IDR_CROSTINI_MASCOT" file="crostini/crostini_mascot_256.png" type="BINDATA" />
         <include name="IDR_LINUX_ILLUSTRATION" file="crostini/linux_illustration_2x.png" type="BINDATA" />
         <include name="IDR_LINUX_SUCCESS_ILLUSTRATION" file="crostini/linux_success_illustration.svg" type="BINDATA" />
         <!-- PluginVm icons -->
