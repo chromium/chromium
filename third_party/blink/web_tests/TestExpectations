@@ -7320,3 +7320,6 @@ crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fi
 crbug.com/1276208 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Pass Timeout ]
 crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Skip ]
 crbug.com/1276044 virtual/gpu-rasterization/images/color-profile-background-image-repeat.html [ Failure Pass ]
+
+# Sheriff 2021-12-03
+crbug.com/1198781 [ Linux ] virtual/scroll-unification-layout_ng_block_frag/fast/forms/fieldset/fieldset-custom-scrollbar.html [ Failure Pass ]
