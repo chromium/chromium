@@ -56,7 +56,6 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
     case V8ImageBitmapSource::ContentType::kBlob:
     case V8ImageBitmapSource::ContentType::kSVGImageElement:
     case V8ImageBitmapSource::ContentType::kVideoFrame:
-      NOTREACHED() << "Unsupported CanvasImageSource";
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Unsupported source."));
       return promise;
