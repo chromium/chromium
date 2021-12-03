@@ -7,16 +7,20 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "chrome/updater/update_service.h"
 
 namespace updater {
 
-// Blocking on metered network is not supported because macOS does not offer a
-// way to detect if a connection is metered.
+#if !defined(OS_WIN)
+
+// Linux and macOS don't have mechanisms to detect if a connection is metered.
 void ShouldBlockUpdateForMeteredNetwork(
     UpdateService::Priority,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(false);
 }
+
+#endif
 
 }  // namespace updater

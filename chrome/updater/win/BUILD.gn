@@ -15,7 +15,7 @@ group("win") {
     ":signing",
     ":updater",
     ":updater_zip",
-    "//chrome/updater/win/installer:installer",
+    "//chrome/updater/win/installer",
   ]
 }
 

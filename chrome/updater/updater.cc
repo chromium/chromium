@@ -36,10 +36,10 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/app/server/win/service_main.h"
 #include "chrome/updater/win/win_util.h"
-#endif
-
-#if defined(OS_MAC)
+#elif defined(OS_MAC)
 #include "chrome/updater/app/server/mac/server.h"
+#elif defined(OS_LINUX)
+#include "chrome/updater/app/server/linux/server.h"
 #endif
 
 // Instructions For Windows.

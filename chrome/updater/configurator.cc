@@ -28,10 +28,10 @@
 
 #if defined(OS_WIN)
 #include "chrome/updater/win/net/network.h"
-#endif
-
-#if defined(OS_MAC)
+#elif defined(OS_MAC)
 #include "chrome/updater/mac/net/network.h"
+#elif defined(OS_LINUX)
+#include "chrome/updater/linux/net/network.h"
 #endif
 
 namespace {

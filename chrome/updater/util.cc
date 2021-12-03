@@ -6,8 +6,10 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -211,4 +213,23 @@ GURL AppendQueryParameter(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
+#if defined(OS_LINUX)
+
+// TODO(crbug.com/1276188) - implement the functions below.
+absl::optional<base::FilePath> GetUpdaterFolderPath(UpdaterScope scope) {
+  NOTIMPLEMENTED();
+  return absl::nullopt;
+}
+
+base::FilePath GetExecutableRelativePath() {
+  NOTIMPLEMENTED();
+  return base::FilePath();
+}
+
+bool PathOwnedByUser(const base::FilePath& path) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+#endif  // OS_LINUX
 }  // namespace updater

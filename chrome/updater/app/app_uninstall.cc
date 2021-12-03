@@ -29,10 +29,10 @@
 
 #if defined(OS_WIN)
 #include "chrome/updater/win/setup/uninstall.h"
-#endif
-
-#if defined(OS_MAC)
+#elif defined(OS_MAC)
 #include "chrome/updater/mac/setup/setup.h"
+#elif defined(OS_LINUX)
+#include "chrome/updater/linux/setup/setup.h"
 #endif
 
 namespace updater {

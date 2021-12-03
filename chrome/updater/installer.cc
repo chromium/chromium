@@ -12,6 +12,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -266,13 +267,14 @@ absl::optional<base::FilePath> Installer::GetCurrentInstallDir() const {
   return path->AppendASCII(pv_.GetString());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX)
 Installer::Result Installer::RunApplicationInstaller(
-    const base::FilePath& app_installer,
-    const std::string& arguments) {
-  NOTREACHED();
+    const base::FilePath& /*app_installer*/,
+    const std::string& /*arguments*/,
+    ProgressCallback /*progress_callback*/) {
+  NOTIMPLEMENTED();
   return Installer::Result(-1);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX)
 
 }  // namespace updater

@@ -15,11 +15,13 @@
 
 #if defined(OS_MAC)
 #include "chrome/updater/mac/mac_util.h"
-#endif
+#endif  // OS_MAC
 
 #if defined(OS_WIN)
 #define EXECUTABLE_EXTENSION ".exe"
-#endif
+#else
+#define EXECUTABLE_EXTENSION ""
+#endif  // OS_WIN
 
 // Tests the updater process returns 0 when run with --test argument.
 TEST(UpdaterTest, UpdaterExitCode) {
@@ -27,19 +29,19 @@ TEST(UpdaterTest, UpdaterExitCode) {
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &this_executable_path));
   const base::FilePath executableFolder = this_executable_path.DirName();
   const base::FilePath updater =
-#if defined(OS_WIN)
-      this_executable_path.DirName().Append(
-          FILE_PATH_LITERAL("updater_test" EXECUTABLE_EXTENSION));
-#elif defined(OS_MAC)
+#if defined(OS_MAC)
       this_executable_path.DirName().Append(
           updater::GetExecutableRelativePath());
 #else
-      "";
-#endif
+      this_executable_path.DirName().Append(
+          FILE_PATH_LITERAL("updater_test" EXECUTABLE_EXTENSION));
+#endif  // OS_MAC
+
   base::LaunchOptions options;
 #if defined(OS_WIN)
   options.start_hidden = true;
-#endif
+#endif  // OS_WIN
+
   base::CommandLine command_line(updater);
   command_line.AppendSwitch("test");
   auto process = base::LaunchProcess(command_line, options);

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/enterprise_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -57,7 +58,13 @@ DMPolicyManager::DMPolicyManager(
 DMPolicyManager::~DMPolicyManager() = default;
 
 bool DMPolicyManager::IsManaged() const {
+#if defined(OS_WIN) || defined(OS_MAC)
   return base::IsMachineExternallyManaged();
+#else
+  // crbug.com/1276162 - implement.
+  NOTIMPLEMENTED();
+  return false;
+#endif
 }
 
 std::string DMPolicyManager::source() const {

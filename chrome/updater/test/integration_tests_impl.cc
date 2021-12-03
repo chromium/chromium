@@ -66,8 +66,10 @@ constexpr char kDoNothingCRXName[] = "updater_qualification_app_exe.crx";
 constexpr char kDoNothingCRXRun[] = "qualification_app.exe";
 constexpr char kDoNothingCRXHash[] =
     "0705f7eedb0427810db76dfc072c8cbc302fbeb9b2c56fa0de3752ed8d6f9164";
-#else
-static_assert(false, "Unsupported platform for IntegrationTest.*");
+#elif defined(OS_LINUX)
+constexpr char kDoNothingCRXName[] = "updater_qualification_app.crx";
+constexpr char kDoNothingCRXRun[] = "qualification_app";
+constexpr char kDoNothingCRXHash[] = "";
 #endif
 
 std::string GetUpdateResponse(const std::string& app_id,
