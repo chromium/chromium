@@ -82,8 +82,6 @@ static_library("extensions") {
     "api/content_settings/content_settings_api.h",
     "api/content_settings/content_settings_custom_extension_provider.cc",
     "api/content_settings/content_settings_custom_extension_provider.h",
-    "api/content_settings/content_settings_helpers.cc",
-    "api/content_settings/content_settings_helpers.h",
     "api/content_settings/content_settings_service.cc",
     "api/content_settings/content_settings_service.h",
     "api/content_settings/content_settings_store.cc",
