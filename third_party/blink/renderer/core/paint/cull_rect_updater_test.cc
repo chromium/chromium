@@ -21,6 +21,12 @@ class CullRectUpdaterTest : public RenderingTest {
   CullRect GetCullRect(const char* id) {
     return GetLayoutObjectByElementId(id)->FirstFragment().GetCullRect();
   }
+
+  CullRect GetContentsCullRect(const char* id) {
+    return GetLayoutObjectByElementId(id)
+        ->FirstFragment()
+        .GetContentsCullRect();
+  }
 };
 
 // TODO(wangxianzhu): Move other cull rect tests from PaintLayerPainterTest
@@ -75,7 +81,7 @@ TEST_F(CullRectUpdaterTest, FixedPositionUnderClipPathWillChangeTransform) {
 TEST_F(CullRectUpdaterTest, AbsolutePositionUnderNonContainingStackingContext) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   SetBodyInnerHTML(R"HTML(
-    <div id="scroller" style="width:200px; height: 200px; overflow: auto;
+    <div id="scroller" style="width: 200px; height: 200px; overflow: auto;
                               position: relative">
       <div style="height: 0; overflow: hidden; opacity: 0.5; margin: 250px">
         <div id="absolute"
@@ -93,6 +99,47 @@ TEST_F(CullRectUpdaterTest, AbsolutePositionUnderNonContainingStackingContext) {
                 ? gfx::Rect(200, 200, 200, 200)
                 : gfx::Rect(150, 200, 200, 200),
             GetCullRect("absolute").Rect());
+}
+
+TEST_F(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller" style="width: 200px; height: 200px; overflow: auto;
+                              background: white">
+      <div id="child" style="height: 7000px; position: relative"></div>
+    </div>
+  )HTML");
+
+  auto* scroller = GetDocument().getElementById("scroller");
+
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 4200), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 4200), GetCullRect("child").Rect());
+
+  for (int i = 1000; i < 7000; i += 1000) {
+    scroller->scrollTo(0, i);
+    UpdateAllLifecyclePhasesForTest();
+  }
+  // When scrolled to 3800, the cull rect covers the whole scrolling contents.
+  // Then we use this full cull rect on further scroll to avoid repaint.
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetCullRect("child").Rect());
+
+  // The full cull rect still applies when the scroller scrolls to the top.
+  scroller->scrollTo(0, 0);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetCullRect("child").Rect());
+
+  // When child needs repaint, it will recalculate its cull rect.
+  GetPaintLayerByElementId("child")->SetNeedsRepaint();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 4200), GetCullRect("child").Rect());
+
+  // Then scroll to the bottom, child should recalculate it cull rect again.
+  scroller->scrollTo(0, 7000);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 7000), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(0, 2800, 200, 4200), GetCullRect("child").Rect());
 }
 
 }  // namespace blink
