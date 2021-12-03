@@ -524,3 +524,19 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
   assertEquals(null, tts.currentUtterance_);
   this.expectUtteranceQueueIsLike([]);
 });
+
+TEST_F('ChromeVoxTtsBackgroundTest', 'ResetTtsSettingsClearsVoice', function() {
+  this.newCallback(async () => {
+    ChromeVox.tts.ttsEngines_[0].currentVoice = '';
+    CommandHandler.onCommand('resetTextToSpeechSettings');
+    await new Promise(r => {
+      ChromeVox.tts.speak = textString => {
+        if (textString === 'Reset text to speech settings to default values') {
+          r();
+        }
+      };
+    });
+    assertEquals(
+        constants.SYSTEM_VOICE, ChromeVox.tts.ttsEngines_[0].currentVoice);
+  })();
+});

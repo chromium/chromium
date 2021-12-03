@@ -808,6 +808,7 @@ TtsBackground = class extends ChromeTtsBase {
    */
   updateVoice_(voiceName, opt_callback) {
     chrome.tts.getVoices((voices) => {
+      console.log('get!' + JSON.stringify(voices));
       const systemVoice = {voiceName: constants.SYSTEM_VOICE};
       voices.unshift(systemVoice);
       const newVoice = voices.find((v) => {
@@ -875,21 +876,23 @@ TtsBackground = class extends ChromeTtsBase {
     chrome.settingsPrivate.setPref('settings.tts.speech_rate', rate);
     chrome.settingsPrivate.setPref('settings.tts.speech_pitch', pitch);
     chrome.settingsPrivate.setPref('settings.tts.speech_volume', volume);
+    chrome.storage.local.remove('voiceName');
+    this.updateVoice_('', () => {
+      // Ensure this announcement doesn't get cut off by speech triggered by
+      // updateFromPrefs_().
+      // Copy properties from AbstractTts.PERSONALITY_ANNOTATION and add the
+      // doNotInterrupt property.
+      const speechProperties = {};
+      const sourceProperties = AbstractTts.PERSONALITY_ANNOTATION || {};
+      for (const [key, value] of Object.entries(sourceProperties)) {
+        speechProperties[key] = value;
+      }
+      speechProperties['doNotInterrupt'] = true;
 
-    // Ensure this announcement doesn't get cut off by speech triggered by
-    // updateFromPrefs_().
-    // Copy properties from AbstractTts.PERSONALITY_ANNOTATION and add the
-    // doNotInterrupt property.
-    const speechProperties = {};
-    const sourceProperties = AbstractTts.PERSONALITY_ANNOTATION || {};
-    for (const [key, value] of Object.entries(sourceProperties)) {
-      speechProperties[key] = value;
-    }
-    speechProperties['doNotInterrupt'] = true;
-
-    ChromeVox.tts.speak(
-        Msgs.getMsg('announce_tts_default_settings'), QueueMode.FLUSH,
-        speechProperties);
+      ChromeVox.tts.speak(
+          Msgs.getMsg('announce_tts_default_settings'), QueueMode.FLUSH,
+          speechProperties);
+    });
   }
 
   /**
