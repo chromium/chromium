@@ -335,6 +335,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnPaint(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -388,6 +389,11 @@ class AutofillPopupItemView : public AutofillPopupRowView {
 
   // All the labels inside this view.
   std::vector<views::Label*> inner_labels_;
+
+  // The Autofill popup may be hovered by the mouse after its creation. In this
+  // case, we want to ignore clicks on the hovered menu item until the user made
+  // an explicit choice. See crbug.com/1240472, crbug.com/1241585.
+  bool mouse_observed_outside_of_item_ = false;
 };
 
 int AutofillPopupItemView::GetFrontendId() const {
@@ -620,19 +626,35 @@ void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
 }
 
+void AutofillPopupItemView::OnPaint(gfx::Canvas* canvas) {
+  AutofillPopupRowView::OnPaint(canvas);
+  mouse_observed_outside_of_item_ |= !IsMouseHovered();
+}
+
 void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
+  // OnMouseEntered() also fires if the had been hovering over the item and
+  // moved only a little bit. In that case, clicks shall still be ignored and we
+  // don't want to show a preview.
+  if (!mouse_observed_outside_of_item_)
+    return;
   AutofillPopupController* controller = popup_view()->controller();
   if (controller)
     controller->SetSelectedLine(GetLineNumber());
 }
 
 void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
+  mouse_observed_outside_of_item_ = true;
   AutofillPopupController* controller = popup_view()->controller();
   if (controller)
     controller->SelectionCleared();
 }
 
 void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
+  // Ignore mouse clicks in case the popup appeared directly under the mouse
+  // cursor and we have no indication that the user intentionally selected the
+  // current item.
+  if (!mouse_observed_outside_of_item_)
+    return;
   AutofillPopupController* controller = popup_view()->controller();
   if (controller && event.IsOnlyLeftMouseButton() &&
       HitTestPoint(event.location())) {
