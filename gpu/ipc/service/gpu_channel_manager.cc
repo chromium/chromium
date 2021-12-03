@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/memory_stats.h"
@@ -96,7 +97,16 @@ void APIENTRY CrashReportOnGLErrorDebugCallback(GLenum source,
                                                 const GLvoid* user_param) {
   if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API &&
       user_param) {
-    LOG(ERROR) << gl::GLEnums::GetStringEnum(id) << ": " << message;
+    // Note: log_message cannot contain any user data. The error strings
+    // generated from ANGLE are all static strings and do not contain user
+    // information such as shader source code. Be careful if updating the
+    // contents of this string.
+    std::string log_message = gl::GLEnums::GetStringEnum(id);
+    if (message && length > 0) {
+      log_message += ": " + std::string(message, length);
+    }
+    LOG(ERROR) << log_message;
+    crash_keys::gpu_gl_error_message.Set(log_message);
     int* remaining_reports =
         const_cast<int*>(static_cast<const int*>(user_param));
     if (*remaining_reports > 0) {

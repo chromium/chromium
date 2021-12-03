@@ -36,6 +36,7 @@ extern GPU_EXPORT crash_reporter::CrashKeyString<20>
     available_physical_memory_in_mb;
 extern GPU_EXPORT crash_reporter::CrashKeyString<1024> current_shader_0;
 extern GPU_EXPORT crash_reporter::CrashKeyString<1024> current_shader_1;
+extern GPU_EXPORT crash_reporter::CrashKeyString<1024> gpu_gl_error_message;
 extern GPU_EXPORT crash_reporter::CrashKeyString<4>
     gpu_watchdog_kill_after_power_resume;
 extern GPU_EXPORT crash_reporter::CrashKeyString<4>

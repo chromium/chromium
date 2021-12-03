@@ -43,6 +43,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "gpu-gl-renderer",
     "gr-context-type",
     "oop_read_failure",
+    "gpu-gl-error-message",
 
     // components/viz
     "viz_deserialization",

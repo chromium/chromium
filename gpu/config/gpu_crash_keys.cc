@@ -31,6 +31,8 @@ crash_reporter::CrashKeyString<20> available_physical_memory_in_mb(
     "available-physical-memory-in-mb");
 crash_reporter::CrashKeyString<1024> current_shader_0("current-shader-0");
 crash_reporter::CrashKeyString<1024> current_shader_1("current-shader-1");
+crash_reporter::CrashKeyString<1024> gpu_gl_error_message(
+    "gpu-gl-error-message");
 crash_reporter::CrashKeyString<4> gpu_watchdog_kill_after_power_resume(
     "gpu-watchdog-kill-after-power-resume");
 crash_reporter::CrashKeyString<4> gpu_watchdog_crashed_in_gpu_init(

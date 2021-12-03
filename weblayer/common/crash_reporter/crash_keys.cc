@@ -31,7 +31,7 @@ const char* const kWebLayerCrashKeyAllowList[] = {
 
     // gpu
     "gpu-driver", "gpu-psver", "gpu-vsver", "gpu-gl-vendor", "gpu-gl-renderer",
-    "oop_read_failure",
+    "oop_read_failure", "gpu-gl-error-message",
 
     // content/:
     "bad_message_reason", "discardable-memory-allocated",
