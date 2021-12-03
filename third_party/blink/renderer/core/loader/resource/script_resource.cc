@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -173,6 +174,48 @@ const ParkableString& ScriptResource::SourceText() {
   }
 
   return source_text_;
+}
+
+// RawSourceText() should be only used for Experimental Web Snapshots behind the
+// flag. This is intended for experiments and should be redesigned before
+// shipping, because this method conflicts with the invariants around
+// ScriptResource in corner cases. Do not derive new code based on this method.
+// This is expected to be removed (and the real Blink integration landed)
+// before M102. See crbug.com/1173534.
+const ParkableString& ScriptResource::RawSourceText() {
+  CHECK(RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled());
+
+  CHECK(IsLoaded());
+
+  if (source_text_.IsNull() && Data()) {
+    String source_text = RawText();
+    ClearData();
+    SetDecodedSize(source_text.CharactersSizeInBytes());
+    source_text_ = ParkableString(source_text.ReleaseImpl());
+  }
+
+  return source_text_;
+}
+
+bool ScriptResource::DataHasPrefix(const base::span<const char>& prefix) const {
+  CHECK(RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled());
+
+  if (Data() == nullptr) {
+    return false;
+  }
+  size_t checked_bytes = 0;
+  for (const auto& span : *Data()) {
+    for (const auto& byte : span) {
+      if (prefix[checked_bytes] != byte) {
+        return false;
+      }
+      ++checked_bytes;
+      if (checked_bytes == prefix.size()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 String ScriptResource::TextForInspector() const {

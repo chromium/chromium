@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -98,11 +99,19 @@ ClassicScript* ClassicScript::CreateFromResource(
   DCHECK_EQ(!streamer, not_streamed_reason !=
                            ScriptStreamer::NotStreamingReason::kInvalid);
 
+  ParkableString source;
+  const char web_snapshot_prefix[4] = {'+', '+', '+', ';'};
+  if (RuntimeEnabledFeatures::ExperimentalWebSnapshotsEnabled() &&
+      resource->DataHasPrefix(base::span<const char>(web_snapshot_prefix))) {
+    source = resource->RawSourceText();
+  } else {
+    source = resource->SourceText();
+  }
   // We lose the encoding information from ScriptResource.
   // Not sure if that matters.
   return MakeGarbageCollected<ClassicScript>(
-      resource->SourceText(), StripFragmentIdentifier(resource->Url()),
-      base_url, fetch_options, ScriptSourceLocationType::kExternalFile,
+      source, StripFragmentIdentifier(resource->Url()), base_url, fetch_options,
+      ScriptSourceLocationType::kExternalFile,
       resource->GetResponse().IsCorsSameOrigin()
           ? SanitizeScriptErrors::kDoNotSanitize
           : SanitizeScriptErrors::kSanitize,
