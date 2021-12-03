@@ -19,10 +19,14 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -713,6 +717,52 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 #if defined(OS_CHROMEOS)
   webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
+#endif
+}
+
+void MaybeRegisterOsUninstall(const WebApp* web_app,
+                              Source::Type source_uninstalling,
+                              OsIntegrationManager& os_integration_manager,
+                              InstallOsHooksCallback callback) {
+#if defined(OS_WIN)
+  // |web_app| object will remove target |source_uninstalling| type.
+  // If the remaining source types and they happen to be user
+  // uninstallable, then it should register OsSettings.
+  WebAppSources sources = web_app->GetSources();
+  DCHECK(sources.test(source_uninstalling));
+  bool user_installable_before_uninstall = CanUserUninstallWebApp(sources);
+  sources[source_uninstalling] = false;
+  bool user_installable_after_uninstall = CanUserUninstallWebApp(sources);
+
+  if (!user_installable_before_uninstall && user_installable_after_uninstall) {
+    InstallOsHooksOptions options;
+    options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
+    os_integration_manager.InstallOsHooks(
+        web_app->app_id(), std::move(callback), nullptr, options);
+    return;
+  }
+#endif
+  std::move(callback).Run(OsHooksErrors());
+}
+
+void MaybeUnregisterOsUninstall(const WebApp* web_app,
+                                Source::Type source_installing,
+                                OsIntegrationManager& os_integration_manager) {
+#if defined(OS_WIN)
+  // |web_app| object will add target |source_installing| type.
+  // If the old source types are user installable, but new type is not, then
+  // it should unregister OsSettings.
+  WebAppSources sources = web_app->GetSources();
+  bool user_installable_before_install = CanUserUninstallWebApp(sources);
+  sources[source_installing] = true;
+  bool user_installable_after_install = CanUserUninstallWebApp(sources);
+
+  if (user_installable_before_install && !user_installable_after_install) {
+    OsHooksOptions options;
+    options[OsHookType::kUninstallationViaOsSettings] = true;
+    os_integration_manager.UninstallOsHooks(web_app->app_id(), options,
+                                            base::DoNothing());
+  }
 #endif
 }
 

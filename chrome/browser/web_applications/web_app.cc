@@ -91,9 +91,13 @@ bool WebApp::HasAnySources() const {
 }
 
 bool WebApp::HasOnlySource(Source::Type source) const {
-  Sources specified_sources;
+  WebAppSources specified_sources;
   specified_sources[source] = true;
-  return HasAnySpecifiedSourcesAndNoOtherSources(specified_sources);
+  return HasAnySpecifiedSourcesAndNoOtherSources(sources_, specified_sources);
+}
+
+WebAppSources WebApp::GetSources() const {
+  return sources_;
 }
 
 bool WebApp::IsSynced() const {
@@ -121,19 +125,7 @@ bool WebApp::IsSubAppInstalledApp() const {
 }
 
 bool WebApp::CanUserUninstallWebApp() const {
-  Sources specified_sources;
-  specified_sources[Source::kDefault] = true;
-  specified_sources[Source::kSync] = true;
-  specified_sources[Source::kWebAppStore] = true;
-  specified_sources[Source::kSubApp] = true;
-  return HasAnySpecifiedSourcesAndNoOtherSources(specified_sources);
-}
-
-bool WebApp::HasAnySpecifiedSourcesAndNoOtherSources(
-    Sources specified_sources) const {
-  bool has_any_specified_sources = (sources_ & specified_sources).any();
-  bool has_no_other_sources = (sources_ & ~specified_sources).none();
-  return has_any_specified_sources && has_no_other_sources;
+  return web_app::CanUserUninstallWebApp(sources_);
 }
 
 bool WebApp::WasInstalledByUser() const {

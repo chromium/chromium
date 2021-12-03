@@ -173,6 +173,11 @@ class WebAppInstallFinalizer {
                                              Source::Type source,
                                              UninstallWebAppCallback callback);
 
+  void OnMaybeRegisterOsUninstall(const AppId& app_id,
+                                  Source::Type source,
+                                  UninstallWebAppCallback callback,
+                                  OsHooksErrors os_hooks_errors);
+
   void SetWebAppManifestFieldsAndWriteData(
       const WebApplicationInfo& web_app_info,
       std::unique_ptr<WebApp> web_app,

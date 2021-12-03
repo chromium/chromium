@@ -582,7 +582,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  WebApp::Sources sources;
+  WebAppSources sources;
   sources[Source::kSystem] = local_data.sources().system();
   sources[Source::kPolicy] = local_data.sources().policy();
   sources[Source::kWebAppStore] = local_data.sources().web_app_store();

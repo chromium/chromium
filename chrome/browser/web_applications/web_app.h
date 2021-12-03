@@ -27,6 +27,7 @@
 
 namespace web_app {
 
+using WebAppSources = std::bitset<Source::kMaxValue + 1>;
 class WebApp {
  public:
   explicit WebApp(const AppId& app_id);
@@ -246,6 +247,7 @@ class WebApp {
   void RemoveSource(Source::Type source);
   bool HasAnySources() const;
   bool HasOnlySource(Source::Type source) const;
+  WebAppSources GetSources() const;
 
   bool IsSynced() const;
   bool IsPreinstalledApp() const;
@@ -322,16 +324,13 @@ class WebApp {
   base::Value AsDebugValue() const;
 
  private:
-  using Sources = std::bitset<Source::kMaxValue + 1>;
-  bool HasAnySpecifiedSourcesAndNoOtherSources(Sources specified_sources) const;
-
   friend class WebAppDatabase;
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
   AppId app_id_;
 
   // This set always contains at least one source.
-  Sources sources_;
+  WebAppSources sources_;
 
   std::string name_;
   std::string description_;

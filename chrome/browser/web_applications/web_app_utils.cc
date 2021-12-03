@@ -371,4 +371,20 @@ void PersistFileHandlersUserChoice(Profile* profile,
   }
 }
 
+bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
+                                             WebAppSources specified_sources) {
+  bool has_any_specified_sources = (sources & specified_sources).any();
+  bool has_no_other_sources = (sources & ~specified_sources).none();
+  return has_any_specified_sources && has_no_other_sources;
+}
+
+bool CanUserUninstallWebApp(WebAppSources sources) {
+  WebAppSources specified_sources;
+  specified_sources[Source::kDefault] = true;
+  specified_sources[Source::kSync] = true;
+  specified_sources[Source::kWebAppStore] = true;
+  specified_sources[Source::kSubApp] = true;
+  return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
+}
+
 }  // namespace web_app

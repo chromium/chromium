@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 
@@ -142,6 +143,13 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    const AppId& app_id,
                                    bool allowed,
                                    base::OnceClosure update_finished_callback);
+
+// Check if only |specified_sources| exist in the |sources|
+bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
+                                             WebAppSources specified_sources);
+
+// Check if all types of |sources| are uninstallable by the user.
+bool CanUserUninstallWebApp(WebAppSources sources);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The kLacrosPrimary and kWebAppsCrosapi features are each independently

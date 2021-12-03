@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/string_piece_forward.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -31,6 +32,8 @@ enum class WebappUninstallSource;
 }  // namespace webapps
 
 namespace web_app {
+
+class WebApp;
 
 enum class ForInstallableSite {
   kYes,
@@ -91,6 +94,17 @@ Source::Type InferSourceFromMetricsInstallSource(
     webapps::WebappInstallSource install_source);
 
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
+
+// The function should be called before removing a source from the WebApp.
+void MaybeRegisterOsUninstall(const WebApp* web_app,
+                              Source::Type source_uninstalling,
+                              OsIntegrationManager& os_integration_manager,
+                              InstallOsHooksCallback callback);
+
+// The function should be called before adding source to the WebApp.
+void MaybeUnregisterOsUninstall(const WebApp* web_app,
+                                Source::Type source_installing,
+                                OsIntegrationManager& os_integration_manager);
 
 }  // namespace web_app
 

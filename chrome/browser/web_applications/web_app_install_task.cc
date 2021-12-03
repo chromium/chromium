@@ -909,7 +909,16 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kProtocolHandlers] = true;
-  options.os_hooks[OsHookType::kUninstallationViaOsSettings] = true;
+
+  // Apps that can't be uninstalled from users shouldn't register to
+  // OS Settings.
+  const WebApp* web_app = registrar_->GetAppById(app_id);
+  if (web_app) {
+    // Certain unit tests could have nullptr web_app.
+    options.os_hooks[OsHookType::kUninstallationViaOsSettings] =
+        web_app->CanUserUninstallWebApp();
+  }
+
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   options.os_hooks[OsHookType::kUrlHandlers] = true;

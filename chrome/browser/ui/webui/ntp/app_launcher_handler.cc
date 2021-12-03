@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -1351,7 +1352,15 @@ void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
   options.os_hooks[web_app::OsHookType::kFileHandlers] = true;
   options.os_hooks[web_app::OsHookType::kProtocolHandlers] = true;
   options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = false;
-  options.os_hooks[web_app::OsHookType::kUninstallationViaOsSettings] = true;
+
+  // Installed WebApp here is user uninstallable app, but it needs to
+  // check user uninstall-ability if there are apps with different source types.
+  // WebApp::CanUserUninstallApp will handles it.
+  const web_app::WebApp* web_app =
+      web_app_provider_->registrar().GetAppById(app_id);
+  options.os_hooks[web_app::OsHookType::kUninstallationViaOsSettings] =
+      web_app->CanUserUninstallWebApp();
+
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   options.os_hooks[web_app::OsHookType::kUrlHandlers] = true;
