@@ -759,7 +759,7 @@ Image OutOfProcessInstance::GetPluginImageData() const {
 }
 
 void OutOfProcessInstance::SetAccessibilityDocInfo(
-    const AccessibilityDocInfo& doc_info) {
+    AccessibilityDocInfo doc_info) {
   PP_PrivateAccessibilityDocInfo pp_doc_info = {
       doc_info.page_count, PP_FromBool(doc_info.text_accessible),
       PP_FromBool(doc_info.text_copyable)};
@@ -784,7 +784,7 @@ void OutOfProcessInstance::SetAccessibilityPageInfo(
 }
 
 void OutOfProcessInstance::SetAccessibilityViewportInfo(
-    const AccessibilityViewportInfo& viewport_info) {
+    AccessibilityViewportInfo viewport_info) {
   PP_PrivateAccessibilityViewportInfo pp_viewport_info = {
       viewport_info.zoom,
       viewport_info.scale,

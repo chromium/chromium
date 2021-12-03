@@ -282,13 +282,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
   void SetFormTextFieldInFocus(bool in_focus) override;
-  void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
+  void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,
                                 std::vector<AccessibilityCharInfo> chars,
                                 AccessibilityPageObjects page_objects) override;
   void SetAccessibilityViewportInfo(
-      const AccessibilityViewportInfo& viewport_info) override;
+      AccessibilityViewportInfo viewport_info) override;
   void NotifyFindResultsChanged(int total, bool final_result) override;
   void NotifyFindTickmarks(const std::vector<gfx::Rect>& tickmarks) override;
   void SetContentRestrictions(int content_restrictions) override;

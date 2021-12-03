@@ -226,7 +226,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void,
               SetAccessibilityDocInfo,
-              (const AccessibilityDocInfo&),
+              (AccessibilityDocInfo),
               (override));
 
   MOCK_METHOD(void,
@@ -239,7 +239,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void,
               SetAccessibilityViewportInfo,
-              (const AccessibilityViewportInfo&),
+              (AccessibilityViewportInfo),
               (override));
 
   MOCK_METHOD(void, NotifyFindResultsChanged, (int, bool), (override));

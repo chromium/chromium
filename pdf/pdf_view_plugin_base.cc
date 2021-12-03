@@ -1032,7 +1032,8 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
     return;
   }
 
-  SetAccessibilityPageInfo(page_info, text_runs, chars, page_objects);
+  SetAccessibilityPageInfo(std::move(page_info), std::move(text_runs),
+                           std::move(chars), std::move(page_objects));
 
   // Schedule loading the next page.
   ScheduleTaskOnMainThread(
@@ -1057,7 +1058,7 @@ void PdfViewPluginBase::PrepareAndSetAccessibilityViewportInfo() {
                         &viewport_info.selection_end_page_index,
                         &viewport_info.selection_end_char_index);
 
-  SetAccessibilityViewportInfo(viewport_info);
+  SetAccessibilityViewportInfo(std::move(viewport_info));
 }
 
 bool PdfViewPluginBase::StartFind(const std::string& text,

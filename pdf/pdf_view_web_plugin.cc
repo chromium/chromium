@@ -850,11 +850,11 @@ void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {
   container_wrapper_->UpdateTextInputState();
 }
 
-void PdfViewWebPlugin::SetAccessibilityDocInfo(
-    const AccessibilityDocInfo& doc_info) {
+void PdfViewWebPlugin::SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityDocInfo,
-                                weak_factory_.GetWeakPtr(), doc_info));
+      FROM_HERE,
+      base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityDocInfo,
+                     weak_factory_.GetWeakPtr(), std::move(doc_info)));
 }
 
 void PdfViewWebPlugin::SetAccessibilityPageInfo(
@@ -870,11 +870,11 @@ void PdfViewWebPlugin::SetAccessibilityPageInfo(
 }
 
 void PdfViewWebPlugin::SetAccessibilityViewportInfo(
-    const AccessibilityViewportInfo& viewport_info) {
+    AccessibilityViewportInfo viewport_info) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityViewportInfo,
-                     weak_factory_.GetWeakPtr(), viewport_info));
+                     weak_factory_.GetWeakPtr(), std::move(viewport_info)));
 }
 
 void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {

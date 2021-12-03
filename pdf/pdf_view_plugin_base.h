@@ -300,8 +300,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
 
   // Sets the accessibility information about the PDF document in the renderer.
-  virtual void SetAccessibilityDocInfo(
-      const AccessibilityDocInfo& doc_info) = 0;
+  virtual void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) = 0;
 
   // Sets the accessibility information about the given `page_index` in the
   // renderer.
@@ -323,7 +322,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Sets the accessibility information about the current viewport in the
   // renderer.
   virtual void SetAccessibilityViewportInfo(
-      const AccessibilityViewportInfo& viewport_info) = 0;
+      AccessibilityViewportInfo viewport_info) = 0;
 
   // Find handlers.
   bool StartFind(const std::string& text, bool case_sensitive);
