@@ -155,7 +155,9 @@ public class WebFeedFollowIntroController {
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
                 if (tab.isIncognito()
                         || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
-                    Log.i(TAG, "No intro: tab is incognito, or URL scheme is not HTTP or HTTPS");
+                    Log.i(TAG,
+                            "No intro: tab is incognito, or URL scheme is not HTTP or HTTPS"
+                                    + url.getValidSpecOrEmpty());
                     return;
                 }
                 mRecommendationFetcher.beginFetch(tab, url, result -> {

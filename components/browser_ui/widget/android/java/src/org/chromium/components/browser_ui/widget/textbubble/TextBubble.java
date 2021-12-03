@@ -531,4 +531,14 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                     view, R.style.TextAppearance_TextMediumThick_Blue);
         }
     }
+
+    /** For testing only, get the list of active text bubbles. */
+    public static Set<TextBubble> getTextBubbleSetForTesting() {
+        return sBubbles;
+    }
+
+    /** For testing only, get the content view of a TextBubble. */
+    public View getTextBubbleContentViewForTesting() {
+        return mContentView;
+    }
 }

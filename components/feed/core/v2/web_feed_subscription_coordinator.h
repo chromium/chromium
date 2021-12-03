@@ -167,7 +167,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void FetchSubscribedWebFeedsStart();
   void FetchSubscribedWebFeedsComplete(
       FetchSubscribedWebFeedsTask::Result result);
-  void CallRefreshCompleteCallbacks(RefreshResult);
+  void CallRefreshCompleteCallbacks(RefreshResult result);
   void IsWebFeedSubscriberDone(base::OnceCallback<void(bool)> callback);
   void SubscribedWebFeedCountDone(base::OnceCallback<void(int)> callback);
 

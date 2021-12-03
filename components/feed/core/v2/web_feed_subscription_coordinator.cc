@@ -662,11 +662,16 @@ void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart() {
 void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsComplete(
     FetchRecommendedWebFeedsTask::Result result) {
   DCHECK(model_);
+  feed::WebFeedSubscriptions::RefreshResult refresh_result;
+  refresh_result.success = false;
   fetching_recommended_web_feeds_ = false;
   feed_stream_->GetMetricsReporter().RefreshRecommendedWebFeedsAttempted(
       result.status, result.recommended_web_feeds.size());
-  if (result.status == WebFeedRefreshStatus::kSuccess)
+  if (result.status == WebFeedRefreshStatus::kSuccess) {
+    refresh_result.success = true;
     model_->UpdateRecommendedFeeds(std::move(result.recommended_web_feeds));
+  }
+  CallRefreshRecommendedFeedsCompleteCallbacks(refresh_result);
 }
 
 void WebFeedSubscriptionCoordinator::
