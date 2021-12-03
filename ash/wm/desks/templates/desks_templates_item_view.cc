@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/label_textfield.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
@@ -142,6 +143,11 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
   icon_container_view_->SetVisible(true);
   card_container->SetFlexForView(spacer, 1);
 
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kCornerRadius);
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
