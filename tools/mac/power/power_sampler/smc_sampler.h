@@ -19,6 +19,8 @@ namespace power_sampler {
 // System Management Controller (SMC).
 class SMCSampler : public Sampler {
  public:
+  static constexpr char kSamplerName[] = "smc";
+
   ~SMCSampler() override;
 
   // Creates and initializes a new sampler, if possible.

@@ -15,6 +15,8 @@ namespace power_sampler {
 // Samples the machdep.user_idle_level sysctl value if it exists.
 class UserIdleLevelSampler : public Sampler {
  public:
+  static constexpr char kSamplerName[] = "user_idle_level";
+
   ~UserIdleLevelSampler() override;
 
   // Creates and initializes a new sampler, if possible.

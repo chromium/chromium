@@ -33,7 +33,7 @@ std::unique_ptr<SMCSampler> SMCSampler::Create() {
 }
 
 std::string SMCSampler::GetName() {
-  return "smc";
+  return kSamplerName;
 }
 
 Sampler::DatumNameUnits SMCSampler::GetDatumNameUnits() {

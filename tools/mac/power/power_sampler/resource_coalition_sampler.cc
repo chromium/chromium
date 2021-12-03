@@ -38,7 +38,7 @@ std::unique_ptr<ResourceCoalitionSampler> ResourceCoalitionSampler::Create(
 }
 
 std::string ResourceCoalitionSampler::GetName() {
-  return "resource_coalition";
+  return kSamplerName;
 }
 
 Sampler::DatumNameUnits ResourceCoalitionSampler::GetDatumNameUnits() {

@@ -18,7 +18,6 @@
 
 namespace power_sampler {
 namespace {
-constexpr char kSamplerName[] = "battery";
 
 // Returns the value corresponding to |key| in the dictionary |description|.
 // Returns |default_value| if the dictionary does not contain |key|, the

@@ -12,6 +12,7 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
@@ -41,6 +42,7 @@ void InitLogging() {
 }
 
 constexpr char kSwitchHelp[] = "h";
+constexpr char kSwitchSamplers[] = "samplers";
 constexpr char kSwitchSampleInterval[] = "sample-interval";
 constexpr char kSwitchSampleCount[] = "sample-count";
 constexpr char kSwitchTimeout[] = "timeout";
@@ -53,6 +55,7 @@ A tool that samples power-related metrics and states. The tool outputs samples
 in CSV or JSON format.
 
 Options:
+  --samplers=<samplers>           Comma separated list of samplers.
   --sample-interval=<num>         Sample on a <num> second interval.
   --sample-on-notification        Sample on power manager notifications.
       Note that interval and event notifications are mutually exclusive.
@@ -82,6 +85,28 @@ enum StatusCode {
   kStatusRuntimeError = 3,
 };
 
+template <class S>
+bool MaybeAddSamplerToController(
+    power_sampler::SamplingController& controller) {
+  auto sampler = S::Create();
+  if (!sampler) {
+    std::cerr << "Failed to create requested sampler: " << S::kSamplerName
+              << std::endl;
+    return false;
+  }
+  controller.AddSampler(std::move(sampler));
+  return true;
+}
+
+bool ConsumeSamplerName(const std::string& sampler_name,
+                        base::flat_set<std::string>& sampler_names) {
+  if (sampler_names.contains(sampler_name)) {
+    sampler_names.erase(sampler_name);
+    return true;
+  }
+  return false;
+}
+
 int main(int argc, char** argv) {
   // Initialize infrastructure from base.
   base::CommandLine::Init(argc, argv);
@@ -92,6 +117,21 @@ int main(int argc, char** argv) {
   if (command_line.HasSwitch(kSwitchHelp)) {
     PrintUsage(nullptr);
     return kStatusUsage;
+  }
+
+  base::flat_set<std::string> sampler_names;
+  if (command_line.HasSwitch(kSwitchSamplers)) {
+    std::string samplers_switch =
+        command_line.GetSwitchValueASCII(kSwitchSamplers);
+    auto sampler_names_vector = SplitString(
+        samplers_switch, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& sampler_name : sampler_names_vector) {
+      auto result = sampler_names.insert(std::move(sampler_name));
+      if (!result.second) {
+        PrintUsage("The same sampler was specified twice.");
+        return kStatusInvalidParam;
+      }
+    }
   }
 
   base::TimeDelta sampling_interval = base::Seconds(60);
@@ -133,7 +173,7 @@ int main(int argc, char** argv) {
   if (command_line.HasSwitch(kSwitchTimeout)) {
     // Those 2 switches are exclusives but it is already checked when handling
     // --sample-count.
-    DCHECK(command_line.HasSwitch(kSwitchSampleCount));
+    DCHECK(!command_line.HasSwitch(kSwitchSampleCount));
 
     std::string timeout_seconds_switch =
         command_line.GetSwitchValueASCII(kSwitchTimeout);
@@ -170,24 +210,46 @@ int main(int argc, char** argv) {
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  std::unique_ptr<power_sampler::Sampler> sampler =
-      power_sampler::MainDisplaySampler::Create();
-  if (sampler)
-    controller.AddSampler(std::move(sampler));
-
-  sampler = power_sampler::BatterySampler::Create();
-  if (sampler)
-    controller.AddSampler(std::move(sampler));
-
-  sampler = power_sampler::SMCSampler::Create();
-  if (sampler)
-    controller.AddSampler(std::move(sampler));
-
-  sampler = power_sampler::UserIdleLevelSampler::Create();
-  if (sampler)
-    controller.AddSampler(std::move(sampler));
-
-  if (command_line.HasSwitch(kSwitchResourceCoalitionPid)) {
+  bool all_samplers = sampler_names.empty();
+  if (ConsumeSamplerName(power_sampler::MainDisplaySampler::kSamplerName,
+                         sampler_names) ||
+      all_samplers) {
+    if (!MaybeAddSamplerToController<power_sampler::MainDisplaySampler>(
+            controller)) {
+      return kStatusRuntimeError;
+    }
+  }
+  if (ConsumeSamplerName(power_sampler::BatterySampler::kSamplerName,
+                         sampler_names) ||
+      all_samplers) {
+    if (!MaybeAddSamplerToController<power_sampler::BatterySampler>(
+            controller)) {
+      return kStatusRuntimeError;
+    }
+  }
+  if (ConsumeSamplerName(power_sampler::SMCSampler::kSamplerName,
+                         sampler_names) ||
+      all_samplers) {
+    if (!MaybeAddSamplerToController<power_sampler::SMCSampler>(controller)) {
+      return kStatusRuntimeError;
+    }
+  }
+  if (ConsumeSamplerName(power_sampler::UserIdleLevelSampler::kSamplerName,
+                         sampler_names) ||
+      all_samplers) {
+    if (!MaybeAddSamplerToController<power_sampler::UserIdleLevelSampler>(
+            controller)) {
+      return kStatusRuntimeError;
+    }
+  }
+  if (ConsumeSamplerName(power_sampler::ResourceCoalitionSampler::kSamplerName,
+                         sampler_names) ||
+      command_line.HasSwitch(kSwitchResourceCoalitionPid)) {
+    if (!command_line.HasSwitch(kSwitchResourceCoalitionPid)) {
+      PrintUsage(
+          "--resource-coalition-pid should be provided to use the resource "
+          "coalition sampler.");
+    }
     std::string resource_coalition_pid_switch =
         command_line.GetSwitchValueASCII(kSwitchResourceCoalitionPid);
     base::ProcessId pid;
@@ -195,7 +257,8 @@ int main(int argc, char** argv) {
       PrintUsage("resource-coalition-pid must be numeric and positive.");
       return kStatusInvalidParam;
     }
-    sampler = power_sampler::ResourceCoalitionSampler::Create(pid, start_time);
+    auto sampler =
+        power_sampler::ResourceCoalitionSampler::Create(pid, start_time);
     if (!sampler) {
       PrintUsage(
           "Could not create a resource coalition sampler. Is the pid passed to "
@@ -203,6 +266,12 @@ int main(int argc, char** argv) {
       return kStatusRuntimeError;
     }
     controller.AddSampler(std::move(sampler));
+  }
+  // Remaining sampler names are invalid.
+  if (!sampler_names.empty()) {
+    for (auto sampler_name : sampler_names)
+      std::cerr << "Invalid sampler name: " << sampler_name << std::endl;
+    return kStatusInvalidParam;
   }
 
   if (!json_output_file_path.empty()) {
@@ -213,7 +282,7 @@ int main(int argc, char** argv) {
         start_time, base::File(STDOUT_FILENO)));
   }
 
-  DCHECK(timeout.is_zero() || sample_count == 0);
+  DCHECK(timeout.is_zero() || sample_count == -1);
   if (sample_count > 0) {
     controller.AddMonitor(
         std::make_unique<power_sampler::SampleCounter>(sample_count));

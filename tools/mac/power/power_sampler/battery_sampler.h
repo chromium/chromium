@@ -37,6 +37,8 @@ namespace power_sampler {
 // interval.
 class BatterySampler : public Sampler {
  public:
+  static constexpr char kSamplerName[] = "battery";
+
   ~BatterySampler() override;
 
   // Creates and initializes a new sampler, if possible.

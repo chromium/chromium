@@ -15,7 +15,7 @@ TEST(UserIdleLevelSamplerTest, NameAndGetDatumNameUnits) {
   std::unique_ptr<UserIdleLevelSampler> sampler(UserIdleLevelSampler::Create());
   EXPECT_NE(nullptr, sampler.get());
 
-  EXPECT_EQ("UserIdleLevel", sampler->GetName());
+  EXPECT_EQ("user_idle_level", sampler->GetName());
 
   auto datum_name_units = sampler->GetDatumNameUnits();
   ASSERT_EQ(1u, datum_name_units.size());

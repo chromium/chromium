@@ -18,11 +18,6 @@ extern int DisplayServicesGetBrightness(CGDirectDisplayID id,
 }
 
 namespace power_sampler {
-namespace {
-
-constexpr char kSamplerName[] = "main_display";
-
-}  // namespace
 
 MainDisplaySampler::~MainDisplaySampler() = default;
 

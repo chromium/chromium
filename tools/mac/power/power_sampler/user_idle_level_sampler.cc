@@ -14,7 +14,6 @@
 namespace power_sampler {
 
 namespace {
-constexpr char kSamplerName[] = "UserIdleLevel";
 
 absl::optional<int> GetIntSysCtl(const std::vector<int>& mib_name) {
   int value = 0;

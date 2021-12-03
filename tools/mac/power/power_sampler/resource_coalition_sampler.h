@@ -27,6 +27,8 @@ class ResourceCoalitionSamplerTest;
 // (https://github.com/apple/darwin-xnu/blob/main/osfmk/kern/coalition.c).
 class ResourceCoalitionSampler : public Sampler {
  public:
+  static constexpr char kSamplerName[] = "resource_coalition";
+
   ~ResourceCoalitionSampler() override;
 
   // Creates and initializes a new sampler. |pid| is the pid of any process in
