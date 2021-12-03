@@ -5187,6 +5187,16 @@ const char kVirtualKeyboardDisabledDescription[] =
     "Always disable virtual keyboard regardless of device mode. Workaround for "
     "virtual keyboard showing with some external keyboards.";
 
+const char kVirtualKeyboardMultipasteName[] = "Virtual Keyboard MultiPaste";
+const char kVirtualKeyboardMultipasteDescription[] =
+    "Show virtual keyboard with multipaste UI";
+
+const char kVirtualKeyboardMultipasteSuggestionName[] =
+    "Virtual Keyboard MultiPaste Suggestion";
+const char kVirtualKeyboardMultipasteSuggestionDescription[] =
+    "Show multipaste items in virtual keyboard suggestion bar if they are "
+    "copied recently";
+
 const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";

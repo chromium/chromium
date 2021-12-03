@@ -569,6 +569,13 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
   features.Append(GenerateFeatureFlag(
+      "multipaste", base::FeatureList::IsEnabled(
+                        chromeos::features::kVirtualKeyboardMultipaste)));
+  features.Append(GenerateFeatureFlag(
+      "multipaste-suggestion",
+      base::FeatureList::IsEnabled(
+          chromeos::features::kVirtualKeyboardMultipasteSuggestion)));
+  features.Append(GenerateFeatureFlag(
       "imeoptionsinsettings",
       base::FeatureList::IsEnabled(chromeos::features::kImeOptionsInSettings)));
 
