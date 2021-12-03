@@ -541,6 +541,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration"
+    enum="JankyBoolean" expires_after="2022-11-24">
+  <owner>nuskos@google.com</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Each time a ScrollUpdate event which was displayed on the screen is
+    processed, an amount of samples equal to the event processing duration in
+    milliseconds is emitted into the corresponding bucket.
+
+    Thus the ratio of the two represents the average amount of time scrolling is
+    janky.
+  </summary>
+</histogram>
+
 <histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
     expires_after="2022-05-22">
   <owner>flackr@chromium.org</owner>

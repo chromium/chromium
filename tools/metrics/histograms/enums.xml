@@ -45866,6 +45866,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="15" label="Post launch update ignored"/>
 </enum>
 
+<enum name="JankyBoolean">
+  <int value="0" label="Non Janky"/>
+  <int value="1" label="Janky"/>
+</enum>
+
 <enum name="JavaJsBridgeMethodInvocationError">
   <int value="0" label="MethodInvocationAsConstructorDisallowed"/>
   <int value="1" label="MethodInvocationNonexistentMethod"/>

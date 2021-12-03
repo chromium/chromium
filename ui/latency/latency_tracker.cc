@@ -53,6 +53,25 @@ bool IsInertialScroll(const LatencyInfo& latency) {
   return latency.source_event_type() == ui::SourceEventType::INERTIAL;
 }
 
+enum Jank : int {
+  kNonJanky = 0,
+  kJanky,
+};
+
+void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
+  int count = dur.InMicroseconds();
+  if (count <= 0) {
+    // Histograms aren't allowed to add zero counts, this could happen
+    // especially in tests when the clock hasn't advanced enough for a
+    // microsecond to have passed.
+    return;
+  }
+  auto* histogram = base::BooleanHistogram::FactoryGet(
+      "Event.Jank.ScrollUpdate.TotalJankyAndNonJankyDuration",
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddCount(janky ? kJanky : kNonJanky, count);
+}
+
 }  // namespace
 
 LatencyTracker::LatencyTracker() = default;
@@ -146,9 +165,9 @@ void LatencyTracker::ReportUkmScrollLatency(
   builder.Record(ukm_recorder);
 }
 
-// Checking whether one update event length (measured in frames) is janky
-// compared to another (either previous or next). Update is deemed janky when
-// it's half of a frame longer than a neighbouring update.
+// Checking whether the update event |tested_frames| length (measured in frames)
+// is janky compared to another |basis_frames| (either previous or next). Update
+// is deemed janky when it's half of a frame longer than a neighbouring update.
 //
 // A small number is added to 0.5 in order to make sure that the comparison does
 // not filter out ratios that are precisely 0.5, which can fall a little above
@@ -159,8 +178,8 @@ void LatencyTracker::ReportUkmScrollLatency(
 // interval less than a second), this ratio should increase with increments more
 // than minimal value in numerator (1ns) divided by maximum value in
 // denominator, giving 1e-9.
-static bool IsJankyComparison(double frames, double other_frames) {
-  return frames > other_frames + 0.5 + 1e-9;
+static bool IsJankyComparison(double tested_frames, double basis_frames) {
+  return tested_frames > basis_frames + 0.5 + 1e-9;
 }
 
 void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
@@ -217,19 +236,20 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
     if (!jank_state_.prev_scroll_update_reported_) {
       // The information about previous GestureScrollUpdate was not reported:
       // check whether it's janky by comparing to the current frame and report.
-
+      bool janky = false;
       if (IsJankyComparison(prev_frames_taken, frames_taken)) {
-        UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
+        janky = true;
         jank_state_.janky_update_events_++;
         jank_state_.janky_update_duration_ += jank_state_.prev_duration_;
-      } else {
-        UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", false);
       }
+      UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", janky);
+      EmitScrollUpdateTime(jank_state_.prev_duration_, janky);
     }
 
     // The current GestureScrollUpdate is janky compared to the previous one.
     if (IsJankyComparison(frames_taken, prev_frames_taken)) {
       UMA_HISTOGRAM_BOOLEAN("Event.Latency.ScrollJank", true);
+      EmitScrollUpdateTime(dur, true);
       jank_state_.janky_update_events_++;
       jank_state_.janky_update_duration_ += dur;
 
