@@ -171,9 +171,11 @@ bool BrotliDecompress(base::StringPiece input, std::string* output) {
 // Helper function for decompressing resource.
 void DecompressIfNeeded(base::StringPiece data, std::string* output) {
   if (!data.empty() && HasGzipHeader(data)) {
+    TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
     bool success = compression::GzipUncompress(data, output);
     DCHECK(success);
   } else if (!data.empty() && HasBrotliHeader(data)) {
+    TRACE_EVENT0("ui", "DecompressIfNeeded::BrotliDecompress");
     bool success = BrotliDecompress(data, output);
     DCHECK(success);
   } else {

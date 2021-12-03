@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_internals_url_loader.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -65,6 +66,7 @@ void ReadData(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     absl::optional<net::HttpByteRange> requested_range,
     scoped_refptr<base::RefCountedMemory> bytes) {
+  TRACE_EVENT0("ui", "WebUIURLLoader::ReadData");
   if (!bytes) {
     CallOnError(std::move(client_remote), net::ERR_FAILED);
     return;
@@ -157,6 +159,7 @@ void DataAvailable(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     absl::optional<net::HttpByteRange> requested_range,
     scoped_refptr<base::RefCountedMemory> bytes) {
+  TRACE_EVENT0("ui", "WebUIURLLoader::DataAvailable");
   // Since the bytes are from the memory mapped resource file, copying the
   // data can lead to disk access. Needs to be posted to a SequencedTaskRunner
   // as Mojo requires a SequencedTaskRunnerHandle in scope.

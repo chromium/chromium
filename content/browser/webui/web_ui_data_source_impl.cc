@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -328,6 +329,8 @@ void WebUIDataSourceImpl::StartDataRequest(
     const WebContents::Getter& wc_getter,
     URLDataSource::GotDataCallback callback) {
   const std::string path = URLDataSource::URLToRequestPath(url);
+  TRACE_EVENT1("ui", "WebUIDataSourceImpl::StartDataRequest", "path", path);
+
   if (!should_handle_request_callback_.is_null() &&
       should_handle_request_callback_.Run(path)) {
     filter_callback_.Run(path, std::move(callback));
