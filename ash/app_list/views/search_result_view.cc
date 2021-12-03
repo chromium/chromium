@@ -712,9 +712,4 @@ void SearchResultView::OnGetContextMenu(
   source->RequestFocus();
 }
 
-bool SearchResultView::IsRichImage() const {
-  return result() &&
-         result()->omnibox_type() == SearchResultOmniboxDisplayType::kRichImage;
-}
-
 }  // namespace ash

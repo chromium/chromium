@@ -846,13 +846,10 @@ void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
   }
 
   if (selected_result->result_type() == AppListSearchResultType::kOmnibox &&
-      (!selected_result->is_omnibox_search() ||
-       selected_result->omnibox_type() ==
-           SearchResultOmniboxDisplayType::kCalculatorAnswer) &&
+      !selected_result->is_omnibox_search() &&
       !selected_result->details().empty()) {
     // For url (non-search) results, use details to ensure that the url is
-    // displayed. For calculator results, use details to ensure that the
-    // calculation answer is displayed.
+    // displayed.
     search_box()->SetText(selected_result->details());
   } else {
     search_box()->SetText(selected_result->title());
