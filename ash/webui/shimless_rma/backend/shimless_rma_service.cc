@@ -772,6 +772,8 @@ void ShimlessRmaService::FinalizationComplete(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
+  state_proto_.mutable_finalize()->set_choice(
+      rmad::FinalizeState::RMAD_FINALIZE_CHOICE_CONTINUE);
   TransitionNextStateGeneric(std::move(callback));
 }
 
