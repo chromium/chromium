@@ -98,24 +98,11 @@ class MediaItemUIDeviceSelectorView
   GetCastSinkButtonsForTesting();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           DeviceButtonsCreated);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           AudioDeviceButtonClickNotifiesContainer);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           CurrentAudioDeviceHighlighted);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           AudioDeviceHighlightedOnChange);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           AudioDeviceButtonsChange);
+  friend class MediaItemUIDeviceSelectorViewTest;
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            AudioDevicesCountHistogramRecorded);
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceSelectorOpenedHistogramRecorded);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           CastDeviceButtonClickStartsCasting);
-  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
-                           CastDeviceButtonClickClearsIssue);
 
   void UpdateVisibility();
   bool ShouldBeVisible() const;
