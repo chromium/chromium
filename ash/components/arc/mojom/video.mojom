@@ -9,6 +9,7 @@ module arc.mojom;
 import "ash/components/arc/mojom/video_decode_accelerator.mojom";
 import "ash/components/arc/mojom/video_encode_accelerator.mojom";
 import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Deprecated method IDs: 0
 // Next method ID: 2
@@ -32,6 +33,7 @@ interface VideoInstance {
 
 // Deprecated method IDs: 0
 // Next method ID: 4
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface VideoAcceleratorFactory {
   [MinVersion=1]
   CreateEncodeAccelerator@1(

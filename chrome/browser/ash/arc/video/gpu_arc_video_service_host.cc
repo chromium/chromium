@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "ash/components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "ash/components/arc/mojom/video_protected_buffer_allocator.mojom.h"
@@ -22,7 +23,10 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_service_registry.h"
+#include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -64,6 +68,26 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
 
   void CreateDecodeAccelerator(
       mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver) override {
+    if (base::FeatureList::IsEnabled(arc::kOutOfProcessVideoDecoding)) {
+      // TODO(b/195769334): we should check if accelerated video decode is
+      // disabled by means of a flag/switch or by GPU bug workarounds.
+      constexpr size_t kMaxArcVideoDecoderProcesses = 8u;
+      if (oop_video_factories_.size() == kMaxArcVideoDecoderProcesses) {
+        LOG(WARNING)
+            << "Reached the maximum number of video decoder processes for ARC ("
+            << kMaxArcVideoDecoderProcesses << ")";
+        return;
+      }
+      mojo::Remote<mojom::VideoAcceleratorFactory> oop_video_factory;
+      content::ServiceProcessHost::Launch(
+          oop_video_factory.BindNewPipeAndPassReceiver(),
+          content::ServiceProcessHost::Options()
+              .WithDisplayName("ARC Video Decoder")
+              .Pass());
+      oop_video_factory->CreateDecodeAccelerator(std::move(receiver));
+      oop_video_factories_.Add(std::move(oop_video_factory));
+      return;
+    }
     content::BindInterfaceInGpuProcess(std::move(receiver));
   }
 
@@ -77,6 +101,9 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
       override {
     content::BindInterfaceInGpuProcess(std::move(receiver));
   }
+
+ private:
+  mojo::RemoteSet<mojom::VideoAcceleratorFactory> oop_video_factories_;
 };
 
 }  // namespace
