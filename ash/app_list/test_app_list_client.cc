@@ -8,6 +8,8 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -19,9 +21,15 @@ TestAppListClient::~TestAppListClient() = default;
 void TestAppListClient::StartZeroStateSearch(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
   start_zero_state_search_count_++;
-  // Unit tests generally expect the launcher to open immediately, so run the
-  // callback synchronously.
-  std::move(on_done).Run();
+  if (run_zero_state_callback_immediately_) {
+    // Most unit tests generally expect the launcher to open immediately, so run
+    // the callback synchronously.
+    std::move(on_done).Run();
+  } else {
+    // Simulate production behavior, which collects the results asynchronously.
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, std::move(on_done), base::Milliseconds(1));
+  }
 }
 
 void TestAppListClient::StartSearch(const std::u16string& trimmed_query) {

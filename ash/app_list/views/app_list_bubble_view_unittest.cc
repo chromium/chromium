@@ -115,12 +115,7 @@ class AppListBubbleViewTest : public AshTestBase {
   // Simulates the Assistant being enabled.
   void SimulateAssistantEnabled() {
     assistant_test_api_ = AssistantTestApi::Create();
-    assistant_test_api_->SetAssistantEnabled(true);
-    assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(
-        chromeos::assistant::AssistantAllowedState::ALLOWED);
-    assistant_test_api_->GetAssistantState()->NotifyStatusChanged(
-        chromeos::assistant::AssistantStatus::READY);
-    assistant_test_api_->WaitUntilIdle();
+    assistant_test_api_->EnableAssistantAndWait();
   }
 
   // Shows the app list on the primary display.

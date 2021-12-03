@@ -314,6 +314,9 @@ bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
 }
 
 void AppListBubbleView::ShowEmbeddedAssistantUI() {
+  if (IsShowingEmbeddedAssistantUI())
+    return;
+
   // The assistant has its own text input field.
   search_box_view_->SetVisible(false);
   separator_->SetVisible(false);

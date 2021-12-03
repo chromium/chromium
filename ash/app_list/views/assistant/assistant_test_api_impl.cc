@@ -141,6 +141,15 @@ aura::Window* AssistantTestApiImpl::root_window() {
   return Shell::Get()->GetPrimaryRootWindow();
 }
 
+void AssistantTestApiImpl::EnableAssistantAndWait() {
+  SetAssistantEnabled(true);
+  GetAssistantState()->NotifyFeatureAllowed(
+      chromeos::assistant::AssistantAllowedState::ALLOWED);
+  GetAssistantState()->NotifyStatusChanged(
+      chromeos::assistant::AssistantStatus::READY);
+  WaitUntilIdle();
+}
+
 void AssistantTestApiImpl::SetAssistantEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
       chromeos::assistant::prefs::kAssistantEnabled, enabled);

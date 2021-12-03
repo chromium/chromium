@@ -80,6 +80,9 @@ class ASH_EXPORT AppListBubblePresenter
   AppListBubbleView* bubble_view_for_test() { return bubble_view_; }
 
  private:
+  // The code doesn't need a value for the search page.
+  enum class Page { kApps, kAssistant };
+
   // Callback for zero state search update. Builds the bubble widget and views
   // on display `display_id` and triggers the show animation.
   void OnZeroStateSearchDone(int64_t display_id);
@@ -105,6 +108,9 @@ class ASH_EXPORT AppListBubblePresenter
 
   // Whether the bubble hide animation is playing.
   bool in_hide_animation_ = false;
+
+  // The page to show after the views are constructed.
+  Page initial_page_ = Page::kApps;
 
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;

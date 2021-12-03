@@ -166,6 +166,8 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   if (bubble_widget_)
     return;
 
+  initial_page_ = Page::kApps;
+
   // Refresh the continue tasks before opening the launcher. If a file doesn't
   // exist on disk anymore then the launcher should not create or animate the
   // continue task view for that suggestion.
@@ -208,6 +210,11 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
       ->AddObserver(this);
   controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
   bubble_widget_->Show();
+  // The page must be set before triggering the show animation so the correct
+  // animations are triggered.
+  if (initial_page_ == Page::kAssistant) {
+    bubble_view_->ShowEmbeddedAssistantUI();
+  }
   if (features::IsProductivityLauncherAnimationEnabled()) {
     bubble_view_->StartShowAnimation();
   }
@@ -284,7 +291,14 @@ bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
 }
 
 void AppListBubblePresenter::ShowEmbeddedAssistantUI() {
-  bubble_view_->ShowEmbeddedAssistantUI();
+  // `bubble_view_` does not exist while waiting for zero-state results.
+  // OnZeroStateSearchDone() sets the page in that case.
+  if (bubble_view_) {
+    bubble_view_->ShowEmbeddedAssistantUI();
+  } else {
+    DCHECK(!bubble_widget_);
+    initial_page_ = Page::kAssistant;
+  }
 }
 
 void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {

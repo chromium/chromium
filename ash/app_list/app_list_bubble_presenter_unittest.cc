@@ -9,9 +9,12 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
+#include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -26,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -71,7 +75,8 @@ size_t NumberOfWidgetsInAppListContainer() {
 
 class AppListBubblePresenterTest : public AshTestBase {
  public:
-  AppListBubblePresenterTest() {
+  AppListBubblePresenterTest()
+      : assistant_test_api_(AssistantTestApi::Create()) {
     scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListBubblePresenterTest() override = default;
@@ -95,6 +100,7 @@ class AppListBubblePresenterTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_features_;
+  std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
 
 TEST_F(AppListBubblePresenterTest, ShowOpensOneWidgetInAppListContainer) {
@@ -208,6 +214,47 @@ TEST_F(AppListBubblePresenterTest, CannotShowWhileAnimatingClosed) {
   // Widget closes anyway.
   waiter.Wait();
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+}
+
+// Regression test for https://crbug.com/1275755
+TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
+  // Simulate production behavior for animations, assistant, and zero-state
+  // search results.
+  base::test::ScopedFeatureList features(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  assistant_test_api_->EnableAssistantAndWait();
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  PressAndReleaseKey(ui::VKEY_ASSISTANT);
+  AppListTestApi().WaitForBubbleWindow();
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(
+      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
+  EXPECT_TRUE(presenter->IsShowingEmbeddedAssistantUI());
+}
+
+TEST_F(AppListBubblePresenterTest, SearchKeyOpensToAppsPage) {
+  // Simulate production behavior for animations, assistant, and zero-state
+  // search results.
+  base::test::ScopedFeatureList features(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  assistant_test_api_->EnableAssistantAndWait();
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  PressAndReleaseKey(ui::VKEY_LWIN);  // Search key.
+  AppListTestApi().WaitForBubbleWindow();
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(
+      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
+  EXPECT_FALSE(presenter->IsShowingEmbeddedAssistantUI());
 }
 
 TEST_F(AppListBubblePresenterTest, DoesNotCrashWhenNativeWidgetDestroyed) {

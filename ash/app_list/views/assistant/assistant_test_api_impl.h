@@ -32,6 +32,7 @@ class AssistantTestApiImpl : public AssistantTestApi {
   void DisableAnimations() override;
   bool IsVisible() override;
   void SendTextQuery(const std::string& query) override;
+  void EnableAssistantAndWait() override;
   void SetAssistantEnabled(bool enable) override;
   void SetScreenContextEnabled(bool enabled) override;
   void SetTabletMode(bool enable) override;

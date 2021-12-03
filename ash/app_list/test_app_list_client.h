@@ -70,6 +70,9 @@ class TestAppListClient : public AppListClient {
   int start_zero_state_search_count() const {
     return start_zero_state_search_count_;
   }
+  void set_run_zero_state_callback_immediately(bool value) {
+    run_zero_state_callback_immediately_ = value;
+  }
   std::u16string last_search_query() const { return last_search_query_; }
 
   // Returns the number of AppItems that have been activated. These items could
@@ -89,6 +92,7 @@ class TestAppListClient : public AppListClient {
 
  private:
   int start_zero_state_search_count_ = 0;
+  bool run_zero_state_callback_immediately_ = true;
   std::u16string last_search_query_;
   std::vector<SearchResultActionId> invoked_result_actions_;
   int activate_item_count_ = 0;
