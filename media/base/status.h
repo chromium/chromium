@@ -225,7 +225,19 @@ class MEDIA_EXPORT TypedStatus {
 
   template <typename OtherType>
   class Or {
+   private:
+    template <typename X>
+    struct OrTypeUnwrapper {
+      using type = Or<X>;
+    };
+    template <typename X>
+    struct OrTypeUnwrapper<Or<X>> {
+      using type = Or<X>;
+    };
+
    public:
+    using ErrorType = TypedStatus;
+
     ~Or() = default;
 
     // Implicit constructors allow returning |OtherType| or |TypedStatus|
@@ -294,6 +306,45 @@ class MEDIA_EXPORT TypedStatus {
              internal::StatusTraitsHelper<Traits>::DefaultEnumValue());
       return error_ ? error_->code()
                     : *internal::StatusTraitsHelper<Traits>::DefaultEnumValue();
+    }
+
+    template <typename FnType,
+              typename ReturnType =
+                  decltype(std::declval<FnType>()(std::declval<OtherType>())),
+              typename OrReturn = typename OrTypeUnwrapper<ReturnType>::type>
+    OrReturn MapValue(FnType&& lambda) && {
+      CHECK(error_ || value_);
+      if (has_error()) {
+        auto error = std::move(*error_);
+        error_.reset();
+        return error;
+      }
+      CHECK(value_);
+      auto value = std::move(std::get<0>(*value_));
+      value_.reset();
+      return lambda(std::move(value));
+    }
+
+    template <typename FnType,
+              typename ReturnType =
+                  decltype(std::declval<FnType>()(std::declval<OtherType>())),
+              typename ConvertTo = typename ReturnType::ErrorType>
+    ReturnType MapValue(
+        FnType&& lambda,
+        typename ConvertTo::Codes on_error,
+        base::StringPiece message = "",
+        base::Location location = base::Location::Current()) && {
+      CHECK(error_ || value_);
+      if (has_error()) {
+        auto error = std::move(*error_);
+        error_.reset();
+        return ConvertTo(on_error, message, location)
+            .AddCause(std::move(error));
+      }
+      CHECK(value_);
+      auto value = std::move(std::get<0>(*value_));
+      value_.reset();
+      return lambda(std::move(value));
     }
 
    private:

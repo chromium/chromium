@@ -32,6 +32,22 @@ struct MediaSerializer<UselessThingToBeSerialized> {
 
 }  // namespace internal
 
+enum class NoDefaultType : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
+
+struct NoDefaultTypeTraits {
+  using Codes = NoDefaultType;
+  static constexpr StatusGroupType Group() {
+    return "GroupWithNoDefaultTypeForTests";
+  }
+};
+
+struct MapValueCodeTraits {
+  enum class Codes { kBadStartCode, kBadPtr, kLTZ, kNotSquare };
+  static constexpr StatusGroupType Group() {
+    return "MapValueTestingCodesGroup";
+  }
+};
+
 // Friend class of MediaLog for access to internal constants.
 class StatusTest : public testing::Test {
  public:
@@ -70,6 +86,43 @@ class StatusTest : public testing::Test {
       return std::make_unique<int>(123);
     return Status(StatusCode::kCodeOnlyForTesting);
   }
+
+  // Helpers for the Map test case.
+  static TypedStatus<MapValueCodeTraits>::Or<std::unique_ptr<int>>
+  GetStartingValue(int key) {
+    switch (key) {
+      case 0:
+        return std::make_unique<int>(36);
+      case 1:
+        return std::make_unique<int>(40);
+      case 2:
+        return std::make_unique<int>(-10);
+      case 3: {
+        std::unique_ptr<int> ret = nullptr;
+        return ret;
+      }
+      case 4:
+        return std::make_unique<int>(81);
+      default:
+        return MapValueCodeTraits::Codes::kBadStartCode;
+    }
+  }
+
+  static TypedStatus<MapValueCodeTraits>::Or<int> UnwrapPtr(
+      std::unique_ptr<int> v) {
+    if (!v)
+      return MapValueCodeTraits::Codes::kBadPtr;
+    return *v;
+  }
+
+  static TypedStatus<MapValueCodeTraits>::Or<int> FindIntSqrt(int v) {
+    if (v < 0)
+      return MapValueCodeTraits::Codes::kLTZ;
+    int floor = sqrt(v);
+    if (floor * floor != v)
+      return MapValueCodeTraits::Codes::kNotSquare;
+    return floor;
+  }
 };
 
 TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
@@ -91,7 +144,7 @@ TEST_F(StatusTest, SingleLayerError) {
   ASSERT_EQ(stack[0].DictSize(), 2ul);  // line and file
 
   // This is a bit fragile, since it's dependent on the file layout.
-  ASSERT_EQ(stack[0].FindIntPath("line").value_or(-1), 41);
+  ASSERT_EQ(stack[0].FindIntPath("line").value_or(-1), 57);
   ASSERT_THAT(*stack[0].FindStringPath("file"),
               HasSubstr("status_unittest.cc"));
 }
@@ -249,15 +302,6 @@ TEST_F(StatusTest, StatusOrCodeIsOkWithValue) {
   EXPECT_EQ(status_or.code(), StatusCode::kOk);
 }
 
-enum class NoDefaultType : StatusCodeType { kFoo = 0, kBar = 1, kBaz = 2 };
-
-struct NoDefaultTypeTraits {
-  using Codes = NoDefaultType;
-  static constexpr StatusGroupType Group() {
-    return "GroupWithNoDefaultTypeForTests";
-  }
-};
-
 TEST_F(StatusTest, TypedStatusWithNoDefault) {
   using NDStatus = TypedStatus<NoDefaultTypeTraits>;
 
@@ -291,6 +335,91 @@ TEST_F(StatusTest, StatusOrEqOp) {
   ASSERT_FALSE(success != StatusCode::kOk);
   ASSERT_TRUE(success == StatusCode::kOk);
   ASSERT_FALSE(success == StatusCode::kCodeOnlyForTesting);
+}
+
+TEST_F(StatusTest, OrTypeMapping) {
+  StatusOr<std::string> failed = FailEasily();
+  StatusOr<int> failed_int = std::move(failed).MapValue(
+      [](std::string value) { return atoi(value.c_str()); });
+  ASSERT_TRUE(failed_int == StatusCode::kCodeOnlyForTesting);
+
+  // Try it with a c++ lambda
+  StatusOr<std::string> success = std::string("12345");
+  StatusOr<int> success_int = std::move(success).MapValue(
+      [](std::string value) { return atoi(value.c_str()); });
+  ASSERT_TRUE(success_int == StatusCode::kOk);
+  ASSERT_EQ(std::move(success_int).value(), 12345);
+
+  // try it with a lambda returning-lambda
+  auto finder = [](char search) {
+    return [search](std::string seq) -> StatusOr<int> {
+      auto count = std::count(seq.begin(), seq.end(), search);
+      if (count == 0)
+        return StatusCode::kCodeOnlyForTesting;
+      return count;
+    };
+  };
+  StatusOr<std::string> hw = std::string("hello world");
+
+  StatusOr<int> success_count = std::move(hw).MapValue(finder('l'));
+  ASSERT_TRUE(success_count == StatusCode::kOk);
+  ASSERT_EQ(std::move(success_count).value(), 3);
+
+  hw = std::string("hello world");
+  StatusOr<int> fail_count = std::move(hw).MapValue(finder('x'));
+  ASSERT_TRUE(fail_count == StatusCode::kCodeOnlyForTesting);
+
+  // Test it chained together! the return type should cascade through.
+  auto case_0 = GetStartingValue(0).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
+  ASSERT_TRUE(case_0.has_value());
+  ASSERT_EQ(std::move(case_0).value(), 6);
+
+  auto case_1 = GetStartingValue(1).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
+  ASSERT_TRUE(case_1 == MapValueCodeTraits::Codes::kNotSquare);
+
+  auto case_2 = GetStartingValue(2).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
+  ASSERT_TRUE(case_2 == MapValueCodeTraits::Codes::kLTZ);
+
+  auto case_3 = GetStartingValue(3).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
+  ASSERT_TRUE(case_3 == MapValueCodeTraits::Codes::kBadPtr);
+
+  auto case_4 = GetStartingValue(4)
+                    .MapValue(UnwrapPtr)
+                    .MapValue(FindIntSqrt)
+                    .MapValue(FindIntSqrt);
+  ASSERT_TRUE(case_4.has_value());
+  ASSERT_EQ(std::move(case_4).value(), 3);
+
+  auto case_5 = GetStartingValue(5).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
+  ASSERT_TRUE(case_5 == MapValueCodeTraits::Codes::kBadStartCode);
+}
+
+TEST_F(StatusTest, OrTypeMappingToOtherOrType) {
+  using A = TypedStatus<NoDefaultTypeTraits>;
+  using B = TypedStatus<MapValueCodeTraits>;
+
+  auto unwrap = [](std::unique_ptr<int> ptr) -> A::Or<int> {
+    if (!ptr)
+      return A::Codes::kFoo;
+    return *ptr;
+  };
+
+  // Returns a valid unique ptr, maps unwraps, and is successful
+  B::Or<std::unique_ptr<int>> b1 = GetStartingValue(0);
+  A::Or<int> a1 = std::move(b1).MapValue(unwrap, A::Codes::kBar);
+  ASSERT_TRUE(a1.has_value() && std::move(a1).value() == 36);
+
+  // Returns a nullptr, not and error. so the unwrapper gives a kFoo.
+  B::Or<std::unique_ptr<int>> b2 = GetStartingValue(3);
+  A::Or<int> a2 = std::move(b2).MapValue(unwrap, A::Codes::kBar);
+  ASSERT_TRUE(a2.has_error());
+  ASSERT_TRUE(a2 == A::Codes::kFoo);
+
+  // b3 is an error here, so Mapping it will wrap it in kBar.
+  B::Or<std::unique_ptr<int>> b3 = GetStartingValue(5);
+  A::Or<int> a3 = std::move(b3).MapValue(unwrap, A::Codes::kBar);
+  ASSERT_TRUE(a3.has_error());
+  ASSERT_TRUE(a3 == A::Codes::kBar);
 }
 
 }  // namespace media
