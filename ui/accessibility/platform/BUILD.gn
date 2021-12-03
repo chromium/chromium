@@ -92,8 +92,6 @@ source_set("platform") {
       "fuchsia/accessibility_bridge_fuchsia.h",
       "fuchsia/accessibility_bridge_fuchsia_registry.cc",
       "fuchsia/accessibility_bridge_fuchsia_registry.h",
-      "fuchsia/fuchsia_types.cc",
-      "fuchsia/fuchsia_types.h",
     ]
 
     public_deps +=

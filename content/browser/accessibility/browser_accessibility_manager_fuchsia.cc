@@ -6,7 +6,6 @@
 
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
-#include "ui/accessibility/platform/fuchsia/fuchsia_types.h"
 
 namespace content {
 
@@ -55,14 +54,14 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
 
   BrowserAccessibilityFuchsia* old_focus_fuchsia =
       ToBrowserAccessibilityFuchsia(GetLastFocusedNode());
+
   if (old_focus_fuchsia) {
     GetAccessibilityBridge()->UnfocusNode(
-        ui::AXNodeDescriptorFuchsia(ax_tree_id(), old_focus_fuchsia->GetId()));
+        old_focus_fuchsia->GetFuchsiaNodeID());
   }
 
   if (new_focus_fuchsia) {
-    GetAccessibilityBridge()->FocusNode(
-        ui::AXNodeDescriptorFuchsia(ax_tree_id(), new_focus_fuchsia->GetId()));
+    GetAccessibilityBridge()->FocusNode(new_focus_fuchsia->GetFuchsiaNodeID());
   }
 }
 

@@ -7,6 +7,8 @@
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 
+#include <vector>
+
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #include "content/common/content_export.h"
@@ -14,7 +16,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
-#include "ui/accessibility/platform/fuchsia/fuchsia_types.h"
 
 namespace content {
 
@@ -34,19 +35,18 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
 
   // Returns the fuchsia representation of the AXNode to which this
   // BrowserAccessibility object refers.
-  // NOTE: BrowserAccessibilityFuchsia does not have access to the
-  // (AXTreeID, AXNodeID) <-> FuchsiaNodeID mapping, this method will NOT fill
-  // any of the ID fields in the fuchsia node (container_id, child_ids,
-  // node_id).
   fuchsia::accessibility::semantics::Node ToFuchsiaNodeData() const;
 
-  // Returns the AXNodeID of this node's offset container if the offset
+  // Returns the fuchsia ID of this node's offset container if the offset
   // container ID is valid. Otherwise, returns the ID of this tree's root node.
-  ui::AXNodeID GetOffsetContainerOrRootNodeID() const;
+  uint32_t GetOffsetContainerOrRootNodeID() const;
 
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
   void OnLocationChanged() override;
+
+  // Returns this object's AXUniqueID as a uint32_t.
+  uint32_t GetFuchsiaNodeID() const;
 
  protected:
   friend class BrowserAccessibility;  // Needs access to our constructor.
@@ -63,8 +63,7 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   fuchsia::accessibility::semantics::Attributes GetFuchsiaAttributes() const;
   fuchsia::ui::gfx::BoundingBox GetFuchsiaLocation() const;
   fuchsia::ui::gfx::mat4 GetFuchsiaTransform() const;
-
-  ui::AXNodeID ax_node_id_ = ui::kInvalidAXNodeID;
+  std::vector<uint32_t> GetFuchsiaChildIDs() const;
 };
 
 BrowserAccessibilityFuchsia* CONTENT_EXPORT

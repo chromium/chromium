@@ -514,4 +514,96 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   EXPECT_EQ(location.max.y, y_max);
 }
 
+TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToFuchsiaNodeDataTranslatesOffsetContainerID) {
+  ui::AXNodeData node;
+  node.id = kRootId;
+  node.child_ids = {2};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  node_2.child_ids = {3};
+  node_2.relative_bounds.offset_container_id = -1;
+  ui::AXNodeData node_3;
+  node_3.id = 3;
+  node_3.relative_bounds.offset_container_id = 2;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node, node_2, node_3),
+          test_browser_accessibility_delegate_.get()));
+
+  // Verify that node 2's offset container was translated correctly.
+  BrowserAccessibilityFuchsia* root =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(kRootId));
+  BrowserAccessibilityFuchsia* child =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  ASSERT_TRUE(child);
+  auto child_node_data = child->ToFuchsiaNodeData();
+  ASSERT_TRUE(child_node_data.has_container_id());
+  EXPECT_EQ(child_node_data.container_id(), root->GetFuchsiaNodeID());
+
+  // Verify that node 3's offset container was translated correctly.
+  BrowserAccessibilityFuchsia* grandchild =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(3));
+  ASSERT_TRUE(grandchild);
+  auto grandchild_node_data = grandchild->ToFuchsiaNodeData();
+  ASSERT_TRUE(grandchild_node_data.has_container_id());
+  EXPECT_EQ(grandchild_node_data.container_id(), child->GetFuchsiaNodeID());
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest,
+       ToFuchsiaNodeDataTranslatesNodeIDAndChildIDs) {
+  ui::AXNodeData node;
+  node.id = kRootId;
+  node.child_ids = {2, 3};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  ui::AXNodeData node_3;
+  node_3.id = 3;
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node, node_2, node_3),
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+
+  ASSERT_TRUE(browser_accessibility_fuchsia);
+  auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+  BrowserAccessibilityFuchsia* root =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(kRootId));
+  BrowserAccessibilityFuchsia* child_1 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  BrowserAccessibilityFuchsia* child_2 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(3));
+
+  ASSERT_TRUE(child_1);
+  ASSERT_TRUE(child_2);
+  EXPECT_EQ(fuchsia_node_data.node_id(), root->GetFuchsiaNodeID());
+  ASSERT_EQ(fuchsia_node_data.child_ids().size(), 2u);
+  EXPECT_EQ(fuchsia_node_data.child_ids()[0], child_1->GetFuchsiaNodeID());
+  EXPECT_EQ(fuchsia_node_data.child_ids()[1], child_2->GetFuchsiaNodeID());
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest, GetFuchsiaNodeIDNonRootTree) {
+  // We want to verify that the root of a non-root tree will NOT be assigned ID
+  // = 0, so Specify that this tree is not the root.
+  test_browser_accessibility_delegate_->is_root_frame_ = false;
+
+  ui::AXNodeData node;
+  node.id = kRootId;
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node), test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(manager->GetRoot());
+
+  ASSERT_TRUE(browser_accessibility_fuchsia);
+  auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+  EXPECT_GT(fuchsia_node_data.node_id(), 0u);
+}
+
 }  // namespace content

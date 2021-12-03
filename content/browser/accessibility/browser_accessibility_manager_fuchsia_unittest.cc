@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/common/render_accessibility.mojom.h"
@@ -25,45 +26,42 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
   ~MockAccessibilityBridge() override = default;
 
   // ui::AccessibilityBridgeFuchsia overrides.
-  void UpdateNode(ui::AXNodeUpdateFuchsia node_update) override {
-    node_updates_.push_back(std::move(node_update));
+  void UpdateNode(fuchsia::accessibility::semantics::Node node) override {
+    node_updates_.push_back(std::move(node));
   }
 
-  void DeleteNode(ui::AXNodeDescriptorFuchsia node_id) override {
+  void DeleteNode(uint32_t node_id) override {
     node_deletions_.push_back(node_id);
   }
 
-  void FocusNode(ui::AXNodeDescriptorFuchsia new_focus) override {
+  void FocusNode(uint32_t new_focus) override {
     new_focus_.emplace(std::move(new_focus));
   }
 
-  void UnfocusNode(ui::AXNodeDescriptorFuchsia old_focus) override {
+  void UnfocusNode(uint32_t old_focus) override {
     old_focus_.emplace(std::move(old_focus));
   }
 
-  void OnAccessibilityHitTestResult(
-      int hit_test_request_id,
-      ui::AXNodeDescriptorFuchsia result) override {
+  void OnAccessibilityHitTestResult(int hit_test_request_id,
+                                    uint32_t result) override {
     hit_test_results_[hit_test_request_id] = result;
   }
 
-  const std::vector<ui::AXNodeUpdateFuchsia>& node_updates() {
+  void SetRootID(uint32_t root_node_id) override {
+    root_node_id_ = root_node_id;
+  }
+
+  const std::vector<fuchsia::accessibility::semantics::Node>& node_updates() {
     return node_updates_;
   }
-  const std::vector<ui::AXNodeDescriptorFuchsia>& node_deletions() {
-    return node_deletions_;
-  }
-  const std::map<int, ui::AXNodeDescriptorFuchsia> hit_test_results() {
-    return hit_test_results_;
-  }
+  const std::vector<uint32_t>& node_deletions() { return node_deletions_; }
+  const std::map<int, uint32_t> hit_test_results() { return hit_test_results_; }
 
-  const absl::optional<ui::AXNodeDescriptorFuchsia>& old_focus() {
-    return old_focus_;
-  }
+  const absl::optional<uint32_t>& old_focus() { return old_focus_; }
 
-  const absl::optional<ui::AXNodeDescriptorFuchsia>& new_focus() {
-    return new_focus_;
-  }
+  const absl::optional<uint32_t>& new_focus() { return new_focus_; }
+
+  const absl::optional<uint32_t>& root_node_id() { return root_node_id_; }
 
   void reset() {
     node_updates_.clear();
@@ -72,13 +70,13 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
   }
 
  private:
-  std::vector<ui::AXNodeUpdateFuchsia> node_updates_;
-  std::vector<ui::AXNodeDescriptorFuchsia> node_deletions_;
-  std::map<int /* hit test request id */,
-           ui::AXNodeDescriptorFuchsia /* hit test result */>
+  std::vector<fuchsia::accessibility::semantics::Node> node_updates_;
+  std::vector<uint32_t> node_deletions_;
+  std::map<int /* hit test request id */, uint32_t /* hit test result */>
       hit_test_results_;
-  absl::optional<ui::AXNodeDescriptorFuchsia> old_focus_;
-  absl::optional<ui::AXNodeDescriptorFuchsia> new_focus_;
+  absl::optional<uint32_t> old_focus_;
+  absl::optional<uint32_t> new_focus_;
+  absl::optional<uint32_t> root_node_id_;
 };
 
 class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
@@ -120,7 +118,18 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
   {
     const auto& node_updates = mock_accessibility_bridge_->node_updates();
     ASSERT_EQ(node_updates.size(), 1u);
-    EXPECT_EQ(node_updates[0].node_id.node_id, 1);
+
+    BrowserAccessibilityFuchsia* node_1 =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+    ASSERT_TRUE(node_1);
+
+    EXPECT_EQ(node_updates[0].node_id(), node_1->GetFuchsiaNodeID());
+
+    // Verify that the the accessibility bridge root ID was set to node 1's
+    // unique ID.
+    ASSERT_TRUE(mock_accessibility_bridge_->root_node_id().has_value());
+    EXPECT_EQ(*mock_accessibility_bridge_->root_node_id(),
+              static_cast<uint32_t>(node_1->GetFuchsiaNodeID()));
 
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
     EXPECT_TRUE(node_deletions.empty());
@@ -140,8 +149,21 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestEmitNodeUpdates) {
   {
     const auto& node_updates = mock_accessibility_bridge_->node_updates();
     ASSERT_EQ(node_updates.size(), 3u);
-    EXPECT_EQ(node_updates[1].node_id.node_id, 1);
-    EXPECT_EQ(node_updates[2].node_id.node_id, 2);
+
+    BrowserAccessibilityFuchsia* node_1 =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+    ASSERT_TRUE(node_1);
+    BrowserAccessibilityFuchsia* node_2 =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+    ASSERT_TRUE(node_2);
+
+    // Node 1 is the root of the root tree, so its fuchsia ID should be 0.
+    EXPECT_EQ(node_updates[1].node_id(), node_1->GetFuchsiaNodeID());
+    ASSERT_EQ(node_updates[1].child_ids().size(), 1u);
+    EXPECT_EQ(node_updates[1].child_ids()[0], node_2->GetFuchsiaNodeID());
+
+    // Node 2 is NOT the root, so its fuchsia ID should be its AXUniqueID.
+    EXPECT_EQ(node_updates[2].node_id(), node_2->GetFuchsiaNodeID());
   }
 }
 
@@ -171,6 +193,16 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
     EXPECT_TRUE(node_deletions.empty());
   }
 
+  // Get the fuchsia IDs for nodes 1 and 2 before they are deleted.
+  BrowserAccessibilityFuchsia* node_1 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+  ASSERT_TRUE(node_1);
+  uint32_t node_1_fuchsia_id = node_1->GetFuchsiaNodeID();
+  BrowserAccessibilityFuchsia* node_2 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  ASSERT_TRUE(node_2);
+  uint32_t node_2_fuchsia_id = node_2->GetFuchsiaNodeID();
+
   // Delete node 2.
   ui::AXTreeUpdate updated_state;
   updated_state.nodes.resize(1);
@@ -178,11 +210,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
 
   manager->ax_tree()->Unserialize(updated_state);
 
-  // Verify that the accessibility bridge received deletions for both nodes.
+  // Verify that the accessibility bridge received a deletion for node 2.
   {
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
     ASSERT_EQ(node_deletions.size(), 1u);
-    EXPECT_EQ(node_deletions[0].node_id, 2);
+    EXPECT_EQ(node_deletions[0], static_cast<uint32_t>(node_2_fuchsia_id));
   }
 
   // Destroy manager. Doing so should force the remainder of the tree to be
@@ -193,8 +225,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeleteNodes) {
   {
     const auto& node_deletions = mock_accessibility_bridge_->node_deletions();
     ASSERT_EQ(node_deletions.size(), 2u);
-    EXPECT_EQ(node_deletions[0].node_id, 2);
-    EXPECT_EQ(node_deletions[1].node_id, 1);
+    EXPECT_EQ(node_deletions[1], node_1_fuchsia_id);
   }
 }
 
@@ -219,7 +250,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   ASSERT_TRUE(manager);
 
   {
-    const auto& node_updates = mock_accessibility_bridge_->node_updates();
+    const std::vector<fuchsia::accessibility::semantics::Node>& node_updates =
+        mock_accessibility_bridge_->node_updates();
     ASSERT_EQ(node_updates.size(), 2u);
   }
 
@@ -232,11 +264,19 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   manager->OnLocationChanges(std::move(changes));
 
   {
-    const auto& node_updates = mock_accessibility_bridge_->node_updates();
+    BrowserAccessibilityFuchsia* node_2 =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+    ASSERT_TRUE(node_2);
+
+    const std::vector<fuchsia::accessibility::semantics::Node>& node_updates =
+        mock_accessibility_bridge_->node_updates();
     ASSERT_EQ(node_updates.size(), 3u);
-    EXPECT_EQ(node_updates.back().node_id.node_id, 2);
-    ASSERT_TRUE(node_updates.back().node_data.has_location());
-    const auto& location = node_updates.back().node_data.location();
+    const fuchsia::accessibility::semantics::Node& node_update =
+        node_updates.back();
+    EXPECT_EQ(node_update.node_id(),
+              static_cast<uint32_t>(node_2->GetFuchsiaNodeID()));
+    ASSERT_TRUE(node_update.has_location());
+    const fuchsia::ui::gfx::BoundingBox& location = node_update.location();
     EXPECT_EQ(location.min.x, 1);
     EXPECT_EQ(location.min.y, 2);
     EXPECT_EQ(location.max.x, 4);
@@ -270,6 +310,14 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
           initial_state, test_browser_accessibility_delegate_.get()));
   ASSERT_TRUE(manager);
 
+  BrowserAccessibilityFuchsia* node_1 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+  ASSERT_TRUE(node_1);
+
+  BrowserAccessibilityFuchsia* node_2 =
+      ToBrowserAccessibilityFuchsia(manager->GetFromID(2));
+  ASSERT_TRUE(node_2);
+
   // Set focus to node 1, and check that the focus was updated from null to
   // node 1.
   {
@@ -286,7 +334,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
 
   ASSERT_FALSE(mock_accessibility_bridge_->old_focus());
   ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
-  EXPECT_EQ(mock_accessibility_bridge_->new_focus()->node_id, 1);
+  EXPECT_EQ(*mock_accessibility_bridge_->new_focus(),
+            node_1->GetFuchsiaNodeID());
 
   // Set focus to node 2, and check that focus was updated from node 1 to node
   // 2.
@@ -303,9 +352,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   }
 
   ASSERT_TRUE(mock_accessibility_bridge_->old_focus());
-  EXPECT_EQ(mock_accessibility_bridge_->old_focus()->node_id, 1);
+  EXPECT_EQ(*mock_accessibility_bridge_->old_focus(),
+            node_1->GetFuchsiaNodeID());
   ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
-  EXPECT_EQ(mock_accessibility_bridge_->new_focus()->node_id, 2);
+  EXPECT_EQ(*mock_accessibility_bridge_->new_focus(),
+            node_2->GetFuchsiaNodeID());
 }
 
 }  // namespace

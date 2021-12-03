@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 
 namespace ui {
