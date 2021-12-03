@@ -248,7 +248,6 @@ static_library("arc_base") {
     "//ash/components/arc/session",
     "//ash/components/arc/session:arc_base_enums",
     "//ash/components/arc/session:connection_holder",
-    "//components/arc/mojom",
     "//dbus",
   ]
 }

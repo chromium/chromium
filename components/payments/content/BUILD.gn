@@ -101,7 +101,6 @@ static_library("content") {
       "//ash/components/arc/mojom",
       "//ash/public/cpp/external_arc",
       "//components/arc",
-      "//components/arc/mojom",
     ]
   }
 
@@ -274,7 +273,6 @@ source_set("unit_tests") {
       "//ash/components/arc/mojom",
       "//ash/public/cpp/external_arc:test_support",
       "//components/arc",
-      "//components/arc/mojom",
     ]
   }
 

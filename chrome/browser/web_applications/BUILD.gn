@@ -330,7 +330,6 @@ source_set("web_applications") {
       "//ash/webui/shortcut_customization_ui",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chromeos/strings",
-      "//components/arc/mojom",
     ]
 
     if (!is_official_build) {
@@ -582,7 +581,6 @@ source_set("web_applications_unit_tests") {
       "//chrome/browser/chromeos",
       "//components/arc:arc",
       "//components/arc:arc_test_support",
-      "//components/arc/mojom",
     ]
   }
 

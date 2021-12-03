@@ -5,8 +5,8 @@
 #ifndef ASH_COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
 #define ASH_COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
 
+#include "ash/components/arc/app/arc_playstore_search_request_state.h"
 #include "ash/components/arc/mojom/app.mojom-shared.h"
-#include "components/arc/app/arc_playstore_search_request_state.h"
 
 namespace mojo {
 

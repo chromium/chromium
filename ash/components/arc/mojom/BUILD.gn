@@ -84,7 +84,6 @@ if (is_chromeos_ash) {
       "//ash/components/arc/mojom:notifications",
       "//ash/components/arc/mojom:oemcrypto",
       "//chromeos/components/sensors/mojom:mojom",
-      "//components/arc/mojom:mojom",
       "//components/payments/mojom:mojom",
       "//media/capture/video/chromeos/mojom:cros_camera",
       "//mojo/public/mojom/base",
