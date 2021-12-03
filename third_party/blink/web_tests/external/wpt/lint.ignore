@@ -320,6 +320,7 @@ SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
 SET TIMEOUT: portals/history/resources/portal-harness.js
+SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resources/chromium/*
 SET TIMEOUT: resources/test/tests/functional/add_cleanup.html
 SET TIMEOUT: resources/test/tests/functional/add_cleanup_async.html

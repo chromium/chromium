@@ -43,6 +43,7 @@ interface DOMStringList {
 };
 
 enum DocumentReadyState { "loading", "interactive", "complete" };
+enum DocumentVisibilityState { "visible", "hidden" };
 typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
 [LegacyOverrideBuiltIns]
@@ -87,9 +88,12 @@ partial interface Document {
   boolean queryCommandState(DOMString commandId);
   boolean queryCommandSupported(DOMString commandId);
   DOMString queryCommandValue(DOMString commandId);
+  readonly attribute boolean hidden;
+  readonly attribute DocumentVisibilityState visibilityState;
 
   // special event handler IDL attributes that only apply to Document objects
   [LegacyLenientThis] attribute EventHandler onreadystatechange;
+  attribute EventHandler onvisibilitychange;
 
   // also has obsolete members
 };
@@ -1447,12 +1451,12 @@ interface mixin CanvasTextDrawingStyles {
   attribute CanvasTextAlign textAlign; // (default: "start")
   attribute CanvasTextBaseline textBaseline; // (default: "alphabetic")
   attribute CanvasDirection direction; // (default: "inherit")
-  attribute double textLetterSpacing; // (default: 0)
-  attribute double textWordSpacing; // (default: 0)
+  attribute double letterSpacing; // (default: 0)
   attribute CanvasFontKerning fontKerning; // (default: "auto")
   attribute CanvasFontStretch fontStretch; // (default: "normal")
   attribute CanvasFontVariantCaps fontVariantCaps; // (default: "normal")
   attribute CanvasTextRendering textRendering; // (default: "auto")
+  attribute double wordSpacing; // (default: 0)
 };
 
 interface mixin CanvasPath {

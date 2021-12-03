@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 816 tests; 806 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 816 tests; 808 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -405,12 +405,12 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute font
 PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
-FAIL OffscreenCanvasRenderingContext2D interface: attribute textLetterSpacing assert_true: The prototype object must have a property "textLetterSpacing" expected true got false
-FAIL OffscreenCanvasRenderingContext2D interface: attribute textWordSpacing assert_true: The prototype object must have a property "textWordSpacing" expected true got false
+PASS OffscreenCanvasRenderingContext2D interface: attribute letterSpacing
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps
 PASS OffscreenCanvasRenderingContext2D interface: attribute textRendering
+PASS OffscreenCanvasRenderingContext2D interface: attribute wordSpacing
 PASS OffscreenCanvasRenderingContext2D interface: operation closePath()
 PASS OffscreenCanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)

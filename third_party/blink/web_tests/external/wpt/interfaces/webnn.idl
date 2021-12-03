@@ -133,7 +133,7 @@ partial interface MLGraphBuilder {
   MLOperand concat(sequence<MLOperand> inputs, long axis);
 };
 
-enum MLFilterOperandLayout {
+enum MLConv2dFilterOperandLayout {
   "oihw",
   "hwio",
   "ohwi",
@@ -150,19 +150,41 @@ dictionary MLConv2dOptions {
   sequence<long> padding;
   sequence<long> strides;
   sequence<long> dilations;
-  sequence<long> outputPadding;
-  sequence<long> outputSizes;
   MLAutoPad autoPad = "explicit";
-  boolean transpose = false;
   long groups = 1;
   MLInputOperandLayout inputLayout = "nchw";
-  MLFilterOperandLayout filterLayout = "oihw";
+  MLConv2dFilterOperandLayout filterLayout = "oihw";
   MLOperand bias;
   MLOperator activation;
 };
 
 partial interface MLGraphBuilder {
   MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
+};
+
+enum MLConvTranspose2dFilterOperandLayout {
+  "iohw",
+  "hwoi",
+  "ohwi"
+};
+
+dictionary MLConvTranspose2dOptions {
+  sequence<long> padding;
+  sequence<long> strides;
+  sequence<long> dilations;
+  sequence<long> outputPadding;
+  sequence<long> outputSizes;
+  MLAutoPad autoPad = "explicit";
+  long groups = 1;
+  MLInputOperandLayout inputLayout = "nchw";
+  MLConvTranspose2dFilterOperandLayout filterLayout = "iohw";
+  MLOperand bias;
+  MLOperator activation;
+};
+
+partial interface MLGraphBuilder {
+  MLOperand convTranspose2d(MLOperand input, MLOperand filter,
+                            optional MLConvTranspose2dOptions options = {});
 };
 
 partial interface MLGraphBuilder {

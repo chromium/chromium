@@ -57,14 +57,6 @@ enum PermissionName {
   "xr-spatial-tracking",
 };
 
-dictionary PushPermissionDescriptor : PermissionDescriptor {
-  boolean userVisibleOnly = false;
-};
-
-dictionary MidiPermissionDescriptor : PermissionDescriptor {
-  boolean sysex = false;
-};
-
 dictionary DevicePermissionDescriptor : PermissionDescriptor {
   DOMString deviceId;
 };

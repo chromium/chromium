@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Redirects done from within a service-worker should not be exposed to client ResourceTiming
+PASS Connection info from within a service-worker should not be exposed to client ResourceTiming
+PASS requestStart should never be before fetchStart
+PASS Delay from within service-worker (after internal fetching) should be accessible through `responseStart`
+PASS Delay from within service-worker (before internal fetching) should be measured before responseStart in the client ResourceTiming entry
+Harness: the test ran to completion.
+

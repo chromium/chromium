@@ -43,3 +43,9 @@ dictionary PaymentCredentialInstrument {
     required DOMString displayName;
     required USVString icon;
 };
+
+enum TransactionAutomationMode {
+  "none",
+  "autoaccept",
+  "autoreject"
+};

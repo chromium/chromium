@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 356 tests; 81 PASS, 275 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 361 tests; 83 PASS, 278 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'createContext')"
 PASS idl_test validation
 PASS Partial interface MLGraphBuilder: original interface defined
@@ -64,6 +64,8 @@ PASS Partial interface MLGraphBuilder[30]: original interface defined
 PASS Partial interface MLGraphBuilder[30]: member names are unique
 PASS Partial interface MLGraphBuilder[31]: original interface defined
 PASS Partial interface MLGraphBuilder[31]: member names are unique
+PASS Partial interface MLGraphBuilder[32]: original interface defined
+PASS Partial interface MLGraphBuilder[32]: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorML: member names are unique
 PASS WorkerNavigator includes NavigatorML: member names are unique
@@ -142,6 +144,7 @@ FAIL MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOption
 FAIL MLGraphBuilder interface: operation clamp(optional MLClampOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation concat(sequence<MLOperand>, long) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
+FAIL MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation add(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation sub(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
 FAIL MLGraphBuilder interface: operation mul(MLOperand, MLOperand) assert_own_property: self does not have own property "MLGraphBuilder" expected property "MLGraphBuilder" missing
@@ -224,6 +227,8 @@ FAIL MLGraphBuilder interface: builder must inherit property "concat(sequence<ML
 FAIL MLGraphBuilder interface: calling concat(sequence<MLOperand>, long) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "conv2d(MLOperand, MLOperand, optional MLConv2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling conv2d(MLOperand, MLOperand, optional MLConv2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: builder must inherit property "convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
+FAIL MLGraphBuilder interface: calling convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "add(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling add(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "sub(MLOperand, MLOperand)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"

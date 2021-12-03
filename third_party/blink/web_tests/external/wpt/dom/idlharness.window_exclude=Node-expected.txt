@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1286 tests; 1283 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1290 tests; 1287 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -179,24 +179,28 @@ PASS AbortController interface: existence and properties of interface prototype 
 PASS AbortController interface: existence and properties of interface prototype object's "constructor" property
 PASS AbortController interface: existence and properties of interface prototype object's @@unscopables property
 PASS AbortController interface: attribute signal
-PASS AbortController interface: operation abort()
+PASS AbortController interface: operation abort(optional any)
 PASS AbortController must be primary interface of new AbortController()
 PASS Stringification of new AbortController()
 PASS AbortController interface: new AbortController() must inherit property "signal" with the proper type
-PASS AbortController interface: new AbortController() must inherit property "abort()" with the proper type
+PASS AbortController interface: new AbortController() must inherit property "abort(optional any)" with the proper type
+PASS AbortController interface: calling abort(optional any) on new AbortController() with too few arguments must throw TypeError
 PASS AbortSignal interface: existence and properties of interface object
 PASS AbortSignal interface object length
 PASS AbortSignal interface object name
 PASS AbortSignal interface: existence and properties of interface prototype object
 PASS AbortSignal interface: existence and properties of interface prototype object's "constructor" property
 PASS AbortSignal interface: existence and properties of interface prototype object's @@unscopables property
-PASS AbortSignal interface: operation abort()
+PASS AbortSignal interface: operation abort(optional any)
 PASS AbortSignal interface: attribute aborted
+PASS AbortSignal interface: attribute reason
 PASS AbortSignal interface: attribute onabort
 PASS AbortSignal must be primary interface of new AbortController().signal
 PASS Stringification of new AbortController().signal
-PASS AbortSignal interface: new AbortController().signal must inherit property "abort()" with the proper type
+PASS AbortSignal interface: new AbortController().signal must inherit property "abort(optional any)" with the proper type
+PASS AbortSignal interface: calling abort(optional any) on new AbortController().signal with too few arguments must throw TypeError
 PASS AbortSignal interface: new AbortController().signal must inherit property "aborted" with the proper type
+PASS AbortSignal interface: new AbortController().signal must inherit property "reason" with the proper type
 PASS AbortSignal interface: new AbortController().signal must inherit property "onabort" with the proper type
 PASS EventTarget interface: new AbortController().signal must inherit property "addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean))" with the proper type
 PASS EventTarget interface: calling addEventListener(DOMString, EventListener?, optional (AddEventListenerOptions or boolean)) on new AbortController().signal with too few arguments must throw TypeError

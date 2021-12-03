@@ -83,6 +83,7 @@ enum FillMode { "none", "forwards", "backwards", "both", "auto" };
 enum PlaybackDirection { "normal", "reverse", "alternate", "alternate-reverse" };
 
 dictionary ComputedEffectTiming : EffectTiming {
+    double?              progress;
     unrestricted double? currentIteration;
 };
 
