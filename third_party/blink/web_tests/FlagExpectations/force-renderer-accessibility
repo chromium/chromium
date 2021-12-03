@@ -7,9 +7,6 @@
 
 # Crashes
 crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
-crbug.com/1225860 crbug.com/926685 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-010.html [ Crash ]
-crbug.com/1225860 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-all-017.html [ Crash ]
-crbug.com/1225860 virtual/layout_ng_block_frag/fast/multicol/dynamic/untransformed-becomes-transformed-has-abspos-crash.html [ Crash ]
 
 # Slow
 crbug.com/1225893 crbug.com/1126305 virtual/prerender/external/wpt/speculation-rules/prerender/about-blank-iframes.html [ Timeout ]
