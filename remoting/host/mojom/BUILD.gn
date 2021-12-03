@@ -8,6 +8,7 @@ mojom("mojom") {
   sources = [
     "chromoting_host_services.mojom",
     "desktop_session.mojom",
+    "remote_security_key.mojom",
     "remote_support.mojom",
     "remote_url_opener.mojom",
     "remoting_host.mojom",

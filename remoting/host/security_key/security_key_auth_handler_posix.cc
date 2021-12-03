@@ -70,7 +70,7 @@ class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
   ~SecurityKeyAuthHandlerPosix() override;
 
  private:
-  typedef std::map<int, std::unique_ptr<SecurityKeySocket>> ActiveSockets;
+  using ActiveSockets = std::map<int, std::unique_ptr<SecurityKeySocket>>;
 
   // SecurityKeyAuthHandler interface.
   void CreateSecurityKeyConnection() override;

@@ -60,7 +60,7 @@ class SecurityKeyMessageHandler {
                               const std::string& message_payload);
 
   // Used to respond to IPC connection changes.
-  void HandleIpcConnectionChange(bool connection_established);
+  void HandleIpcConnectionChange();
 
   // Used to indicate an IPC connection error has occurred.
   void HandleIpcConnectionError();
@@ -85,10 +85,6 @@ class SecurityKeyMessageHandler {
 
   // Signaled when an error occurs.
   base::OnceClosure error_callback_;
-
-  // Used to indicate when we expect the IPC channel to be closed (i.e. in the
-  // invalid session scenario) and when it is an unexpected error.
-  bool expect_ipc_channel_close_ = false;
 
   base::ThreadChecker thread_checker_;
 };

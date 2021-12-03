@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace base {
 class FilePath;
@@ -28,9 +29,8 @@ class SecurityKeyAuthHandler {
   virtual ~SecurityKeyAuthHandler() {}
 
   // Used to send security key extension messages to the client.
-  typedef base::RepeatingCallback<void(int connection_id,
-                                       const std::string& data)>
-      SendMessageCallback;
+  using SendMessageCallback =
+      base::RepeatingCallback<void(int connection_id, const std::string& data)>;
 
   // Creates a platform-specific SecurityKeyAuthHandler.
   // All invocations of |send_message_callback| are guaranteed to occur before

@@ -85,26 +85,16 @@ void SecurityKeyMessageHandler::ProcessSecurityKeyMessage(
   }
 }
 
-void SecurityKeyMessageHandler::HandleIpcConnectionChange(
-    bool connection_established) {
+void SecurityKeyMessageHandler::HandleIpcConnectionChange() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (connection_established) {
-    SendMessageWithPayload(SecurityKeyMessageType::CONNECT_RESPONSE,
-                           std::string(1, kConnectResponseActiveSession));
-  } else {
-    SendMessageWithPayload(SecurityKeyMessageType::CONNECT_RESPONSE,
-                           std::string(1, kConnectResponseNoSession));
-    // We expect the server to close the IPC channel in this scenario.
-    expect_ipc_channel_close_ = true;
-  }
+  SendMessageWithPayload(SecurityKeyMessageType::CONNECT_RESPONSE,
+                         std::string(1, kConnectResponseActiveSession));
 }
 
 void SecurityKeyMessageHandler::HandleIpcConnectionError() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!expect_ipc_channel_close_) {
-    SendMessageWithPayload(SecurityKeyMessageType::CONNECT_ERROR,
-                           "Unknown error occurred during connection.");
-  }
+  SendMessageWithPayload(SecurityKeyMessageType::CONNECT_ERROR,
+                         "Unknown error occurred during connection.");
 }
 
 void SecurityKeyMessageHandler::HandleSecurityKeyResponse(

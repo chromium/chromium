@@ -40,6 +40,7 @@ source_set("security_key") {
     "//net:net",
     "//net/traffic_annotation:traffic_annotation",
     "//remoting/host:host_extension",
+    "//remoting/host/mojom",
     "//remoting/proto",
     "//remoting/protocol:protocol",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -120,6 +121,7 @@ source_set("unit_tests") {
     "//remoting:test_support",
     "//remoting/host:common",
     "//remoting/host:test_support",
+    "//remoting/host/mojom",
     "//remoting/host/setup:common",
     "//remoting/protocol:protocol",
   ]
@@ -151,6 +153,7 @@ static_library("test_support") {
     ":security_key",
     "//ipc",
     "//remoting/host:common",
+    "//remoting/host/mojom",
     "//remoting/proto",
     "//testing/gtest",
   ]

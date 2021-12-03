@@ -63,7 +63,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   ~SecurityKeyAuthHandlerWin() override;
 
  private:
-  typedef std::map<int, std::unique_ptr<SecurityKeyIpcServer>> ActiveChannels;
+  using ActiveChannels = std::map<int, std::unique_ptr<SecurityKeyIpcServer>>;
 
   // SecurityKeyAuthHandler interface.
   void CreateSecurityKeyConnection() override;

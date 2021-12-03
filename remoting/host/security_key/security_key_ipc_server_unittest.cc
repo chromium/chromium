@@ -157,7 +157,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleSingleSecurityKeyRequest) {
   WaitForOperationComplete();
 
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
 
   // Send a request from the IPC client to the IPC server.
@@ -194,7 +193,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleLargeSecurityKeyRequest) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -232,7 +230,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleReallyLargeSecurityKeyRequest) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -270,7 +267,6 @@ TEST_F(SecurityKeyIpcServerTest, HandleMultipleSecurityKeyRequests) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -376,7 +372,6 @@ TEST_F(SecurityKeyIpcServerTest, MAYBE_NoSecurityKeyRequestTimeout) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -404,7 +399,6 @@ TEST_F(SecurityKeyIpcServerTest, SecurityKeyResponseTimeout) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -438,7 +432,6 @@ TEST_F(SecurityKeyIpcServerTest, SendResponseTimeout) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -495,7 +488,6 @@ TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
 
-  ASSERT_FALSE(fake_ipc_client.invalid_session_error());
   ASSERT_TRUE(fake_ipc_client.connection_ready());
   ASSERT_TRUE(fake_ipc_client.ipc_channel_connected());
 
@@ -519,7 +511,7 @@ TEST_F(SecurityKeyIpcServerTest, CleanupPendingConnection) {
   // Typically the client will be the one to close the connection.
   fake_ipc_client.CloseIpcConnection();
 }
-#endif  // defined(OS_APPLE)
+#endif  // !defined(OS_APPLE)
 
 #if defined(OS_WIN)
 TEST_F(SecurityKeyIpcServerTest, IpcConnectionFailsFromInvalidSession) {
@@ -536,10 +528,6 @@ TEST_F(SecurityKeyIpcServerTest, IpcConnectionFailsFromInvalidSession) {
   FakeSecurityKeyIpcClient fake_ipc_client{base::DoNothing()};
   ASSERT_TRUE(fake_ipc_client.ConnectViaIpc(server_name));
   WaitForOperationComplete();
-
-  // Verify the connection failed.
-  ASSERT_TRUE(fake_ipc_client.invalid_session_error());
-  ASSERT_FALSE(fake_ipc_client.connection_ready());
 
   RunPendingTasks();
   ASSERT_FALSE(fake_ipc_client.ipc_channel_connected());

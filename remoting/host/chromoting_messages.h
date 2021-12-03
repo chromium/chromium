@@ -293,27 +293,3 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_CloseFile,
 // message.
 IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_CancelFile,
                     uint64_t /* file_id */)
-
-//---------------------------------------------------------------------
-// Chromoting messages sent from the remote_security_key process to the
-// network process.
-
-// The array of bytes representing a security key request to be sent to the
-// remote client.
-IPC_MESSAGE_CONTROL(ChromotingRemoteSecurityKeyToNetworkMsg_Request,
-                    std::string /* request bytes */)
-
-//---------------------------------------------------------
-// Chromoting messages sent from the network process to the remote_security_key
-// process.
-
-// The array of bytes representing the security key response from the client.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_Response,
-                    std::string /* response bytes */)
-
-// Indicates the channel used for security key message passing is ready for use.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_ConnectionReady)
-
-// Error indicating the request originated from outside the remoted session.
-// The IPC channel will be disconnected after this message has been sent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_InvalidSession)
