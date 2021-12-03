@@ -66,7 +66,10 @@ class _FuncWrapper(object):
     self._func = func
 
   def __call__(self, index, _=None):
+    global _fork_kwargs
     try:
+      if _fork_kwargs is None:  # Clarifies _fork_kwargs is map for pylint.
+        _fork_kwargs = {}
       return self._func(*_fork_params[index], **_fork_kwargs)
     except Exception as e:
       # Only keep the exception type for builtin exception types or else risk

@@ -6,8 +6,8 @@
 
 from __future__ import print_function
 
+import argparse
 import collections
-import optparse
 import os
 import re
 import sys
@@ -124,27 +124,27 @@ def _PrintSymbolized(asan_input, arch):
 
 
 def main():
-  parser = optparse.OptionParser()
-  parser.add_option('-l', '--logcat',
-                    help='File containing adb logcat output with ASan stacks. '
-                         'Use stdin if not specified.')
-  parser.add_option('--output-directory',
-                    help='Path to the root build directory.')
-  parser.add_option('--arch', default='arm',
-                    help='CPU architecture name')
-  options, _ = parser.parse_args()
+  parser = argparse.ArgumentParser()
+  parser.add_argument('-l',
+                      '--logcat',
+                      help='File containing adb logcat output with ASan '
+                      'stacks. Use stdin if not specified.')
+  parser.add_argument('--output-directory',
+                      help='Path to the root build directory.')
+  parser.add_argument('--arch', default='arm', help='CPU architecture name')
+  args = parser.parse_args()
 
-  if options.output_directory:
-    constants.SetOutputDirectory(options.output_directory)
+  if args.output_directory:
+    constants.SetOutputDirectory(args.output_directory)
   # Do an up-front test that the output directory is known.
   constants.CheckOutputDirectory()
 
-  if options.logcat:
-    asan_input = open(options.logcat, 'r')
+  if args.logcat:
+    asan_input = open(args.logcat, 'r')
   else:
     asan_input = sys.stdin
 
-  _PrintSymbolized(asan_input.readlines(), options.arch)
+  _PrintSymbolized(asan_input.readlines(), args.arch)
 
 
 if __name__ == "__main__":

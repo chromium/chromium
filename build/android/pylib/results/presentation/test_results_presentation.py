@@ -216,31 +216,25 @@ def create_suite_table(results_dict):
     cell(data=0),  # elapsed_time_ms
   ]
 
-  suite_row_dict = {}
+  suite_row_dict = collections.defaultdict(lambda: [
+      # Note: |suite_name| will be given in the following for loop.
+      # It is not assigned yet here.
+      action_cell('showTestsOfOneSuiteOnlyWithNewState("%s")' % suite_name,
+                  suite_name, 'left'),  # suite_name
+      cell(data=0),  # number_success_tests
+      cell(data=0),  # number_fail_tests
+      cell(data=0),  # all_tests
+      cell(data=0),  # elapsed_time_ms
+  ])
   for test_name, test_results in results_dict.items():
     # TODO(mikecase): This logic doesn't work if there are multiple test runs.
     # That is, if 'per_iteration_data' has multiple entries.
     # Since we only care about the result of the last test run.
     result = test_results[-1]
 
-    suite_name = (test_name.split('#')[0] if '#' in test_name
-                  else test_name.split('.')[0])
-    if suite_name in suite_row_dict:
-      suite_row = suite_row_dict[suite_name]
-    else:
-      suite_row = [
-        action_cell(
-          'showTestsOfOneSuiteOnlyWithNewState("%s")' % suite_name,
-          suite_name,
-          'left'
-        ),             # suite_name
-        cell(data=0),  # number_success_tests
-        cell(data=0),  # number_fail_tests
-        cell(data=0),  # all_tests
-        cell(data=0),  # elapsed_time_ms
-      ]
-
-    suite_row_dict[suite_name] = suite_row
+    suite_name = (test_name.split('#')[0]
+                  if '#' in test_name else test_name.split('.')[0])
+    suite_row = suite_row_dict[suite_name]
 
     suite_row[ALL_COUNT_INDEX]['data'] += 1
     footer_row[ALL_COUNT_INDEX]['data'] += 1

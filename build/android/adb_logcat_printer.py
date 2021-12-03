@@ -19,9 +19,9 @@ monitoring for the deletion of the aforementioned file.
 """
 # pylint: disable=W0702
 
+import argparse
 import io
 import logging
-import optparse
 import os
 import re
 import signal
@@ -152,13 +152,13 @@ def ShutdownLogcatMonitor(base_dir, logger):
 
 
 def main(argv):
-  parser = optparse.OptionParser(usage='Usage: %prog [options] <log dir>')
-  parser.add_option('--output-path',
-                    help='Output file path (if unspecified, prints to stdout)')
-  options, args = parser.parse_args(argv)
-  if len(args) != 1:
-    parser.error('Wrong number of unparsed args')
-  base_dir = args[0]
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '--output-path',
+      help='Output file path (if unspecified, prints to stdout)')
+  parser.add_argument('log_dir')
+  args = parser.parse_args(argv)
+  base_dir = args.log_dir
 
   log_stringio = io.StringIO()
   logger = logging.getLogger('LogcatPrinter')
@@ -168,16 +168,16 @@ def main(argv):
                                     ' %(message)s'))
   logger.addHandler(sh)
 
-  if options.output_path:
-    if not os.path.exists(os.path.dirname(options.output_path)):
+  if args.output_path:
+    if not os.path.exists(os.path.dirname(args.output_path)):
       logger.warning('Output dir %s doesn\'t exist. Creating it.',
-                      os.path.dirname(options.output_path))
-      os.makedirs(os.path.dirname(options.output_path))
-    output_file = open(options.output_path, 'w')
-    logger.info('Dumping logcat to local file %s. If running in a build, '
-                'this file will likely will be uploaded to google storage '
-                'in a later step. It can be downloaded from there.',
-                options.output_path)
+                     os.path.dirname(args.output_path))
+      os.makedirs(os.path.dirname(args.output_path))
+    output_file = open(args.output_path, 'w')
+    logger.info(
+        'Dumping logcat to local file %s. If running in a build, '
+        'this file will likely will be uploaded to google storage '
+        'in a later step. It can be downloaded from there.', args.output_path)
   else:
     output_file = sys.stdout
 
