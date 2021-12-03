@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
@@ -193,19 +194,19 @@ class AccountProfileMapperTest : public testing::Test {
       const std::vector<std::string>& gaia_accounts_in_facade,
       const AccountMapping& expected_accounts_upserted,
       const AccountMapping& expected_accounts_removed,
-      const AccountMapping& expected_accounts_in_storage) {
+      const AccountMapping& expected_accounts_in_prefs) {
     TestMapperUpdate(mapper, AccountsFromGaiaIDs(gaia_accounts_in_facade),
                      expected_accounts_upserted, expected_accounts_removed,
-                     expected_accounts_in_storage);
+                     expected_accounts_in_prefs);
   }
 
   // Triggers an update of the accounts and checks observer calls, and the end
-  // state of the storage.
+  // state of the prefs.
   void TestMapperUpdate(AccountProfileMapper* mapper,
                         const std::vector<Account>& accounts_in_facade,
                         const AccountMapping& expected_accounts_upserted,
                         const AccountMapping& expected_accounts_removed,
-                        const AccountMapping& expected_accounts_in_storage) {
+                        const AccountMapping& expected_accounts_in_prefs) {
     MockAccountProfileMapperObserver mock_observer;
     base::ScopedObservation<AccountProfileMapper,
                             AccountProfileMapper::Observer>
@@ -221,7 +222,7 @@ class AccountProfileMapperTest : public testing::Test {
 
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
     testing::Mock::VerifyAndClearExpectations(mock_facade());
-    ExpectAccountsInStorage(expected_accounts_in_storage);
+    VerifyAccountsInPrefs(expected_accounts_in_prefs);
   }
 
   AccountProfileMapper* CreateMapperNonInitialized(
@@ -230,8 +231,8 @@ class AccountProfileMapperTest : public testing::Test {
     testing_profile_manager_.SetAccountProfileMapper(
         std::make_unique<AccountProfileMapper>(
             mock_facade(), attributes_storage(), local_state()));
-    SetAccountsInStorage(accounts);
-    ExpectAccountsInStorage(accounts);
+    CreateProfilesAndSetAccountsInPrefs(accounts);
+    VerifyAccountsInPrefs(accounts);
     return testing_profile_manager_.profile_manager()
         ->GetAccountProfileMapper();
   }
@@ -288,7 +289,9 @@ class AccountProfileMapperTest : public testing::Test {
   }
 
   // Checks that the `ProfileAttributesStorage` matches `accounts_map`.
-  void ExpectAccountsInStorage(const AccountMapping& accounts_map) {
+  // Tests should normally use `VerifyAccountsInPrefs()` instead to verify local
+  // state as well.
+  void VerifyAccountsInStorage(const AccountMapping& accounts_map) {
     auto entries = attributes_storage()->GetAllProfilesAttributes();
     // Count profiles in the map.
     size_t profiles_in_map = accounts_map.size();
@@ -310,6 +313,21 @@ class AccountProfileMapperTest : public testing::Test {
       }
     }
     EXPECT_TRUE(main_profile_found) << "No main profile";
+  }
+
+  // Checks that the `ProfileAttributesStorage` and the list of accounts in
+  // local state match `accounts_map`.
+  void VerifyAccountsInPrefs(const AccountMapping& accounts_map) {
+    VerifyAccountsInStorage(accounts_map);
+
+    // Check accounts in local state.
+    base::flat_set<std::string> accounts_set;
+    for (const auto& path_and_accounts_pair : accounts_map) {
+      const auto& profile_accounts_set = path_and_accounts_pair.second;
+      accounts_set.insert(profile_accounts_set.begin(),
+                          profile_accounts_set.end());
+    }
+    EXPECT_EQ(GetLacrosAccountsFromLocalState(), accounts_set);
   }
 
   // Sets an expectation that `GetAccounts()` is called on the facade at least
@@ -356,10 +374,11 @@ class AccountProfileMapperTest : public testing::Test {
     std::move(callback).Run(accounts);
   }
 
-  // Sets the accounts in `ProfileAttributesStorage`. `accounts_map` is a map
-  // from profile path to a vector of GaiaIds. One of the profiles must be the
-  // main profile.
-  void SetAccountsInStorage(const AccountMapping& accounts_map) {
+  // Creates profiles that are listed in `accounts_map` and sets the accounts in
+  // `ProfileAttributesStorage` and in local state.
+  // `accounts_map` is a map from profile path to a vector of GaiaIds. One of
+  // the profiles must be the main profile.
+  void CreateProfilesAndSetAccountsInPrefs(const AccountMapping& accounts_map) {
     // Clear all profiles.
     testing_profile_manager_.DeleteAllTestingProfiles();
     // Create new profiles.
@@ -370,10 +389,21 @@ class AccountProfileMapperTest : public testing::Test {
       testing_profile_manager_.CreateTestingProfile(
           path.BaseName().MaybeAsASCII());
     }
-    // Import accounts from the map.
+    SetAccountsInStorage(accounts_map);
+    base::flat_set<std::string> accounts_set;
+    for (const auto& path_and_accounts_pair : accounts_map) {
+      const auto& profile_accounts_set = path_and_accounts_pair.second;
+      accounts_set.insert(profile_accounts_set.begin(),
+                          profile_accounts_set.end());
+    }
+    SetLacrosAccountsInLocalState(accounts_set);
+  }
+
+  // Imports accounts from `accounts_map` to `ProfileAttributesStorage`.
+  void SetAccountsInStorage(const AccountMapping& accounts_map) {
     ProfileAttributesStorage* storage = attributes_storage();
     for (const auto& path_accounts_pair : accounts_map) {
-      const base::FilePath path = path_accounts_pair.first;
+      const base::FilePath& path = path_accounts_pair.first;
       if (path.empty())
         continue;  // Account is unassigned.
       storage->GetProfileAttributesWithPath(path)->SetGaiaIds(
@@ -387,6 +417,14 @@ class AccountProfileMapperTest : public testing::Test {
     for (const auto& gaia_id : account_ids)
       list.Append(gaia_id);
     local_state()->Set(kLacrosAccountIdsPref, list);
+  }
+
+  base::flat_set<std::string> GetLacrosAccountsFromLocalState() {
+    const base::Value* list = local_state()->Get(kLacrosAccountIdsPref);
+    EXPECT_TRUE(list->is_list());
+    return base::MakeFlatSet<std::string>(
+        list->GetList(), {},
+        [](const base::Value& value) { return value.GetString(); });
   }
 
   void SetPrimaryAccountForProfile(const base::FilePath& profile_path,
@@ -509,7 +547,7 @@ TEST_F(AccountProfileMapperTest, UpdateSingleProfile) {
                        /*accounts_in_facade=*/{"A", "C"},
                        /*expected_accounts_upserted=*/{{main_path(), {"C"}}},
                        /*expected_accounts_removed=*/{{main_path(), {"B"}}},
-                       /*expected_accounts_in_storage=*/
+                       /*expected_accounts_in_prefs=*/
                        {{main_path(), {"A", "C"}}});
 }
 
@@ -520,9 +558,11 @@ TEST_F(AccountProfileMapperTest, UpdateSingleProfile) {
 TEST_F(AccountProfileMapperTest,
        UpdateSingleProfile_AtInitialization_EmptyLocalState) {
   CreateMapperNonInitialized({{main_path(), {"A", "B"}}});
+  // Clean local state.
+  SetLacrosAccountsInLocalState({});
   // B is removed and C is added.
   CompleteFacadeGetAccountsGaia({"A", "C"});
-  ExpectAccountsInStorage({{main_path(), {"A", "C"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A", "C"}}});
 }
 
 // Tests that at AccountProfileMapper initialization when there is only one
@@ -530,12 +570,11 @@ TEST_F(AccountProfileMapperTest,
 // - an unassigned account is not added to the main profile storage
 // - a no longer existing account is removed from the profile storage
 TEST_F(AccountProfileMapperTest, UpdateSingleProfile_AtInitialization) {
-  // C is an unassigned account saved in local state.
-  SetLacrosAccountsInLocalState({"A", "B", "C"});
-  CreateMapperNonInitialized({{main_path(), {"A", "B"}}});
+  CreateMapperNonInitialized(
+      {{main_path(), {"A", "B"}}, {base::FilePath(), {"C"}}});
   // B is removed.
   CompleteFacadeGetAccountsGaia({"A", "C"});
-  ExpectAccountsInStorage({{main_path(), {"A"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
 }
 
 // Tests that new accounts are left unassigned when there are multiple profiles.
@@ -548,8 +587,8 @@ TEST_F(AccountProfileMapperTest, UpdateMultiProfile) {
       /*accounts_in_facade=*/{"A", "B", "D"},
       /*expected_accounts_upserted=*/{{base::FilePath(), {"D"}}},
       /*expected_accounts_removed=*/{{other_path, {"C"}}},
-      /*expected_accounts_in_storage=*/
-      {{main_path(), {"A"}}, {other_path, {"B"}}});
+      /*expected_accounts_in_prefs=*/
+      {{main_path(), {"A"}}, {other_path, {"B"}}, {base::FilePath(), {"D"}}});
 }
 
 // Tests that at AccountProfileMapper initialization when there are multiple
@@ -560,9 +599,12 @@ TEST_F(AccountProfileMapperTest,
        UpdateMultiProfile_AtInitialization_EmptyLocalState) {
   base::FilePath other_path = GetProfilePath("Other");
   CreateMapperNonInitialized({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  // Clean local state.
+  SetLacrosAccountsInLocalState({});
   // C is removed and D is added.
   CompleteFacadeGetAccountsGaia({"A", "B", "D"});
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+  VerifyAccountsInPrefs(
+      {{main_path(), {"A"}}, {other_path, {"B"}}, {base::FilePath(), {"D"}}});
 }
 
 // Tests that at AccountProfileMapper initialization when there are multiple
@@ -570,13 +612,14 @@ TEST_F(AccountProfileMapperTest,
 // - an unassigned account is not added to the main profile storage
 // - a no longer existing account is removed from the profile storage
 TEST_F(AccountProfileMapperTest, UpdateMultiProfile_AtInitialization) {
-  // D is an unassigned account saved in local state.
-  SetLacrosAccountsInLocalState({"A", "B", "C", "D"});
   base::FilePath other_path = GetProfilePath("Other");
-  CreateMapperNonInitialized({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  CreateMapperNonInitialized({{main_path(), {"A"}},
+                              {other_path, {"B", "C"}},
+                              {base::FilePath(), {"D"}}});
   // C is removed.
   CompleteFacadeGetAccountsGaia({"A", "B", "D"});
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+  VerifyAccountsInPrefs(
+      {{main_path(), {"A"}}, {other_path, {"B"}}, {base::FilePath(), {"D"}}});
 }
 
 // Checks that `GetPersistentErrorForAccount()` returns an error when the
@@ -631,8 +674,9 @@ TEST_F(AccountProfileMapperTest, WaitForInitialization) {
 TEST_F(AccountProfileMapperTest, NoObserversAtInitialization) {
   AccountProfileMapper* mapper =
       CreateMapperNonInitialized({{main_path(), {"A"}}});
-  // Change the storage, so that observers would normally trigger.
+  // Change the prefs, so that observers would normally trigger.
   SetAccountsInStorage({{main_path(), {"A", "B"}}});
+  SetLacrosAccountsInLocalState({"A", "B"});
 
   MockAccountProfileMapperObserver mock_observer;
   base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
@@ -643,11 +687,11 @@ TEST_F(AccountProfileMapperTest, NoObserversAtInitialization) {
   EXPECT_CALL(mock_observer, OnAccountRemoved(testing::_, testing::_)).Times(0);
 
   // Observers were not called even though the storage was updated.
-  ExpectAccountsInStorage({{main_path(), {"A", "B"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A", "B"}}});
   CompleteFacadeGetAccountsGaia({"A"});
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
-  ExpectAccountsInStorage({{main_path(), {"A"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}});
 }
 
 TEST_F(AccountProfileMapperTest, NonGaia) {
@@ -656,13 +700,13 @@ TEST_F(AccountProfileMapperTest, NonGaia) {
   TestMapperUpdate(mapper, {AccountFromGaiaID("A"), NonGaiaAccountFromID("B")},
                    /*expected_accounts_upserted=*/{},
                    /*expected_accounts_removed=*/{},
-                   /*expected_accounts_in_storage=*/
+                   /*expected_accounts_in_prefs=*/
                    {{main_path(), {"A"}}});
   // Removal is ignored as well.
   TestMapperUpdate(mapper, {AccountFromGaiaID("A")},
                    /*expected_accounts_upserted=*/{},
                    /*expected_accounts_removed=*/{},
-                   /*expected_accounts_in_storage=*/
+                   /*expected_accounts_in_prefs=*/
                    {{main_path(), {"A"}}});
 }
 
@@ -786,7 +830,7 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromSecondaryProfile) {
       /*accounts_in_facade=*/{"A", "C"},
       /*expected_accounts_upserted=*/{{base::FilePath(), {"C"}}},
       /*expected_accounts_removed=*/{{other_path, {"B"}}},
-      /*expected_accounts_in_storage=*/
+      /*expected_accounts_in_prefs=*/
       {{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(other_path);
@@ -807,8 +851,8 @@ TEST_F(AccountProfileMapperTest,
       /*accounts_in_facade=*/{"A", "C", "D"},
       /*expected_accounts_upserted=*/{{base::FilePath(), {"C"}}},
       /*expected_accounts_removed=*/{{second_path, {"B"}}},
-      /*expected_accounts_in_storage=*/
-      {{main_path(), {"A"}}, {third_path, {"D"}}});
+      /*expected_accounts_in_prefs=*/
+      {{main_path(), {"A"}}, {third_path, {"D"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(second_path);
 }
@@ -823,9 +867,11 @@ TEST_F(
     RemovePrimaryAccountFromSecondaryProfile_AtInitialization_EmptyLocalState) {
   base::FilePath other_path = GetProfilePath("Other");
   CreateMapperNonInitialized({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  // Clean local state.
+  SetLacrosAccountsInLocalState({});
   SetPrimaryAccountForProfile(other_path, "B");
   CompleteFacadeGetAccountsGaia({"A", "C"});
-  ExpectAccountsInStorage({{main_path(), {"A", "C"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A", "C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(other_path);
 }
@@ -835,12 +881,11 @@ TEST_F(
 // A secondary account of the deleted profile remains unassigned.
 TEST_F(AccountProfileMapperTest,
        RemovePrimaryAccountFromSecondaryProfile_AtInitialization) {
-  SetLacrosAccountsInLocalState({"A", "B", "C"});
   base::FilePath other_path = GetProfilePath("Other");
   CreateMapperNonInitialized({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
   SetPrimaryAccountForProfile(other_path, "B");
   CompleteFacadeGetAccountsGaia({"A", "C"});
-  ExpectAccountsInStorage({{main_path(), {"A"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"C"}}});
   ProfileAttributesStorageTestObserver(attributes_storage())
       .WaitForProfileBeingDeleted(other_path);
 }
@@ -856,7 +901,7 @@ TEST_F(AccountProfileMapperTest, RemoveSecondaryAccountFromSecondaryProfile) {
                        /*accounts_in_facade=*/{"A", "B"},
                        /*expected_accounts_upserted=*/{},
                        /*expected_accounts_removed=*/{{other_path, {"C"}}},
-                       /*expected_accounts_in_storage=*/
+                       /*expected_accounts_in_prefs=*/
                        {{main_path(), {"A"}}, {other_path, {"B"}}});
 }
 
@@ -869,7 +914,7 @@ TEST_F(AccountProfileMapperTest, RemovePrimaryAccountFromPrimaryProfile) {
                        /*accounts_in_facade=*/{"B"},
                        /*expected_accounts_upserted=*/{},
                        /*expected_accounts_removed=*/{{main_path(), {"A"}}},
-                       /*expected_accounts_in_storage=*/
+                       /*expected_accounts_in_prefs=*/
                        {{main_path(), {"B"}}});
 }
 
@@ -887,7 +932,7 @@ TEST_F(AccountProfileMapperTest, DeleteProfile) {
   ExpectOnAccountRemoved(&mock_observer, {});
 
   testing_profile_manager()->DeleteTestingProfile("Other");
-  ExpectAccountsInStorage({{main_path(), {"A"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {base::FilePath(), {"B", "C"}}});
 }
 
 TEST_F(AccountProfileMapperTest, ShowAddAccountDialogBeforeInit) {
@@ -943,7 +988,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
 
   // Success: Add account to existing profile (with no callback provided).
   Account account_d = AccountFromGaiaID("D");
@@ -962,8 +1007,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   CompleteFacadeGetAccountsGaia({"A", "B", "C", "D"});
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  ExpectAccountsInStorage(
-      {{main_path(), {"A"}}, {other_path, {"B", "C", "D"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {other_path, {"B", "C", "D"}}});
 
   // Failure: Add account that already exists.
   ExpectFacadeShowAddAccountDialogCalled(source, account_c);
@@ -998,6 +1042,10 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  // `account_e` is added as an unassigned account.
+  VerifyAccountsInPrefs({{main_path(), {"A"}},
+                         {other_path, {"B", "C", "D"}},
+                         {base::FilePath(), {"E"}}});
 
   // Failure: Non-Gaia account.
   Account account_f = NonGaiaAccountFromID("F");
@@ -1027,8 +1075,9 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // No account was assigned by any the failures above.
-  ExpectAccountsInStorage(
-      {{main_path(), {"A"}}, {other_path, {"B", "C", "D"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}},
+                         {other_path, {"B", "C", "D"}},
+                         {base::FilePath(), {"E"}}});
 }
 
 // Tests that an account is fully added only after the account manager called
@@ -1060,7 +1109,7 @@ TEST_F(AccountProfileMapperTest,
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {other_path, {"B"}}});
 
   // An account is added after the account manager upserts it:
   EXPECT_CALL(account_added_callback, Run(AddAccountResultEqual(result)));
@@ -1073,7 +1122,7 @@ TEST_F(AccountProfileMapperTest,
   // The second `GetAccounts()` call is generated when an `AddAccountHelper`
   // completes.
   CompleteFacadeGetAccountsGaia({"A", "B", "C"});
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
 }
 
 // Tests that an account is fully added only after the account manager called
@@ -1118,7 +1167,7 @@ TEST_F(AccountProfileMapperTest,
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   EXPECT_TRUE(show_add_account_dialog_facade_callback);
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {other_path, {"B"}}});
 
   // An account is added after the account manager invokes the account added
   // callback:
@@ -1130,7 +1179,7 @@ TEST_F(AccountProfileMapperTest,
       .Run(AccountAdditionResult::FromAccount(account_c));
   // `mapper` updates the account list after it adds an account.
   CompleteFacadeGetAccountsGaia({"A", "B", "C"});
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
 }
 
 TEST_F(AccountProfileMapperTest, ShowAddAccountDialogNewProfile) {
@@ -1171,7 +1220,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialogNewProfile) {
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   EXPECT_EQ(new_profile->GetPath(), new_profile_path);
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {new_profile_path, {"B"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}, {new_profile_path, {"B"}}});
   ProfileAttributesEntry* entry =
       attributes_storage()->GetProfileAttributesWithPath(new_profile_path);
   ASSERT_TRUE(entry);
@@ -1208,7 +1257,7 @@ TEST_F(AccountProfileMapperTest, AddAccount) {
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  ExpectAccountsInStorage({{main_path(), {"A", "C"}}, {other_path, {"B"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A", "C"}}, {other_path, {"B"}}});
 
   // Failure: Non-Gaia account (with no callback provided).
   EXPECT_CALL(mock_observer, OnAccountUpserted(testing::_, testing::_))
@@ -1228,7 +1277,7 @@ TEST_F(AccountProfileMapperTest, AddAccount) {
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  ExpectAccountsInStorage({{main_path(), {"A", "C"}}, {other_path, {"B"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A", "C"}}, {other_path, {"B"}}});
 }
 
 // Tries adding an account "B" to the profile, when the account "B" does not
@@ -1259,7 +1308,7 @@ TEST_F(AccountProfileMapperTest, AddUnknownAccount) {
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
-  ExpectAccountsInStorage({{main_path(), {"A"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A"}}});
 }
 
 TEST_F(AccountProfileMapperTest, CreateNewProfileWithAccount) {
@@ -1295,7 +1344,7 @@ TEST_F(AccountProfileMapperTest, CreateNewProfileWithAccount) {
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   EXPECT_EQ(new_profile->GetPath(), new_profile_path);
-  ExpectAccountsInStorage(
+  VerifyAccountsInPrefs(
       {{main_path(), {"A"}}, {other_path, {"B"}}, {new_profile_path, {"C"}}});
   ProfileAttributesEntry* entry =
       attributes_storage()->GetProfileAttributesWithPath(new_profile_path);
@@ -1315,10 +1364,10 @@ TEST_F(AccountProfileMapperTest, FixProfilesAtStartup) {
   base::FilePath unconsented_path = GetProfilePath("Unconsented");
 
   // Create profiles without gaia ids.
-  SetAccountsInStorage({{main_path(), {}},
-                        {syncing_path, {}},
-                        {unconsented_path, {}},
-                        {signed_out_path, {}}});
+  CreateProfilesAndSetAccountsInPrefs({{main_path(), {}},
+                                       {syncing_path, {}},
+                                       {unconsented_path, {}},
+                                       {signed_out_path, {}}});
   // Set profiles in various signin states.
   attributes_storage()
       ->GetProfileAttributesWithPath(syncing_path)
@@ -1339,15 +1388,19 @@ TEST_F(AccountProfileMapperTest, FixProfilesAtStartup) {
   // The main profile is not deleted, even though it does not have an account.
   // The syncing profile was fixed, by adding the sync account in Gaia Ids.
   // The other profiles (non-main and non-syncing) were deleted.
-  ExpectAccountsInStorage({{main_path(), {}}, {syncing_path, {"A"}}});
+  VerifyAccountsInStorage({{main_path(), {}}, {syncing_path, {"A"}}});
 }
 
 // Checks that profiles are correctly imported from Ash-based Chrome.
 TEST_F(AccountProfileMapperTest, MigrateAshProfile) {
   // On Ash, the accounts are not explicitly assigned to the profile in
   // `ProfileAttributesStorage`.
-  CreateMapper({{main_path(), {}}, {base::FilePath(), {"A", "B", "C"}}});
+  CreateMapperNonInitialized(
+      {{main_path(), {}}, {base::FilePath(), {"A", "B", "C"}}});
+  // Local state is empty before the profile is migrated.
+  SetLacrosAccountsInLocalState({});
+  CompleteFacadeGetAccountsGaia({"A", "B", "C"});
 
   // All accounts have been assigned to the main profile.
-  ExpectAccountsInStorage({{main_path(), {"A", "B", "C"}}});
+  VerifyAccountsInPrefs({{main_path(), {"A", "B", "C"}}});
 }

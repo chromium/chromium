@@ -69,7 +69,10 @@ AccountCache::AccountIdSet AccountCache::CreateSnapshot() {
   DCHECK(snapshot_.empty());
   snapshot_ = accounts_;
   snapshot_created_ = true;
-  return GetLacrosAccountIdsPref(local_state_);
+  AccountCache::AccountIdSet previous_accounts =
+      GetLacrosAccountIdsPref(local_state_);
+  SetLacrosAccountIdsPref(local_state_, accounts_);
+  return previous_accounts;
 }
 
 AccountCache::AccountByGaiaIdMap AccountCache::UpdateSnapshot() {
