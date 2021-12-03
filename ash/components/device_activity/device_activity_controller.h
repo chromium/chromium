@@ -34,15 +34,25 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityController {
   ~DeviceActivityController();
 
   // Start Device Activity reporting for a trigger.
-  void Start(Trigger t,
+  void Start(Trigger trigger,
              PrefService* local_state,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Stop Device Activity reporting for a trigger.
-  void Stop(Trigger t);
+  void Stop(Trigger trigger);
 
  private:
+  void OnPsmDeviceActiveSecretFetched(
+      Trigger trigger,
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::string& psm_device_active_secret);
+
   std::unique_ptr<DeviceActivityClient> da_client_network_;
+
+  // Automatically cancels callbacks when the referent of weakptr gets
+  // destroyed.
+  base::WeakPtrFactory<DeviceActivityController> weak_factory_{this};
 };
 
 }  // namespace device_activity

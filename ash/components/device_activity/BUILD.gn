@@ -15,6 +15,7 @@ component("device_activity") {
     ":fresnel_service_proto",
     "//base",
     "//base:i18n",
+    "//chromeos/dbus/session_manager",
     "//chromeos/network",
     "//components/prefs:prefs",
     "//crypto:crypto",

@@ -419,6 +419,18 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // sync fails or there's no network, the callback is never invoked.
   virtual void GetServerBackedStateKeys(StateKeysCallback callback) = 0;
 
+  using PsmDeviceActiveSecretCallback =
+      base::OnceCallback<void(const std::string& psm_device_active_secret)>;
+
+  // Get a derivative of the stable_device_secret_DO_NOT_SHARE vpd field.
+  // Derivative of this field is used to prevent privacy complications in the
+  // case of a Chrome data leak.
+  //
+  // The string is returned asynchronously via |callback|. The callback is
+  // invoked with an empty string in case of errors.
+  virtual void GetPsmDeviceActiveSecret(
+      PsmDeviceActiveSecretCallback callback) = 0;
+
   // StartArcMiniContainer starts a container with only a handful of ARC
   // processes for Chrome OS login screen.
   virtual void StartArcMiniContainer(

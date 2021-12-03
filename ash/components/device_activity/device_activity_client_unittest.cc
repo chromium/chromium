@@ -22,6 +22,8 @@ namespace {
 
 constexpr char kWifiServiceGuid[] = "wifi_guid";
 
+constexpr char kFakePsmDeviceActiveSecret[] = "FAKE_PSM_DEVICE_ACTIVE_SECRET";
+
 }  // namespace
 
 class MockDeviceActivityClient : public DeviceActivityClient {
@@ -30,7 +32,10 @@ class MockDeviceActivityClient : public DeviceActivityClient {
       NetworkStateHandler* handler,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : DeviceActivityClient(handler, local_state, url_loader_factory) {}
+      : DeviceActivityClient(handler,
+                             local_state,
+                             url_loader_factory,
+                             kFakePsmDeviceActiveSecret) {}
 
   MOCK_METHOD(void, TransitionToHealthCheck, (), (override));
   MOCK_METHOD(void, TransitionToCheckMembershipOprf, (), (override));

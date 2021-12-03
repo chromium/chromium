@@ -50,7 +50,8 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   DeviceActivityClient(
       NetworkStateHandler* handler,
       PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const std::string& psm_device_active_secret);
   DeviceActivityClient(const DeviceActivityClient&) = delete;
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
@@ -127,11 +128,6 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // the chrome-internal repository and is not publicly exposed in Chromium.
   const std::string api_key_;
 
-  // TODO(https://crbug.com/1262151): Retrieve the derived secret from VPD.
-  // The ChromeOS platform code will provide a derived stable device secret.
-  // This secret is used to generate a PSM identifier for the reporting window.
-  const std::string derived_stable_device_secret_;
-
   // Generated on demand each time the state machine leaves the idle state.
   // It is reused by several states. It is reset to nullopt.
   // This field is used apart of PSM Import request.
@@ -175,6 +171,12 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // The URLLoaderFactory we use to issue network requests.
   // |url_loader_factory_| outlives |url_loader_|.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // The ChromeOS platform code will provide a derived PSM device active secret
+  // via callback.
+  //
+  // This secret is used to generate a PSM identifier for the reporting window.
+  const std::string psm_device_active_secret_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

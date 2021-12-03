@@ -8,6 +8,7 @@
 #include "ash/components/device_activity/fresnel_pref_names.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -46,18 +47,32 @@ DeviceActivityController::~DeviceActivityController() {
 }
 
 void DeviceActivityController::Start(
-    Trigger t,
+    Trigger trigger,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (t == Trigger::kNetwork) {
+  // Wrap with callback from |psm_device_active_secret_| retrieval using
+  // |SessionManagerClient| DBus.
+  chromeos::SessionManagerClient::Get()->GetPsmDeviceActiveSecret(
+      base::BindOnce(&device_activity::DeviceActivityController::
+                         OnPsmDeviceActiveSecretFetched,
+                     weak_factory_.GetWeakPtr(), trigger, local_state,
+                     url_loader_factory));
+}
+
+void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
+    Trigger trigger,
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& psm_device_active_secret) {
+  if (trigger == Trigger::kNetwork) {
     da_client_network_ = std::make_unique<DeviceActivityClient>(
         chromeos::NetworkHandler::Get()->network_state_handler(), local_state,
-        url_loader_factory);
+        url_loader_factory, psm_device_active_secret);
   }
 }
 
-void DeviceActivityController::Stop(Trigger t) {
-  if (t == Trigger::kNetwork && da_client_network_) {
+void DeviceActivityController::Stop(Trigger trigger) {
+  if (trigger == Trigger::kNetwork && da_client_network_) {
     da_client_network_.reset();
   }
 }

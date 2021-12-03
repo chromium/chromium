@@ -644,6 +644,15 @@ void FakeSessionManagerClient::GetServerBackedStateKeys(
   }
 }
 
+void FakeSessionManagerClient::GetPsmDeviceActiveSecret(
+    PsmDeviceActiveSecretCallback callback) {
+  if (force_state_keys_missing_) {
+    PostReply(FROM_HERE, std::move(callback), std::string());
+    return;
+  }
+  PostReply(FROM_HERE, std::move(callback), psm_device_active_secret_);
+}
+
 void FakeSessionManagerClient::StartArcMiniContainer(
     const login_manager::StartArcMiniContainerRequest& request,
     VoidDBusMethodCallback callback) {

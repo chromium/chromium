@@ -136,6 +136,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const std::vector<std::string>& feature_flags,
       const std::map<std::string, std::string>& origin_list_flags) override;
   void GetServerBackedStateKeys(StateKeysCallback callback) override;
+  void GetPsmDeviceActiveSecret(
+      PsmDeviceActiveSecretCallback callback) override;
 
   void StartArcMiniContainer(
       const login_manager::StartArcMiniContainerRequest& request,
@@ -235,6 +237,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     server_backed_state_keys_ = state_keys;
   }
 
+  void set_psm_device_active_secret(
+      const std::string& psm_device_active_secret) {
+    psm_device_active_secret_ = psm_device_active_secret;
+  }
+
   int clear_forced_re_enrollment_vpd_call_count() const {
     return clear_forced_re_enrollment_vpd_call_count_;
   }
@@ -325,6 +332,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       SessionManagerClient::kObserverListPolicy};
   SessionManagerClient::ActiveSessionsMap user_sessions_;
   std::vector<std::string> server_backed_state_keys_;
+
+  std::string psm_device_active_secret_;
 
   // Policy is stored in |policy_| if |policy_storage_| type is
   // PolicyStorageType::kInMemory. Uses the relative stub file path as key.

@@ -566,6 +566,18 @@ class SessionManagerClientImpl : public SessionManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetPsmDeviceActiveSecret(
+      PsmDeviceActiveSecretCallback callback) override {
+    dbus::MethodCall method_call(
+        login_manager::kSessionManagerInterface,
+        login_manager::kSessionManagerGetPsmDeviceActiveSecret);
+
+    session_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SessionManagerClientImpl::OnGetPsmDeviceActiveSecret,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StartArcMiniContainer(
       const login_manager::StartArcMiniContainerRequest& request,
       VoidDBusMethodCallback callback) override {
@@ -1024,6 +1036,27 @@ class SessionManagerClientImpl : public SessionManagerClient {
     }
 
     std::move(callback).Run(state_keys);
+  }
+
+  // Called when kSessionManagerGetPsmDeviceActiveSecret method is complete.
+  void OnGetPsmDeviceActiveSecret(PsmDeviceActiveSecretCallback callback,
+                                  dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to get response OnGetPsmDeviceActiveSecret.";
+      std::move(callback).Run(std::string());
+      return;
+    }
+
+    std::string psm_device_active_secret;
+    dbus::MessageReader reader(response);
+
+    if (!reader.PopString(&psm_device_active_secret)) {
+      LOG(ERROR) << "Received a non-string response from dbus.";
+      std::move(callback).Run(std::string());
+      return;
+    }
+
+    std::move(callback).Run(psm_device_active_secret);
   }
 
   void OnGetArcStartTime(DBusMethodCallback<base::TimeTicks> callback,

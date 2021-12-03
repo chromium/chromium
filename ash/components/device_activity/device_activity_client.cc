@@ -98,16 +98,15 @@ std::string GetDigestString(const std::string& key,
 
 // Generate the PSM identifier, used to identify a fixed
 // window of time for device active counting. Privacy compliance is guaranteed
-// by retrieving the |derived_stable_secret| from chromeos, and
+// by retrieving the |psm_device_active_secret_| from chromeos, and
 // performing an additional HMAC-SHA256 hash on generated plaintext string.
 absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
-    const std::string& derived_stable_secret,
+    const std::string& psm_device_active_secret,
     const std::string& psm_use_case,
     const std::string& window_id) {
-  if (derived_stable_secret.empty() || psm_use_case.empty() ||
-      window_id.empty()) {
+  if (psm_device_active_secret.empty() || psm_use_case.empty() ||
+      window_id.empty())
     return absl::nullopt;
-  }
 
   std::string unhashed_psm_id =
       base::JoinString({psm_use_case, window_id}, "|");
@@ -115,7 +114,7 @@ absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
   // Convert bytes to hex to avoid encoding/decoding proto issues across
   // client/server.
   std::string psm_id_hex =
-      GetDigestString(derived_stable_secret, unhashed_psm_id);
+      GetDigestString(psm_device_active_secret, unhashed_psm_id);
 
   if (!psm_id_hex.empty()) {
     psm_rlwe::RlwePlaintextId psm_rlwe_id;
@@ -146,12 +145,14 @@ bool IsDailyDeviceActivePingRequired(base::Time prev_ping_ts,
 DeviceActivityClient::DeviceActivityClient(
     NetworkStateHandler* handler,
     PrefService* local_state,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& psm_device_active_secret)
     : api_key_(google_apis::GetFresnelAPIKey()),
       report_timer_(ConstructReportTimer()),
       network_state_handler_(handler),
       local_state_(local_state),
-      url_loader_factory_(url_loader_factory) {
+      url_loader_factory_(url_loader_factory),
+      psm_device_active_secret_(psm_device_active_secret) {
   DCHECK(network_state_handler_);
   DCHECK(local_state_);
   DCHECK(url_loader_factory_);
@@ -241,10 +242,9 @@ void DeviceActivityClient::TransitionOutOfIdle() {
           last_transition_out_of_idle_time_)) {
     current_day_window_id_ =
         GenerateWindowIdentifier(last_transition_out_of_idle_time_);
-    current_day_psm_id_ =
-        GeneratePsmIdentifier(derived_stable_device_secret_,
-                              psm_rlwe::RlweUseCase_Name(kDailyPsmUseCase),
-                              current_day_window_id_.value());
+    current_day_psm_id_ = GeneratePsmIdentifier(
+        psm_device_active_secret_, psm_rlwe::RlweUseCase_Name(kDailyPsmUseCase),
+        current_day_window_id_.value());
 
     // Check if the PSM id is generated.
     if (!current_day_psm_id_.has_value()) {
