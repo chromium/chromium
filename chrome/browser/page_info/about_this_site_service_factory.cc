@@ -13,8 +13,8 @@
 #include "chrome/browser/page_info/chrome_about_this_site_service_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/page_info/about_this_site_service.h"
-#include "components/page_info/features.h"
+#include "components/page_info/core/about_this_site_service.h"
+#include "components/page_info/core/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui_delegate.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "url/gurl.h"
 
 class Profile;

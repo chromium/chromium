@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_ABOUT_THIS_SITE_CONTENT_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;

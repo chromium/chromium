@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_INFO_ABOUT_THIS_SITE_VALIDATION_H_
-#define COMPONENTS_PAGE_INFO_ABOUT_THIS_SITE_VALIDATION_H_
+#ifndef COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_VALIDATION_H_
+#define COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_VALIDATION_H_
 
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace page_info {
@@ -46,4 +46,4 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info);
 }  // namespace about_this_site_validation
 }  // namespace page_info
 
-#endif  // COMPONENTS_PAGE_INFO_ABOUT_THIS_SITE_VALIDATION_H_
+#endif  // COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_VALIDATION_H_

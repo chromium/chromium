@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_info/about_this_site_service.h"
+#include "components/page_info/core/about_this_site_service.h"
 #include <memory>
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/page_info/about_this_site_validation.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
+#include "components/page_info/core/about_this_site_validation.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

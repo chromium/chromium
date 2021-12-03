@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_INFO_ABOUT_THIS_SITE_SERVICE_H_
-#define COMPONENTS_PAGE_INFO_ABOUT_THIS_SITE_SERVICE_H_
+#ifndef COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_SERVICE_H_
+#define COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_SERVICE_H_
 
 #include <string>
 
@@ -53,4 +53,4 @@ class AboutThisSiteService : public KeyedService {
 
 }  // namespace page_info
 
-#endif  // COMPONENTS_PAGE_INFO_ABOUT_THIS_SITE_SERVICE_H_
+#endif  // COMPONENTS_PAGE_INFO_CORE_ABOUT_THIS_SITE_SERVICE_H_

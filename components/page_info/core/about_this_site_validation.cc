@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_info/about_this_site_validation.h"
+#include "components/page_info/core/about_this_site_validation.h"
 
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "url/gurl.h"
 
 namespace page_info {

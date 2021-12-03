@@ -3035,7 +3035,7 @@ if (!is_android && !is_fuchsia) {
       }
       deps += [
         ":test_support_ui",
-        "//components/page_info:proto",
+        "//components/page_info/core:proto",
         "//components/send_tab_to_self",
         "//components/send_tab_to_self:test_support",
         "//ui/base/dragdrop:types",

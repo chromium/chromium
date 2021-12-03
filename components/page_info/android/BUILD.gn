@@ -21,6 +21,7 @@ static_library("android") {
     "//components/content_settings/core/browser",
     "//components/page_info",
     "//components/page_info/android:jni_headers",
+    "//components/page_info/core",
     "//components/security_state/core:core",
     "//components/strings:components_strings_grit",
     "//content/public/browser:browser",

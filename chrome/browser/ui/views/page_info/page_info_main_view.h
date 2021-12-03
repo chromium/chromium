@@ -12,8 +12,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/views/view.h"
 

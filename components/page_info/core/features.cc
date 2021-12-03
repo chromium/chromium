@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/page_info/features.h"
+#include "components/page_info/core/features.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
