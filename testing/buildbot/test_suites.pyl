@@ -4299,14 +4299,12 @@
       },
     },
 
-    # create this temporary lacros arm test suites that runs on skylab, which
-    # focuses on the tast tests; create this new suite instead of using
-    # lacros_skylab_tests which may be altered later
-    # TODO(crbug.com/1247425): remove it and use lacros_skylab_poc instead if
-    # we want to add ozone unit test
+    # create this temporary lacros arm test suites that runs on skylab
+    # TODO(crbug.com/1247425): remove it if it is the same as
+    # lacros_skylab_poc
     'lacros_skylab_arm_tests': {
       'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
+        'tast_expr': '("group:mainline" && "dep:lacros" && "dep:lacros_unstable")',
         'timeout_sec': 10800,
       },
     },

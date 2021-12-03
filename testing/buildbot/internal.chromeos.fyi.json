@@ -1189,7 +1189,7 @@
         "cros_img": "kevin-release/R98-14362.0.0",
         "name": "lacros_all_tast_tests_KEVIN_LKGM",
         "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && \"dep:lacros_unstable\")",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800
