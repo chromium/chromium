@@ -195,7 +195,7 @@ class NavigationScenario(ScenarioWithBrowserOSADriver):
         GetTemplateFileForBrowser(browser_driver, "navigation"), {
             "per_navigation_delay": navigation_duration.total_seconds(),
             "navigation_cycles": navigation_cycles,
-            "sites": ",".join(sites)
+            "sites": ",".join([f'"{site}"' for site in sites])
         })
 
 

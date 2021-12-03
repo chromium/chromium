@@ -160,7 +160,7 @@ class DriverContext:
           stdin=subprocess.PIPE)
       power_sampler_args = [
           self._power_sample_path, "--sample-interval=10",
-          "--samplers=smc,user_idle,main_display",
+          "--samplers=smc,user_idle_level,main_display",
           f"--timeout={int(scenario_driver.duration.total_seconds())}",
           f"--json-output-file={power_sampler_output}"
       ]

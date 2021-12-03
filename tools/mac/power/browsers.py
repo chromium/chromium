@@ -17,10 +17,14 @@ class BrowserDriver(abc.ABC):
   """Abstract Base Class encapsulating browser setup and tear down.
   """
 
-  def __init__(self, browser_name: str, process_name: str):
+  def __init__(self,
+               browser_name: str,
+               process_name: str,
+               executable: str = None):
     self.name = browser_name
     self.process_name = process_name
     self.browser_process = None
+    self.executable = executable
 
   @abc.abstractmethod
   def Launch(self):
@@ -70,7 +74,7 @@ class BrowserDriver(abc.ABC):
 
 class SafariDriver(BrowserDriver):
   def __init__(self, extra_args=[]):
-    super().__init__("safari", "Safari", "Safari")
+    super().__init__("safari", "Safari")
     self.extra_args = extra_args
 
   def Launch(self):
@@ -93,8 +97,7 @@ class ChromiumDriver(BrowserDriver):
                process_name: str,
                executable_path=None,
                extra_args=[]):
-    self.executable = executable_path
-    super().__init__(browser_name, process_name)
+    super().__init__(browser_name, process_name, executable_path)
     self.extra_args = extra_args
 
   def Launch(self):
