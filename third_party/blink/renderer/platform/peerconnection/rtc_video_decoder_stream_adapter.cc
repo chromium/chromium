@@ -63,19 +63,42 @@ namespace {
 // Any reasonable size, will be overridden by the decoder anyway.
 constexpr gfx::Size kDefaultSize(640, 480);
 
+// How many buffers are we willing to receive during init, before we give up and
+// fall back to software?  This is not used once a decoder is initialized.  Also
+// note that this value still counts buffers that were dropped in favor of a
+// more recent keyframe; it represents the maximum number of calls to Decode
+// before the decoder is ready to do work.
+constexpr int32_t kMaxFramesDuringInitBeforeFallback = 256;
+
+// Max number of non-keyframes we'll queue without a decoder before we request a
+// keyframe to replace them while the decoder is initializing.  Previously
+// queued frames will be discarded, to prevent a lot of old frames from being
+// dumped onto the newly-initialized decoder, that are probably stale anyway.
+constexpr int32_t kMaxKeyFrameIntervalDuringInit = 8;
+
 // Maximum number of buffers that we will queue in the decoder stream during
 // normal operation.  It includes all buffers that we have not gotten an output
 // for.  "Normal operation" means that we believe that the decoder is trying to
 // drain the queue.  During init and reset, for example, we don't expect it.
+// See above for constants used while the decoder is being initialized.  During
+// reset, we will also allow more buffers since Reset can involve a few hops.
+//
+// If we go over this value, then we'll reset the decoder and request a keyframe
+// to try to catch up.
+//
 // Note: This value is chosen to be Ludicrously High(tm), so that we can see
 // where reasonable limits should be via UMA.
 constexpr int32_t kMaxPendingBuffers = 64;
 
-// Absolute maximum number of pending buffers, whether we think the decoder is
-// draining them or not.  If, at any time, we believe that there are this many
-// decodes in-flight when a new decode request arrives, we will fall back to
-// software decoding.  It indicates that (a) reset never completed, (b) init
-// never completed, or (c) we're hopelessly behind.
+// Absolute maximum number of pending buffers.  If, at any time while we have
+// an initialized decoder, we believe that there are this many decodes in-flight
+// when a new decode request arrives, we will fall back to software decoding.
+// It indicates that (a) reset never completed, (b) we're hopelessly behind.
+//
+// This value is not used while we do not have a decoder.  Instead, we use
+// `kMaxFramesDuringInitBeforeFallback`, since we might have different
+// tolerances for "during init" and "during normal decode".
+//
 // Note: This value is chosen to be Ludicrously High(tm), so that we can see
 // where reasonable limits should be via UMA.  Changing this changes UMA, so
 // probably don't.
@@ -156,6 +179,10 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
   // Queue it, and maybe send it along immediately if there's a read pending.
   void EnqueueBuffer(std::unique_ptr<PendingBuffer> pending_buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // If we keyframe trimming is enabled, and we're adding a keyframe, then
+    // drop all the old buffers and start over.
+    if (trim_ && pending_buffer->buffer->is_key_frame())
+      buffers_.clear();
     buffers_.emplace_back(std::move(pending_buffer));
     MaybeSatisfyPendingRead();
   }
@@ -167,6 +194,12 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
     if (pending_read_)
       std::move(pending_read_).Run(DemuxerStream::Status::kAborted, nullptr);
   }
+
+  // If enabled, we'll drop any queued buffers when we're given a keyframe.
+  // Otherwise, we'll queue normally.
+  void set_keyframe_trimming(bool trim) { trim_ = trim; }
+
+  size_t queue_length() const { return buffers_.size(); }
 
  private:
   // Send more DecoderBuffers to the reader, if we can.
@@ -204,6 +237,9 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
 
   // Read request from the stream that we haven't been able to fulfill, if any.
   ReadCB pending_read_;
+
+  // Start in trimming mode, until we're told to stop.
+  bool trim_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -494,6 +530,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     DVLOG(2) << "Key frame received, resume decoding";
     // ok, we got key frame and can continue decoding.
     key_frame_required_ = false;
+    non_keyframe_buffers_ = 0;
   }
 
   std::vector<uint32_t> spatial_layer_frame_size;
@@ -548,7 +585,27 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
       return FallBackToSoftwareLocked();
     }
 
-    if (pending_buffer_count_ >= max_pending_buffer_count_) {
+    if (!decoder_configured_) {
+      // If we don't have a decoder, then try to keep the amount of catch-up
+      // work to a minimum.  `pending_buffer_count_` indicates the number of
+      // buffers that we have sent, including those that were dropped.
+      if (!pending_buffer->buffer->is_key_frame()) {
+        if (pending_buffer_count_ > kMaxFramesDuringInitBeforeFallback) {
+          RecordRTCVideoDecoderFallbackReason(
+              config_.codec(), RTCVideoDecoderFallbackReason::
+                                   kConsecutivePendingBufferOverflowDuringInit);
+          return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
+        } else if (non_keyframe_buffers_ > kMaxKeyFrameIntervalDuringInit) {
+          // Too many frames since the last keyframe -- request a new one and
+          // don't queue anything else until we get it.
+          key_frame_required_ = true;
+          return WEBRTC_VIDEO_CODEC_ERROR;
+        }
+        // Else not a keyframe, but we haven't sent too many since the last one.
+      }  // Else a keyframe, yay!
+      pending_buffer_count_++;
+      non_keyframe_buffers_++;
+    } else if (pending_buffer_count_ >= max_pending_buffer_count_) {
       // We are severely behind. Drop pending buffers and request a keyframe to
       // catch up as quickly as possible.
       DVLOG(2) << "Pending buffers overflow";
@@ -887,6 +944,9 @@ void RTCVideoDecoderStreamAdapter::ResetOnMediaThread() {
 
   pending_reset_ = true;
   demuxer_stream_->Reset();
+  // We might want to go into trimming mode here, and turn it back off when we
+  // get the reset callback.  However, this would require that ::Decode also
+  // understands to request keyframes more often else it won't do much.
   decoder_stream_->Reset(base::BindOnce(
       &RTCVideoDecoderStreamAdapter::OnResetCompleteOnMediaThread, weak_this_));
 }
@@ -960,9 +1020,25 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
                "decoder",
                (decoder ? static_cast<int>(decoder->GetDecoderType()) : -1));
 
+  // The demuxer should trim to keyframes if and only if we don't have a decoder
+  // to consume them.  This prevents the queue from getting too long.
+  if (demuxer_stream_)
+    demuxer_stream_->set_keyframe_trimming(!decoder);
+
   if (!decoder) {
     decoder_configured_ = false;
+    pending_buffer_count_ = 0;
     return;
+  }
+
+  if (!decoder_configured_) {
+    // Switching from no decoder back to having a decoder, so reset the buffer
+    // count to what's still pending after keyframe trimming.
+    //
+    // Note that this is approximate; some buffers might have been drained
+    // already by the DecoderStream.  However, the pending buffer count is
+    // always clamped to zero, so that's okay.
+    pending_buffer_count_ = demuxer_stream_->queue_length();
   }
 
   decoder_configured_ = true;

@@ -209,6 +209,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   // Decoding thread members.
   bool key_frame_required_ = true;
+  int non_keyframe_buffers_ = 0;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
 
   // Shared members.
