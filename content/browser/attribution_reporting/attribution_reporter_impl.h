@@ -53,10 +53,11 @@ class CONTENT_EXPORT AttributionReporterImpl
                             ReportSentCallback sent_callback) = 0;
   };
 
-  AttributionReporterImpl(
-      StoragePartitionImpl* storage_partition,
-      const base::Clock* clock,
-      base::RepeatingCallback<void(SentReportInfo)> callback);
+  using Callback = base::RepeatingCallback<void(SentReportInfo)>;
+
+  AttributionReporterImpl(StoragePartitionImpl* storage_partition,
+                          const base::Clock* clock,
+                          Callback callback);
   AttributionReporterImpl(const AttributionReporterImpl&) = delete;
   AttributionReporterImpl& operator=(const AttributionReporterImpl&) = delete;
   AttributionReporterImpl(AttributionReporterImpl&&) = delete;
@@ -99,7 +100,7 @@ class CONTENT_EXPORT AttributionReporterImpl
 
   raw_ptr<const base::Clock> clock_;
 
-  base::RepeatingCallback<void(SentReportInfo)> callback_;
+  Callback callback_;
 
   // Should never be nullptr, since StoragePartition owns the AttributionManager
   // which owns |this|.

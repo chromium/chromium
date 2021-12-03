@@ -23,7 +23,7 @@ namespace content {
 AttributionReporterImpl::AttributionReporterImpl(
     StoragePartitionImpl* storage_partition,
     const base::Clock* clock,
-    base::RepeatingCallback<void(SentReportInfo)> callback)
+    Callback callback)
     : clock_(clock),
       callback_(std::move(callback)),
       partition_(storage_partition),

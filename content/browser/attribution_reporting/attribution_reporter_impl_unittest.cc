@@ -4,17 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_reporter_impl.h"
 
-#include <stdint.h>
-
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/strcat.h"
-#include "base/task/post_task.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
-#include "base/test/simple_test_clock.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
+#include "base/test/mock_callback.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/storage_partition_impl.h"
@@ -32,51 +23,42 @@ namespace content {
 
 namespace {
 
-using testing::_;
-using testing::Pointee;
-using testing::Return;
+using ::testing::_;
+using ::testing::InSequence;
+using ::testing::Pointee;
+using ::testing::Return;
+
+using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 // Create a report which should be sent at |report_time|. Impression
 // data/conversion data/conversion id are all the same for simplicity.
-AttributionReport GetReport(base::Time conversion_time,
-                            base::Time report_time,
+AttributionReport GetReport(base::Time report_time,
                             AttributionReport::Id conversion_id) {
   // Construct impressions with a null impression time as it is not used for
   // reporting.
   return ReportBuilder(SourceBuilder(base::Time()).Build())
-      .SetConversionTime(conversion_time)
       .SetReportTime(report_time)
       .SetReportId(conversion_id)
       .Build();
 }
 
-// NetworkSender that keep track of the last sent report id.
 class MockNetworkSender : public AttributionReporterImpl::NetworkSender {
  public:
-  MockNetworkSender() = default;
-
-  void SendReport(AttributionReport report,
-                  ReportSentCallback sent_callback) override {
-    last_sent_report_id_ = *report.conversion_id;
-    num_reports_sent_++;
-    std::move(sent_callback)
-        .Run(SentReportInfo(std::move(report), SentReportInfo::Status::kSent,
-                            /*http_response_code=*/200));
-  }
-
-  AttributionReport::Id last_sent_report_id() { return last_sent_report_id_; }
-
-  size_t num_reports_sent() { return num_reports_sent_; }
-
-  void Reset() {
-    num_reports_sent_ = 0u;
-    last_sent_report_id_ = AttributionReport::Id();
-  }
-
- private:
-  size_t num_reports_sent_ = 0u;
-  AttributionReport::Id last_sent_report_id_;
+  MOCK_METHOD(void,
+              SendReport,
+              (AttributionReport report, ReportSentCallback callback),
+              (override));
 };
+
+auto InvokeCallbackWith(SentReportInfo::Status status,
+                        int http_response_code = 200) {
+  return
+      [=](AttributionReport report,
+          AttributionReporterImpl::NetworkSender::ReportSentCallback callback) {
+        std::move(callback).Run(
+            SentReportInfo(std::move(report), status, http_response_code));
+      };
+}
 
 }  // namespace
 
@@ -89,8 +71,7 @@ class AttributionReporterImplTest : public testing::Test {
             static_cast<StoragePartitionImpl*>(
                 browser_context_->GetDefaultStoragePartition()),
             task_environment_.GetMockClock(),
-            base::BindRepeating(&AttributionReporterImplTest::OnReportSent,
-                                base::Unretained(this)))) {
+            callback_.Get())) {
     auto network_sender = std::make_unique<MockNetworkSender>();
     sender_ = network_sender.get();
     reporter_->SetNetworkSenderForTesting(std::move(network_sender));
@@ -99,10 +80,6 @@ class AttributionReporterImplTest : public testing::Test {
   }
 
   const base::Clock& clock() { return *task_environment_.GetMockClock(); }
-
-  const absl::optional<SentReportInfo>& last_sent_report_info() const {
-    return last_sent_report_info_;
-  }
 
   void SetOffline(bool offline) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
@@ -116,141 +93,198 @@ class AttributionReporterImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
 
+  base::MockCallback<AttributionReporterImpl::Callback> callback_;
+
   std::unique_ptr<AttributionReporterImpl> reporter_;
   raw_ptr<MockNetworkSender> sender_;
-
- private:
-  absl::optional<SentReportInfo> last_sent_report_info_;
-
-  void OnReportSent(SentReportInfo info) {
-    last_sent_report_info_ = std::move(info);
-  }
 };
 
 TEST_F(AttributionReporterImplTest,
        ReportAddedWithImmediateReportTime_ReportSent) {
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), AttributionReport::Id(1))});
+  const auto report = GetReport(clock().Now(), AttributionReport::Id(1));
+
+  EXPECT_CALL(*sender_, SendReport(report, _))
+      .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+
+  EXPECT_CALL(callback_,
+              Run(SentReportInfo(report, SentReportInfo::Status::kSent,
+                                 /*http_response_code=*/200)));
+
+  reporter_->AddReportsToQueue({report});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(1, *sender_->last_sent_report_id());
-  EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
-  EXPECT_EQ(200, last_sent_report_info()->http_response_code);
 }
 
 TEST_F(AttributionReporterImplTest,
        ReportWithReportTimeBeforeCurrentTime_ReportSent) {
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() - base::Hours(10),
-                 AttributionReport::Id(1))});
+  const auto report =
+      GetReport(clock().Now() - base::Hours(10), AttributionReport::Id(1));
+
+  EXPECT_CALL(*sender_, SendReport(report, _))
+      .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+
+  EXPECT_CALL(callback_,
+              Run(SentReportInfo(report, SentReportInfo::Status::kSent,
+                                 /*http_response_code=*/200)));
+
+  reporter_->AddReportsToQueue({report});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(1, *sender_->last_sent_report_id());
-  EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
-  EXPECT_EQ(200, last_sent_report_info()->http_response_code);
 }
 
 TEST_F(AttributionReporterImplTest,
        ReportWithReportTimeBeforeCurrentTime_DeletedReportNotSent) {
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() - base::Hours(10),
-                 AttributionReport::Id(1))});
+  const auto report =
+      GetReport(clock().Now() - base::Hours(10), AttributionReport::Id(1));
+
+  EXPECT_CALL(*sender_, SendReport).Times(0);
+  EXPECT_CALL(callback_, Run(SentReportInfo(
+                             report, SentReportInfo::Status::kRemovedFromQueue,
+                             /*http_response_code=*/0)));
+
+  reporter_->AddReportsToQueue({report});
 
   reporter_->RemoveAllReportsFromQueue();
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(0u, sender_->num_reports_sent());
-  EXPECT_EQ(SentReportInfo::Status::kRemovedFromQueue,
-            last_sent_report_info()->status);
 }
 
 TEST_F(AttributionReporterImplTest,
        ReportWithDelayedReportTime_NotSentUntilDelay) {
   const base::TimeDelta delay = base::Minutes(30);
+  const auto report =
+      GetReport(clock().Now() + delay, AttributionReport::Id(1));
 
-  reporter_->AddReportsToQueue({GetReport(clock().Now(), clock().Now() + delay,
-                                          AttributionReport::Id(1))});
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*sender_, SendReport(report, _));
+  }
+
+  reporter_->AddReportsToQueue({report});
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(0u, sender_->num_reports_sent());
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(delay - base::Seconds(1));
-  EXPECT_EQ(0u, sender_->num_reports_sent());
+  checkpoint.Call(2);
 
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(1u, sender_->num_reports_sent());
 }
 
 TEST_F(AttributionReporterImplTest, DuplicateReportScheduled_Sent) {
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() + base::Minutes(1),
-                 AttributionReport::Id(1))});
+  const auto report =
+      GetReport(clock().Now() + base::Minutes(1), AttributionReport::Id(1));
 
   // A duplicate report should be scheduled, as it is up to the manager to
   // perform deduplication.
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now() + base::Minutes(1),
-                 AttributionReport::Id(1))});
+  EXPECT_CALL(*sender_, SendReport(report, _)).Times(2);
+
+  reporter_->AddReportsToQueue({report});
+  reporter_->AddReportsToQueue({report});
+
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(2u, sender_->num_reports_sent());
 }
 
 TEST_F(AttributionReporterImplTest,
        NewReportWithPreviouslySeenConversionId_Scheduled) {
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), AttributionReport::Id(1))});
+  const auto report = GetReport(clock().Now(), AttributionReport::Id(1));
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*sender_, SendReport(report, _));
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*sender_, SendReport(report, _));
+  }
+
+  reporter_->AddReportsToQueue({report});
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(1u, sender_->num_reports_sent());
+  checkpoint.Call(1);
 
   // We should schedule the new report because the previous report has been
   // sent.
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), AttributionReport::Id(1))});
+  reporter_->AddReportsToQueue({report});
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(2u, sender_->num_reports_sent());
 }
 
 TEST_F(AttributionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
   std::vector<AttributionReport> reports;
-  for (int i = 1; i < 10; i++) {
-    reports.push_back(GetReport(clock().Now(), clock().Now() + base::Minutes(i),
-                                AttributionReport::Id(i)));
+
+  Checkpoint checkpoint;
+  {
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+
+    for (int i = 1; i < 10; i++) {
+      EXPECT_CALL(checkpoint, Call(i));
+
+      auto report =
+          GetReport(clock().Now() + base::Minutes(i), AttributionReport::Id(i));
+
+      EXPECT_CALL(*sender_, SendReport(report, _))
+          .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+
+      EXPECT_CALL(callback_,
+                  Run(SentReportInfo(report, SentReportInfo::Status::kSent,
+                                     /*http_response_code=*/200)));
+
+      reports.push_back(std::move(report));
+    }
   }
-  reporter_->AddReportsToQueue(reports);
+
+  reporter_->AddReportsToQueue(std::move(reports));
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(0u, sender_->num_reports_sent());
 
   for (int i = 1; i < 10; i++) {
+    checkpoint.Call(i);
     task_environment_.FastForwardBy(base::Minutes(1));
-
-    EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
-    EXPECT_EQ(static_cast<int64_t>(i), *sender_->last_sent_report_id());
-    EXPECT_EQ(static_cast<int64_t>(i),
-              *last_sent_report_info()->report.conversion_id.value());
   }
 }
 
 TEST_F(AttributionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
-  for (int i = 1; i < 10; i++) {
-    reporter_->AddReportsToQueue(
-        {GetReport(clock().Now(), clock().Now() + base::Minutes(i),
-                   AttributionReport::Id(i))});
+  std::vector<AttributionReport> reports;
+
+  Checkpoint checkpoint;
+  {
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+
+    for (int i = 1; i < 10; i++) {
+      EXPECT_CALL(checkpoint, Call(i));
+
+      auto report =
+          GetReport(clock().Now() + base::Minutes(i), AttributionReport::Id(i));
+
+      EXPECT_CALL(*sender_, SendReport(report, _))
+          .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+
+      EXPECT_CALL(callback_,
+                  Run(SentReportInfo(report, SentReportInfo::Status::kSent,
+                                     /*http_response_code=*/200)));
+
+      reports.push_back(std::move(report));
+    }
   }
+
+  for (auto& report : reports) {
+    reporter_->AddReportsToQueue({std::move(report)});
+  }
+
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(0u, sender_->num_reports_sent());
 
   for (int i = 1; i < 10; i++) {
+    checkpoint.Call(i);
     task_environment_.FastForwardBy(base::Minutes(1));
-
-    EXPECT_EQ(static_cast<size_t>(i), sender_->num_reports_sent());
-    EXPECT_EQ(static_cast<int64_t>(i), *sender_->last_sent_report_id());
-    EXPECT_EQ(static_cast<int64_t>(i),
-              *last_sent_report_info()->report.conversion_id.value());
   }
 }
 
@@ -266,62 +300,78 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowsReporting_ReportNotSent) {
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  reporter_->AddReportsToQueue(
-      {GetReport(clock().Now(), clock().Now(), AttributionReport::Id(1))});
+  const auto report = GetReport(clock().Now(), AttributionReport::Id(1));
+
+  EXPECT_CALL(*sender_, SendReport).Times(0);
+
+  EXPECT_CALL(callback_,
+              Run(SentReportInfo(report, SentReportInfo::Status::kDropped,
+                                 /*http_response_code=*/0)));
+
+  reporter_->AddReportsToQueue({report});
 
   // Fast forward by 0, as we yield the thread when a report is scheduled to be
   // sent.
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_EQ(0u, sender_->num_reports_sent());
-  EXPECT_EQ(1L, *last_sent_report_info()->report.conversion_id.value());
-  // Verify that the report was not sent to the NetworkSender.
-  EXPECT_EQ(0, last_sent_report_info()->http_response_code);
 }
 
 TEST_F(AttributionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
+  const auto report1_1 =
+      GetReport(clock().Now() + base::Minutes(1), AttributionReport::Id(1));
+  const auto report2_1 =
+      GetReport(clock().Now() + base::Minutes(2), AttributionReport::Id(2));
+
+  const auto report1_2 =
+      GetReport(clock().Now() + base::Minutes(3), AttributionReport::Id(1));
+  const auto report2_2 =
+      GetReport(clock().Now() + base::Minutes(4), AttributionReport::Id(2));
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+    EXPECT_CALL(callback_,
+                Run(SentReportInfo(report1_1, SentReportInfo::Status::kOffline,
+                                   /*http_response_code=*/0)));
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+    EXPECT_CALL(callback_,
+                Run(SentReportInfo(report2_1, SentReportInfo::Status::kOffline,
+                                   /*http_response_code=*/0)));
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(*sender_, SendReport)
+        .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+    EXPECT_CALL(callback_,
+                Run(SentReportInfo(report1_2, SentReportInfo::Status::kSent,
+                                   /*http_response_code=*/200)));
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(*sender_, SendReport).Times(0);
+    EXPECT_CALL(callback_,
+                Run(SentReportInfo(report2_2, SentReportInfo::Status::kOffline,
+                                   /*http_response_code=*/0)));
+  }
+
   SetOffline(true);
 
-  reporter_->AddReportsToQueue({
-      GetReport(clock().Now(), clock().Now() + base::Minutes(1),
-                AttributionReport::Id(1)),
-      GetReport(clock().Now(), clock().Now() + base::Minutes(2),
-                AttributionReport::Id(2)),
-  });
+  reporter_->AddReportsToQueue({report1_1, report2_1});
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(0u, sender_->num_reports_sent());
-  EXPECT_EQ(AttributionReport::Id(1),
-            *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
+  checkpoint.Call(1);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(0u, sender_->num_reports_sent());
-  EXPECT_EQ(AttributionReport::Id(2),
-            *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
+  checkpoint.Call(2);
 
-  reporter_->AddReportsToQueue({
-      GetReport(clock().Now(), clock().Now() + base::Minutes(1),
-                AttributionReport::Id(1)),
-      GetReport(clock().Now(), clock().Now() + base::Minutes(2),
-                AttributionReport::Id(2)),
-  });
+  reporter_->AddReportsToQueue({report1_2, report2_2});
 
   SetOffline(false);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(1u, sender_->num_reports_sent());
-  EXPECT_EQ(AttributionReport::Id(1),
-            *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kSent, last_sent_report_info()->status);
+  checkpoint.Call(3);
 
   SetOffline(true);
 
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(1u, sender_->num_reports_sent());
-  EXPECT_EQ(AttributionReport::Id(2),
-            *last_sent_report_info()->report.conversion_id);
-  EXPECT_EQ(SentReportInfo::Status::kOffline, last_sent_report_info()->status);
 }
 
 }  // namespace content
