@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
@@ -233,9 +234,6 @@ const base::Feature
     CallStackProfileMetricsProvider::kSamplingProfilerReporting = {
         "SamplingProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature CallStackProfileMetricsProvider::kHeapProfilerReporting{
-    "HeapProfilerReporting", base::FEATURE_DISABLED_BY_DEFAULT};
-
 CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() = default;
 CallStackProfileMetricsProvider::~CallStackProfileMetricsProvider() = default;
 
@@ -250,12 +248,10 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
     return;
   }
 
-  const base::Feature& feature =
-      profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION
-          ? kHeapProfilerReporting
-          : kSamplingProfilerReporting;
-  if (!base::FeatureList::IsEnabled(feature))
+  if (profile.trigger_event() != SampledProfile::PERIODIC_HEAP_COLLECTION &&
+      !base::FeatureList::IsEnabled(kSamplingProfilerReporting)) {
     return;
+  }
   PendingProfiles::GetInstance()->MaybeCollectProfile(profile_start_time,
                                                       std::move(profile));
 }
@@ -302,12 +298,13 @@ void CallStackProfileMetricsProvider::ProvideCurrentSessionData(
   std::vector<SampledProfile> profiles =
       PendingProfiles::GetInstance()->RetrieveProfiles();
 
-  DCHECK(base::FeatureList::IsEnabled(kSamplingProfilerReporting) ||
-         base::FeatureList::IsEnabled(kHeapProfilerReporting) ||
-         profiles.empty());
-
-  for (auto& profile : profiles)
+  for (auto& profile : profiles) {
+    // Only heap samples should ever be received if SamplingProfilerReporting is
+    // disabled.
+    DCHECK(base::FeatureList::IsEnabled(kSamplingProfilerReporting) ||
+           profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION);
     *uma_proto->add_sampled_profile() = std::move(profile);
+  }
 }
 
 // static

@@ -146,8 +146,9 @@ void IOSChromeMainParts::PreCreateMainMessageLoop() {
 void IOSChromeMainParts::PreCreateThreads() {
   // Create and start the stack sampling profiler if CANARY or DEV. The warning
   // below doesn't apply.
-  if (::GetChannel() == version_info::Channel::CANARY ||
-      ::GetChannel() == version_info::Channel::DEV) {
+  const version_info::Channel channel = ::GetChannel();
+  if (channel == version_info::Channel::CANARY ||
+      channel == version_info::Channel::DEV) {
     sampling_profiler_ = IOSThreadProfiler::CreateAndStartOnMainThread();
     IOSThreadProfiler::SetMainThreadTaskRunner(
         base::ThreadTaskRunnerHandle::Get());
@@ -223,7 +224,8 @@ void IOSChromeMainParts::PreCreateThreads() {
     if (malloc_intercepted) {
       // Start heap profiling as early as possible so it can start recording
       // memory allocations. Requires the allocator shim to be enabled.
-      heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
+      heap_profiler_controller_ =
+          std::make_unique<HeapProfilerController>(channel);
       heap_profiler_controller_->Start();
     }
   }

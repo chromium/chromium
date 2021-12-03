@@ -700,13 +700,13 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
 #endif
   }
 
-  ALLOW_UNUSED_LOCAL(channel);
   ALLOW_UNUSED_LOCAL(is_canary_dev);
 
   // Start heap profiling as early as possible so it can start recording
   // memory allocations.
   if (is_browser_process) {
-    heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
+    heap_profiler_controller_ =
+        std::make_unique<HeapProfilerController>(channel);
     heap_profiler_controller_->Start();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

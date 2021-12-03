@@ -20,13 +20,50 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_builder.h"
-#include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
+#include "components/version_info/channel.h"
 
 namespace {
 
+// Platform-specific parameter defaults.
+
+#if defined(OS_IOS) || defined(OS_ANDROID)
+// Average 1M bytes per sample.
+constexpr int kDefaultSamplingRate = 1000000;
+
+// Default on iOS is equal to mean value of up process time. Android is
+// more similar to iOS than to Desktop.
+constexpr int kDefaultCollectionIntervalInMinutes = 30;
+#else
+// Average 10M bytes per sample.
+constexpr int kDefaultSamplingRate = 10000000;
+
+// Default on desktop is once per day.
+constexpr int kDefaultCollectionIntervalInMinutes = 24 * 60;
+#endif
+
+// Sets the chance that this client will report heap samples through a metrics
+// provider if it's on the stable channel.
+constexpr base::FeatureParam<double> kStableProbability{
+    &HeapProfilerController::kHeapProfilerReporting, "stable-probability",
+    0.01};
+
+// Sets the chance that this client will report heap samples through a metrics
+// provider if it's on a non-stable channel.
+constexpr base::FeatureParam<double> kNonStableProbability{
+    &HeapProfilerController::kHeapProfilerReporting, "nonstable-probability",
+    0.5};
+
 // Sets heap sampling interval in bytes.
-const char kHeapProfilerSamplingRate[] = "sampling-rate";
+constexpr base::FeatureParam<int> kSamplingRate{
+    &HeapProfilerController::kHeapProfilerReporting, "sampling-rate",
+    kDefaultSamplingRate};
+
+// Sets the interval between snapshots.
+constexpr base::FeatureParam<int> kCollectionIntervalMinutes{
+    &HeapProfilerController::kHeapProfilerReporting,
+    "heap-profiler-collection-interval-minutes",
+    kDefaultCollectionIntervalInMinutes};
 
 base::TimeDelta RandomInterval(base::TimeDelta mean) {
   // Time intervals between profile collections form a Poisson stream with
@@ -34,45 +71,39 @@ base::TimeDelta RandomInterval(base::TimeDelta mean) {
   return -std::log(base::RandDouble()) * mean;
 }
 
-// Returns collection interval by trying these steps:
-//  - get from command line if available to allow override for a single client
-//  - get from finch if available to allow experiment with different intervals
-//  - return default interval that is best suited for current OS
-int GetCollectionIntervalInMinutes() {
-#if defined(OS_IOS) || defined(OS_ANDROID)
-  // Default on iOS is equal to mean value of up process time. Android is more
-  // similar to iOS than to Desktop.
-  const int kDefaultValueInMinutes = 30;
-#else
-  const int kDefaultValueInMinutes = 24 * 60;
-#endif
-
-  return base::GetFieldTrialParamByFeatureAsInt(
-      metrics::CallStackProfileMetricsProvider::kHeapProfilerReporting,
-      "heap-profiler-collection-interval-minutes", kDefaultValueInMinutes);
+bool DecideIfCollectionIsEnabled(version_info::Channel channel) {
+  // TODO(crbug.com/1271555): Register a synthetic field trial
+  // (go/synthetic-trials) to keep track of which clients are opted in.
+  if (!base::FeatureList::IsEnabled(
+          HeapProfilerController::kHeapProfilerReporting))
+    return false;
+  const double probability = (channel == version_info::Channel::STABLE)
+                                 ? kStableProbability.Get()
+                                 : kNonStableProbability.Get();
+  return base::RandDouble() < probability;
 }
 
 }  // namespace
 
-HeapProfilerController::HeapProfilerController()
-    : stopped_(base::MakeRefCounted<StoppedFlag>()) {}
+constexpr base::Feature HeapProfilerController::kHeapProfilerReporting{
+    "HeapProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+
+HeapProfilerController::HeapProfilerController(version_info::Channel channel)
+    : profiling_enabled_(DecideIfCollectionIsEnabled(channel)),
+      stopped_(base::MakeRefCounted<StoppedFlag>()) {}
 
 HeapProfilerController::~HeapProfilerController() {
   stopped_->data.Set();
 }
 
 void HeapProfilerController::Start() {
-  if (!base::FeatureList::IsEnabled(
-          metrics::CallStackProfileMetricsProvider::kHeapProfilerReporting)) {
+  if (!profiling_enabled_)
     return;
-  }
-  int sampling_rate = base::GetFieldTrialParamByFeatureAsInt(
-      metrics::CallStackProfileMetricsProvider::kHeapProfilerReporting,
-      kHeapProfilerSamplingRate, 0);
+  int sampling_rate = kSamplingRate.Get();
   if (sampling_rate > 0)
     base::SamplingHeapProfiler::Get()->SetSamplingInterval(sampling_rate);
   base::SamplingHeapProfiler::Get()->Start();
-  const int interval = GetCollectionIntervalInMinutes();
+  const int interval = kCollectionIntervalMinutes.Get();
   DCHECK_GT(interval, 0);
   ScheduleNextSnapshot(
       stopped_, {.interval = base::Minutes(interval),

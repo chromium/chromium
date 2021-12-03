@@ -8,16 +8,20 @@
 #include <map>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
+#include "components/version_info/channel.h"
 
 // HeapProfilerController controls collection of sampled heap allocation
 // snapshots for the current process.
 class HeapProfilerController {
  public:
-  HeapProfilerController();
+  // `channel` is used to determine the probability that this client will be
+  // opted in to profiling.
+  explicit HeapProfilerController(version_info::Channel channel);
 
   HeapProfilerController(const HeapProfilerController&) = delete;
   HeapProfilerController& operator=(const HeapProfilerController&) = delete;
@@ -50,6 +54,14 @@ class HeapProfilerController {
   // Merges samples that have identical stack traces, excluding total and size.
   static SampleMap MergeSamples(const std::vector<Sample>& samples);
 
+  // If this is disabled, the client will not collect heap profiles. If it is
+  // enabled, the client may enable the sampling heap profiler (with probability
+  // based on the "stable-probability" parameter if the client is on the stable
+  // channel, or the "nonstable-probability" parameter otherwise). Sampled heap
+  // profiles will then be reported through the metrics service iff metrics
+  // reporting is enabled.
+  static const base::Feature kHeapProfilerReporting;
+
   // Uses the exact parameter values for the sampling interval and time between
   // samples, instead of a distribution around those values. This must be called
   // before Start.
@@ -67,6 +79,10 @@ class HeapProfilerController {
   static void TakeSnapshot(scoped_refptr<StoppedFlag> stopped,
                            CollectionInterval heap_collection_interval);
   static void RetrieveAndSendSnapshot();
+
+  // On startup this will be determined randomly based on the current channel
+  // and the probability parameters of the HeapProfilerReporting feature.
+  const bool profiling_enabled_;
 
   scoped_refptr<StoppedFlag> stopped_;
   bool suppress_randomness_for_testing_ = false;
