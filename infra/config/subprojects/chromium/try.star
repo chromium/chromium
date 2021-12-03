@@ -915,6 +915,8 @@ try_.chromium_chromiumos_builder(
     ssd = True,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     os = os.LINUX_BIONIC_REMOVE,
     tryjob = try_.job(
         experiment_percentage = 3,

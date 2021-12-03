@@ -1,4 +1,11 @@
 {
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true
+  },
   "$build/goma": {
     "enable_ats": true,
     "jobs": 300,
