@@ -8,13 +8,8 @@
 <script>
 (async function() {
   const background_sync_register_key = KEYS['background-sync'];
-  const fencedframe_scope = 'background-sync-inner.https.html';
-  var scope = new URL('scope/' + fencedframe_scope,
-                      new URL(fencedframe_scope, window.location)).toString();
-  var options = {};
-  options.scope = scope;
 
-  navigator.serviceWorker.register("empty-worker.js", options);
+  navigator.serviceWorker.register("empty-worker.js", { scope: location.href });
   const registration = await navigator.serviceWorker.ready;
 
   // This test verifies that one-shot syncs can not be registered from an fenced frame.
