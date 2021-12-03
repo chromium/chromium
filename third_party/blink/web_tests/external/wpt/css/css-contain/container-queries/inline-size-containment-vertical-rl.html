@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<!doctype html>
+<title>CSS Container Queries Test: query of inline-size container in vertical-rl</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
 <style>
   #ancestry { writing-mode: vertical-rl; }
@@ -21,13 +23,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   test(()=> {
-      ancestry.style.height = "100px";
-      assert_equals(keg.offsetWidth, 400);
+    ancestry.style.height = "100px";
+    assert_equals(keg.offsetWidth, 400);
 
-      ancestry.style.height = "300px";
-      assert_equals(keg.offsetWidth, 50);
+    ancestry.style.height = "300px";
+    assert_equals(keg.offsetWidth, 50);
 
-      ancestry.style.height = "500px";
-      assert_equals(keg.offsetWidth, 20);
+    ancestry.style.height = "500px";
+    assert_equals(keg.offsetWidth, 20);
   }, "inline-size containment only");
 </script>
