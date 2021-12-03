@@ -5,6 +5,7 @@
 #include "ash/components/device_activity/device_activity_client.h"
 
 #include "ash/components/device_activity/fresnel_pref_names.h"
+#include "ash/components/device_activity/fresnel_service.pb.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,10 +34,16 @@ constexpr size_t kMaxFresnelResponseSizeBytes = 1 << 20;  // 1MB;
 
 // Timeout for each Fresnel request.
 constexpr base::TimeDelta kHealthCheckRequestTimeout = base::Seconds(10);
+constexpr base::TimeDelta kImportRequestTimeout = base::Seconds(10);
+constexpr base::TimeDelta kOprfRequestTimeout = base::Seconds(10);
+constexpr base::TimeDelta kQueryRequestTimeout = base::Seconds(60);
 
 // Default response code to use before retrieving the response code from the
 // actual response body.
 constexpr int32_t kDefaultResponseCode = -1;
+
+// Response code representing a successfully completed network request.
+constexpr int32_t kSuccessResponseCode = 200;
 
 // TODO(https://crbug.com/1268095): Refactor to pass base url via. constructor.
 const char kFresnelBaseUrl[] =
@@ -46,8 +53,6 @@ const char kFresnelHealthCheckEndpoint[] = "/v1/fresnel/healthCheck";
 const char kFresnelImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 const char kFresnelOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
 const char kFresnelQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
-
-const size_t kHmacDigestLength = 32;
 
 std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
     const std::string& request_method,
@@ -79,28 +84,43 @@ std::string GenerateWindowIdentifier(base::Time ts) {
   return base::UTF16ToUTF8(base::TimeFormatWithPattern(ts, "yyyyMMdd"));
 }
 
+// Calculates an HMAC of |message| using |key|, encoded as a hexadecimal string.
+// Return empty string if HMAC fails.
+std::string GetDigestString(const std::string& key,
+                            const std::string& message) {
+  crypto::HMAC hmac(crypto::HMAC::SHA256);
+  std::vector<uint8_t> digest(hmac.DigestLength());
+  if (!hmac.Init(key) || !hmac.Sign(message, &digest[0], digest.size())) {
+    return std::string();
+  }
+  return base::HexEncode(&digest[0], digest.size());
+}
+
 // Generate the PSM identifier, used to identify a fixed
 // window of time for device active counting. Privacy compliance is guaranteed
 // by retrieving the |derived_stable_secret| from chromeos, and
 // performing an additional HMAC-SHA256 hash on generated plaintext string.
-absl::optional<std::string> GeneratePsmIdentifier(
+absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
     const std::string& derived_stable_secret,
     const std::string& psm_use_case,
     const std::string& window_id) {
   if (derived_stable_secret.empty() || psm_use_case.empty() ||
-      window_id.empty())
+      window_id.empty()) {
     return absl::nullopt;
+  }
 
   std::string unhashed_psm_id =
       base::JoinString({psm_use_case, window_id}, "|");
 
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  unsigned char digest[kHmacDigestLength];
-  bool result = hmac.Init(derived_stable_secret) &&
-                hmac.Sign(unhashed_psm_id, digest, kHmacDigestLength);
-  if (result) {
-    return std::string(reinterpret_cast<const char*>(digest),
-                       kHmacDigestLength);
+  // Convert bytes to hex to avoid encoding/decoding proto issues across
+  // client/server.
+  std::string psm_id_hex =
+      GetDigestString(derived_stable_secret, unhashed_psm_id);
+
+  if (!psm_id_hex.empty()) {
+    psm_rlwe::RlwePlaintextId psm_rlwe_id;
+    psm_rlwe_id.set_sensitive_id(psm_id_hex);
+    return psm_rlwe_id;
   }
 
   // Failed HMAC-SHA256 hash on PSM id.
@@ -203,11 +223,13 @@ GURL DeviceActivityClient::GetFresnelURL() const {
 // TODO(https://crbug.com/1262189): Add callback to report actives only after
 // synchronizing the system clock.
 void DeviceActivityClient::TransitionOutOfIdle() {
-  if (!network_connected_ || state_ != State::kIdle)
+  if (!network_connected_ || state_ != State::kIdle) {
+    TransitionToIdle();
     return;
+  }
 
   // The network is connected and the client |state_| is kIdle.
-  last_transition_out_of_idle_time__ = base::Time::Now();
+  last_transition_out_of_idle_time_ = base::Time::Now();
 
   // Begin phase one of checking membership if the device has not pinged yet
   // within the given use case window.
@@ -216,17 +238,30 @@ void DeviceActivityClient::TransitionOutOfIdle() {
   if (IsDailyDeviceActivePingRequired(
           local_state_->GetTime(
               prefs::kDeviceActiveLastKnownDailyPingTimestamp),
-          last_transition_out_of_idle_time__)) {
+          last_transition_out_of_idle_time_)) {
     current_day_window_id_ =
-        GenerateWindowIdentifier(last_transition_out_of_idle_time__);
+        GenerateWindowIdentifier(last_transition_out_of_idle_time_);
     current_day_psm_id_ =
         GeneratePsmIdentifier(derived_stable_device_secret_,
                               psm_rlwe::RlweUseCase_Name(kDailyPsmUseCase),
                               current_day_window_id_.value());
 
     // Check if the PSM id is generated.
-    if (!current_day_psm_id_.has_value())
+    if (!current_day_psm_id_.has_value()) {
+      TransitionToIdle();
       return;
+    }
+
+    std::vector<psm_rlwe::RlwePlaintextId> psm_rlwe_ids = {
+        current_day_psm_id_.value()};
+    auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY, psm_rlwe_ids);
+
+    if (!status_or_client.ok()) {
+      TransitionToIdle();
+      return;
+    }
+    psm_rlwe_client_ = std::move(status_or_client.value());
 
     TransitionToCheckMembershipOprf();
   }
@@ -236,11 +271,14 @@ void DeviceActivityClient::TransitionToHealthCheck() {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
+  // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kHealthCheck;
 
   auto resource_request = GenerateResourceRequest(
       net::HttpRequestHeaders::kGetMethod, GetFresnelURL(), api_key_);
 
+  // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
+  // call to a shared helper method.
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  MISSING_TRAFFIC_ANNOTATION);
 
@@ -268,7 +306,9 @@ void DeviceActivityClient::OnHealthCheckDone(
   // request type.
   VLOG(1) << "Health Check Request returned response code " << response_code;
 
-  url_loader_.reset();
+  // Use RAII to reset |url_loader_| after current function scope.
+  // Resetting |url_loader_| also invalidates the |response_info| variable.
+  auto url_loader = std::move(url_loader_);
 
   // Transition back to kIdle state after performing a health check on servers.
   TransitionToIdle();
@@ -276,45 +316,250 @@ void DeviceActivityClient::OnHealthCheckDone(
 
 void DeviceActivityClient::TransitionToCheckMembershipOprf() {
   DCHECK_EQ(state_, State::kIdle);
+  DCHECK(!url_loader_);
+
+  // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kCheckingMembershipOprf;
 
-  // TODO(https://crbug.com/1262201): Add OPRF network request with callback to
-  // OnCheckMembershipOprfDone with response.
+  // Generate PSM Oprf request body.
+  const auto status_or_oprf_request = psm_rlwe_client_->CreateOprfRequest();
+  if (!status_or_oprf_request.ok()) {
+    TransitionToIdle();
+    return;
+  }
+
+  psm_rlwe::PrivateMembershipRlweOprfRequest oprf_request =
+      status_or_oprf_request.value();
+
+  // Wrap PSM Oprf request body by FresnelPsmRlweOprfRequest proto.
+  // This proto is expected by the Fresnel service.
+  device_activity::FresnelPsmRlweOprfRequest fresnel_oprf_request;
+  *fresnel_oprf_request.mutable_rlwe_oprf_request() = oprf_request;
+
+  std::string request_body;
+  fresnel_oprf_request.SerializeToString(&request_body);
+
+  auto resource_request = GenerateResourceRequest(
+      net::HttpRequestHeaders::kPostMethod, GetFresnelURL(), api_key_);
+
+  // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
+  // call to a shared helper method.
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 MISSING_TRAFFIC_ANNOTATION);
+  url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
+  url_loader_->SetTimeoutDuration(kOprfRequestTimeout);
+  url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&DeviceActivityClient::OnCheckMembershipOprfDone,
+                     weak_factory_.GetWeakPtr()),
+      kMaxFresnelResponseSizeBytes);
 }
 
-void DeviceActivityClient::OnCheckMembershipOprfDone() {
-  TransitionToCheckMembershipQuery();
+void DeviceActivityClient::OnCheckMembershipOprfDone(
+    std::unique_ptr<std::string> response_body) {
+  int32_t response_code = kDefaultResponseCode;
+  const network::mojom::URLResponseHead* response_info =
+      url_loader_->ResponseInfo();
+  if (response_info && response_info->headers) {
+    response_code = response_info->headers->response_code();
+  }
+
+  // Use RAII to reset |url_loader_| after current function scope.
+  // Resetting |url_loader_| also invalidates the |response_info| variable.
+  auto url_loader = std::move(url_loader_);
+
+  // TODO(https://crbug.com/1262216): Report UMA histogram response codes of
+  // Oprf request.
+  VLOG(1) << "Oprf Check Membership request returned response code "
+          << response_code;
+
+  // Convert serialized response body to oprf response protobuf.
+  FresnelPsmRlweOprfResponse psm_oprf_response;
+  if (!response_body || !psm_oprf_response.ParseFromString(*response_body)) {
+    TransitionToIdle();
+    return;
+  }
+
+  // Parse |fresnel_oprf_response| for oprf_response.
+  if (!psm_oprf_response.has_rlwe_oprf_response()) {
+    TransitionToIdle();
+    return;
+  }
+
+  psm_rlwe::PrivateMembershipRlweOprfResponse oprf_response =
+      psm_oprf_response.rlwe_oprf_response();
+
+  TransitionToCheckMembershipQuery(oprf_response);
 }
 
-void DeviceActivityClient::TransitionToCheckMembershipQuery() {
+void DeviceActivityClient::TransitionToCheckMembershipQuery(
+    const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
   DCHECK_EQ(state_, State::kCheckingMembershipOprf);
+  DCHECK(!url_loader_);
+
+  // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kCheckingMembershipQuery;
 
-  // TODO(https://crbug.com/1262201): Add Query network request with callback to
-  // OnCheckMembershipQueryDone with response.
+  // Generate PSM Query request body.
+  const auto status_or_query_request =
+      psm_rlwe_client_->CreateQueryRequest(oprf_response);
+  if (!status_or_query_request.ok()) {
+    TransitionToIdle();
+    return;
+  }
+
+  psm_rlwe::PrivateMembershipRlweQueryRequest query_request =
+      status_or_query_request.value();
+
+  // Wrap PSM Query request body by FresnelPsmRlweQueryRequest proto.
+  // This proto is expected by the Fresnel service.
+  device_activity::FresnelPsmRlweQueryRequest fresnel_query_request;
+  *fresnel_query_request.mutable_rlwe_query_request() = query_request;
+
+  std::string request_body;
+  fresnel_query_request.SerializeToString(&request_body);
+
+  auto resource_request = GenerateResourceRequest(
+      net::HttpRequestHeaders::kPostMethod, GetFresnelURL(), api_key_);
+
+  // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
+  // call to a shared helper method.
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 MISSING_TRAFFIC_ANNOTATION);
+  url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
+  url_loader_->SetTimeoutDuration(kQueryRequestTimeout);
+  url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&DeviceActivityClient::OnCheckMembershipQueryDone,
+                     weak_factory_.GetWeakPtr()),
+      kMaxFresnelResponseSizeBytes);
 }
 
-void DeviceActivityClient::OnCheckMembershipQueryDone(bool needs_check_in) {
-  if (needs_check_in) {
+void DeviceActivityClient::OnCheckMembershipQueryDone(
+    std::unique_ptr<std::string> response_body) {
+  int32_t response_code = kDefaultResponseCode;
+  const network::mojom::URLResponseHead* response_info =
+      url_loader_->ResponseInfo();
+  if (response_info && response_info->headers) {
+    response_code = response_info->headers->response_code();
+  }
+
+  // Use RAII to reset |url_loader_| after current function scope.
+  // Resetting |url_loader_| also invalidates the |response_info| variable.
+  auto url_loader = std::move(url_loader_);
+
+  // TODO(https://crbug.com/1262216): Report UMA histogram for response codes of
+  // Query request.
+  VLOG(1) << "Query Check Membership request returned response code "
+          << response_code;
+
+  // Convert serialized response body to fresnel query response protobuf.
+  FresnelPsmRlweQueryResponse psm_query_response;
+  if (!response_body || !psm_query_response.ParseFromString(*response_body)) {
+    TransitionToIdle();
+    return;
+  }
+
+  // Parse |fresnel_query_response| for psm query_response.
+  if (!psm_query_response.has_rlwe_query_response()) {
+    TransitionToIdle();
+    return;
+  }
+
+  psm_rlwe::PrivateMembershipRlweQueryResponse query_response =
+      psm_query_response.rlwe_query_response();
+
+  auto status_or_response = psm_rlwe_client_->ProcessResponse(query_response);
+  if (!status_or_response.ok()) {
+    TransitionToIdle();
+    return;
+  }
+
+  psm_rlwe::MembershipResponseMap membership_response_map =
+      status_or_response.value();
+  private_membership::MembershipResponse membership_response =
+      membership_response_map.Get(current_day_psm_id_.value());
+
+  bool is_psm_id_member = membership_response.is_member();
+
+  if (!is_psm_id_member) {
     TransitionToCheckIn();
   } else {
+    // Update local state to signal ping has already been sent for current day.
+    local_state_->SetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
+                          last_transition_out_of_idle_time_);
     TransitionToIdle();
   }
 }
 
 void DeviceActivityClient::TransitionToCheckIn() {
   DCHECK_EQ(state_, State::kCheckingMembershipQuery);
+  DCHECK(!url_loader_);
+
+  // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kCheckingIn;
 
-  // TODO(https://crbug.com/1262201): Add import network request with callback
-  // to OnCheckInDone with response.
+  std::string current_psm_id_str = current_day_psm_id_.value().sensitive_id();
+
+  // Generate Fresnel PSM import request body.
+  device_activity::ImportDataRequest import_request;
+  import_request.set_window_identifier(current_day_window_id_.value());
+  import_request.set_plaintext_identifier(current_psm_id_str);
+  import_request.set_use_case(kDailyPsmUseCase);
+
+  // Initialize empty device metadata.
+  // Important: Each new dimension added to metadata will need to be approved by
+  // privacy.
+  import_request.mutable_device_metadata();
+
+  std::string request_body;
+  import_request.SerializeToString(&request_body);
+
+  auto resource_request = GenerateResourceRequest(
+      net::HttpRequestHeaders::kPostMethod, GetFresnelURL(), api_key_);
+
+  // TODO(https://crbug.com/1266972): Refactor |url_loader_| network request
+  // call to a shared helper method.
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 MISSING_TRAFFIC_ANNOTATION);
+  url_loader_->AttachStringForUpload(request_body, "application/x-protobuf");
+  url_loader_->SetTimeoutDuration(kImportRequestTimeout);
+  url_loader_->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&DeviceActivityClient::OnCheckInDone,
+                     weak_factory_.GetWeakPtr()),
+      kMaxFresnelResponseSizeBytes);
 }
 
-void DeviceActivityClient::OnCheckInDone() {
+void DeviceActivityClient::OnCheckInDone(
+    std::unique_ptr<std::string> response_body) {
+  int32_t response_code = kDefaultResponseCode;
+  const network::mojom::URLResponseHead* response_info =
+      url_loader_->ResponseInfo();
+  if (response_info && response_info->headers) {
+    response_code = response_info->headers->response_code();
+  }
+
+  // TODO(https://crbug.com/1262216): Report UMA histogram for response codes of
+  // Import request.
+  VLOG(1) << "Check In request returned response code " << response_code;
+
+  // Use RAII to reset |url_loader_| after current function scope.
+  // Resetting |url_loader_| also invalidates the |response_info| variable.
+  auto url_loader = std::move(url_loader_);
+
+  // Successful import request - device active was imported successfully.
+  if (response_code == kSuccessResponseCode) {
+    // Update local state pref to record reporting device active.
+    local_state_->SetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
+                          last_transition_out_of_idle_time_);
+  }
+
   TransitionToIdle();
 }
 
 void DeviceActivityClient::TransitionToIdle() {
+  DCHECK(!url_loader_);
   state_ = State::kIdle;
 
   current_day_window_id_ = absl::nullopt;

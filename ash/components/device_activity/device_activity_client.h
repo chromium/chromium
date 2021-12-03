@@ -66,6 +66,34 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   State GetState() const;
 
+ protected:
+  // Send Health Check network request and update |state_|.
+  // Before calling this method: |state_| is expected to be |kIdle|.
+  // After calling this method: |state_| set to |kHealthCheck|.
+  virtual void TransitionToHealthCheck();
+
+  // Send Oprf network request and update |state_|.
+  // Before calling this method: |state_| is expected to be |kIdle|.
+  // After calling this method:  |state_| set to |kCheckingMembershipOprf|.
+  virtual void TransitionToCheckMembershipOprf();
+
+  // Update |state_| to |kIdle|.
+  virtual void TransitionToIdle();
+
+  // Send Query network request and update |state_|.
+  // Before calling this method: |state_| is expected to be
+  // |kCheckingMembershipOprf|. After calling this method:  |state_| set to
+  // |kCheckingMembershipQuery|.
+  virtual void TransitionToCheckMembershipQuery(
+      const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
+          oprf_response);
+
+  // Send Import network request and update |state_|.
+  // Before calling this method: |state_| is expected to be
+  // |kCheckingMembershipQuery|. After calling this method:  |state_| set to
+  // |kCheckingIn|.
+  virtual void TransitionToCheckIn();
+
  private:
   // Handles device network connecting successfully.
   void OnNetworkOnline();
@@ -76,42 +104,18 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Called when device network comes online as well as by |report_timer_|.
   void TransitionOutOfIdle();
 
-  // Send Health Check network request and update |state_|.
-  // Before method: |state_| set to |kIdle|.
-  // After method: |state_| set to |kHealthCheck|.
-  void TransitionToHealthCheck();
-
   // Callback from asynchronous method |TransitionToHealthCheck|.
   void OnHealthCheckDone(std::unique_ptr<std::string> response_body);
 
-  // Send Oprf network request and update |state_|.
-  // Before method: |state_| set to |kIdle|.
-  // After method:  |state_| set to |kCheckingMembershipOprf|.
-  void TransitionToCheckMembershipOprf();
-
   // Callback from asynchronous method |TransitionToCheckMembershipOprf|.
-  void OnCheckMembershipOprfDone();
-
-  // Send Query network request and update |state_|.
-  // Before method: |state_| set to |kCheckingMembershipOprf|.
-  // After method:  |state_| set to |kCheckingMembershipQuery|.
-  void TransitionToCheckMembershipQuery();
+  void OnCheckMembershipOprfDone(std::unique_ptr<std::string> response_body);
 
   // Callback from asynchronous method |TransitionToCheckMembershipQuery|.
-  // |needs_check_in| is true if check membership query response returns false.
-  // |needs_check_in| is false if check membership query response returns true.
-  void OnCheckMembershipQueryDone(bool needs_check_in);
-
-  // Send Import network request and update |state_|.
-  // Before method: |state_| set to |kCheckingMembershipQuery|.
-  // After method:  |state_| set to |kCheckingIn|.
-  void TransitionToCheckIn();
+  // Check in PSM id based on |response_body| from CheckMembershipQuery.
+  void OnCheckMembershipQueryDone(std::unique_ptr<std::string> response_body);
 
   // Callback from asynchronous method |TransitionToCheckIn|.
-  void OnCheckInDone();
-
-  // Update |state_| to |kIdle|.
-  void TransitionToIdle();
+  void OnCheckInDone(std::unique_ptr<std::string> response_body);
 
   // Tracks the current state of the DeviceActivityClient.
   State state_ = State::kIdle;
@@ -136,15 +140,20 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Generated on demand each time the state machine leaves the idle state.
   // It is reused by several states. It is reset to nullopt.
   // This field is used apart of PSM Oprf, Query, and Import requests.
-  absl::optional<std::string> current_day_psm_id_;
+  absl::optional<private_membership::rlwe::RlwePlaintextId> current_day_psm_id_;
 
   // Time the device last transitioned out of idle state.
-  base::Time last_transition_out_of_idle_time__;
+  base::Time last_transition_out_of_idle_time_;
 
   // Tries reporting device actives every |kTimeToRepeat| from when this class
   // is initialized. Time of class initialization depends on when the device is
   // turned on (when |ChromeBrowserMainPartsAsh::PostBrowserStart| is run).
   std::unique_ptr<base::RepeatingTimer> report_timer_;
+
+  // Generated on demand each time the state machine leaves the idle state.
+  // Client Generates protos used in request body of Oprf and Query requests.
+  std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
+      psm_rlwe_client_;
 
   // Tracks the visible networks and their properties.
   // |network_state_handler_| outlives the lifetime of this class.
