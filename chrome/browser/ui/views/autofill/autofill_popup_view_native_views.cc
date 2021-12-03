@@ -63,6 +63,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+using autofill::PopupItemId;
 using views::BubbleBorder;
 
 namespace {
@@ -94,17 +95,16 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
 
-// Popup footer items that use a leading icon instead of a trailing one.
-constexpr autofill::PopupItemId kItemTypesUsingLeadingIcons[] = {
-    autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM,
-    autofill::PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
-    autofill::PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS,
-    autofill::PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
-    autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY,
-    autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
-    autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
-    autofill::PopupItemId::
-        POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE};
+// Popup items that use a leading icon instead of a trailing one.
+constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
+    PopupItemId::POPUP_ITEM_ID_CLEAR_FORM,
+    PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
+    PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS,
+    PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
+    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY,
+    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
+    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
+    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE};
 
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -1347,60 +1347,77 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   body_container_ = nullptr;
   footer_container_ = nullptr;
 
-  int line_number = 0;
-  bool has_footer = false;
+  int line_count = controller_->GetLineCount();
+
+  std::vector<int> footer_item_line_numbers;
+  footer_item_line_numbers.reserve(line_count);
+
+  // Convert a line number to a front end id.
+  auto line_number_to_frontend_id = [&](int line_number) {
+    return controller_->GetSuggestionAt(line_number).frontend_id;
+  };
 
   // Process and add all the suggestions which are in the primary container.
-  // Stop once the first footer item is found, or there are no more items.
-  while (line_number < controller_->GetLineCount()) {
-    int frontend_id = controller_->GetSuggestionAt(line_number).frontend_id;
+  // Collect all footer line numbers such that those can be added to the footer
+  // container below. DCHECK that all non-footer items are added before any
+  // footer items.
+  for (int current_line_number = 0; current_line_number < line_count;
+       ++current_line_number) {
+    int frontend_id = line_number_to_frontend_id(current_line_number);
     switch (frontend_id) {
-      case autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
-      case autofill::PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
-      case autofill::PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
-      case autofill::PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
-      case autofill::PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
-      case autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
-      case autofill::PopupItemId::POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS:
-      case autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
-      case autofill::PopupItemId::
-          POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
-      case autofill::PopupItemId::
+      // Collect all the footer lines for subsequent processing.
+      case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
+      case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
+      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
+      case PopupItemId::POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS:
+      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
+      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
+      case PopupItemId::
           POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
-      case autofill::PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
-      case autofill::PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
-        // This is a footer, so this suggestion will be processed later. Don't
-        // increment |line_number|, or else it will be skipped when adding
-        // footer rows below.
-        has_footer = true;
+      case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
+      case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
+      case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
+      case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
+      case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
+        footer_item_line_numbers.emplace_back(current_line_number);
         break;
 
-      case autofill::PopupItemId::POPUP_ITEM_ID_SEPARATOR:
-        rows_.push_back(AutofillPopupSeparatorView::Create(this, line_number));
+      // Separator lines can be added both into the footer section and into the
+      // scrollable section before.
+      case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
+        // Directly add the separator view unless the loop is already processing
+        // footer items. In this case, add it to the footer items for subsequent
+        // processing.
+        if (footer_item_line_numbers.empty()) {
+          rows_.push_back(
+              AutofillPopupSeparatorView::Create(this, current_line_number));
+        } else {
+          footer_item_line_numbers.emplace_back(current_line_number);
+        }
         break;
 
-      case autofill::PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
-      case autofill::PopupItemId::
-          POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-        rows_.push_back(AutofillPopupWarningView::Create(this, line_number));
+      case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
+      case PopupItemId::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
+        DCHECK(footer_item_line_numbers.empty());
+        rows_.push_back(
+            AutofillPopupWarningView::Create(this, current_line_number));
         break;
 
-      case autofill::PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
-      case autofill::PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
-      case autofill::PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
-      case autofill::PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
-        rows_.push_back(PasswordPopupSuggestionView::Create(this, line_number,
-                                                            frontend_id));
+      case PopupItemId::POPUP_ITEM_ID_USERNAME_ENTRY:
+      case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
+      case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
+      case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
+        DCHECK(footer_item_line_numbers.empty());
+        rows_.push_back(PasswordPopupSuggestionView::Create(
+            this, current_line_number, frontend_id));
         break;
 
       default:
+        DCHECK(footer_item_line_numbers.empty());
         rows_.push_back(AutofillPopupSuggestionView::Create(
-            this, line_number, frontend_id, controller_->GetPopupType()));
+            this, current_line_number, frontend_id,
+            controller_->GetPopupType()));
     }
-
-    if (has_footer)
-      break;
-    line_number++;
   }
 
   if (!rows_.empty()) {
@@ -1437,30 +1454,34 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     layout_->SetFlexForView(padding_wrapper, 1);
   }
 
-  // All the remaining rows (where index >= |line_number|) are part of the
-  // footer. This needs to be in its own container because it should not be
-  // affected by scrolling behavior (it's "sticky") and because it has a
-  // special background color.
-  if (has_footer) {
-    auto* footer_container = new views::View();
-
-    views::BoxLayout* footer_layout =
-        footer_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-    footer_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-
-    while (line_number < controller_->GetLineCount()) {
-      rows_.push_back(AutofillPopupFooterView::Create(
-          this, line_number,
-          controller_->GetSuggestionAt(line_number).frontend_id));
-      footer_container->AddChildView(rows_.back());
-      line_number++;
-    }
-
-    footer_container_ = AddChildView(footer_container);
-    layout_->SetFlexForView(footer_container_, 0);
+  if (footer_item_line_numbers.empty()) {
+    return;
   }
+
+  // Footer items need to be in their own container because they should not be
+  // affected by scrolling behavior (they are "sticky" at the bottom) and
+  // because they have a special background color
+  auto* footer_container = new views::View();
+
+  views::BoxLayout* footer_layout =
+      footer_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  footer_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+
+  for (int line_number : footer_item_line_numbers) {
+    // The footer can contain either footer views or separator lines.
+    if (line_number_to_frontend_id(line_number) == POPUP_ITEM_ID_SEPARATOR) {
+      rows_.push_back(AutofillPopupSeparatorView::Create(this, line_number));
+    } else {
+      rows_.push_back(AutofillPopupFooterView::Create(
+          this, line_number, line_number_to_frontend_id(line_number)));
+    }
+    footer_container->AddChildView(rows_.back());
+  }
+
+  footer_container_ = AddChildView(footer_container);
+  layout_->SetFlexForView(footer_container_, 0);
 }
 
 int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
