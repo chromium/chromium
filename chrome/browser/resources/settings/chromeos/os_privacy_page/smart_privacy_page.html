@@ -51,8 +51,10 @@
 </settings-toggle-button>
 <settings-toggle-button
     pref="{{prefs.ash.privacy.snooping_protection_enabled}}"
+    id="snoopingProtectionToggle"
     label="$i18n{smartPrivacySnoopingTitle}"
-    sub-label="$i18n{smartPrivacySnoopingSubtext}">
+    sub-label="$i18n{smartPrivacySnoopingSubtext}"
+    deep-link-focus-id$="[[Setting.kSnoopingProtection]]">
 </settings-toggle-button>
 <iron-collapse id="snoopingProtectionOptions"
     opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">

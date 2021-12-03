@@ -240,6 +240,24 @@ suite('PrivacyPageTests', function() {
         'Allow guest browsing should be focused for settingId=1105.');
   });
 
+  test('Deep link to snooping protection on smart privacy page', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '1114');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SMART_PRIVACY, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        privacyPage.$$('settings-smart-privacy-page')
+            .shadowRoot.querySelector('#snoopingProtectionToggle')
+            .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Snooping protection should be focused for settingId=1114.');
+  });
+
   test('Fingerprint dialog closes when token expires', async () => {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,

@@ -15,12 +15,27 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
 import '../../settings_vars_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../prefs_behavior.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ */
+const SettingsSmartPrivacyPageBase = mixinBehaviors(
+    [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
+    PolymerElement);
 
 /** @polymer */
-class SettingsSmartPrivacyPage extends PolymerElement {
+class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
   static get is() {
     return 'settings-smart-privacy-page';
   }
@@ -38,7 +53,32 @@ class SettingsSmartPrivacyPage extends PolymerElement {
         type: Object,
         notify: true,
       },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kSnoopingProtection,
+        ]),
+      },
     };
+  }
+
+
+  /**
+   * RouteObserverBehavior
+   * @param {!Route} route
+   */
+  currentRouteChanged(route) {
+    // Does not apply to this page.
+    if (route !== routes.SMART_PRIVACY) {
+      return;
+    }
+
+    this.attemptDeepLink();
   }
 }
 
