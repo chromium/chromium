@@ -3354,28 +3354,6 @@
             ]
         }
     ],
-    "DownloadBufferSize": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledBufferSize512k",
-                    "params": {
-                        "download_file_buffer_size": "524288"
-                    },
-                    "enable_features": [
-                        "AllowFileBufferSizeControl"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadLater": [
         {
             "platforms": [
