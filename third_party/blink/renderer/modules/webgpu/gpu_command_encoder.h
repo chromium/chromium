@@ -83,6 +83,16 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
     GetProcs().commandEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
                                             queryIndex);
   }
+  void clearBuffer(DawnObject<WGPUBuffer>* buffer, uint64_t offset) {
+    GetProcs().commandEncoderClearBuffer(GetHandle(), buffer->GetHandle(),
+                                         offset, WGPU_WHOLE_SIZE);
+  }
+  void clearBuffer(DawnObject<WGPUBuffer>* buffer,
+                   uint64_t offset,
+                   uint64_t size) {
+    GetProcs().commandEncoderClearBuffer(GetHandle(), buffer->GetHandle(),
+                                         offset, size);
+  }
   GPUCommandBuffer* finish(const GPUCommandBufferDescriptor* descriptor);
 };
 

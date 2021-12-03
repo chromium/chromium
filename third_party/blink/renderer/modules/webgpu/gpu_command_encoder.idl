@@ -45,6 +45,11 @@
 
     void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
+    void clearBuffer(
+        GPUBuffer buffer,
+        optional GPUSize64 offset = 0,
+        optional GPUSize64 size);
+
     GPUCommandBuffer finish(optional GPUCommandBufferDescriptor descriptor = {});
 };
 GPUCommandEncoder includes GPUObjectBase;
