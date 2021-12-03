@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -29,6 +30,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_buffer.h"
@@ -80,9 +82,9 @@ class GbmDeviceWrapper {
     const int fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
     if (fourcc_format == DRM_FORMAT_INVALID)
       return gfx::GpuMemoryBufferHandle();
-    const uint32_t flags = ui::BufferUsageToGbmFlags(buffer_usage);
+
     std::unique_ptr<ui::GbmBuffer> buffer =
-        gbm_device_->CreateBuffer(fourcc_format, size, flags);
+        CreateGbmBuffer(fourcc_format, size, buffer_usage);
     if (!buffer)
       return gfx::GpuMemoryBufferHandle();
 
@@ -126,6 +128,30 @@ class GbmDeviceWrapper {
     }
   }
   ~GbmDeviceWrapper() = default;
+
+  std::unique_ptr<ui::GbmBuffer> CreateGbmBuffer(int fourcc_format,
+                                                 const gfx::Size& size,
+                                                 gfx::BufferUsage buffer_usage)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    uint32_t flags = ui::BufferUsageToGbmFlags(buffer_usage);
+    std::unique_ptr<ui::GbmBuffer> buffer =
+        gbm_device_->CreateBuffer(fourcc_format, size, flags);
+    if (buffer)
+      return buffer;
+
+    // For certain use cases, allocated buffers must be able to be set via kms
+    // on a CRTC. For those cases, the GBM_BO_USE_SCANOUT flag is required.
+    // For other use cases, GBM_BO_USE_SCANOUT may be preferred but is
+    // ultimately optional, so we can fall back to allocation without that
+    // flag.
+    constexpr auto kScanoutUsages = base::MakeFixedFlatSet<gfx::BufferUsage>(
+        {gfx::BufferUsage::SCANOUT,
+         gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
+         gfx::BufferUsage::SCANOUT_FRONT_RENDERING});
+    if (!kScanoutUsages.contains(buffer_usage))
+      flags &= ~GBM_BO_USE_SCANOUT;
+    return gbm_device_->CreateBuffer(fourcc_format, size, flags);
+  }
 
   friend class base::NoDestructor<GbmDeviceWrapper>;
 
