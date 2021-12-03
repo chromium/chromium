@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
+
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
@@ -58,31 +60,19 @@ public class PasswordManagerHelper {
             SyncService syncService) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
-        if (credentialManagerLauncher == null) {
-            Bundle fragmentArgs = new Bundle();
-            fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
-            context.startActivity(settingsLauncher.createSettingsActivityIntent(
-                    context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
-            return;
+
+        if (credentialManagerLauncher != null) {
+            launchTheCredentialManager(referrer, credentialManagerLauncher, syncService);
+
+            // If the global feature is not enabled the Credential Manager will not be launched even
+            // if the intent is fetched so the regular password settings should be launched instead.
+            if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) return;
         }
 
-        if (hasChosenToSyncPasswords(syncService)) {
-            long startTimeMs = SystemClock.elapsedRealtime();
-            credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
-
-                    CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
-                    (intent)
-                            -> PasswordManagerHelper.launchCredentialManager(
-                                    intent, startTimeMs, true),
-                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
-        } else {
-            long startTimeMs = SystemClock.elapsedRealtime();
-            credentialManagerLauncher.getCredentialManagerIntentForLocal(referrer,
-                    (intent)
-                            -> PasswordManagerHelper.launchCredentialManager(
-                                    intent, startTimeMs, false),
-                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, false));
-        }
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
+        context.startActivity(settingsLauncher.createSettingsActivityIntent(
+                context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
     }
 
     /**
@@ -123,6 +113,28 @@ public class PasswordManagerHelper {
         return true;
     }
 
+    private static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
+            CredentialManagerLauncher credentialManagerLauncher, SyncService syncService) {
+        if (hasChosenToSyncPasswords(syncService)) {
+            long startTimeMs = SystemClock.elapsedRealtime();
+            credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
+
+                    CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
+                    (intent)
+                            -> PasswordManagerHelper.launchCredentialManager(
+                                    intent, startTimeMs, true),
+                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
+            return;
+        }
+
+        long startTimeMs = SystemClock.elapsedRealtime();
+        credentialManagerLauncher.getCredentialManagerIntentForLocal(referrer,
+                (intent)
+                        -> PasswordManagerHelper.launchCredentialManager(
+                                intent, startTimeMs, false),
+                (error) -> PasswordManagerHelper.recordFailureMetrics(error, false));
+    }
+
     private static void recordFailureMetrics(
             @CredentialManagerError int error, boolean forAccount) {
         final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
@@ -138,7 +150,7 @@ public class PasswordManagerHelper {
             PendingIntent intent, long startTimeMs, boolean forAccount) {
         recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)) {
+        if (!ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) {
             return;
         }
 

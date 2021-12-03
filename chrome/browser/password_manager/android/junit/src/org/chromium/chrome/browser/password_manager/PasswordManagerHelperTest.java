@@ -14,6 +14,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
@@ -154,6 +158,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testLaunchesCredentialManagerSync() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -167,6 +172,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testLaunchesCredentialManagerForLocal() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
@@ -202,6 +208,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_ERROR);
@@ -272,6 +279,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForLocalIntent() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         returnErrorWhenFetchingIntentForLocal(CredentialManagerError.API_ERROR);
@@ -321,10 +329,18 @@ public class PasswordManagerHelperTest {
     @Test
     @DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesntCallIntentIfFeatureIsDisabled() throws CanceledException {
+        Context contextMock = Mockito.mock(Context.class);
+        final String passwordSettingsFragment =
+                "org.chromium.chrome.browser.password_manager.settings.PasswordSettings";
+        Intent dummyIntent = new Intent();
+        when(mSettingsLauncherMock.createSettingsActivityIntent(
+                     eq(contextMock), eq(passwordSettingsFragment), any(Bundle.class)))
+                .thenReturn(dummyIntent);
         setUpSuccessfulIntentFetchingForAccount();
-        PasswordManagerHelper.showPasswordSettings(ContextUtils.getApplicationContext(),
+        PasswordManagerHelper.showPasswordSettings(contextMock,
                 ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncherMock,
                 mCredentialManagerLauncherMock, mSyncServiceMock);
+        verify(contextMock).startActivity(eq(dummyIntent));
         verify(mPendingIntentMock, never()).send();
     }
 
