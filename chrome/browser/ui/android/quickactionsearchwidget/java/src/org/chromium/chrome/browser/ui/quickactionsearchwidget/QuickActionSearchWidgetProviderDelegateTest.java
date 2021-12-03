@@ -71,8 +71,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         ComponentName searchActivityComponent = new ComponentName(mContext, SearchActivity.class);
 
-        mDelegate = new QuickActionSearchWidgetProviderDelegate(
-                R.layout.quick_action_search_widget_medium_layout, searchActivityComponent,
+        mDelegate = new QuickActionSearchWidgetProviderDelegate(searchActivityComponent,
                 IntentHandler.createTrustedOpenNewTabIntent(mContext, /*incognito=*/true),
                 createDinoIntent(mContext));
 
@@ -135,7 +134,10 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
         SearchActivityPreferences prefs =
                 new SearchActivityPreferences("EngineName", "http://engine", true, true, true);
-        mWidgetView = mDelegate.createWidgetRemoteViews(mContext, prefs).apply(mContext, null);
+        mWidgetView = mDelegate
+                              .createWidgetRemoteViews(mContext,
+                                      R.layout.quick_action_search_widget_medium_layout, prefs)
+                              .apply(mContext, null);
     }
 
     /**

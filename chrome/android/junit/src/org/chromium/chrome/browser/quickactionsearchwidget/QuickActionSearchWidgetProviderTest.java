@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.quickactionsearchwidget;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,8 +13,12 @@ import static org.mockito.Mockito.when;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Pair;
+import android.widget.RemoteViews;
 
+import androidx.annotation.LayoutRes;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -51,8 +54,13 @@ public class QuickActionSearchWidgetProviderTest {
      */
     private class TestProvider extends QuickActionSearchWidgetProvider {
         @Override
-        protected QuickActionSearchWidgetProviderDelegate getDelegate(
+        Pair<Integer, Integer> getOrientationSpecificLayoutRes(
                 Context context, AppWidgetManager manager, int widgetId) {
+            return new Pair<>(0, 0);
+        }
+
+        @Override
+        protected QuickActionSearchWidgetProviderDelegate getDelegate() {
             return mDelegateMock;
         }
     }
@@ -65,10 +73,13 @@ public class QuickActionSearchWidgetProviderTest {
     private QuickActionSearchWidgetProviderDelegate mDelegateMock;
     @Mock
     private Bundle mBundleMock;
+    private RemoteViews mRemoteViews;
 
     private QuickActionSearchWidgetProvider mWidgetProvider;
     private Context mContext;
-    private int mMediumWidgetMinHeight;
+    private int mXSmallWidgetMinHeightDp;
+    private int mSmallWidgetMinHeightDp;
+    private int mMediumWidgetMinHeightDp;
 
     @Before
     public void setUp() {
@@ -76,15 +87,30 @@ public class QuickActionSearchWidgetProviderTest {
         MockitoAnnotations.initMocks(this);
         mContext = Mockito.spy(ApplicationProvider.getApplicationContext());
 
+        // Inflate an actual RemoteViews to avoid stubbing internal methods or making
+        // any other assumptions about the class.
+        mRemoteViews = new RemoteViews(
+                mContext.getPackageName(), R.layout.quick_action_search_widget_medium_layout);
         mWidgetProvider = Mockito.spy(new TestProvider());
         when(mContext.getSystemService(Context.APPWIDGET_SERVICE))
                 .thenReturn(mAppWidgetManagerMock);
         when(mAppWidgetManagerMock.getAppWidgetOptions(anyInt())).thenReturn(mBundleMock);
+        when(mDelegateMock.createWidgetRemoteViews(any(), anyInt(), any()))
+                .thenReturn(mRemoteViews);
+
+        Resources res = mContext.getResources();
+        float density = res.getDisplayMetrics().density;
+
         // Depend on device-supplied defaults to test also on different form factors.
         // The computation below infers the size specific to a particular device running tests.
-        mMediumWidgetMinHeight = (int) (mContext.getResources().getDimension(
-                                                R.dimen.quick_action_search_widget_medium_height)
-                / mContext.getResources().getDisplayMetrics().density);
+        mXSmallWidgetMinHeightDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_xsmall_height)
+                        / density);
+        mSmallWidgetMinHeightDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_small_height) / density);
+        mMediumWidgetMinHeightDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_medium_height)
+                        / density);
     }
 
     @Test
@@ -98,44 +124,12 @@ public class QuickActionSearchWidgetProviderTest {
         verify(mWidgetProvider, times(1)).onUpdate(mContext, mAppWidgetManagerMock, WIDGET_IDS);
         verify(mWidgetProvider, times(1)).onUpdate(any(), any(), any());
 
-        // We create dedicated view based on widget size for every widget instance.
-        verify(mDelegateMock, times(2)).createWidgetRemoteViews(any(), any());
-    }
+        // There are 2 fake widgets that we work with, so expect both being evaluated
+        verify(mWidgetProvider, times(2)).getOrientationSpecificLayoutRes(any(), any(), anyInt());
 
-    /**
-     * Test that a different provider delegate is returned for widgets when these are scaled
-     * vertically.
-     * This takes under consideration the fact that "dipi" and "dpi" dimensions are different
-     */
-    @Test
-    @SmallTest
-    public void testVerticalDynamicWidgetResizeForSmallWidgetProvider() {
-        doVerticalDynamicWidgetResize(
-                "Small Widget provider", new QuickActionSearchWidgetProviderSearch());
-    }
-
-    private void doVerticalDynamicWidgetResize(
-            String providerType, QuickActionSearchWidgetProvider provider) {
-        when(mBundleMock.getInt(anyString()))
-                .thenReturn(mMediumWidgetMinHeight - 10)
-                .thenReturn(mMediumWidgetMinHeight + 10)
-                .thenReturn(mMediumWidgetMinHeight - 1)
-                .thenReturn(mMediumWidgetMinHeight);
-
-        QuickActionSearchWidgetProviderDelegate delegate1 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate2 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate3 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate4 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-
-        Assert.assertNotEquals(providerType, delegate1,
-                delegate2); // Small and medium widget delegates are different.
-        Assert.assertEquals(providerType, delegate1, delegate3); // Small widget delegates are same.
-        Assert.assertEquals(
-                providerType, delegate2, delegate4); // Medium widget delegates are same.
+        // We create dedicated view based on widget size for every widget instance and screen
+        // orientation.
+        verify(mDelegateMock, times(4)).createWidgetRemoteViews(any(), anyInt(), any());
     }
 
     /**
@@ -149,54 +143,75 @@ public class QuickActionSearchWidgetProviderTest {
                 "Small Widget provider", new QuickActionSearchWidgetProviderSearch());
     }
 
+    static class VerticalResizeHeightVariant {
+        /** Reported widget height (in distance point) for this variant. */
+        public final int heightDp;
+        /** String representation (for human readable logs). */
+        public final String variantName;
+        /** Expected Layout Resource ID for that height. */
+        public final Integer layoutRes;
+
+        VerticalResizeHeightVariant(int heightDp, String variantName, @LayoutRes int layoutRes) {
+            this.heightDp = heightDp;
+            this.variantName = variantName;
+            this.layoutRes = layoutRes;
+        }
+    }
+
     private void doVerticalWidgetResizeOfSmallWidget(
             String providerType, QuickActionSearchWidgetProvider provider) {
-        when(mBundleMock.getInt(anyString()))
-                .thenReturn(0)
-                .thenReturn(1)
-                .thenReturn(mMediumWidgetMinHeight - 10)
-                .thenReturn(mMediumWidgetMinHeight - 1);
+        // Validate all height pairs (exhausts the solution space).
+        // This includes both reasonable and unreasonable pairs, ie. the assertion that the
+        // MIN_HEIGHT <= MAX_HEIGHT does not have to hold true.
+        // We want to be thorough and test both the lower and the upper boundary against what we
+        // expect to be returned.
+        VerticalResizeHeightVariant[] variants = new VerticalResizeHeightVariant[] {
+                // The following 2 variants "should never happen" and technically violate any
+                // assumptions that could be made about Android widget sizing, but we keep these to
+                // verify that we're not doing anything unexpected / bad, like crashing.
+                new VerticalResizeHeightVariant(0, //
+                        "zero", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mXSmallWidgetMinHeightDp - 1,
+                        "XSmallMinHeightDp - 1", R.layout.quick_action_search_widget_xsmall_layout),
 
-        QuickActionSearchWidgetProviderDelegate delegate1 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate2 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate3 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate4 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
+                // The following variants test every valid variant at its boundaries.
+                new VerticalResizeHeightVariant(mXSmallWidgetMinHeightDp, //
+                        "XSmallMinHeightDp", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mXSmallWidgetMinHeightDp + 1,
+                        "XSmallMinHeightDp + 1", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mSmallWidgetMinHeightDp - 1, //
+                        "SmallMinHeightDp - 1", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mSmallWidgetMinHeightDp, //
+                        "SmallMinHeightDp", R.layout.quick_action_search_widget_small_layout),
+                new VerticalResizeHeightVariant(mSmallWidgetMinHeightDp + 1, //
+                        "SmallMinHeightDp + 1", R.layout.quick_action_search_widget_small_layout),
+                new VerticalResizeHeightVariant(mMediumWidgetMinHeightDp - 1,
+                        "MediumMinHeightDp - 1", R.layout.quick_action_search_widget_small_layout),
+                new VerticalResizeHeightVariant(mMediumWidgetMinHeightDp, //
+                        "MediumMinHeightDp", R.layout.quick_action_search_widget_medium_layout),
+                new VerticalResizeHeightVariant(mMediumWidgetMinHeightDp + 1,
+                        "MediumMinHeightDp + 1", R.layout.quick_action_search_widget_medium_layout),
+        };
 
-        Assert.assertEquals(providerType, delegate1, delegate2);
-        Assert.assertNotEquals(providerType, delegate1, delegate3);
-        Assert.assertEquals(providerType, delegate3, delegate4);
-    }
+        for (VerticalResizeHeightVariant minHeightVariant : variants) {
+            for (VerticalResizeHeightVariant maxHeightVariant : variants) {
+                when(mBundleMock.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT))
+                        .thenReturn(minHeightVariant.heightDp);
+                when(mBundleMock.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT))
+                        .thenReturn(maxHeightVariant.heightDp);
 
-    /**
-     * Test that the same delegate is used for all medium size widgets.
-     * This takes under consideration the fact that "dipi" and "dpi" dimensions are different
-     */
-    @Test
-    @SmallTest
-    public void testVerticalWidgetResizeOfMediumWidget() {
-        doVerticalWidgetResizeOfMediumWidget(
-                "Small Widget provider", new QuickActionSearchWidgetProviderSearch());
-    }
+                Pair<Integer, Integer> layouts = provider.getOrientationSpecificLayoutRes(
+                        mContext, mAppWidgetManagerMock, 0);
 
-    private void doVerticalWidgetResizeOfMediumWidget(
-            String providerType, QuickActionSearchWidgetProvider provider) {
-        when(mBundleMock.getInt(anyString()))
-                .thenReturn(mMediumWidgetMinHeight)
-                .thenReturn(mMediumWidgetMinHeight + 1)
-                .thenReturn(mMediumWidgetMinHeight * 10);
-
-        QuickActionSearchWidgetProviderDelegate delegate1 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate2 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-        QuickActionSearchWidgetProviderDelegate delegate3 =
-                provider.getDelegate(mContext, mAppWidgetManagerMock, 1);
-
-        Assert.assertEquals(providerType, delegate1, delegate2);
-        Assert.assertEquals(providerType, delegate1, delegate3);
+                Assert.assertEquals(
+                        "Landscape layout invalid where MIN_HEIGHT=" + minHeightVariant.variantName
+                                + " and MAX_HEIGHT=" + maxHeightVariant.variantName,
+                        minHeightVariant.layoutRes, layouts.first);
+                Assert.assertEquals(
+                        "Portrait layout invalid where MIN_HEIGHT=" + minHeightVariant.variantName
+                                + " and MAX_HEIGHT=" + maxHeightVariant.variantName,
+                        maxHeightVariant.layoutRes, layouts.second);
+            }
+        }
     }
 }

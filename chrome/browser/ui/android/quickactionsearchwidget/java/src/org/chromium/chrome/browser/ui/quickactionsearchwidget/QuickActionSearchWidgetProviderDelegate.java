@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
  * contains as much of the widget logic for the Quick Action Search Widget as possible.
  */
 public class QuickActionSearchWidgetProviderDelegate {
-    private final @LayoutRes int mLayoutRes;
     private final ComponentName mSearchActivityComponent;
     private final Intent mStartIncognitoTabIntent;
     private final Intent mStartDinoGameIntent;
@@ -37,10 +36,8 @@ public class QuickActionSearchWidgetProviderDelegate {
      *          events will be propagated.
      * @param startIncognitoIntent A trusted intent starting a new Incognito tab.
      */
-    public QuickActionSearchWidgetProviderDelegate(@LayoutRes int layoutRes,
-            @NonNull ComponentName searchActivityComponent, @NonNull Intent startIncognitoTabIntent,
-            @NonNull Intent startDinoGameIntent) {
-        mLayoutRes = layoutRes;
+    public QuickActionSearchWidgetProviderDelegate(@NonNull ComponentName searchActivityComponent,
+            @NonNull Intent startIncognitoTabIntent, @NonNull Intent startDinoGameIntent) {
         mSearchActivityComponent = searchActivityComponent;
         mStartIncognitoTabIntent = startIncognitoTabIntent;
         mStartDinoGameIntent = startDinoGameIntent;
@@ -53,12 +50,13 @@ public class QuickActionSearchWidgetProviderDelegate {
      * widget.
      *
      * @param context The {@link Context} from which the widget is being updated.
+     * @param layoutRes The Layout to inflate.
      * @param prefs Structure describing current preferences and feature availability.
      * @return Widget RemoteViews structure describing layout and content of the widget.
      */
-    public RemoteViews createWidgetRemoteViews(
-            @NonNull Context context, @NonNull SearchActivityPreferences prefs) {
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), mLayoutRes);
+    public RemoteViews createWidgetRemoteViews(@NonNull Context context, @LayoutRes int layoutRes,
+            @NonNull SearchActivityPreferences prefs) {
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutRes);
 
         // Search Bar Intent
         PendingIntent textSearchPendingIntent = createPendingIntentForAction(

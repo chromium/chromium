@@ -10,10 +10,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Pair;
+import android.widget.RemoteViews;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -47,31 +48,28 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      */
     public static class QuickActionSearchWidgetProviderSearch
             extends QuickActionSearchWidgetProvider {
-        protected static
-                @Nullable QuickActionSearchWidgetProviderDelegate sExtraSmallWidgetDelegate;
-        protected static @Nullable QuickActionSearchWidgetProviderDelegate sSmallWidgetDelegate;
-        protected static @Nullable QuickActionSearchWidgetProviderDelegate sMediumWidgetDelegate;
-
-        @Override
-        public void onAppWidgetOptionsChanged(
-                Context context, AppWidgetManager manager, int widgetId, Bundle newOptions) {
-            onUpdate(context, manager, new int[] {widgetId});
-            super.onAppWidgetOptionsChanged(context, manager, widgetId, newOptions);
-        }
-
         @Override
         @NonNull
-        QuickActionSearchWidgetProviderDelegate getDelegate(
+        Pair<Integer, Integer> getOrientationSpecificLayoutRes(
                 Context context, AppWidgetManager manager, int widgetId) {
             Bundle options = manager.getAppWidgetOptions(widgetId);
-            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-            boolean isLandscapeMode = context.getResources().getConfiguration().orientation
-                    == Configuration.ORIENTATION_LANDSCAPE;
 
-            // MIN_HEIGHT is reported for landscape mode, whereas MAX_HEIGHT is used with portrait.
-            int newWidgetHeightDp =
-                    options.getInt(isLandscapeMode ? AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT
-                                                   : AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+            return new Pair<>(getLayoutForHeight(context,
+                                      options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)),
+                    getLayoutForHeight(
+                            context, options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)));
+        }
+
+        /**
+         * Given height, identify the WidgetProviderDelegate maintaining widgets that will fit in
+         * the space.
+         *
+         * @param context Current context.
+         * @param heightDp Are height in distance points.
+         * @return Widget LayoutRes appropriate for the supplied height.
+         */
+        private @LayoutRes int getLayoutForHeight(Context context, int heightDp) {
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
             float smallWidgetMinHeightDp = context.getResources().getDimension(
                                                    R.dimen.quick_action_search_widget_small_height)
                     / displayMetrics.density;
@@ -80,37 +78,12 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                             R.dimen.quick_action_search_widget_medium_height)
                     / displayMetrics.density;
 
-            if (newWidgetHeightDp < smallWidgetMinHeightDp) {
-                return getExtraSmallWidgetDelegate();
-            } else if (newWidgetHeightDp < mediumWidgetMinHeightDp) {
-                return getSmallWidgetDelegate();
-            } else {
-                return getMediumWidgetDelegate();
+            if (heightDp < smallWidgetMinHeightDp) {
+                return R.layout.quick_action_search_widget_xsmall_layout;
+            } else if (heightDp < mediumWidgetMinHeightDp) {
+                return R.layout.quick_action_search_widget_small_layout;
             }
-        }
-
-        private @NonNull QuickActionSearchWidgetProviderDelegate getExtraSmallWidgetDelegate() {
-            if (sExtraSmallWidgetDelegate == null) {
-                sExtraSmallWidgetDelegate =
-                        createDelegate(R.layout.quick_action_search_widget_xsmall_layout);
-            }
-            return sExtraSmallWidgetDelegate;
-        }
-
-        private @NonNull QuickActionSearchWidgetProviderDelegate getSmallWidgetDelegate() {
-            if (sSmallWidgetDelegate == null) {
-                sSmallWidgetDelegate =
-                        createDelegate(R.layout.quick_action_search_widget_small_layout);
-            }
-            return sSmallWidgetDelegate;
-        }
-
-        private @NonNull QuickActionSearchWidgetProviderDelegate getMediumWidgetDelegate() {
-            if (sMediumWidgetDelegate == null) {
-                sMediumWidgetDelegate =
-                        createDelegate(R.layout.quick_action_search_widget_medium_layout);
-            }
-            return sMediumWidgetDelegate;
+            return R.layout.quick_action_search_widget_medium_layout;
         }
     }
 
@@ -120,22 +93,28 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      */
     public static class QuickActionSearchWidgetProviderDino
             extends QuickActionSearchWidgetProvider {
-        private static QuickActionSearchWidgetProviderDelegate sDelegate;
-
         @Override
-        protected QuickActionSearchWidgetProviderDelegate getDelegate(
+        @NonNull
+        Pair<Integer, Integer> getOrientationSpecificLayoutRes(
                 Context context, AppWidgetManager manager, int widgetId) {
-            if (sDelegate == null) {
-                sDelegate = createDelegate(R.layout.quick_action_search_widget_dino_layout);
-            }
-            return sDelegate;
+            return new Pair<>(R.layout.quick_action_search_widget_dino_layout,
+                    R.layout.quick_action_search_widget_dino_layout);
         }
     }
+
+    private static @Nullable QuickActionSearchWidgetProviderDelegate sDelegate;
 
     @Override
     public void onUpdate(@NonNull Context context, @NonNull AppWidgetManager manager,
             @Nullable int[] widgetIds) {
         updateWidgets(context, manager, SearchActivityPreferencesManager.getCurrent(), widgetIds);
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(
+            Context context, AppWidgetManager manager, int widgetId, Bundle newOptions) {
+        super.onAppWidgetOptionsChanged(context, manager, widgetId, newOptions);
+        onUpdate(context, manager, new int[] {widgetId});
     }
 
     /**
@@ -156,22 +135,25 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
 
         for (int index = 0; index < widgetIds.length; index++) {
             int widgetId = widgetIds[index];
+            Pair<Integer, Integer> layouts =
+                    getOrientationSpecificLayoutRes(context, manager, widgetId);
 
             manager.updateAppWidget(widgetId,
-                    getDelegate(context, manager, widgetId)
-                            .createWidgetRemoteViews(context, preferences));
+                    new RemoteViews(getDelegate().createWidgetRemoteViews(
+                                            context, layouts.first, preferences),
+                            getDelegate().createWidgetRemoteViews(
+                                    context, layouts.second, preferences)));
         }
     }
 
     /**
-     * Create a new QuickActionSearchWidgetProviderDelegate.
-     *
-     * This method should only be used when a new instance of the ProviderDelegate is needed.
-     * In all other cases, use the getDelegate() method.
-     *
-     * @param widgetType The type of the Widget for which the ProviderDelegate should be built.
+     * Get (create if necessary) an instance of QuickActionSearchWidgetProviderDelegate.
      */
-    protected QuickActionSearchWidgetProviderDelegate createDelegate(@LayoutRes int layout) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    @NonNull
+    protected QuickActionSearchWidgetProviderDelegate getDelegate() {
+        if (sDelegate != null) return sDelegate;
+
         Context context = ContextUtils.getApplicationContext();
         ComponentName searchActivityComponent = new ComponentName(context, SearchActivity.class);
         Intent trustedIncognitoIntent =
@@ -181,8 +163,9 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         Intent dinoIntent = createDinoIntent(context);
 
-        return new QuickActionSearchWidgetProviderDelegate(
-                layout, searchActivityComponent, trustedIncognitoIntent, dinoIntent);
+        sDelegate = new QuickActionSearchWidgetProviderDelegate(
+                searchActivityComponent, trustedIncognitoIntent, dinoIntent);
+        return sDelegate;
     }
 
     /**
@@ -210,19 +193,16 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
     }
 
     /**
-     * This function lazily initializes and returns the
-     * {@link QuickActionSearchWidgetProviderDelegate}
-     * for this instance.
-     * <p>
-     * We don't initialize the delegate in the constructor because creation of the
-     * QuickActionSearchWidgetProvider is done by the system.
+     * Acquire screen orientation specific layouts that will be applied to the
+     * widget.
+     * The two layouts represent screen orientations in Landscape and Portrait mode.
      *
      * @param context Current context.
      * @param manager The AppWidgetManager instance to query widget info.
      * @param widgetId The widget to get the delegate for.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    abstract QuickActionSearchWidgetProviderDelegate getDelegate(
+    abstract Pair<Integer, Integer> getOrientationSpecificLayoutRes(
             Context context, AppWidgetManager manager, int widgetId);
 
     /**
