@@ -133,55 +133,6 @@ TEST(LayoutRectTest, EnclosingIntRect) {
             EnclosingIntRect(fractional_negpos_rect3));
 }
 
-TEST(LayoutRectTest, EnclosedIntRect) {
-  LayoutUnit small;
-  small.SetRawValue(1);
-  LayoutRect small_dimensions_rect(LayoutUnit(42.5f), LayoutUnit(84.5f), small,
-                                   small);
-
-  LayoutRect integral_rect(IntRect(100, 150, 200, 350));
-  EXPECT_EQ(IntRect(100, 150, 200, 350), EnclosedIntRect(integral_rect));
-
-  LayoutRect fractional_pos_rect(LayoutUnit(100.6f), LayoutUnit(150.8f),
-                                 LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(101, 151, 199, 349), EnclosedIntRect(fractional_pos_rect));
-
-  LayoutRect fractional_dimensions_rect(LayoutUnit(100), LayoutUnit(150),
-                                        LayoutUnit(200.6f), LayoutUnit(350.4f));
-  EXPECT_EQ(IntRect(100, 150, 200, 350),
-            EnclosedIntRect(fractional_dimensions_rect));
-
-  LayoutRect fractional_both_rect1(LayoutUnit(100.6f), LayoutUnit(150.8f),
-                                   LayoutUnit(200.4f), LayoutUnit(350.2f));
-  EXPECT_EQ(IntRect(101, 151, 199, 349),
-            EnclosedIntRect(fractional_both_rect1));
-
-  LayoutRect fractional_both_rect2(LayoutUnit(100.5f), LayoutUnit(150.7f),
-                                   LayoutUnit(200.3f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(101, 151, 199, 349),
-            EnclosedIntRect(fractional_both_rect2));
-
-  LayoutRect fractional_both_rect3(LayoutUnit(100.3f), LayoutUnit(150.2f),
-                                   LayoutUnit(200.6f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(101, 151, 199, 349),
-            EnclosedIntRect(fractional_both_rect3));
-
-  LayoutRect fractional_negpos_rect1(LayoutUnit(-100.4f), LayoutUnit(-150.8f),
-                                     LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(-100, -150, 199, 349),
-            EnclosedIntRect(fractional_negpos_rect1));
-
-  LayoutRect fractional_negpos_rect2(LayoutUnit(-100.5f), LayoutUnit(-150.7f),
-                                     LayoutUnit(199.4f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-100, -150, 198, 349),
-            EnclosedIntRect(fractional_negpos_rect2));
-
-  LayoutRect fractional_negpos_rect3(LayoutUnit(-100.3f), LayoutUnit(-150.2f),
-                                     LayoutUnit(199.6f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-100, -150, 199, 350),
-            EnclosedIntRect(fractional_negpos_rect3));
-}
-
 TEST(LayoutRectTest, EdgesOnPixelBoundaries) {
   EXPECT_TRUE(LayoutRect().EdgesOnPixelBoundaries());
   EXPECT_TRUE(

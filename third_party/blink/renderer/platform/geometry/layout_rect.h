@@ -357,17 +357,6 @@ inline gfx::Rect ToEnclosingRect(const LayoutRect& rect) {
                    max_point.y() - location.y());
 }
 
-inline IntRect EnclosedIntRect(const LayoutRect& rect) {
-  gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
-  gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
-  return IntRect(location, IntSize(max_point - location));
-}
-inline gfx::Rect ToEnclosedRect(const LayoutRect& rect) {
-  gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
-  gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
-  return gfx::BoundingRect(location, max_point);
-}
-
 inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
   LayoutUnit x = LayoutUnit::FromFloatFloor(rect.x());
   LayoutUnit y = LayoutUnit::FromFloatFloor(rect.y());
