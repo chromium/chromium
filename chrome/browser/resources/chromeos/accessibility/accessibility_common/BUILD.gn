@@ -122,11 +122,10 @@ js2gtest("accessibility_common_extjs_tests") {
     "autoclick/autoclick_test.js",
     "dictation/dictation_test.js",
     "dictation/dictation_test_base.js",
+    "dictation/macros/dictation_macros_test.js",
+    "dictation/parse/dictation_parse_test.js",
     "magnifier/magnifier_test.js",
   ]
-  if (enable_pumpkin_for_dictation) {
-    sources += [ "dictation/dictation_pumpkin_test.js" ]
-  }
   gen_include_files = [
     "../common/rect_util.js",
     "../common/testing/callback_helper.js",

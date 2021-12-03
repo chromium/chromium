@@ -226,4 +226,26 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
     assertEquals(
         contextID, this.mockInputIme.getLastCommittedParameters().contextID);
   }
+
+  /** Sets up Dictation with commands enabled. */
+  async waitForDictationWithCommands() {
+    await this.waitForDictationModule();
+    await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
+    await this.setCommandsEnabledForTest(true);
+  }
+
+  /** @return {InputTextStrategy} */
+  getInputTextStrategy() {
+    return accessibilityCommon.dictation_.speechParser_.inputTextStrategy_;
+  }
+
+  /** @return {SimpleParseStrategy} */
+  getSimpleParseStrategy() {
+    return accessibilityCommon.dictation_.speechParser_.simpleParseStrategy_;
+  }
+
+  /** @return {PumpkinParseStrategy} */
+  getPumpkinParseStrategy() {
+    return accessibilityCommon.dictation_.speechParser_.pumpkinParseStrategy_;
+  }
 };
