@@ -25,8 +25,6 @@
 #include "components/permissions/bluetooth_chooser_desktop.h"
 #include "components/permissions/bluetooth_scanning_prompt_desktop.h"
 #include "components/strings/grit/components_strings.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/extensions_browser_client.h"
 #endif  // OS_ANDROID
 
 ChromeBluetoothDelegateImplClient::ChromeBluetoothDelegateImplClient() =
@@ -56,13 +54,6 @@ ChromeBluetoothDelegateImplClient::RunBluetoothChooser(
       frame, event_handler,
       std::make_unique<ChromeBluetoothChooserAndroidDelegate>());
 #else
-  if (extensions::AppWindowRegistry::Get(frame->GetBrowserContext())
-          ->GetAppWindowForWebContents(
-              content::WebContents::FromRenderFrameHost(frame))) {
-    return extensions::ExtensionsBrowserClient::Get()->CreateBluetoothChooser(
-        frame, event_handler);
-  }
-
   auto controller =
       std::make_unique<ChromeBluetoothChooserController>(frame, event_handler);
   auto controller_weak = controller->GetWeakPtr();
@@ -81,12 +72,6 @@ ChromeBluetoothDelegateImplClient::ShowBluetoothScanningPrompt(
       frame, event_handler,
       std::make_unique<ChromeBluetoothScanningPromptAndroidDelegate>());
 #else
-  if (extensions::AppWindowRegistry::Get(frame->GetBrowserContext())
-          ->GetAppWindowForWebContents(
-              content::WebContents::FromRenderFrameHost(frame))) {
-    return nullptr;
-  }
-
   return std::make_unique<permissions::BluetoothScanningPromptDesktop>(
       frame, event_handler,
       CreateExtensionAwareChooserTitle(frame,

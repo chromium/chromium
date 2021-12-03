@@ -938,8 +938,6 @@ static_library("ui") {
       "blocked_content/popunder_preventer.h",
       "bluetooth/chrome_bluetooth_chooser_controller.cc",
       "bluetooth/chrome_bluetooth_chooser_controller.h",
-      "bluetooth/chrome_extension_bluetooth_chooser.cc",
-      "bluetooth/chrome_extension_bluetooth_chooser.h",
       "bookmarks/bookmark_bar.h",
       "bookmarks/bookmark_bubble_observer.h",
       "bookmarks/bookmark_context_menu_controller.cc",

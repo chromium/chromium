@@ -137,9 +137,6 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
                                      mojom::ViewType view_type) override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context) override;
-  std::unique_ptr<content::BluetoothChooser> CreateBluetoothChooser(
-      content::RenderFrameHost* frame,
-      const content::BluetoothChooser::EventHandler& event_handler) override;
   bool IsActivityLoggingEnabled(content::BrowserContext* context) override;
   void GetTabAndWindowIdForWebContents(content::WebContents* web_contents,
                                        int* tab_id,

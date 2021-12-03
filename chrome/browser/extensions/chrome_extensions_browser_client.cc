@@ -46,7 +46,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
-#include "chrome/browser/ui/bluetooth/chrome_extension_bluetooth_chooser.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
@@ -462,14 +461,6 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
   }
   return update_client::UpdateClientFactory(
       ChromeUpdateClientConfig::Create(context, override_url));
-}
-
-std::unique_ptr<content::BluetoothChooser>
-ChromeExtensionsBrowserClient::CreateBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  return std::make_unique<ChromeExtensionBluetoothChooser>(frame,
-                                                           event_handler);
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(
