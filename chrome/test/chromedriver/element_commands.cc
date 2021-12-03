@@ -565,11 +565,11 @@ Status ExecuteSendKeysToElement(Session* session,
     }
     // Compress array into a single string.
     std::string paths_string;
-    for (size_t i = 0; i < key_list->GetList().size(); ++i) {
-      std::string path_part;
-      if (!key_list->GetString(i, &path_part))
+    for (const base::Value& i : key_list->GetList()) {
+      const std::string* path_part = i.GetIfString();
+      if (!path_part)
         return Status(kInvalidArgument, "'value' is invalid");
-      paths_string.append(path_part);
+      paths_string.append(*path_part);
     }
 
     // w3c spec specifies empty path_part should throw invalidArgument error

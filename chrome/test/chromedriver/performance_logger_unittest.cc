@@ -299,12 +299,11 @@ TEST(PerformanceLogger, TracingStartStop) {
   base::ListValue* categories;
   EXPECT_TRUE(cmd->params->GetList("traceConfig.includedCategories",
                                    &categories));
-  EXPECT_EQ(2u, categories->GetList().size());
-  std::string category;
-  EXPECT_TRUE(categories->GetString(0, &category));
-  EXPECT_EQ("benchmark", category);
-  EXPECT_TRUE(categories->GetString(1, &category));
-  EXPECT_EQ("blink.console", category);
+  ASSERT_EQ(2u, categories->GetList().size());
+  ASSERT_TRUE(categories->GetList()[0].is_string());
+  EXPECT_EQ("benchmark", categories->GetList()[0].GetString());
+  ASSERT_TRUE(categories->GetList()[1].is_string());
+  EXPECT_EQ("blink.console", categories->GetList()[1].GetString());
   int expected_interval = 0;
   EXPECT_TRUE(cmd->params->GetInteger("bufferUsageReportingInterval",
                                       &expected_interval));
