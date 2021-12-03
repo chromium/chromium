@@ -29,6 +29,10 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #endif
 
+#if defined(OS_WIN)
+#include "sandbox/policy/mojom/sandbox.mojom-shared.h"
+#endif
+
 using content::BrowserThread;
 
 namespace performance_monitor {
@@ -185,6 +189,14 @@ std::vector<ProcessMetadata> ProcessMonitor::GatherNonRendererProcesses() {
   // Find all child processes (does not include renderers), which has to be
   // done on the IO thread.
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
+#if defined(OS_WIN)
+    // Cannot gather process metrics for elevated process as browser has no
+    // access to them.
+    if (iter.GetData().sandbox_type ==
+        sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
+      continue;
+    }
+#endif
     ProcessMetadata child_process_data;
     child_process_data.handle = iter.GetData().GetProcess().Handle();
     child_process_data.process_type = iter.GetData().process_type;
@@ -202,8 +214,6 @@ std::vector<ProcessMetadata> ProcessMonitor::GatherNonRendererProcesses() {
   browser_process_data.handle = base::GetCurrentProcessHandle();
 
   processes.push_back(browser_process_data);
-
-  // Update metrics for all watched processes; remove dead entries from the map.
 
   return processes;
 }
