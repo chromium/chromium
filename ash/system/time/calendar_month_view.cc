@@ -274,6 +274,8 @@ CalendarMonthView::CalendarMonthView(
     MoveToNextDay(column, current_date, current_date_exploded);
   }
 
+  last_row_index_ = row_number - 1;
+
   // TODO(https://crbug.com/1236276): Handle some cases when the first day is
   // not Sunday.
   if (current_date_exploded.day_of_week == 0)

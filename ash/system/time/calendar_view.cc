@@ -766,13 +766,13 @@ void CalendarView::ScrollDownOneMonthAndAutoScroll() {
 }
 
 void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
-  // TODO(https://crbug.com/1238927). Scroll the height of one row each time if
-  // the event list is shown.
-  if (event_list_)
-    return;
-
   if (is_resetting_scroll_)
     return;
+
+  if (event_list_) {
+    ScrollOneRowWithAnimation(is_scrolling_up);
+    return;
+  }
 
   // If there's already an existing animation, restores each layer's visibility
   // and position.
@@ -861,6 +861,52 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
       .Then()
       .SetDuration(calendar_utils::kAnimationDurationForVisibility)
       .SetOpacity(header_, 0.0);
+}
+
+void CalendarView::ScrollOneRowWithAnimation(bool is_scrolling_up) {
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+  base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
+
+  // Scrolls to the last row of the previous month if it's currently on the
+  // first row and scrolling up.
+  if (is_scrolling_up &&
+      calendar_view_controller_->GetExpandedRowIndex() == 0) {
+    ScrollUpOneMonth();
+    calendar_view_controller_->set_expanded_row_index(
+        current_month_->last_row_index());
+    const int row_height = calendar_view_controller_->GetExpandedRowIndex() *
+                           calendar_view_controller_->row_height();
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   PositionOfCurrentMonth() + row_height);
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    return;
+  }
+
+  // Scrolls to the first row of the next month if it's currently on the
+  // last row and scrolling down.
+  if (!is_scrolling_up && calendar_view_controller_->GetExpandedRowIndex() ==
+                              current_month_->last_row_index()) {
+    ScrollDownOneMonth();
+    calendar_view_controller_->set_expanded_row_index(0);
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   PositionOfCurrentMonth());
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    return;
+  }
+
+  calendar_view_controller_->set_expanded_row_index(
+      calendar_view_controller_->GetExpandedRowIndex() +
+      (is_scrolling_up ? -1 : 1));
+  const int row_height = calendar_view_controller_->GetExpandedRowIndex() *
+                         calendar_view_controller_->row_height();
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 PositionOfCurrentMonth() + row_height);
+  scroll_view_->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  return;
 }
 
 void CalendarView::OnEvent(ui::Event* event) {
