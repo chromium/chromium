@@ -848,6 +848,43 @@ TEST_F(DockedMagnifierTest, ResizeDockedMagnifier) {
             viewport_widget->GetWindowBoundsInScreen());
 }
 
+// Tests to verify dragging about separator does not resize docked magnifier.
+TEST_F(DockedMagnifierTest, DragAboveSeparatorDoesNotResizeDockedMagnifier) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      std::vector<base::Feature>{::features::kDockedMagnifierResizing},
+      std::vector<base::Feature>{});
+
+  UpdateDisplay("800x600");
+  const auto root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(1u, root_windows.size());
+
+  controller()->SetEnabled(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+  const views::Widget* viewport_widget =
+      controller()->GetViewportWidgetForTesting();
+  ASSERT_NE(nullptr, viewport_widget);
+  EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
+  const int viewport_height =
+      root_windows[0]->bounds().height() /
+      DockedMagnifierController::kDefaultScreenHeightDivisor;
+  EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
+            viewport_widget->GetWindowBoundsInScreen());
+
+  // Move cursor 1px above the docked magnifier separator, in the viewport area,
+  // where dragging should not work.
+  gfx::Point mouse_location(400, viewport_height - 1);
+  GetEventGenerator()->MoveMouseTo(mouse_location);
+
+  // Drag 100 pixels down.
+  mouse_location = gfx::Point(400, viewport_height + 100);
+  GetEventGenerator()->DragMouseTo(mouse_location);
+
+  // Assert docked magnifier viewport size remains at old height.
+  EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
+            viewport_widget->GetWindowBoundsInScreen());
+}
+
 // Tests that there are no crashes observed when the docked magnifier switches
 // displays, moving away from a display with a maximized window that has a
 // focused text input field. Changing the old display's work area bounds should
