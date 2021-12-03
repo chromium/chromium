@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
-                       OptimizationGuideDetectedBlacklist) {
+                       OptimizationGuideDetectedBlocklist) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("https://www.optguideloggedin.com/page.html")));
   ExpectLoginDetectionTypeMetric(
