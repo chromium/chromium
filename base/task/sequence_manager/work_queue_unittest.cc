@@ -63,21 +63,21 @@ class WorkQueueTest : public testing::Test {
                                           WeakPtr<Cancelable> weak_ptr) {
     Task fake_task(PostedTask(nullptr, BindOnce(&Cancelable::NopTask, weak_ptr),
                               FROM_HERE),
-                   TimeTicks(), EnqueueOrder(),
+                   EnqueueOrder(),
                    EnqueueOrder::FromIntForTesting(enqueue_order));
     return fake_task;
   }
 
   Task FakeTaskWithEnqueueOrder(int enqueue_order) {
     Task fake_task(PostedTask(nullptr, BindOnce(&NopTask), FROM_HERE),
-                   TimeTicks(), EnqueueOrder(),
+                   EnqueueOrder(),
                    EnqueueOrder::FromIntForTesting(enqueue_order));
     return fake_task;
   }
 
   Task FakeNonNestableTaskWithEnqueueOrder(int enqueue_order) {
     Task fake_task(PostedTask(nullptr, BindOnce(&NopTask), FROM_HERE),
-                   TimeTicks(), EnqueueOrder(),
+                   EnqueueOrder(),
                    EnqueueOrder::FromIntForTesting(enqueue_order));
     fake_task.nestable = Nestable::kNonNestable;
     return fake_task;

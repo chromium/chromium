@@ -8,18 +8,26 @@ namespace base {
 namespace sequence_manager {
 
 Task::Task(internal::PostedTask posted_task,
-           TimeTicks delayed_run_time,
            EnqueueOrder sequence_order,
            EnqueueOrder enqueue_order,
+           TimeTicks queue_time,
            WakeUpResolution resolution)
     : PendingTask(posted_task.location,
                   std::move(posted_task.callback),
-                  posted_task.queue_time,
-                  delayed_run_time),
+                  queue_time,
+                  absl::holds_alternative<base::TimeTicks>(
+                      posted_task.delay_or_delayed_run_time)
+                      ? absl::get<base::TimeTicks>(
+                            posted_task.delay_or_delayed_run_time)
+                      : base::TimeTicks()),
       nestable(posted_task.nestable),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
       enqueue_order_(enqueue_order) {
+  DCHECK(!absl::holds_alternative<base::TimeDelta>(
+             posted_task.delay_or_delayed_run_time) ||
+         absl::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
+             .is_zero());
   // We use |sequence_num| when comparing PendingTask for ordering purposes
   // and it may wrap around to a negative number during the static cast, hence,
   // TaskQueueImpl::DelayedIncomingQueue is especially sensitive to a potential
@@ -36,6 +44,7 @@ Task::~Task() = default;
 Task& Task::operator=(Task&& other) = default;
 
 namespace internal {
+
 PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
                        OnceClosure callback,
                        Location location,
@@ -44,20 +53,25 @@ PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
                        TaskType task_type)
     : callback(std::move(callback)),
       location(location),
-      delay(delay),
       nestable(nestable),
       task_type(task_type),
+      delay_or_delayed_run_time(delay),
       task_runner(std::move(task_runner)) {}
 
-PostedTask::PostedTask(PostedTask&& move_from) noexcept
-    : callback(std::move(move_from.callback)),
-      location(move_from.location),
-      delay(move_from.delay),
-      nestable(move_from.nestable),
-      task_type(move_from.task_type),
-      task_runner(std::move(move_from.task_runner)),
-      queue_time(move_from.queue_time) {}
+PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
+                       OnceClosure callback,
+                       Location location,
+                       TimeTicks delayed_run_time,
+                       Nestable nestable,
+                       TaskType task_type)
+    : callback(std::move(callback)),
+      location(location),
+      nestable(nestable),
+      task_type(task_type),
+      delay_or_delayed_run_time(delayed_run_time),
+      task_runner(std::move(task_runner)) {}
 
+PostedTask::PostedTask(PostedTask&& move_from) noexcept = default;
 PostedTask::~PostedTask() = default;
 
 }  // namespace internal

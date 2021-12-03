@@ -8,6 +8,7 @@
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 namespace sequence_manager {
@@ -21,9 +22,15 @@ namespace internal {
 // Eventually it becomes a PendingTask once accepted by a TaskQueueImpl.
 struct BASE_EXPORT PostedTask {
   explicit PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
-                      OnceClosure callback = OnceClosure(),
-                      Location location = Location(),
-                      TimeDelta delay = TimeDelta(),
+                      OnceClosure callback,
+                      Location location,
+                      TimeDelta delay = base::TimeDelta(),
+                      Nestable nestable = Nestable::kNestable,
+                      TaskType task_type = kTaskTypeNone);
+  explicit PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
+                      OnceClosure callback,
+                      Location location,
+                      TimeTicks delayed_run_time,
                       Nestable nestable = Nestable::kNestable,
                       TaskType task_type = kTaskTypeNone);
   PostedTask(PostedTask&& move_from) noexcept;
@@ -31,16 +38,19 @@ struct BASE_EXPORT PostedTask {
   PostedTask& operator=(const PostedTask&) = delete;
   ~PostedTask();
 
+  bool is_delayed() const {
+    return absl::holds_alternative<TimeTicks>(delay_or_delayed_run_time) ||
+           !absl::get<TimeDelta>(delay_or_delayed_run_time).is_zero();
+  }
+
   OnceClosure callback;
   Location location;
-  TimeDelta delay;
-  Nestable nestable;
-  TaskType task_type;
+  Nestable nestable = Nestable::kNestable;
+  TaskType task_type = kTaskTypeNone;
+  absl::variant<TimeDelta, TimeTicks> delay_or_delayed_run_time;
   // The task runner this task is running on. Can be used by task runners that
   // support posting back to the "current sequence".
   scoped_refptr<SequencedTaskRunner> task_runner;
-  // The time at which the task was queued.
-  TimeTicks queue_time;
 };
 
 }  // namespace internal
@@ -67,9 +77,9 @@ struct WakeUp {
 // PendingTask with extra metadata for SequenceManager.
 struct BASE_EXPORT Task : public PendingTask {
   Task(internal::PostedTask posted_task,
-       TimeTicks delayed_run_time,
        EnqueueOrder sequence_order,
        EnqueueOrder enqueue_order = EnqueueOrder(),
+       TimeTicks queue_time = TimeTicks(),
        WakeUpResolution wake_up_resolution = WakeUpResolution::kLow);
   Task(Task&& move_from);
   ~Task();

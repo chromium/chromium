@@ -438,7 +438,7 @@ class BASE_EXPORT TaskQueueImpl {
   // Push the task onto the |delayed_incoming_queue|. Lock-free main thread
   // only fast path.
   void PushOntoDelayedIncomingQueueFromMainThread(Task pending_task,
-                                                  TimeTicks now,
+                                                  LazyNow* lazy_now,
                                                   bool notify_task_annotator);
 
   // Push the task onto the |delayed_incoming_queue|.  Slow path from other
@@ -463,6 +463,9 @@ class BASE_EXPORT TaskQueueImpl {
   void TraceQueueSize() const;
   static Value QueueAsValue(const TaskDeque& queue, TimeTicks now);
   static Value TaskAsValue(const Task& task, TimeTicks now);
+
+  // Returns a Task representation for `delayed_task`.
+  Task MakeDelayedTask(PostedTask delayed_task, LazyNow* lazy_now) const;
 
   // Activate a delayed fence if a time has come.
   void ActivateDelayedFenceIfNeeded(TimeTicks now);

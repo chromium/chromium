@@ -218,10 +218,16 @@ void TaskQueueImpl::PostTask(PostedTask task) {
 
 #if DCHECK_IS_ON()
   MaybeLogPostTask(task);
-  task.delay += GetTaskDelayAdjustment(current_thread);
+  TimeDelta delay = GetTaskDelayAdjustment(current_thread);
+  if (absl::holds_alternative<base::TimeTicks>(
+          task.delay_or_delayed_run_time)) {
+    absl::get<base::TimeTicks>(task.delay_or_delayed_run_time) += delay;
+  } else {
+    absl::get<base::TimeDelta>(task.delay_or_delayed_run_time) += delay;
+  }
 #endif  // DCHECK_IS_ON()
 
-  if (task.delay.is_zero()) {
+  if (!task.is_delayed()) {
     PostImmediateTaskImpl(std::move(task), current_thread);
   } else {
     PostDelayedTaskImpl(std::move(task), current_thread);
@@ -233,8 +239,14 @@ void TaskQueueImpl::MaybeLogPostTask(const PostedTask& task) {
   if (!sequence_manager_->settings().log_post_task)
     return;
 
-  LOG(INFO) << name_ << " PostTask " << task.location.ToString() << " delay "
-            << task.delay;
+  LOG(INFO) << name_ << " PostTask " << task.location.ToString();
+  if (absl::holds_alternative<base::TimeDelta>(task.delay_or_delayed_run_time))
+    LOG(INFO) << "delay "
+              << absl::get<base::TimeDelta>(task.delay_or_delayed_run_time);
+  else if (absl::holds_alternative<base::TimeTicks>(
+               task.delay_or_delayed_run_time))
+    LOG(INFO) << "delayed_run_time "
+              << absl::get<base::TimeTicks>(task.delay_or_delayed_run_time);
 #endif  // DCHECK_IS_ON()
 }
 
@@ -267,10 +279,10 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     // TODO(alexclarke): Maybe add a main thread only immediate_incoming_queue
     // See https://crbug.com/901800
     base::internal::CheckedAutoLock lock(any_thread_lock_);
-    LazyNow lazy_now(sequence_manager_->any_thread_clock());
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
+    TimeTicks queue_time;
     if (add_queue_time_to_tasks || delayed_fence_allowed_)
-      task.queue_time = lazy_now.Now();
+      queue_time = sequence_manager_->any_thread_clock()->NowTicks();
 
     // The sequence number must be incremented atomically with pushing onto the
     // incoming queue. Otherwise if there are several threads posting task we
@@ -279,10 +291,8 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
     bool was_immediate_incoming_queue_empty =
         any_thread_.immediate_incoming_queue.empty();
-    // Delayed run time is null for an immediate task.
-    base::TimeTicks delayed_run_time;
-    any_thread_.immediate_incoming_queue.push_back(Task(
-        std::move(task), delayed_run_time, sequence_number, sequence_number));
+    any_thread_.immediate_incoming_queue.push_back(
+        Task(std::move(task), sequence_number, sequence_number, queue_time));
 
 #if DCHECK_IS_ON()
     any_thread_.immediate_incoming_queue.back().cross_thread_ =
@@ -332,57 +342,22 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(posted_task.callback);
-  DCHECK_GT(posted_task.delay, TimeDelta());
-
-  WakeUpResolution resolution = WakeUpResolution::kLow;
-#if defined(OS_WIN)
-  // We consider the task needs a high resolution timer if the delay is more
-  // than 0 and less than 32ms. This caps the relative error to less than 50% :
-  // a 33ms wait can wake at 48ms since the default resolution on Windows is
-  // between 10 and 15ms.
-  if (posted_task.delay.InMilliseconds() <
-      (2 * Time::kMinLowResolutionThresholdMs))
-    resolution = WakeUpResolution::kHigh;
-#endif  // defined(OS_WIN)
 
   if (current_thread == CurrentThread::kMainThread) {
-    // Lock-free fast path for delayed tasks posted from the main thread.
-    EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
-
-    TimeTicks now = sequence_manager_->main_thread_clock()->NowTicks();
-    TimeTicks delayed_run_time = now + posted_task.delay;
-    if (sequence_manager_->GetAddQueueTimeToTasks())
-      posted_task.queue_time = now;
-
+    LazyNow lazy_now(sequence_manager_->main_thread_clock());
     PushOntoDelayedIncomingQueueFromMainThread(
-        Task(std::move(posted_task), delayed_run_time, sequence_number,
-             EnqueueOrder(), resolution),
-        now, /* notify_task_annotator */ true);
+        MakeDelayedTask(std::move(posted_task), &lazy_now), &lazy_now,
+        /* notify_task_annotator */ true);
   } else {
-    // NOTE posting a delayed taskxs from a different thread is not expected to
-    // be common. This pathway is less optimal than perhaps it could be
-    // because it causes two main thread tasks to be run.  Should this
-    // assumption prove to be false in future, we may need to revisit this.
-    EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
-
-    TimeTicks now;
-    {
-      base::internal::CheckedAutoLock lock(any_thread_lock_);
-      now = sequence_manager_->any_thread_clock()->NowTicks();
-    }
-    TimeTicks delayed_run_time = now + posted_task.delay;
-    if (sequence_manager_->GetAddQueueTimeToTasks())
-      posted_task.queue_time = now;
-
-    PushOntoDelayedIncomingQueue(Task(std::move(posted_task), delayed_run_time,
-                                      sequence_number, EnqueueOrder(),
-                                      resolution));
+    LazyNow lazy_now(sequence_manager_->any_thread_clock());
+    PushOntoDelayedIncomingQueue(
+        MakeDelayedTask(std::move(posted_task), &lazy_now));
   }
 }
 
 void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
     Task pending_task,
-    TimeTicks now,
+    LazyNow* lazy_now,
     bool notify_task_annotator) {
 #if DCHECK_IS_ON()
   pending_task.cross_thread_ = false;
@@ -393,9 +368,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
     MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
   }
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
-
-  LazyNow lazy_now(now);
-  UpdateWakeUp(&lazy_now);
+  UpdateWakeUp(lazy_now);
 
   TraceQueueSize();
 }
@@ -423,18 +396,18 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TimeTicks delayed_run_time = pending_task.delayed_run_time;
   TimeTicks now = sequence_manager_->main_thread_clock()->NowTicks();
+  LazyNow lazy_now(now);
   if (delayed_run_time <= now) {
     // If |delayed_run_time| is in the past then push it onto the work queue
     // immediately. To ensure the right task ordering we need to temporarily
     // push it onto the |delayed_incoming_queue|.
     pending_task.delayed_run_time = now;
     main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
-    LazyNow lazy_now(now);
     MoveReadyDelayedTasksToWorkQueue(&lazy_now);
   } else {
     // If |delayed_run_time| is in the future we can queue it as normal.
-    PushOntoDelayedIncomingQueueFromMainThread(std::move(pending_task), now,
-                                               false);
+    PushOntoDelayedIncomingQueueFromMainThread(std::move(pending_task),
+                                               &lazy_now, false);
   }
   TraceQueueSize();
 }
@@ -928,6 +901,33 @@ Value TaskQueueImpl::TaskAsValue(const Task& task, TimeTicks now) {
   state.SetDoubleKey("delayed_run_time_milliseconds_from_now",
                      delayed_run_time_milliseconds_from_now.InMillisecondsF());
   return state;
+}
+
+Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
+                                    LazyNow* lazy_now) const {
+  EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
+  base::TimeDelta delay;
+  WakeUpResolution resolution = WakeUpResolution::kLow;
+  if (absl::holds_alternative<base::TimeDelta>(
+          delayed_task.delay_or_delayed_run_time)) {
+    delay = absl::get<base::TimeDelta>(delayed_task.delay_or_delayed_run_time);
+    delayed_task.delay_or_delayed_run_time = lazy_now->Now() + delay;
+  }
+#if defined(OS_WIN)
+  else {
+    delay = absl::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
+            lazy_now->Now();
+  }
+  // We consider the task needs a high resolution timer if the delay is more
+  // than 0 and less than 32ms. This caps the relative error to less than 50% :
+  // a 33ms wait can wake at 48ms since the default resolution on Windows is
+  // between 10 and 15ms.
+  if (delay < (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
+    resolution = WakeUpResolution::kHigh;
+  }
+#endif  // defined(OS_WIN)
+  return Task(std::move(delayed_task), sequence_number, EnqueueOrder(),
+              lazy_now->Now(), resolution);
 }
 
 bool TaskQueueImpl::IsQueueEnabled() const {

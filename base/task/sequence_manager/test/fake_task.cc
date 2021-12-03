@@ -13,12 +13,12 @@ FakeTask::FakeTask(TaskType task_type)
     : Task(internal::PostedTask(nullptr,
                                 OnceClosure(),
                                 FROM_HERE,
-                                TimeDelta(),
+                                base::TimeDelta(),
                                 Nestable::kNestable,
                                 task_type),
+           EnqueueOrder(),
+           EnqueueOrder(),
            TimeTicks(),
-           EnqueueOrder(),
-           EnqueueOrder(),
            WakeUpResolution::kLow) {}
 
 FakeTaskTiming::FakeTaskTiming()
