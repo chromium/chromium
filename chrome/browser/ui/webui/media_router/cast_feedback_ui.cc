@@ -164,7 +164,7 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
   source->AddString("categoryTag", categoryTag);
 
   source->AddBoolean("globalMediaControlsCastStartStop",
-                     GlobalMediaControlsCastStartStopEnabled());
+                     GlobalMediaControlsCastStartStopEnabled(profile_));
 
   webui::SetupWebUIDataSource(
       source,

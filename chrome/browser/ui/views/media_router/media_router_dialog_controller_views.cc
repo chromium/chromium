@@ -43,7 +43,8 @@ MediaRouterDialogControllerViews::~MediaRouterDialogControllerViews() {
 
 bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     std::unique_ptr<StartPresentationContext> context) {
-  if (!GlobalMediaControlsCastStartStopEnabled()) {
+  if (!GlobalMediaControlsCastStartStopEnabled(
+          initiator()->GetBrowserContext())) {
     // Delegate to the base class, which will show the Cast dialog.
     return MediaRouterDialogController::ShowMediaRouterDialogForPresentation(
         std::move(context));

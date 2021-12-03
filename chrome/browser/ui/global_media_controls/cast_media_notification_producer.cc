@@ -18,13 +18,14 @@
 
 namespace {
 
-bool ShouldHideNotification(const media_router::MediaRoute& route) {
+bool ShouldHideNotification(const raw_ptr<Profile> profile,
+                            const media_router::MediaRoute& route) {
   // TODO(crbug.com/1195382): Display multizone group route.
   if (!route.for_display() || route.is_connecting()) {
     return true;
   }
 
-  if (media_router::GlobalMediaControlsCastStartStopEnabled()) {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
     // Hide a route if it's not for display or it's a mirroring route.
     if (route.media_source().IsTabMirroringSource() ||
         route.media_source().IsDesktopMirroringSource() ||
@@ -139,7 +140,7 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
   });
 
   for (const auto& route : routes) {
-    if (ShouldHideNotification(route))
+    if (ShouldHideNotification(profile_, route))
       continue;
 
     auto item_it =

@@ -134,8 +134,9 @@ bool DialMediaRouteProviderEnabled() {
   return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
 }
 
-bool GlobalMediaControlsCastStartStopEnabled() {
-  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop);
+bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
+  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
+         MediaRouterEnabled(context);
 }
 
 bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {

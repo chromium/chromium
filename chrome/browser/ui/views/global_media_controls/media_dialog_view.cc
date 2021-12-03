@@ -379,8 +379,7 @@ MediaDialogView::BuildMediaItemUIView(
       item->SourceType() ==
       media_message_center::SourceType::kLocalMediaSession;
   const bool gmc_cast_start_stop_enabled =
-      media_router::GlobalMediaControlsCastStartStopEnabled() &&
-      media_router::MediaRouterEnabled(profile_);
+      media_router::GlobalMediaControlsCastStartStopEnabled(profile_);
 
   // Show a device selector view for media and supplemental notifications.
   std::unique_ptr<MediaItemUIDeviceSelectorView> device_selector_view;
@@ -390,8 +389,7 @@ MediaDialogView::BuildMediaItemUIView(
     const bool show_expand_button =
         !base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI);
     std::unique_ptr<media_router::CastDialogController> cast_controller;
-    if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
-        media_router::MediaRouterEnabled(profile_)) {
+    if (gmc_cast_start_stop_enabled) {
       cast_controller =
           is_local_media_session
               ? service_->CreateCastDialogControllerForSession(id)

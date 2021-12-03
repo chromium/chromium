@@ -143,8 +143,8 @@ void MediaToolbarButtonView::Disable() {
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
-      media_router::MediaRouterEnabled(browser_->profile()) &&
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(
+          browser_->profile()) &&
       service_->HasLocalCastNotifications()) {
     feature_promo_controller_->MaybeShowPromo(
         feature_engagement::kIPHGMCCastStartStopFeature);

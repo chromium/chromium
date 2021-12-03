@@ -88,8 +88,9 @@ std::string GetReceiverIdHashToken(PrefService* pref_service);
 // also disables SSDP-based discovery for Cast devices.
 bool DialMediaRouteProviderEnabled();
 
-// Returns true if global media controls are used to start and stop casting.
-bool GlobalMediaControlsCastStartStopEnabled();
+// Returns true if global media controls are used to start and stop casting and
+// Media Router is enabled for |context|.
+bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 
 // Returns true if this user is allowed to use Access Codes & QR codes to
 // discover cast devices.
