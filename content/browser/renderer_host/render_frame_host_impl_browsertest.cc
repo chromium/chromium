@@ -866,6 +866,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   InstallBeforeUnloadHandler(root->child_at(0), SHOW_DIALOG);
 
+  // This test assumes a beforeunload handler is present on the main frame.
+  static_cast<RenderFrameHostImpl*>(web_contents()->GetMainFrame())
+      ->SuddenTerminationDisablerChanged(
+          true,
+          blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+
   // Disable beforeunload timer to prevent flakiness.
   PrepContentsForBeforeUnloadTest(web_contents());
 
