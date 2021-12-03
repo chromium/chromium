@@ -2409,7 +2409,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALGL(
       GetFeatureInfo(), source_target, source_level, source_internal_format,
       source_type, dest_target, dest_level, dest_internal_format, unpack_flip_y,
       NeedsUnpackPremultiplyAlpha(*source_shared_image),
-      false /* unpack_unmultiply_alpha */, false /* dither */);
+      false /* unpack_unmultiply_alpha */);
 #if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_FAMILY)
   // glDrawArrays is faster than glCopyTexSubImage2D on IA Mesa driver,
   // although opposite in Android.
@@ -2431,8 +2431,7 @@ void RasterDecoderImpl::DoCopySubTextureINTERNALGL(
       dest_size.width(), dest_size.height(), source_size.width(),
       source_size.height(), unpack_flip_y,
       NeedsUnpackPremultiplyAlpha(*source_shared_image),
-      false /* unpack_unmultiply_alpha */, false /* dither */, method,
-      copy_tex_image_blit_.get());
+      false /* unpack_unmultiply_alpha */, method, copy_tex_image_blit_.get());
   dest_texture->SetLevelClearedRect(dest_target, dest_level, new_cleared_rect);
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(new_cleared_rect);

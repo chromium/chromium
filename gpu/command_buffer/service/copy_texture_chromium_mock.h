@@ -97,7 +97,6 @@ class MockCopyTextureResourceManager final
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) override {}
   void DoCopySubTexture(
@@ -123,7 +122,6 @@ class MockCopyTextureResourceManager final
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) override {}
 };

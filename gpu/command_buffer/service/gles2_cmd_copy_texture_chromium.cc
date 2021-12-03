@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -93,15 +94,14 @@ enum {
 };
 
 const unsigned kAlphaSize = 4;
-const unsigned kDitherSize = 2;
 const unsigned kNumVertexShaders = NUM_GLSL;
 
 static_assert(std::numeric_limits<unsigned>::max() / NUM_GLSL / NUM_D_FORMAT /
-                      NUM_S_FORMAT / NUM_SAMPLERS / kDitherSize / kAlphaSize >
+                      NUM_S_FORMAT / NUM_SAMPLERS / kAlphaSize >
                   0,
               "ShaderId would overflow");
-const unsigned kNumFragmentShaders = kAlphaSize * kDitherSize * NUM_SAMPLERS *
-                                     NUM_S_FORMAT * NUM_D_FORMAT * NUM_GLSL;
+const unsigned kNumFragmentShaders =
+    kAlphaSize * NUM_SAMPLERS * NUM_S_FORMAT * NUM_D_FORMAT * NUM_GLSL;
 
 typedef unsigned ShaderId;
 
@@ -114,19 +114,16 @@ ShaderId GetVertexShaderId(unsigned glslVersion) {
 ShaderId GetFragmentShaderId(unsigned glslVersion,
                              bool premultiply_alpha,
                              bool unpremultiply_alpha,
-                             bool dither,
                              GLenum target,
                              GLenum source_format,
                              GLenum dest_format) {
   unsigned alphaIndex = 0;
-  unsigned ditherIndex = 0;
   unsigned targetIndex = 0;
   unsigned sourceFormatIndex = 0;
   unsigned destFormatIndex = 0;
 
-  alphaIndex = (premultiply_alpha   ? (1 << 0) : 0) |
-               (unpremultiply_alpha ? (1 << 1) : 0);
-  ditherIndex = dither ? 1 : 0;
+  alphaIndex =
+      (premultiply_alpha ? (1 << 0) : 0) | (unpremultiply_alpha ? (1 << 1) : 0);
 
   switch (target) {
     case GL_TEXTURE_2D:
@@ -306,7 +303,6 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
   id = id * NUM_D_FORMAT + destFormatIndex;
   id = id * NUM_S_FORMAT + sourceFormatIndex;
   id = id * NUM_SAMPLERS + targetIndex;
-  id = id * kDitherSize + ditherIndex;
   id = id * kAlphaSize + alphaIndex;
   return id;
 }
@@ -379,7 +375,6 @@ std::string GetVertexShaderSource(unsigned glslVersion) {
 std::string GetFragmentShaderSource(unsigned glslVersion,
                                     bool premultiply_alpha,
                                     bool unpremultiply_alpha,
-                                    bool dither,
                                     bool nv_egl_stream_consumer_external,
                                     GLenum target,
                                     GLenum source_format,
@@ -476,27 +471,6 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
     source += "  if (color.a > 0.0) {\n";
     source += "    color.rgb /= color.a;\n";
     source += "  }\n";
-  }
-
-  // Dither after moving us to our desired alpha format.
-  if (dither) {
-    // Simulate a 4x4 dither pattern using mod/step. This code was tested for
-    // performance in Skia.
-    source +=
-        "  float range = 1.0 / 15.0;\n"
-        "  vec4 modValues = mod(gl_FragCoord.xyxy, vec4(2.0, 2.0, 4.0, 4.0));\n"
-        "  vec4 stepValues = step(modValues, vec4(1.0, 1.0, 2.0, 2.0));\n"
-        "  float dither_value = \n"
-        "      dot(stepValues, \n"
-        "          vec4(8.0 / 16.0, 4.0 / 16.0, 2.0 / 16.0, 1.0 / 16.0)) -\n"
-        "      15.0 / 32.0;\n";
-    // Apply the dither offset to the color. Only dither alpha if non-opaque.
-    source +=
-        "  if (color.a < 1.0) {\n"
-        "    color += dither_value * range;\n"
-        "  } else {\n"
-        "    color.rgb += dither_value * range;\n"
-        "  }\n";
   }
 
   source += "  FRAGCOLOR = TextureType(color * ScaleValue);\n";
@@ -895,7 +869,6 @@ class CopyTextureResourceManagerImpl
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) override;
   void DoCopySubTexture(
@@ -921,9 +894,9 @@ class CopyTextureResourceManagerImpl
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) override;
+
  private:
   struct ProgramInfo {
     ProgramInfo()
@@ -965,7 +938,6 @@ class CopyTextureResourceManagerImpl
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTexImageResourceManager* luma_emulation_blitter);
 
   bool initialized_;
@@ -1088,7 +1060,6 @@ void CopyTextureResourceManagerImpl::DoCopySubTexture(
     bool flip_y,
     bool premultiply_alpha,
     bool unpremultiply_alpha,
-    bool dither,
     CopyTextureMethod method,
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   if (method == CopyTextureMethod::DIRECT_COPY) {
@@ -1136,7 +1107,7 @@ void CopyTextureResourceManagerImpl::DoCopySubTexture(
       decoder, source_target, source_id, source_level, source_internal_format,
       dest_target, dest_texture, dest_level, dest_internal_format, dest_xoffset,
       dest_yoffset, x, y, width, height, dest_width, dest_height, source_width,
-      source_height, flip_y, premultiply_alpha, unpremultiply_alpha, dither,
+      source_height, flip_y, premultiply_alpha, unpremultiply_alpha,
       luma_emulation_blitter);
 
   if (method == CopyTextureMethod::DRAW_AND_COPY ||
@@ -1174,7 +1145,6 @@ void CopyTextureResourceManagerImpl::DoCopyTexture(
     bool flip_y,
     bool premultiply_alpha,
     bool unpremultiply_alpha,
-    bool dither,
     CopyTextureMethod method,
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   GLsizei dest_width = width;
@@ -1217,7 +1187,7 @@ void CopyTextureResourceManagerImpl::DoCopyTexture(
       decoder, source_target, source_id, source_level, source_internal_format,
       dest_target, dest_texture, dest_level, dest_internal_format, 0, 0, 0, 0,
       width, height, dest_width, dest_height, width, height, flip_y,
-      premultiply_alpha, unpremultiply_alpha, dither, luma_emulation_blitter);
+      premultiply_alpha, unpremultiply_alpha, luma_emulation_blitter);
 
   if (method == CopyTextureMethod::DRAW_AND_COPY ||
       method == CopyTextureMethod::DRAW_AND_READBACK) {
@@ -1260,7 +1230,6 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
     bool flip_y,
     bool premultiply_alpha,
     bool unpremultiply_alpha,
-    bool dither,
     gpu::gles2::CopyTexImageResourceManager* luma_emulation_blitter) {
   DCHECK(source_target == GL_TEXTURE_2D ||
          source_target == GL_TEXTURE_RECTANGLE_ARB ||
@@ -1304,7 +1273,7 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
   DCHECK_LT(static_cast<size_t>(vertex_shader_id), vertex_shaders_.size());
   ShaderId fragment_shader_id =
       GetFragmentShaderId(glslVersion, premultiply_alpha, unpremultiply_alpha,
-                          dither, source_target, source_format, dest_format);
+                          source_target, source_format, dest_format);
   DCHECK_LT(static_cast<size_t>(fragment_shader_id), fragment_shaders_.size());
 
   ProgramMapKey key(fragment_shader_id);
@@ -1323,7 +1292,7 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
     if (!*fragment_shader) {
       *fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
       std::string source = GetFragmentShaderSource(
-          glslVersion, premultiply_alpha, unpremultiply_alpha, dither,
+          glslVersion, premultiply_alpha, unpremultiply_alpha,
           nv_egl_stream_consumer_external_, source_target, source_format,
           dest_format);
       CompileShaderWithLog(*fragment_shader, source.c_str());

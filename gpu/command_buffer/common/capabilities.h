@@ -193,8 +193,6 @@ struct GPU_EXPORT Capabilities {
 
   bool chromium_gpu_fence = false;
 
-  bool unpremultiply_and_dither_copy = false;
-
   bool separate_stencil_ref_mask_writemask = false;
 
   bool use_gpu_fences_for_overlay_planes = false;

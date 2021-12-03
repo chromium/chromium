@@ -74,7 +74,6 @@ class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) = 0;
 
@@ -101,7 +100,6 @@ class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
       bool flip_y,
       bool premultiply_alpha,
       bool unpremultiply_alpha,
-      bool dither,
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) = 0;
 

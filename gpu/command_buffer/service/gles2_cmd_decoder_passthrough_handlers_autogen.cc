@@ -4407,32 +4407,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleLoseContextCHROMIUM(
   return error::kNoError;
 }
 
-error::Error
-GLES2DecoderPassthroughImpl::HandleUnpremultiplyAndDitherCopyCHROMIUM(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::UnpremultiplyAndDitherCopyCHROMIUM& c =
-      *static_cast<
-          const volatile gles2::cmds::UnpremultiplyAndDitherCopyCHROMIUM*>(
-          cmd_data);
-  if (!features().unpremultiply_and_dither_copy) {
-    return error::kUnknownCommand;
-  }
-
-  GLuint source_id = static_cast<GLuint>(c.source_id);
-  GLuint dest_id = static_cast<GLuint>(c.dest_id);
-  GLint x = static_cast<GLint>(c.x);
-  GLint y = static_cast<GLint>(c.y);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
-  error::Error error = DoUnpremultiplyAndDitherCopyCHROMIUM(
-      source_id, dest_id, x, y, width, height);
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleDrawBuffersEXTImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

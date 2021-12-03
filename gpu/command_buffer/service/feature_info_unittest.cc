@@ -1697,25 +1697,6 @@ TEST_P(FeatureInfoTest, InitializeEXT_texture_norm16) {
       GL_RGBA16_EXT));
 }
 
-TEST_P(FeatureInfoTest, InitializeCHROMIUM_unpremultiply_and_dither_copy) {
-  SetupInitExpectations("");
-  switch (GetParam()) {
-    case ES2_on_Version3_0_Passthrough:
-      EXPECT_FALSE(info_->feature_flags().unpremultiply_and_dither_copy);
-      EXPECT_FALSE(gfx::HasExtension(
-          info_->extensions(), "GL_CHROMIUM_unpremultiply_and_dither_copy"));
-      break;
-    case ES2_on_Version3_0:
-    case ES2_on_Version3_2Compatibility:
-    case ES3_on_Version3_0:
-    case ES3_on_Version3_2Compatibility:
-      EXPECT_TRUE(info_->feature_flags().unpremultiply_and_dither_copy);
-      EXPECT_TRUE(gfx::HasExtension(
-          info_->extensions(), "GL_CHROMIUM_unpremultiply_and_dither_copy"));
-      break;
-  }
-}
-
 TEST_P(FeatureInfoTest, InitializeMESAFramebufferFlipYExtensionTrue) {
   SetupInitExpectations("GL_MESA_framebuffer_flip_y");
   EXPECT_TRUE(info_->feature_flags().mesa_framebuffer_flip_y);

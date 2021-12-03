@@ -1630,11 +1630,6 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_EXT_debug_marker");
   }
 
-  // UnpremultiplyAndDitherCopyCHROMIUM is only implemented on the full decoder.
-  feature_flags_.unpremultiply_and_dither_copy = !is_passthrough_cmd_decoder_;
-  if (feature_flags_.unpremultiply_and_dither_copy)
-    AddExtensionString("GL_CHROMIUM_unpremultiply_and_dither_copy");
-
   // On D3D, there is only one ref, mask, and writemask setting which applies
   // to both FRONT and BACK faces. This restriction is always applied to WebGL.
   // https://crbug.com/806557

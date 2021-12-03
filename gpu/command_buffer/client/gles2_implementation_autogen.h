@@ -1123,13 +1123,6 @@ void DiscardFramebufferEXT(GLenum target,
 
 void LoseContextCHROMIUM(GLenum current, GLenum other) override;
 
-void UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
-                                        GLuint dest_id,
-                                        GLint x,
-                                        GLint y,
-                                        GLsizei width,
-                                        GLsizei height) override;
-
 void DrawBuffersEXT(GLsizei count, const GLenum* bufs) override;
 
 void DiscardBackbufferCHROMIUM() override;

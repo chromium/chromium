@@ -146,8 +146,7 @@ CopyTextureMethod GetCopyTextureCHROMIUMMethod(const FeatureInfo* feature_info,
                                                GLenum dest_internal_format,
                                                bool flip_y,
                                                bool premultiply_alpha,
-                                               bool unpremultiply_alpha,
-                                               bool dither);
+                                               bool unpremultiply_alpha);
 
 bool ValidateCopyTextureCHROMIUMInternalFormats(const FeatureInfo* feature_info,
                                                 GLenum source_internal_format,

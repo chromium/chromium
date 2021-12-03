@@ -893,28 +893,6 @@ typedef void(GL_APIENTRYP PFNGLSETCOLORSPACEMETADATACHROMIUM)(
     GLcolorSpace color_space);
 #endif /* GL_CHROMIUM_color_space_metadata */
 
-/* GL_CHROMIUM_dither_and_premultiply_copy */
-#ifndef GL_CHROMIUM_unpremultiply_and_dither_copy
-#define GL_CHROMIUM_unpremultiply_and_dither_copy 1
-
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY
-glUnpremultiplyAndDitherCopyCHROMIUM(GLenum source_id,
-                                     GLenum dest_id,
-                                     GLint x,
-                                     GLint y,
-                                     GLsizei width,
-                                     GLsizei height);
-#endif
-typedef void(GL_APIENTRYP PFNGLUNPREMULTIPLYANDDITHERCOPYCHROMIUMPROC)(
-    GLenum source_id,
-    GLenum dest_id,
-    GLint x,
-    GLint y,
-    GLsizei width,
-    GLsizei height);
-#endif /* GL_CHROMIUM_unpremultiply_and_dither_copy */
-
 #ifndef GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT
 #define GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT 0x8868
 #endif

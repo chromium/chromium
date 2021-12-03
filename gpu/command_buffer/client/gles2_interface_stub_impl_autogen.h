@@ -1086,13 +1086,6 @@ void GLES2InterfaceStub::DiscardFramebufferEXT(
     const GLenum* /* attachments */) {}
 void GLES2InterfaceStub::LoseContextCHROMIUM(GLenum /* current */,
                                              GLenum /* other */) {}
-void GLES2InterfaceStub::UnpremultiplyAndDitherCopyCHROMIUM(
-    GLuint /* source_id */,
-    GLuint /* dest_id */,
-    GLint /* x */,
-    GLint /* y */,
-    GLsizei /* width */,
-    GLsizei /* height */) {}
 void GLES2InterfaceStub::DrawBuffersEXT(GLsizei /* count */,
                                         const GLenum* /* bufs */) {}
 void GLES2InterfaceStub::DiscardBackbufferCHROMIUM() {}

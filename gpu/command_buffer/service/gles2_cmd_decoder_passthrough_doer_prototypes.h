@@ -1091,12 +1091,6 @@ error::Error DoWindowRectanglesEXT(GLenum mode,
 error::Error DoCreateGpuFenceINTERNAL(GLuint gpu_fence_id);
 error::Error DoWaitGpuFenceCHROMIUM(GLuint gpu_fence_id);
 error::Error DoDestroyGpuFenceCHROMIUM(GLuint gpu_fence_id);
-error::Error DoUnpremultiplyAndDitherCopyCHROMIUM(GLuint src_texture,
-                                                  GLuint dst_texture,
-                                                  GLint x,
-                                                  GLint y,
-                                                  GLsizei width,
-                                                  GLsizei height);
 error::Error DoSetReadbackBufferShadowAllocationINTERNAL(GLuint buffer_id,
                                                          GLuint shm_id,
                                                          GLuint shm_offset,
