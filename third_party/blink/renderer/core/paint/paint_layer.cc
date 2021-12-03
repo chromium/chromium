@@ -1821,6 +1821,24 @@ void PaintLayer::CollectFragments(
       is_fragmented &&
       root_layer->EnclosingPaginationLayer() == EnclosingPaginationLayer();
 
+  const LayoutBox* layout_box_with_fragments = nullptr;
+  if (GetLayoutObject().CanTraversePhysicalFragments()) {
+    layout_box_with_fragments = GetLayoutBox();
+    if (layout_box_with_fragments) {
+      if (!layout_box_with_fragments->PhysicalFragmentCount()) {
+        NOTREACHED();
+        // TODO(crbug.com/1273068): The box has no fragments. This is
+        // unexpected, and we must have failed a bunch of DCHECKs (if enabled)
+        // on our way here. If the LayoutBox has never been laid out, it will
+        // have no fragments. But then we shouldn't really be here. Fall back to
+        // legacy LayoutObject tree traversal for this layer. There's code that
+        // requires that there be at least one PaintLayerFragment, so leaving
+        // empty-handed isn't an option.
+        layout_box_with_fragments = nullptr;
+      }
+    }
+  }
+
   // The inherited offset_from_root does not include any pagination offsets.
   // In the presence of fragmentation, we cannot use it.
   bool offset_from_root_can_be_used = offset_from_root && !is_fragmented;
@@ -1886,12 +1904,10 @@ void PaintLayer::CollectFragments(
 
     fragment.fragment_data = fragment_data;
 
-    if (GetLayoutObject().CanTraversePhysicalFragments()) {
-      if (const auto* layout_box = GetLayoutBox()) {
-        fragment.physical_fragment =
-            layout_box->GetPhysicalFragment(physical_fragment_idx);
-        DCHECK(fragment.physical_fragment);
-      }
+    if (layout_box_with_fragments) {
+      fragment.physical_fragment =
+          layout_box_with_fragments->GetPhysicalFragment(physical_fragment_idx);
+      DCHECK(fragment.physical_fragment);
     }
 
     fragments.push_back(fragment);
