@@ -253,12 +253,6 @@ void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
       &::features::kPluginVm,
   };
 
-  if (!IsRunningTest()) {
-    // TODO(b/192007213): Remove once kCellularUseAttachApn defaults to true.
-    kForwardEnabledFeatures.push_back(
-        &chromeos::features::kCellularUseAttachApn);
-  }
-
   std::vector<std::string> enabled_features;
   for (const auto* feature : kForwardEnabledFeatures) {
     if (base::FeatureList::IsEnabled(*feature))
