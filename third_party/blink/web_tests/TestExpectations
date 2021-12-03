@@ -1722,9 +1722,7 @@ crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failur
 
 # @container
 crbug.com/1273913 external/wpt/css/css-contain/container-queries/pseudo-elements-002.tentative.html [ Failure ]
-crbug.com/1249468 wpt_internal/css/css-conditional/container-queries/block-size-and-min-height.html [ Failure ]
-crbug.com/829028 wpt_internal/css/css-contain/multicol-block-size.html [ Failure ]
-crbug.com/829028 wpt_internal/css/css-contain/multicol-inline-size.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-contain/contain-inline-size-multicol.html [ Failure ]
 
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]
