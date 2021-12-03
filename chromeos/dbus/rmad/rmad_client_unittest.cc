@@ -37,8 +37,6 @@ MATCHER_P(HasMember, name, "") {
   return true;
 }
 
-}  // namespace
-
 class RmadClientTest : public testing::Test {
  public:
   RmadClientTest() = default;
@@ -855,5 +853,7 @@ TEST_F(RmadClientTest, RoFirmwareUpdateProgressBadParameterFails) {
   EXPECT_EQ(observer_1.last_ro_firmware_update_status(),
             rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UNKNOWN);
 }
+
+}  // namespace
 
 }  // namespace chromeos
