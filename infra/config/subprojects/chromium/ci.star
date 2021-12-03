@@ -52,7 +52,7 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_OWNER,
-            groups = "google/luci-task-force@google.com",
+            groups = "project-chromium-admins",
         ),
         acl.entry(
             roles = acl.SCHEDULER_TRIGGERER,
