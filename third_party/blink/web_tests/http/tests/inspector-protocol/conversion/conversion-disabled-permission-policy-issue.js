@@ -13,7 +13,7 @@
   const eventPromises = [dp.Network.onceRequestWillBeSent(), dp.Audits.onceIssueAdded()];
   await page.loadHTML(`
     <!DOCTYPE html>
-    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php"></img>`);
+    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php?trigger-data=2"></img>`);
 
   const [requestWillBeSent, issue] = await Promise.all(eventPromises);
   testRunner.log(issue.params.issue, "Issue reported: ", ['frame', 'request', 'violatingNodeId']);

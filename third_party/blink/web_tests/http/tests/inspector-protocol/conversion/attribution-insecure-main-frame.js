@@ -10,7 +10,7 @@
   await page.navigate('http://devtools.test:8000/inspector-protocol/resources/empty.html');
 
   const issuePromise = dp.Audits.onceIssueAdded();
-  await page.loadHTML(`<!DOCTYPE html><img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php"></img>`);
+  await page.loadHTML(`<!DOCTYPE html><img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php?trigger-data=2"></img>`);
   const issue = await issuePromise;
   testRunner.log(issue.params.issue, "Issue reported: ", ['frame', 'requestId']);
   testRunner.completeTest();

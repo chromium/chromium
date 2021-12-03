@@ -12,8 +12,8 @@
   const issuePromises = [dp.Audits.onceIssueAdded(), dp.Audits.onceIssueAdded()];
   await page.loadHTML(`
     <!DOCTYPE html>
-    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect-invalid-data.php"></img>
-    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect-missing-data.php"></img>`);
+    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php"></img>
+    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php?trigger-data=badinteger"></img>`);
   const issues = await Promise.all(issuePromises);
   testRunner.log(issues[0].params.issue, "Issue reported: ", ['requestId']);
   testRunner.log(issues[1].params.issue, "Issue reported: ", ['requestId']);

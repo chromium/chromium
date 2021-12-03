@@ -12,7 +12,7 @@
   const issuePromise = dp.Audits.onceIssueAdded();
   await page.loadHTML(`
     <!DOCTYPE html>
-    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect-too-large-data.php"></img>`);
+    <img src="https://devtools.test:8443/inspector-protocol/conversion/resources/conversion-redirect.php?trigger-data=42"></img>`);
   const issues = await issuePromise;
   testRunner.log(issues.params.issue, "Issue reported: ", ['requestId']);
 
