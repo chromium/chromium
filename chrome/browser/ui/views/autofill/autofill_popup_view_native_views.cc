@@ -1352,6 +1352,9 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   std::vector<int> footer_item_line_numbers;
   footer_item_line_numbers.reserve(line_count);
 
+  bool use_visual_suggestion_ui_improvements = base::FeatureList::IsEnabled(
+      features::kAutofillVisualImprovementsForSuggestionUi);
+
   // Convert a line number to a front end id.
   auto line_number_to_frontend_id = [&](int line_number) {
     return controller_->GetSuggestionAt(line_number).frontend_id;
@@ -1365,7 +1368,6 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
        ++current_line_number) {
     int frontend_id = line_number_to_frontend_id(current_line_number);
     switch (frontend_id) {
-      // Collect all the footer lines for subsequent processing.
       case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
       case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
       case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
@@ -1376,6 +1378,18 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
           POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
       case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
       case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
+        // TODO(crbug.com/1274134): Clean up once improvements are launched.
+        if (use_visual_suggestion_ui_improvements) {
+          DCHECK(footer_item_line_numbers.empty());
+          rows_.push_back(AutofillPopupSuggestionView::Create(
+              this, current_line_number, frontend_id,
+              controller_->GetPopupType()));
+        } else {
+          footer_item_line_numbers.emplace_back(current_line_number);
+        }
+        break;
+
+      // Collect all the footer lines for subsequent processing.
       case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
       case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
       case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
@@ -1388,6 +1402,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
         // Directly add the separator view unless the loop is already processing
         // footer items. In this case, add it to the footer items for subsequent
         // processing.
+        // TODO(crbug.com/1274134): Clean up once improvements are launched.
         if (footer_item_line_numbers.empty()) {
           rows_.push_back(
               AutofillPopupSeparatorView::Create(this, current_line_number));
