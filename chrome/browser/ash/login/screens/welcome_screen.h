@@ -65,7 +65,13 @@ class WelcomeScreen : public BaseScreen,
     virtual void OnLanguageListReloaded() = 0;
   };
 
-  enum class Result { NEXT, NEXT_OS_INSTALL, SETUP_DEMO, ENABLE_DEBUGGING };
+  enum class Result {
+    NEXT,
+    NEXT_OS_INSTALL,
+    SETUP_DEMO,
+    ENABLE_DEBUGGING,
+    QUICK_START
+  };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 

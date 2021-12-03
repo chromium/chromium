@@ -1997,6 +1997,8 @@ source_set("chromeos") {
     "../ash/login/screens/parental_handoff_screen.h",
     "../ash/login/screens/pin_setup_screen.cc",
     "../ash/login/screens/pin_setup_screen.h",
+    "../ash/login/screens/quick_start_screen.cc",
+    "../ash/login/screens/quick_start_screen.h",
     "../ash/login/screens/recommend_apps/fake_recommend_apps_fetcher.cc",
     "../ash/login/screens/recommend_apps/fake_recommend_apps_fetcher.h",
     "../ash/login/screens/recommend_apps/recommend_apps_fetcher.cc",

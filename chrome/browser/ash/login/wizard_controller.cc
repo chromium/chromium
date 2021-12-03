@@ -163,6 +163,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -541,6 +542,12 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
         oobe_ui->GetView<EulaScreenHandler>(),
         base::BindRepeating(&WizardController::OnEulaScreenExit,
                             weak_factory_.GetWeakPtr())));
+    if (ash::features::IsOobeQuickStartEnabled()) {
+      append(std::make_unique<QuickStartScreen>(
+          oobe_ui->GetView<QuickStartScreenHandler>(),
+          base::BindRepeating(&WizardController::OnQuickStartScreenExit,
+                              weak_factory_.GetWeakPtr())));
+    }
   }
 
   append(std::make_unique<NetworkScreen>(
@@ -753,6 +760,11 @@ std::vector<std::unique_ptr<BaseScreen>> WizardController::CreateScreens() {
 
 void WizardController::ShowWelcomeScreen() {
   SetCurrentScreen(GetScreen(WelcomeView::kScreenId));
+}
+
+void WizardController::ShowQuickStartScreen() {
+  CHECK(ash::features::IsOobeQuickStartEnabled());
+  SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
 }
 
 void WizardController::ShowNetworkScreen() {
@@ -1257,7 +1269,13 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
     case WelcomeScreen::Result::NEXT:
       ShowNetworkScreen();
       return;
+    case WelcomeScreen::Result::QUICK_START:
+      ShowQuickStartScreen();
+      return;
   }
+}
+
+void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
 }
 
 void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {

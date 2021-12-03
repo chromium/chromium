@@ -86,6 +86,7 @@ constexpr const char kUserActionActivateRemoraRequisition[] =
     "activateRemoraRequisition";
 constexpr const char kUserActionEditDeviceRequisition[] =
     "editDeviceRequisition";
+constexpr const char kUserActionQuickStartClicked[] = "activateQuickStart";
 
 struct WelcomeScreenA11yUserAction {
   const char* name_;
@@ -171,6 +172,8 @@ std::string WelcomeScreen::GetResultString(Result result) {
       return "SetupDemo";
     case Result::ENABLE_DEBUGGING:
       return "EnableDebugging";
+    case Result::QUICK_START:
+      return "QuickStart";
   }
 }
 
@@ -375,6 +378,11 @@ void WelcomeScreen::HideImpl() {
 }
 
 void WelcomeScreen::OnUserAction(const std::string& action_id) {
+  if (action_id == kUserActionQuickStartClicked) {
+    DCHECK(ash::features::IsOobeQuickStartEnabled());
+    exit_callback_.Run(Result::QUICK_START);
+    return;
+  }
   if (action_id == kUserActionContinueButtonClicked) {
     OnContinueButtonPressed();
     return;

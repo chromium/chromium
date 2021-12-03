@@ -47,6 +47,7 @@
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
@@ -236,6 +237,7 @@ class WizardController {
 
   // Show specific screen.
   void ShowWelcomeScreen();
+  void ShowQuickStartScreen();
   void ShowNetworkScreen();
   void ShowEulaScreen();
   void ShowEnrollmentScreen();
@@ -296,6 +298,7 @@ class WizardController {
   void OnWrongHWIDScreenExit();
   void OnHidDetectionScreenExit(HIDDetectionScreen::Result result);
   void OnWelcomeScreenExit(WelcomeScreen::Result result);
+  void OnQuickStartScreenExit(QuickStartScreen::Result result);
   void OnNetworkScreenExit(NetworkScreen::Result result);
   bool ShowEulaOrArcTosAfterNetworkScreen();
   void OnEulaScreenExit(EulaScreen::Result result);

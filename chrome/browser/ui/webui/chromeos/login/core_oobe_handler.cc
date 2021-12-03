@@ -113,6 +113,8 @@ void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     dict->SetKey("flowType", base::Value("meet"));
   }
+  dict->SetKey("isQuickStartEnabled",
+               base::Value(ash::features::IsOobeQuickStartEnabled()));
 }
 
 void CoreOobeHandler::RegisterMessages() {

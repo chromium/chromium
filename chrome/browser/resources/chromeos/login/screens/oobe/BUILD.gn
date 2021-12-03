@@ -16,6 +16,7 @@ group("polymer3_elements") {
     ":hid_detection_module",
     ":oobe_eula_module",
     ":packaged_license_module",
+    ":quick_start_module",
     ":update_module",
     ":welcome_dialog_module",
     ":welcome_module",
@@ -42,6 +43,7 @@ js_type_check("closure_compile_module") {
     ":hid_detection.m",
     ":oobe_eula.m",
     ":packaged_license.m",
+    ":quick_start.m",
     ":update.m",
     ":welcome.m",
     ":welcome_dialog.m",
@@ -128,6 +130,17 @@ js_library("hid_detection.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":hid_detection_module" ]
+}
+
+js_library("quick_start.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/quick_start.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":quick_start_module" ]
 }
 
 js_library("oobe_eula.m") {
@@ -247,6 +260,14 @@ polymer_modulizer("enable_debugging") {
 polymer_modulizer("hid_detection") {
   js_file = "hid_detection.js"
   html_file = "hid_detection.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("quick_start") {
+  js_file = "quick_start.js"
+  html_file = "quick_start.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

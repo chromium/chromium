@@ -72,13 +72,13 @@
         justify-self: start;
       }
 
-      :host-context([orientation=vertical]) #getStarted {
+      :host-context([orientation=vertical]) #bottomButtons {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 3 / span 1;
         justify-self: center;
       }
-      :host-context([orientation=horizontal]) #getStarted {
+      :host-context([orientation=horizontal]) #bottomButtons {
         align-self: end;
         grid-column: 1 / span 1;
         grid-row: 2 / span 1;
@@ -188,10 +188,18 @@
             hidden="[[!debuggingLinkVisible]]">
           </oobe-icon-button>
         </div>
-        <oobe-text-button id="getStarted"
-            inverse on-click="onNextClicked_"
-            text-key="welcomeScreenGetStarted">
-        </oobe-text-button>
+        <div id="bottomButtons">
+          <template is="dom-if" if="[[isQuickStartEnabled_]]">
+            <oobe-text-button id="quickStart"
+               on-click="onQuickStartClicked_"
+               text-key="welcomeScreenQuickStart">
+            </oobe-text-button>
+          </template>
+          <oobe-text-button id="getStarted"
+              inverse on-click="onNextClicked_"
+              text-key="welcomeScreenGetStarted">
+          </oobe-text-button>
+        </div>
         <div id="welcomeAnimationSlot">
           <oobe-cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
               animation-url="/welcome_screen_animation.json">

@@ -10622,6 +10622,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Autolaunch.Completed" label=""/>
   <suffix name="Connect.EnableDebugging" label=""/>
   <suffix name="Connect.Next" label=""/>
+  <suffix name="Connect.QuickStart" label=""/>
   <suffix name="Connect.SetupDemo" label=""/>
   <suffix name="Connect.StartDemo" label=""/>
   <suffix name="Connect.StartOsInstall" label=""/>

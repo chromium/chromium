@@ -319,6 +319,15 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   /**
+   * Handle "Quick Start" button for "Welcome" screen.
+   *
+   * @private
+   */
+  onQuickStartButtonClicked_() {
+    this.userActed('activateQuickStart');
+  }
+
+  /**
    * Handles "enable-debugging" link for "Welcome" screen.
    *
    * @private

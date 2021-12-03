@@ -232,6 +232,10 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
                IDS_ENTERPRISE_DEVICE_REQUISITION_REMORA_PROMPT_TEXT);
   builder->Add("deviceRequisitionSharkPromptText",
                IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
+
+  if (ash::features::IsOobeQuickStartEnabled()) {
+    builder->Add("welcomeScreenQuickStart", IDS_LOGIN_GET_STARTED);
+  }
 }
 
 void WelcomeScreenHandler::DeclareJSCallbacks() {

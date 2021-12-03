@@ -63,6 +63,10 @@ OobeWelcomeDialogBase.$;
         },
         readOnly: true,
       },
+
+      isQuickStartEnabled_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -81,6 +85,8 @@ OobeWelcomeDialogBase.$;
      * to this dialog from Language / Timezone Selection dialogs.
      */
     this.focusedElement_ = null;
+
+    this.isQuickStartEnabled_ = loadTimeData.getBoolean('isQuickStartEnabled');
   }
 
   onBeforeShow() {
@@ -104,11 +110,19 @@ OobeWelcomeDialogBase.$;
 
   onNextClicked_() {
     this.focusedElement_ = 'getStarted';
-    this.dispatchEvent(new CustomEvent('next-button-clicked', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent(
+        'next-button-clicked', {bubbles: true, composed: true}));
+  }
+
+  onQuickStartClicked_() {
+    assert(this.isQuickStartEnabled_);
+    this.dispatchEvent(new CustomEvent(
+        'quick-start-clicked', {bubbles: true, composed: true}));
   }
 
   onDebuggingLinkClicked_() {
-    this.dispatchEvent(new CustomEvent('enable-debugging-clicked', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent(
+        'enable-debugging-clicked', {bubbles: true, composed: true}));
   }
 
   /*
@@ -117,7 +131,8 @@ OobeWelcomeDialogBase.$;
     * @private
     */
   onTitleLongTouch_() {
-    this.dispatchEvent(new CustomEvent('launch-advanced-options', { bubbles: true, composed: true }));
+    this.dispatchEvent(new CustomEvent(
+        'launch-advanced-options', {bubbles: true, composed: true}));
   }
 
   attached() {

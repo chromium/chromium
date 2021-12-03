@@ -81,6 +81,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
@@ -420,6 +421,11 @@ void OobeUI::ConfigureOobeDisplay() {
 
     AddScreenHandler(
         std::make_unique<EulaScreenHandler>(js_calls_container_.get()));
+
+    if (ash::features::IsOobeQuickStartEnabled()) {
+      AddScreenHandler(
+          std::make_unique<QuickStartScreenHandler>(js_calls_container_.get()));
+    }
   }
 
   AddScreenHandler(
