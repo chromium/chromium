@@ -194,7 +194,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -228,7 +227,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -276,8 +274,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -303,8 +301,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -330,8 +328,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -357,8 +355,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -383,8 +381,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -407,8 +405,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -437,8 +435,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -450,7 +448,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -469,8 +466,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -484,7 +481,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -503,8 +499,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -706,7 +702,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -740,7 +735,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -788,8 +782,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -815,8 +809,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -842,8 +836,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -869,8 +863,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -895,8 +889,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -919,8 +913,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -949,8 +943,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -962,7 +956,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -981,8 +974,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -996,7 +989,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
@@ -1015,8 +1007,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-440.100",
-              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+              "gpu": "10de:1cb3-418.56",
+              "os": "Ubuntu-19.04",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1235,7 +1227,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1271,7 +1262,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1494,7 +1484,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1528,7 +1517,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1839,7 +1827,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1875,7 +1862,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2098,7 +2084,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2132,7 +2117,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2179,7 +2163,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2210,7 +2194,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2241,7 +2225,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2271,7 +2255,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2299,7 +2283,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2334,7 +2318,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2352,7 +2336,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64",
           "--time-out-ms=48000"
         ],
@@ -2371,7 +2354,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             },
@@ -2575,7 +2558,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2608,7 +2590,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2654,7 +2635,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2680,7 +2661,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2706,7 +2687,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2732,7 +2713,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2757,7 +2738,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2780,7 +2761,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2810,7 +2791,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2823,7 +2804,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2841,7 +2821,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2856,7 +2836,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2874,7 +2853,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3071,7 +3050,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3104,7 +3082,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3150,7 +3127,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3176,7 +3153,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3202,7 +3179,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3228,7 +3205,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3253,7 +3230,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3276,7 +3253,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3306,7 +3283,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3319,7 +3296,6 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3337,7 +3313,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3352,7 +3328,6 @@
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox",
           "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -3370,7 +3345,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3568,8 +3543,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3600,8 +3574,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3646,7 +3619,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3672,7 +3645,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3698,7 +3671,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3724,7 +3697,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3749,7 +3722,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3772,7 +3745,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3802,7 +3775,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3814,8 +3787,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3832,7 +3804,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -3846,8 +3818,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3864,7 +3835,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4060,8 +4031,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4092,8 +4062,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4138,7 +4107,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4164,7 +4133,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4190,7 +4159,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4216,7 +4185,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4241,7 +4210,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4264,7 +4233,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4294,7 +4263,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4306,8 +4275,7 @@
       {
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--flag-specific=webgpu",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--flag-specific=webgpu"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4324,7 +4292,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -4338,8 +4306,7 @@
         "args": [
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--flag-specific=webgpu-with-partial-backend-validation",
-          "--time-out-ms=30000",
-          "--additional-driver-flag=--disable-gpu-sandbox"
+          "--time-out-ms=30000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4356,7 +4323,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:2184-27.21.14.5638",
+              "gpu": "10de:1cb3-27.21.14.5148",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }

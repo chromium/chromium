@@ -1286,7 +1286,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_common_gtests_passthrough',
@@ -1305,7 +1305,7 @@
       'linux-angle-nvidia': {
         'os_type': 'linux',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_nvidia_gtests',
@@ -1351,7 +1351,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_angle_win_intel_nvidia_telemetry_tests',
@@ -1369,7 +1369,7 @@
       'win10-angle-x64-nvidia': {
         'os_type': 'win',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_win_nvidia_gtests',
@@ -2138,7 +2138,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -2160,7 +2160,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -2245,7 +2245,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable_dimension_set',
+          'win10_nvidia_quadro_p400_stable_dimension_set',
           'win10_intel_hd_630_stable_dimension_set',
         ],
         'test_suites': {
@@ -2270,7 +2270,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -2292,7 +2292,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -2316,7 +2316,7 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -2338,7 +2338,7 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
@@ -3826,7 +3826,7 @@
         'browser_config': 'debug',
         'os_type': 'linux',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -3837,7 +3837,7 @@
         'browser_config': 'release',
         'os_type': 'linux',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_desktop_passthrough_gtests',
@@ -3894,7 +3894,7 @@
         'browser_config': 'debug_x64',
         'os_type': 'win',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_win_gtests',
@@ -3905,7 +3905,7 @@
         'browser_config': 'release_x64',
         'os_type': 'win',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_win_gtests',
@@ -3953,7 +3953,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_gtests',
@@ -4154,7 +4154,7 @@
         'browser_config': 'debug',
         'os_type': 'linux',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_debug_gtests',
@@ -4193,7 +4193,7 @@
         # need the browser_config parameter.
         'os_type': 'linux',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           # This bot doesn't run any browser-based tests
@@ -4243,7 +4243,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
@@ -4277,7 +4277,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_vulkan_gtests',
@@ -4487,7 +4487,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_optional_gtests',
@@ -4546,7 +4546,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_optional_gtests',
@@ -4559,7 +4559,7 @@
         'os_type': 'win',
         'browser_config': 'debug_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
@@ -4569,7 +4569,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
@@ -4579,7 +4579,7 @@
         'os_type': 'win',
         'browser_config': 'debug_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
@@ -4608,7 +4608,7 @@
         'browser_config': 'release_x64',
         'mixins': [
           'limited_capacity_bot',
-          'win10_nvidia_gtx_1660_experimental',
+          'win10_nvidia_quadro_p400_experimental',
         ],
         # When the experimental driver is identical to the stable driver, this
         # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
@@ -4652,17 +4652,18 @@
         'browser_config': 'release_x64',
         'mixins': [
           'limited_capacity_bot',
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_geforce_gtx_1660',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
         },
       },
       'Win10 FYI x64 Release (NVIDIA)': {
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
@@ -4674,7 +4675,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'isolated_scripts': 'win_specific_xr_perf_tests',
@@ -4684,7 +4685,7 @@
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_skia_renderer_dawn_gtests',
@@ -4695,7 +4696,7 @@
         'browser_config': 'release',
         'os_type': 'win',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
@@ -6223,7 +6224,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_v8_desktop_passthrough_telemetry_tests',
@@ -6233,7 +6234,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_nvidia_gtx_1660_stable',
+          'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_v8_desktop_passthrough_telemetry_tests',
@@ -6367,7 +6368,7 @@
         'os_type': 'win',
         'browser_config': 'release',
         'mixins': [
-          'win10_nvidia_gtx_1660_stable',
+          'win10_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_v8_desktop_passthrough_telemetry_tests',
