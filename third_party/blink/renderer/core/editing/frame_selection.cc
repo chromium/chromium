@@ -1168,7 +1168,8 @@ bool FrameSelection::SelectAroundCaret(
     // requested.
     if (text_granularity == TextGranularity::kSentence) {
       start = StartOfSentencePosition(position);
-      end = EndOfSentence(position).GetPosition();
+      end = EndOfSentence(position, SentenceTrailingSpaceBehavior::kOmitSpace)
+                .GetPosition();
     } else {
       start = StartOfWordPosition(position, word_side);
       end = EndOfWordPosition(position, word_side);

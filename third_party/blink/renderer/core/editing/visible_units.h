@@ -53,6 +53,7 @@ enum WordSide {
 };
 
 enum class PlatformWordBehavior { kWordSkipSpaces, kWordDontSkipSpaces };
+enum class SentenceTrailingSpaceBehavior { kIncludeSpace, kOmitSpace };
 
 // offset functions on Node
 CORE_EXPORT int CaretMinOffset(const Node*);
@@ -144,12 +145,22 @@ bool IsWordBreak(UChar);
 CORE_EXPORT Position StartOfSentencePosition(const Position&);
 CORE_EXPORT PositionInFlatTree
 StartOfSentencePosition(const PositionInFlatTree&);
-CORE_EXPORT PositionWithAffinity EndOfSentence(const Position&);
+CORE_EXPORT PositionWithAffinity
+EndOfSentence(const Position&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
 CORE_EXPORT PositionInFlatTreeWithAffinity
-EndOfSentence(const PositionInFlatTree&);
-CORE_EXPORT VisiblePosition EndOfSentence(const VisiblePosition&);
+EndOfSentence(const PositionInFlatTree&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
+CORE_EXPORT VisiblePosition
+EndOfSentence(const VisiblePosition&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
 CORE_EXPORT VisiblePositionInFlatTree
-EndOfSentence(const VisiblePositionInFlatTree&);
+EndOfSentence(const VisiblePositionInFlatTree&,
+              SentenceTrailingSpaceBehavior =
+                  SentenceTrailingSpaceBehavior::kIncludeSpace);
 PositionInFlatTree PreviousSentencePosition(const PositionInFlatTree&);
 PositionInFlatTree NextSentencePosition(const PositionInFlatTree&);
 EphemeralRange ExpandEndToSentenceBoundary(const EphemeralRange&);

@@ -218,7 +218,7 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
   EXPECT_TRUE(Selection().SelectAroundCaret(
       TextGranularity::kSentence, HandleVisibility::kNotVisible,
       ContextMenuVisibility::kNotVisible));
-  EXPECT_EQ_SELECTED_TEXT("This is the second sentence. ");
+  EXPECT_EQ_SELECTED_TEXT("This is the second sentence.");
 
   // This is the first sentence|. This is the second sentence. This is the last
   // sentence.
@@ -226,7 +226,7 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
   EXPECT_TRUE(Selection().SelectAroundCaret(
       TextGranularity::kSentence, HandleVisibility::kNotVisible,
       ContextMenuVisibility::kNotVisible));
-  EXPECT_EQ_SELECTED_TEXT("This is the first sentence. ");
+  EXPECT_EQ_SELECTED_TEXT("This is the first sentence.");
 
   // This is the first sentence.| This is the second sentence. This is the last
   // sentence.
@@ -235,7 +235,7 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
       TextGranularity::kSentence, HandleVisibility::kNotVisible,
       ContextMenuVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT(
-      "This is the first sentence. This is the second sentence. ");
+      "This is the first sentence. This is the second sentence.");
 
   // This is the first sentence. |This is the second sentence. This is the last
   // sentence.
@@ -244,7 +244,7 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
       TextGranularity::kSentence, HandleVisibility::kNotVisible,
       ContextMenuVisibility::kNotVisible));
   EXPECT_EQ_SELECTED_TEXT(
-      "This is the first sentence. This is the second sentence. ");
+      "This is the first sentence. This is the second sentence.");
 
   // This is the first sentence. T|his is the second sentence. This is the last
   // sentence.
@@ -252,7 +252,7 @@ TEST_F(FrameSelectionTest, SelectAroundCaret_Sentence) {
   EXPECT_TRUE(Selection().SelectAroundCaret(
       TextGranularity::kSentence, HandleVisibility::kNotVisible,
       ContextMenuVisibility::kNotVisible));
-  EXPECT_EQ_SELECTED_TEXT("This is the second sentence. ");
+  EXPECT_EQ_SELECTED_TEXT("This is the second sentence.");
 }
 
 TEST_F(FrameSelectionTest, SelectAroundCaret_ShouldShowHandle) {
