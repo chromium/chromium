@@ -111,12 +111,17 @@
     <!-- Note that this might be moved to a different protocol if there is
       usage for it outside of Chrome OS -->
       <description summary="set the surface rounded corners">
+        [Deprecated] Informs the server that it must apply the rounded corners
+        mask filter that shall be applied on next commit. Use
+        set_rounded_corners_bounds instead.
       </description>
       <arg name="top_left" type="fixed" summary="top left corner"/>
       <arg name="top_right" type="fixed" summary="top right corner"/>
       <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
       <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
     </request>
+
+    <!-- Version 2 additions -->
 
     <request name="set_destination_size" since="2">
       <description summary="set the surface destination viewport size, with subpixel accuracy">
@@ -126,6 +131,28 @@
       <arg name="width" type="fixed" summary="width of the surface"/>
       <arg name="height" type="fixed" summary="height of the surface"/>
     </request>\
+
+    <request name="set_rounded_clip_bounds" since="2">
+    <!-- Note that this might be moved to a different protocol if there is
+      usage for it outside of Chrome OS -->
+      <description summary="set the surface rounded clip bounds">
+        Informs the server that it must apply the rounded clipping mask filter
+        that shall be applied on next commit. The mask can be uniform for
+        several surfaces and applied uniformally so that two or more
+        surfaces visually look as a single surface with rounded corners.
+        Please note this is can only be used on surfaces that are used as
+        overlays, which must not have any subtrees. The rounding will be
+        ignored if the bounds are outside of the surface.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+      <arg name="top_left" type="fixed" summary="top left corner"/>
+      <arg name="top_right" type="fixed" summary="top right corner"/>
+      <arg name="bottom_right" type="fixed" summary="bottom right corner"/>
+      <arg name="bottom_left" type="fixed" summary="bottom left corner"/>
+    </request>
   </interface>
 
   <interface name="augmented_sub_surface" version="1">

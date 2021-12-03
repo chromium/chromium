@@ -15,6 +15,7 @@
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace exo {
@@ -48,12 +49,17 @@ class AugmentedSurface : public SurfaceObserver {
     }
   }
 
-  void SetCorners(double top_left,
+  void SetCorners(int32_t x,
+                  int32_t y,
+                  int32_t width,
+                  int32_t height,
+                  double top_left,
                   double top_right,
                   double bottom_right,
                   double bottom_left) {
-    surface_->SetRoundedCorners(
-        gfx::RoundedCornersF(top_left, top_right, bottom_right, bottom_left));
+    surface_->SetRoundedCorners(gfx::RRectF(
+        gfx::RectF(x, y, width, height),
+        gfx::RoundedCornersF(top_left, top_right, bottom_right, bottom_left)));
   }
 
   void SetDestination(float width, float height) {
@@ -74,23 +80,13 @@ void augmented_surface_destroy(wl_client* client, wl_resource* resource) {
   wl_resource_destroy(resource);
 }
 
-void augmented_surface_set_corners(wl_client* client,
-                                   wl_resource* resource,
-                                   wl_fixed_t top_left,
-                                   wl_fixed_t top_right,
-                                   wl_fixed_t bottom_right,
-                                   wl_fixed_t bottom_left) {
-  if (top_left < 0 || bottom_left < 0 || bottom_right < 0 || top_right < 0) {
-    wl_resource_post_error(
-        resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
-        "All corner must have positive radius (%d, %d, %d, %d)", top_left,
-        top_right, bottom_right, bottom_left);
-    return;
-  }
-
-  GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
-      wl_fixed_to_double(top_left), wl_fixed_to_double(top_right),
-      wl_fixed_to_double(bottom_right), wl_fixed_to_double(bottom_left));
+void augmented_surface_set_corners_DEPRECATED(wl_client* client,
+                                              wl_resource* resource,
+                                              wl_fixed_t top_left,
+                                              wl_fixed_t top_right,
+                                              wl_fixed_t bottom_right,
+                                              wl_fixed_t bottom_left) {
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 void augmented_surface_set_destination_size(wl_client* client,
@@ -108,9 +104,36 @@ void augmented_surface_set_destination_size(wl_client* client,
       wl_fixed_to_double(width), wl_fixed_to_double(height));
 }
 
+void augmented_surface_set_rounded_corners_bounds(wl_client* client,
+                                                  wl_resource* resource,
+                                                  int32_t x,
+                                                  int32_t y,
+                                                  int32_t width,
+                                                  int32_t height,
+                                                  wl_fixed_t top_left,
+                                                  wl_fixed_t top_right,
+                                                  wl_fixed_t bottom_right,
+                                                  wl_fixed_t bottom_left) {
+  if (width < 0 || height < 0 || top_left < 0 || bottom_left < 0 ||
+      bottom_right < 0 || top_right < 0) {
+    wl_resource_post_error(resource, AUGMENTED_SURFACE_ERROR_BAD_VALUE,
+                           "The size and corners must have positive values "
+                           "(%d, %d, %d, %d, %d, %d)",
+                           width, height, top_left, top_right, bottom_right,
+                           bottom_left);
+    return;
+  }
+
+  GetUserDataAs<AugmentedSurface>(resource)->SetCorners(
+      x, y, width, height, wl_fixed_to_double(top_left),
+      wl_fixed_to_double(top_right), wl_fixed_to_double(bottom_right),
+      wl_fixed_to_double(bottom_left));
+}
+
 const struct augmented_surface_interface augmented_implementation = {
-    augmented_surface_destroy, augmented_surface_set_corners,
-    augmented_surface_set_destination_size};
+    augmented_surface_destroy, augmented_surface_set_corners_DEPRECATED,
+    augmented_surface_set_destination_size,
+    augmented_surface_set_rounded_corners_bounds};
 
 ////////////////////////////////////////////////////////////////////////////////
 // augmented_sub_surface_interface:

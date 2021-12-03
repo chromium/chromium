@@ -519,11 +519,12 @@ void Surface::OnSubSurfaceCommit() {
     delegate_->OnSurfaceCommit();
 }
 
-void Surface::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
-  TRACE_EVENT1("exo", "Surface::SetRoundedCorner", "corners", radii.ToString());
-  if (radii != pending_state_.radii) {
+void Surface::SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds) {
+  TRACE_EVENT1("exo", "Surface::SetRoundedCorner", "corners",
+               rounded_corners_bounds.ToString());
+  if (rounded_corners_bounds != pending_state_.rounded_corners_bounds) {
     has_pending_contents_ = true;
-    pending_state_.radii = radii;
+    pending_state_.rounded_corners_bounds = rounded_corners_bounds;
   }
 }
 
@@ -761,7 +762,8 @@ void Surface::Commit() {
   has_cached_contents_ |= has_pending_contents_;
   has_pending_contents_ = false;
   cached_state_.buffer = std::move(pending_state_.buffer);
-  cached_state_.radii = std::move(pending_state_.radii);
+  cached_state_.rounded_corners_bounds =
+      std::move(pending_state_.rounded_corners_bounds);
   cached_state_.overlay_priority_hint = pending_state_.overlay_priority_hint;
   cached_state_.acquire_fence = std::move(pending_state_.acquire_fence);
   cached_state_.per_commit_explicit_release_callback_ =
@@ -816,7 +818,7 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         cached_state_.basic_state.buffer_transform !=
             state_.basic_state.buffer_transform ||
         cached_state_.basic_state.viewport != state_.basic_state.viewport ||
-        cached_state_.radii != state_.radii ||
+        cached_state_.rounded_corners_bounds != state_.rounded_corners_bounds ||
         cached_state_.basic_state.crop != state_.basic_state.crop ||
         cached_state_.basic_state.only_visible_on_secure_output !=
             state_.basic_state.only_visible_on_secure_output ||
@@ -891,7 +893,8 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         needs_update_buffer_transform = true;
 
       state_.buffer = std::move(cached_state_.buffer);
-      state_.radii = std::move(cached_state_.radii);
+      state_.rounded_corners_bounds =
+          std::move(cached_state_.rounded_corners_bounds);
       state_.overlay_priority_hint = cached_state_.overlay_priority_hint;
       state_.acquire_fence = std::move(cached_state_.acquire_fence);
       state_.per_commit_explicit_release_callback_ =
@@ -1334,10 +1337,17 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
           gfx::ToEnclosedRect(output_rect));
 
   gfx::MaskFilterInfo msk;
-  if (!state_.radii.IsEmpty()) {
-    const auto rect =
-        gfx::ScaleRect(gfx::RectF(scale.x(), scale.y()), device_scale_factor);
-    msk = gfx::MaskFilterInfo(rect, state_.radii);
+  if (!state_.rounded_corners_bounds.IsEmpty()) {
+    DCHECK(sub_surfaces_.empty());
+    auto rounded_corners_rect = state_.rounded_corners_bounds;
+
+    // Convert from dip to px.
+    gfx::Transform scale_transform;
+    scale_transform.Scale(device_scale_factor, device_scale_factor);
+    scale_transform.TransformRRectF(&rounded_corners_rect);
+
+    // Set the mask.
+    msk = gfx::MaskFilterInfo(rounded_corners_rect);
   }
 
   // The overdraw algorithm in 'Display::RemoveOverdrawQuads' operates in

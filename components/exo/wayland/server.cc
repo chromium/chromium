@@ -302,8 +302,8 @@ void Server::Initialize() {
                    kWlDataDeviceManagerVersion, data_device_manager_data_.get(),
                    bind_data_device_manager);
 
-  wl_global_create(wl_display_.get(), &surface_augmenter_interface, 1, display_,
-                   bind_surface_augmenter);
+  wl_global_create(wl_display_.get(), &surface_augmenter_interface,
+                   kSurfaceAugmenterVersion, display_, bind_surface_augmenter);
   wl_global_create(wl_display_.get(), &overlay_prioritizer_interface, 1,
                    display_, bind_overlay_prioritizer);
   wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,

@@ -24,6 +24,7 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -175,7 +176,7 @@ class Surface final : public ui::PropertyHandler {
   void PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling);
   void OnSubSurfaceCommit();
 
-  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+  void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds);
   void SetOverlayPriorityHint(OverlayPriority hint);
 
   // This sets the surface viewport for scaling.
@@ -453,8 +454,8 @@ class Surface final : public ui::PropertyHandler {
 
     // The buffer that will become the content of surface.
     BufferAttachment buffer;
-    // The rounded corner for the surface.
-    gfx::RoundedCornersF radii;
+    // The rounded corners bounds for the surface.
+    gfx::RRectF rounded_corners_bounds;
     // The damage region to schedule paint for.
     cc::Region damage;
     // These lists contain the callbacks to notify the client when it is a good
