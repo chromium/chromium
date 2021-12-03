@@ -66,14 +66,6 @@ static const CrossSiteTestCase kCrossSiteTests[]{
      "https://idp.example", NavigationThrottle::DEFER},
 };
 
-MovableScopedFeatureList InitScopedFeatureList() {
-  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list->InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmInterceptionFieldTrialParamName, "true"}});
-  return scoped_feature_list;
-}
-
 }  // namespace
 
 class FederatedAuthNavigationThrottleTest : public RenderViewHostTestHarness {
@@ -102,9 +94,36 @@ class FederatedAuthNavigationThrottleTest : public RenderViewHostTestHarness {
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
-// Test that the throttle is only created when the WebID feature is turned on
-// and when the frame is a main frame.
-TEST_F(FederatedAuthNavigationThrottleTest, Instantiate) {
+class FederatedAuthNavigationThrottleWithFlagEnabledTest
+    : public FederatedAuthNavigationThrottleTest {
+ public:
+  FederatedAuthNavigationThrottleWithFlagEnabledTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFedCm,
+        {{features::kFedCmInterceptionFieldTrialParamName, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the throttle is not created when the feature flag is not set.
+TEST_F(FederatedAuthNavigationThrottleTest, InstantiateWithoutFlag) {
+  GURL url("https://idp.example");
+
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+
+  MockNavigationHandle top_frame_handle(url, main_rfh());
+
+  auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+      &top_frame_handle);
+  ASSERT_FALSE(throttle);
+}
+
+// Test that the throttle is created when the FedCM feature is turned on
+// and only when the frame is a main frame.
+TEST_F(FederatedAuthNavigationThrottleWithFlagEnabledTest, Instantiate) {
   GURL url("https://idp.example");
   GURL url_child("https://child.example");
 
@@ -116,15 +135,8 @@ TEST_F(FederatedAuthNavigationThrottleTest, Instantiate) {
   MockNavigationHandle top_frame_handle(url, main_rfh());
   MockNavigationHandle child_frame_handle(url_child, child_rfh);
 
-  // Attempt to create throttle for the main frame without features::kFedCm set.
-  auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
-      &top_frame_handle);
-  ASSERT_FALSE(throttle);
-
-  MovableScopedFeatureList scoped_feature_list = InitScopedFeatureList();
-
   // Attempt to create throttle for a child frame with features::kFedCm set.
-  throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+  auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
       &child_frame_handle);
   ASSERT_FALSE(throttle);
 
@@ -135,15 +147,14 @@ TEST_F(FederatedAuthNavigationThrottleTest, Instantiate) {
 }
 
 // Verify an OAuth request is throttled.
-TEST_F(FederatedAuthNavigationThrottleTest, ThrottleAuthRequest) {
+TEST_F(FederatedAuthNavigationThrottleWithFlagEnabledTest,
+       ThrottleAuthRequest) {
   GURL idp_url(
       "https://idp.example/?client_id=12345&scope=67890&"
       "redirect_uri=https%3A%2F%2Frp.example%2F");
 
   MockNavigationHandle handle(idp_url, main_rfh());
   handle.set_initiator_origin(url::Origin::Create(GURL("https://rp.example")));
-
-  MovableScopedFeatureList scoped_feature_list = InitScopedFeatureList();
 
   auto throttle =
       FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(&handle);
@@ -153,7 +164,7 @@ TEST_F(FederatedAuthNavigationThrottleTest, ThrottleAuthRequest) {
 }
 
 class CrossSiteFederatedAuthNavigationThrottleTest
-    : public FederatedAuthNavigationThrottleTest,
+    : public FederatedAuthNavigationThrottleWithFlagEnabledTest,
       public ::testing::WithParamInterface<CrossSiteTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(CrossSiteThrottlingTests,
@@ -168,8 +179,6 @@ TEST_P(CrossSiteFederatedAuthNavigationThrottleTest, SameSiteAuthRequest) {
 
   MockNavigationHandle handle(idp_url, main_rfh());
   handle.set_initiator_origin(url::Origin::Create(GURL(test_case.rp_origin)));
-
-  MovableScopedFeatureList scoped_feature_list = InitScopedFeatureList();
 
   auto throttle =
       FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(&handle);
