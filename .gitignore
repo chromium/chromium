@@ -58,6 +58,7 @@ GTAGS
 Session.vim
 tags
 Thumbs.db
+rust-project.json
 v8.log
 vs-chromium-project.txt
 /.clangd
