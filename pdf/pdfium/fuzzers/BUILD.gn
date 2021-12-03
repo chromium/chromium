@@ -87,6 +87,9 @@ group("pdf_fuzzers") {
       ":pdf_cpdf_tounicodemap_fuzzer",
       ":pdf_nametree_fuzzer",
     ]
+    if (pdf_enable_xfa) {
+      deps += [ ":pdf_xfa_fdp_fuzzer" ]
+    }
   }
 }
 
@@ -272,6 +275,11 @@ if (is_clang) {
   }
 
   pdfium_fuzzer_test("pdf_nametree_fuzzer") {
+  }
+
+  if (pdf_enable_xfa) {
+    pdfium_fuzzer_test("pdf_xfa_fdp_fuzzer") {
+    }
   }
 }
 
