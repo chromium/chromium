@@ -192,7 +192,7 @@ void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 
 bool AppListMainView::CanSelectSearchResults() {
   // If there's a result, keyboard selection is allowed.
-  return !!contents_view_->search_result_page_view()->first_result_view();
+  return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
 }
 
 void AppListMainView::AssistantButtonPressed() {

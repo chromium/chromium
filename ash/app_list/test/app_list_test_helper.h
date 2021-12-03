@@ -19,7 +19,6 @@ class View;
 
 namespace ash {
 
-class SearchResultPageAnchoredDialog;
 class AppListBubbleAppsPage;
 class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
@@ -34,6 +33,8 @@ class ProductivityLauncherSearchView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class SearchBoxView;
+class SearchResultPageView;
+class SearchResultPageAnchoredDialog;
 enum class AppListViewState;
 
 class AppListTestHelper {
@@ -108,6 +109,7 @@ class AppListTestHelper {
   AppListFolderView* GetFullscreenFolderView();
   RecentAppsView* GetFullscreenRecentAppsView();
   ContinueSectionView* GetFullscreenContinueSectionView();
+  SearchResultPageView* GetFullscreenSearchResultPageView();
   SearchResultPageAnchoredDialog* GetFullscreenSearchPageDialog();
   ProductivityLauncherSearchView* GetProductivityLauncherSearchView();
   views::View* GetFullscreenLauncherAppsSeparatorView();

@@ -21,10 +21,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
-namespace views {
-class DialogDelegateView;
-}
-
 namespace ash {
 
 class AppListMainView;
@@ -102,12 +98,9 @@ class ASH_EXPORT SearchResultPageView
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
 
-  // Shows a dialog widget, and anchors it within the search results page. The
-  // dialog will be positioned relative to the search box bounds, and will be
-  // repositioned as the page layout changes. The dialog will be closed if the
-  // search results page gets hidden.
-  // |dialog| should not yet have a widget.
-  void ShowAnchoredDialog(std::unique_ptr<views::DialogDelegateView> dialog);
+  // Whether any results are available for selection within the search result
+  // UI.
+  bool CanSelectSearchResults() const;
 
   views::View* contents_view() { return contents_view_; }
 

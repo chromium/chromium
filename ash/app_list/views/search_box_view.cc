@@ -387,8 +387,9 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
       (IsUnhandledArrowKeyEvent(*evt) || evt->key_code() == ui::VKEY_TAB)) {
     search_box()->RequestFocus();
 
-    if (result_selection_controller_->MoveSelection(*evt) ==
-        ResultSelectionController::MoveResult::kResultChanged) {
+    if (delegate()->CanSelectSearchResults() &&
+        result_selection_controller_->MoveSelection(*evt) ==
+            ResultSelectionController::MoveResult::kResultChanged) {
       UpdateSearchBoxTextForSelectedResult(
           result_selection_controller_->selected_result()->result());
     }

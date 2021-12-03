@@ -519,6 +519,16 @@ void SearchResultPageView::SearchEngineChanged() {}
 
 void SearchResultPageView::ShowAssistantChanged() {}
 
+bool SearchResultPageView::CanSelectSearchResults() const {
+  if (!GetVisible())
+    return false;
+
+  if (features::IsProductivityLauncherEnabled())
+    return productivity_launcher_search_view_->CanSelectSearchResults();
+
+  return first_result_view_;
+}
+
 SkColor SearchResultPageView::GetBackgroundColorForState(
     AppListState state) const {
   if (state == AppListState::kStateSearchResults)

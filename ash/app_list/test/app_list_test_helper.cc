@@ -185,13 +185,16 @@ views::View* AppListTestHelper::GetFullscreenLauncherAppsSeparatorView() {
   return GetAppsContainerView()->GetSeparatorView();
 }
 
-SearchResultPageAnchoredDialog*
-AppListTestHelper::GetFullscreenSearchPageDialog() {
+SearchResultPageView* AppListTestHelper::GetFullscreenSearchResultPageView() {
   return GetAppListView()
       ->app_list_main_view()
       ->contents_view()
-      ->search_result_page_view()
-      ->dialog_for_test();
+      ->search_result_page_view();
+}
+
+SearchResultPageAnchoredDialog*
+AppListTestHelper::GetFullscreenSearchPageDialog() {
+  return GetFullscreenSearchResultPageView()->dialog_for_test();
 }
 
 AppListBubbleView* AppListTestHelper::GetBubbleView() {
