@@ -100,7 +100,7 @@ base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
   // This implementation is not so fast since it converts the text encoding
   // twice. Please feel free to file a bug if this function hurts the
   // performance of Chrome.
-  DCHECK(base::IsStringUTF8(input));
+  DCHECK(base::IsStringUTF8(input)) << input;
   return TrimWhitespace(base::UTF8ToUTF16(input), positions, output);
 }
 
