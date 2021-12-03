@@ -28,6 +28,7 @@ through `builders.cpu`, `builders.os` and `builders.goma` respectively.
 load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
+load("./bootstrap.star", "register_bootstrap")
 load("./listify.star", "listify")
 
 ################################################################################
@@ -372,6 +373,7 @@ def builder(
         auto_builder_dimension = args.DEFAULT,
         fully_qualified_builder_dimension = args.DEFAULT,
         cores = args.DEFAULT,
+        bootstrap = False,
         cpu = args.DEFAULT,
         builder_group = args.DEFAULT,
         pool = args.DEFAULT,
@@ -422,6 +424,13 @@ def builder(
         (may be specified by module-level default).
       * executable - an executable to run, e.g. a luci.recipe(...). Required (may
         be specified by module-level default).
+      * bootstrap: a boolean indicating whether the builder should have its
+        properties bootstrapped. If True, the builder's properties will be
+        written to a separate file and its definition will be updated with
+        new properties and executable that cause a bootstrapping binary to
+        be used. The build's default values for properties will be taken
+        from the properties file at the version that the build will check
+        out.
       * os - a member of the `os` enum indicating the OS the builder requires for
         the machines that run it. Emits a dimension of the form 'os:os'. By
         default considered None.
@@ -711,6 +720,8 @@ def builder(
         ),
         **kwargs
     )
+
+    register_bootstrap(bucket, name, bootstrap, executable)
 
     builder_name = "{}/{}".format(bucket, name)
 
