@@ -1028,6 +1028,34 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
             EvalJs(shell(), "window[0].document.body.textContent"));
 }
 
+// This test checks that same-process OriginAgentCluster won't crash and will
+// apply properly when used on a localhost URL.  See https://crbug.com/1276155.
+IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest, Localhost) {
+  SetHeaderValue("?1");
+  GURL url(https_server()->GetURL("localhost", "/isolate_origin"));
+  url::Origin origin(url::Origin::Create(url));
+
+  EXPECT_TRUE(SiteIsolationPolicy::IsOriginAgentClusterEnabled());
+  EXPECT_FALSE(
+      SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  EXPECT_FALSE(root->current_frame_host()
+                   ->GetSiteInstance()
+                   ->RequiresDedicatedProcess());
+  EXPECT_FALSE(ShouldOriginGetOptInProcessIsolation(origin));
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  auto isolation_result = policy->DetermineOriginAgentClusterIsolation(
+      root->current_frame_host()->GetSiteInstance()->GetIsolationContext(),
+      origin, MakeOACIsolationState(false));
+  EXPECT_TRUE(isolation_result.is_origin_agent_cluster());
+  EXPECT_FALSE(isolation_result.requires_origin_keyed_process());
+  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+      web_contents()->GetBrowserContext(), origin));
+}
+
 // This test verifies that --disable-web-security overrides same-process
 // OriginAgentCluster (i.e. disables it).
 IN_PROC_BROWSER_TEST_F(SameProcessNoWebSecurityOriginIsolationOptInHeaderTest,

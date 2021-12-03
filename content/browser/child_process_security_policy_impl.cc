@@ -2442,7 +2442,7 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOriginForBrowsingInstance(
   // origin-keyed OriginAgentCluster isolated origins have slightly different
   // validation requirements.
   bool is_valid_origin =
-      requires_origin_keyed_process
+      is_origin_agent_cluster
           ? IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin)
           : IsolatedOriginUtil::IsValidIsolatedOrigin(origin);
   CHECK(is_valid_origin) << "Trying to isolate invalid origin: " << origin;
