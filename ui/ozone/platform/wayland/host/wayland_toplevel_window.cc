@@ -54,6 +54,11 @@ WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
 WaylandToplevelWindow::~WaylandToplevelWindow() = default;
 
 bool WaylandToplevelWindow::CreateShellToplevel() {
+  // Certain Wayland compositors (E.g. Mutter) expects wl_surface to have no
+  // buffer attached when xdg-surface role is created.
+  wl_surface_attach(root_surface()->surface(), nullptr, 0, 0);
+  root_surface()->Commit(false);
+
   ShellObjectFactory factory;
   shell_toplevel_ = factory.CreateShellToplevelWrapper(connection(), this);
   if (!shell_toplevel_) {
@@ -129,10 +134,6 @@ void WaylandToplevelWindow::Hide() {
 
   shell_toplevel_.reset();
   connection()->ScheduleFlush();
-
-  // Detach buffer from surface in order to completely shutdown menus and
-  // tooltips, and release resources.
-  connection()->buffer_manager_host()->ResetSurfaceContents(root_surface());
 }
 
 bool WaylandToplevelWindow::IsVisible() const {

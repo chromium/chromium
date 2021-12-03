@@ -182,17 +182,20 @@ void MockSurface::DestroyPrevAttachedBuffer() {
 }
 
 void MockSurface::ReleaseBuffer(wl_resource* buffer) {
-  DCHECK(buffer);
-  wl_buffer_send_release(buffer);
-  wl_client_flush(wl_resource_get_client(buffer));
-
   // Strictly speaking, Wayland protocol requires that we send both an explicit
   // release and a buffer release if an explicit release has been asked for.
   // But, this makes testing harder, and ozone/wayland should work with
   // just one of these signals (and handle both gracefully).
-  auto iter = linux_buffer_releases_.find(buffer);
-  if (iter != linux_buffer_releases_.end())
-    linux_buffer_releases_.erase(iter);
+  // TODO(fangzhoug): Make buffer release mechanism a testing config variation.
+  if (linux_buffer_releases_.find(buffer) != linux_buffer_releases_.end()) {
+    ReleaseBufferFenced(buffer, {});
+    wl_buffer_send_release(buffer);
+    wl_client_flush(wl_resource_get_client(buffer));
+  }
+
+  DCHECK(buffer);
+  wl_buffer_send_release(buffer);
+  wl_client_flush(wl_resource_get_client(buffer));
 
   if (buffer == prev_attached_buffer_)
     prev_attached_buffer_ = nullptr;

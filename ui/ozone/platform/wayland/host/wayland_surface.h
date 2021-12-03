@@ -48,18 +48,21 @@ class WaylandSurface {
   wp_viewport* viewport() const { return viewport_.get(); }
   zcr_blending_v1* blending() const { return blending_.get(); }
 
+  uint32_t buffer_id() const { return state_.buffer_id; }
+  int32_t buffer_scale() const { return state_.buffer_scale; }
+  float opacity() const { return state_.opacity; }
+  bool use_blending() const { return state_.use_blending; }
+
   const std::vector<uint32_t>& entered_outputs() const {
     return entered_outputs_;
   }
 
+  bool has_explicit_release_callback() const {
+    return !explicit_release_callback_.is_null();
+  }
   void set_explicit_release_callback(ExplicitReleaseCallback callback) {
     explicit_release_callback_ = callback;
   }
-
-  int32_t pending_buffer_scale() const { return pending_state_.buffer_scale; }
-
-  // Tells if the surface has a buffer attached.
-  bool has_buffer_attached() const { return !!state_.buffer; }
 
   // Returns an id that identifies the |wl_surface_|.
   uint32_t GetSurfaceId() const;
@@ -81,14 +84,12 @@ class WaylandSurface {
   void SetAcquireFence(gfx::GpuFenceHandle acquire_fence);
 
   // Attaches the given wl_buffer to the underlying wl_surface at (0, 0).
-  void AttachBuffer(WaylandBufferHandle* buffer_handle);
+  // Returns true if wl_surface.attach will be called in ApplyPendingStates().
+  bool AttachBuffer(WaylandBufferHandle* buffer_handle);
 
   // Describes where the surface needs to be repainted according to
   // |buffer_pending_damage_region|, which should be in buffer coordinates (px).
   void UpdateBufferDamageRegion(const gfx::Rect& damage_px);
-
-  // Commits the underlying wl_surface and triggers a wayland connection flush.
-  void Commit();
 
   // Sets an optional transformation for how the Wayland compositor interprets
   // the contents of the buffer attached to this surface.
@@ -157,6 +158,10 @@ class WaylandSurface {
   // Then copy |pending_states_| to |states_|.
   void ApplyPendingState();
 
+  // Commits the underlying wl_surface, triggers a wayland connection flush if
+  // |flush| is true.
+  void Commit(bool flush = true);
+
   // Workaround used by GLSurfaceWayland when libgbm is not available. Causes
   // SetSurfaceBufferScale() SetOpaqueRegion(), and SetInputRegion() to take
   // effect immediately.
@@ -197,6 +202,10 @@ class WaylandSurface {
     gfx::GpuFenceHandle acquire_fence;
 
     uint32_t buffer_id = 0;
+    // Note that this wl_buffer ptr is never cleared, even when the
+    // buffer_handle owning this wl_buffer is destroyed. Accessing this field
+    // should ensure wl_buffer exists by calling
+    // WaylandBufferManagerHost::EnsureBufferHandle(buffer_id).
     wl_buffer* buffer = nullptr;
     gfx::Size buffer_size_px;
 

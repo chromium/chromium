@@ -126,6 +126,10 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
   void OnPresentation(BufferId buffer_id,
                       const gfx::PresentationFeedback& feedback) override;
 
+  // PendingFrame here is a post-SkiaRenderer struct that contains overlays +
+  // primary plane informations. It is a "compositor frame" on AcceleratedWidget
+  // level. This information gets into browser process and overlays are
+  // translated to be attached to WaylandSurfaces of the AcceleratedWidget.
   struct PendingFrame {
     PendingFrame();
     ~PendingFrame();
@@ -148,15 +152,12 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
     PresentationCallback presentation_callback;
     // Merged release fence fd. This is taken as the union of all release
     // fences for a particular OnSubmission.
-    base::ScopedFD merged_release_fence_fd;
     bool schedule_planes_succeeded = false;
 
     // Maps |buffer_id| to an OverlayPlane, used for committing overlays and
     // wait for OnSubmission's.
     base::small_map<std::map<BufferId, OverlayPlane>> planes;
-    base::flat_set<BufferId> pending_presentation_buffers;
-    gfx::SwapResult swap_result = gfx::SwapResult::SWAP_ACK;
-    gfx::PresentationFeedback feedback;
+    BufferId pending_presentation_buffer;
   };
 
   void MaybeSubmitFrames();
@@ -177,8 +178,16 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
   // The native surface. Deleting this is allowed to free the EGLNativeWindow.
   gfx::AcceleratedWidget widget_;
+
+  // PendingFrames that are waiting to be submitted. They can be either ready,
+  // waiting for gpu fences, or still scheduling overlays.
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
+
+  // PendingFrames that are submitted, pending OnSubmission() calls.
   std::vector<std::unique_ptr<PendingFrame>> submitted_frames_;
+
+  // PendingFrames that have received OnSubmission(), pending OnPresentation()
+  // calls.
   std::vector<std::unique_ptr<PendingFrame>> pending_presentation_frames_;
   bool has_implicit_external_sync_;
   bool last_swap_buffers_result_ = true;

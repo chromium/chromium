@@ -156,17 +156,26 @@ void WaylandSurface::SetAcquireFence(gfx::GpuFenceHandle acquire_fence) {
   return;
 }
 
-void WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
+bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   DCHECK(!apply_state_immediately_);
   if (!buffer_handle) {
     pending_state_.buffer = nullptr;
     pending_state_.buffer_id = 0;
-    return;
+    return false;
   }
 
   pending_state_.buffer_size_px = buffer_handle->size();
   pending_state_.buffer = buffer_handle->wl_buffer();
   pending_state_.buffer_id = buffer_handle->id();
+
+  if (state_.buffer_id == pending_state_.buffer_id &&
+      buffer_handle->released()) {
+    state_.buffer = nullptr;
+    state_.buffer_id = 0;
+  }
+  // Compare buffer_id because it is monotonically increasing. state_.buffer
+  // may have been de-allocated.
+  return state_.buffer_id != pending_state_.buffer_id;
 }
 
 void WaylandSurface::UpdateBufferDamageRegion(const gfx::Rect& damage_px) {
@@ -174,9 +183,10 @@ void WaylandSurface::UpdateBufferDamageRegion(const gfx::Rect& damage_px) {
   pending_state_.damage_px.push_back(damage_px);
 }
 
-void WaylandSurface::Commit() {
+void WaylandSurface::Commit(bool flush) {
   wl_surface_commit(surface_.get());
-  connection_->ScheduleFlush();
+  if (flush)
+    connection_->ScheduleFlush();
 }
 
 void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
@@ -354,21 +364,24 @@ void WaylandSurface::ApplyPendingState() {
               surface_sync, pending_state_.acquire_fence.owned_fd.get());
         }
 
-        auto* linux_buffer_release =
-            zwp_linux_surface_synchronization_v1_get_release(surface_sync);
+        if (!explicit_release_callback_.is_null()) {
+          auto* linux_buffer_release =
+              zwp_linux_surface_synchronization_v1_get_release(surface_sync);
 
-        static struct zwp_linux_buffer_release_v1_listener release_listener = {
-            &WaylandSurface::FencedRelease,
-            &WaylandSurface::ImmediateRelease,
-        };
-        zwp_linux_buffer_release_v1_add_listener(linux_buffer_release,
-                                                 &release_listener, this);
+          static struct zwp_linux_buffer_release_v1_listener release_listener =
+              {
+                  &WaylandSurface::FencedRelease,
+                  &WaylandSurface::ImmediateRelease,
+              };
+          zwp_linux_buffer_release_v1_add_listener(linux_buffer_release,
+                                                   &release_listener, this);
 
-        linux_buffer_releases_.emplace(
-            linux_buffer_release,
-            ExplicitReleaseInfo(
-                wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
-                pending_state_.buffer));
+          linux_buffer_releases_.emplace(
+              linux_buffer_release,
+              ExplicitReleaseInfo(
+                  wl::Object<zwp_linux_buffer_release_v1>(linux_buffer_release),
+                  pending_state_.buffer));
+        }
       }
     }
   }

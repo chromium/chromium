@@ -109,6 +109,8 @@ source_set("wayland") {
     "host/wayland_event_watcher.h",
     "host/wayland_exchange_data_provider.cc",
     "host/wayland_exchange_data_provider.h",
+    "host/wayland_frame_manager.cc",
+    "host/wayland_frame_manager.h",
     "host/wayland_input_method_context.cc",
     "host/wayland_input_method_context.h",
     "host/wayland_input_method_context_factory.cc",

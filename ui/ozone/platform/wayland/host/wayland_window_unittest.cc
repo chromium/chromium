@@ -2594,7 +2594,7 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
   EXPECT_TRUE(mock_surface->xdg_surface()->xdg_popup());
 }
 
-TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
+TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
   EXPECT_TRUE(connection_->buffer_manager_host());
 
   auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
@@ -2639,6 +2639,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   background->transform = gfx::OVERLAY_TRANSFORM_NONE;
   background->buffer_id = buffer_id1;
   background->surface_scale_factor = 1;
+  background->opacity = 1.f;
   overlays.push_back(std::move(background));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
   mock_surface->SendFrameCallback();
@@ -2647,20 +2648,20 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
 
   EXPECT_NE(mock_surface->attached_buffer(), nullptr);
 
-  // Hiding window attaches a nil wl_buffer as background.
   window->Hide();
   mock_surface->SendFrameCallback();
 
   Sync();
 
-  EXPECT_EQ(mock_surface->attached_buffer(), nullptr);
-
-  mock_surface->ReleaseBuffer(mock_surface->prev_attached_buffer());
+  mock_surface->ReleaseBuffer(mock_surface->attached_buffer());
   window->Show(false);
 
   Sync();
 
   SendConfigureEvent(mock_surface->xdg_surface(), 100, 100, 2, states.get());
+
+  // Expects to receive an attach request on next frame.
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
 
   // Commit a frame with only the primary_plane.
   overlays.clear();
@@ -2670,6 +2671,7 @@ TEST_P(WaylandWindowTest, RemovesReattachesBackgroundOnHideShow) {
   primary->transform = gfx::OVERLAY_TRANSFORM_NONE;
   primary->buffer_id = buffer_id2;
   primary->surface_scale_factor = 1;
+  primary->opacity = 1.f;
   overlays.push_back(std::move(primary));
   buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
 

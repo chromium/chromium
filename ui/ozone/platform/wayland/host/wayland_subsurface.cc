@@ -59,7 +59,6 @@ void WaylandSubsurface::Hide() {
     return;
 
   subsurface_.reset();
-  connection_->buffer_manager_host()->ResetSurfaceContents(wayland_surface());
 }
 
 bool WaylandSubsurface::IsVisible() const {
@@ -81,8 +80,6 @@ void WaylandSubsurface::CreateSubsurface() {
   // dispatch all of the input to platform window.
   gfx::Rect region_px;
   wayland_surface()->SetInputRegion(&region_px);
-
-  connection_->buffer_manager_host()->SetSurfaceConfigured(wayland_surface());
 }
 
 void WaylandSubsurface::ConfigureAndShowSurface(
@@ -96,8 +93,10 @@ void WaylandSubsurface::ConfigureAndShowSurface(
   // Chromium positions quads in display::Display coordinates in physical
   // pixels, but Wayland requires them to be in local surface coordinates a.k.a
   // relative to parent window.
-  auto bounds_dip_in_parent_surface =
-      AdjustSubsurfaceBounds(bounds_px, parent_bounds_px, buffer_scale);
+  auto bounds_dip_in_parent_surface = AdjustSubsurfaceBounds(
+      bounds_px, parent_bounds_px,
+      connection_->surface_submission_in_pixel_coordinates() ? 1.f
+                                                             : buffer_scale);
   wl_subsurface_set_position(subsurface_.get(),
                              bounds_dip_in_parent_surface.x(),
                              bounds_dip_in_parent_surface.y());

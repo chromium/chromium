@@ -414,65 +414,25 @@ void GbmSurfacelessWayland::SetNoGLFlushForTests() {
 void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
                                          const gfx::SwapResult& swap_result,
                                          gfx::GpuFenceHandle release_fence) {
-  // submitted_frames_ may temporarily have more than one buffer in it if
-  // buffers are released out of order by the Wayland server.
-  DCHECK(!submitted_frames_.empty() || background_buffer_id_ == buffer_id);
+  DCHECK(!submitted_frames_.empty());
+  DCHECK(submitted_frames_.front()->planes.count(buffer_id) ||
+         buffer_id == background_buffer_id_);
 
-  // Let the holder mark this buffer as free to reuse.
-  solid_color_buffers_holder_->OnSubmission(buffer_id, buffer_manager_,
-                                            widget_);
-
-  size_t erased = 0;
-  for (auto& submitted_frame : submitted_frames_) {
-    if ((erased = submitted_frame->planes.erase(buffer_id)) > 0) {
-      // |completion_callback| only takes 1 SwapResult. It's possible that only
-      // one of the buffers in a frame gets a SWAP_FAILED or
-      // SWAP_NAK_RECREATE_BUFFERS. Don't replace a failed swap_result with
-      // SWAP_ACK. If both SWAP_FAILED and SWAP_NAK_RECREATE_BUFFERS happens,
-      // this swap is treated as SWAP_FAILED.
-      if (submitted_frame->swap_result == gfx::SwapResult::SWAP_ACK ||
-          swap_result == gfx::SwapResult::SWAP_FAILED) {
-        submitted_frame->swap_result = swap_result;
-      }
-      submitted_frame->pending_presentation_buffers.insert(buffer_id);
-
-      // Accumulate release fences into a single fence.
-      if (!release_fence.is_null()) {
-        if (submitted_frame->merged_release_fence_fd.is_valid()) {
-          submitted_frame->merged_release_fence_fd.reset(
-              sync_merge("", submitted_frame->merged_release_fence_fd.get(),
-                         release_fence.owned_fd.get()));
-        } else {
-          submitted_frame->merged_release_fence_fd =
-              std::move(release_fence.owned_fd);
-        }
-        DCHECK(submitted_frame->merged_release_fence_fd.is_valid());
-      }
-      break;
-    }
+  auto submitted_frame = std::move(submitted_frames_.front());
+  submitted_frames_.erase(submitted_frames_.begin());
+  for (auto& plane : submitted_frame->planes) {
+    // Let the holder mark this buffer as free to reuse.
+    solid_color_buffers_holder_->OnSubmission(plane.first, buffer_manager_,
+                                              widget_);
   }
+  submitted_frame->planes.clear();
+  submitted_frame->overlays.clear();
 
-  // Following while loop covers below scenario:
-  //   frame_1 submitted a buffer_1 for overlay; frame_2 submitted a buffer_2
-  //   for primary plane. This can happen at the end of a single-on-top overlay.
-  //   buffer_1 is not attached immediately due to unack'ed wl_frame_callback.
-  //   buffer_2 is attached immediately Onsubmission() of buffer_2 runs.
-  while (!submitted_frames_.empty() &&
-         submitted_frames_.front()->planes.empty()) {
-    auto submitted_frame = std::move(submitted_frames_.front());
-    submitted_frames_.erase(submitted_frames_.begin());
-    submitted_frame->overlays.clear();
+  std::move(submitted_frame->completion_callback)
+      .Run(gfx::SwapCompletionResult(swap_result, std::move(release_fence)));
 
-    gfx::GpuFenceHandle release_fence_handle;
-    if (submitted_frame->merged_release_fence_fd.is_valid())
-      release_fence_handle.owned_fd =
-          std::move(submitted_frame->merged_release_fence_fd);
-    std::move(submitted_frame->completion_callback)
-        .Run(gfx::SwapCompletionResult(submitted_frame->swap_result,
-                                       std::move(release_fence_handle)));
-
-    pending_presentation_frames_.push_back(std::move(submitted_frame));
-  }
+  submitted_frame->pending_presentation_buffer = buffer_id;
+  pending_presentation_frames_.push_back(std::move(submitted_frame));
 
   if (swap_result != gfx::SwapResult::SWAP_ACK) {
     last_swap_buffers_result_ = false;
@@ -485,48 +445,13 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
 void GbmSurfacelessWayland::OnPresentation(
     BufferId buffer_id,
     const gfx::PresentationFeedback& feedback) {
-  DCHECK(!submitted_frames_.empty() || !pending_presentation_frames_.empty() ||
-         background_buffer_id_ == buffer_id);
+  DCHECK(!pending_presentation_frames_.empty());
+  DCHECK_EQ(pending_presentation_frames_.front()->pending_presentation_buffer,
+            buffer_id);
 
-  size_t erased = 0;
-  for (auto& frame : pending_presentation_frames_) {
-    if ((erased = frame->pending_presentation_buffers.erase(buffer_id)) > 0) {
-      frame->feedback = feedback;
-      break;
-    }
-  }
-
-  // Items in |submitted_frames_| will not be moved to
-  // |pending_presentation_frames_| until |planes| is empty.
-  // Example:
-  //    A SwapBuffers that submitted 2 buffers (buffer_1 and buffer_2) will push
-  //    a submitted_frame expecting 2 submission feedbacks and 2 presentation
-  //    feedbacks.
-  //    If IPCs comes in the order of:
-  //      buffer_1:submission > buffer_2:submission > buffer_1:presentation >
-  //      buffer_2:presentation
-  //    We are fine without below logic. However, this can happen:
-  //      buffer_1:submission > buffer_1:presentation > buffer_2:submission >
-  //      buffer_2:presentation
-  //    In this case, we have to find the item in |submitted_frames_| and
-  //    remove from |pending_presentation_buffers| there.
-  if (!erased) {
-    for (auto& frame : submitted_frames_) {
-      if ((erased = frame->pending_presentation_buffers.erase(buffer_id)) > 0) {
-        frame->feedback = feedback;
-        break;
-      }
-    }
-  }
-
-  while (!pending_presentation_frames_.empty() &&
-         pending_presentation_frames_.front()
-             ->pending_presentation_buffers.empty()) {
-    auto* frame = pending_presentation_frames_.front().get();
-    DCHECK(frame->planes.empty());
-    std::move(frame->presentation_callback).Run(frame->feedback);
-    pending_presentation_frames_.erase(pending_presentation_frames_.begin());
-  }
+  std::move(pending_presentation_frames_.front()->presentation_callback)
+      .Run(feedback);
+  pending_presentation_frames_.erase(pending_presentation_frames_.begin());
 }
 
 }  // namespace ui
