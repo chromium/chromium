@@ -1265,7 +1265,7 @@ void ScriptExecutor::WaitForDomOperation::OnInterruptDone(
   if (observer_)
     observer_->OnInterruptFinished();
 
-  RestorePreInterruptState();
+  RestoreStatusMessage();
   RestorePreInterruptScroll();
 
   // Restart. We use the original wait time since the interruption could have
@@ -1300,18 +1300,15 @@ void ScriptExecutor::WaitForDomOperation::SavePreInterruptState() {
   if (saved_pre_interrupt_state_)
     return;
 
-  ExecutorState pre_interrupt_state;
-  pre_interrupt_state.status_message = delegate_->GetStatusMessage();
-  pre_interrupt_state.controller_state = delegate_->GetState();
-  saved_pre_interrupt_state_ = pre_interrupt_state;
+  pre_interrupt_status_ = delegate_->GetStatusMessage();
+  saved_pre_interrupt_state_ = true;
 }
 
-void ScriptExecutor::WaitForDomOperation::RestorePreInterruptState() {
+void ScriptExecutor::WaitForDomOperation::RestoreStatusMessage() {
   if (!saved_pre_interrupt_state_)
     return;
 
-  delegate_->SetStatusMessage(saved_pre_interrupt_state_->status_message);
-  delegate_->EnterState(saved_pre_interrupt_state_->controller_state);
+  delegate_->SetStatusMessage(pre_interrupt_status_);
 }
 
 void ScriptExecutor::WaitForDomOperation::RestorePreInterruptScroll() {

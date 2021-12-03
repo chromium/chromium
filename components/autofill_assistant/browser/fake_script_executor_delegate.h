@@ -41,7 +41,6 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   bool EnterState(AutofillAssistantState state) override;
-  AutofillAssistantState GetState() override;
   void SetTouchableElementArea(const ElementAreaProto& element) override;
   void SetStatusMessage(const std::string& message) override;
   std::string GetStatusMessage() const override;
@@ -135,6 +134,11 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void SetUserModel(UserModel* user_model) { user_model_ = user_model; }
   std::vector<AutofillAssistantState> GetStateHistory() {
     return state_history_;
+  }
+
+  AutofillAssistantState GetState() const {
+    return state_history_.empty() ? AutofillAssistantState::INACTIVE
+                                  : state_history_.back();
   }
 
   const std::vector<Details>& GetDetails() { return details_; }
