@@ -5536,6 +5536,25 @@
             ]
         }
     ],
+    "OmniboxPedalsBatch2NonEnglish": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxPedalsBatch2NonEnglish",
+                        "OmniboxPedalsTranslationConsole"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxPedalsBatch3": [
         {
             "platforms": [
