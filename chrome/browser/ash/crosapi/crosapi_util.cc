@@ -71,6 +71,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "chromeos/tpm/install_attributes.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -387,6 +388,9 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
           IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 
   params->ash_capabilities = {{kBrowserManagerReloadBrowserCapability}};
+
+  params->is_device_enterprised_managed =
+      chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
 
   return params;
 }

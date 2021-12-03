@@ -606,8 +606,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 35
-// Next id: 35
+// Next version: 36
+// Next id: 36
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -837,6 +837,10 @@ struct BrowserInitParams {
   // See `ash::features::IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()`.
   [MinVersion=34]
   bool is_holding_space_in_progress_downloads_notification_suppression_enabled@34;
+
+  // Whether the device is either enterprise managed or in demo mode.
+  [MinVersion=35]
+  bool is_device_enterprised_managed@35;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
