@@ -210,7 +210,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     // Escape key closes the topmost dialog that is currently open within
     // Print Preview. If no such dialog exists, then the Print Preview dialog
     // itself is closed.
-    if (e.code === 'Escape' && !hasKeyModifiers(e)) {
+    if (e.key === 'Escape' && !hasKeyModifiers(e)) {
       // Don't close the Print Preview dialog if there is a child dialog open.
       if (this.openDialogs_.length !== 0) {
         // Manually cancel the dialog, since we call preventDefault() to prevent
@@ -239,7 +239,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
 
     // On Mac, Cmd+Period should close the print dialog.
-    if (isMac && e.code === 'Period' && e.metaKey) {
+    if (isMac && e.key === '.' && e.metaKey) {
       this.close_();
       e.preventDefault();
       return;
@@ -247,7 +247,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     // Ctrl + Shift + p / Mac equivalent. Doesn't apply on Chrome OS.
     // <if expr="not chromeos and not lacros">
-    if (e.code === 'KeyP') {
+    if (e.key === 'p') {
       if ((isMac && e.metaKey && e.altKey && !e.shiftKey && !e.ctrlKey) ||
           (!isMac && e.shiftKey && e.ctrlKey && !e.altKey && !e.metaKey)) {
         // Don't use system dialog if the link isn't available.
@@ -267,7 +267,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
     // </if>
 
-    if ((e.code === 'Enter' || e.code === 'NumpadEnter') &&
+    if ((e.key === 'Enter' || e.key === 'NumpadEnter') &&
         this.state === State.READY && this.openDialogs_.length === 0) {
       const activeElementTag = (e.composedPath()[0] as HTMLElement).tagName;
       if (['CR-BUTTON', 'BUTTON', 'SELECT', 'A', 'CR-CHECKBOX'].includes(

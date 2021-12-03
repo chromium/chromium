@@ -8,10 +8,20 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './print_preview_vars_css.js';
 import './throbber_css.js';
 
-import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin, GooglePromotedDestinationId} from '../data/destination.js';
+
+export interface PrintPreviewLinkContainerElement {
+  $: {
+    // <if expr="is_macosx">
+    openPdfInPreviewLink: HTMLDivElement,
+    openPdfInPreviewThrobber: HTMLDivElement,
+    // </if>
+    systemDialogLink: HTMLDivElement,
+    systemDialogThrobber: HTMLDivElement,
+  };
+}
 
 export class PrintPreviewLinkContainerElement extends PolymerElement {
   static get is() {
@@ -69,19 +79,26 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     if (this.appKioskMode) {
       return false;
     }
-    if (!isWindows) {
-      return true;
-    }
+    // <if expr="not is_win">
+    return true;
+    // </if>
+    // <if expr="is_win">
     return !!this.destination &&
         this.destination.origin === DestinationOrigin.LOCAL &&
         this.destination.id !== GooglePromotedDestinationId.SAVE_AS_PDF;
+    // </if>
   }
 
   /**
    * @return Whether the system dialog link should be disabled
    */
   private computeSystemDialogLinkDisabled_(): boolean {
-    return isWindows && this.disabled;
+    // <if expr="not is_win">
+    return false;
+    // </if>
+    // <if expr="is_win">
+    return this.disabled;
+    // </if>
   }
 
   private fire_(eventName: string) {

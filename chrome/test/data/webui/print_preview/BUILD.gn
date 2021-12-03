@@ -16,7 +16,7 @@ preprocessed_tests = [
   "destination_store_test.ts",
   "duplex_settings_test.ts",
   "invalid_settings_browsertest.ts",
-  "key_event_test.js",
+  "key_event_test.ts",
   "native_layer_stub.ts",
   "policy_test.js",
   "preview_generation_test.js",
@@ -41,8 +41,7 @@ non_preprocessed_tests = [
   "destination_list_test.ts",
   "dpi_settings_test.ts",
   "header_test.ts",
-  "layout_settings_test.js",
-  "link_container_test.js",
+  "layout_settings_test.ts",
   "margins_settings_test.js",
   "media_size_settings_test.js",
   "model_settings_availability_test.js",
@@ -87,6 +86,7 @@ if (is_chromeos) {
     "destination_search_test.ts",
     "destination_select_test.ts",
   ]
+  preprocessed_tests += [ "link_container_test.ts" ]
 }
 
 generate_grd("build_grdp") {
