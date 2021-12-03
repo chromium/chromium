@@ -3,6 +3,11 @@
     height: 200px;
     width: 300px;
   }
+
+  paper-spinner-lite {
+    height: 300px;
+    width: 300px;
+  }
 </style>
 
 <base-page orientation="column">
@@ -11,10 +16,9 @@
     <div id="calibration">
       <span>[[calibrationStatusMessage_]]</span>
     </div>
-    <span hidden$="[[!calibrationComplete_]]">[[i18n('runCalibrationCompleteText')]]</span>
   </div>
   <div slot="body">
-    <!-- TODO(gavindodd): Replace with accelerometer calibration image -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+    <paper-spinner-lite active hidden$="[[calibrationComplete_]]">
+    </paper-spinner-lite>
   </div>
 </base-page>

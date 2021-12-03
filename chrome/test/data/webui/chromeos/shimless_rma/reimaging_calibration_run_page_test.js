@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -169,7 +170,9 @@ export function reimagingCalibrationRunPageTest() {
   test('CalibrationProgressUpdatesStatusMessage', async () => {
     await initializeCalibrationRunPage();
     const statusMessage = component.shadowRoot.querySelector('#calibration');
-    let message = statusMessage.innerHTML;
+    assertEquals(
+        loadTimeData.getString('runCalibrationStartingText'),
+        statusMessage.textContent.trim());
     service.triggerCalibrationObserver(
         {
           component: ComponentType.kBaseGyroscope,
@@ -178,8 +181,11 @@ export function reimagingCalibrationRunPageTest() {
         },
         0);
     await flushTasks();
-    let message2 = statusMessage.innerHTML;
-    assertNotEquals(message, statusMessage.innerHTML);
+    assertEquals(
+        loadTimeData.getStringF(
+            'runCalibrationCalibratingComponent',
+            loadTimeData.getString('componentBaseGyroscope')),
+        statusMessage.textContent.trim());
     service.triggerCalibrationObserver(
         {
           component: ComponentType.kLidAccelerometer,
@@ -188,7 +194,10 @@ export function reimagingCalibrationRunPageTest() {
         },
         0);
     await flushTasks();
-    assertNotEquals(message, statusMessage.innerHTML);
-    assertNotEquals(message2, statusMessage.innerHTML);
+    assertEquals(
+        loadTimeData.getStringF(
+            'runCalibrationCalibratingComponent',
+            loadTimeData.getString('componentLidAccelerometer')),
+        statusMessage.textContent.trim());
   });
 }

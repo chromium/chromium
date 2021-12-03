@@ -2323,20 +2323,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_STARTING" translateable="false" desc="Message to display when when waiting for calibration to start.">
         Calibration starting...
       </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_WAITING" translateable="false" desc="Status message for a single component waiting to calibrate.">
-        Waiting to calibrate <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_PROGRESS" translateable="false" desc="Status message for a single component waiting to calibrate.">
-        Calibrating <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph> <ph name="CALIBRATION_PROGRESS">$2<ex>25</ex></ph>% complete
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_COMPLETE" translateable="false" desc="Status message for a single component waiting to calibrate.">
-        Calibrated <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_FAILED" translateable="false" desc="Status message for a single component waiting to calibrate.">
-        Failed to calibrate <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPONENT_SKIPPED" translateable="false" desc="Status message for a single component waiting to calibrate.">
-        Skipped calibrating <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>
+      <message name="IDS_SHIMLESS_RMA_RUN_CALIBRATING_COMPONENT" translateable="false" desc="Status message for a single component while it's being calibrated.">
+        Calibrating <ph name="COMPONENT_NAME">$1<ex>Audio</ex></ph>...
       </message>
       <!-- OS update page -->
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" translateable="false" desc="Title of Chrome OS update page.">

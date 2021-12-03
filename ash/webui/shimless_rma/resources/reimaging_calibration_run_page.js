@@ -13,18 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, CalibrationStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-
-/** @type {!Object<!CalibrationStatus, string>} */
-const calibrationStatusTextKeys = {
-  [CalibrationStatus.kCalibrationWaiting]: 'runCalibrationComponentWaitingText',
-  [CalibrationStatus.kCalibrationInProgress]:
-      'runCalibrationComponentProgressText',
-  [CalibrationStatus.kCalibrationComplete]:
-      'runCalibrationComponentCompleteText',
-  [CalibrationStatus.kCalibrationFailed]: 'runCalibrationComponentFailedText',
-  [CalibrationStatus.kCalibrationSkip]: 'runCalibrationComponentSkippedText',
-};
+import {CalibrationComponentStatus, CalibrationObserverInterface, CalibrationObserverReceiver, CalibrationOverallStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -109,6 +98,8 @@ export class ReimagingCalibrationRunPage extends
   onCalibrationStepComplete(status) {
     switch (status) {
       case CalibrationOverallStatus.kCalibrationOverallComplete:
+        this.calibrationStatusMessage_ =
+            this.i18n('runCalibrationCompleteText');
         this.calibrationComplete_ = true;
         this.dispatchEvent(new CustomEvent(
             'disable-next-button',
@@ -133,19 +124,13 @@ export class ReimagingCalibrationRunPage extends
   }
 
   /**
-   * @private
-   * @return {string}
    * @param {!CalibrationComponentStatus} status
+   * @return {string}
+   * @private
    */
   getCalibrationStatusString_(status) {
     const componentType = this.i18n(ComponentTypeToId[status.component]);
-    const percent = Math.round(status.progress * 100.0);
-    if (status.status === CalibrationStatus.kCalibrationInProgress) {
-      return this.i18n(
-          calibrationStatusTextKeys[status.status], componentType, percent);
-    } else {
-      return this.i18n(calibrationStatusTextKeys[status.status], componentType);
-    }
+    return this.i18n('runCalibrationCalibratingComponent', componentType);
   }
 }
 
