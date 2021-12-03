@@ -485,8 +485,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.InputEventPrediction.Scroll.PredictionJitter"
     units="pixels" expires_after="2022-05-08">
-  <owner>eirage@chromium.org</owner>
-  <owner>axantoine@google.com</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of touch
     scroll deltas which are the difference between a predicted scroll position
@@ -499,8 +499,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.InputEventPrediction.Scroll.VisualJitter" units="pixels"
     expires_after="2022-05-08">
-  <owner>eirage@chromium.org</owner>
-  <owner>axantoine@google.com</owner>
+  <owner>flackr@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of touch
     scroll deltas which are the difference between a predicted scroll position
@@ -512,8 +512,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.InputEventPrediction.Scroll.WrongDirection"
     enum="Boolean" expires_after="M97">
-  <owner>eirage@chromium.org</owner>
-  <owner>axantoine@google.com</owner>
+  <obsolete>
+    Removed 2021-12-02.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <owner>joalmei@microsoft.com</owner>
   <summary>
     Boolean that indicates whether the prediction is in the same direction as
     the real trajectory at the same prediction time. True means the direction is
