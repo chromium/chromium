@@ -91,6 +91,7 @@ using base::SysUTF8ToNSString;
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
                                 tag:(NSString* _Nullable)ap
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
@@ -105,6 +106,7 @@ using base::SysUTF8ToNSString;
       remoteObjectProxyWithErrorHandler:errorHandler]
       registerForUpdatesWithAppId:appId
                         brandCode:brandCode
+                        brandPath:brandPath
                               tag:ap
                           version:version
              existenceCheckerPath:existenceCheckerPath
@@ -213,11 +215,12 @@ void UpdateServiceProxy::RegisterApp(
   [client_
       registerForUpdatesWithAppId:SysUTF8ToNSString(request.app_id)
                         brandCode:SysUTF8ToNSString(request.brand_code)
+                        brandPath:base::mac::FilePathToNSString(
+                                      request.brand_path)
                               tag:SysUTF8ToNSString(request.ap)
                           version:SysUTF8ToNSString(request.version.GetString())
-             existenceCheckerPath:SysUTF8ToNSString(
-                                      request.existence_checker_path
-                                          .AsUTF8Unsafe())
+             existenceCheckerPath:base::mac::FilePathToNSString(
+                                      request.existence_checker_path)
                             reply:reply];
 }
 

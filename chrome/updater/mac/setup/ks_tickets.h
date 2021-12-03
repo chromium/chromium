@@ -9,6 +9,9 @@
 
 #include "chrome/updater/update_service.h"
 
+extern NSString* _Nonnull const kCRUTicketBrandKey;
+extern NSString* _Nonnull const kCRUTicketTagKey;
+
 @interface KSPathExistenceChecker : NSObject <NSSecureCoding>
 @property(nonnull, readonly) NSString* path;
 @end

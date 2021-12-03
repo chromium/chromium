@@ -12,6 +12,9 @@
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 
+NSString* const kCRUTicketBrandKey = @"KSBrandID";
+NSString* const kCRUTicketTagKey = @"KSChannelID";
+
 @implementation KSTicketStore
 
 + (nullable NSDictionary<NSString*, KSTicket*>*)readStoreWithPath:
@@ -205,17 +208,23 @@ NSString* const kKSTicketCohortNameKey = @"CohortName";
     if (!state.ecp.empty()) {
       existenceChecker_ =
           [[KSPathExistenceChecker alloc] initWithFilePath:state.ecp];
+
+      tagPath_ = [[NSString
+          stringWithFormat:@"%@/Contents/Info.plist",
+                           base::mac::FilePathToNSString(state.ecp)] retain];
+      tagKey_ = [kCRUTicketTagKey retain];
     }
     tag_ = [base::SysUTF8ToNSString(state.ap) retain];
+
     brandCode_ = [base::SysUTF8ToNSString(state.brand_code) retain];
+    if (!state.brand_path.empty()) {
+      brandPath_ = [base::mac::FilePathToNSString(state.brand_path) retain];
+      brandKey_ = [kCRUTicketBrandKey retain];
+    }
     serverURL_ = [[NSURL
         URLWithString:@"https://tools.google.com/service/update2"] retain];
     serverType_ = [@"Omaha" retain];
     ticketVersion_ = 1;
-
-    // TODO(crbug/1250524): Infer tagPath, tagKey, brandPath, brandKey,
-    // versionPath, versionKey from app's existence checker and populate them
-    // as additional properties.
   }
   return self;
 }

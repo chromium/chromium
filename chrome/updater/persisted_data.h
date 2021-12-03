@@ -58,6 +58,10 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   std::string GetBrandCode(const std::string& id) const;
   void SetBrandCode(const std::string& id, const std::string& bc);
 
+  // These functions access the brand path for the specified id.
+  base::FilePath GetBrandPath(const std::string& id) const;
+  void SetBrandPath(const std::string& id, const base::FilePath& bp);
+
   // These functions access the AP for the specified id.
   std::string GetAP(const std::string& id) const;
   void SetAP(const std::string& id, const std::string& ap);

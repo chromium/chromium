@@ -29,6 +29,11 @@ struct RegistrationRequest {
   // string.
   std::string brand_code;
 
+  // A file path. Currently applicable to on Mac only: if a valid plist file
+  // exists at this path, the string value of key "KSBrandID" will override
+  // the `brand_code` above.
+  base::FilePath brand_path;
+
   // The ap value (e.g. from a tagged metainstaller). May be the empty string.
   // This typically indicates channel, though it can carry additional data as
   // well.

@@ -255,6 +255,7 @@ void UpdateServiceImpl::GetAppStates(
     app_state.version = persisted_data_->GetProductVersion(app_id);
     app_state.ap = persisted_data_->GetAP(app_id);
     app_state.brand_code = persisted_data_->GetBrandCode(app_id);
+    app_state.brand_path = persisted_data_->GetBrandPath(app_id);
     app_state.ecp = persisted_data_->GetExistenceCheckerPath(app_id);
     apps.push_back(app_state);
   }

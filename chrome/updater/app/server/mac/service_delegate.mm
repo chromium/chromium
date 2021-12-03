@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_block.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
@@ -196,6 +197,7 @@
 
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
                                 tag:(NSString* _Nullable)ap
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
@@ -203,10 +205,11 @@
   updater::RegistrationRequest request;
   request.app_id = base::SysNSStringToUTF8(appId);
   request.brand_code = base::SysNSStringToUTF8(brandCode);
+  request.brand_path = base::mac::NSStringToFilePath(brandPath);
   request.ap = base::SysNSStringToUTF8(ap);
   request.version = base::Version(base::SysNSStringToUTF8(version));
   request.existence_checker_path =
-      base::FilePath(base::SysNSStringToUTF8(existenceCheckerPath));
+      base::mac::NSStringToFilePath(existenceCheckerPath);
 
   auto cb = base::BindOnce(
       base::RetainBlock(^(const updater::RegistrationResponse& response) {

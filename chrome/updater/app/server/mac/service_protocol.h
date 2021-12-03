@@ -52,6 +52,7 @@
 // Registers app and returns the result in the reply block.
 - (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
                           brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
                                 tag:(NSString* _Nullable)ap
                             version:(NSString* _Nullable)version
                existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath

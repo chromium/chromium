@@ -189,6 +189,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     base::Version version;
     std::string ap;
     std::string brand_code;
+    base::FilePath brand_path;
     base::FilePath ecp;
   };
 

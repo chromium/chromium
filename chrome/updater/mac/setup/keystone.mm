@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
+#include "base/mac/foundation_util.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
@@ -120,9 +121,15 @@ void MigrateKeystoneTickets(
       registration.version =
           base::Version(base::SysNSStringToUTF8([ticket determineVersion]));
       registration.existence_checker_path =
-          base::FilePath(base::SysNSStringToUTF8(ticket.existenceChecker.path));
+          base::mac::NSStringToFilePath(ticket.existenceChecker.path);
       registration.brand_code =
           base::SysNSStringToUTF8([ticket determineBrand]);
+      if ([ticket.brandKey isEqualToString:kCRUTicketBrandKey]) {
+        // New updater only supports hard-coded brandKey, only migrate brand
+        // path if the key matches.
+        registration.brand_path =
+            base::mac::NSStringToFilePath(ticket.brandPath);
+      }
       registration.ap = base::SysNSStringToUTF8([ticket determineTag]);
 
       // Skip migration for incomplete ticket or Keystone itself.

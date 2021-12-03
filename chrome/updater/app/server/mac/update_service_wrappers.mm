@@ -35,6 +35,7 @@ static NSString* const kCRUAppStateAppId = @"appStateAppId";
 static NSString* const kCRUAppStateVersion = @"appStateVersion";
 static NSString* const kCRUAppStateAp = @"appStateAp";
 static NSString* const kCRUAppStateBrandCode = @"appStateBrandCode";
+static NSString* const kCRUAppStateBrandPath = @"appStateBrandPath";
 static NSString* const kCRUAppStateExistenceChecker =
     @"appStateExistenceChecker";
 
@@ -505,6 +506,8 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
                forKey:kCRUAppStateAp];
   [coder encodeObject:base::SysUTF8ToNSString(self.state.brand_code)
                forKey:kCRUAppStateBrandCode];
+  [coder encodeObject:base::mac::FilePathToNSString(self.state.brand_path)
+               forKey:kCRUAppStateBrandPath];
   [coder encodeObject:base::mac::FilePathToNSString(self.state.ecp)
                forKey:kCRUAppStateExistenceChecker];
 }
@@ -521,6 +524,8 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
                                         forKey:kCRUAppStateAp];
   NSString* brandCode = [aDecoder decodeObjectOfClass:[NSString class]
                                                forKey:kCRUAppStateBrandCode];
+  NSString* brandPath = [aDecoder decodeObjectOfClass:[NSString class]
+                                               forKey:kCRUAppStateBrandPath];
   NSString* ecp = [aDecoder decodeObjectOfClass:[NSString class]
                                          forKey:kCRUAppStateExistenceChecker];
 
@@ -529,6 +534,7 @@ typedef NS_ENUM(NSInteger, CRUErrorCategoryEnum) {
   appState.version = base::Version(base::SysNSStringToUTF8(version));
   appState.ap = base::SysNSStringToUTF8(ap);
   appState.brand_code = base::SysNSStringToUTF8(brandCode);
+  appState.brand_path = base::mac::NSStringToFilePath(brandPath);
   appState.ecp = base::mac::NSStringToFilePath(ecp);
   return [self initWithAppState:appState];
 }
