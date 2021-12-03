@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
 
+#include <list>
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/clipboard_image_model_factory.h"

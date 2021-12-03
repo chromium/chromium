@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_H_
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_H_
 
+#include <list>
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"

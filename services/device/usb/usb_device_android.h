@@ -5,6 +5,10 @@
 #ifndef SERVICES_DEVICE_USB_USB_DEVICE_ANDROID_H_
 #define SERVICES_DEVICE_USB_USB_DEVICE_ANDROID_H_
 
+#include <list>
+#include <memory>
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "services/device/usb/usb_device.h"

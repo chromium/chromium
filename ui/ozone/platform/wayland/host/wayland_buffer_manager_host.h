@@ -5,7 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_HOST_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_BUFFER_MANAGER_HOST_H_
 
+#include <list>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"

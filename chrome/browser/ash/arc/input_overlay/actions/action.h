@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ACTIONS_ACTION_H_
 
+#include <list>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/values.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"

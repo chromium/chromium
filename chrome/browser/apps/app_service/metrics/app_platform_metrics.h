@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
 
+#include <list>
 #include <map>
 #include <set>
+#include <string>
 
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
