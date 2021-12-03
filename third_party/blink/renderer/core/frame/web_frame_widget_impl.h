@@ -44,7 +44,7 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-blink.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
@@ -779,7 +779,10 @@ class CORE_EXPORT WebFrameWidgetImpl
       const gfx::Rect& rect_in_dips) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;
 #if defined(OS_ANDROID)
-  void SelectWordAroundCaret(SelectWordAroundCaretCallback callback) override;
+  void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
+                         bool should_show_handle,
+                         bool should_show_context_menu,
+                         SelectAroundCaretCallback callback) override;
 #endif
 
   // PageWidgetEventHandler overrides:

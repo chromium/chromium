@@ -540,13 +540,17 @@ void WebContentsAndroid::SelectWordAroundCaretAck(bool did_select,
     rwhva->SelectWordAroundCaretAck(did_select, start_adjust, end_adjust);
 }
 
-void WebContentsAndroid::SelectWordAroundCaret(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+void WebContentsAndroid::SelectAroundCaret(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj,
+                                           jint granularity,
+                                           jboolean should_show_handle,
+                                           jboolean should_show_context_menu) {
   auto* input_handler = web_contents_->GetFocusedFrameWidgetInputHandler();
   if (!input_handler)
     return;
-  input_handler->SelectWordAroundCaret(
+  input_handler->SelectAroundCaret(
+      static_cast<blink::mojom::SelectionGranularity>(granularity),
+      should_show_handle, should_show_context_menu,
       base::BindOnce(&WebContentsAndroid::SelectWordAroundCaretAck,
                      weak_factory_.GetWeakPtr()));
 }

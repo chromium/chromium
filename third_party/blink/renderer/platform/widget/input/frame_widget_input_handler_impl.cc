@@ -271,15 +271,18 @@ void FrameWidgetInputHandlerImpl::SelectRange(const gfx::Point& base,
 
 #if defined(OS_ANDROID)
 
-void FrameWidgetInputHandlerImpl::SelectWordAroundCaret(
-    SelectWordAroundCaretCallback callback) {
+void FrameWidgetInputHandlerImpl::SelectAroundCaret(
+    mojom::blink::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu,
+    SelectAroundCaretCallback callback) {
   // If the mojom channel is registered with compositor thread, we have to run
   // the callback on compositor thread. Otherwise run it on main thread. Mojom
   // requires the callback runs on the same thread.
   if (ThreadedCompositingEnabled()) {
     callback = base::BindOnce(
         [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
-           SelectWordAroundCaretCallback callback, bool did_select,
+           SelectAroundCaretCallback callback, bool did_select,
            int start_adjust, int end_adjust) {
           callback_task_runner->PostTask(
               FROM_HERE, base::BindOnce(std::move(callback), did_select,
@@ -290,14 +293,19 @@ void FrameWidgetInputHandlerImpl::SelectWordAroundCaret(
 
   RunOnMainThread(base::BindOnce(
       [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
-         SelectWordAroundCaretCallback callback) {
+         mojom::blink::SelectionGranularity granularity,
+         bool should_show_handle, bool should_show_context_menu,
+         SelectAroundCaretCallback callback) {
         if (handler) {
-          handler->SelectWordAroundCaret(std::move(callback));
+          handler->SelectAroundCaret(granularity, should_show_handle,
+                                     should_show_context_menu,
+                                     std::move(callback));
         } else {
           std::move(callback).Run(false, 0, 0);
         }
       },
-      main_thread_frame_widget_input_handler_, std::move(callback)));
+      main_thread_frame_widget_input_handler_, granularity, should_show_handle,
+      should_show_context_menu, std::move(callback)));
 }
 #endif  // defined(OS_ANDROID)
 

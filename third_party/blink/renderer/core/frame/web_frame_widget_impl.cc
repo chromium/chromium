@@ -3579,11 +3579,14 @@ void WebFrameWidgetImpl::CollapseSelection() {
 }
 
 void WebFrameWidgetImpl::Replace(const String& word) {
-  WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
+  auto* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
     return;
-  if (!focused_frame->HasSelection())
-    focused_frame->SelectWordAroundCaret();
+  if (!focused_frame->HasSelection()) {
+    focused_frame->SelectAroundCaret(mojom::blink::SelectionGranularity::kWord,
+                                     /*should_show_handle=*/false,
+                                     /*should_show_context_menu=*/false);
+  }
   focused_frame->ReplaceSelection(word);
   // If the resulting selection is not actually a change in selection, we do not
   // need to explicitly notify about the selection change.
@@ -3677,8 +3680,11 @@ void WebFrameWidgetImpl::MoveCaret(const gfx::Point& point_in_dips) {
 }
 
 #if defined(OS_ANDROID)
-void WebFrameWidgetImpl::SelectWordAroundCaret(
-    SelectWordAroundCaretCallback callback) {
+void WebFrameWidgetImpl::SelectAroundCaret(
+    mojom::blink::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu,
+    SelectAroundCaretCallback callback) {
   auto* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame) {
     std::move(callback).Run(false, 0, 0);
@@ -3690,8 +3696,10 @@ void WebFrameWidgetImpl::SelectWordAroundCaret(
   int end_adjust = 0;
   blink::WebRange initial_range = focused_frame->SelectionRange();
   SetHandlingInputEvent(true);
-  if (!initial_range.IsNull())
-    did_select = focused_frame->SelectWordAroundCaret();
+  if (!initial_range.IsNull()) {
+    did_select = focused_frame->SelectAroundCaret(
+        granularity, should_show_handle, should_show_context_menu);
+  }
   if (did_select) {
     blink::WebRange adjusted_range = focused_frame->SelectionRange();
     DCHECK(!adjusted_range.IsNull());

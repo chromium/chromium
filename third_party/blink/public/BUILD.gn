@@ -80,6 +80,7 @@ if (is_android) {
     sources = [
       "./common/input/web_input_event.h",
       "./mojom/context_menu/context_menu.mojom",
+      "./mojom/input/input_handler.mojom",
       "./platform/web_text_input_mode.h",
       "./platform/web_text_input_type.h",
     ]

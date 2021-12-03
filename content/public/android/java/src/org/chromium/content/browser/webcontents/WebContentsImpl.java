@@ -27,6 +27,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -633,10 +634,11 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public void selectWordAroundCaret() {
+    public void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
+            boolean shouldShowContextMenu) {
         checkNotDestroyed();
-        WebContentsImplJni.get().selectWordAroundCaret(
-                mNativeWebContentsAndroid, WebContentsImpl.this);
+        WebContentsImplJni.get().selectAroundCaret(mNativeWebContentsAndroid, WebContentsImpl.this,
+                granularity, shouldShowHandle, shouldShowContextMenu);
     }
 
     @Override
@@ -1101,7 +1103,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void exitFullscreen(long nativeWebContentsAndroid, WebContentsImpl caller);
         void scrollFocusedEditableNodeIntoView(
                 long nativeWebContentsAndroid, WebContentsImpl caller);
-        void selectWordAroundCaret(long nativeWebContentsAndroid, WebContentsImpl caller);
+        void selectAroundCaret(long nativeWebContentsAndroid, WebContentsImpl caller,
+                int granularity, boolean shouldShowHandle, boolean shouldShowContextMenu);
         void adjustSelectionByCharacterOffset(long nativeWebContentsAndroid, WebContentsImpl caller,
                 int startAdjust, int endAdjust, boolean showSelectionMenu);
         GURL getLastCommittedURL(long nativeWebContentsAndroid, WebContentsImpl caller);

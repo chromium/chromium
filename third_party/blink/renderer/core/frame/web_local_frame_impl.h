@@ -50,6 +50,7 @@
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_file_system_type.h"
@@ -215,7 +216,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void TextSelectionChanged(const WebString& selection_text,
                             uint32_t offset,
                             const gfx::Range& range) override;
-  bool SelectWordAroundCaret() override;
+  bool SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
+                         bool should_show_handle,
+                         bool should_show_context_menu);
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectRange(const WebRange&,
                    HandleVisibilityBehavior,

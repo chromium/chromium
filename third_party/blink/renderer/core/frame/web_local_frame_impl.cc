@@ -91,6 +91,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -1369,14 +1370,33 @@ void WebLocalFrameImpl::TextSelectionChanged(const WebString& selection_text,
   GetFrame()->TextSelectionChanged(selection_text, offset, range);
 }
 
-bool WebLocalFrameImpl::SelectWordAroundCaret() {
-  TRACE_EVENT0("blink", "WebLocalFrameImpl::selectWordAroundCaret");
+bool WebLocalFrameImpl::SelectAroundCaret(
+    mojom::blink::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu) {
+  TRACE_EVENT0("blink", "WebLocalFrameImpl::selectAroundCaret");
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetFrame()->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
-  return GetFrame()->Selection().SelectWordAroundCaret();
+  // TODO(1275801): Add mapping between the enums once it becomes possible to
+  // do so.
+  blink::TextGranularity text_granularity;
+  switch (granularity) {
+    case mojom::blink::SelectionGranularity::kWord:
+      text_granularity = blink::TextGranularity::kWord;
+      break;
+    case mojom::blink::SelectionGranularity::kSentence:
+      text_granularity = blink::TextGranularity::kSentence;
+      break;
+  }
+  return GetFrame()->Selection().SelectAroundCaret(
+      text_granularity,
+      should_show_handle ? HandleVisibility::kVisible
+                         : HandleVisibility::kNotVisible,
+      should_show_context_menu ? ContextMenuVisibility ::kVisible
+                               : ContextMenuVisibility ::kNotVisible);
 }
 
 void WebLocalFrameImpl::SelectRange(const gfx::Point& base_in_viewport,

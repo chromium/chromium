@@ -498,11 +498,6 @@ class WebLocalFrame : public WebFrame {
                                     uint32_t offset,
                                     const gfx::Range& range) = 0;
 
-  // Expands the selection to a word around the caret and returns
-  // true. Does nothing and returns false if there is no caret or
-  // there is ranged selection.
-  virtual bool SelectWordAroundCaret() = 0;
-
   // DEPRECATED: Use moveRangeSelection.
   virtual void SelectRange(const gfx::Point& base,
                            const gfx::Point& extent) = 0;
