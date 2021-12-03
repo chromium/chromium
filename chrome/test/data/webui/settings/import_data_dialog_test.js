@@ -126,6 +126,7 @@ suite('ImportDataDialog', function() {
   function simulateBrowserProfileChange(index) {
     dialog.$.browserSelect.selectedIndex = index;
     dialog.$.browserSelect.dispatchEvent(new CustomEvent('change'));
+    return new Promise(resolve => setTimeout(resolve, 0));
   }
 
   test('Initialization', function() {
@@ -149,7 +150,7 @@ suite('ImportDataDialog', function() {
     });
   });
 
-  test('ImportButton', function() {
+  test('ImportButton', async function() {
     assertFalse(dialog.$.import.disabled);
 
     // Flip all prefs to false.
@@ -159,7 +160,7 @@ suite('ImportDataDialog', function() {
     assertTrue(dialog.$.import.disabled);
 
     // Change browser selection to "Import from Bookmarks HTML file".
-    simulateBrowserProfileChange(2);
+    await simulateBrowserProfileChange(2);
     assertTrue(dialog.$.import.disabled);
 
     // Ensure everything except |import_dialog_bookmarks| is ignored.
@@ -193,10 +194,10 @@ suite('ImportDataDialog', function() {
     webUIListenerCallback('import-data-status-changed', status);
   }
 
-  test('ImportFromBookmarksFile', function() {
-    simulateBrowserProfileChange(2);
+  test('ImportFromBookmarksFile', async function() {
+    await simulateBrowserProfileChange(2);
     dialog.$.import.click();
-    return browserProxy.whenCalled('importFromBookmarksFile').then(function() {
+    await browserProxy.whenCalled('importFromBookmarksFile').then(function() {
       simulateImportStatusChange(ImportDataStatus.IN_PROGRESS);
       assertInProgressButtons();
 
@@ -209,16 +210,16 @@ suite('ImportDataDialog', function() {
     });
   });
 
-  test('ImportFromBrowserProfile', function() {
+  test('ImportFromBrowserProfile', async function() {
     ensureSettingsCheckboxCheckedStatus('import_dialog_bookmarks', false);
     ensureSettingsCheckboxCheckedStatus('import_dialog_search_engine', true);
 
     const expectedIndex = 0;
-    simulateBrowserProfileChange(expectedIndex);
+    await simulateBrowserProfileChange(expectedIndex);
     dialog.$.import.click();
 
     const importCalled = browserProxy.whenCalled('importData');
-    return importCalled.then(([actualIndex, types]) => {
+    await importCalled.then(([actualIndex, types]) => {
       assertEquals(expectedIndex, actualIndex);
       assertFalse(types['import_dialog_bookmarks']);
       assertTrue(types['import_dialog_search_engine']);
@@ -235,18 +236,18 @@ suite('ImportDataDialog', function() {
     });
   });
 
-  test('ImportFromBrowserProfileWithUnsupportedOption', function() {
+  test('ImportFromBrowserProfileWithUnsupportedOption', async function() {
     // Flip all prefs to true.
     Object.keys(prefs).forEach(function(prefName) {
       ensureSettingsCheckboxCheckedStatus(prefName, true);
     });
 
     const expectedIndex = 1;
-    simulateBrowserProfileChange(expectedIndex);
+    await simulateBrowserProfileChange(expectedIndex);
     dialog.$.import.click();
 
     const importCalled = browserProxy.whenCalled('importData');
-    return importCalled.then(([actualIndex, types]) => {
+    await importCalled.then(([actualIndex, types]) => {
       assertEquals(expectedIndex, actualIndex);
 
       Object.keys(prefs).forEach(function(prefName) {
