@@ -33,6 +33,7 @@ using BatchDecodeResult = CameraRollThumbnailDecoder::BatchDecodeResult;
 using BatchDecodeCallback =
     base::OnceCallback<void(BatchDecodeResult,
                             const std::vector<CameraRollItem>&)>;
+using FeatureState = chromeos::multidevice_setup::mojom::FeatureState;
 using FileTransferStatus = chromeos::secure_channel::mojom::FileTransferStatus;
 
 class FakeObserver : public CameraRollManager::Observer {
@@ -58,7 +59,7 @@ void RegisterHasDismissedOnBoardingUiPreferences(
     TestingPrefServiceSimple* pref_service) {
   DCHECK(pref_service);
   pref_service->registry()->RegisterBooleanPref(
-      prefs::kHasDismissedCameraRollOnboardingUi, true);
+      prefs::kHasDismissedCameraRollOnboardingUi, false);
 }
 
 void PopulateItemProto(proto::CameraRollItem* item_proto, std::string key) {
@@ -139,7 +140,7 @@ class CameraRollManagerImplTest : public testing::Test {
     fake_camera_roll_download_manager_ =
         fake_camera_roll_download_manager.get();
 
-    SetCameraRollFeatureSettings(true);
+    SetCameraRollFeatureState(FeatureState::kEnabledByUser);
     camera_roll_manager_ = std::make_unique<CameraRollManagerImpl>(
         &pref_service_, &fake_message_receiver_, &fake_message_sender_,
         fake_multidevice_setup_client_.get(), &fake_connection_manager_,
@@ -211,16 +212,10 @@ class CameraRollManagerImplTest : public testing::Test {
         ->CompletePendingCallback(result);
   }
 
-  void SetCameraRollFeatureSettings(bool enabled) {
-    if (enabled) {
-      fake_multidevice_setup_client_->SetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
-    } else {
-      fake_multidevice_setup_client_->SetFeatureState(
-          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
-          chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser);
-    }
+  void SetCameraRollFeatureState(FeatureState feature_state) {
+    fake_multidevice_setup_client_->SetFeatureState(
+        chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
+        feature_state);
   }
 
   void SendFetchCameraRollItemDataResponse(
@@ -370,6 +365,8 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
 }
 
@@ -386,6 +383,8 @@ TEST_F(CameraRollManagerImplTest,
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(0,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
 }
 
@@ -407,6 +406,8 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::ITEMS_VISIBLE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(3,
             GetSentFetchCameraRollItemsRequest().current_item_metadata_size());
@@ -437,12 +438,15 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusUpdateReceivedWithCameraRollSettingsDisabled) {
+  SetCameraRollFeatureState(FeatureState::kDisabledByUser);
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
@@ -455,10 +459,11 @@ TEST_F(CameraRollManagerImplTest,
       update.mutable_properties()->mutable_camera_roll_access_state();
   access_state->set_feature_enabled(true);
   access_state->set_storage_permission_granted(true);
-  SetCameraRollFeatureSettings(false);
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::CAN_OPT_IN,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(4, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
@@ -479,6 +484,8 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
@@ -492,6 +499,8 @@ TEST_F(CameraRollManagerImplTest, OnPhoneStatusSnapshotReceived) {
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
 }
 
@@ -511,12 +520,15 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 TEST_F(CameraRollManagerImplTest,
        OnPhoneStatusSnapshotReceivedWithCameraRollSettingDisabled) {
+  SetCameraRollFeatureState(FeatureState::kDisabledByUser);
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
@@ -526,13 +538,14 @@ TEST_F(CameraRollManagerImplTest,
   proto::PhoneStatusSnapshot snapshot;
   proto::CameraRollAccessState* access_state =
       snapshot.mutable_properties()->mutable_camera_roll_access_state();
-  access_state->set_feature_enabled(false);
+  access_state->set_feature_enabled(true);
   access_state->set_storage_permission_granted(true);
-  SetCameraRollFeatureSettings(false);
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::CAN_OPT_IN,
+            camera_roll_manager()->ui_state());
+  EXPECT_EQ(4, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -552,22 +565,45 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
   EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 TEST_F(CameraRollManagerImplTest, OnFeatureOnFeatureStatesChangedToDisabled) {
+  proto::PhoneStatusSnapshot snapshot;
+  proto::CameraRollAccessState* access_state =
+      snapshot.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
   CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
 
-  SetCameraRollFeatureSettings(false);
+  SetCameraRollFeatureState(FeatureState::kDisabledByUser);
 
-  EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::CAN_OPT_IN,
+            camera_roll_manager()->ui_state());
+  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
+}
+
+TEST_F(CameraRollManagerImplTest, FeatureProhibitedByPolicy) {
+  SetCameraRollFeatureState(FeatureState::kProhibitedByPolicy);
+
+  proto::PhoneStatusSnapshot snapshot;
+  proto::CameraRollAccessState* access_state =
+      snapshot.mutable_properties()->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
+  access_state->set_storage_permission_granted(true);
+  fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
+
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+            camera_roll_manager()->ui_state());
 }
 
 TEST_F(CameraRollManagerImplTest, DownloadItem) {

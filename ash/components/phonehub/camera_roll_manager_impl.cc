@@ -255,17 +255,32 @@ void CameraRollManagerImpl::OnCameraRollOnboardingUiDismissed() {
 void CameraRollManagerImpl::ComputeAndUpdateUiState() {
   if (!is_camera_roll_accessible_) {
     ui_state_ = CameraRollUiState::SHOULD_HIDE;
-  } else if (!IsCameraRollSettingEnabled()) {
-    ui_state_ =
-        (pref_service_->GetBoolean(prefs::kHasDismissedCameraRollOnboardingUi))
-            ? CameraRollUiState::SHOULD_HIDE
-            : CameraRollUiState::CAN_OPT_IN;
-  } else if (is_refreshing_after_user_opt_in_) {
-    ui_state_ = CameraRollUiState::LOADING_VIEW;
-  } else if (current_items().empty()) {
-    ui_state_ = CameraRollUiState::SHOULD_HIDE;
-  } else {
-    ui_state_ = CameraRollUiState::ITEMS_VISIBLE;
+    NotifyCameraRollViewUiStateUpdated();
+    return;
+  }
+
+  chromeos::multidevice_setup::mojom::FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+  switch (feature_state) {
+    case chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser:
+      ui_state_ =
+          pref_service_->GetBoolean(prefs::kHasDismissedCameraRollOnboardingUi)
+              ? CameraRollUiState::SHOULD_HIDE
+              : CameraRollUiState::CAN_OPT_IN;
+      break;
+    case chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser:
+      if (is_refreshing_after_user_opt_in_) {
+        ui_state_ = CameraRollUiState::LOADING_VIEW;
+      } else if (current_items().empty()) {
+        ui_state_ = CameraRollUiState::SHOULD_HIDE;
+      } else {
+        ui_state_ = CameraRollUiState::ITEMS_VISIBLE;
+      }
+      break;
+    default:
+      ui_state_ = CameraRollUiState::SHOULD_HIDE;
+      break;
   }
   NotifyCameraRollViewUiStateUpdated();
 }
