@@ -61,9 +61,7 @@ std::vector<DpfParameters> ConstructDpfParameters() {
   for (size_t i = 0; i < AggregatableReport::kBucketDomainBitLength; i++) {
     parameters[i].set_log_domain_size(i + 1);
 
-    // TODO(crbug.com/1227772): deprecated, replace with ValueType when we roll
-    // the DPF library.
-    parameters[i].set_element_bitsize(
+    parameters[i].mutable_value_type()->mutable_integer()->set_bitsize(
         AggregatableReport::kValueDomainBitLength);
   }
 
