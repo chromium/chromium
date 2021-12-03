@@ -976,6 +976,8 @@ crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/
 crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-3d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
 crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
 
+# Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
+crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 # This test is failing on Android Pixel 2 and 3 (Qualcomm)
 # Seems to be an OpenGL ES bug.
