@@ -177,13 +177,13 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
     // Record latency histogram.
     switch (tab_switch_result) {
       case TabSwitchResult::kSuccess: {
-        base::UmaHistogramTimes(
+        base::UmaHistogramMediumTimes(
             base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
             tab_switch_duration);
         break;
       }
       case TabSwitchResult::kIncomplete: {
-        base::UmaHistogramTimes(
+        base::UmaHistogramMediumTimes(
             base::StrCat(
                 {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
             tab_switch_duration);
