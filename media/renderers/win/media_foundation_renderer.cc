@@ -513,16 +513,19 @@ HRESULT MediaFoundationRenderer::PopulateStatistics(
     PipelineStatistics& statistics) {
   ComPtr<IMFMediaEngineEx> media_engine_ex;
   RETURN_IF_FAILED(mf_media_engine_.As(&media_engine_ex));
+
   base::win::ScopedPropVariant frames_rendered;
   RETURN_IF_FAILED(media_engine_ex->GetStatistics(
       MF_MEDIA_ENGINE_STATISTIC_FRAMES_RENDERED, frames_rendered.Receive()));
   base::win::ScopedPropVariant frames_dropped;
   RETURN_IF_FAILED(media_engine_ex->GetStatistics(
       MF_MEDIA_ENGINE_STATISTIC_FRAMES_DROPPED, frames_dropped.Receive()));
-  DVLOG_FUNC(3) << "video_frames_decoded=" << frames_rendered.get().ulVal
-                << ", video_frames_dropped=" << frames_dropped.get().ulVal;
-  statistics.video_frames_decoded = frames_rendered.get().ulVal;
+
+  statistics.video_frames_decoded =
+      frames_rendered.get().ulVal + frames_dropped.get().ulVal;
   statistics.video_frames_dropped = frames_dropped.get().ulVal;
+  DVLOG_FUNC(3) << "video_frames_decoded=" << statistics.video_frames_decoded
+                << ", video_frames_dropped=" << statistics.video_frames_dropped;
   return S_OK;
 }
 
