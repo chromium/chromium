@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Match container in outer tree assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+FAIL Match container in same tree, not walking flat tree ancestors assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+PASS Match container in ::slotted selector's originating element tree
+FAIL Match container in outer tree for :host assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+FAIL Match container in ::part selector's originating element tree assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+FAIL Match container for ::before in ::slotted selector's originating element tree assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+FAIL Match container in outer tree for :host::before assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+FAIL Match container for ::before in ::part selector's originating element tree Failed to execute 'getComputedStyle' on 'Window': parameter 1 is not of type 'Element'.
+Harness: the test ran to completion.
+
