@@ -128,7 +128,14 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   } else {
     base::FilePath local_state_file =
         browser_->options()->user_data_dir.Append(kLocalStateFilename);
-    pref_store = base::MakeRefCounted<JsonPrefStore>(local_state_file);
+    pref_store = base::MakeRefCounted<JsonPrefStore>(
+        local_state_file,
+        /*pref_filter=*/nullptr,
+        /*file_task_runner=*/
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+        /*read_only=*/true);
     auto result = pref_store->ReadPrefs();
     base::debug::Alias(&result);
     if (result != JsonPrefStore::PREF_READ_ERROR_NONE) {

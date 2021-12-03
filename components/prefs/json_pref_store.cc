@@ -147,11 +147,12 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
 JsonPrefStore::JsonPrefStore(
     const base::FilePath& pref_filename,
     std::unique_ptr<PrefFilter> pref_filter,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    bool read_only)
     : path_(pref_filename),
       file_task_runner_(std::move(file_task_runner)),
       prefs_(new base::DictionaryValue()),
-      read_only_(false),
+      read_only_(read_only),
       writer_(pref_filename,
               file_task_runner_,
               GetHistogramSuffix(pref_filename)),
