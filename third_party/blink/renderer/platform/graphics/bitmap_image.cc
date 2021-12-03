@@ -310,17 +310,20 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
   uint32_t stable_id = image.stable_id();
   bool is_lazy_generated = image.IsLazyGenerated();
 
-  cc::PaintFlags image_flags(flags);
+  const cc::PaintFlags* image_flags = &flags;
+  absl::optional<cc::PaintFlags> dark_mode_flags;
   if (draw_options.apply_dark_mode) {
+    dark_mode_flags = flags;
     DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
     DarkModeFilterHelper::ApplyToImageIfNeeded(
-        *dark_mode_filter, this, &image_flags, gfx::RectFToSkRect(src_rect),
-        gfx::RectFToSkRect(dst_rect));
+        *dark_mode_filter, this, &dark_mode_flags.value(),
+        gfx::RectFToSkRect(src_rect), gfx::RectFToSkRect(dst_rect));
+    image_flags = &dark_mode_flags.value();
   }
   canvas->drawImageRect(
       std::move(image), gfx::RectFToSkRect(adjusted_src_rect),
       gfx::RectFToSkRect(adjusted_dst_rect), draw_options.sampling_options,
-      &image_flags,
+      image_flags,
       WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
 
   if (is_lazy_generated) {
