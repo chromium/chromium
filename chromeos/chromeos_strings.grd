@@ -2359,7 +2359,7 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Manually disable wp page -->
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS" translateable="false" desc="The text instructions for how to manually disable write-protect on the device.">
-        Disable write-protect to continue to the next screen. Learn how to disable write-proect for this device by viewing the instructions at <ph name="HELP_LINK">$1<ex>g.co/help</ex></ph> or scanning the QR code. Once you disable write-protect, you will need to leave it disabled until the repair process is finished.
+        Disable write-protect to continue to the next screen. Learn how to disable write-protect for this device by viewing the instructions at the device manufacturer's support page. Once you disable write-protect, you will need to leave it disabled until the repair process is finished. Please expect a reboot after disabling write protection.
       </message>
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE" translateable="false" desc="The title for the page to manually disable write-protect on the device.">
         Manually disable write-protect
