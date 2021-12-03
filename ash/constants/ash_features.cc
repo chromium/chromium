@@ -1251,9 +1251,9 @@ const base::Feature kVirtualKeyboardMultipasteSuggestion{
 const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable new wallpaper experience in WebUI inside system settings.
+// Enable new wallpaper experience SWA.
 const base::Feature kWallpaperWebUI{"WallpaperWebUI",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable full screen wallpaper preview in new wallpaper experience. Requires
 // |kWallpaperWebUI| to also be enabled.
