@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.price_tracking;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,6 +66,8 @@ public class PriceTrackingNotificationBridgeUnitTest {
 
     @Mock
     PriceDropNotifier mNotifier;
+    @Mock
+    PriceDropNotificationManager mPriceDropNotificationManager;
 
     @Captor
     ArgumentCaptor<PriceDropNotifier.NotificationData> mNotificationDataCaptor;
@@ -79,7 +82,9 @@ public class PriceTrackingNotificationBridgeUnitTest {
                 .when(currencyFormatterJniMock)
                 .format(Mockito.anyLong(), Mockito.any(CurrencyFormatter.class),
                         Mockito.anyString());
-        mPriceTrackingNotificationBridge = new PriceTrackingNotificationBridge(0, mNotifier);
+        mPriceTrackingNotificationBridge =
+                new PriceTrackingNotificationBridge(0, mNotifier, mPriceDropNotificationManager);
+        when(mPriceDropNotificationManager.canPostNotification()).thenReturn(true);
     }
 
     // Creates a ChromeNotification.Builder that sets a valid ChromeNotification proto.
@@ -151,6 +156,14 @@ public class PriceTrackingNotificationBridgeUnitTest {
         Assert.assertEquals(ACTION_ID_1, data.actions.get(1).actionId);
         Assert.assertEquals(ACTION_TEXT_1, data.actions.get(1).text);
         Assert.assertEquals(String.valueOf(OFFER_ID), data.offerId);
+    }
+
+    @Test
+    public void testShowNotification_ChannelNotCreated() {
+        when(mPriceDropNotificationManager.canPostNotification()).thenReturn(false);
+        mPriceTrackingNotificationBridge.showNotification(
+                createValidChromeNotification().build().toByteArray());
+        verify(mNotifier, times(0)).showNotification(any());
     }
 
     @Test
