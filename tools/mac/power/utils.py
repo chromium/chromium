@@ -84,3 +84,12 @@ def FindProcess(process_name: str) -> psutil.Process:
           "Too many copies of the process running, this is wrong.")
 
   return returned_process
+
+
+def FindChromiumSrcDir(path: os.PathLike) -> os.PathLike:
+  path = os.path.abspath(path)
+  while path:
+    (head, tail) = os.path.split(path)
+    if tail == "src":
+      return path
+    path = head

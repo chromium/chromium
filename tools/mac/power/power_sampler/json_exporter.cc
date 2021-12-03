@@ -58,8 +58,9 @@ void JsonExporter::OnEndSession() {
   output.emplace("data_rows", base::Value(data_rows_));
 
   std::string json_string;
-  bool success =
-      base::JSONWriter::Write(base::Value(std::move(output)), &json_string);
+  bool success = base::JSONWriter::WriteWithOptions(
+      base::Value(std::move(output)), base::JSONWriter::OPTIONS_PRETTY_PRINT,
+      &json_string);
 
   DCHECK(success);
   success = base::WriteFile(file_path_, json_string);

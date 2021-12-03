@@ -13,6 +13,7 @@ import datetime
 from driver import DriverContext
 import scenarios
 import browsers
+import utils
 
 
 def IterScenarios(
@@ -45,6 +46,11 @@ def main():
       action='store',
       choices=["wakeups", "cpu_time"],
       help="Profile the application in one of two modes: wakeups, cpu_time.")
+  parser.add_argument("--power_sampler",
+                      help="Path to power sampler binary",
+                      default=os.path.join(
+                          utils.FindChromiumSrcDir(os.path.dirname(__file__)),
+                          "out", "Default", "power_sampler"))
   parser.add_argument(
       '--scenarios',
       dest='scenarios',
@@ -86,7 +92,7 @@ def main():
                               datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
 
   logging.info(f'Outputing results in {os.path.abspath(output_dir)}')
-  with DriverContext(output_dir) as driver:
+  with DriverContext(output_dir, args.power_sampler) as driver:
     driver.CheckEnv(not args.no_checks)
     # This is the average brightness from UMA data.
     driver.SetMainDisplayBrightness(65)

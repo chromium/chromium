@@ -28,10 +28,11 @@ class ScenarioOSADriver(abc.ABC):
      down.
   """
 
-  def __init__(self, scenario_name):
+  def __init__(self, scenario_name, duration: datetime.timedelta):
     self.name = scenario_name
     self.script_process = None
     self.osa_script = None
+    self.duration = duration
 
   def Launch(self):
     """Starts the driver script.
@@ -90,8 +91,9 @@ class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
   """Specialisation for OSA script that runs with a browser.
   """
 
-  def __init__(self, scenario_name, browser_driver: browsers.BrowserDriver):
-    super().__init__(f"{browser_driver.name}_{scenario_name}")
+  def __init__(self, scenario_name, browser_driver: browsers.BrowserDriver,
+               duration: datetime.timedelta):
+    super().__init__(f"{browser_driver.name}_{scenario_name}", duration)
     self.browser = browser_driver
 
   def Launch(self):
@@ -119,11 +121,10 @@ class IdleScenario(ScenarioOSADriver):
   """
 
   def __init__(self, duration: datetime.timedelta, scenario_name="idle"):
-    super().__init__(scenario_name)
+    super().__init__(scenario_name, duration)
     self._CompileTemplate("idle", {
         "delay": duration.total_seconds(),
     })
-
 
 
 class IdleOnSiteScenario(ScenarioWithBrowserOSADriver):
@@ -132,7 +133,7 @@ class IdleOnSiteScenario(ScenarioWithBrowserOSADriver):
 
   def __init__(self, browser_driver: browsers.BrowserDriver,
                duration: datetime.timedelta, site_url: str, scenario_name):
-    super().__init__(scenario_name, browser_driver)
+    super().__init__(scenario_name, browser_driver, duration)
     self._CompileTemplate(
         GetTemplateFileForBrowser(browser_driver, "idle_on_site"), {
             "idle_site": site_url,
@@ -163,7 +164,7 @@ class ZeroWindowScenario(ScenarioWithBrowserOSADriver):
                browser_driver: browsers.BrowserDriver,
                duration: datetime.timedelta,
                scenario_name="zero_window"):
-    super().__init__(scenario_name, browser_driver)
+    super().__init__(scenario_name, browser_driver, duration)
     self._CompileTemplate(
         GetTemplateFileForBrowser(browser_driver, "zero_window"), {
             "delay": duration.total_seconds(),
@@ -173,17 +174,28 @@ class ZeroWindowScenario(ScenarioWithBrowserOSADriver):
 class NavigationScenario(ScenarioWithBrowserOSADriver):
   """Scenario that has a browser navigating on web pages in a loop.
   """
+  NAVIGATED_SITES = [
+      "https://amazon.com",
+      "https://www.amazon.com/s?k=computer&ref=nb_sb_noss_2",
+      "https://google.com", "https://www.google.com/search?q=computers",
+      "https://www.youtube.com",
+      "https://www.youtube.com/results?search_query=computers",
+      "https://bit.ly/chrome-clocks-and-sleep"
+  ]
 
   def __init__(self,
                browser_driver: browsers.BrowserDriver,
                navigation_duration: datetime.timedelta,
                navigation_cycles: int,
+               sites=NAVIGATED_SITES,
                scenario_name="navigation"):
-    super().__init__(scenario_name, browser_driver)
+    super().__init__(scenario_name, browser_driver,
+                     navigation_duration * navigation_cycles * len(sites))
     self._CompileTemplate(
         GetTemplateFileForBrowser(browser_driver, "navigation"), {
             "per_navigation_delay": navigation_duration.total_seconds(),
-            "navigation_cycles": navigation_cycles
+            "navigation_cycles": navigation_cycles,
+            "sites": ",".join(sites)
         })
 
 
@@ -196,7 +208,7 @@ class MeetScenario(ScenarioWithBrowserOSADriver):
                duration: datetime.timedelta,
                meeting_id: int,
                scenario_name="meet"):
-    super().__init__(scenario_name, browser_driver)
+    super().__init__(scenario_name, browser_driver, duration)
     self._CompileTemplate(GetTemplateFileForBrowser(browser_driver, "meet"), {
         "delay": duration.total_seconds(),
         "meeting_id": meeting_id
@@ -233,8 +245,8 @@ def MakeScenarioDriver(scenario_name,
   if "navigation" == scenario_name:
     return NavigationScenario(
         browser_driver,
-        navigation_duration=datetime.timedelta(seconds=60),
-        navigation_cycles=10)
+        navigation_duration=datetime.timedelta(seconds=15),
+        navigation_cycles=140)
   if "zero_window" == scenario_name:
     return ZeroWindowScenario(browser_driver, datetime.timedelta(minutes=60))
   return None

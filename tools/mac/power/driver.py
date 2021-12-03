@@ -22,13 +22,14 @@ class DriverContext:
   of the global state needed to do so.
   """
 
-  def __init__(self, output_dir: str):
+  def __init__(self, output_dir: str, power_sample_path: str):
     """
     Args:
       output_dir: A string path of Where the results should be stored.
     """
 
     self._output_dir = output_dir
+    self._power_sample_path = power_sample_path
 
     # Make sure there is somewhere to put  results.
     os.makedirs(f"{self._output_dir}", exist_ok=True)
@@ -120,27 +121,66 @@ class DriverContext:
 
     self.WriteScenarioSummary(scenario_driver)
 
-    output_file = os.path.join(self._output_dir, scenario_driver.name,
-                               "powermetrics.plist")
+    powermetrics_output = os.path.join(self._output_dir, scenario_driver.name,
+                                       "powermetrics.plist")
+    power_sampler_output = os.path.join(self._output_dir, scenario_driver.name,
+                                        "power_sampler.json")
+    power_sampler_battery_output = os.path.join(self._output_dir,
+                                                scenario_driver.name,
+                                                "power_sampler_battery.json")
 
     powermetrics_process = None
+    power_sampler_process = None
+    power_sampler_battery_process = None
+    browser_process = None
     try:
       scenario_driver.Launch()
+      if hasattr(scenario_driver, 'browser'):
+        browser_process = scenario_driver.browser.browser_process
+
       powermetrics_args = [
           "sudo", "powermetrics", "-f", "plist", "--samplers",
           "tasks,cpu_power,gpu_power,thermal,disk,network",
           "--show-process-coalition", "--show-process-gpu",
-          "--show-process-energy", "-i", "10000", "--output-file", output_file
+          "--show-process-energy", "-i", "10000", "--output-file",
+          powermetrics_output
       ]
-
       powermetrics_process = subprocess.Popen(powermetrics_args,
                                               stdout=subprocess.PIPE,
                                               stdin=subprocess.PIPE)
+      power_sampler_battery_args = [
+          self._power_sample_path, "--sample-on-notification",
+          "--samplers=battery",
+          f"--timeout={int(scenario_driver.duration.total_seconds())}",
+          f"--json-output-file={power_sampler_battery_output}"
+      ]
+      power_sampler_battery_process = subprocess.Popen(
+          power_sampler_battery_args,
+          stdout=subprocess.PIPE,
+          stdin=subprocess.PIPE)
+      power_sampler_args = [
+          self._power_sample_path, "--sample-interval=10",
+          "--samplers=smc,user_idle,main_display",
+          f"--timeout={int(scenario_driver.duration.total_seconds())}",
+          f"--json-output-file={power_sampler_output}"
+      ]
+      if browser_process is not None:
+        power_sampler_args += [
+            f"--resource-coalition-pid={browser_process.pid}"
+        ]
+      power_sampler_process = subprocess.Popen(power_sampler_args,
+                                               stdout=subprocess.PIPE,
+                                               stdin=subprocess.PIPE)
       scenario_driver.Wait()
+      power_sampler_process.wait()
+      power_sampler_battery_process.wait()
 
     finally:
       scenario_driver.TearDown()
-
+      if power_sampler_process:
+        utils.TerminateProcess(power_sampler_process)
+      if power_sampler_battery_process:
+        utils.TerminateProcess(power_sampler_battery_process)
       if powermetrics_process:
         # Force powermetrics to flush data.
         utils.SendSignalToRootProcess(powermetrics_process, signal.SIGIO)
