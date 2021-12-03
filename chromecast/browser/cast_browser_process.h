@@ -30,6 +30,7 @@ namespace shell {
 class AccessibilityManager;
 #endif  // defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
+class AccessibilityServiceImpl;
 class CastBrowserContext;
 class CastContentBrowserClient;
 class CastDisplayConfigurator;
@@ -75,6 +76,8 @@ class CastBrowserProcess {
       std::unique_ptr<RemoteDebuggingServer> remote_debugging_server);
   void SetConnectivityChecker(
       scoped_refptr<ConnectivityChecker> connectivity_checker);
+  void SetAccessibilityService(
+      std::unique_ptr<AccessibilityServiceImpl> accessibility_service);
 
   CastContentBrowserClient* browser_client() const {
     return cast_content_browser_client_;
@@ -104,6 +107,9 @@ class CastBrowserProcess {
   RemoteDebuggingServer* remote_debugging_server() const {
     return remote_debugging_server_.get();
   }
+  AccessibilityServiceImpl* accessibility_service() const {
+    return accessibility_service_.get();
+  }
 
  private:
   // Note: The following objects should be declared in the same order as they
@@ -124,6 +130,7 @@ class CastBrowserProcess {
   scoped_refptr<ConnectivityChecker> connectivity_checker_;
   std::unique_ptr<metrics::CastBrowserMetrics> cast_browser_metrics_;
   std::unique_ptr<RemoteDebuggingServer> remote_debugging_server_;
+  std::unique_ptr<AccessibilityServiceImpl> accessibility_service_;
 #if defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   // Destroyed in PostMainMessageLoopRun, just after CastService::Stop(). It's
   // not clear why this has to be destroyed before CastService.

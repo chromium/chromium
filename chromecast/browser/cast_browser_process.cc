@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "chromecast/browser/accessibility/accessibility_service_impl.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_network_contexts.h"
@@ -25,7 +26,7 @@
 #include "chromecast/browser/accessibility/accessibility_manager.h"
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
-#include "chromecast/browser/cast_display_configurator.h"
+#include "chromecast/browser/cast_display_configurator.h"  // nogncheck
 #include "chromecast/graphics/cast_screen.h"
 #endif  // defined(USE_AURA)
 
@@ -131,6 +132,12 @@ void CastBrowserProcess::SetConnectivityChecker(
     scoped_refptr<ConnectivityChecker> connectivity_checker) {
   DCHECK(!connectivity_checker_);
   connectivity_checker_.swap(connectivity_checker);
+}
+
+void CastBrowserProcess::SetAccessibilityService(
+    std::unique_ptr<AccessibilityServiceImpl> accessibility_service) {
+  DCHECK(!accessibility_service_);
+  accessibility_service_ = std::move(accessibility_service);
 }
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)

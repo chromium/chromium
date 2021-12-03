@@ -7,9 +7,6 @@
 
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/accessibility.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 #include "chromecast/browser/extensions/cast_extension_system.h"
@@ -48,8 +45,6 @@ class AccessibilityServiceImpl : public mojom::CastAccessibilityService {
   void GetAccessibilitySettings(
       GetAccessibilitySettingsCallback callback) override;
 
-  void AddBinding(mojom::CastAccessibilityServiceRequest request);
-
   void Stop();
 
  private:
@@ -72,7 +67,6 @@ class AccessibilityServiceImpl : public mojom::CastAccessibilityService {
 
   content::BrowserContext* const browser_context_;
   DisplaySettingsManager* const display_settings_manager_;
-  mojo::ReceiverSet<mojom::CastAccessibilityService> receivers_;
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   bool chromevox_enabled_ = false;

@@ -16,7 +16,7 @@ cast_source_set("display_settings") {
 
   deps = [
     "//base",
-    "//chromecast/browser",
+    "//chromecast/browser:display_configurator",
     "//chromecast/graphics",
     "//chromecast/ui:display_settings_public",
     "//skia",
@@ -33,37 +33,31 @@ cast_source_set("display_settings") {
 
     deps += [
       ":screen_power_controller_aura",
-      "//ui/aura"
+      "//ui/aura",
     ]
   } else {
-    deps += [
-      ":screen_power_controller_default",
-    ]
+    deps += [ ":screen_power_controller_default" ]
   }
 }
 
 cast_source_set("screen_power_controller_default") {
   sources = [
     "screen_power_controller.h",
-    "screen_power_controller_default.h",
     "screen_power_controller_default.cc",
+    "screen_power_controller_default.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 cast_source_set("screen_power_controller_aura") {
   sources = [
     "screen_power_controller.h",
-    "screen_power_controller_aura.h",
     "screen_power_controller_aura.cc",
+    "screen_power_controller_aura.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 test("cast_display_settings_unittests") {
@@ -80,12 +74,8 @@ test("cast_display_settings_unittests") {
   ]
 
   if (use_aura) {
-    sources += [
-      "screen_power_controller_aura_unittest.cc",
-    ]
+    sources += [ "screen_power_controller_aura_unittest.cc" ]
 
-    deps += [
-      ":screen_power_controller_aura",
-    ]
+    deps += [ ":screen_power_controller_aura" ]
   }
 }

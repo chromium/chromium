@@ -35,6 +35,7 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/base/metrics/grouped_histogram.h"
 #include "chromecast/base/version.h"
+#include "chromecast/browser/accessibility/accessibility_service_impl.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_browser_client.h"
@@ -66,6 +67,7 @@
 #include "chromecast/net/connectivity_checker.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/service/cast_service.h"
+#include "chromecast/ui/display_settings_manager_impl.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/prefs/pref_service.h"
@@ -115,7 +117,7 @@
 // header, but is exported to allow injecting the overlay-composited
 // callback.
 #include "chromecast/browser/accessibility/accessibility_manager_impl.h"
-#include "chromecast/browser/cast_display_configurator.h"
+#include "chromecast/browser/cast_display_configurator.h"  // nogncheck
 #include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/graphics/cast_window_manager_aura.h"
@@ -477,6 +479,11 @@ CastBrowserMainParts::media_connector() {
   return media_connector_.get();
 }
 
+AccessibilityServiceImpl* CastBrowserMainParts::accessibility_service() {
+  CHECK(accessibility_service_);
+  return accessibility_service_.get();
+}
+
 void CastBrowserMainParts::PreCreateMainMessageLoop() {
   // GroupedHistograms needs to be initialized before any threads are created
   // to prevent race conditions between calls to Preregister and those threads
@@ -673,6 +680,19 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   ::media::InitializeMediaLibrary();
   media_caps_->Initialize();
 
+  display_settings_manager_ = std::make_unique<DisplaySettingsManagerImpl>(
+      window_manager_.get(),
+#if defined(USE_AURA)
+      cast_browser_process_->display_configurator()
+#else
+      nullptr
+#endif  // defined(USE_AURA)
+  );
+  cast_browser_process_->SetAccessibilityService(
+      std::make_unique<AccessibilityServiceImpl>(
+          cast_browser_process_->browser_context(),
+          display_settings_manager_.get()));
+
   web_service_ = std::make_unique<CastWebService>(
       cast_browser_process_->browser_context(), window_manager_.get());
   browser_service_->AddInterface<::chromecast::mojom::CastWebService>(
@@ -688,7 +708,9 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_browser_process_->browser_context(),
           cast_system_memory_pressure_evaluator_adjuster_,
           cast_browser_process_->pref_service(), video_plane_controller_.get(),
-          window_manager_.get(), web_service_.get()));
+          window_manager_.get(), web_service_.get(),
+          display_settings_manager_.get(),
+          cast_browser_process_->accessibility_service()));
   cast_browser_process_->cast_service()->Initialize();
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)

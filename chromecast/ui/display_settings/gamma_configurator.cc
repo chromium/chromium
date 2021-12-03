@@ -17,9 +17,9 @@ constexpr uint16_t kMaxGammaValue = std::numeric_limits<uint16_t>::max();
 std::vector<display::GammaRampRGBEntry> CreateDefaultGammaLut() {
   std::vector<display::GammaRampRGBEntry> gamma_lut;
   for (size_t i = 0; i < kGammaTableSize; ++i) {
-    float value =
-        static_cast<float>(kGammaTableSize - i - 1) / (kGammaTableSize - 1);
-    value *= kMaxGammaValue;
+    const uint16_t value = static_cast<uint16_t>(
+        kMaxGammaValue *
+        (static_cast<float>(kGammaTableSize - i - 1) / (kGammaTableSize - 1)));
     gamma_lut.push_back({value, value, value});
   }
 

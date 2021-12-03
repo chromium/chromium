@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -28,13 +29,13 @@
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/common/extensions_api/accessibility_private.h"
-#include "chromecast/common/mojom/accessibility.mojom.h"
 #include "chromecast/graphics/cast_window_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
 constexpr char kExtensionsDirDefault[] = "/system/chrome/extensions";
@@ -59,9 +60,7 @@ AccessibilityServiceImpl::AccessibilityServiceImpl(
   DCHECK(browser_context);
 }
 
-AccessibilityServiceImpl::~AccessibilityServiceImpl() {
-  receivers_.Clear();
-}
+AccessibilityServiceImpl::~AccessibilityServiceImpl() = default;
 
 void AccessibilityServiceImpl::SetColorInversion(bool enable) {
   if (enable != color_inversion_enabled_) {
@@ -219,11 +218,6 @@ void AccessibilityServiceImpl::GetAccessibilitySettings(
   settings->magnification_gesture_enabled = IsMagnificationGestureEnabled();
 
   std::move(callback).Run(std::move(settings));
-}
-
-void AccessibilityServiceImpl::AddBinding(
-    mojom::CastAccessibilityServiceRequest request) {
-  receivers_.Add(this, std::move(request));
 }
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)

@@ -247,6 +247,7 @@ cast_source_set("browser_base") {
     "//chromecast/net:connectivity_checker",
     "//chromecast/net:socket_util",
     "//chromecast/service",
+    "//chromecast/ui:display_settings_manager",
     "//chromecast/ui:display_settings_public",
     "//components/cast/message_port:message_port_cast",
     "//components/cdm/browser",
@@ -314,17 +315,7 @@ cast_source_set("browser_base") {
       "//components/embedder_support/android:view",
     ]
   } else {
-    sources += [
-      "cast_display_configurator.cc",
-      "cast_display_configurator.h",
-      "cast_touch_device_manager.cc",
-      "cast_touch_device_manager.h",
-    ]
-
-    deps += [
-      "//mojo/public/cpp/bindings",
-      "//ui/aura",
-    ]
+    deps += [ ":display_configurator" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -349,6 +340,7 @@ cast_source_set("browser_base") {
 
     deps += [
       "//chromecast/ui:media_control_ui",
+      "//ui/aura",
       "//ui/views:views",
     ]
 
@@ -546,6 +538,32 @@ cast_source_set("browser_base") {
   }
 }
 
+cast_source_set("display_configurator") {
+  sources = [
+    "cast_display_configurator.cc",
+    "cast_display_configurator.h",
+    "cast_touch_device_manager.cc",
+    "cast_touch_device_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//chromecast/base",
+    "//chromecast/graphics",
+    "//chromecast/public",
+    "//ui/display",
+    "//ui/events/devices",
+    "//ui/gfx/geometry",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
+  public_configs = [ "//skia:skia_config" ]
+}
+
 cast_source_set("simple_main_parts") {
   sources = [ "cast_browser_main_parts_simple.cc" ]
 
@@ -727,6 +745,7 @@ cast_source_set("unittests") {
 
   deps = [
     ":browser",
+    ":display_configurator",
     ":test_support",
     "//base",
     "//base/test:test_support",

@@ -37,6 +37,7 @@ class ViewsDelegate;
 namespace chromecast {
 class CastSystemMemoryPressureEvaluatorAdjuster;
 class CastWebService;
+class DisplaySettingsManager;
 class ServiceConnector;
 class ServiceManagerContext;
 class WaylandServerController;
@@ -72,6 +73,7 @@ class MetricsHelperImpl;
 }  // namespace metrics
 
 namespace shell {
+class AccessibilityServiceImpl;
 class CastBrowserProcess;
 class CastContentBrowserClient;
 
@@ -99,6 +101,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   external_mojo::BrokerService* broker_service();
   external_service_support::ExternalConnector* connector();
   external_service_support::ExternalConnector* media_connector();
+  AccessibilityServiceImpl* accessibility_service();
 
   // content::BrowserMainParts implementation:
   void PreCreateMainMessageLoop() override;
@@ -141,6 +144,8 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<CastWindowManager> window_manager_;
 #endif  //  defined(USE_AURA)
   std::unique_ptr<CastWebService> web_service_;
+  std::unique_ptr<DisplaySettingsManager> display_settings_manager_;
+  std::unique_ptr<AccessibilityServiceImpl> accessibility_service_;
 
 #if defined(OS_ANDROID)
   void StartPeriodicCrashReportUpload();

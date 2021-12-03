@@ -41,6 +41,9 @@ class DisplaySettingsManager {
 
   virtual void SetDelegate(Delegate* delegate) = 0;
 
+  virtual void SetColorTemperatureConfig(
+      const ColorTemperatureConfig& config) = 0;
+
   virtual void ResetDelegate() = 0;
 
   virtual void SetGammaCalibration(

@@ -31,7 +31,9 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     PrefService* pref_service,
     media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager,
-    CastWebService* web_service) {
+    CastWebService* web_service,
+    DisplaySettingsManager* display_settings_manager,
+    shell::AccessibilityServiceImpl* accessibility_service) {
   auto network_context_getter = base::BindRepeating(
       [](CastRuntimeContentBrowserClient* client)
           -> network::mojom::NetworkContext* {

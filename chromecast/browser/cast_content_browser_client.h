@@ -63,6 +63,7 @@ class CastSystemMemoryPressureEvaluatorAdjuster;
 class CastWebService;
 class CastWindowManager;
 class CastFeatureListCreator;
+class DisplaySettingsManager;
 class GeneralAudienceBrowsingService;
 class MemoryPressureControllerImpl;
 class ServiceConnector;
@@ -79,6 +80,7 @@ class VideoResolutionPolicy;
 }
 
 namespace shell {
+class AccessibilityServiceImpl;
 class CastBrowserMainParts;
 class CastNetworkContexts;
 
@@ -114,7 +116,9 @@ class CastContentBrowserClient
       PrefService* pref_service,
       media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager,
-      CastWebService* web_service);
+      CastWebService* web_service,
+      DisplaySettingsManager* display_settings_manager,
+      AccessibilityServiceImpl* accessibility_service);
 
   virtual media::VideoModeSwitcher* GetVideoModeSwitcher();
 

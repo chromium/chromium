@@ -30,7 +30,7 @@ class GammaConfigurator;
 
 namespace shell {
 class CastDisplayConfigurator;
-}
+}  // namespace shell
 
 class DisplaySettingsManagerImpl : public DisplaySettingsManager,
                                    public ScreenPowerController::Delegate,
@@ -38,8 +38,7 @@ class DisplaySettingsManagerImpl : public DisplaySettingsManager,
  public:
   DisplaySettingsManagerImpl(
       CastWindowManager* window_manager,
-      const DisplaySettingsManager::ColorTemperatureConfig&
-          color_temperature_config);
+      shell::CastDisplayConfigurator* display_configurator);
   DisplaySettingsManagerImpl(const DisplaySettingsManagerImpl&) = delete;
   DisplaySettingsManagerImpl& operator=(const DisplaySettingsManagerImpl&) =
       delete;
@@ -48,6 +47,8 @@ class DisplaySettingsManagerImpl : public DisplaySettingsManager,
   // DisplaySettingsManager implementation:
   void SetDelegate(DisplaySettingsManager::Delegate* delegate) override;
   void ResetDelegate() override;
+  void SetColorTemperatureConfig(
+      const DisplaySettingsManager::ColorTemperatureConfig& config) override;
   void SetGammaCalibration(
       const std::vector<display::GammaRampRGBEntry>& gamma) override;
   void NotifyBrightnessChanged(float new_brightness,

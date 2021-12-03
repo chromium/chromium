@@ -200,7 +200,9 @@ std::unique_ptr<CastService> CastContentBrowserClient::CreateCastService(
     PrefService* pref_service,
     media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager,
-    CastWebService* web_service) {
+    CastWebService* web_service,
+    DisplaySettingsManager* display_settings_manager,
+    AccessibilityServiceImpl* accessibility_service) {
   return std::make_unique<CastServiceSimple>(web_service);
 }
 
