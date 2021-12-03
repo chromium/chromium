@@ -114,7 +114,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
 
     EXPECT_FALSE(chip->should_expand_for_testing());
     EXPECT_FALSE(chip->get_chip_button_for_testing()->is_animating());
-    EXPECT_EQ(OmniboxChipButton::Theme::kGray,
+    EXPECT_EQ(OmniboxChipButton::Theme::kLowVisibility,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
   }
 
@@ -128,7 +128,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
 
     EXPECT_TRUE(chip->should_expand_for_testing());
     EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
-    EXPECT_EQ(OmniboxChipButton::Theme::kGray,
+    EXPECT_EQ(OmniboxChipButton::Theme::kLowVisibility,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
   }
 
@@ -142,7 +142,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
     // TODO(crbug.com/1232460): Verify that OmniboxChipButton::is_animating is
     // true. Right now the value is flaky.
-    EXPECT_EQ(OmniboxChipButton::Theme::kBlue,
+    EXPECT_EQ(OmniboxChipButton::Theme::kNormalVisibility,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
   }
 

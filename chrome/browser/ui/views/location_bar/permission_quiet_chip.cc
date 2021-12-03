@@ -54,7 +54,7 @@ PermissionQuietChip::PermissionQuietChip(
           {GetBlockedPermissionIconId(delegate),
            GetBlockedPermissionIconId(delegate), GetPermissionMessage(delegate),
            false,
-           /*is_prominent=*/false, OmniboxChipButton::Theme::kGray,
+           /*is_prominent=*/false, OmniboxChipButton::Theme::kLowVisibility,
            /*should_expand=*/should_expand}),
       browser_(browser) {
   DCHECK_EQ(1u, delegate->Requests().size());

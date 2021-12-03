@@ -135,7 +135,7 @@ void OmniboxChipButton::UpdateIconAndColors() {
 
 SkColor OmniboxChipButton::GetTextAndIconColor() {
   switch (theme_) {
-    case Theme::kBlue: {
+    case Theme::kNormalVisibility: {
       // TODO(crbug.com/1274118) Instead of using constants or toolbar colors,
       // add the chip's properties.
       return color_utils::IsDark(
@@ -143,7 +143,7 @@ SkColor OmniboxChipButton::GetTextAndIconColor() {
                  ? gfx::kGoogleBlue300
                  : gfx::kGoogleBlue600;
     }
-    case Theme::kGray: {
+    case Theme::kLowVisibility: {
       return GetThemeProvider()->GetColor(
           ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE);
     }
@@ -154,7 +154,7 @@ SkColor OmniboxChipButton::GetBackgroundColor() {
   SkColor active_tab_color =
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
 
-  if (theme_ == Theme::kGray) {
+  if (theme_ == Theme::kLowVisibility) {
     return active_tab_color;
   }
 
@@ -173,7 +173,8 @@ void OmniboxChipButton::SetForceExpandedForTesting(
 void OmniboxChipButton::SetShowBlockedIcon(bool show_blocked_icon) {
   if (show_blocked_icon_ != show_blocked_icon) {
     show_blocked_icon_ = show_blocked_icon;
-    theme_ = show_blocked_icon ? Theme::kGray : Theme::kBlue;
+    theme_ =
+        show_blocked_icon ? Theme::kLowVisibility : Theme::kNormalVisibility;
     UpdateIconAndColors();
   }
 }
