@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 
+#include "ash/app_list/app_list_badge_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_impl.h"
@@ -750,9 +751,8 @@ class AppListControllerImplTestWithNotificationBadging
     else
       test_app.has_badge = apps::mojom::OptionalBool::kFalse;
 
-    apps::AppUpdate test_update(nullptr, &test_app /* delta */, account_id);
-    static_cast<apps::AppRegistryCache::Observer*>(controller)
-        ->OnAppUpdate(test_update);
+    apps::AppUpdate test_update(nullptr, /*delta=*/&test_app, account_id);
+    controller->badge_controller_for_test()->OnAppUpdate(test_update);
   }
 };
 

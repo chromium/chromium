@@ -21,7 +21,6 @@
 
 namespace ash {
 enum class AppListConfigType;
-class AppListControllerImpl;
 class AppListItemList;
 class AppListItemListTest;
 class AppListItemObserver;
@@ -125,7 +124,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Subclasses also have mutable access to the metadata ptr.
   AppListItemMetadata* metadata() { return metadata_.get(); }
 
-  friend class AppListControllerImpl;
+  friend class AppListBadgeController;
   friend class AppListItemList;
   friend class AppListItemListTest;
   friend class AppListModel;

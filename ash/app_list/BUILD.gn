@@ -8,6 +8,8 @@ assert(is_chromeos_ash)
 
 source_set("app_list") {
   sources = [
+    "app_list_badge_controller.cc",
+    "app_list_badge_controller.h",
     "app_list_bubble_event_filter.cc",
     "app_list_bubble_event_filter.h",
     "app_list_bubble_presenter.cc",
