@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
@@ -684,7 +685,18 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
-  int process_id = render_frame_host->GetProcess()->GetID();
+  content::RenderProcessHost* render_process_host =
+      render_frame_host->GetProcess();
+  if (params->is_scripted && render_frame_host->IsNestedWithinFencedFrame()) {
+    // The renderer should have checked and disallowed the request for fenced
+    // frames in ChromeClient. Ignore the request and mark it as bad if it
+    // didn't happen for some reason.
+    bad_message::ReceivedBadMessage(
+        render_process_host, bad_message::PVMB_SCRIPTED_PRINT_FENCED_FRAME);
+    std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
+    return;
+  }
+  int process_id = render_process_host->GetID();
   int routing_id = render_frame_host->GetRoutingID();
   auto callback_wrapper = base::BindOnce(
       &PrintViewManagerBase::ScriptedPrintReply, weak_ptr_factory_.GetWeakPtr(),

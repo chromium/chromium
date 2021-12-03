@@ -54,6 +54,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -1553,6 +1554,114 @@ IN_PROC_BROWSER_TEST_F(PrintPrerenderBrowserTest,
   EXPECT_EQ(false, content::EvalJs(prerender_host, "firedAfterPrint"));
   EXPECT_EQ(1u, console_observer.messages().size());
 }
+
+class PrintFencedFrameBrowserTest
+    : public testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType>,
+      public PrintBrowserTest {
+ public:
+  PrintFencedFrameBrowserTest() {
+    if (GetParam() ==
+        blink::features::FencedFramesImplementationType::kMPArch) {
+      fenced_frame_helper_ =
+          std::make_unique<content::test::FencedFrameTestHelper>();
+    } else {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          blink::features::kFencedFrames,
+          {{"implementation_type", "shadow_dom"}});
+    }
+  }
+  ~PrintFencedFrameBrowserTest() override = default;
+
+  PrintFencedFrameBrowserTest(const PrintFencedFrameBrowserTest&) = delete;
+  PrintFencedFrameBrowserTest& operator=(const PrintFencedFrameBrowserTest&) =
+      delete;
+
+ protected:
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* fenced_frame_parent,
+      const GURL& url) {
+    if (fenced_frame_helper_)
+      return fenced_frame_helper_->CreateFencedFrame(fenced_frame_parent, url);
+
+    // FencedFrameTestHelper only supports the MPArch version of fenced frames.
+    // So need to maually create a fenced frame for the ShadowDOM version.
+    content::TestNavigationManager navigation(
+        browser()->tab_strip_model()->GetActiveWebContents(), url);
+    constexpr char kAddFencedFrameScript[] = R"({
+        const fenced_frame = document.createElement('fencedframe');
+        fenced_frame.src = $1;
+        document.body.appendChild(fenced_frame);
+    })";
+    EXPECT_TRUE(ExecJs(fenced_frame_parent,
+                       content::JsReplace(kAddFencedFrameScript, url)));
+    navigation.WaitForNavigationFinished();
+
+    content::RenderFrameHost* new_frame = ChildFrameAt(fenced_frame_parent, 0);
+
+    return new_frame;
+  }
+
+  void RunPrintTest(const std::string& print_command) {
+    // Navigate to an initial page.
+    const GURL url(embedded_test_server()->GetURL("/empty.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    // Load a fenced frame.
+    GURL fenced_frame_url =
+        embedded_test_server()->GetURL("/fenced_frames/title1.html");
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::RenderFrameHost* fenced_frame_host =
+        CreateFencedFrame(web_contents->GetMainFrame(), fenced_frame_url);
+    ASSERT_TRUE(fenced_frame_host);
+    content::WebContentsConsoleObserver console_observer(web_contents);
+    EXPECT_EQ(0u, console_observer.messages().size());
+
+    constexpr char kAddListenersScript[] = R"(
+        (async () => {
+          let firedBeforePrint = false;
+          let firedAfterPrint = false;
+          window.addEventListener('beforeprint', () => {
+            firedBeforePrint = true;
+          });
+          window.addEventListener('afterprint', () => {
+            firedAfterPrint = true;
+          });
+          %s
+          return 'beforeprint: ' + firedBeforePrint +
+                 ', afterprint: ' + firedAfterPrint;
+        })();
+      )";
+    const std::string test_script =
+        base::StringPrintf(kAddListenersScript, print_command.c_str());
+
+    EXPECT_EQ("beforeprint: false, afterprint: false",
+              content::EvalJs(fenced_frame_host, test_script));
+    console_observer.Wait();
+    ASSERT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ("Ignored call to 'print()'. The document is in a fenced frame.",
+              console_observer.GetMessageAt(0));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<content::test::FencedFrameTestHelper> fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest, ScriptedPrint) {
+  RunPrintTest("window.print();");
+}
+
+IN_PROC_BROWSER_TEST_P(PrintFencedFrameBrowserTest, DocumentExecCommand) {
+  RunPrintTest("document.execCommand('print');");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrintFencedFrameBrowserTest,
+    PrintFencedFrameBrowserTest,
+    testing::Values(blink::features::FencedFramesImplementationType::kShadowDOM,
+                    blink::features::FencedFramesImplementationType::kMPArch));
 
 // TODO(crbug.com/822505)  ChromeOS uses different testing setup that isn't
 // hooked up to make use of `TestPrintingContext` yet.

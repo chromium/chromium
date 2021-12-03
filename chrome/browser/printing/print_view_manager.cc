@@ -13,6 +13,7 @@
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "content/public/browser/browser_thread.h"
@@ -261,10 +262,20 @@ void PrintViewManager::DidShowPrintDialog() {
 void PrintViewManager::SetupScriptedPrintPreview(
     SetupScriptedPrintPreviewCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto& map = g_scripted_print_preview_closure_map.Get();
   content::RenderFrameHost* rfh = GetCurrentTargetFrame();
   content::RenderProcessHost* rph = rfh->GetProcess();
 
+  if (rfh->IsNestedWithinFencedFrame()) {
+    // The renderer should have checked and disallowed the request for fenced
+    // frames in ChromeClient. Ignore the request and mark it as bad if it
+    // didn't happen for some reason.
+    bad_message::ReceivedBadMessage(
+        rph, bad_message::PVM_SCRIPTED_PRINT_FENCED_FRAME);
+    std::move(callback).Run();
+    return;
+  }
+
+  auto& map = g_scripted_print_preview_closure_map.Get();
   if (base::Contains(map, rph)) {
     // Renderer already handling window.print(). Abort this attempt to prevent
     // the renderer from having multiple nested loops. If multiple nested loops
