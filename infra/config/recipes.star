@@ -2,10 +2,48 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+load("//lib/bootstrap.star", "PROPERTIES_OPTIONAL", "register_recipe_bootstrappability")
+
 _RECIPE_NAME_PREFIX = "recipe:"
 
 def _recipe_for_package(cipd_package):
-    def recipe(*, name, cipd_version = None, recipe = None):
+    def recipe(
+            *,
+            name,
+            cipd_version = None,
+            recipe = None,
+            bootstrappable = False):
+        """Declare a recipe for the given package.
+
+        A wrapper around luci.recipe with a fixed cipd_package and some
+        chromium-specific functionality. See
+        https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.recipe
+        for more information.
+
+        Args:
+            name: The name to use to refer to the executable in builder
+              definitions. Must start with "recipe:". See luci.recipe for more
+              information.
+            cipd_version: See luci.recipe.
+            recipe: See luci.recipe.
+            bootstrappable: Whether or not the recipe supports the chromium
+              bootstrapper. A recipe supports the bootstrapper if the following
+              conditions are met:
+              * chromium_bootstrap.update_gclient_config is called to update the
+                gclient config that is used for bot_update. This will be true if
+                calling chromium_checkout.ensure_checkout or
+                chromium_tests.prepare_checkout.
+              * If the recipe does analysis to reduce compilation/testing, it
+                skips analysis and performs a full build if
+                chromium_bootstrap.skip_analysis_reasons is non-empty. This will
+                be true if calling chromium_tests.determine_compilation_targets.
+              In addition to a True or False value, PROPERTIES_OPTIONAL can be
+              specified. This value will cause the builder's executable to be
+              changed to the bootstrapper in properties optional mode, which
+              will by default not bootstrap any properties. On a per-run basis
+              the $bootstrap/properties property can be set to bootstrap properties.
+        """
+
         # Force the caller to put the recipe prefix rather than adding it
         # programatically to make the string greppable
         if not name.startswith(_RECIPE_NAME_PREFIX):
@@ -13,13 +51,17 @@ def _recipe_for_package(cipd_package):
                 .format(name, _RECIPE_NAME_PREFIX))
         if recipe == None:
             recipe = name[len(_RECIPE_NAME_PREFIX):]
-        return luci.recipe(
+        ret = luci.recipe(
             name = name,
             cipd_package = cipd_package,
             cipd_version = cipd_version,
             recipe = recipe,
             use_bbagent = True,
         )
+
+        register_recipe_bootstrappability(name, bootstrappable)
+
+        return ret
 
     return recipe
 
@@ -73,14 +115,17 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium",
+    bootstrappable = True,
 )
 
 build_recipe(
     name = "recipe:chromium/orchestrator",
+    bootstrappable = True,
 )
 
 build_recipe(
     name = "recipe:chromium/compilator",
+    bootstrappable = True,
 )
 
 build_recipe(
@@ -117,6 +162,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_trybot",
+    bootstrappable = True,
 )
 
 build_recipe(
@@ -137,6 +183,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:findit/chromium/single_revision",
+    bootstrappable = PROPERTIES_OPTIONAL,
 )
 
 build_recipe(
