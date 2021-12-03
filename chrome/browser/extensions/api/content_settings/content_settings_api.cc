@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_api_constants.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_helpers.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_store.h"
@@ -72,6 +71,14 @@ bool RemoveContentType(std::vector<base::Value>& args,
   return *content_type != ContentSettingsType::DEFAULT;
 }
 
+// Errors.
+constexpr char kIncognitoContextError[] =
+    "Can't modify regular settings from an incognito context.";
+constexpr char kIncognitoSessionOnlyError[] =
+    "You cannot read incognito content settings when no incognito window "
+    "is open.";
+constexpr char kInvalidUrlError[] = "The URL \"*\" is invalid.";
+
 }  // namespace
 
 namespace extensions {
@@ -98,8 +105,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   } else if (browser_context()->IsOffTheRecord()) {
     // Incognito profiles can't access regular mode ever, they only exist in
     // split mode.
-    return RespondNow(
-        Error(content_settings_api_constants::kIncognitoContextError));
+    return RespondNow(Error(kIncognitoContextError));
   }
 
   scoped_refptr<ContentSettingsStore> store =
@@ -121,16 +127,15 @@ ContentSettingsContentSettingGetFunction::Run() {
 
   GURL primary_url(params->details.primary_url);
   if (!primary_url.is_valid()) {
-    return RespondNow(Error(content_settings_api_constants::kInvalidUrlError,
-                            params->details.primary_url));
+    return RespondNow(Error(kInvalidUrlError, params->details.primary_url));
   }
 
   GURL secondary_url(primary_url);
   if (params->details.secondary_url.get()) {
     secondary_url = GURL(*params->details.secondary_url);
     if (!secondary_url.is_valid()) {
-      return RespondNow(Error(content_settings_api_constants::kInvalidUrlError,
-                              *params->details.secondary_url));
+      return RespondNow(
+          Error(kInvalidUrlError, *params->details.secondary_url));
     }
   }
 
@@ -147,8 +152,7 @@ ContentSettingsContentSettingGetFunction::Run() {
     if (!profile->HasPrimaryOTRProfile()) {
       // TODO(bauerb): Allow reading incognito content settings
       // outside of an incognito session.
-      return RespondNow(
-          Error(content_settings_api_constants::kIncognitoSessionOnlyError));
+      return RespondNow(Error(kIncognitoSessionOnlyError));
     }
     map = HostContentSettingsMapFactory::GetForProfile(
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
@@ -285,8 +289,7 @@ ContentSettingsContentSettingSetFunction::Run() {
     // Incognito profiles can't access regular mode ever, they only exist in
     // split mode.
     if (browser_context()->IsOffTheRecord())
-      return RespondNow(
-          Error(content_settings_api_constants::kIncognitoContextError));
+      return RespondNow(Error(kIncognitoContextError));
   }
 
   if (scope == kExtensionPrefsScopeIncognitoSessionOnly &&
