@@ -144,6 +144,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
  private:
   friend class AutoConnectHandlerTest;
   friend class ClientCertResolverTest;
+  friend class ESimPolicyLoginMetricsLoggerTest;
   friend class ManagedNetworkConfigurationHandler;
   friend class ManagedNetworkConfigurationHandlerTest;
   friend class ManagedNetworkConfigurationHandlerMockTest;

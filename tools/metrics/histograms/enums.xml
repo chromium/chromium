@@ -61227,6 +61227,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="17" label="EAP-TTLS"/>
 </enum>
 
+<enum name="NetworkBlockNonManagedCellularBehavior">
+  <int value="0" label="Admin allowed only managed cellular networks"/>
+  <int value="1"
+      label="Admin allowed both managed and unmanaged cellular networks"/>
+</enum>
+
 <enum name="NetworkCellular3GPPRegistrationDelayedDrop">
   <int value="0" label="Delayed drop posted">
     A signal loss in the cellular service was detected and a delayed connection
@@ -61634,6 +61640,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Proxy"/>
   <int value="4" label="AuthExtTimeout"/>
   <int value="5" label="None"/>
+</enum>
+
+<enum name="NetworkESimPolicyStatusAtLogin">
+  <int value="0" label="No cellular networks installed"/>
+  <int value="1" label="Installed only unmanaged cellular networks"/>
+  <int value="2" label="Installed only managed cellular networks"/>
+  <int value="3"
+      label="Installed both managed and unmanaged cellular networks"/>
 </enum>
 
 <enum name="NetworkIsolationKeyPresent">

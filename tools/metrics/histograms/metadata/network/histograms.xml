@@ -231,6 +231,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.Policy.BlockNonManagedCellularBehavior"
+    enum="NetworkBlockNonManagedCellularBehavior" expires_after="2022-05-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks how often the admin allows only managed cellular networks to connect.
+    This metric is logged for managed, cellular-capable devices when the primary
+    user logs in or when there is an update to the
+    allowOnlyPolicyCellularNetworks policy.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.Policy.ConnectionResult.All"
     enum="ShillCellularConnectResult" expires_after="2022-09-01">
   <owner>azeemarshad@chromium.org</owner>
@@ -316,6 +329,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks how many managed eSIM profiles are installed on the devices after a
     primary user login.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.Policy.StatusAtLogin"
+    enum="NetworkESimPolicyStatusAtLogin" expires_after="2022-05-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>jiajunz@google.com</owner>
+  <summary>
+    Tracks status of managed eSIM cellular networks on the device. The status
+    indicates whether the device has managed or only non-managed or both types
+    of cellular networks. This is logged for managed cellular capable devices
+    when the primary user logs in. This allows us to track what fraction of
+    cellular network usage are controlled by policy.
   </summary>
 </histogram>
 

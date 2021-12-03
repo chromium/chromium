@@ -17,6 +17,7 @@
 #include "chromeos/network/client_cert_resolver.h"
 #include "chromeos/network/geolocation_handler.h"
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
+#include "chromeos/network/metrics/esim_policy_login_metrics_logger.h"
 #include "chromeos/network/network_activation_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_cert_migrator.h"
@@ -55,6 +56,7 @@ NetworkHandler::NetworkHandler()
   cellular_esim_uninstall_handler_.reset(new CellularESimUninstallHandler());
   if (features::IsESimPolicyEnabled()) {
     cellular_policy_handler_.reset(new CellularPolicyHandler());
+    esim_policy_login_metrics_logger_.reset(new ESimPolicyLoginMetricsLogger());
   }
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   if (NetworkCertLoader::IsInitialized()) {
@@ -107,6 +109,9 @@ void NetworkHandler::Init() {
   if (features::IsESimPolicyEnabled()) {
     cellular_policy_handler_->Init(
         cellular_esim_installer_.get(), network_profile_handler_.get(),
+        managed_network_configuration_handler_.get());
+    esim_policy_login_metrics_logger_->Init(
+        network_state_handler_.get(),
         managed_network_configuration_handler_.get());
   }
   cellular_metrics_logger_->Init(network_state_handler_.get(),
@@ -264,6 +269,16 @@ GeolocationHandler* NetworkHandler::geolocation_handler() {
 ProhibitedTechnologiesHandler*
 NetworkHandler::prohibited_technologies_handler() {
   return prohibited_technologies_handler_.get();
+}
+
+void NetworkHandler::SetIsEnterpriseManaged(bool is_enterprise_managed) {
+  is_enterprise_managed_ = is_enterprise_managed;
+  if (esim_policy_login_metrics_logger_) {
+    // Call SetIsEnterpriseManaged on ESimPolicyLoginMetricsLogger, this only
+    // gets called when the primary user logs in.
+    esim_policy_login_metrics_logger_->SetIsEnterpriseManaged(
+        is_enterprise_managed);
+  }
 }
 
 }  // namespace chromeos

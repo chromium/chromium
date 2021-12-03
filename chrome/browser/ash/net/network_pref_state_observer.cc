@@ -37,7 +37,7 @@ void NetworkPrefStateObserver::OnUserProfileLoaded(
   // in. Other profiles are ignored because only the primary user's network
   // configuration is used on Chrome OS.
   if (ProfileHelper::IsPrimaryProfile(profile)) {
-    NetworkHandler::Get()->set_is_enterprise_managed(
+    NetworkHandler::Get()->SetIsEnterpriseManaged(
         InstallAttributes::Get()->IsEnterpriseManaged());
     InitializeNetworkPrefServices(profile);
     session_observation_.Reset();

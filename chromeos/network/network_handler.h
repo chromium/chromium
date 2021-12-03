@@ -24,6 +24,7 @@ class CellularInhibitor;
 class CellularMetricsLogger;
 class CellularPolicyHandler;
 class ClientCertResolver;
+class ESimPolicyLoginMetricsLogger;
 class GeolocationHandler;
 class ManagedNetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandlerImpl;
@@ -77,6 +78,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   static bool HasUiProxyConfigService();
   static UIProxyConfigService* GetUiProxyConfigService();
 
+  // Sets whether the device is managed by policy. This is called when the
+  // primary user logs in.
+  void SetIsEnterpriseManaged(bool is_enterprise_managed);
+
   // Returns the task runner for posting NetworkHandler calls from other
   // threads.
   base::SingleThreadTaskRunner* task_runner() { return task_runner_.get(); }
@@ -104,10 +109,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   GeolocationHandler* geolocation_handler();
   ProhibitedTechnologiesHandler* prohibited_technologies_handler();
 
-  void set_is_enterprise_managed(bool is_enterprise_managed) {
-    is_enterprise_managed_ = is_enterprise_managed;
-  }
-
  private:
   NetworkHandler();
   virtual ~NetworkHandler();
@@ -133,6 +134,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
       cellular_esim_uninstall_handler_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
+  std::unique_ptr<ESimPolicyLoginMetricsLogger>
+      esim_policy_login_metrics_logger_;
   std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
   std::unique_ptr<AutoConnectHandler> auto_connect_handler_;
