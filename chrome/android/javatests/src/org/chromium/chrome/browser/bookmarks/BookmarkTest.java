@@ -73,6 +73,9 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -2119,6 +2122,34 @@ public class BookmarkTest {
         Assert.assertEquals("Tracked products", toolbar.getTitle());
         Assert.assertEquals(SelectableListToolbar.NAVIGATION_BUTTON_BACK,
                 toolbar.getNavigationButtonForTests());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
+    @Features.DisableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.SHOPPING_LIST})
+    public void testShoppingDataPresentButFeatureDisabled()
+            throws InterruptedException, ExecutionException {
+        BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
+        PowerBookmarkMeta.Builder meta =
+                PowerBookmarkMeta.newBuilder()
+                        .setType(PowerBookmarkType.SHOPPING)
+                        .setShoppingSpecifics(
+                                ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBookmarkModel.setPowerBookmarkMeta(id, meta.build()); });
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+
+        RecyclerView.Adapter adapter = getAdapter();
+        final BookmarkManager manager = getBookmarkManager();
+
+        BookmarkRow itemView = (BookmarkRow) manager.getRecyclerViewForTests()
+                                       .findViewHolderForAdapterPosition(0)
+                                       .itemView;
+        Assert.assertNotEquals(PowerBookmarkShoppingItemRow.class, itemView.getClass());
     }
 
     /**

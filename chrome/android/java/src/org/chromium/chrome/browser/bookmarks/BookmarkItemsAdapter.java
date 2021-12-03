@@ -202,6 +202,13 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     public ViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
         assert mDelegate != null;
 
+        // The shopping-specific bookmark row is only shown with the visual refresh. When there's a
+        // mismatch, the ViewType is downgraded to ViewType.BOOKMARK.
+        if (viewType == ViewType.SHOPPING_POWER_BOOKMARK
+                && !BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
+            viewType = ViewType.BOOKMARK;
+        }
+
         switch (viewType) {
             case ViewType.PERSONALIZED_SIGNIN_PROMO:
                 // fall through
