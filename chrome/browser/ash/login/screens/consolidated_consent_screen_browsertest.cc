@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/hash/sha1.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/fake_arc_tos_mixin.h"
@@ -19,17 +20,28 @@
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/consolidated_consent_screen_handler.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "content/public/test/browser_test.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace {
 
+using ::consent_auditor::FakeConsentAuditor;
+using ::sync_pb::UserConsentTypes;
 using ::testing::_;
+using ArcPlayTermsOfServiceConsent =
+    ::sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
+using ArcBackupAndRestoreConsent =
+    ::sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent;
+using ArcGoogleLocationServiceConsent =
+    ::sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent;
 
 constexpr char kConsolidatedConsentId[] = "consolidated-consent";
 
@@ -109,6 +121,46 @@ const test::UIPath kPrivacyPolicyWebview = {kConsolidatedConsentId,
 const test::UIPath kPrivacyPolicyOkButton = {kConsolidatedConsentId,
                                              "privacyOkButton"};
 
+ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(
+    const std::string& tos_content) {
+  ArcPlayTermsOfServiceConsent play_consent;
+  play_consent.set_status(sync_pb::UserConsentTypes::GIVEN);
+  play_consent.set_confirmation_grd_id(
+      IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+  play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
+  play_consent.set_play_terms_of_service_hash(
+      base::SHA1HashString(tos_content));
+  play_consent.set_play_terms_of_service_text_length(tos_content.length());
+  return play_consent;
+}
+
+ArcBackupAndRestoreConsent BuildArcBackupAndRestoreConsent(bool accepted) {
+  ArcBackupAndRestoreConsent backup_and_restore_consent;
+  backup_and_restore_consent.set_confirmation_grd_id(
+      IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+  backup_and_restore_consent.add_description_grd_ids(
+      IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_TITLE);
+  backup_and_restore_consent.add_description_grd_ids(
+      IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN);
+  backup_and_restore_consent.set_status(accepted ? UserConsentTypes::GIVEN
+                                                 : UserConsentTypes::NOT_GIVEN);
+
+  return backup_and_restore_consent;
+}
+
+ArcGoogleLocationServiceConsent BuildArcGoogleLocationServiceConsent(
+    bool accepted) {
+  ArcGoogleLocationServiceConsent location_service_consent;
+  location_service_consent.set_confirmation_grd_id(
+      IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
+  location_service_consent.add_description_grd_ids(
+      IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE);
+  location_service_consent.add_description_grd_ids(
+      IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN);
+  location_service_consent.set_status(accepted ? UserConsentTypes::GIVEN
+                                               : UserConsentTypes::NOT_GIVEN);
+  return location_service_consent;
+}
 }  // namespace
 
 // Regular user flow with ARC not enabled
@@ -345,4 +397,84 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
   test::OobeJS().ExpectDialogClosed(kFooterLearnMorePopUp);
 }
 
+// There are two toggles for enabling/disabling ARC backup restore and
+// ARC location service. This parameterized test executes all 4 combinations
+// of enabled/disabled states and checks that advancing to the next screen by
+// accepting.
+class ConsolidatedConsentScreenParametrizedTest
+    : public ConsolidatedConsentScreenArcEnabledTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  void SetUp() override {
+    std::tie(accept_backup_restore_, accept_location_service_) = GetParam();
+    ConsolidatedConsentScreenArcEnabledTest::SetUp();
+  }
+
+  // Common routine that enables/disables toggles based on test parameters.
+  // `play_consent`, `backup_and_restore_consent` and `location_service_consent`
+  // are the expected consents recordings.
+  void AdvanceNextScreenWithExpectations(
+      ArcPlayTermsOfServiceConsent play_consent,
+      ArcBackupAndRestoreConsent backup_and_restore_consent,
+      ArcGoogleLocationServiceConsent location_service_consent) {
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    FakeConsentAuditor* auditor = static_cast<FakeConsentAuditor*>(
+        ConsentAuditorFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile, base::BindRepeating(&BuildFakeConsentAuditor)));
+
+    if (!accept_backup_restore_)
+      test::OobeJS().ClickOnPath(kBackupToggle);
+
+    if (!accept_location_service_)
+      test::OobeJS().ClickOnPath(kLocationToggle);
+
+    EXPECT_CALL(*auditor, RecordArcPlayConsent(
+                              testing::_,
+                              consent_auditor::ArcPlayConsentEq(play_consent)));
+
+    EXPECT_CALL(*auditor,
+                RecordArcBackupAndRestoreConsent(
+                    testing::_, consent_auditor::ArcBackupAndRestoreConsentEq(
+                                    backup_and_restore_consent)));
+
+    EXPECT_CALL(
+        *auditor,
+        RecordArcGoogleLocationServiceConsent(
+            testing::_, consent_auditor::ArcGoogleLocationServiceConsentEq(
+                            location_service_consent)));
+
+    test::OobeJS().ClickOnPath(kAcceptButton);
+  }
+
+ protected:
+  bool accept_backup_restore_;
+  bool accept_location_service_;
+};
+
+// Tests that clicking on "Accept" button records the expected consents.
+// When TOS are accepted we should also record whether backup restores and
+// location services are enabled.
+IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
+  fake_arc_tos_.set_serve_tos_with_privacy_policy_footer(false);
+  LoginAsRegularUser();
+  OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
+
+  ArcPlayTermsOfServiceConsent play_consent =
+      BuildArcPlayTermsOfServiceConsent(fake_arc_tos_.GetArcTosContent());
+  ArcBackupAndRestoreConsent backup_and_restore_consent =
+      BuildArcBackupAndRestoreConsent(accept_backup_restore_);
+  ArcGoogleLocationServiceConsent location_service_consent =
+      BuildArcGoogleLocationServiceConsent(accept_location_service_);
+
+  AdvanceNextScreenWithExpectations(play_consent, backup_and_restore_consent,
+                                    location_service_consent);
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_, ConsolidatedConsentScreen::Result::ACCEPTED);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ConsolidatedConsentScreenParametrizedTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 }  // namespace ash

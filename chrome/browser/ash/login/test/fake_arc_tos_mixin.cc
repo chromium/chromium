@@ -59,11 +59,14 @@ std::unique_ptr<HttpResponse> FakeArcTosMixin::HandleRequest(
     // with with href that matches '/policies/privacy/' that is also a child of
     // an element with class 'play-footer'.
     std::string href = TestServerBaseUrl() + kPrivacyPolicyPath;
-    std::string footer = base::StringPrintf(
-        "<div class='play-footer'><a href='%s'>Privacy Policy</a></div>",
-        href.c_str());
+    content = kArcTosContent;
+    if (serve_tos_with_privacy_policy_footer_) {
+      std::string footer = base::StringPrintf(
+          "<div class='play-footer'><a href='%s'>Privacy Policy</a></div>",
+          href.c_str());
 
-    content = kArcTosContent + footer;
+      content += footer;
+    }
   } else {
     content = kPrivacyPolicyContent;
   }

@@ -224,6 +224,8 @@ void ConsolidatedConsentScreen::RecordConsents(
       IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
   if (params.record_arc_tos_consent) {
+    play_consent.set_confirmation_grd_id(
+        IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
     play_consent.set_play_terms_of_service_text_length(
         params.tos_content.length());
     play_consent.set_play_terms_of_service_hash(
