@@ -6,6 +6,7 @@
 
 #include <fuchsia/ui/app/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
+#include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/commands.h>
@@ -27,9 +28,29 @@
 #include "base/numerics/clamped_math.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
 namespace {
+
+// Checks the supported ozone platform with Scenic if no arg is specified.
+// TODO(crbug.com/1230150): Delete this after Flatland migration is completed.
+void HandleOzonePlatformArgs() {
+  base::CommandLine* const launch_args = base::CommandLine::ForCurrentProcess();
+  if (launch_args->HasSwitch(switches::kOzonePlatform))
+    return;
+  fuchsia::ui::scenic::ScenicSyncPtr scenic;
+  zx_status_t status =
+      base::ComponentContextForProcess()->svc()->Connect(scenic.NewRequest());
+  if (status != ZX_OK) {
+    ZX_LOG(ERROR, status) << "Couldn't connect to Scenic.";
+    return;
+  }
+  bool scenic_uses_flatland = false;
+  scenic->UsesFlatland(&scenic_uses_flatland);
+  launch_args->AppendSwitchNative(switches::kOzonePlatform,
+                                  scenic_uses_flatland ? "flatland" : "scenic");
+}
 
 fuchsia::ui::views::ViewRef CloneViewRef(
     const fuchsia::ui::views::ViewRef& view_ref) {
@@ -538,6 +559,11 @@ void ChromeBrowserMainPartsFuchsia::ShowMissingLocaleMessageBox() {
   // Locale data should be bundled for all possible platform locales,
   // so crash here to make missing-locale states more visible.
   CHECK(false);
+}
+
+int ChromeBrowserMainPartsFuchsia::PreEarlyInitialization() {
+  HandleOzonePlatformArgs();
+  return ChromeBrowserMainParts::PreEarlyInitialization();
 }
 
 int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
