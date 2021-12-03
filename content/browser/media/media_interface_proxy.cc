@@ -378,8 +378,8 @@ void MediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
       // the library CDM in case of failure.
       factory->CreateCdm(
           cdm_config, base::BindOnce(&MediaInterfaceProxy::OnChromeOsCdmCreated,
-                                     weak_factory_.GetWeakPtr(), key_system,
-                                     cdm_config, std::move(callback)));
+                                     weak_factory_.GetWeakPtr(), cdm_config,
+                                     std::move(callback)));
       return;
     }
   }
