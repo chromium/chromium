@@ -199,6 +199,28 @@ export class Viewport {
         'change-zoom', e => this.setZoom(e.detail.zoom));
   }
 
+  /**
+   * Sets the contents of the viewport.
+   * @param {?Node} content The new viewport contents, or null to clear the
+   *     viewport.
+   */
+  setContent(content) {
+    if (content === null) {
+      this.sizer_.style.display = 'none';
+      return;
+    }
+
+    // We don't actually replace the content in the DOM, as the controller
+    // implementations take care of "removal" in controller-specific ways:
+    //
+    // 1. Plugin content gets added once, then hidden and revealed using CSS.
+    // 2. Ink content gets removed directly from the DOM on unload.
+    if (!content.parentNode) {
+      this.content_.appendChild(content);
+    }
+    assert(content.parentNode === this.content_);
+  }
+
   /** @param {function():void} viewportChangedCallback */
   setViewportChangedCallback(viewportChangedCallback) {
     this.viewportChangedCallback_ = viewportChangedCallback;

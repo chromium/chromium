@@ -54,9 +54,6 @@ export class InkController {
     /** @private {!Viewport} */
     this.viewport_;
 
-    /** @private {!HTMLDivElement} */
-    this.contentElement_;
-
     /** @private {?ViewerInkHostElement} */
     this.inkHost_ = null;
 
@@ -66,11 +63,9 @@ export class InkController {
 
   /**
    * @param {!Viewport} viewport
-   * @param {!HTMLDivElement} contentElement
    */
-  init(viewport, contentElement) {
+  init(viewport) {
     this.viewport_ = viewport;
-    this.contentElement_ = contentElement;
   }
 
   /**
@@ -78,9 +73,9 @@ export class InkController {
    * @override
    */
   get isActive() {
-    // Check whether `contentElement_` is defined as a signal that `init()` was
+    // Check whether `viewport_` is defined as a signal that `init()` was
     // called.
-    return !!this.contentElement_ && this.isActive_;
+    return !!this.viewport_ && this.isActive_;
   }
 
   /**
@@ -158,7 +153,7 @@ export class InkController {
   load(filename, data) {
     if (!this.inkHost_) {
       const inkHost = document.createElement('viewer-ink-host');
-      this.contentElement_.appendChild(inkHost);
+      this.viewport_.setContent(inkHost);
       this.inkHost_ = /** @type {!ViewerInkHostElement} */ (inkHost);
       this.inkHost_.viewport = this.viewport_;
       inkHost.addEventListener('stroke-added', e => {

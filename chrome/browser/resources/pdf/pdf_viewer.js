@@ -303,16 +303,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // </if>
   }
 
-  /** @override */
-  getContent() {
-    return /** @type {!HTMLDivElement} */ (this.$$('#content'));
-  }
-
-  /** @override */
-  getSizer() {
-    return /** @type {!HTMLDivElement} */ (this.$$('#sizer'));
-  }
-
   /**
    * @return {!ViewerToolbarElement}
    * @private
@@ -328,14 +318,16 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @param {!BrowserApi} browserApi */
   init(browserApi) {
-    super.init(browserApi);
+    super.init(
+        browserApi, /** @type {!HTMLElement} */ (this.$$('#scroller')),
+        /** @type {!HTMLDivElement} */ (this.$$('#sizer')),
+        /** @type {!HTMLDivElement} */ (this.$$('#content')));
 
     this.pluginController_ = PluginController.getInstance();
 
     // <if expr="enable_ink">
     this.inkController_ = InkController.getInstance();
-    this.inkController_.init(
-        this.viewport, /** @type {!HTMLDivElement} */ (this.getContent()));
+    this.inkController_.init(this.viewport);
     this.tracker.add(
         this.inkController_.getEventTarget(),
         InkControllerEventType.HAS_UNSAVED_CHANGES,

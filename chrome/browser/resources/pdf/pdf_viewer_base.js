@@ -117,18 +117,6 @@ export class PDFViewerBaseElement extends PolymerElement {
   }
 
   /**
-   * @return {!HTMLDivElement}
-   * @protected
-   */
-  getContent() {}
-
-  /**
-   * @return {!HTMLDivElement}
-   * @protected
-   */
-  getSizer() {}
-
-  /**
    * @param {!FittingType} view
    * @protected
    */
@@ -149,17 +137,26 @@ export class PDFViewerBaseElement extends PolymerElement {
     return this.shadowRoot.querySelector(query);
   }
 
+  /**
+   * Whether to enable the new UI.
+   * @return {boolean}
+   * @protected
+   */
+  isNewUiEnabled() {
+    return true;
+  }
+
   /** @return {number} */
   getBackgroundColor() {
     return -1;
   }
 
   /**
-   * @param {boolean} isPrintPreview Is the plugin for Print Preview.
+   * Creates the plugin element.
    * @return {!HTMLEmbedElement} The plugin
    * @private
    */
-  createPlugin_(isPrintPreview) {
+  createPlugin_() {
     // Create the plugin object dynamically. The plugin element is sized to
     // fill the entire window and is set to be fixed positioning, acting as a
     // viewport. The plugin renders into this viewport according to the scroll
@@ -189,7 +186,7 @@ export class PDFViewerBaseElement extends PolymerElement {
       plugin.toggleAttribute('full-frame', true);
     }
 
-    if (!isPrintPreview) {
+    if (this.isNewUiEnabled()) {
       plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
@@ -208,8 +205,14 @@ export class PDFViewerBaseElement extends PolymerElement {
     return plugin;
   }
 
-  /** @param {!BrowserApi} browserApi */
-  init(browserApi) {
+  /**
+   * Initializes the PDF viewer.
+   * @param {!BrowserApi} browserApi The interface with the browser.
+   * @param {!HTMLElement} scroller The viewport's scroller element.
+   * @param {!HTMLDivElement} sizer The viewport's sizer element.
+   * @param {!HTMLDivElement} content The viewport's content element.
+   */
+  init(browserApi, scroller, sizer, content) {
     this.browserApi = browserApi;
     this.originalUrl = this.browserApi.getStreamInfo().originalUrl;
 
@@ -220,13 +223,6 @@ export class PDFViewerBaseElement extends PolymerElement {
       return PluginController.getInstance().getNamedDestination(destination);
     });
 
-    // Determine the scrolling container.
-    const isPrintPreview =
-        document.documentElement.hasAttribute('is-print-preview');
-    const scrollContainer = isPrintPreview ?
-        document.documentElement :
-        /** @type {!HTMLElement} */ (this.getSizer().offsetParent);
-
     // Create the viewport.
     const defaultZoom =
         this.browserApi.getZoomBehavior() === ZoomBehavior.MANAGE ?
@@ -234,8 +230,7 @@ export class PDFViewerBaseElement extends PolymerElement {
         1.0;
 
     this.viewport_ = new Viewport(
-        scrollContainer, this.getSizer(), this.getContent(),
-        getScrollbarWidth(), defaultZoom);
+        scroller, sizer, content, getScrollbarWidth(), defaultZoom);
     this.viewport_.setViewportChangedCallback(() => this.viewportChanged_());
     this.viewport_.setBeforeZoomCallback(
         () => this.currentController.beforeZoom());
@@ -255,8 +250,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     }, false);
 
     // Create the plugin.
-    this.plugin_ = this.createPlugin_(isPrintPreview);
-    this.getContent().appendChild(this.plugin_);
+    this.plugin_ = this.createPlugin_();
 
     const pluginController = PluginController.getInstance();
     pluginController.init(
@@ -306,7 +300,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     if (progress === -1) {
       // Document load failed.
       this.showErrorDialog = true;
-      this.getSizer().style.display = 'none';
+      this.viewport_.setContent(null);
       this.setLoadState(LoadState.FAILED);
       this.sendDocumentLoadedMessage();
     } else if (progress === 100) {

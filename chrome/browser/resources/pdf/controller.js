@@ -198,6 +198,7 @@ export class PluginController {
     this.pendingTokens_ = new Map();
     this.requestResolverMap_ = new Map();
 
+    this.viewport_.setContent(this.plugin_);
     this.plugin_.addEventListener(
         'message', e => this.handlePluginMessage_(e), false);
     if (!this.plugin_.postMessage) {

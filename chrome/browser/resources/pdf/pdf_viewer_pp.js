@@ -55,13 +55,8 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   /** @override */
-  getContent() {
-    return /** @type {!HTMLDivElement} */ (this.$$('#content'));
-  }
-
-  /** @override */
-  getSizer() {
-    return /** @type {!HTMLDivElement} */ (this.$$('#sizer'));
+  isNewUiEnabled() {
+    return false;
   }
 
   /** @override */
@@ -79,7 +74,10 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
   /** @param {!BrowserApi} browserApi */
   init(browserApi) {
-    super.init(browserApi);
+    super.init(
+        browserApi, document.documentElement,
+        /** @type {!HTMLDivElement} */ (this.$$('#sizer')),
+        /** @type {!HTMLDivElement} */ (this.$$('#content')));
 
     /** @private {?PluginController} */
     this.pluginController_ = PluginController.getInstance();
