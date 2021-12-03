@@ -207,7 +207,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // sequence_manager::TimeDomain:
 
   base::TimeTicks GetNextDelayedTaskTime(
-      sequence_manager::DelayedWakeUp next_wake_up,
+      sequence_manager::WakeUp next_wake_up,
       sequence_manager::LazyNow* lazy_now) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -228,7 +228,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // non-delayed work. Advances time to the next task unless
   // |quit_when_idle_requested| or TaskEnvironment controls mock time.
   bool MaybeFastForwardToWakeUp(
-      absl::optional<sequence_manager::DelayedWakeUp> next_wake_up,
+      absl::optional<sequence_manager::WakeUp> next_wake_up,
       bool quit_when_idle_requested) override {
     if (quit_when_idle_requested)
       return false;
@@ -263,7 +263,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // tasks, expected to be called after being just idle, racily scheduling
   // immediate tasks doesn't affect the outcome of this call.
   NextTaskSource FastForwardToNextTaskOrCap(
-      absl::optional<sequence_manager::DelayedWakeUp> next_main_thread_wake_up,
+      absl::optional<sequence_manager::WakeUp> next_main_thread_wake_up,
       TimeTicks fast_forward_cap) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -674,7 +674,7 @@ void TaskEnvironment::FastForwardBy(TimeDelta delta) {
     // FastForwardToNextTaskOrCap isn't affected by canceled tasks.
     sequence_manager_->ReclaimMemory();
   } while (mock_time_domain_->FastForwardToNextTaskOrCap(
-               sequence_manager_->GetNextDelayedWakeUp(), fast_forward_until) !=
+               sequence_manager_->GetNextWakeUp(), fast_forward_until) !=
            MockTimeDomain::NextTaskSource::kNone);
 
   if (task_tracker_ && !could_run_tasks)
@@ -726,8 +726,8 @@ TimeDelta TaskEnvironment::NextMainThreadPendingTaskDelay() const {
   sequence_manager::LazyNow lazy_now(mock_time_domain_->NowTicks());
   if (!sequence_manager_->IsIdleForTesting())
     return TimeDelta();
-  absl::optional<sequence_manager::DelayedWakeUp> wake_up =
-      sequence_manager_->GetNextDelayedWakeUp();
+  absl::optional<sequence_manager::WakeUp> wake_up =
+      sequence_manager_->GetNextWakeUp();
   return wake_up ? wake_up->time - lazy_now.Now() : TimeDelta::Max();
 }
 

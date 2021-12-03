@@ -656,7 +656,7 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
   // There shouldn't be any delayed tasks posted by the idle helper when paused.
   base::sequence_manager::LazyNow lazy_now_1(
       test_task_runner_->GetMockTickClock());
-  EXPECT_FALSE(scheduler_helper_->GetNextDelayedWakeUp());
+  EXPECT_FALSE(scheduler_helper_->GetNextWakeUp());
 
   // Posting a task should transition us to the an active state.
   g_max_idle_task_reposts = 2;
@@ -678,7 +678,7 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
   CheckIdlePeriodStateIs("in_long_idle_period_paused");
   base::sequence_manager::LazyNow lazy_now_2(
       test_task_runner_->GetMockTickClock());
-  EXPECT_FALSE(scheduler_helper_->GetNextDelayedWakeUp());
+  EXPECT_FALSE(scheduler_helper_->GetNextWakeUp());
 
   idle_helper_->EndIdlePeriod();
   CheckIdlePeriodStateIs("not_in_idle_period");

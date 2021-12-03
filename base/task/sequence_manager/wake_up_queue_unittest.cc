@@ -32,7 +32,7 @@ class TaskQueueImplForTest : public internal::TaskQueueImpl {
       : TaskQueueImpl(sequence_manager, wake_up_queue, spec) {}
   ~TaskQueueImplForTest() = default;
 
-  using TaskQueueImpl::SetNextDelayedWakeUp;
+  using TaskQueueImpl::SetNextWakeUp;
 };
 
 class MockWakeUpQueue : public WakeUpQueue {
@@ -48,11 +48,10 @@ class MockWakeUpQueue : public WakeUpQueue {
   using WakeUpQueue::SetNextWakeUpForQueue;
   using WakeUpQueue::UnregisterQueue;
 
-  void OnNextDelayedWakeUpChanged(
-      LazyNow* lazy_now,
-      absl::optional<DelayedWakeUp> wake_up) override {
+  void OnNextWakeUpChanged(LazyNow* lazy_now,
+                           absl::optional<WakeUp> wake_up) override {
     TimeTicks time = wake_up ? wake_up->time : TimeTicks::Max();
-    OnNextDelayedWakeUpChanged_TimeTicks(time);
+    OnNextWakeUpChanged_TimeTicks(time);
   }
   const char* GetName() const override { return "Test"; }
   void UnregisterQueue(internal::TaskQueueImpl* queue) override {
@@ -71,7 +70,7 @@ class MockWakeUpQueue : public WakeUpQueue {
     return wake_up_queue_.top().wake_up.time;
   }
 
-  MOCK_METHOD1(OnNextDelayedWakeUpChanged_TimeTicks, void(TimeTicks run_time));
+  MOCK_METHOD1(OnNextWakeUpChanged_TimeTicks, void(TimeTicks run_time));
 };
 
 class WakeUpQueueTest : public testing::Test {
@@ -98,9 +97,9 @@ TEST_F(WakeUpQueueTest, ScheduleWakeUpForQueue) {
   TimeTicks delayed_runtime = now + delay;
   EXPECT_TRUE(wake_up_queue_->empty());
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime));
+              OnNextWakeUpChanged_TimeTicks(delayed_runtime));
   LazyNow lazy_now(now);
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime});
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{delayed_runtime});
 
   EXPECT_FALSE(wake_up_queue_->empty());
   EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
@@ -109,7 +108,7 @@ TEST_F(WakeUpQueueTest, ScheduleWakeUpForQueue) {
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()))
+              OnNextWakeUpChanged_TimeTicks(TimeTicks::Max()))
       .Times(AnyNumber());
 }
 
@@ -120,9 +119,9 @@ TEST_F(WakeUpQueueTest, ScheduleWakeUpForQueueSupersedesPreviousWakeUp) {
   TimeTicks delayed_runtime1 = now + delay1;
   TimeTicks delayed_runtime2 = now + delay2;
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime1));
+              OnNextWakeUpChanged_TimeTicks(delayed_runtime1));
   LazyNow lazy_now(now);
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime1});
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{delayed_runtime1});
 
   EXPECT_EQ(delayed_runtime1, wake_up_queue_->NextScheduledRunTime());
 
@@ -131,14 +130,14 @@ TEST_F(WakeUpQueueTest, ScheduleWakeUpForQueueSupersedesPreviousWakeUp) {
   // Now schedule a later wake_up, which should replace the previously
   // requested one.
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime2));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{delayed_runtime2});
+              OnNextWakeUpChanged_TimeTicks(delayed_runtime2));
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{delayed_runtime2});
 
   EXPECT_EQ(delayed_runtime2, wake_up_queue_->NextScheduledRunTime());
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()))
+              OnNextWakeUpChanged_TimeTicks(TimeTicks::Max()))
       .Times(AnyNumber());
 }
 
@@ -165,27 +164,25 @@ TEST_F(WakeUpQueueTest, SetNextDelayedDoWork_OnlyCalledForEarlierTasks) {
   TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(now + delay1));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay1});
+              OnNextWakeUpChanged_TimeTicks(now + delay1));
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{now + delay1});
 
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   // SetNextDelayedDoWork should not be called when scheduling later tasks.
-  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
-      .Times(0);
-  task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay2});
-  task_queue3->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay3});
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(_)).Times(0);
+  task_queue2->SetNextWakeUp(&lazy_now, WakeUp{now + delay2});
+  task_queue3->SetNextWakeUp(&lazy_now, WakeUp{now + delay3});
 
   // SetNextDelayedDoWork should be called when scheduling earlier tasks.
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(now + delay4));
-  task_queue4->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{now + delay4});
+              OnNextWakeUpChanged_TimeTicks(now + delay4));
+  task_queue4->SetNextWakeUp(&lazy_now, WakeUp{now + delay4});
 
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
-      .Times(2);
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(_)).Times(2);
   task_queue2->UnregisterTaskQueue();
   task_queue3->UnregisterTaskQueue();
   task_queue4->UnregisterTaskQueue();
@@ -200,20 +197,18 @@ TEST_F(WakeUpQueueTest, UnregisterQueue) {
   TimeTicks now = tick_clock_.NowTicks();
   LazyNow lazy_now(now);
   TimeTicks wake_up1 = now + Milliseconds(10);
-  EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(wake_up1))
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(wake_up1))
       .Times(1);
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{wake_up1});
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{wake_up1});
   TimeTicks wake_up2 = now + Milliseconds(100);
-  task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{wake_up2});
+  task_queue2->SetNextWakeUp(&lazy_now, WakeUp{wake_up2});
   EXPECT_FALSE(wake_up_queue_->empty());
 
   EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
 
   testing::Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(wake_up2))
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(wake_up2))
       .Times(1);
 
   wake_up_queue_->UnregisterQueue(task_queue_.get());
@@ -226,7 +221,7 @@ TEST_F(WakeUpQueueTest, UnregisterQueue) {
   testing::Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()))
+              OnNextWakeUpChanged_TimeTicks(TimeTicks::Max()))
       .Times(1);
 
   wake_up_queue_->UnregisterQueue(task_queue2.get());
@@ -243,9 +238,8 @@ TEST_F(WakeUpQueueTest, MoveReadyDelayedTasksToWorkQueues) {
   LazyNow lazy_now_1(now);
   TimeTicks delayed_runtime = now + delay;
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(delayed_runtime));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now_1,
-                                    DelayedWakeUp{delayed_runtime});
+              OnNextWakeUpChanged_TimeTicks(delayed_runtime));
+  task_queue_->SetNextWakeUp(&lazy_now_1, WakeUp{delayed_runtime});
 
   EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
@@ -253,7 +247,7 @@ TEST_F(WakeUpQueueTest, MoveReadyDelayedTasksToWorkQueues) {
   EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()));
+              OnNextWakeUpChanged_TimeTicks(TimeTicks::Max()));
   tick_clock_.SetNowTicks(delayed_runtime);
   LazyNow lazy_now_2(&tick_clock_);
   wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_2);
@@ -265,15 +259,14 @@ TEST_F(WakeUpQueueTest, CancelDelayedWork) {
   LazyNow lazy_now(now);
   TimeTicks run_time = now + Milliseconds(20);
 
-  EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(run_time));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time});
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(run_time));
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{run_time});
 
   EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
 
   EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(TimeTicks::Max()));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
+              OnNextWakeUpChanged_TimeTicks(TimeTicks::Max()));
+  task_queue_->SetNextWakeUp(&lazy_now, absl::nullopt);
   EXPECT_FALSE(wake_up_queue_->NextScheduledTaskQueue());
 }
 
@@ -286,29 +279,26 @@ TEST_F(WakeUpQueueTest, CancelDelayedWork_TwoQueues) {
   LazyNow lazy_now(now);
   TimeTicks run_time1 = now + Milliseconds(20);
   TimeTicks run_time2 = now + Milliseconds(40);
-  EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(run_time1));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time1});
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(run_time1));
+  task_queue_->SetNextWakeUp(&lazy_now, WakeUp{run_time1});
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
-  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
-      .Times(0);
-  task_queue2->SetNextDelayedWakeUp(&lazy_now, DelayedWakeUp{run_time2});
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(_)).Times(0);
+  task_queue2->SetNextWakeUp(&lazy_now, WakeUp{run_time2});
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
 
   EXPECT_EQ(task_queue_.get(), wake_up_queue_->NextScheduledTaskQueue());
 
   EXPECT_EQ(run_time1, wake_up_queue_->NextScheduledRunTime());
 
-  EXPECT_CALL(*wake_up_queue_.get(),
-              OnNextDelayedWakeUpChanged_TimeTicks(run_time2));
-  task_queue_->SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(run_time2));
+  task_queue_->SetNextWakeUp(&lazy_now, absl::nullopt);
   EXPECT_EQ(task_queue2.get(), wake_up_queue_->NextScheduledTaskQueue());
 
   EXPECT_EQ(run_time2, wake_up_queue_->NextScheduledRunTime());
 
   Mock::VerifyAndClearExpectations(wake_up_queue_.get());
-  EXPECT_CALL(*wake_up_queue_.get(), OnNextDelayedWakeUpChanged_TimeTicks(_))
+  EXPECT_CALL(*wake_up_queue_.get(), OnNextWakeUpChanged_TimeTicks(_))
       .Times(AnyNumber());
 
   // Tidy up.
@@ -328,10 +318,10 @@ TEST_F(WakeUpQueueTest, HighResolutionWakeUps) {
   // Add two high resolution wake-ups.
   EXPECT_FALSE(wake_up_queue_->has_pending_high_resolution_tasks());
   wake_up_queue_->SetNextWakeUpForQueue(
-      &q1, &lazy_now, DelayedWakeUp{run_time1, WakeUpResolution::kHigh});
+      &q1, &lazy_now, WakeUp{run_time1, WakeUpResolution::kHigh});
   EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
   wake_up_queue_->SetNextWakeUpForQueue(
-      &q2, &lazy_now, DelayedWakeUp{run_time2, WakeUpResolution::kHigh});
+      &q2, &lazy_now, WakeUp{run_time2, WakeUpResolution::kHigh});
   EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Remove one of the wake-ups.
@@ -344,15 +334,15 @@ TEST_F(WakeUpQueueTest, HighResolutionWakeUps) {
 
   // Change a low resolution wake-up to a high resolution one.
   wake_up_queue_->SetNextWakeUpForQueue(
-      &q1, &lazy_now, DelayedWakeUp{run_time1, WakeUpResolution::kLow});
+      &q1, &lazy_now, WakeUp{run_time1, WakeUpResolution::kLow});
   EXPECT_FALSE(wake_up_queue_->has_pending_high_resolution_tasks());
   wake_up_queue_->SetNextWakeUpForQueue(
-      &q1, &lazy_now, DelayedWakeUp{run_time1, WakeUpResolution::kHigh});
+      &q1, &lazy_now, WakeUp{run_time1, WakeUpResolution::kHigh});
   EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Move a high resolution wake-up in time.
   wake_up_queue_->SetNextWakeUpForQueue(
-      &q1, &lazy_now, DelayedWakeUp{run_time2, WakeUpResolution::kHigh});
+      &q1, &lazy_now, WakeUp{run_time2, WakeUpResolution::kHigh});
   EXPECT_TRUE(wake_up_queue_->has_pending_high_resolution_tasks());
 
   // Cancel the wake-up twice.

@@ -102,8 +102,7 @@ class PLATFORM_EXPORT SchedulerHelper
   void ReclaimMemory();
 
   // Accessor methods.
-  absl::optional<base::sequence_manager::DelayedWakeUp> GetNextDelayedWakeUp()
-      const;
+  absl::optional<base::sequence_manager::WakeUp> GetNextWakeUp() const;
   void SetTimeDomain(base::sequence_manager::TimeDomain* time_domain);
   void ResetTimeDomain();
   bool GetAndClearSystemIsQuiescentBit();

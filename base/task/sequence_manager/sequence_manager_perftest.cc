@@ -61,7 +61,7 @@ class PerfTestTimeDomain : public MockTimeDomain {
   PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  base::TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
+  base::TimeTicks GetNextDelayedTaskTime(WakeUp next_wake_up,
                                          LazyNow* lazy_now) const override {
     // Check if we have a task that should be running now.
     if (next_wake_up.time <= NowTicks())
@@ -72,7 +72,7 @@ class PerfTestTimeDomain : public MockTimeDomain {
     return base::TimeTicks::Max();
   }
 
-  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wake_up,
+  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> wake_up,
                                 bool quit_when_idle_requested) override {
     if (wake_up) {
       SetNowTicks(wake_up->time);

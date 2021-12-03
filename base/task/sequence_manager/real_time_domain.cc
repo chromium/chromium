@@ -20,7 +20,7 @@ TimeTicks RealTimeDomain::NowTicks() const {
 }
 
 base::TimeTicks RealTimeDomain::GetNextDelayedTaskTime(
-    DelayedWakeUp next_wake_up,
+    WakeUp next_wake_up,
     sequence_manager::LazyNow* lazy_now) const {
   TimeTicks now = lazy_now->Now();
   if (now >= next_wake_up.time) {
@@ -35,7 +35,7 @@ base::TimeTicks RealTimeDomain::GetNextDelayedTaskTime(
 }
 
 bool RealTimeDomain::MaybeFastForwardToWakeUp(
-    absl::optional<DelayedWakeUp> next_wake_up,
+    absl::optional<WakeUp> next_wake_up,
     bool quit_when_idle_requested) {
   return false;
 }

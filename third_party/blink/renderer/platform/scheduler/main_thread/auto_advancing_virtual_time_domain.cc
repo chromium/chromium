@@ -57,7 +57,7 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
 }
 
 base::TimeTicks AutoAdvancingVirtualTimeDomain::GetNextDelayedTaskTime(
-    base::sequence_manager::DelayedWakeUp next_wake_up,
+    base::sequence_manager::WakeUp next_wake_up,
     base::sequence_manager::LazyNow* lazy_now) const {
   // We may have advanced virtual time past the next task when a
   // WebScopedVirtualTimePauser unpauses.
@@ -70,7 +70,7 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::GetNextDelayedTaskTime(
 }
 
 bool AutoAdvancingVirtualTimeDomain::MaybeFastForwardToWakeUp(
-    absl::optional<base::sequence_manager::DelayedWakeUp> wakeup,
+    absl::optional<base::sequence_manager::WakeUp> wakeup,
     bool quit_when_idle_requested) {
   if (!can_advance_virtual_time_)
     return false;
@@ -146,7 +146,7 @@ void AutoAdvancingVirtualTimeDomain::DidProcessTask(
 
   // Delayed tasks are being excessively starved, so allow virtual time to
   // advance.
-  auto wake_up = helper_->GetNextDelayedWakeUp();
+  auto wake_up = helper_->GetNextWakeUp();
   if (wake_up && MaybeAdvanceVirtualTime(wake_up->time))
     task_starvation_count_ = 0;
 }

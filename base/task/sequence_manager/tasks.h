@@ -48,20 +48,18 @@ struct BASE_EXPORT PostedTask {
 enum class WakeUpResolution { kLow, kHigh };
 
 // Represents a time at which a task wants to run.
-struct DelayedWakeUp {
+struct WakeUp {
   TimeTicks time;
   WakeUpResolution resolution;
 
-  bool operator!=(const DelayedWakeUp& other) const {
+  bool operator!=(const WakeUp& other) const {
     return time != other.time || resolution != other.resolution;
   }
 
-  bool operator==(const DelayedWakeUp& other) const {
-    return !(*this != other);
-  }
+  bool operator==(const WakeUp& other) const { return !(*this != other); }
 
   // Used for a min-heap.
-  bool operator>(const DelayedWakeUp& other) const {
+  bool operator>(const WakeUp& other) const {
     return std::tie(time, resolution) > std::tie(other.time, other.resolution);
   }
 };

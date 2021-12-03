@@ -65,10 +65,10 @@ bool TaskQueueThrottler::IsThrottled() const {
   return throttling_ref_count_ > 0;
 }
 
-absl::optional<base::sequence_manager::DelayedWakeUp>
+absl::optional<base::sequence_manager::WakeUp>
 TaskQueueThrottler::GetNextAllowedWakeUpImpl(
     LazyNow* lazy_now,
-    absl::optional<base::sequence_manager::DelayedWakeUp> next_wake_up,
+    absl::optional<base::sequence_manager::WakeUp> next_wake_up,
     bool has_ready_task) {
   DCHECK(IsThrottled());
   DCHECK(task_queue_->IsQueueEnabled());
@@ -82,7 +82,7 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
     if (!allowed_run_time.is_null()) {
       // WakeUpResolution::kLow is always used for throttled tasks since those
       // tasks can tolerate having their execution being delayed.
-      return base::sequence_manager::DelayedWakeUp{
+      return base::sequence_manager::WakeUp{
           allowed_run_time, base::sequence_manager::WakeUpResolution::kLow};
     }
   }
@@ -95,7 +95,7 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
   if (allowed_run_time.is_null())
     allowed_run_time = desired_run_time;
 
-  return base::sequence_manager::DelayedWakeUp{
+  return base::sequence_manager::WakeUp{
       allowed_run_time, base::sequence_manager::WakeUpResolution::kLow};
 }
 
@@ -109,17 +109,16 @@ void TaskQueueThrottler::OnHasImmediateTask() {
   if (CanRunTasksAt(lazy_now.Now())) {
     UpdateFence(lazy_now.Now());
   } else {
-    task_queue_->UpdateDelayedWakeUp(&lazy_now);
+    task_queue_->UpdateWakeUp(&lazy_now);
   }
 }
 
-absl::optional<base::sequence_manager::DelayedWakeUp>
+absl::optional<base::sequence_manager::WakeUp>
 TaskQueueThrottler::GetNextAllowedWakeUp(
     LazyNow* lazy_now,
-    absl::optional<base::sequence_manager::DelayedWakeUp> next_desired_wake_up,
+    absl::optional<base::sequence_manager::WakeUp> next_desired_wake_up,
     bool has_ready_task) {
-  TRACE_EVENT0("renderer.scheduler",
-               "TaskQueueThrottler::OnNextDelayedWakeUpChanged");
+  TRACE_EVENT0("renderer.scheduler", "TaskQueueThrottler::OnNextWakeUpChanged");
 
   return GetNextAllowedWakeUpImpl(lazy_now, next_desired_wake_up,
                                   has_ready_task);
@@ -161,7 +160,7 @@ void TaskQueueThrottler::UpdateQueueState(base::TimeTicks now) {
     TRACE_EVENT_INSTANT("renderer.scheduler",
                         "TaskQueueThrottler::InsertFence");
   }
-  task_queue_->UpdateDelayedWakeUp(&lazy_now);
+  task_queue_->UpdateWakeUp(&lazy_now);
 }
 
 void TaskQueueThrottler::OnWakeUp(base::sequence_manager::LazyNow* lazy_now) {

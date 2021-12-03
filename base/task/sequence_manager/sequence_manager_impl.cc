@@ -506,9 +506,8 @@ void SequenceManagerImpl::ScheduleWork() {
   controller_->ScheduleWork();
 }
 
-void SequenceManagerImpl::SetNextDelayedWakeUp(
-    LazyNow* lazy_now,
-    absl::optional<DelayedWakeUp> wake_up) {
+void SequenceManagerImpl::SetNextWakeUp(LazyNow* lazy_now,
+                                        absl::optional<WakeUp> wake_up) {
   TimeTicks next_task_time = TimeTicks::Max();
   if (wake_up) {
     next_task_time = main_thread_only().time_domain->GetNextDelayedTaskTime(
@@ -761,11 +760,10 @@ TimeTicks SequenceManagerImpl::GetNextTaskTime(LazyNow* lazy_now,
   return GetNextDelayedTaskTimeImpl(lazy_now, option);
 }
 
-absl::optional<DelayedWakeUp> SequenceManagerImpl::GetNextDelayedWakeUp()
-    const {
+absl::optional<WakeUp> SequenceManagerImpl::GetNextWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  return main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
+  return main_thread_only().wake_up_queue->GetNextWakeUp();
 }
 
 TimeTicks SequenceManagerImpl::GetNextDelayedTaskTimeImpl(
@@ -776,7 +774,7 @@ TimeTicks SequenceManagerImpl::GetNextDelayedTaskTimeImpl(
   if (option == SelectTaskOption::kSkipDelayedTask)
     return TimeTicks::Max();
 
-  auto wake_up = GetNextDelayedWakeUp();
+  auto wake_up = GetNextWakeUp();
   if (!wake_up)
     return TimeTicks::Max();
   return main_thread_only().time_domain->GetNextDelayedTaskTime(*wake_up,
@@ -790,7 +788,7 @@ bool SequenceManagerImpl::HasPendingHighResolutionTasks() {
 }
 
 bool SequenceManagerImpl::OnSystemIdle() {
-  auto wakeup = main_thread_only().wake_up_queue->GetNextDelayedWakeUp();
+  auto wakeup = main_thread_only().wake_up_queue->GetNextWakeUp();
   bool have_work_to_do =
       main_thread_only().time_domain->MaybeFastForwardToWakeUp(
           wakeup, controller_->ShouldQuitRunLoopWhenIdle());

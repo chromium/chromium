@@ -121,7 +121,7 @@ class BASE_EXPORT TaskQueueImpl {
   bool IsEmpty() const;
   size_t GetNumberOfPendingTasks() const;
   bool HasTaskToRunImmediatelyOrReadyDelayedTask() const;
-  absl::optional<DelayedWakeUp> GetNextDesiredWakeUp();
+  absl::optional<WakeUp> GetNextDesiredWakeUp();
   void SetQueuePriority(TaskQueue::QueuePriority priority);
   TaskQueue::QueuePriority GetQueuePriority() const;
   void AddTaskObserver(TaskObserver* task_observer);
@@ -265,12 +265,11 @@ class BASE_EXPORT TaskQueueImpl {
   // Updates this queue's next wake up time in the time domain,
   // taking into account the desired run time of queued tasks and
   // policies enforced by the Throttler.
-  void UpdateDelayedWakeUp(LazyNow* lazy_now);
+  void UpdateWakeUp(LazyNow* lazy_now);
 
  protected:
   // Sets this queue's next wake up time to |wake_up| in the time domain.
-  void SetNextDelayedWakeUp(LazyNow* lazy_now,
-                            absl::optional<DelayedWakeUp> wake_up);
+  void SetNextWakeUp(LazyNow* lazy_now, absl::optional<WakeUp> wake_up);
 
  private:
   friend class WorkQueue;
@@ -420,7 +419,7 @@ class BASE_EXPORT TaskQueueImpl {
     TaskExecutionTraceLogger task_execution_trace_logger;
     // Last reported wake up, used only in UpdateWakeUp to avoid
     // excessive calls.
-    absl::optional<DelayedWakeUp> scheduled_wake_up;
+    absl::optional<WakeUp> scheduled_wake_up;
     // If false, queue will be disabled. Used only for tests.
     bool is_enabled_for_test = true;
     // The time at which the task queue was disabled, if it is currently

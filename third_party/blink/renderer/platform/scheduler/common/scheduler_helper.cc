@@ -123,11 +123,11 @@ void SchedulerHelper::ReclaimMemory() {
   sequence_manager_->ReclaimMemory();
 }
 
-absl::optional<base::sequence_manager::DelayedWakeUp>
-SchedulerHelper::GetNextDelayedWakeUp() const {
+absl::optional<base::sequence_manager::WakeUp> SchedulerHelper::GetNextWakeUp()
+    const {
   CheckOnValidThread();
   DCHECK(sequence_manager_);
-  return sequence_manager_->GetNextDelayedWakeUp();
+  return sequence_manager_->GetNextWakeUp();
 }
 
 void SchedulerHelper::SetTimeDomain(

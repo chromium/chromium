@@ -34,7 +34,7 @@ class BASE_EXPORT WakeUpQueue {
   // Returns a wake-up for the next pending delayed task (pending delayed tasks
   // that are ripe may be ignored). If there are no such tasks (immediate tasks
   // don't count) or queues are disabled it returns nullopt.
-  absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const;
+  absl::optional<WakeUp> GetNextWakeUp() const;
 
   // Debug info.
   Value AsValue(TimeTicks now) const;
@@ -55,13 +55,13 @@ class BASE_EXPORT WakeUpQueue {
   // previously set wake up for `queue`.
   void SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
                              LazyNow* lazy_now,
-                             absl::optional<DelayedWakeUp> wake_up);
+                             absl::optional<WakeUp> wake_up);
 
   // Remove the TaskQueue from any internal data structures.
   virtual void UnregisterQueue(internal::TaskQueueImpl* queue) = 0;
 
   // Removes all canceled delayed tasks from the front of the queue. After
-  // calling this, GetNextDelayedWakeUp() is guaranteed to return a wake up time
+  // calling this, GetNextWakeUp() is guaranteed to return a wake up time
   // for a non-canceled task.
   void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
 
@@ -72,20 +72,19 @@ class BASE_EXPORT WakeUpQueue {
   // Called every time the next `next_wake_up` changes. absl::nullopt is used to
   // cancel the next wake-up. Subclasses may use this to tell SequenceManager to
   // schedule the next wake-up at the given time.
-  virtual void OnNextDelayedWakeUpChanged(
-      LazyNow* lazy_now,
-      absl::optional<DelayedWakeUp> next_wake_up) = 0;
+  virtual void OnNextWakeUpChanged(LazyNow* lazy_now,
+                                   absl::optional<WakeUp> next_wake_up) = 0;
 
   virtual const char* GetName() const = 0;
 
  private:
   friend class MockWakeUpQueue;
 
-  struct ScheduledDelayedWakeUp {
-    DelayedWakeUp wake_up;
+  struct ScheduledWakeUp {
+    WakeUp wake_up;
     internal::TaskQueueImpl* queue;
 
-    bool operator>(const ScheduledDelayedWakeUp& other) const {
+    bool operator>(const ScheduledWakeUp& other) const {
       return wake_up > other.wake_up;
     }
 
@@ -102,7 +101,7 @@ class BASE_EXPORT WakeUpQueue {
     HeapHandle GetHeapHandle() const { return queue->heap_handle(); }
   };
 
-  IntrusiveHeap<ScheduledDelayedWakeUp, std::greater<>> wake_up_queue_;
+  IntrusiveHeap<ScheduledWakeUp, std::greater<>> wake_up_queue_;
   int pending_high_res_wake_up_count_ = 0;
 
   scoped_refptr<internal::AssociatedThreadId> associated_thread_;
@@ -119,9 +118,8 @@ class BASE_EXPORT DefaultWakeUpQueue : public WakeUpQueue {
 
  private:
   // WakeUpQueue implementation:
-  void OnNextDelayedWakeUpChanged(
-      LazyNow* lazy_now,
-      absl::optional<DelayedWakeUp> wake_up) override;
+  void OnNextWakeUpChanged(LazyNow* lazy_now,
+                           absl::optional<WakeUp> wake_up) override;
   const char* GetName() const override;
   void UnregisterQueue(internal::TaskQueueImpl* queue) override;
 
@@ -138,9 +136,8 @@ class BASE_EXPORT NonWakingWakeUpQueue : public WakeUpQueue {
 
  private:
   // WakeUpQueue implementation:
-  void OnNextDelayedWakeUpChanged(
-      LazyNow* lazy_now,
-      absl::optional<DelayedWakeUp> wake_up) override;
+  void OnNextWakeUpChanged(LazyNow* lazy_now,
+                           absl::optional<WakeUp> wake_up) override;
   const char* GetName() const override;
   void UnregisterQueue(internal::TaskQueueImpl* queue) override;
 };

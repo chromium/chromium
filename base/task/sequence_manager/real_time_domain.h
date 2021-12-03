@@ -26,9 +26,9 @@ class BASE_EXPORT RealTimeDomain : public TimeDomain {
 
   // TimeDomain implementation:
   base::TimeTicks GetNextDelayedTaskTime(
-      DelayedWakeUp next_wake_up,
+      WakeUp next_wake_up,
       sequence_manager::LazyNow* lazy_now) const override;
-  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> next_wake_up,
+  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> next_wake_up,
                                 bool quit_when_idle_requested) override;
 
  protected:

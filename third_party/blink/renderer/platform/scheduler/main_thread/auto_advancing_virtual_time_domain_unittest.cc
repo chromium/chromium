@@ -188,10 +188,10 @@ TEST_F(AutoAdvancingVirtualTimeDomainTest,
                                                        base::Milliseconds(100));
 
   // Task at t+10ms should be run immediately.
-  EXPECT_TRUE(auto_advancing_time_domain_
-                  ->GetNextDelayedTaskTime(
-                      *sequence_manager_->GetNextDelayedWakeUp(), nullptr)
-                  .is_null());
+  EXPECT_TRUE(
+      auto_advancing_time_domain_
+          ->GetNextDelayedTaskTime(*sequence_manager_->GetNextWakeUp(), nullptr)
+          .is_null());
 }
 
 }  // namespace auto_advancing_virtual_time_domain_unittest

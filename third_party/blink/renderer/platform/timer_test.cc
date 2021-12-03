@@ -64,7 +64,7 @@ class TimerTest : public testing::Test {
     base::sequence_manager::LazyNow lazy_now(platform_->NowTicks());
     auto wake_up = platform_->GetMainThreadScheduler()
                        ->GetSchedulerHelperForTesting()
-                       ->GetNextDelayedWakeUp();
+                       ->GetNextWakeUp();
     if (!wake_up)
       return false;
     *time = wake_up->time - lazy_now.Now();

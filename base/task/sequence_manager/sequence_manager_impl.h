@@ -140,7 +140,7 @@ class BASE_EXPORT SequenceManagerImpl
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
-  absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const override;
+  absl::optional<WakeUp> GetNextWakeUp() const override;
 
   // SequencedTaskSource implementation:
   absl::optional<SelectedTask> SelectNextTask(
@@ -179,8 +179,7 @@ class BASE_EXPORT SequenceManagerImpl
   // Schedules next wake-up at the given time, canceling any previous requests.
   // Use absl::nullopt to cancel a wake-up. Must be called on the thread this
   // class was created on. Must be called from a TimeDomain only.
-  void SetNextDelayedWakeUp(LazyNow* lazy_now,
-                            absl::optional<DelayedWakeUp> wake_up);
+  void SetNextWakeUp(LazyNow* lazy_now, absl::optional<WakeUp> wake_up);
 
   // Returns the currently executing TaskQueue if any. Must be called on the
   // thread this class was created on.

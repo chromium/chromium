@@ -67,7 +67,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // the TaskQueue already had a pending immediate task.
     // The implementation may use this to:
     // - Restrict task execution by inserting/updating a fence.
-    // - Update the TaskQueue's next delayed wake up via UpdateDelayedWakeUp().
+    // - Update the TaskQueue's next delayed wake up via UpdateWakeUp().
     //   This allows the Throttler to perform additional operations later from
     //   OnWakeUp().
     // This is always called on the thread this TaskQueue is associated with.
@@ -82,9 +82,9 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
     // tasks or ripe delayed tasks. The implementation should return the next
     // allowed wake up, or nullopt if no future wake-up is necessary.
     // This is always called on the thread this TaskQueue is associated with.
-    virtual absl::optional<DelayedWakeUp> GetNextAllowedWakeUp(
+    virtual absl::optional<WakeUp> GetNextAllowedWakeUp(
         LazyNow* lazy_now,
-        absl::optional<DelayedWakeUp> next_desired_wake_up,
+        absl::optional<WakeUp> next_desired_wake_up,
         bool has_ready_task) = 0;
 
    protected:
@@ -280,7 +280,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // such tasks (immediate tasks don't count) or the queue is disabled it
   // returns nullopt.
   // NOTE: this must be called on the thread this TaskQueue was created by.
-  absl::optional<DelayedWakeUp> GetNextDesiredWakeUp();
+  absl::optional<WakeUp> GetNextDesiredWakeUp();
 
   // Can be called on any thread.
   virtual const char* GetName() const;
@@ -356,7 +356,7 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Updates the task queue's next wake up time in its time domain, taking into
   // account the desired run time of queued tasks and policies enforced by the
   // throttler if any.
-  void UpdateDelayedWakeUp(LazyNow* lazy_now);
+  void UpdateWakeUp(LazyNow* lazy_now);
 
   // Controls whether or not the queue will emit traces events when tasks are
   // posted to it while disabled. This only applies for the current or next

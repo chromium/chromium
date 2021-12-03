@@ -42,7 +42,7 @@ void WakeUpQueue::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
 
 void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
                                         LazyNow* lazy_now,
-                                        absl::optional<DelayedWakeUp> wake_up) {
+                                        absl::optional<WakeUp> wake_up) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(queue->wake_up_queue(), this);
   DCHECK(queue->IsQueueEnabled() || !wake_up);
@@ -84,7 +84,7 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
   DCHECK_GE(pending_high_res_wake_up_count_, 0);
 
   if (new_wake_up != previous_wake_up)
-    OnNextDelayedWakeUpChanged(lazy_now, GetNextDelayedWakeUp());
+    OnNextWakeUpChanged(lazy_now, GetNextWakeUp());
 }
 
 void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
@@ -109,17 +109,17 @@ void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   // becomes the next one to wake up, since that wake up can't be moved up.
   // `wake_up_queue_` is non-empty here, per the condition above.
   internal::TaskQueueImpl* queue = wake_up_queue_.top().queue;
-  queue->UpdateDelayedWakeUp(lazy_now);
+  queue->UpdateWakeUp(lazy_now);
   while (!wake_up_queue_.empty()) {
     internal::TaskQueueImpl* old_queue =
         std::exchange(queue, wake_up_queue_.top().queue);
     if (old_queue == queue)
       break;
-    queue->UpdateDelayedWakeUp(lazy_now);
+    queue->UpdateWakeUp(lazy_now);
   }
 }
 
-absl::optional<DelayedWakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
+absl::optional<WakeUp> WakeUpQueue::GetNextWakeUp() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (wake_up_queue_.empty())
     return absl::nullopt;
@@ -145,10 +145,9 @@ DefaultWakeUpQueue::DefaultWakeUpQueue(
 
 DefaultWakeUpQueue::~DefaultWakeUpQueue() = default;
 
-void DefaultWakeUpQueue::OnNextDelayedWakeUpChanged(
-    LazyNow* lazy_now,
-    absl::optional<DelayedWakeUp> wake_up) {
-  sequence_manager_->SetNextDelayedWakeUp(lazy_now, wake_up);
+void DefaultWakeUpQueue::OnNextWakeUpChanged(LazyNow* lazy_now,
+                                             absl::optional<WakeUp> wake_up) {
+  sequence_manager_->SetNextWakeUp(lazy_now, wake_up);
 }
 
 void DefaultWakeUpQueue::UnregisterQueue(internal::TaskQueueImpl* queue) {
@@ -167,9 +166,9 @@ NonWakingWakeUpQueue::NonWakingWakeUpQueue(
 
 NonWakingWakeUpQueue::~NonWakingWakeUpQueue() = default;
 
-void NonWakingWakeUpQueue::OnNextDelayedWakeUpChanged(
-    LazyNow* lazy_now,
-    absl::optional<DelayedWakeUp> wake_up) {}
+void NonWakingWakeUpQueue::OnNextWakeUpChanged(LazyNow* lazy_now,
+                                               absl::optional<WakeUp> wake_up) {
+}
 
 const char* NonWakingWakeUpQueue::GetName() const {
   return "NonWakingWakeUpQueue";

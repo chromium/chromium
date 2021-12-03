@@ -34,16 +34,15 @@ class BASE_EXPORT TimeDomain : public TickClock {
   // typically aligned with `next_wake_up.time` but virtual time domains may
   // elect otherwise. Can be called from main thread only.
   // TODO(857101): Pass `lazy_now` by reference.
-  virtual TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
+  virtual TimeTicks GetNextDelayedTaskTime(WakeUp next_wake_up,
                                            LazyNow* lazy_now) const = 0;
 
   // Invoked when the thread reaches idle. Gives an opportunity to a virtual
   // time domain impl to fast-forward time and return true to indicate that
   // there's more work to run. If RunLoop::QuitWhenIdle has been called then
   // `quit_when_idle_requested` will be true.
-  virtual bool MaybeFastForwardToWakeUp(
-      absl::optional<DelayedWakeUp> next_wake_up,
-      bool quit_when_idle_requested) = 0;
+  virtual bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> next_wake_up,
+                                        bool quit_when_idle_requested) = 0;
 
   // Debug info.
   Value AsValue() const;

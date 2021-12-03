@@ -98,16 +98,15 @@ class PLATFORM_EXPORT TaskQueueThrottler final
   base::TimeTicks GetTimeTasksCanRunUntil(base::TimeTicks now) const;
 
   // See GetNextAllowedWakeUp().
-  absl::optional<base::sequence_manager::DelayedWakeUp>
-  GetNextAllowedWakeUpImpl(
+  absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUpImpl(
       base::sequence_manager::LazyNow* lazy_now,
-      absl::optional<base::sequence_manager::DelayedWakeUp> next_wake_up,
+      absl::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task);
 
   // TaskQueue::Throttler implementation:
-  absl::optional<base::sequence_manager::DelayedWakeUp> GetNextAllowedWakeUp(
+  absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUp(
       base::sequence_manager::LazyNow* lazy_now,
-      absl::optional<base::sequence_manager::DelayedWakeUp> next_wake_up,
+      absl::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task) override;
   void OnWakeUp(base::sequence_manager::LazyNow* lazy_now) override;
   void OnHasImmediateTask() override;

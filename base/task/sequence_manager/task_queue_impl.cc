@@ -395,7 +395,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
 
   LazyNow lazy_now(now);
-  UpdateDelayedWakeUp(&lazy_now);
+  UpdateWakeUp(&lazy_now);
 
   TraceQueueSize();
 }
@@ -526,7 +526,7 @@ bool TaskQueueImpl::HasTaskToRunImmediatelyOrReadyDelayedTask() const {
   return !any_thread_.immediate_incoming_queue.empty();
 }
 
-absl::optional<DelayedWakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
+absl::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
   // Note we don't scheduled a wake-up for disabled queues.
   if (main_thread_only().delayed_incoming_queue.empty() || !IsQueueEnabled())
     return absl::nullopt;
@@ -541,7 +541,7 @@ absl::optional<DelayedWakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
           : WakeUpResolution::kLow;
 
   const auto& top_task = main_thread_only().delayed_incoming_queue.top();
-  return DelayedWakeUp{top_task.delayed_run_time, resolution};
+  return WakeUp{top_task.delayed_run_time, resolution};
 }
 
 void TaskQueueImpl::OnWakeUp(LazyNow* lazy_now) {
@@ -568,7 +568,7 @@ bool TaskQueueImpl::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
   }
 
   if (!tasks_to_delete->empty()) {
-    UpdateDelayedWakeUp(lazy_now);
+    UpdateWakeUp(lazy_now);
     return true;
   }
 
@@ -618,7 +618,7 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   // Explicitly delete tasks last.
   tasks_to_delete->clear();
 
-  UpdateDelayedWakeUp(lazy_now);
+  UpdateWakeUp(lazy_now);
 }
 
 void TaskQueueImpl::TraceQueueSize() const {
@@ -655,7 +655,7 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
 #if defined(OS_WIN)
   // Updating queue priority can change whether high resolution timer is needed.
   LazyNow lazy_now(sequence_manager_->main_thread_clock());
-  UpdateDelayedWakeUp(&lazy_now);
+  UpdateWakeUp(&lazy_now);
 #endif
 
   static_assert(TaskQueue::QueuePriority::kLowPriority >
@@ -959,8 +959,8 @@ void TaskQueueImpl::SetQueueEnabled(bool enabled) {
   }
 
   // If there is a throttler, it will be notified of pending delayed and
-  // immediate tasks inside UpdateDelayedWakeUp().
-  UpdateDelayedWakeUp(&lazy_now);
+  // immediate tasks inside UpdateWakeUp().
+  UpdateWakeUp(&lazy_now);
 
   {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
@@ -1054,7 +1054,7 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   }
 
   LazyNow lazy_now(now);
-  UpdateDelayedWakeUp(&lazy_now);
+  UpdateWakeUp(&lazy_now);
 }
 
 void TaskQueueImpl::PushImmediateIncomingTaskForTest(Task task) {
@@ -1107,23 +1107,22 @@ void TaskQueueImpl::ResetThrottler() {
   LazyNow lazy_now(sequence_manager_->main_thread_clock());
   // The current delayed wake up may have been determined by the Throttler.
   // Update it now that there is no Throttler.
-  UpdateDelayedWakeUp(&lazy_now);
+  UpdateWakeUp(&lazy_now);
 }
 
-void TaskQueueImpl::UpdateDelayedWakeUp(LazyNow* lazy_now) {
-  absl::optional<DelayedWakeUp> wake_up = GetNextDesiredWakeUp();
+void TaskQueueImpl::UpdateWakeUp(LazyNow* lazy_now) {
+  absl::optional<WakeUp> wake_up = GetNextDesiredWakeUp();
   if (main_thread_only().throttler && IsQueueEnabled()) {
     // GetNextAllowedWakeUp() may return a non-null wake_up even if |wake_up| is
     // nullopt, e.g. to throttle immediate tasks.
     wake_up = main_thread_only().throttler->GetNextAllowedWakeUp(
         lazy_now, wake_up, HasTaskToRunImmediatelyOrReadyDelayedTask());
   }
-  SetNextDelayedWakeUp(lazy_now, wake_up);
+  SetNextWakeUp(lazy_now, wake_up);
 }
 
-void TaskQueueImpl::SetNextDelayedWakeUp(
-    LazyNow* lazy_now,
-    absl::optional<DelayedWakeUp> wake_up) {
+void TaskQueueImpl::SetNextWakeUp(LazyNow* lazy_now,
+                                  absl::optional<WakeUp> wake_up) {
   if (main_thread_only().scheduled_wake_up == wake_up)
     return;
   main_thread_only().scheduled_wake_up = wake_up;

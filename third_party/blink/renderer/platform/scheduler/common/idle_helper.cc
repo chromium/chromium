@@ -84,7 +84,7 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     return IdlePeriodState::kNotInIdlePeriod;
   }
 
-  auto wake_up = helper_->GetNextDelayedWakeUp();
+  auto wake_up = helper_->GetNextWakeUp();
 
   base::TimeDelta long_idle_period_duration;
 

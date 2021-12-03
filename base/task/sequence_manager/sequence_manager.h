@@ -180,7 +180,7 @@ class BASE_EXPORT SequenceManager {
   // Returns a wake-up for the next delayed task which is not ripe for
   // execution. If there are no such tasks (immediate tasks don't count), it
   // returns nullopt.
-  virtual absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const = 0;
+  virtual absl::optional<WakeUp> GetNextWakeUp() const = 0;
 
   // Sets the SingleThreadTaskRunner that will be returned by
   // ThreadTaskRunnerHandle::Get on the main thread.

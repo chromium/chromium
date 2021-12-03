@@ -344,7 +344,7 @@ class SequenceManagerTest : public testing::TestWithParam<TestType>,
       // Advance time if we've run out of immediate work to do.
       if (!sequence_manager()->HasImmediateWork()) {
         LazyNow lazy_now(mock_tick_clock());
-        auto wake_up = sequence_manager()->GetNextDelayedWakeUp();
+        auto wake_up = sequence_manager()->GetNextWakeUp();
         if (wake_up.has_value()) {
           AdvanceMockTickClock(wake_up->time - lazy_now.Now());
           per_run_time_callback.Run();
@@ -1676,47 +1676,47 @@ TEST_P(SequenceManagerTest, ThreadCheckAfterTermination) {
   EXPECT_TRUE(queue->task_runner()->RunsTasksInCurrentSequence());
 }
 
-TEST_P(SequenceManagerTest, GetNextDelayedWakeUp) {
+TEST_P(SequenceManagerTest, GetNextWakeUp) {
   auto queues = CreateTaskQueues(2u);
   AdvanceMockTickClock(Microseconds(10000));
   LazyNow lazy_now_1(mock_tick_clock());
 
   // With no delayed tasks.
-  EXPECT_FALSE(sequence_manager()->GetNextDelayedWakeUp());
+  EXPECT_FALSE(sequence_manager()->GetNextWakeUp());
 
   // With a non-delayed task.
   queues[0]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
-  EXPECT_FALSE(sequence_manager()->GetNextDelayedWakeUp());
+  EXPECT_FALSE(sequence_manager()->GetNextWakeUp());
 
   // With a delayed task.
   TimeDelta expected_delay = Milliseconds(50);
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             expected_delay);
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextDelayedWakeUp()->time);
+            sequence_manager()->GetNextWakeUp()->time);
 
   // With another delayed task in the same queue with a longer delay.
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             Milliseconds(100));
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextDelayedWakeUp()->time);
+            sequence_manager()->GetNextWakeUp()->time);
 
   // With another delayed task in the same queue with a shorter delay.
   expected_delay = Milliseconds(20);
   queues[0]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             expected_delay);
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextDelayedWakeUp()->time);
+            sequence_manager()->GetNextWakeUp()->time);
 
   // With another delayed task in a different queue with a shorter delay.
   expected_delay = Milliseconds(10);
   queues[1]->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask),
                                             expected_delay);
   EXPECT_EQ(lazy_now_1.Now() + expected_delay,
-            sequence_manager()->GetNextDelayedWakeUp()->time);
+            sequence_manager()->GetNextWakeUp()->time);
 }
 
-TEST_P(SequenceManagerTest, GetNextDelayedWakeUp_MultipleQueues) {
+TEST_P(SequenceManagerTest, GetNextWakeUp_MultipleQueues) {
   auto queues = CreateTaskQueues(3u);
 
   TimeDelta delay1 = Milliseconds(50);
@@ -1731,8 +1731,7 @@ TEST_P(SequenceManagerTest, GetNextDelayedWakeUp_MultipleQueues) {
   queues[0]->task_runner()->PostTask(FROM_HERE, BindOnce(&NopTask));
 
   LazyNow lazy_now(mock_tick_clock());
-  EXPECT_EQ(lazy_now.Now() + delay2,
-            sequence_manager()->GetNextDelayedWakeUp()->time);
+  EXPECT_EQ(lazy_now.Now() + delay2, sequence_manager()->GetNextWakeUp()->time);
 }
 
 TEST(SequenceManagerWithTaskRunnerTest, DeleteSequenceManagerInsideATask) {
@@ -2204,9 +2203,9 @@ class MockTaskQueueThrottler : public TaskQueue::Throttler {
 
   MOCK_METHOD1(GetNextAllowedWakeUp_DesiredWakeUpTime, void(TimeTicks));
 
-  absl::optional<DelayedWakeUp> GetNextAllowedWakeUp(
+  absl::optional<WakeUp> GetNextAllowedWakeUp(
       LazyNow* lazy_now,
-      absl::optional<DelayedWakeUp> next_desired_wake_up,
+      absl::optional<WakeUp> next_desired_wake_up,
       bool has_immediate_work) override {
     if (next_desired_wake_up)
       GetNextAllowedWakeUp_DesiredWakeUpTime(next_desired_wake_up->time);
@@ -2215,13 +2214,12 @@ class MockTaskQueueThrottler : public TaskQueue::Throttler {
     return next_desired_wake_up;
   }
 
-  void SetNextAllowedWakeUp(
-      absl::optional<DelayedWakeUp> next_allowed_wake_up) {
+  void SetNextAllowedWakeUp(absl::optional<WakeUp> next_allowed_wake_up) {
     next_allowed_wake_up_ = next_allowed_wake_up;
   }
 
  private:
-  absl::optional<DelayedWakeUp> next_allowed_wake_up_;
+  absl::optional<WakeUp> next_allowed_wake_up_;
 };
 
 }  // namespace
@@ -2349,7 +2347,7 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_ResetThrottler) {
   // GetNextAllowedWakeUp should be called when a delayed task is posted on an
   // empty queue.
   throttler.SetNextAllowedWakeUp(
-      base::sequence_manager::DelayedWakeUp{start_time + delay10s});
+      base::sequence_manager::WakeUp{start_time + delay10s});
   EXPECT_CALL(throttler,
               GetNextAllowedWakeUp_DesiredWakeUpTime(start_time + delay1s));
   queue->task_runner()->PostDelayedTask(FROM_HERE, BindOnce(&NopTask), delay1s);
@@ -2428,7 +2426,7 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedWorkWhichCanRunNow) {
   // This test checks that when delayed work becomes available the notification
   // still fires. This usually happens when time advances and task becomes
   // available in the middle of the scheduling code. For this test we force
-  // notification dispatching by calling UpdateDelayedWakeUp() explicitly.
+  // notification dispatching by calling UpdateWakeUp() explicitly.
 
   auto queue = CreateTaskQueue();
 
@@ -2447,7 +2445,7 @@ TEST_P(SequenceManagerTest, TaskQueueThrottler_DelayedWorkWhichCanRunNow) {
 
   EXPECT_CALL(throttler, GetNextAllowedWakeUp_DesiredWakeUpTime(_));
   LazyNow lazy_now(mock_tick_clock());
-  queue->UpdateDelayedWakeUp(&lazy_now);
+  queue->UpdateWakeUp(&lazy_now);
   Mock::VerifyAndClearExpectations(&throttler);
 
   // Tidy up.
@@ -4581,11 +4579,11 @@ class MockTimeDomain : public TimeDomain {
   TimeTicks NowTicks() const override { return now_; }
 
   // TimeDomain:
-  TimeTicks GetNextDelayedTaskTime(DelayedWakeUp delayed_wakeup,
+  TimeTicks GetNextDelayedTaskTime(WakeUp delayed_wakeup,
                                    LazyNow* lazy_now) const override {
     return TimeTicks();
   }
-  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wakeup,
+  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> wakeup,
                                 bool quit_when_idle_requested) override {
     return MaybeFastForwardToWakeUp(quit_when_idle_requested);
   }
