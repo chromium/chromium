@@ -807,7 +807,7 @@ bool WaylandWindow::CommitOverlays(
 
   gfx::Size visual_size = (*main_overlay)->bounds_rect.size();
   float buffer_scale = (*main_overlay)->surface_scale_factor;
-  auto& rounded_corners = (*main_overlay)->rounded_corners;
+  auto& rounded_clip_bounds = (*main_overlay)->rounded_clip_bounds;
 
   if (!wayland_overlay_delegation_enabled_) {
     DCHECK_EQ(overlays.size(), 1u);
@@ -885,7 +885,7 @@ bool WaylandWindow::CommitOverlays(
   }
   root_config->bounds_rect.set_size(visual_size);
   root_config->surface_scale_factor = buffer_scale;
-  root_config->rounded_corners = rounded_corners;
+  root_config->rounded_clip_bounds = rounded_clip_bounds;
 
   frame_manager_->RecordFrame(
       std::make_unique<WaylandFrame>(root_surface(), std::move(root_config),

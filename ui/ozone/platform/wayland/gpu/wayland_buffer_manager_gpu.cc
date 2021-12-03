@@ -44,19 +44,8 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
   wayland_overlay_config->priority_hint =
       input.overlay_plane_data.priority_hint;
 
-  const auto& rounded_corners = input.overlay_plane_data.rounded_corners;
-  wayland_overlay_config->rounded_corners.clear();
-  // Push the corners in the following order - top left, top right, bottom
-  // right, and bottom left.
-  wayland_overlay_config->rounded_corners.push_back(
-      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft).x());
-  wayland_overlay_config->rounded_corners.push_back(
-      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kUpperRight).x());
-  wayland_overlay_config->rounded_corners.push_back(
-      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).x());
-  wayland_overlay_config->rounded_corners.push_back(
-      rounded_corners.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x());
-
+  wayland_overlay_config->rounded_clip_bounds =
+      input.overlay_plane_data.rounded_corners;
   return wayland_overlay_config;
 }
 }  // namespace mojo
@@ -250,7 +239,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
       surface_scale_factor, bounds_rect, gfx::RectF(1.f, 1.f) /* no crop */,
       damage_region, false, 1.0f /*opacity*/, gfx::GpuFenceHandle(),
-      gfx::OverlayPriorityHint::kNone, std::vector<float>()));
+      gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
   CommitOverlays(widget, std::move(overlay_configs));
 }

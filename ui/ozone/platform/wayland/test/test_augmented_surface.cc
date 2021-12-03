@@ -4,30 +4,49 @@
 
 #include "ui/ozone/platform/wayland/test/test_augmented_surface.h"
 
+#include "base/logging.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 
 namespace wl {
 
 namespace {
 
-void SetRoundedCorners(struct wl_client* client,
-                       struct wl_resource* resource,
-                       wl_fixed_t top_left,
-                       wl_fixed_t top_right,
-                       wl_fixed_t bottom_right,
-                       wl_fixed_t bottom_left) {
-  GetUserDataAs<TestAugmentedSurface>(resource)->set_rounded_corners(
-      gfx::RoundedCornersF(
-          wl_fixed_to_double(top_left), wl_fixed_to_double(top_right),
-          wl_fixed_to_double(bottom_right), wl_fixed_to_double(bottom_left)));
+void SetRoundedCornersDEPRECATED(struct wl_client* client,
+                                 struct wl_resource* resource,
+                                 wl_fixed_t top_left,
+                                 wl_fixed_t top_right,
+                                 wl_fixed_t bottom_right,
+                                 wl_fixed_t bottom_left) {
+  LOG(ERROR) << "Deprecated.";
+}
+
+void SetRoundedClipBounds(struct wl_client* client,
+                          struct wl_resource* resource,
+                          int32_t x,
+                          int32_t y,
+                          int32_t width,
+                          int32_t height,
+                          wl_fixed_t top_left,
+                          wl_fixed_t top_right,
+                          wl_fixed_t bottom_right,
+                          wl_fixed_t bottom_left) {
+  GetUserDataAs<TestAugmentedSurface>(resource)->set_rounded_clip_bounds(
+      gfx::RRectF(gfx::RectF(x, y, width, height),
+                  gfx::RoundedCornersF(wl_fixed_to_double(top_left),
+                                       wl_fixed_to_double(top_right),
+                                       wl_fixed_to_double(bottom_right),
+                                       wl_fixed_to_double(bottom_left))));
 }
 
 }  // namespace
 
 const struct augmented_surface_interface kTestAugmentedSurfaceImpl = {
     DestroyResource,
-    SetRoundedCorners,
+    SetRoundedCornersDEPRECATED,
+    nullptr,
+    SetRoundedClipBounds,
 };
 
 TestAugmentedSurface::TestAugmentedSurface(wl_resource* resource,

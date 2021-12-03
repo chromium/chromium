@@ -440,16 +440,37 @@ void WaylandSurface::ApplyPendingState() {
                   .get());
   }
 
-  if (pending_state_.rounded_corners != state_.rounded_corners &&
-      !pending_state_.rounded_corners.empty()) {
+  if (pending_state_.rounded_clip_bounds != state_.rounded_clip_bounds) {
     DCHECK(GetAugmentedSurface());
-    DCHECK(pending_state_.rounded_corners.size() == 4u);
-    augmented_surface_set_rounded_corners(
-        GetAugmentedSurface(),
-        wl_fixed_from_double(pending_state_.rounded_corners.at(0)),
-        wl_fixed_from_double(pending_state_.rounded_corners.at(1)),
-        wl_fixed_from_double(pending_state_.rounded_corners.at(2)),
-        wl_fixed_from_double(pending_state_.rounded_corners.at(3)));
+    if (augmented_surface_get_version(GetAugmentedSurface()) >=
+        AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
+      gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
+      gfx::Transform scale_transform;
+      scale_transform.Scale(1.f / pending_state_.buffer_scale,
+                            1.f / pending_state_.buffer_scale);
+      scale_transform.TransformRRectF(&rounded_clip_bounds);
+
+      augmented_surface_set_rounded_clip_bounds(
+          GetAugmentedSurface(), rounded_clip_bounds.rect().x(),
+          rounded_clip_bounds.rect().y(), rounded_clip_bounds.rect().width(),
+          rounded_clip_bounds.rect().height(),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kUpperLeft)
+                  .x()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kUpperRight)
+                  .x()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kLowerRight)
+                  .x()),
+          wl_fixed_from_double(
+              rounded_clip_bounds
+                  .GetCornerRadii(gfx::RRectF::Corner::kLowerLeft)
+                  .x()));
+    }
   }
 
   // Buffer-local coordinates are in pixels, surface coordinates are in DIP.
@@ -602,7 +623,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   crop = other.crop;
   viewport_px = other.viewport_px;
   opacity = other.opacity;
-  rounded_corners = other.rounded_corners;
+  rounded_clip_bounds = other.rounded_clip_bounds;
   use_blending = other.use_blending;
   priority_hint = other.priority_hint;
   return *this;
@@ -669,14 +690,10 @@ bool WaylandSurface::SurfaceSubmissionInPixelCoordinates() const {
   return connection_->surface_submission_in_pixel_coordinates();
 }
 
-void WaylandSurface::SetRoundedCorners(
-    const std::vector<float> rounded_corners) {
-  // WaylandOverlayConfig.rounded_corners are always created from gfx::RRectF
-  // and must always have size equal to 4. However, to be sure malformed
-  // requests do not get through, explicitly check if size is correct and ignore
-  // the request if it is not.
-  if (GetAugmentedSurface() && rounded_corners.size() == 4u)
-    pending_state_.rounded_corners = rounded_corners;
+void WaylandSurface::SetRoundedClipBounds(
+    const gfx::RRectF& rounded_clip_bounds) {
+  if (GetAugmentedSurface())
+    pending_state_.rounded_clip_bounds = rounded_clip_bounds;
 }
 
 // static

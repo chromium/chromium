@@ -7,7 +7,7 @@
 
 #include <surface-augmenter-server-protocol.h>
 
-#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
@@ -23,16 +23,16 @@ class TestAugmentedSurface : public ServerObject {
   TestAugmentedSurface(const TestAugmentedSurface& rhs) = delete;
   TestAugmentedSurface& operator=(const TestAugmentedSurface& rhs) = delete;
 
-  void set_rounded_corners(const gfx::RoundedCornersF& rounded_corners) {
-    rounded_corners_ = rounded_corners;
+  void set_rounded_clip_bounds(const gfx::RRectF& rounded_clip_bounds) {
+    rounded_clip_bounds_ = rounded_clip_bounds;
   }
-  const gfx::RoundedCornersF& rounded_corners() { return rounded_corners_; }
+  const gfx::RRectF& rounded_clip_bounds() { return rounded_clip_bounds_; }
 
  private:
   // Surface resource that is the ground for this augmented surface.
   wl_resource* surface_ = nullptr;
 
-  gfx::RoundedCornersF rounded_corners_;
+  gfx::RRectF rounded_clip_bounds_;
 };
 
 }  // namespace wl

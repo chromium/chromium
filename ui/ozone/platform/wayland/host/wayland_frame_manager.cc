@@ -235,7 +235,7 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   surface->SetViewportDestination(config->bounds_rect.size());
   surface->SetOpacity(config->opacity);
   surface->SetBlending(config->enable_blend);
-  surface->SetRoundedCorners(config->rounded_corners);
+  surface->SetRoundedClipBounds(config->rounded_clip_bounds);
   surface->SetOverlayPriority(config->priority_hint);
   if (set_opaque_region) {
     std::vector<gfx::Rect> region_px = {gfx::Rect(config->bounds_rect.size())};

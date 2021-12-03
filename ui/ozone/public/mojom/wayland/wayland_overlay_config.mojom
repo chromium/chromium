@@ -8,6 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/overlay_priority_hint.mojom";
+import "ui/gfx/mojom/rrect_f.mojom";
 
 // This is not a mirror of ui::OverlayPlane, it only contains things that are
 // useful to ozone/wayland.
@@ -57,9 +58,7 @@ struct WaylandOverlayConfig {
   // and enabled.
   gfx.mojom.OverlayPriorityHint priority_hint;
 
-  // Specifies rounded corners of the overlay. If Wayland compositor does not
-  // support a protocol that allows to set that, this will be empty.
-  // The corners are stored in the following order - top left, top right,
-  // bottom right, and bottom left.
-  array<float> rounded_corners;
+  // Specifies rounded clip bounds of the overlay if delegated composition is
+  // supported and enabled.
+  gfx.mojom.RRectF rounded_clip_bounds;
 };

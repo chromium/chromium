@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -149,10 +150,8 @@ class WaylandSurface {
   // Sets the priority hint for the overlay that is committed via this surface.
   void SetOverlayPriority(gfx::OverlayPriorityHint priority_hint);
 
-  // Sets the rounded corners for this surface. Values are radius in dip.
-  // |rounded_corners| must either be empty or all the corners must be set in
-  // the following order - top left, top right, bottom right, bottom left.
-  void SetRoundedCorners(const std::vector<float> rounded_corners);
+  // Sets the rounded clip bounds for this surface.
+  void SetRoundedClipBounds(const gfx::RRectF& rounded_clip_bounds);
 
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
@@ -235,7 +234,7 @@ class WaylandSurface {
     // zcr_blending_v1_set_blending.
     bool use_blending = true;
 
-    std::vector<float> rounded_corners;
+    gfx::RRectF rounded_clip_bounds;
     gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kRegular;
   };
 

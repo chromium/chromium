@@ -15,6 +15,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -463,14 +464,13 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u,
       kDefaultScale, window_->GetBounds(), gfx::RectF(), window_->GetBounds(),
       false, 1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::RRectF()));
 
   // Non-existing buffer id
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 2u, kDefaultScale,
       window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
@@ -489,13 +489,11 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
       window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, 1u, kDefaultScale,
       window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
 
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
@@ -1741,18 +1739,15 @@ TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId1,
       kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId2,
       kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       1, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, kBufferId3,
       kDefaultScale, bounds, gfx::RectF(), bounds, false, 1.0f,
-      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-      std::vector<float>()));
+      gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
   buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
                                       std::move(overlay_configs));
   Sync();
@@ -2005,7 +2000,7 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
           id == 1 ? INT32_MIN : id,
           gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
           window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-          gfx::GpuFenceHandle(), priority.first, std::vector<float>()));
+          gfx::GpuFenceHandle(), priority.first, gfx::RRectF()));
     }
 
     buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
@@ -2057,52 +2052,64 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
 
   Sync();
 
-  std::vector<std::vector<float>> rounded_corners_vec = {
-      {1, 1, 1, 1},  {0, 1, 0, 1}, {1, 0, 1, 0}, {5, 10, 0, 1},
-      {0, 2, 20, 3}, {2, 3, 4, 5}, {0, 0, 0, 0},
+  std::vector<gfx::RRectF> rounded_corners_vec = {
+      {{10, 10, 200, 200}, {1, 1, 1, 1}},  {{10, 10, 200, 200}, {0, 1, 0, 1}},
+      {{10, 10, 200, 200}, {1, 0, 1, 0}},  {{10, 10, 200, 200}, {5, 10, 0, 1}},
+      {{10, 10, 200, 200}, {0, 2, 20, 3}}, {{10, 10, 200, 200}, {2, 3, 4, 5}},
+      {{10, 10, 200, 200}, {0, 0, 0, 0}},
   };
 
-  for (const auto& rounded_corners : rounded_corners_vec) {
-    std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
-    for (auto id : kBufferIds) {
-      overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
-          id == 1 ? INT32_MIN : id,
-          gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, kDefaultScale,
-          window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false, 1.0f,
-          gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
-          rounded_corners));
+  // Use different scale factors to verify Ozone/Wayland translates the corners
+  // from px to dip.
+  std::vector<float> scale_factors = {1, 1.2, 1.5, 2};
+
+  // Exo may allow to submit values in px.
+  std::vector<bool> in_pixels = {true, false};
+
+  for (auto is_in_px : in_pixels) {
+    connection_->set_surface_submission_in_pixel_coordinates(is_in_px);
+    for (auto scale_factor : scale_factors) {
+      for (const auto& rounded_corners : rounded_corners_vec) {
+        std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlay_configs;
+        for (auto id : kBufferIds) {
+          overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
+              id == 1 ? INT32_MIN : id,
+              gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, id, scale_factor,
+              window_->GetBounds(), gfx::RectF(), window_->GetBounds(), false,
+              1.0f, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
+              rounded_corners));
+        }
+
+        buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
+                                            std::move(overlay_configs));
+
+        Sync();
+
+        for (auto& subsurface : window_->wayland_subsurfaces_) {
+          auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
+              subsurface->wayland_surface()->GetSurfaceId());
+          EXPECT_TRUE(mock_surface_of_subsurface);
+
+          gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
+          // If submission in px is allowed, there is no need to convert px to
+          // dip.
+          if (!is_in_px) {
+            gfx::Transform scale_transform;
+            // Ozone/Wayland applies ceiled scale factor if it's fractional.
+            scale_transform.Scale(1.f / std::ceil(scale_factor),
+                                  1.f / std::ceil(scale_factor));
+            scale_transform.TransformRRectF(&rounded_clip_bounds_dip);
+          }
+
+          EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                        ->rounded_clip_bounds(),
+                    rounded_clip_bounds_dip);
+          mock_surface_of_subsurface->SendFrameCallback();
+        }
+
+        mock_surface->SendFrameCallback();
+      }
     }
-
-    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(),
-                                        std::move(overlay_configs));
-
-    Sync();
-
-    for (auto& subsurface : window_->wayland_subsurfaces_) {
-      auto* mock_surface_of_subsurface = server_.GetObject<wl::MockSurface>(
-          subsurface->wayland_surface()->GetSurfaceId());
-      EXPECT_TRUE(mock_surface_of_subsurface);
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .upper_left(),
-                rounded_corners.at(0));
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .upper_right(),
-                rounded_corners.at(1));
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .lower_right(),
-                rounded_corners.at(2));
-      EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                    ->rounded_corners()
-                    .lower_left(),
-                rounded_corners.at(3));
-
-      mock_surface_of_subsurface->SendFrameCallback();
-    }
-
-    mock_surface->SendFrameCallback();
   }
 }
 
