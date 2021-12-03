@@ -47,6 +47,12 @@
 #include <sys/time.h>
 #endif  // defined(OS_POSIX)
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_APPLE)
+#include <OpenCL/opencl.h>
+
+#include <base/mac/mac_util.h>
+#endif
+
 #define EXPECT_PEQ(ptr1, ptr2) \
   { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
 
@@ -3925,6 +3931,107 @@ TEST_F(PartitionAllocTest, CrashOnUnknownPointer) {
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) &&
         // defined(ARCH_CPU_64_BITS)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_MAC)
+
+// Adapted from crashpad tests.
+class ScopedOpenCLNoOpKernel {
+ public:
+  ScopedOpenCLNoOpKernel()
+      : context_(nullptr),
+        program_(nullptr),
+        kernel_(nullptr),
+        success_(false) {}
+
+  ScopedOpenCLNoOpKernel(const ScopedOpenCLNoOpKernel&) = delete;
+  ScopedOpenCLNoOpKernel& operator=(const ScopedOpenCLNoOpKernel&) = delete;
+
+  ~ScopedOpenCLNoOpKernel() {
+    if (kernel_) {
+      cl_int rv = clReleaseKernel(kernel_);
+      EXPECT_EQ(rv, CL_SUCCESS) << "clReleaseKernel";
+    }
+
+    if (program_) {
+      cl_int rv = clReleaseProgram(program_);
+      EXPECT_EQ(rv, CL_SUCCESS) << "clReleaseProgram";
+    }
+
+    if (context_) {
+      cl_int rv = clReleaseContext(context_);
+      EXPECT_EQ(rv, CL_SUCCESS) << "clReleaseContext";
+    }
+  }
+
+  void SetUp() {
+    cl_platform_id platform_id;
+    cl_int rv = clGetPlatformIDs(1, &platform_id, nullptr);
+    ASSERT_EQ(rv, CL_SUCCESS) << "clGetPlatformIDs";
+    cl_device_id device_id;
+    rv =
+        clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, &device_id, nullptr);
+#if defined(ARCH_CPU_ARM64)
+    // CL_DEVICE_TYPE_CPU doesn’t seem to work at all on arm64, meaning that
+    // these weird OpenCL modules probably don’t show up there at all. Keep this
+    // test even on arm64 in case this ever does start working.
+    if (rv == CL_INVALID_VALUE) {
+      return;
+    }
+#endif  // ARCH_CPU_ARM64
+    ASSERT_EQ(rv, CL_SUCCESS) << "clGetDeviceIDs";
+
+    context_ = clCreateContext(nullptr, 1, &device_id, nullptr, nullptr, &rv);
+    ASSERT_EQ(rv, CL_SUCCESS) << "clCreateContext";
+
+    const char* sources[] = {
+        "__kernel void NoOp(void) {barrier(CLK_LOCAL_MEM_FENCE);}",
+    };
+    const size_t source_lengths[] = {
+        strlen(sources[0]),
+    };
+    static_assert(base::size(sources) == base::size(source_lengths),
+                  "arrays must be parallel");
+
+    program_ = clCreateProgramWithSource(context_, base::size(sources), sources,
+                                         source_lengths, &rv);
+    ASSERT_EQ(rv, CL_SUCCESS) << "clCreateProgramWithSource";
+
+    rv = clBuildProgram(program_, 1, &device_id, "-cl-opt-disable", nullptr,
+                        nullptr);
+    ASSERT_EQ(rv, CL_SUCCESS) << "clBuildProgram";
+
+    kernel_ = clCreateKernel(program_, "NoOp", &rv);
+    ASSERT_EQ(rv, CL_SUCCESS) << "clCreateKernel";
+
+    success_ = true;
+  }
+
+  bool success() const { return success_; }
+
+ private:
+  cl_context context_;
+  cl_program program_;
+  cl_kernel kernel_;
+  bool success_;
+};
+
+// On macOS 10.11, allocations are made with PartitionAlloc, but the pointer
+// is incorrectly passed by CoreFoundation to the previous default zone,
+// causing crashes. This is intended to detect these issues coming back.
+TEST_F(PartitionAllocTest, OpenCL) {
+  // Skip on 10.11, as it fails there.
+  // TODO(crbug.com/1268776): Make it pass on macOS 10.11.
+  if (base::mac::IsOS10_11())
+    return;
+
+  ScopedOpenCLNoOpKernel kernel;
+  kernel.SetUp();
+#if !defined(ARCH_CPU_ARM64)
+  ASSERT_TRUE(kernel.success());
+#endif
+}
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_MAC)
 
 }  // namespace internal
 }  // namespace base

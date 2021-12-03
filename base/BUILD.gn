@@ -3618,6 +3618,7 @@ test("base_unittests") {
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",
+      "OpenCL.framework",
     ]
     if (current_cpu == "x64") {
       deps += [ ":base_profiler_test_support_library" ]
