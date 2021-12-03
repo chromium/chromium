@@ -481,8 +481,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -515,8 +515,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -549,8 +549,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -583,8 +583,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -626,8 +626,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -669,8 +669,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -704,8 +704,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -738,8 +738,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -774,8 +774,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -810,8 +810,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -849,8 +849,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -883,8 +883,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -917,8 +917,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -951,8 +951,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -994,8 +994,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1037,8 +1037,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1072,8 +1072,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1106,8 +1106,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1142,8 +1142,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1178,8 +1178,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-418.56",
-              "os": "Ubuntu-19.04",
+              "gpu": "10de:2184-440.100",
+              "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -1916,7 +1916,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -1950,7 +1950,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -1984,7 +1984,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2018,7 +2018,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2061,7 +2061,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2104,7 +2104,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2139,7 +2139,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2173,7 +2173,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2209,7 +2209,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
@@ -2245,7 +2245,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3-27.21.14.5148",
+              "gpu": "10de:2184-27.21.14.5638",
               "os": "Windows-10-18363",
               "pool": "chromium.tests.gpu"
             }
