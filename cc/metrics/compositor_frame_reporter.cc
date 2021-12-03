@@ -1072,8 +1072,8 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
         if (info.IsDroppedAffectingSmoothness()) {
           DCHECK(state == ChromeFrameReporter::STATE_DROPPED ||
                  state == ChromeFrameReporter::STATE_PRESENTED_PARTIAL);
-          reporter->set_affects_smoothness(true);
         }
+        reporter->set_affects_smoothness(info.IsDroppedAffectingSmoothness());
         ChromeFrameReporter::ScrollState scroll_state;
         switch (scrolling_thread_) {
           case FrameSequenceMetrics::ThreadType::kMain:
