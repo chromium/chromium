@@ -47,14 +47,6 @@ namespace {
 const char kFullscreenBubbleReshowsHistogramName[] =
     "ExclusiveAccess.BubbleReshowsPerSession.Fullscreen";
 
-bool IsAnotherScreen(WebContents* web_contents, const int64_t display_id) {
-  if (display_id == display::kInvalidDisplayId)
-    return false;
-  auto* screen = display::Screen::GetScreen();
-  auto display = screen->GetDisplayNearestView(web_contents->GetNativeView());
-  return display_id != display.id();
-}
-
 }  // namespace
 
 FullscreenController::FullscreenController(ExclusiveAccessManager* manager)
@@ -126,38 +118,34 @@ bool FullscreenController::IsFullscreenCausedByTab() const {
   return state_prior_to_tab_fullscreen_ == STATE_NORMAL;
 }
 
-bool FullscreenController::CanEnterFullscreenModeForTab(
-    content::RenderFrameHost* requesting_frame,
-    const int64_t display_id) {
-  DCHECK(requesting_frame);
-  auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
-  DCHECK(web_contents);
-
-  if ((web_contents !=
-           exclusive_access_manager()->context()->GetActiveWebContents() ||
-       IsWindowFullscreenForTabOrPending()) &&
-      !IsAnotherScreen(web_contents, display_id))
-    return false;
-
-  return true;
-}
-
 void FullscreenController::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const int64_t display_id) {
   DCHECK(requesting_frame);
-  // This function should never fail. Any possible failures must be checked in
-  // |CanEnterFullscreenModeForTab()| instead. Silently dropping the request
-  // could cause requestFullscreen promises to hang. If we are in this function,
-  // the renderer expects a visual property update to call
-  // |blink::FullscreenController::DidEnterFullscreen| to resolve promises.
-  DCHECK(CanEnterFullscreenModeForTab(requesting_frame, display_id));
   auto* web_contents = WebContents::FromRenderFrameHost(requesting_frame);
   DCHECK(web_contents);
 
   if (MaybeToggleFullscreenWithinTab(web_contents, true)) {
     // During tab capture of fullscreen-within-tab views, the browser window
     // fullscreen state is unchanged, so return now.
+    return;
+  }
+
+  auto* screen = display::Screen::GetScreen();
+  bool requesting_another_screen = false;
+  auto display = screen->GetDisplayNearestView(web_contents->GetNativeView());
+  requesting_another_screen =
+      display_id != display.id() && display_id != display::kInvalidDisplayId;
+  if ((web_contents !=
+           exclusive_access_manager()->context()->GetActiveWebContents() ||
+       IsWindowFullscreenForTabOrPending()) &&
+      !requesting_another_screen) {
+    // TODO(enne): this early out (and other early outs in this function)
+    // could cause requestFullscreen promises to hang.  If we are in this
+    // function, the renderer expects a visual property update to call
+    // blink::FullscreenController::DidEnterFullscreen to resolve promises.
+    // This needs to be refactored to send more explicit/nuanced feedback
+    // to the renderer, rather than just silently dropping these requests.
     return;
   }
 
@@ -171,8 +159,7 @@ void FullscreenController::EnterFullscreenModeForTab(
   // UI style.
   exclusive_access_context->UpdateUIForTabFullscreen();
 
-  if (!exclusive_access_context->IsFullscreen() ||
-      IsAnotherScreen(web_contents, display_id)) {
+  if (!exclusive_access_context->IsFullscreen() || requesting_another_screen) {
     // Normal -> Tab Fullscreen.
     state_prior_to_tab_fullscreen_ = STATE_NORMAL;
     EnterFullscreenModeInternal(TAB, requesting_frame, display_id);
