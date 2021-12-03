@@ -26,7 +26,7 @@ namespace {
 void MaybeUpdateStringProperty(aura::Window* window,
                                const ui::ClassProperty<std::string*>* property,
                                const std::string& value) {
-  std::string* old_value = window->GetProperty(ash::kAppIDKey);
+  std::string* old_value = window->GetProperty(property);
   if (!old_value || *old_value != value) {
     window->SetProperty(property, value);
   }
