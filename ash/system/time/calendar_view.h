@@ -150,7 +150,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   void UpdateHeaders();
 
   // Resets the `header_`'s opacity and position. Also resets
-  // `scrolling_settled_timer_` and `animation_restart_timer_`.
+  // `scrolling_settled_timer_` and `header_animation_restart_timer_`.
   void RestoreHeadersStatus();
 
   // Resets the the month views' opacity and position. In case the animation is
@@ -179,6 +179,17 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
 
   std::unique_ptr<CalendarViewController> calendar_view_controller_;
 
+  // Setters for animation flags.
+  void set_should_header_animate(bool should_animate) {
+    should_header_animate_ = should_animate;
+  }
+  void set_should_months_animate(bool should_animate) {
+    should_months_animate_ = should_animate;
+  }
+
+  // Reset `scrolling_settled_timer_`.
+  void reset_scrolling_settled_timer() { scrolling_settled_timer_.Reset(); }
+
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
   views::View* content_view_ = nullptr;
@@ -202,18 +213,24 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // don't need to check if we need to update the month or not.
   bool is_resetting_scroll_ = false;
 
-  // It's true if it should animate, but false when it is currently animating or
+  // It's true if the header should animate, but false when it is currently
+  // animating, or header changing from mouse scroll (not from the buttons) or
   // cooling down from the last animation.
-  bool should_show_animation_ = true;
+  bool should_header_animate_ = true;
+
+  // It's true if the month views should animate, but false when it is currently
+  // animating, or cooling down from the last animation.
+  bool should_months_animate_ = true;
 
   // Timer that fires when we've "settled" on, i.e. finished scrolling to, a
   // currently-visible month
   base::RetainingOneShotTimer scrolling_settled_timer_;
 
-  // Timer that enables the updating month animation. When the month keeps
-  // getting changed, the animation will be disabled and the cool-down duration
-  // is `kAnimationDisablingTimeout` ms to enable the next animation.
-  base::RetainingOneShotTimer animation_restart_timer_;
+  // Timers that enable the updating month/header animations. When the month
+  // keeps getting changed, the animation will be disabled and the cool-down
+  // duration is `kAnimationDisablingTimeout` ms to enable the next animation.
+  base::RetainingOneShotTimer header_animation_restart_timer_;
+  base::RetainingOneShotTimer months_animation_restart_timer_;
 
   base::CallbackListSubscription on_contents_scrolled_subscription_;
   base::ScopedObservation<CalendarViewController,
