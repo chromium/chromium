@@ -1093,12 +1093,10 @@ void View::Paint(const PaintInfo& parent_paint_info) {
   if (!ShouldPaint())
     return;
 
-#if DCHECK_IS_ON()
   if (!has_run_accessibility_paint_checks_) {
     RunAccessibilityPaintChecks(this);
     has_run_accessibility_paint_checks_ = true;
   }
-#endif  // DCHECK_IS_ON()
 
   const gfx::Rect& parent_bounds =
       !parent() ? GetMirroredBounds() : parent()->GetMirroredBounds();

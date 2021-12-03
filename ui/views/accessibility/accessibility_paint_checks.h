@@ -12,8 +12,8 @@ namespace views {
 
 class View;
 
-// This runs CHECKs related to the view's state when painting. Generally, when a
-// View is ready to be displayed to the user it should also be accessible.
+// This runs DCHECKs related to the view's state when painting. Generally, when
+// a View is ready to be displayed to the user it should also be accessible.
 void RunAccessibilityPaintChecks(View* view);
 
 // Skip accessibility paint checks on a specific View.
