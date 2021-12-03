@@ -23,6 +23,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
@@ -215,6 +216,10 @@ void ToggleFullscreen() {
     return;
   const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
   WindowState::Get(active_window)->OnWMEvent(&event);
+}
+
+void ToggleKeyboardBacklight() {
+  // TODO: b/194146863 Add KBL toggle implementation 
 }
 
 void ToggleMaximized() {

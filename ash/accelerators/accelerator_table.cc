@@ -64,6 +64,7 @@ static_assert(kDeprecatedAcceleratorsLength ==
 
 const AcceleratorData kDebugAcceleratorData[] = {
     {true, ui::VKEY_N, kDebugModifier, TOGGLE_WIFI},
+    {true, ui::VKEY_X, kDebugModifier, DEBUG_KEYBOARD_BACKLIGHT_TOGGLE},
     {true, ui::VKEY_M, kDebugModifier, DEBUG_MICROPHONE_MUTE_TOGGLE},
     {true, ui::VKEY_O, kDebugModifier, DEBUG_SHOW_TOAST},
     {true, ui::VKEY_P, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
@@ -212,6 +213,7 @@ const size_t kActionsAllowedAtPowerMenuLength =
 const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
     DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,
@@ -290,6 +292,7 @@ const size_t kRepeatableActionsLength = base::size(kRepeatableActions);
 const AcceleratorAction kActionsAllowedInAppModeOrPinnedMode[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
     DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_PRINT_LAYER_HIERARCHY,
     DEBUG_PRINT_VIEW_HIERARCHY,
@@ -380,6 +383,7 @@ const size_t kActionsNeedingWindowLength = base::size(kActionsNeedingWindow);
 const AcceleratorAction kActionsKeepingMenuOpen[] = {
     BRIGHTNESS_DOWN,
     BRIGHTNESS_UP,
+    DEBUG_KEYBOARD_BACKLIGHT_TOGGLE,
     DEBUG_MICROPHONE_MUTE_TOGGLE,
     DEBUG_TOGGLE_TOUCH_PAD,
     DEBUG_TOGGLE_TOUCH_SCREEN,

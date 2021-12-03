@@ -100,6 +100,16 @@ void HandleToggleWallpaperMode() {
   }
 }
 
+void HandleToggleKeyboardBacklight() {
+  base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+  accelerators::ToggleKeyboardBacklight();
+}
+
+void HandleToggleMicrophoneMute() {
+  base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
+  accelerators::MicrophoneMuteToggle();
+}
+
 void HandleToggleTouchpad() {
   base::RecordAction(base::UserMetricsAction("Accel_Toggle_Touchpad"));
   Shell::Get()->touch_devices_controller()->ToggleTouchpad();
@@ -152,8 +162,11 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     return;
 
   switch (action) {
+    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
+      HandleToggleKeyboardBacklight();
+      break;
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
-      accelerators::MicrophoneMuteToggle();
+      HandleToggleMicrophoneMute();
       break;
     case DEBUG_PRINT_LAYER_HIERARCHY:
       HandlePrintLayerHierarchy();

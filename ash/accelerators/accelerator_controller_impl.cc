@@ -1842,6 +1842,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DESKS_ACTIVATE_7:
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
       return true;
+    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
@@ -2077,10 +2078,8 @@ void AcceleratorControllerImpl::PerformAction(
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
       HandleToggleAssignToAllDesks();
       break;
+    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
-      base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
-      accelerators::MicrophoneMuteToggle();
-      break;
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:

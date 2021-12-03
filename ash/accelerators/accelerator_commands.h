@@ -104,6 +104,9 @@ ASH_EXPORT void ToggleFloating();
 // by WindowStateDelegate::ToggleFullscreen().
 ASH_EXPORT void ToggleFullscreen();
 
+// Toggle keyboard backlight.
+ASH_EXPORT void ToggleKeyboardBacklight();
+
 // Toggles the maxmized state. If the window is in fulllscreen, it exits
 // fullscreen mode.
 ASH_EXPORT void ToggleMaximized();
