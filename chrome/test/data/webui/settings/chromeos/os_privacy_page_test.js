@@ -258,6 +258,23 @@ suite('PrivacyPageTests', function() {
         'Snooping protection should be focused for settingId=1114.');
   });
 
+  test('Deep link to quick dim on smart privacy page', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '1115');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.SMART_PRIVACY, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = privacyPage.$$('settings-smart-privacy-page')
+                                .shadowRoot.querySelector('#quickDimToggle')
+                                .shadowRoot.querySelector('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Quick dim should be focused for settingId=1115.');
+  });
+
   test('Fingerprint dialog closes when token expires', async () => {
     loadTimeData.overrideValues({
       fingerprintUnlockEnabled: true,
@@ -315,7 +332,7 @@ suite('PrivacyPageTests', function() {
 
   test('Smart privacy hidden when feature disabled', async () => {
     loadTimeData.overrideValues({
-      isSnoopingProtectionEnabled: false,
+      isSmartPrivacyEnabled: false,
     });
 
     privacyPage = document.createElement('os-settings-privacy-page');
@@ -328,7 +345,7 @@ suite('PrivacyPageTests', function() {
 
   test('Smart privacy shown when feature enabled', async () => {
     loadTimeData.overrideValues({
-      isSnoopingProtectionEnabled: true,
+      isSmartPrivacyEnabled: true,
     });
 
     privacyPage = document.createElement('os-settings-privacy-page');

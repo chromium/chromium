@@ -166,22 +166,50 @@ const std::vector<SearchConcept>& GetPciguardSearchConcepts() {
   return *tags;
 }
 
+bool IsSmartPrivacyEnabled() {
+  return ash::features::IsSnoopingProtectionEnabled() ||
+         ash::features::IsQuickDimEnabled();
+}
+
 const std::vector<SearchConcept>& GetSmartPrivacySearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags(
-      {{IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING,
-        mojom::kSmartPrivacySubpagePath,
-        mojom::SearchResultIcon::kShield,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSetting,
-        {.setting = mojom::Setting::kSnoopingProtection},
-        {IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT1,
-         IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT2}},
-       {IDS_OS_SETTINGS_TAG_SMART_PRIVACY,
-        mojom::kSmartPrivacySubpagePath,
-        mojom::SearchResultIcon::kShield,
-        mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kSmartPrivacy}}});
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    std::vector<SearchConcept> init_tags;
+
+    if (IsSmartPrivacyEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY,
+                           mojom::kSmartPrivacySubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSubpage,
+                           {.subpage = mojom::Subpage::kSmartPrivacy}});
+    }
+
+    if (ash::features::IsSnoopingProtectionEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING,
+                           mojom::kSmartPrivacySubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kSnoopingProtection},
+                           {IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT1,
+                            IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT2}});
+    }
+
+    // Quick dim: a.k.a leave detection, a.k.a lock on leave, a.k.a. smart
+    // privacy screen lock.
+    //
+    // TODO(crbug.com/1241706): defrag these terms into one canonical name.
+    if (ash::features::IsQuickDimEnabled()) {
+      init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY_QUICK_DIM,
+                           mojom::kSmartPrivacySubpagePath,
+                           mojom::SearchResultIcon::kShield,
+                           mojom::SearchResultDefaultRank::kMedium,
+                           mojom::SearchResultType::kSetting,
+                           {.setting = mojom::Setting::kQuickDim}});
+    }
+
+    return init_tags;
+  }());
 
   return *tags;
 }
@@ -241,9 +269,9 @@ PrivacySection::PrivacySection(Profile* profile,
     updater.AddSearchTags(GetPciguardSearchConcepts());
   }
 
-  if (ash::features::IsSnoopingProtectionEnabled()) {
-    updater.AddSearchTags(GetSmartPrivacySearchConcepts());
-  }
+  // Conditionally adds search tags concepts based on the subset of smart
+  // privacy functionality enabled.
+  updater.AddSearchTags(GetSmartPrivacySearchConcepts());
 }
 
 PrivacySection::~PrivacySection() = default;
@@ -287,10 +315,10 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
       {"smartPrivacySubtext", IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT},
       {"smartPrivacyDesc", IDS_OS_SETTINGS_SMART_PRIVACY_DESC},
-      {"smartPrivacyScreenLockTitle",
-       IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_TITLE},
-      {"smartPrivacyScreenLockSubtext",
-       IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_SUBTEXT},
+      {"smartPrivacyQuickDimTitle",
+       IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_TITLE},
+      {"smartPrivacyQuickDimSubtext",
+       IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_SUBTEXT},
       {"smartPrivacySnoopingTitle",
        IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE},
       {"smartPrivacySnoopingSubtext",
@@ -300,8 +328,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("isSnoopingProtectionEnabled",
-                          ash::features::IsSnoopingProtectionEnabled());
+  html_source->AddBoolean("isSmartPrivacyEnabled", IsSmartPrivacyEnabled());
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
@@ -421,8 +448,10 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_OS_SETTINGS_SMART_PRIVACY_TITLE, mojom::Subpage::kSmartPrivacy,
       mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
       mojom::kSmartPrivacySubpagePath);
-  RegisterNestedSettingBulk(mojom::Subpage::kSmartPrivacy,
-                            {{mojom::Setting::kSnoopingProtection}}, generator);
+  RegisterNestedSettingBulk(
+      mojom::Subpage::kSmartPrivacy,
+      {{mojom::Setting::kSnoopingProtection, mojom::Setting::kQuickDim}},
+      generator);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

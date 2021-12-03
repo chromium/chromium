@@ -61,6 +61,7 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
       supportedSettingIds: {
         type: Object,
         value: () => new Set([
+          chromeos.settings.mojom.Setting.kQuickDim,
           chromeos.settings.mojom.Setting.kSnoopingProtection,
         ]),
       },

@@ -1069,6 +1069,9 @@
   <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY_SNOOPING_ALT2" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage with a toggle to enable/disable snooping protection. Alternate phrase for: 'Snooping protection', 'Shoulder surfing'" translateable="false">
     Peeking
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_SMART_PRIVACY_QUICK_DIM" desc="Text for search result item which, when clicked, navigates the user to the smart privacy subpage with a toggle to enable/disable quick dim." translateable="false">
+    Smart screen lock
+  </message>
 
   <!-- Languages and Input section. -->
   <message name="IDS_OS_SETTINGS_TAG_LANGUAGES" desc="Text for search result item which, when clicked, navigates the user to languages settings.">

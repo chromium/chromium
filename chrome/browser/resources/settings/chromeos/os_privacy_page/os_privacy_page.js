@@ -131,13 +131,13 @@ Polymer({
     },
 
     /**
-     * True if snooping protection is enabled.
+     * True if snooping protection or screen lock is enabled.
      * @private
      */
-    isSnoopingProtectionEnabled_: {
+    isSmartPrivacyEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
+        return loadTimeData.getBoolean('isSmartPrivacyEnabled');
       },
       readOnly: true,
     },

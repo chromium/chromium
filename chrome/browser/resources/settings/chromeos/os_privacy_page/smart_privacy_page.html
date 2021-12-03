@@ -42,12 +42,12 @@
     $i18n{smartPrivacyDesc}
   </div>
 </div>
-<!-- TODO(crbug.com/1262869): Currently inert. Once the screen dim
-                              feature has an associated preference,
-                              reference it from here. -->
 <settings-toggle-button class="underbar"
-    label="$i18n{smartPrivacyScreenLockTitle}"
-    sub-label="$i18n{smartPrivacyScreenLockSubtext}">
+    pref="{{prefs.power.quick_dim_enabled}}"
+    id="quickDimToggle"
+    label="$i18n{smartPrivacyQuickDimTitle}"
+    sub-label="$i18n{smartPrivacyQuickDimSubtext}"
+    deep-link-focus-id$="[[Setting.kQuickDim]]">
 </settings-toggle-button>
 <settings-toggle-button
     pref="{{prefs.ash.privacy.snooping_protection_enabled}}"
