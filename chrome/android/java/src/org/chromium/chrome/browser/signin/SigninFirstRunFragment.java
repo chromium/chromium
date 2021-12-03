@@ -61,11 +61,13 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         super.onAttach(context);
         getPageDelegate().getPolicyLoadListener().onAvailable(
                 hasPolicies -> notifyCoordinatorWhenNativeAndPolicyAreLoaded());
-        mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
-                getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
-        mSkipTosDialogPolicyListener.onAvailable((Boolean skipTos) -> {
-            if (skipTos) exitFirstRun();
-        });
+        if (getPageDelegate().isLaunchedFromCct()) {
+            mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
+                    getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
+            mSkipTosDialogPolicyListener.onAvailable((Boolean skipTos) -> {
+                if (skipTos) exitFirstRun();
+            });
+        }
         mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
     }
 
@@ -185,9 +187,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         // Make sure this function is called at most once.
         if (!mExitFirstRunCalled) {
             mExitFirstRunCalled = true;
-            getPageDelegate().acceptTermsOfService(false);
-            new Handler().postDelayed(
-                    () -> getPageDelegate().exitFirstRun(), FirstRunUtils.getSkipTosExitDelayMs());
+            new Handler().postDelayed(() -> {
+                getPageDelegate().acceptTermsOfService(false);
+                getPageDelegate().exitFirstRun();
+            }, FirstRunUtils.getSkipTosExitDelayMs());
         }
     }
 
@@ -212,10 +215,5 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
         return view;
-    }
-
-    @VisibleForTesting
-    public boolean isExitFirstRunCalled() {
-        return mExitFirstRunCalled;
     }
 }

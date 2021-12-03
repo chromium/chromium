@@ -556,6 +556,41 @@ public class FirstRunIntegrationTest {
         waitForActivity(ChromeTabbedActivity.class);
     }
 
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_SearchPromo_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase()
+                                     .withCctTosDisabled()
+                                     .withSearchPromo()
+                                     .withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSigninPromo());
+    }
+
     private void runFirstRunPagesTest(FirstRunPagesTestCase testCase) throws Exception {
         initializePreferences(testCase);
 
@@ -1413,7 +1448,13 @@ public class FirstRunIntegrationTest {
             int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
             int acceptCallCount = mScopedObserverData.acceptTermsOfServiceCallback.getCallCount();
 
-            clickButton(mFirstRunActivity, R.id.terms_accept, "Failed to accept ToS");
+            if (Matchers.instanceOf(SigninFirstRunFragment.class)
+                            .matches(mFirstRunActivity.getCurrentFragmentForTesting())) {
+                clickButton(
+                        mFirstRunActivity, R.id.signin_fre_continue_button, "Failed to accept ToS");
+            } else {
+                clickButton(mFirstRunActivity, R.id.terms_accept, "Failed to accept ToS");
+            }
             mScopedObserverData.jumpToPageCallback.waitForCallback(
                     "Failed to try moving to the next screen", jumpCallCount);
             mScopedObserverData.acceptTermsOfServiceCallback.waitForCallback(

@@ -138,10 +138,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     private void createPageSequence() {
         FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
+        BooleanSupplier showWelcomePage = () -> !FirstRunStatus.shouldSkipWelcomePage();
         if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-            mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, () -> true));
+            mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
         } else {
-            BooleanSupplier showWelcomePage = () -> !FirstRunStatus.shouldSkipWelcomePage();
             // TODO(crbug.com/1111490): Revisit during post-MVP.
             // There's an edge case where we accept the welcome page in the main app, abort the FRE,
             // then go through this CCT FRE again.
@@ -556,6 +556,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public boolean didAcceptTermsOfService() {
         return FirstRunUtils.didAcceptTermsOfService();
+    }
+
+    @Override
+    public boolean isLaunchedFromCct() {
+        return mLaunchedFromCCT;
     }
 
     @Override
