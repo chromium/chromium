@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(b/208311777): Add assert(is_chromeos_ash).
-
+import("//build/config/chromeos/ui_mode.gni")
 import("//media/gpu/args.gni")
+
+assert(is_chromeos_ash)
 
 static_library("video_accelerator") {
   sources = [
