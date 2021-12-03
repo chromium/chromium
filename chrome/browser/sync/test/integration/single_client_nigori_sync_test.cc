@@ -24,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -1388,6 +1389,79 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                                                              /*degraded=*/false)
                   .Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+}
+
+// This test verifies that client handles security domain reset and able to
+// register again after that and follow key rotation.
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
+                       ShouldFollowKeyRotationAfterSecurityDomainReset) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+
+  // Rotate trusted vault key and mimic transition to trusted vault passphrase
+  // type.
+  std::vector<uint8_t> trusted_vault_key1 =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key1}),
+                        GetFakeServer());
+
+  // Ensure that client has finished following key rotation by verifying
+  // passwords are decryptable.
+  const KeyParamsForTesting trusted_vault_key_params1 =
+      TrustedVaultKeyParamsForTesting(trusted_vault_key1);
+  const password_manager::PasswordForm password_form1 =
+      passwords_helper::CreateTestPasswordForm(1);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form1, trusted_vault_key_params1.password,
+      trusted_vault_key_params1.derivation_params, GetFakeServer());
+  ASSERT_TRUE(PasswordFormsChecker(0, {password_form1}).Wait());
+
+  // Reset security domain state and mimic sync data reset.
+  GetSecurityDomainsServer()->ResetData();
+  GetFakeServer()->ClearServerData();
+
+  // Make change to trigger sync cycle.
+  bookmarks_helper::AddURL(/*profile=*/0, /*title=*/"title",
+                           GURL("http://www.google.com"));
+
+  // Wait until sync gets disabled to ensure client is aware of reset.
+  ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
+
+  // Make sure that client is able to follow key rotation with fresh security
+  // domain state.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+
+  std::vector<uint8_t> trusted_vault_key2 =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key2}),
+                        GetFakeServer());
+
+  const KeyParamsForTesting trusted_vault_key_params2 =
+      TrustedVaultKeyParamsForTesting(trusted_vault_key2);
+  const password_manager::PasswordForm password_form2 =
+      passwords_helper::CreateTestPasswordForm(2);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form2, trusted_vault_key_params2.password,
+      trusted_vault_key_params2.derivation_params, GetFakeServer());
+  // |password_form1| has never been deleted locally, so client should have both
+  // forms now.
+  EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 }
 
 // ChromeOS doesn't have unconsented primary accounts.

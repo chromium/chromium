@@ -436,6 +436,25 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
               base::Unretained(this), std::move(cb)));
 }
 
+void StandaloneTrustedVaultBackend::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(account_info.gaia);
+  if (!per_user_vault) {
+    return;
+  }
+
+  *per_user_vault = sync_pb::LocalTrustedVaultPerUser();
+  per_user_vault->set_gaia_id(account_info.gaia);
+  WriteToDisk(data_, file_path_);
+
+  // This codepath invoked as part of sync reset. While sync reset can cause
+  // resetting primary account, this is not the case for Chrome OS and Butter
+  // mode. Trigger device registration attempt immediately as it can succeed in
+  // these cases.
+  MaybeRegisterDevice(/*has_persistent_auth_error_for_uma=*/false);
+}
+
 absl::optional<CoreAccountInfo>
 StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;

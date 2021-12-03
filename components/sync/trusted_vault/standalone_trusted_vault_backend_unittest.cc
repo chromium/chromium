@@ -575,6 +575,64 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldClearDataAndAttemptDeviceRegistration) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<std::vector<uint8_t>> kInitialVaultKeys = {{1, 2, 3}};
+  const int kInitialLastKeyVersion = 1;
+
+  // Mimic device previously registered with some keys.
+  StoreKeysAndMimicDeviceRegistration(kInitialVaultKeys, kInitialLastKeyVersion,
+                                      account_info);
+
+  // Set primary account to trigger immediate device registration attempt upon
+  // reset.
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // Expect device registration attempt without keys.
+  TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+      device_registration_callback;
+  std::vector<uint8_t> serialized_public_device_key;
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys(Eq(account_info), _, _))
+      .WillOnce([&](const CoreAccountInfo& account_info,
+                    const SecureBoxPublicKey& device_public_key,
+                    TrustedVaultConnection::RegisterDeviceWithoutKeysCallback
+                        callback) {
+        serialized_public_device_key = device_public_key.ExportToBytes();
+        device_registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // Clear data for |account_info|, keys should be removed and device
+  // registration attempt should be triggered.
+  backend()->ClearDataForAccount(account_info);
+
+  // Callback should be called immediately.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+
+  // Mimic successful device registration and verify the state.
+  std::move(device_registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess,
+           TrustedVaultKeyAndVersion(GetConstantTrustedVaultKey(),
+                                     kInitialLastKeyVersion + 1));
+
+  // Now the device should be registered.
+  sync_pb::LocalDeviceRegistrationInfo registration_info =
+      backend()->GetDeviceRegistrationInfoForTesting(account_info.gaia);
+  EXPECT_TRUE(registration_info.device_registered());
+  EXPECT_TRUE(registration_info.has_private_key_material());
+
+  std::unique_ptr<SecureBoxKeyPair> key_pair =
+      SecureBoxKeyPair::CreateByPrivateKeyImport(base::as_bytes(
+          base::make_span(registration_info.private_key_material())));
+  EXPECT_THAT(key_pair->public_key().ExportToBytes(),
+              Eq(serialized_public_device_key));
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
        ShouldRecordAuthErrorAndAttemptDeviceRegistration) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};

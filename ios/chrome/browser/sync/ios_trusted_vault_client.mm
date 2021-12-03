@@ -94,3 +94,9 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
   // Not used on iOS.
   NOTREACHED();
 }
+
+void IOSTrustedVaultClient::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  // TODO(crbug.com/1273080): decide whether this logic needs to be implemented
+  // on iOS.
+}

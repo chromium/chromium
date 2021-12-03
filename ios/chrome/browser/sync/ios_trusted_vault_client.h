@@ -36,6 +36,7 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure callback) override;
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Not copyable or movable
   IOSTrustedVaultClient(const IOSTrustedVaultClient&) = delete;

@@ -150,6 +150,12 @@ std::string GetPublicKeyFromGetSecurityDomainMemberRequestURL(
 }  // namespace
 
 FakeSecurityDomainsServer::State::State() = default;
+
+FakeSecurityDomainsServer::State::State(State&& other) = default;
+
+FakeSecurityDomainsServer::State& FakeSecurityDomainsServer::State::operator=(
+    State&& other) = default;
+
 FakeSecurityDomainsServer::State::~State() = default;
 
 // static
@@ -242,6 +248,12 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
   }
 
   return new_trusted_vault_key;
+}
+
+void FakeSecurityDomainsServer::ResetData() {
+  base::AutoLock autolock(lock_);
+  state_ = State();
+  state_.trusted_vault_keys.push_back(GetConstantTrustedVaultKey());
 }
 
 void FakeSecurityDomainsServer::RequirePublicKeyToAvoidRecoverabilityDegraded(

@@ -319,6 +319,16 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
                      BindToCurrentSequence(std::move(cb))));
 }
 
+void StandaloneTrustedVaultClient::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::ClearDataForAccount,
+                     backend_, account_info));
+}
+
 void StandaloneTrustedVaultClient::WaitForFlushForTesting(
     base::OnceClosure cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -68,6 +68,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
                                 base::OnceClosure cb) override;
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Runs |cb| when all requests have completed.
   void WaitForFlushForTesting(base::OnceClosure cb) const;

@@ -127,6 +127,8 @@ static_library("test_support") {
     "fake_sync_service.h",
     "mock_sync_service.cc",
     "mock_sync_service.h",
+    "mock_trusted_vault_client.cc",
+    "mock_trusted_vault_client.h",
     "sync_client_mock.cc",
     "sync_client_mock.h",
     "sync_service_impl_bundle.cc",

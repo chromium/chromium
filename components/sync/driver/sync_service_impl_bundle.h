@@ -12,6 +12,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/driver/fake_sync_api_component_factory.h"
+#include "components/sync/driver/mock_trusted_vault_client.h"
 #include "components/sync/driver/sync_client_mock.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/invalidations/mock_sync_invalidations_service.h"
@@ -66,12 +67,17 @@ class SyncServiceImplBundle {
     }
   }
 
+  MockTrustedVaultClient* trusted_vault_client() {
+    return &trusted_vault_client_;
+  }
+
  private:
   TestingPrefServiceSimple pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
   FakeSyncApiComponentFactory component_factory_;
   testing::NiceMock<MockSyncInvalidationsService> sync_invalidations_service_;
+  testing::NiceMock<MockTrustedVaultClient> trusted_vault_client_;
 };
 
 }  // namespace syncer

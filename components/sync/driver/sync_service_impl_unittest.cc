@@ -36,6 +36,7 @@
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/driver/fake_data_type_controller.h"
 #include "components/sync/driver/fake_sync_api_component_factory.h"
+#include "components/sync/driver/mock_trusted_vault_client.h"
 #include "components/sync/driver/sync_client_mock.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_impl_bundle.h"
@@ -52,6 +53,7 @@
 using testing::_;
 using testing::AnyNumber;
 using testing::ByMove;
+using testing::Eq;
 using testing::Not;
 using testing::Return;
 
@@ -234,6 +236,10 @@ class SyncServiceImplTest : public ::testing::Test {
 
   MockSyncInvalidationsService* sync_invalidations_service() {
     return sync_service_impl_bundle_.sync_invalidations_service();
+  }
+
+  MockTrustedVaultClient* trusted_vault_client() {
+    return sync_service_impl_bundle_.trusted_vault_client();
   }
 
   FakeDataTypeController* get_controller(ModelType type) {
@@ -1007,6 +1013,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   ASSERT_EQ(0, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+
+  EXPECT_CALL(*trusted_vault_client(),
+              ClearDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSync))));
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;

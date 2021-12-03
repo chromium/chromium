@@ -848,6 +848,11 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
         UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", BIRTHDAY_ERROR,
                                   STOP_SOURCE_LIMIT);
       }
+
+      // Security domain state might be reset, reset local state as well.
+      sync_client_->GetTrustedVaultClient()->ClearDataForAccount(
+          GetAccountInfo());
+
       // Note: StopAndClear sets IsSyncRequested to false, which ensures that
       // Sync-the-feature remains off.
       StopAndClear();

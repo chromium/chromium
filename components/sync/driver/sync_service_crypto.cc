@@ -72,6 +72,11 @@ class EmptyTrustedVaultClient : public TrustedVaultClient {
     // Never invoked by SyncServiceCrypto.
     NOTREACHED();
   }
+
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override {
+    // Never invoked by SyncServiceCrypto.
+    NOTREACHED();
+  }
 };
 
 // A SyncEncryptionHandler::Observer implementation that simply posts all calls

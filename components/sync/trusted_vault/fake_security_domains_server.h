@@ -56,6 +56,9 @@ class FakeSecurityDomainsServer {
   std::vector<uint8_t> RotateTrustedVaultKey(
       const std::vector<uint8_t>& last_trusted_vault_key);
 
+  // Resets |state_| to the initial one.
+  void ResetData();
+
   // Causes the security domain to enter the degraded recoverability state
   // unless the provided |public_key| matches a member's public key.
   void RequirePublicKeyToAvoidRecoverabilityDegraded(
@@ -87,7 +90,9 @@ class FakeSecurityDomainsServer {
    public:
     State();
     State(const State& other) = delete;
+    State(State&& other);
     State& operator=(const State& other) = delete;
+    State& operator=(State&& other);
     ~State();
 
     bool received_invalid_request = false;

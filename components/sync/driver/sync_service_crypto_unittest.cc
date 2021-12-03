@@ -255,6 +255,10 @@ class TestTrustedVaultClient : public TrustedVaultClient {
     std::move(cb).Run();
   }
 
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override {
+    // Not relevant in these tests.
+  }
+
  private:
   struct CachedKeysPerUser {
     bool marked_as_stale = false;
