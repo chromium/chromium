@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -61,12 +60,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         NetworkInfo networkInfo =
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         return networkInfo != null;
-    }
-
-    @Override
-    public boolean shouldPrerender() {
-        if (!DeviceClassManager.enablePrerendering()) return false;
-        return canPrefetchAndPrerender();
     }
 
     @Override
@@ -119,15 +112,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
                 && (isUsageAndCrashReportingPermittedByUser() || isUploadEnabledForTests());
     }
 
-    /**
-     * Checks whether network predictions are allowed given preferences and current network
-     * connection type.
-     * @return Whether network predictions are allowed.
-     */
-    private boolean canPrefetchAndPrerender() {
-        return PrivacyPreferencesManagerImplJni.get().canPrefetchAndPrerender();
-    }
-
     @Override
     public boolean isMetricsReportingEnabled() {
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingEnabled();
@@ -143,27 +127,8 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingManaged();
     }
 
-    @Override
-    public boolean getNetworkPredictionEnabled() {
-        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionEnabled();
-    }
-
-    @Override
-    public void setNetworkPredictionEnabled(boolean enabled) {
-        PrivacyPreferencesManagerImplJni.get().setNetworkPredictionEnabled(enabled);
-    }
-
-    @Override
-    public boolean isNetworkPredictionManaged() {
-        return PrivacyPreferencesManagerImplJni.get().getNetworkPredictionManaged();
-    }
-
     @NativeMethods
     public interface Natives {
-        boolean canPrefetchAndPrerender();
-        boolean getNetworkPredictionManaged();
-        boolean getNetworkPredictionEnabled();
-        void setNetworkPredictionEnabled(boolean enabled);
         boolean isMetricsReportingEnabled();
         void setMetricsReportingEnabled(boolean enabled);
         boolean isMetricsReportingManaged();

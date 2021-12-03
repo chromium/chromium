@@ -8,6 +8,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -56,46 +57,15 @@ ChromeNoStatePrefetchManagerDelegate::GetNoStatePrefetchContentsDelegate() {
 
 bool ChromeNoStatePrefetchManagerDelegate::
     IsNetworkPredictionPreferenceEnabled() {
-  return GetPredictionStatus() ==
-         chrome_browser_net::NetworkPredictionStatus::ENABLED;
-}
-
-bool ChromeNoStatePrefetchManagerDelegate::IsPredictionDisabledDueToNetwork(
-    Origin origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Prerendering forced for cellular networks still prevents navigation with
-  // the DISABLED_ALWAYS selected via privacy settings.
-  chrome_browser_net::NetworkPredictionStatus prediction_status =
-      chrome_browser_net::CanPrefetchAndPrerenderUI(profile_->GetPrefs());
-  if (origin == ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER &&
-      prediction_status == chrome_browser_net::NetworkPredictionStatus::
-                               DISABLED_DUE_TO_NETWORK) {
-    return false;
-  }
-
-  return prediction_status ==
-         chrome_browser_net::NetworkPredictionStatus::DISABLED_DUE_TO_NETWORK;
+  return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs());
 }
 
 std::string
 ChromeNoStatePrefetchManagerDelegate::GetReasonForDisablingPrediction() {
-  auto prediction_status = GetPredictionStatus();
-  if (prediction_status ==
-      chrome_browser_net::NetworkPredictionStatus::DISABLED_ALWAYS) {
+  if (!IsNetworkPredictionPreferenceEnabled()) {
     return "Disabled by user setting";
   }
-  if (prediction_status ==
-      chrome_browser_net::NetworkPredictionStatus::DISABLED_DUE_TO_NETWORK) {
-    return "Disabled on cellular connection by default";
-  }
   return "";
-}
-
-chrome_browser_net::NetworkPredictionStatus
-ChromeNoStatePrefetchManagerDelegate::GetPredictionStatus() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return chrome_browser_net::CanPrefetchAndPrerenderUI(profile_->GetPrefs());
 }
 
 }  // namespace prerender

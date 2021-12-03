@@ -4,11 +4,10 @@
 
 #include <jni.h>
 
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/android/jni_headers/PreloadPagesSettingsBridge_jni.h"
+#include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -31,7 +30,7 @@ static jint JNI_PreloadPagesSettingsBridge_GetState(JNIEnv* env) {
 static jboolean JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
     JNIEnv* env) {
   return GetPrefService()->IsManagedPreference(
-      prefs::kNetworkPredictionOptions);
+      prefetch::prefs::kNetworkPredictionOptions);
 }
 
 static void JNI_PreloadPagesSettingsBridge_SetState(JNIEnv* env, jint state) {

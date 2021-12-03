@@ -73,6 +73,9 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJni;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -220,6 +223,8 @@ public class LocationBarMediatorTest {
     private IdentityManager mIdentityManager;
     @Mock
     private Profile mProfile;
+    @Mock
+    private PreloadPagesSettingsBridge.Natives mPreloadPagesSettingsJni;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -245,6 +250,7 @@ public class LocationBarMediatorTest {
         doReturn(new WeakReference<Activity>(null)).when(mWindowAndroid).getActivity();
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
+        mJniMocker.mock(PreloadPagesSettingsBridgeJni.TEST_HOOKS, mPreloadPagesSettingsJni);
         SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
         Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
@@ -336,14 +342,14 @@ public class LocationBarMediatorTest {
         verify(mPrerenderJni)
                 .initializeForProfile(123L, omniboxPrerenderCaptor.getValue(), profile);
 
-        doReturn(false).when(mPrivacyPreferencesManager).shouldPrerender();
+        doReturn(PreloadPagesState.NO_PRELOADING).when(mPreloadPagesSettingsJni).getState();
         mMediator.onSuggestionsChanged("text", true);
         verify(mPrerenderJni, never())
                 .prerenderMaybe(
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
 
+        doReturn(PreloadPagesState.STANDARD_PRELOADING).when(mPreloadPagesSettingsJni).getState();
         mMediator.setUrl("originalUrl", null);
-        doReturn(true).when(mPrivacyPreferencesManager).shouldPrerender();
         doReturn(true).when(mLocationBarDataProvider).hasTab();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(456L).when(mAutocompleteCoordinator).getCurrentNativeAutocompleteResult();

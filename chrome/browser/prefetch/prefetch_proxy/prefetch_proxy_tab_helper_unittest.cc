@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
@@ -935,9 +935,8 @@ TEST_F(PrefetchProxyTabHelperTest, NonHTML) {
 TEST_F(PrefetchProxyTabHelperTest, UserSettingDisabled) {
   base::HistogramTester histogram_tester;
 
-  profile()->GetPrefs()->SetInteger(
-      prefs::kNetworkPredictionOptions,
-      chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  prefetch::SetPreloadPagesState(profile()->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
 
   NavigateSomewhere();
   GURL doc_url("https://www.google.com/search?q=cats");

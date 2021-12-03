@@ -114,10 +114,8 @@ public class PreloadPagesSettingsFragmentTest {
             Assert.assertFalse(
                     ASSERT_RADIO_BUTTON_CHECKED, getStandardPreloadingButton().isChecked());
             Assert.assertFalse(ASSERT_RADIO_BUTTON_CHECKED, getNoPreloadingButton().isChecked());
-            // TODO(crbug.com/1263586): Enable this once prefs are implemented.
-            // Assert.assertEquals(ASSERT_PRELOAD_PAGES_STATE_NATIVE,
-            //         PreloadPagesState.EXTENDED_PRELOADING,
-            //         PreloadPagesSettingsBridge.getState());
+            Assert.assertEquals(ASSERT_PRELOAD_PAGES_STATE_NATIVE,
+                    PreloadPagesState.EXTENDED_PRELOADING, PreloadPagesSettingsBridge.getState());
 
             // Click the Standard Preloading button.
             getStandardPreloadingButton().onClick(null);
@@ -128,10 +126,8 @@ public class PreloadPagesSettingsFragmentTest {
             Assert.assertTrue(
                     ASSERT_RADIO_BUTTON_CHECKED, getStandardPreloadingButton().isChecked());
             Assert.assertFalse(ASSERT_RADIO_BUTTON_CHECKED, getNoPreloadingButton().isChecked());
-            // TODO(crbug.com/1263586): Enable this once prefs are implemented.
-            // Assert.assertEquals(ASSERT_PRELOAD_PAGES_STATE_NATIVE,
-            //         PreloadPagesState.STANDARD_PRELOADING,
-            //         PreloadPagesSettingsBridge.getState());
+            Assert.assertEquals(ASSERT_PRELOAD_PAGES_STATE_NATIVE,
+                    PreloadPagesState.STANDARD_PRELOADING, PreloadPagesSettingsBridge.getState());
 
             // Click the No Preloading button.
             getNoPreloadingButton().onClick(null);
@@ -142,10 +138,8 @@ public class PreloadPagesSettingsFragmentTest {
             Assert.assertFalse(
                     ASSERT_RADIO_BUTTON_CHECKED, getStandardPreloadingButton().isChecked());
             Assert.assertTrue(ASSERT_RADIO_BUTTON_CHECKED, getNoPreloadingButton().isChecked());
-            // TODO(crbug.com/1263586): Enable this once prefs are implemented.
-            // Assert.assertEquals(ASSERT_PRELOAD_PAGES_STATE_NATIVE,
-            // PreloadPagesState.NO_PRELOADING,
-            //         PreloadPagesSettingsBridge.getState());
+            Assert.assertEquals(ASSERT_PRELOAD_PAGES_STATE_NATIVE, PreloadPagesState.NO_PRELOADING,
+                    PreloadPagesSettingsBridge.getState());
         });
     }
 
@@ -180,8 +174,12 @@ public class PreloadPagesSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"PreloadPages"})
-    @Policies.Add({ @Policies.Item(key = "NetworkPredictionOptions", string = "0") })
-    public void testPreloadingManaged() {
+    @Policies.Add({
+        @Policies.Item(key = "NetworkPredictionOptions",
+                string = "2" /* NetworkPredictionOptions::kDisabled */)
+    })
+    public void
+    testPreloadingManaged() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
         launchSettingsActivity();
@@ -191,8 +189,7 @@ public class PreloadPagesSettingsFragmentTest {
             Assert.assertFalse(getExtendedPreloadingButton().isEnabled());
             Assert.assertFalse(getStandardPreloadingButton().isEnabled());
             Assert.assertFalse(getNoPreloadingButton().isEnabled());
-            // TODO(crbug.com/1263586): This should be NO_PRELOADING once prefs are implemented.
-            Assert.assertEquals(PreloadPagesState.STANDARD_PRELOADING, getPreloadPagesState());
+            Assert.assertEquals(PreloadPagesState.NO_PRELOADING, getPreloadPagesState());
             // To disclose information, aux buttons should be enabled under managed mode.
             Assert.assertTrue(getExtendedPreloadingButton().getAuxButtonForTests().isEnabled());
             Assert.assertTrue(getStandardPreloadingButton().getAuxButtonForTests().isEnabled());

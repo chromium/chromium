@@ -63,7 +63,8 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -1451,10 +1452,7 @@ public class CustomTabsConnection {
                 == CookieControlsMode.BLOCK_THIRD_PARTY) {
             return SPECULATION_STATUS_ON_START_NOT_ALLOWED_BLOCK_3RD_PARTY_COOKIES;
         }
-        // TODO(yusufo): The check for prerender in PrivacyPreferencesManagerImpl now checks for the
-        // network connection type as well, we should either change that or add another check for
-        // custom tabs. Then that method should be used to make the below check.
-        if (!PrivacyPreferencesManagerImpl.getInstance().getNetworkPredictionEnabled()) {
+        if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
             return SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED;
         }
         if (DataReductionProxySettings.getInstance().isDataReductionProxyEnabled()

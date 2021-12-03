@@ -33,7 +33,8 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -241,7 +242,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(enabled);
+                if (enabled) {
+                    PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
+                } else {
+                    PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+                }
             }
         });
     }

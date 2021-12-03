@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREFETCH_NO_STATE_PREFETCH_CHROME_NO_STATE_PREFETCH_MANAGER_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 
@@ -30,11 +29,9 @@ class ChromeNoStatePrefetchManagerDelegate
   std::unique_ptr<NoStatePrefetchContentsDelegate>
   GetNoStatePrefetchContentsDelegate() override;
   bool IsNetworkPredictionPreferenceEnabled() override;
-  bool IsPredictionDisabledDueToNetwork(Origin origin) override;
   std::string GetReasonForDisablingPrediction() override;
 
  private:
-  chrome_browser_net::NetworkPredictionStatus GetPredictionStatus() const;
   raw_ptr<Profile> profile_;
 };
 

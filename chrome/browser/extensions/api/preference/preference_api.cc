@@ -24,7 +24,8 @@
 #include "chrome/browser/extensions/api/proxy/proxy_api.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_api.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -96,7 +97,7 @@ const PrefMappingEntry kPrefMapping[] = {
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"hyperlinkAuditingEnabled", prefs::kEnableHyperlinkAuditing,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
-    {"networkPredictionEnabled", prefs::kNetworkPredictionOptions,
+    {"networkPredictionEnabled", prefetch::prefs::kNetworkPredictionOptions,
      APIPermissionID::kPrivacy, APIPermissionID::kPrivacy},
     {"passwordSavingEnabled",
      password_manager::prefs::kCredentialsEnableService,
@@ -240,21 +241,23 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
       DCHECK(false) << "Preference not found.";
     } else if (extension_pref->GetBool()) {
       return std::make_unique<base::Value>(
-          chrome_browser_net::NETWORK_PREDICTION_DEFAULT);
+          static_cast<int>(prefetch::NetworkPredictionOptions::kDefault));
     }
     return std::make_unique<base::Value>(
-        chrome_browser_net::NETWORK_PREDICTION_NEVER);
+        static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled));
   }
 
   std::unique_ptr<base::Value> BrowserToExtensionPref(
       const base::Value* browser_pref,
       bool is_incognito_profile) override {
-    int int_value = chrome_browser_net::NETWORK_PREDICTION_DEFAULT;
+    prefetch::NetworkPredictionOptions value =
+        prefetch::NetworkPredictionOptions::kDefault;
     if (browser_pref->is_int()) {
-      int_value = browser_pref->GetInt();
+      value = static_cast<prefetch::NetworkPredictionOptions>(
+          browser_pref->GetInt());
     }
     return std::make_unique<base::Value>(
-        int_value != chrome_browser_net::NETWORK_PREDICTION_NEVER);
+        value != prefetch::NetworkPredictionOptions::kDisabled);
   }
 };
 
@@ -342,7 +345,7 @@ class PrefMapping {
                             std::make_unique<ProxyPrefTransformer>());
     RegisterPrefTransformer(prefs::kCookieControlsMode,
                             std::make_unique<CookieControlsModeTransformer>());
-    RegisterPrefTransformer(prefs::kNetworkPredictionOptions,
+    RegisterPrefTransformer(prefetch::prefs::kNetworkPredictionOptions,
                             std::make_unique<NetworkPredictionTransformer>());
     RegisterPrefTransformer(
         prefs::kProtectedContentDefault,

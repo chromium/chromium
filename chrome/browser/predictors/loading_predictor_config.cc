@@ -5,8 +5,8 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/predictors_features.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace predictors {
@@ -36,7 +36,7 @@ bool IsPreconnectAllowed(Profile* profile) {
 
   // Checks that the preconnect is allowed by user settings.
   return profile && profile->GetPrefs() &&
-         chrome_browser_net::CanPreresolveAndPreconnectUI(profile->GetPrefs());
+         prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
 std::string GetStringNameForHintOrigin(HintOrigin hint_origin) {

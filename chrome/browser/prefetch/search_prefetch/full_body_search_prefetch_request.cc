@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/prefetched_response_container.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_from_string_url_loader.h"

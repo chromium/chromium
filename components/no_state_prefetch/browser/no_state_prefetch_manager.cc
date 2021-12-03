@@ -497,11 +497,6 @@ bool NoStatePrefetchManager::IsPredictionEnabled(Origin origin) {
     return true;
   }
 
-  // TODO(crbug.com/1121970): Remove this check once we're no longer running the
-  // experiment "PredictivePrefetchingAllowedOnAllConnectionTypes".
-  if (delegate_->IsPredictionDisabledDueToNetwork(origin))
-    return false;
-
   return delegate_->IsNetworkPredictionPreferenceEnabled();
 }
 
@@ -557,10 +552,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   }
 
   if (!IsPredictionEnabled(origin)) {
-    FinalStatus final_status =
-        delegate_->IsPredictionDisabledDueToNetwork(origin)
-            ? FINAL_STATUS_CELLULAR_NETWORK
-            : FINAL_STATUS_PRERENDERING_DISABLED;
+    FinalStatus final_status = FINAL_STATUS_PRERENDERING_DISABLED;
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin, final_status);
     return nullptr;
   }

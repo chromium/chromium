@@ -5,7 +5,8 @@
 #include "chrome/browser/policy/network_prediction_policy_handler.h"
 
 #include "base/values.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -14,12 +15,6 @@
 #include "components/strings/grit/components_strings.h"
 
 namespace policy {
-
-NetworkPredictionPolicyHandler::NetworkPredictionPolicyHandler() {
-}
-
-NetworkPredictionPolicyHandler::~NetworkPredictionPolicyHandler() {
-}
 
 bool NetworkPredictionPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -56,7 +51,7 @@ void NetworkPredictionPolicyHandler::ApplyPolicySettings(
   const base::Value* network_prediction_options =
       policies.GetValue(key::kNetworkPredictionOptions);
   if (network_prediction_options && network_prediction_options->is_int()) {
-    prefs->SetInteger(prefs::kNetworkPredictionOptions,
+    prefs->SetInteger(prefetch::prefs::kNetworkPredictionOptions,
                       network_prediction_options->GetInt());
     return;
   }
@@ -65,15 +60,12 @@ void NetworkPredictionPolicyHandler::ApplyPolicySettings(
   const base::Value* network_prediction_enabled =
       policies.GetValue(key::kDnsPrefetchingEnabled);
   if (network_prediction_enabled && network_prediction_enabled->is_bool()) {
-    // Some predictive network actions, most notably prefetch, used to be
-    // hardwired never to run on cellular network.  In order to retain this
-    // behavior (unless explicitly overriden by kNetworkPredictionOptions),
-    // kNetworkPredictionEnabled = true is translated to
-    // kNetworkPredictionOptions = WIFI_ONLY.
-    prefs->SetInteger(prefs::kNetworkPredictionOptions,
-                      network_prediction_enabled->GetBool()
-                          ? chrome_browser_net::NETWORK_PREDICTION_WIFI_ONLY
-                          : chrome_browser_net::NETWORK_PREDICTION_NEVER);
+    prefetch::NetworkPredictionOptions setting =
+        network_prediction_enabled->GetBool()
+            ? prefetch::NetworkPredictionOptions::kWifiOnlyDeprecated
+            : prefetch::NetworkPredictionOptions::kDisabled;
+    prefs->SetInteger(prefetch::prefs::kNetworkPredictionOptions,
+                      static_cast<int>(setting));
   }
 }
 

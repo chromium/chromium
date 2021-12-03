@@ -16,11 +16,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/history/core/browser/in_memory_database.h"
@@ -194,15 +194,12 @@ void AutocompleteActionPredictor::StartPrerendering(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (blink::features::IsPrerender2Enabled() &&
       base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2)) {
-    // Check whether NetworkPredictionStatus is enabled. If users disable this
+    // Check whether preloading is enabled. If users disable this
     // setting, it means users do not want to preload pages.
     // TODO(https://crbug.com/1269204): Move this check into
     // WebContentsDelegate::IsPrerender2Supported after exposing TriggerType to
     // embedders.
-    chrome_browser_net::NetworkPredictionStatus prediction_status =
-        chrome_browser_net::CanPrefetchAndPrerenderUI(profile_->GetPrefs());
-    if (prediction_status !=
-        chrome_browser_net::NetworkPredictionStatus::ENABLED) {
+    if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
       return;
     }
 

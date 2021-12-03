@@ -39,7 +39,7 @@ public class PreloadPagesSettingsBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         @PreloadPagesState
         int getState();
         void setState(@PreloadPagesState int mode);

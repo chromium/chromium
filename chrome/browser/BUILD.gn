@@ -865,8 +865,6 @@ static_library("browser") {
     "net/net_error_tab_helper.h",
     "net/net_export_helper.cc",
     "net/net_export_helper.h",
-    "net/prediction_options.cc",
-    "net/prediction_options.h",
     "net/probe_message.cc",
     "net/probe_message.h",
     "net/profile_network_context_service.cc",

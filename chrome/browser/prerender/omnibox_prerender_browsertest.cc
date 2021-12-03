@@ -8,9 +8,9 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -88,18 +88,13 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-bool IsNetworkPredictionEnabled(PrefService* prefs) {
-  return chrome_browser_net::CanPrefetchAndPrerenderUI(prefs) ==
-         chrome_browser_net::NetworkPredictionStatus::ENABLED;
-}
-
 // Tests that Prerender2 cannot be triggered when preload setting is disabled.
 IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   // Disable network prediction.
   PrefService* prefs = GetProfile()->GetPrefs();
-  prefs->SetInteger(prefs::kNetworkPredictionOptions,
-                    chrome_browser_net::NETWORK_PREDICTION_NEVER);
-  ASSERT_FALSE(IsNetworkPredictionEnabled(prefs));
+  prefetch::SetPreloadPagesState(prefs,
+                                 prefetch::PreloadPagesState::kNoPreloading);
+  ASSERT_FALSE(prefetch::IsSomePreloadingEnabled(*prefs));
 
   // Attempt to prerender a direct URL input.
   auto* predictor = GetAutocompleteActionPredictor();
@@ -114,9 +109,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderBrowserTest, DisableNetworkPrediction) {
   EXPECT_EQ(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 
   // Re-enable the setting.
-  prefs->SetInteger(prefs::kNetworkPredictionOptions,
-                    chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
-  ASSERT_TRUE(IsNetworkPredictionEnabled(prefs));
+  prefetch::SetPreloadPagesState(
+      prefs, prefetch::PreloadPagesState::kStandardPreloading);
+  ASSERT_TRUE(prefetch::IsSomePreloadingEnabled(*prefs));
 
   content::test::PrerenderHostRegistryObserver registry_observer(*web_contents);
   // Attempt to trigger prerendering again.

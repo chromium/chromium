@@ -11,8 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/search_prefetch/back_forward_search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/full_body_search_prefetch_request.h"
@@ -109,7 +109,7 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
 
   SearchPrefetchEligibilityReasonRecorder recorder;
 
-  if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
+  if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
     return false;
   }

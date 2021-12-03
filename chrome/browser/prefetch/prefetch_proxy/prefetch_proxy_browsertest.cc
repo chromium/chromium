@@ -30,11 +30,11 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
@@ -2361,7 +2361,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTestPrefetchProxyBrowserTest,
   policies.Set(
       policy::key::kNetworkPredictionOptions, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-      base::Value(chrome_browser_net::NETWORK_PREDICTION_NEVER), nullptr);
+      base::Value(
+          static_cast<int>(prefetch::NetworkPredictionOptions::kDisabled)),
+      nullptr);
   UpdateProviderPolicy(policies);
 
   PrefetchProxyTabHelper* tab_helper =

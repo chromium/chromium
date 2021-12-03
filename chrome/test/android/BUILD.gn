@@ -319,6 +319,7 @@ android_library("chrome_java_test_support") {
     "//chrome/browser/flags:java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/prefetch/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/signin/services/android:java",

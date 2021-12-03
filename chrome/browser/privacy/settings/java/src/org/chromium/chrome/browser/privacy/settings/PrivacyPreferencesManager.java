@@ -11,12 +11,6 @@ import org.chromium.components.minidump_uploader.util.CrashReportingPermissionMa
  */
 public interface PrivacyPreferencesManager extends CrashReportingPermissionManager {
     /**
-     * Checks whether prerender should be allowed and updates the preference if it is not set yet.
-     * @return Whether prerendering should be allowed.
-     */
-    boolean shouldPrerender();
-
-    /**
      * Sets the usage and crash reporting preference ON or OFF.
      *
      * @param enabled A boolean corresponding whether usage and crash reports uploads are allowed.
@@ -93,19 +87,4 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      * @return Whether usage and crash report pref is managed.
      */
     boolean isMetricsReportingManaged();
-
-    /**
-     * @return Network predictions preference.
-     */
-    boolean getNetworkPredictionEnabled();
-
-    /**
-     * Sets network predictions preference.
-     */
-    void setNetworkPredictionEnabled(boolean enabled);
-
-    /**
-     * @return Whether Network Predictions is configured by policy.
-     */
-    boolean isNetworkPredictionManaged();
 }

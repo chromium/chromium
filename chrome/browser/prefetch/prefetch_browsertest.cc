@@ -6,7 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -25,8 +25,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-using chrome_browser_net::NetworkPredictionOptions;
 using net::NetworkChangeNotifier;
+using prefetch::PreloadPagesState;
 
 namespace {
 
@@ -73,9 +73,8 @@ class PrefetchBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  void SetPreference(NetworkPredictionOptions value) {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kNetworkPredictionOptions, value);
+  void SetPreference(prefetch::PreloadPagesState value) {
+    prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(), value);
   }
 
   bool RunPrefetchExperiment(bool expect_success, Browser* browser) {
@@ -109,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, PreferenceWorks) {
     EXPECT_TRUE(RunPrefetchExperiment(true, browser()));
   }
 
-  // Set preference to NEVER: prefetch should be unaffected.
-  SetPreference(NetworkPredictionOptions::NETWORK_PREDICTION_NEVER);
+  // Set preference to no preloading: prefetch should be unaffected.
+  SetPreference(PreloadPagesState::kNoPreloading);
   {
     std::unique_ptr<NetworkChangeNotifier> mock(
         new MockNetworkChangeNotifierWIFI);

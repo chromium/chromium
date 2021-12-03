@@ -37,7 +37,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -600,11 +601,12 @@ public class CustomTabsConnectionTest {
         CustomTabsTestUtils.warmUpAndWait();
 
         // Needs the browser process to be initialized.
-        boolean enabled = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            boolean oldEnabled =
-                    PrivacyPreferencesManagerImpl.getInstance().getNetworkPredictionEnabled();
-            PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(false);
-            return oldEnabled;
+        @PreloadPagesState
+        int state = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            @PreloadPagesState
+            int oldState = PreloadPagesSettingsBridge.getState();
+            PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+            return oldState;
         });
 
         try {
@@ -612,10 +614,7 @@ public class CustomTabsConnectionTest {
                     mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(URL), null, null));
             TestThreadUtils.runOnUiThreadBlocking(this::assertSpareWebContentsNotNullAndDestroy);
         } finally {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    ()
-                            -> PrivacyPreferencesManagerImpl.getInstance()
-                                       .setNetworkPredictionEnabled(enabled));
+            TestThreadUtils.runOnUiThreadBlocking(() -> PreloadPagesSettingsBridge.setState(state));
         }
     }
 

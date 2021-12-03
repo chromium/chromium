@@ -18,8 +18,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
@@ -1293,8 +1293,8 @@ void PrefetchProxyTabHelper::PrefetchUrls(
     return;
   }
 
-  // This checks whether the user has enabled pre* actions in the settings UI.
-  if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
+  // This checks whether the user has disabled pre* actions in the settings UI.
+  if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
     return;
   }
 

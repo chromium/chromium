@@ -5,7 +5,7 @@
 #include "chrome/browser/privacy/privacy_metrics_service.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
@@ -149,12 +149,8 @@ void PrivacyMetricsService::RecordStartupMetrics() {
       "Privacy.DoNotTrackSetting",
       pref_service_->GetBoolean(prefs::kEnableDoNotTrack));
 
-  auto preload_setting_status =
-      static_cast<chrome_browser_net::NetworkPredictionOptions>(
-          pref_service_->GetInteger(::prefs::kNetworkPredictionOptions));
-  base::UmaHistogramBoolean(
-      "Settings.PreloadStatus.OnStartup",
-      (preload_setting_status != chrome_browser_net::NETWORK_PREDICTION_NEVER));
+  base::UmaHistogramBoolean("Settings.PreloadStatus.OnStartup",
+                            prefetch::IsSomePreloadingEnabled(*pref_service_));
 
   base::UmaHistogramBoolean(
       "Settings.AutocompleteSearches.OnStartup",
