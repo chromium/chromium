@@ -24,7 +24,7 @@ GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
                            WGPUTextureUsage usage,
                            WGPUTextureFormat format,
                            cc::PaintFlags::FilterQuality filter_quality,
-                           IntSize size)
+                           gfx::Size size)
     : DawnObjectBase(device->GetDawnControlClient()),
       device_(device),
       context_(context),
@@ -185,7 +185,7 @@ bool GPUSwapChain::CopyTextureToResourceProvider(
     const gfx::Size& size,
     CanvasResourceProvider* resource_provider) const {
   DCHECK(resource_provider);
-  DCHECK_EQ(resource_provider->Size(), IntSize(size));
+  DCHECK_EQ(resource_provider->Size(), size);
   DCHECK(resource_provider->GetSharedImageUsageFlags() &
          gpu::SHARED_IMAGE_USAGE_WEBGPU);
   DCHECK(resource_provider->IsOriginTopLeft());

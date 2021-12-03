@@ -594,7 +594,7 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> image_input =
-      canvas->GetSourceImageForCanvas(&status, FloatSize());
+      canvas->GetSourceImageForCanvas(&status, gfx::SizeF());
   if (status != kNormalSourceImageStatus)
     return;
   DCHECK(IsA<StaticBitmapImage>(image_input.get()));
@@ -620,7 +620,7 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
   scoped_refptr<Image> raw_input = offscreen_canvas->GetSourceImageForCanvas(
-      &status, FloatSize(offscreen_canvas->Size()));
+      &status, gfx::SizeF(offscreen_canvas->Size()));
   DCHECK(IsA<StaticBitmapImage>(raw_input.get()));
   scoped_refptr<StaticBitmapImage> input =
       static_cast<StaticBitmapImage*>(raw_input.get());
@@ -665,7 +665,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
     return;
 
   const IntRect& src_rect = IntRect(parsed_options.crop_rect);
-  const IntRect data_src_rect = IntRect(gfx::Point(), data->Size());
+  const IntRect data_src_rect = IntRect(gfx::Rect(gfx::Point(), data->Size()));
   const IntRect intersect_rect =
       crop_rect ? IntersectRects(src_rect, data_src_rect) : data_src_rect;
 
@@ -1004,7 +1004,7 @@ ScriptPromise ImageBitmap::CreateImageBitmap(
 
 scoped_refptr<Image> ImageBitmap::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&,
+    const gfx::SizeF&,
     const AlphaDisposition alpha_disposition) {
   *status = kNormalSourceImageStatus;
   if (!image_)
@@ -1017,10 +1017,10 @@ scoped_refptr<Image> ImageBitmap::GetSourceImageForCanvas(
   return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
 }
 
-FloatSize ImageBitmap::ElementSize(
-    const FloatSize&,
+gfx::SizeF ImageBitmap::ElementSize(
+    const gfx::SizeF&,
     const RespectImageOrientationEnum respect_orientation) const {
-  return FloatSize(image_->Size(respect_orientation));
+  return gfx::SizeF(ToGfxSize(image_->Size(respect_orientation)));
 }
 
 }  // namespace blink

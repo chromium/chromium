@@ -46,7 +46,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   cc::Layer* CcLayer();
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
-  WGPUTexture GetNewTexture(const IntSize& size);
+  WGPUTexture GetNewTexture(const gfx::Size& size);
 
   struct WebGPUMailboxTextureAndSize {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture;

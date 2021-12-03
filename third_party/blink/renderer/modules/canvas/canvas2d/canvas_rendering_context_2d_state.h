@@ -117,9 +117,9 @@ class CanvasRenderingContext2DState final
   void SetCanvasFilter(CanvasFilter* filter_value);
   CanvasFilter* GetCanvasFilter() const { return canvas_filter_; }
   sk_sp<PaintFilter> GetFilter(Element*,
-                               IntSize canvas_size,
+                               gfx::Size canvas_size,
                                CanvasRenderingContext2D*);
-  sk_sp<PaintFilter> GetFilterForOffscreenCanvas(IntSize canvas_size,
+  sk_sp<PaintFilter> GetFilterForOffscreenCanvas(gfx::Size canvas_size,
                                                  BaseRenderingContext2D*);
   ALWAYS_INLINE bool IsFilterUnresolved() const {
     return filter_state_ == FilterState::kUnresolved;

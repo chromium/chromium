@@ -151,7 +151,7 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
   unused_swap_buffers_.push_back(std::move(swap_buffer));
 }
 
-WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
+WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size) {
   DCHECK(!current_swap_buffer_);
   auto context_provider = GetContextProviderWeakPtr();
   if (!context_provider) {
@@ -164,7 +164,7 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   // Create a new swap buffer.
   current_swap_buffer_ = NewOrRecycledSwapBuffer(
       context_provider->ContextProvider()->SharedImageInterface(),
-      context_provider, ToGfxSize(size));
+      context_provider, size);
 
   // Ensure the shared image is allocated and not in use service-side before
   // working with it

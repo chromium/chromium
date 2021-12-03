@@ -840,7 +840,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV9) {
       V8ScriptValueDeserializer(script_state, input).Deserialize();
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
+  EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(8u, new_pm.computeByteSize());
   EXPECT_EQ(200u, new_pm.addr32()[0]);
@@ -856,7 +856,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
       V8ScriptValueDeserializer(script_state, input).Deserialize();
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
+  EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_8888_SkColorType, new_pm.info().colorType());
   EXPECT_EQ(8u, new_pm.computeByteSize());
@@ -875,7 +875,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
       V8ScriptValueDeserializer(script_state, input).Deserialize();
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
+  EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
   EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
   EXPECT_EQ("float32", new_image_data_settings->storageFormat());
@@ -1351,7 +1351,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
   ASSERT_TRUE(V8OffscreenCanvas::HasInstance(result, scope.GetIsolate()));
   OffscreenCanvas* new_canvas =
       V8OffscreenCanvas::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(10, 7), new_canvas->Size());
+  EXPECT_EQ(gfx::Size(10, 7), new_canvas->Size());
   EXPECT_EQ(519, new_canvas->PlaceholderCanvasId());
   EXPECT_TRUE(canvas->IsNeutered());
   EXPECT_FALSE(new_canvas->IsNeutered());

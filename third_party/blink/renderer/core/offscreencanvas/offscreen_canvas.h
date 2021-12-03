@@ -17,10 +17,10 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ class CORE_EXPORT OffscreenCanvas final
                                  unsigned width,
                                  unsigned height);
 
-  OffscreenCanvas(ExecutionContext*, const IntSize&);
+  OffscreenCanvas(ExecutionContext*, const gfx::Size&);
   ~OffscreenCanvas() override;
   void Dispose();
 
@@ -68,8 +68,8 @@ class CORE_EXPORT OffscreenCanvas final
                               const ImageEncodeOptions* options,
                               ExceptionState& exception_state);
 
-  const IntSize& Size() const override { return size_; }
-  void SetSize(const IntSize&);
+  const gfx::Size& Size() const override { return size_; }
+  void SetSize(const gfx::Size&);
   void RecordTransfer();
 
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
@@ -159,12 +159,12 @@ class CORE_EXPORT OffscreenCanvas final
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;
   bool WouldTaintOrigin() const final { return !origin_clean_; }
-  FloatSize ElementSize(const FloatSize& default_object_size,
-                        const RespectImageOrientationEnum) const final {
-    return FloatSize(width(), height());
+  gfx::SizeF ElementSize(const gfx::SizeF& default_object_size,
+                         const RespectImageOrientationEnum) const final {
+    return gfx::SizeF(width(), height());
   }
   bool IsOpaque() const final;
   bool IsAccelerated() const final;
@@ -243,7 +243,7 @@ class CORE_EXPORT OffscreenCanvas final
 
   DOMNodeId placeholder_canvas_id_ = kInvalidDOMNodeId;
 
-  IntSize size_;
+  gfx::Size size_;
   bool disposing_ = false;
   bool is_neutered_ = false;
   bool origin_clean_ = true;

@@ -66,7 +66,7 @@ ImageData* ImageData::ValidateAndCreate(
     const ImageDataSettings* settings,
     ValidateAndCreateParams params,
     ExceptionState& exception_state) {
-  IntSize size;
+  gfx::Size size;
   if (params.require_canvas_color_management &&
       !RuntimeEnabledFeatures::CanvasColorManagementEnabled()) {
     exception_state.ThrowTypeError("Overload resolution failed.");
@@ -88,12 +88,27 @@ ImageData* ImageData::ValidateAndCreate(
         "The source width is zero or not a number.");
     return nullptr;
   }
+  if (width > static_cast<unsigned>(std::numeric_limits<int>::max())) {
+    // TODO(crbug.com/1273969): Should throw RangeError instead.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        "The requested image size exceeds the supported range.");
+    return nullptr;
+  }
   size.set_width(width);
+
   if (height) {
     if (!*height) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kIndexSizeError,
           "The source height is zero or not a number.");
+      return nullptr;
+    }
+    if (height > static_cast<unsigned>(std::numeric_limits<int>::max())) {
+      // TODO(crbug.com/1273969): Should throw RangeError instead.
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kIndexSizeError,
+          "The requested image size exceeds the supported range.");
       return nullptr;
     }
     size.set_height(*height);
@@ -109,6 +124,7 @@ ImageData* ImageData::ValidateAndCreate(
     size_in_elements_checked *= size.height();
     if (!params.context_2d_error_mode) {
       if (!size_in_elements_checked.IsValid()) {
+        // TODO(crbug.com/1273969): Should throw RangeError instead.
         exception_state.ThrowDOMException(
             DOMExceptionCode::kIndexSizeError,
             "The requested image size exceeds the supported range.");
@@ -258,7 +274,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
 
 // This function accepts size (0, 0) and always returns the ImageData in
 // "srgb" color space and "uint8" storage format.
-ImageData* ImageData::CreateForTest(const IntSize& size) {
+ImageData* ImageData::CreateForTest(const gfx::Size& size) {
   base::CheckedNumeric<unsigned> data_size =
       StorageFormatBytesPerPixel(kUint8ClampedArrayStorageFormat);
   data_size *= size.width();
@@ -279,7 +295,7 @@ ImageData* ImageData::CreateForTest(const IntSize& size) {
 
 // This function is called from unit tests, and all the parameters are supposed
 // to be validated on the call site.
-ImageData* ImageData::CreateForTest(const IntSize& size,
+ImageData* ImageData::CreateForTest(const gfx::Size& size,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     CanvasColorSpace color_space,
                                     ImageDataStorageFormat storage_format) {
@@ -457,7 +473,7 @@ v8::Local<v8::Object> ImageData::AssociateWithWrapper(
   return wrapper;
 }
 
-ImageData::ImageData(const IntSize& size,
+ImageData::ImageData(const gfx::Size& size,
                      NotShared<DOMArrayBufferView> data,
                      CanvasColorSpace color_space,
                      ImageDataStorageFormat storage_format)

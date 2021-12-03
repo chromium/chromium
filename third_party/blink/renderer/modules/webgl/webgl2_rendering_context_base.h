@@ -1096,7 +1096,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                                     GLenum,
                                     Vector<GLenum>&);
 
-  IntRect GetTextureSourceSubRectangle(GLsizei width, GLsizei height);
+  gfx::Rect GetTextureSourceSubRectangle(GLsizei width, GLsizei height);
 
   enum ClearBufferCaller {
     kClearBufferiv,

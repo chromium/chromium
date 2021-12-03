@@ -1000,7 +1000,7 @@ void BaseRenderingContext2D::DrawPathInternal(
     return;
 
   SkPath sk_path = path.GetSkPath();
-  FloatRect bounds(path.BoundingRect());
+  gfx::RectF bounds(path.BoundingRect());
   if (std::isnan(bounds.x()) || std::isnan(bounds.y()) ||
       std::isnan(bounds.width()) || std::isnan(bounds.height()))
     return;
@@ -1018,7 +1018,7 @@ void BaseRenderingContext2D::DrawPathInternal(
       { c->drawPath(sk_path, *flags, use_paint_cache); },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      bounds, paint_type,
+      gfx::RectFToSkRect(bounds), paint_type,
       GetState().HasPattern(paint_type)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
@@ -1116,7 +1116,10 @@ void BaseRenderingContext2D::fillRect(double x,
       [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       { c->drawRect(rect, *flags); },
       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
-      { return RectContainsTransformedRect(rect, clip_bounds); },
+      {
+        return RectContainsTransformedRect(gfx::SkRectToRectF(rect),
+                                           clip_bounds);
+      },
       rect, CanvasRenderingContext2DState::kFillPaintType,
       GetState().HasPattern(CanvasRenderingContext2DState::kFillPaintType)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
@@ -1124,7 +1127,7 @@ void BaseRenderingContext2D::fillRect(double x,
       CanvasPerformanceMonitor::DrawType::kRectangle);
 }
 
-static void StrokeRectOnCanvas(const FloatRect& rect,
+static void StrokeRectOnCanvas(const gfx::RectF& rect,
                                cc::PaintCanvas* canvas,
                                const PaintFlags* flags) {
   DCHECK_EQ(flags->getStyle(), PaintFlags::kStroke_Style);
@@ -1137,7 +1140,7 @@ static void StrokeRectOnCanvas(const FloatRect& rect,
     canvas->drawPath(path, *flags);
     return;
   }
-  canvas->drawRect(rect, *flags);
+  canvas->drawRect(gfx::RectFToSkRect(rect), *flags);
 }
 
 void BaseRenderingContext2D::strokeRect(double x,
@@ -1161,8 +1164,8 @@ void BaseRenderingContext2D::strokeRect(double x,
   float fwidth = ClampTo<float>(width);
   float fheight = ClampTo<float>(height);
 
-  SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
-  FloatRect bounds = rect;
+  gfx::RectF rect(fx, fy, fwidth, fheight);
+  gfx::RectF bounds = rect;
   InflateStrokeRect(bounds);
 
   if (!ValidateRectForCanvas(bounds.x(), bounds.y(), bounds.width(),
@@ -1172,7 +1175,8 @@ void BaseRenderingContext2D::strokeRect(double x,
   Draw<OverdrawOp::kNone>(
       [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
       { StrokeRectOnCanvas(rect, c, flags); },
-      kNoOverdraw, bounds, CanvasRenderingContext2DState::kStrokePaintType,
+      kNoOverdraw, gfx::RectFToSkRect(bounds),
+      CanvasRenderingContext2DState::kStrokePaintType,
       GetState().HasPattern(CanvasRenderingContext2DState::kStrokePaintType)
           ? CanvasRenderingContext2DState::kNonOpaqueImage
           : CanvasRenderingContext2DState::kNoImage,
@@ -1321,46 +1325,41 @@ void BaseRenderingContext2D::clearRect(double x,
   float fwidth = ClampTo<float>(width);
   float fheight = ClampTo<float>(height);
 
-  FloatRect rect(fx, fy, fwidth, fheight);
+  gfx::RectF rect(fx, fy, fwidth, fheight);
   if (RectContainsTransformedRect(rect, clip_bounds)) {
     if (for_reset) {
       // In the reset case, we can use kUntransformedUnclippedFill because we
       // know the state state was reset.
-      CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
+      CheckOverdraw(gfx::RectFToSkRect(rect), &clear_flags,
+                    CanvasRenderingContext2DState::kNoImage,
                     OverdrawOp::kContextReset);
     } else {
-      CheckOverdraw(rect, &clear_flags, CanvasRenderingContext2DState::kNoImage,
+      CheckOverdraw(gfx::RectFToSkRect(rect), &clear_flags,
+                    CanvasRenderingContext2DState::kNoImage,
                     OverdrawOp::kClearRect);
     }
     GetPaintCanvasForDraw(clip_bounds,
                           CanvasPerformanceMonitor::DrawType::kOther)
-        ->drawRect(rect, clear_flags);
+        ->drawRect(gfx::RectFToSkRect(rect), clear_flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(rect, clip_bounds, &dirty_rect)) {
       GetPaintCanvasForDraw(clip_bounds,
                             CanvasPerformanceMonitor::DrawType::kOther)
-          ->drawRect(rect, clear_flags);
+          ->drawRect(gfx::RectFToSkRect(rect), clear_flags);
     }
   }
 }
 
-static inline FloatRect NormalizeRect(const FloatRect& rect) {
-  return FloatRect(std::min(rect.x(), rect.right()),
-                   std::min(rect.y(), rect.bottom()),
-                   std::max(rect.width(), -rect.width()),
-                   std::max(rect.height(), -rect.height()));
-}
-
-static inline void ClipRectsToImageRect(const FloatRect& image_rect,
-                                        FloatRect* src_rect,
-                                        FloatRect* dst_rect) {
+static inline void ClipRectsToImageRect(const gfx::RectF& image_rect,
+                                        gfx::RectF* src_rect,
+                                        gfx::RectF* dst_rect) {
   if (image_rect.Contains(*src_rect))
     return;
 
   // Compute the src to dst transform
-  FloatSize scale(dst_rect->size().width() / src_rect->size().width(),
-                  dst_rect->size().height() / src_rect->size().height());
+  gfx::SizeF scale(dst_rect->size().width() / src_rect->size().width(),
+                   dst_rect->size().height() / src_rect->size().height());
   gfx::PointF scaled_src_location = src_rect->origin();
   scaled_src_location.Scale(scale.width(), scale.height());
   gfx::Vector2dF offset = dst_rect->origin() - scaled_src_location;
@@ -1384,10 +1383,10 @@ void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
     return;
   RespectImageOrientationEnum respect_orientation =
       RespectImageOrientationInternal(image_source_internal);
-  FloatSize default_object_size(Width(), Height());
-  FloatSize source_rect_size = image_source_internal->ElementSize(
+  gfx::SizeF default_object_size(Width(), Height());
+  gfx::SizeF source_rect_size = image_source_internal->ElementSize(
       default_object_size, respect_orientation);
-  FloatSize dest_rect_size = image_source_internal->DefaultDestinationSize(
+  gfx::SizeF dest_rect_size = image_source_internal->DefaultDestinationSize(
       default_object_size, respect_orientation);
   drawImage(image_source_internal, 0, 0, source_rect_size.width(),
             source_rect_size.height(), x, y, dest_rect_size.width(),
@@ -1404,8 +1403,8 @@ void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
       ToCanvasImageSource(image_source, exception_state);
   if (!image_source_internal)
     return;
-  FloatSize default_object_size(Width(), Height());
-  FloatSize source_rect_size = image_source_internal->ElementSize(
+  gfx::SizeF default_object_size(Width(), Height());
+  gfx::SizeF source_rect_size = image_source_internal->ElementSize(
       default_object_size,
       RespectImageOrientationInternal(image_source_internal));
   drawImage(image_source_internal, 0, 0, source_rect_size.width(),
@@ -1431,7 +1430,7 @@ void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
 }
 
 bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
-    const FloatRect& dest_rect) const {
+    const gfx::RectF& dest_rect) const {
   if (!GetState().ShouldAntialias())
     return false;
   cc::PaintCanvas* c = GetPaintCanvas();
@@ -1506,8 +1505,8 @@ void BaseRenderingContext2D::DrawImageInternal(
     cc::PaintCanvas* c,
     CanvasImageSource* image_source,
     Image* image,
-    const FloatRect& src_rect,
-    const FloatRect& dst_rect,
+    const gfx::RectF& src_rect,
+    const gfx::RectF& dst_rect,
     const SkSamplingOptions& sampling,
     const PaintFlags* flags) {
   cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
@@ -1525,7 +1524,7 @@ void BaseRenderingContext2D::DrawImageInternal(
       // crbug.com/504687
       return;
     }
-    SkRect bounds = dst_rect;
+    SkRect bounds = gfx::RectFToSkRect(dst_rect);
     ctm.mapRect(&bounds);
     if (!bounds.isFinite()) {
       // There is an earlier check for the correctness of the bounds, but it is
@@ -1550,7 +1549,7 @@ void BaseRenderingContext2D::DrawImageInternal(
 
   if (image_source->IsVideoElement()) {
     c->save();
-    c->clipRect(dst_rect);
+    c->clipRect(gfx::RectFToSkRect(dst_rect));
     c->translate(dst_rect.x(), dst_rect.y());
     c->scale(dst_rect.width() / src_rect.width(),
              dst_rect.height() / src_rect.height());
@@ -1567,18 +1566,18 @@ void BaseRenderingContext2D::DrawImageInternal(
     bool ignore_transformation =
         RespectImageOrientationInternal(image_source) ==
         kDoNotRespectImageOrientation;
-    FloatRect corrected_src_rect = src_rect;
+    gfx::RectF corrected_src_rect = src_rect;
 
     if (!ignore_transformation) {
       auto orientation_enum = VideoTransformationToImageOrientation(
           media_frame->metadata().transformation.value_or(
               media::kNoTransformation));
       if (ImageOrientation(orientation_enum).UsesWidthAsHeight())
-        corrected_src_rect = src_rect.TransposedRect();
+        corrected_src_rect = gfx::TransposeRect(src_rect);
     }
 
     c->save();
-    c->clipRect(dst_rect);
+    c->clipRect(gfx::RectFToSkRect(dst_rect));
     c->translate(dst_rect.x(), dst_rect.y());
     c->scale(dst_rect.width() / corrected_src_rect.width(),
              dst_rect.height() / corrected_src_rect.height());
@@ -1591,18 +1590,19 @@ void BaseRenderingContext2D::DrawImageInternal(
     // the source of the image.
     RespectImageOrientationEnum respect_orientation =
         RespectImageOrientationInternal(image_source);
-    FloatRect corrected_src_rect = src_rect;
+    FloatRect corrected_src_rect(src_rect);
     if (respect_orientation == kRespectImageOrientation &&
         !image->HasDefaultOrientation()) {
       corrected_src_rect = image->CorrectSrcRectForImageOrientation(
-          image->SizeAsFloat(kRespectImageOrientation), src_rect);
+          image->SizeAsFloat(kRespectImageOrientation), FloatRect(src_rect));
     }
     image_flags.setAntiAlias(ShouldDrawImageAntialiased(dst_rect));
     ImageDrawOptions draw_options;
     draw_options.sampling_options = sampling;
     draw_options.respect_orientation = respect_orientation;
     draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-    image->Draw(c, image_flags, dst_rect, corrected_src_rect, draw_options);
+    image->Draw(c, image_flags, FloatRect(dst_rect), corrected_src_rect,
+                draw_options);
   }
 
   c->restoreToCount(initial_save_count);
@@ -1629,7 +1629,7 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
     return;
 
   scoped_refptr<Image> image;
-  FloatSize default_object_size(Width(), Height());
+  gfx::SizeF default_object_size(Width(), Height());
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   if (!image_source->IsVideoElement()) {
     image = image_source->GetSourceImageForCanvas(&source_image_status,
@@ -1652,6 +1652,8 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
+  AdjustRectForCanvas(sx, sy, sw, sh);
+  AdjustRectForCanvas(dx, dy, dw, dh);
   float fsx = ClampTo<float>(sx);
   float fsy = ClampTo<float>(sy);
   float fsw = ClampTo<float>(sw);
@@ -1661,13 +1663,12 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
   float fdw = ClampTo<float>(dw);
   float fdh = ClampTo<float>(dh);
 
-  FloatRect src_rect = NormalizeRect(FloatRect(fsx, fsy, fsw, fsh));
-  FloatRect dst_rect = NormalizeRect(FloatRect(fdx, fdy, fdw, fdh));
-  FloatSize image_size = image_source->ElementSize(
+  gfx::RectF src_rect(fsx, fsy, fsw, fsh);
+  gfx::RectF dst_rect(fdx, fdy, fdw, fdh);
+  gfx::SizeF image_size = image_source->ElementSize(
       default_object_size, RespectImageOrientationInternal(image_source));
 
-  ClipRectsToImageRect(FloatRect(gfx::PointF(), image_size), &src_rect,
-                       &dst_rect);
+  ClipRectsToImageRect(gfx::RectF(image_size), &src_rect, &dst_rect);
 
   if (src_rect.IsEmpty())
     return;
@@ -1698,26 +1699,26 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       },
       [this, dst_rect](const SkIRect& clip_bounds)  // overdraw test lambda
       { return RectContainsTransformedRect(dst_rect, clip_bounds); },
-      dst_rect, CanvasRenderingContext2DState::kImagePaintType,
+      gfx::RectFToSkRect(dst_rect),
+      CanvasRenderingContext2DState::kImagePaintType,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kImage);
 }
 
 void BaseRenderingContext2D::ClearCanvasForSrcCompositeOp() {
-  FloatRect canvas_rect(0, 0, Width(), Height());
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (c)
     c->clear(HasAlpha() ? SK_ColorTRANSPARENT : SK_ColorBLACK);
 }
 
 bool BaseRenderingContext2D::RectContainsTransformedRect(
-    const FloatRect& rect,
+    const gfx::RectF& rect,
     const SkIRect& transformed_rect) const {
   FloatQuad quad(rect);
   FloatQuad transformed_quad(
-      FloatRect(transformed_rect.x(), transformed_rect.y(),
-                transformed_rect.width(), transformed_rect.height()));
+      gfx::RectF(transformed_rect.x(), transformed_rect.y(),
+                 transformed_rect.width(), transformed_rect.height()));
   return GetState().GetTransform().MapQuad(quad).ContainsQuad(transformed_quad);
 }
 
@@ -1833,7 +1834,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
 
   SourceImageStatus status;
 
-  FloatSize default_object_size(Width(), Height());
+  gfx::SizeF default_object_size(Width(), Height());
   scoped_refptr<Image> image_for_rendering =
       image_source->GetSourceImageForCanvas(&status, default_object_size);
 
@@ -1879,7 +1880,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
   return pattern;
 }
 
-bool BaseRenderingContext2D::ComputeDirtyRect(const FloatRect& local_rect,
+bool BaseRenderingContext2D::ComputeDirtyRect(const gfx::RectF& local_rect,
                                               SkIRect* dirty_rect) {
   SkIRect clip_bounds;
   cc::PaintCanvas* paint_canvas = GetOrCreatePaintCanvas();
@@ -2212,7 +2213,7 @@ void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
               source.rowBytes(), dest_x, dest_y);
 }
 
-void BaseRenderingContext2D::InflateStrokeRect(FloatRect& rect) const {
+void BaseRenderingContext2D::InflateStrokeRect(gfx::RectF& rect) const {
   // Fast approximation of the stroke's bounding rect.
   // This yields a slightly oversized rect but is very fast
   // compared to Path::strokeBoundingRect().

@@ -527,7 +527,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   if (!media_video_frame || !video_renderer)
     return nullptr;
 
-  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
+  const gfx::Size intrinsic_size = media_video_frame->natural_size();
   if (!resource_provider_ ||
       allow_accelerated_images != resource_provider_->IsAccelerated() ||
       intrinsic_size != resource_provider_->Size()) {
@@ -557,7 +557,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
 
 scoped_refptr<Image> HTMLVideoElement::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&,
+    const gfx::SizeF&,
     const AlphaDisposition alpha_disposition) {
   // UnpremultiplyAlpha is not implemented yet.
   DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
@@ -576,10 +576,10 @@ bool HTMLVideoElement::WouldTaintOrigin() const {
   return !IsMediaDataCorsSameOrigin();
 }
 
-FloatSize HTMLVideoElement::ElementSize(
-    const FloatSize&,
+gfx::SizeF HTMLVideoElement::ElementSize(
+    const gfx::SizeF&,
     const RespectImageOrientationEnum) const {
-  return FloatSize(videoWidth(), videoHeight());
+  return gfx::SizeF(videoWidth(), videoHeight());
 }
 
 IntSize HTMLVideoElement::BitmapSourceSize() const {

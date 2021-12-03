@@ -69,16 +69,16 @@ enum BitmapOpacity { kOpaqueBitmap, kTransparentBitmap };
 
 class FakeImageSource : public CanvasImageSource {
  public:
-  FakeImageSource(IntSize, BitmapOpacity);
+  FakeImageSource(gfx::Size, BitmapOpacity);
 
   scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               const FloatSize&,
+                                               const gfx::SizeF&,
                                                const AlphaDisposition) override;
 
   bool WouldTaintOrigin() const override { return false; }
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override {
-    return FloatSize(size_);
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override {
+    return gfx::SizeF(size_);
   }
   bool IsOpaque() const override { return is_opaque_; }
   bool IsAccelerated() const override { return false; }
@@ -86,12 +86,12 @@ class FakeImageSource : public CanvasImageSource {
   ~FakeImageSource() override = default;
 
  private:
-  IntSize size_;
+  gfx::Size size_;
   scoped_refptr<Image> image_;
   bool is_opaque_;
 };
 
-FakeImageSource::FakeImageSource(IntSize size, BitmapOpacity opacity)
+FakeImageSource::FakeImageSource(gfx::Size size, BitmapOpacity opacity)
     : size_(size), is_opaque_(opacity == kOpaqueBitmap) {
   sk_sp<SkSurface> surface(
       SkSurface::MakeRasterN32Premul(size_.width(), size_.height()));
@@ -102,7 +102,7 @@ FakeImageSource::FakeImageSource(IntSize size, BitmapOpacity opacity)
 
 scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize&,
+    const gfx::SizeF&,
     const AlphaDisposition alpha_disposition = kPremultiplyAlpha) {
   // Only cover premultiply alpha cases.
   DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
@@ -163,7 +163,7 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
 
   void TearDown() override;
   void UnrefCanvas();
-  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const IntSize&, RasterMode);
+  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const gfx::Size&, RasterMode);
 
   Document& GetDocument() const {
     return *web_view_helper_->GetWebView()
@@ -223,8 +223,8 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
 CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
-      opaque_bitmap_(IntSize(10, 10), kOpaqueBitmap),
-      alpha_bitmap_(IntSize(10, 10), kTransparentBitmap) {}
+      opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
+      alpha_bitmap_(gfx::Size(10, 10), kTransparentBitmap) {}
 
 void CanvasRenderingContext2DTest::CreateContext(
     OpacityMode opacity_mode,
@@ -311,7 +311,7 @@ void CanvasRenderingContext2DTest::TearDown() {
 }
 
 std::unique_ptr<Canvas2DLayerBridge> CanvasRenderingContext2DTest::MakeBridge(
-    const IntSize& size,
+    const gfx::Size& size,
     RasterMode raster_mode) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, raster_mode, kNonOpaque);
@@ -323,7 +323,7 @@ std::unique_ptr<Canvas2DLayerBridge> CanvasRenderingContext2DTest::MakeBridge(
 
 class FakeCanvas2DLayerBridge : public Canvas2DLayerBridge {
  public:
-  FakeCanvas2DLayerBridge(const IntSize& size,
+  FakeCanvas2DLayerBridge(const gfx::Size& size,
                           OpacityMode opacity_mode,
                           RasterModeHint hint)
       : Canvas2DLayerBridge(size, RasterMode::kCPU, opacity_mode),
@@ -376,7 +376,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
 
 class MockImageBufferSurfaceForOverwriteTesting : public Canvas2DLayerBridge {
  public:
-  MockImageBufferSurfaceForOverwriteTesting(const IntSize& size,
+  MockImageBufferSurfaceForOverwriteTesting(const gfx::Size& size,
                                             OpacityMode opacity_mode)
       : Canvas2DLayerBridge(size, RasterMode::kCPU, opacity_mode) {}
   ~MockImageBufferSurfaceForOverwriteTesting() override = default;
@@ -410,7 +410,7 @@ void CanvasRenderingContext2DOverdrawTest::SetUp() {
   CanvasRenderingContext2DTest::SetUp();
   histogram_tester_ = std::make_unique<base::HistogramTester>();
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   std::unique_ptr<MockImageBufferSurfaceForOverwriteTesting> mock_surface =
       std::make_unique<MockImageBufferSurfaceForOverwriteTesting>(size,
                                                                   kNonOpaque);
@@ -754,7 +754,7 @@ TEST_P(CanvasRenderingContext2DOverdrawTest, Path_FullCoverage) {
 TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().CreateRawElement(html_names::kCanvasTag));
-  canvas->SetSize(IntSize(40, 40));
+  canvas->SetSize(gfx::Size(40, 40));
   ImageBitmap* image_bitmap_derived = nullptr;
   {
     const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
@@ -781,7 +781,7 @@ TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
 TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   CreateContext(kNonOpaque);
 
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
@@ -810,7 +810,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
       To<HTMLCanvasElement>(GetDocument().getElementById("d"));
   CanvasContextCreationAttributesCore attributes;
   anotherCanvas->GetCanvasRenderingContext("2d", attributes);
-  IntSize size2(10, 5);
+  gfx::Size size2(10, 5);
   std::unique_ptr<FakeCanvas2DLayerBridge> fake_2d_layer_bridge2 =
       std::make_unique<FakeCanvas2DLayerBridge>(size2, kNonOpaque,
                                                 RasterModeHint::kPreferGPU);
@@ -823,11 +823,11 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
       size2);
 
   // Tear down the first image buffer that resides in current canvas element
-  CanvasElement().SetSize(IntSize(20, 20));
+  CanvasElement().SetSize(gfx::Size(20, 20));
   Mock::VerifyAndClearExpectations(fake_2d_layer_bridge_ptr);
 
   // Tear down the second image buffer
-  anotherCanvas->SetSize(IntSize(20, 20));
+  anotherCanvas->SetSize(gfx::Size(20, 20));
 }
 
 TEST_P(CanvasRenderingContext2DTest, CanvasDisposedBeforeContext) {
@@ -860,7 +860,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // certain code paths in canvas 2d (that depend on the existence of
   // CanvasResourceProvider) will be changed too, causing bad regressions.
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -874,7 +874,7 @@ TEST_P(CanvasRenderingContext2DTest,
        DISABLED_DisableAcceleration_UpdateGPUMemoryUsage) {
   CreateContext(kNonOpaque);
 
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -900,7 +900,7 @@ TEST_P(CanvasRenderingContext2DTest,
   InSequence s;
 
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1143,7 +1143,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
           NOTREACHED();
       }
 
-      image_data = ImageData::CreateForTest(IntSize(2, 2), data_array,
+      image_data = ImageData::CreateForTest(gfx::Size(2, 2), data_array,
                                             image_data_color_spaces[i],
                                             image_data_storage_formats[j]);
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
@@ -1257,7 +1257,7 @@ TEST_P(CanvasRenderingContext2DTest,
 TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1273,7 +1273,7 @@ TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
 TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1298,7 +1298,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
 TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1318,7 +1318,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
     size_t expected_op_count = initial_op_count;
     for (size_t pinned_bytes = 0; pinned_bytes <= kMaxPinnedImageBytes;
          pinned_bytes += kBytesPerImage) {
-      FakeImageSource unique_image(IntSize(kImageSize, kImageSize),
+      FakeImageSource unique_image(gfx::Size(kImageSize, kImageSize),
                                    kOpaqueBitmap);
       NonThrowableExceptionState exception_state;
       Context2D()->drawImage(&unique_image, 0, 0, 1, 1, 0, 0, 1, 1,
@@ -1337,7 +1337,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
 TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1346,7 +1346,8 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
   constexpr unsigned int kImageSize = 10;
   constexpr unsigned int kBytesPerImage = 400;
 
-  FakeImageSource unique_image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
+  FakeImageSource unique_image(gfx::Size(kImageSize, kImageSize),
+                               kOpaqueBitmap);
   NonThrowableExceptionState exception_state;
   Context2D()->drawImage(&unique_image, 0, 0, 10, 10, 0, 0, 10, 10,
                          exception_state);
@@ -1363,7 +1364,7 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
 TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1375,7 +1376,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
   constexpr unsigned int kImageSize = 10;
   constexpr unsigned int kBytesPerImage = 400;
 
-  FakeImageSource image(IntSize(kImageSize, kImageSize), kOpaqueBitmap);
+  FakeImageSource image(gfx::Size(kImageSize, kImageSize), kOpaqueBitmap);
 
   for (size_t pinned_bytes = 0; pinned_bytes <= 2 * kMaxPinnedImageBytes;
        pinned_bytes += kBytesPerImage) {
@@ -1391,7 +1392,7 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
 TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
-  IntSize size(10, 10);
+  gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
       size, kNonOpaque, RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1426,7 +1427,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        ElementRequestsCompositingUpdateOnHibernateAndWakeUp) {
   CreateContext(kNonOpaque);
-  IntSize size(300, 300);
+  gfx::Size size(300, 300);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU, kNonOpaque);
   // Force hibernatation to occur in an immediate task.
@@ -1486,7 +1487,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoHibernationIfNoResourceProvider) {
   CreateContext(kNonOpaque);
-  IntSize size(300, 300);
+  gfx::Size size(300, 300);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU, kNonOpaque);
   // Force hibernatation to occur in an immediate task.

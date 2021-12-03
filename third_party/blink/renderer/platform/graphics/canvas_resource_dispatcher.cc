@@ -59,7 +59,7 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
     uint32_t client_id,
     uint32_t sink_id,
     int canvas_id,
-    const IntSize& size)
+    const gfx::Size& size)
     : frame_sink_id_(viz::FrameSinkId(client_id, sink_id)),
       size_(size),
       change_size_for_next_commit_(false),
@@ -267,7 +267,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   resources_.insert(resource_id, std::move(frame_resource));
 
   // TODO(crbug.com/869913): add unit testing for this.
-  const gfx::Size canvas_resource_size = ToGfxSize(canvas_resource->Size());
+  const gfx::Size canvas_resource_size = canvas_resource->Size();
 
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 
@@ -423,11 +423,11 @@ void CanvasResourceDispatcher::ReclaimResource(viz::ResourceId resource_id) {
   }
 }
 
-bool CanvasResourceDispatcher::VerifyImageSize(const IntSize image_size) {
+bool CanvasResourceDispatcher::VerifyImageSize(const gfx::Size& image_size) {
   return image_size == size_;
 }
 
-void CanvasResourceDispatcher::Reshape(const IntSize& size) {
+void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
   if (size_ != size) {
     size_ = size;
     change_size_for_next_commit_ = true;

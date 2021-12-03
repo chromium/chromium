@@ -30,7 +30,7 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
                         WGPUTextureUsage,
                         WGPUTextureFormat,
                         cc::PaintFlags::FilterQuality,
-                        IntSize);
+                        gfx::Size);
 
   GPUSwapChain(const GPUSwapChain&) = delete;
   GPUSwapChain& operator=(const GPUSwapChain&) = delete;
@@ -79,7 +79,7 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
   Member<GPUCanvasContext> context_;
   WGPUTextureUsage usage_;
   WGPUTextureFormat format_;
-  const IntSize size_;
+  const gfx::Size size_;
 
   Member<GPUTexture> texture_;
 

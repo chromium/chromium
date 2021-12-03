@@ -178,7 +178,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void SetFilterQuality(cc::PaintFlags::FilterQuality quality) {
     filter_quality_ = quality;
   }
-  IntSize Size() const;
+  gfx::Size Size() const;
   bool IsOriginTopLeft() const { return is_origin_top_left_; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;

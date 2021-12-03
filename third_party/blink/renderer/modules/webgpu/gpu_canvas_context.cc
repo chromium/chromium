@@ -86,7 +86,7 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
 
   if (Host()->ResourceProvider() &&
-      Host()->ResourceProvider()->Size() != IntSize(swapchain_->Size())) {
+      Host()->ResourceProvider()->Size() != swapchain_->Size()) {
     Host()->DiscardResourceProvider();
   }
 
@@ -186,10 +186,10 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   // Set the default size.
-  IntSize size;
+  gfx::Size size;
   if (descriptor->hasSize()) {
     WGPUExtent3D dawn_extent = AsDawnType(descriptor->size());
-    size = IntSize(dawn_extent.width, dawn_extent.height);
+    size = gfx::Size(dawn_extent.width, dawn_extent.height);
 
     if (dawn_extent.depthOrArrayLayers != 1) {
       configured_device_->InjectError(

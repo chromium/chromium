@@ -257,11 +257,10 @@ bool NearlyIntegral(float value) {
   return fabs(value - floorf(value)) < std::numeric_limits<float>::epsilon();
 }
 
-bool IsValidImageSize(const IntSize& size) {
+bool IsValidImageSize(const gfx::Size& size) {
   if (size.IsEmpty())
     return false;
-  base::CheckedNumeric<int> area = size.width();
-  area *= size.height();
+  base::CheckedNumeric<int> area = size.GetCheckedArea();
   if (!area.IsValid() || area.ValueOrDie() > kMaxCanvasArea)
     return false;
   if (size.width() > kMaxSkiaDim || size.height() > kMaxSkiaDim)

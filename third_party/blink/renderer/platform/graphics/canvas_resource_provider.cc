@@ -1358,8 +1358,8 @@ CanvasResourceProvider::FlushCanvasAndMaybePreserveRecording() {
   return FlushCanvasInternal(IsPrinting() && clear_frame_);
 }
 
-IntSize CanvasResourceProvider::Size() const {
-  return IntSize(info_.width(), info_.height());
+gfx::Size CanvasResourceProvider::Size() const {
+  return gfx::Size(info_.width(), info_.height());
 }
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {

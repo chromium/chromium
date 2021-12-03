@@ -1031,7 +1031,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
       break;
   }
 
-  FloatRect bounds(
+  gfx::RectF bounds(
       location.x() - font_metrics.Height() / 2,
       location.y() - font_metrics.Ascent() - font_metrics.LineGap(),
       ClampTo<float>(width + font_metrics.Height()),
@@ -1064,7 +1064,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
+      gfx::RectFToSkRect(bounds), paint_type,
+      CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 }
 
@@ -1174,8 +1175,7 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
   stroke_data.SetThickness(kFocusRingWidth);
 
   SkIRect dirty_rect;
-  if (!ComputeDirtyRect(FloatRect(path.StrokeBoundingRect(stroke_data)),
-                        &dirty_rect))
+  if (!ComputeDirtyRect(path.StrokeBoundingRect(stroke_data), &dirty_rect))
     return;
 
   DidDraw(dirty_rect, CanvasPerformanceMonitor::DrawType::kPath);

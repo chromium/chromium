@@ -90,7 +90,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
                      bool unpack_premultiply_alpha,
                      bool unpack_flip_y,
                      const gfx::Point& dest_point,
-                     const IntRect& source_sub_rectangle) override;
+                     const gfx::Rect& source_sub_rectangle) override;
 
   bool CopyToResourceProvider(
       CanvasResourceProvider* resource_provider) override;

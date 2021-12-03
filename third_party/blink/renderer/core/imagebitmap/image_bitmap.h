@@ -99,13 +99,13 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool WouldTaintOrigin() const override {
     return image_ ? !image_->OriginClean() : false;
   }
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override;
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override;
   bool IsImageBitmap() const override { return true; }
   bool IsAccelerated() const override;
 

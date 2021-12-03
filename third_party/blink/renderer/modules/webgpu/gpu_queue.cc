@@ -217,8 +217,8 @@ scoped_refptr<Image> GetImageFromExternalImage(
   // HTMLCanvasElement and OffscreenCanvas won't care image orientation. But for
   // ImageBitmap, use kRespectImageOrientation will make ElementSize() behave
   // as Size().
-  FloatSize image_size = source->ElementSize(
-      FloatSize(),  // It will be ignored and won't affect size.
+  gfx::SizeF image_size = source->ElementSize(
+      gfx::SizeF(),  // It will be ignored and won't affect size.
       kRespectImageOrientation);
 
   // TODO(crbug.com/1197369): Ensure kUnpremultiplyAlpha impl will also make

@@ -39,7 +39,6 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -49,6 +48,7 @@
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/size.h"
 
 struct SkImageInfo;
 
@@ -73,7 +73,7 @@ class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
  public:
-  Canvas2DLayerBridge(const IntSize&, RasterMode, OpacityMode opacity_mode);
+  Canvas2DLayerBridge(const gfx::Size&, RasterMode, OpacityMode opacity_mode);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
@@ -90,7 +90,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   void SetIsBeingDisplayed(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void DidDraw();
-  void DoPaintInvalidation(const IntRect& dirty_rect);
+  void DoPaintInvalidation(const gfx::Rect& dirty_rect);
   cc::Layer* Layer();
   bool Restore();
 
@@ -193,7 +193,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   const RasterMode raster_mode_;
   const OpacityMode opacity_mode_;
-  const IntSize size_;
+  const gfx::Size size_;
 
   enum SnapshotState {
     kInitialSnapshotState,

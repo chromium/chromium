@@ -662,10 +662,10 @@ bool WebGL2RenderingContextBase::CheckAndTranslateAttachments(
   return true;
 }
 
-IntRect WebGL2RenderingContextBase::GetTextureSourceSubRectangle(
+gfx::Rect WebGL2RenderingContextBase::GetTextureSourceSubRectangle(
     GLsizei width,
     GLsizei height) {
-  return IntRect(unpack_skip_pixels_, unpack_skip_rows_, width, height);
+  return gfx::Rect(unpack_skip_pixels_, unpack_skip_rows_, width, height);
 }
 
 void WebGL2RenderingContextBase::invalidateFramebuffer(
@@ -1873,10 +1873,8 @@ void WebGL2RenderingContextBase::texImage3D(GLenum target,
                                             GLenum type,
                                             ImageData* pixels) {
   DCHECK(pixels);
-  IntRect source_image_rect;
-  source_image_rect.set_origin(
-      gfx::Point(unpack_skip_pixels_, unpack_skip_rows_));
-  source_image_rect.set_size(IntSize(width, height));
+  gfx::Rect source_image_rect(unpack_skip_pixels_, unpack_skip_rows_, width,
+                              height);
   TexImageHelperImageData(kTexImage3D, target, level, internalformat, 0, format,
                           type, depth, 0, 0, 0, pixels, source_image_rect,
                           unpack_image_height_);

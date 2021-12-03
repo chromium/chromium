@@ -21,34 +21,36 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type)
     : host_type_(host_type) {}
 
-void CanvasRenderingContextHost::RecordCanvasSizeToUMA(const IntSize& size) {
+void CanvasRenderingContextHost::RecordCanvasSizeToUMA(const gfx::Size& size) {
   if (did_record_canvas_size_to_uma_)
     return;
   did_record_canvas_size_to_uma_ = true;
 
   if (host_type_ == kCanvasHost) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.Canvas.SqrtNumberOfPixels",
-                                std::sqrt(size.Area()), 1, 5000, 100);
+                                std::sqrt(size.Area64()), 1, 5000, 100);
   } else if (host_type_ == kOffscreenCanvasHost) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("Blink.OffscreenCanvas.SqrtNumberOfPixels",
-                                std::sqrt(size.Area()), 1, 5000, 100);
+                                std::sqrt(size.Area64()), 1, 5000, 100);
   } else {
     NOTREACHED();
   }
 }
 
 scoped_refptr<StaticBitmapImage>
-CanvasRenderingContextHost::CreateTransparentImage(const IntSize& size) const {
+CanvasRenderingContextHost::CreateTransparentImage(
+    const gfx::Size& size) const {
   if (!IsValidImageSize(size))
     return nullptr;
   SkImageInfo info = SkImageInfo::Make(
-      SkISize::Make(size.width(), size.height()),
+      gfx::SizeToSkISize(size),
       GetRenderingContextSkColorInfo().makeAlphaType(kPremul_SkAlphaType));
   sk_sp<SkSurface> surface =
       SkSurface::MakeRaster(info, info.minRowBytes(), nullptr);

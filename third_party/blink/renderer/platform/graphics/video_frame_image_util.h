@@ -112,7 +112,7 @@ GetRasterContextProvider();
 // resource provider will be returned.
 PLATFORM_EXPORT std::unique_ptr<CanvasResourceProvider>
 CreateResourceProviderForVideoFrame(
-    IntSize size,
+    gfx::Size size,
     viz::RasterContextProvider* raster_context_provider);
 
 }  // namespace blink

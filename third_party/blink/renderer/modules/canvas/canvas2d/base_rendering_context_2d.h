@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -401,8 +402,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return *state_stack_.back();
   }
 
-  bool ComputeDirtyRect(const FloatRect& local_bounds, SkIRect*);
-  bool ComputeDirtyRect(const FloatRect& local_bounds,
+  bool ComputeDirtyRect(const gfx::RectF& local_bounds, SkIRect*);
+  bool ComputeDirtyRect(const gfx::RectF& local_bounds,
                         const SkIRect& transformed_clip_bounds,
                         SkIRect*);
 
@@ -416,7 +417,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
             CanvasRenderingContext2DState::ImageType,
             CanvasPerformanceMonitor::DrawType);
 
-  void InflateStrokeRect(FloatRect&) const;
+  void InflateStrokeRect(gfx::RectF&) const;
 
   void UnwindStateStack();
 
@@ -499,7 +500,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // EndLayer.
   void PopAndRestore();
 
-  bool ShouldDrawImageAntialiased(const FloatRect& dest_rect) const;
+  bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
 
   void SetTransform(const TransformationMatrix&);
 
@@ -538,8 +539,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void DrawImageInternal(cc::PaintCanvas*,
                          CanvasImageSource*,
                          Image*,
-                         const FloatRect& src_rect,
-                         const FloatRect& dst_rect,
+                         const gfx::RectF& src_rect,
+                         const gfx::RectF& dst_rect,
                          const SkSamplingOptions&,
                          const PaintFlags*);
   void ClipInternal(const Path&,
@@ -567,7 +568,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
 
   void ClearCanvasForSrcCompositeOp();
-  bool RectContainsTransformedRect(const FloatRect&, const SkIRect&) const;
+  bool RectContainsTransformedRect(const gfx::RectF&, const SkIRect&) const;
   // Sets the origin to be tainted by the content of the canvas, such
   // as a cross-origin image. This is as opposed to some other reason
   // such as tainting from a filter applied to the canvas.
@@ -661,7 +662,8 @@ void BaseRenderingContext2D::DrawInternal(
     draw_func(GetPaintCanvasForDraw(clip_bounds, draw_type), flags);
   } else {
     SkIRect dirty_rect;
-    if (ComputeDirtyRect(bounds, clip_bounds, &dirty_rect)) {
+    if (ComputeDirtyRect(gfx::SkRectToRectF(bounds), clip_bounds,
+                         &dirty_rect)) {
       const PaintFlags* flags =
           state.GetFlags(paint_type, kDrawShadowAndForeground, image_type);
       if (paint_type != CanvasRenderingContext2DState::kStrokePaintType &&
@@ -838,21 +840,21 @@ ALWAYS_INLINE bool BaseRenderingContext2D::StateHasFilter() {
 }
 
 ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
-    const FloatRect& local_rect,
+    const gfx::RectF& local_rect,
     const SkIRect& transformed_clip_bounds,
     SkIRect* dirty_rect) {
   DCHECK(dirty_rect);
   const CanvasRenderingContext2DState& state = GetState();
-  FloatRect canvas_rect = state.GetTransform().MapRect(local_rect);
+  gfx::RectF canvas_rect = state.GetTransform().MapRect(local_rect);
 
   if (UNLIKELY(AlphaChannel(state.ShadowColor()))) {
-    FloatRect shadow_rect(canvas_rect);
+    gfx::RectF shadow_rect(canvas_rect);
     shadow_rect.Offset(state.ShadowOffset());
     shadow_rect.Outset(ClampTo<float>(state.ShadowBlur()));
     canvas_rect.Union(shadow_rect);
   }
 
-  static_cast<SkRect>(canvas_rect).roundOut(dirty_rect);
+  gfx::RectFToSkRect(canvas_rect).roundOut(dirty_rect);
   if (UNLIKELY(!dirty_rect->intersect(transformed_clip_bounds)))
     return false;
 

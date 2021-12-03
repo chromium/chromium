@@ -72,7 +72,7 @@ class CanvasResourceProviderTest : public Test {
 };
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
@@ -106,7 +106,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
@@ -129,7 +129,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
@@ -156,7 +156,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageResourceRecycling) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
@@ -280,7 +280,7 @@ TEST_F(CanvasResourceProviderTest,
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
@@ -298,7 +298,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   MockCanvasResourceDispatcherClient client;
@@ -325,7 +325,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect2DGpuMemoryBuffer) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   const uint32_t shared_image_usage_flags =
@@ -360,7 +360,7 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect3DGpuMemoryBuffer) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
@@ -485,7 +485,7 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(

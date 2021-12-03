@@ -38,13 +38,12 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -187,13 +186,13 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() { return settings_; }
 
-  static ImageData* CreateForTest(const IntSize&);
-  static ImageData* CreateForTest(const IntSize&,
+  static ImageData* CreateForTest(const gfx::Size&);
+  static ImageData* CreateForTest(const gfx::Size&,
                                   NotShared<DOMArrayBufferView>,
                                   CanvasColorSpace,
                                   ImageDataStorageFormat);
 
-  ImageData(const IntSize&,
+  ImageData(const gfx::Size&,
             NotShared<DOMArrayBufferView>,
             CanvasColorSpace,
             ImageDataStorageFormat);
@@ -203,7 +202,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static unsigned StorageFormatBytesPerPixel(const String&);
   static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
 
-  IntSize Size() const { return size_; }
+  gfx::Size Size() const { return size_; }
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
   String colorSpace() const;
@@ -222,7 +221,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   SkPixmap GetSkPixmap() const;
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override { return size_; }
+  IntSize BitmapSourceSize() const override { return IntSize(size_); }
   ScriptPromise CreateImageBitmap(ScriptState*,
                                   absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
@@ -236,7 +235,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
       v8::Local<v8::Object> wrapper) override;
 
  private:
-  IntSize size_;
+  gfx::Size size_;
   // TODO(https://crbug.com/1198606): Remove this.
   Member<ImageDataSettings> settings_;
   Member<V8ImageDataArray> data_;

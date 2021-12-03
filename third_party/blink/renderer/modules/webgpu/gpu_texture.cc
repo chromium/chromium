@@ -200,7 +200,7 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
     // Fallback to static bitmap image.
     SourceImageStatus source_image_status = kInvalidSourceImageStatus;
     auto image = canvas->GetSourceImageForCanvas(&source_image_status,
-                                                 FloatSize(canvas->Size()));
+                                                 gfx::SizeF(canvas->Size()));
     if (source_image_status != kNormalSourceImageStatus) {
       exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                         "Failed to get image from canvas");

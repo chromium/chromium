@@ -766,6 +766,7 @@ component("platform") {
     "geometry/float_size.cc",
     "geometry/float_size.h",
     "geometry/geometry_as_json.h",
+    "geometry/geometry_hash_traits.h",
     "geometry/int_rect.cc",
     "geometry/int_rect.h",
     "geometry/int_rect_outsets.h",

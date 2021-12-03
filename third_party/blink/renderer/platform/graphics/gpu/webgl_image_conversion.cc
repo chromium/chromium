@@ -3208,7 +3208,7 @@ class FormatConverter {
   STACK_ALLOCATED();
 
  public:
-  FormatConverter(const IntRect& source_data_sub_rectangle,
+  FormatConverter(const gfx::Rect& source_data_sub_rectangle,
                   int depth,
                   int unpack_image_height,
                   const void* src_start,
@@ -3252,7 +3252,7 @@ class FormatConverter {
             WebGLImageConversion::AlphaOp alphaOp>
   void Convert();
 
-  const IntRect& src_sub_rectangle_;
+  const gfx::Rect& src_sub_rectangle_;
   const int depth_;
   const int unpack_image_height_;
   const void* const src_start_;
@@ -3908,7 +3908,7 @@ bool WebGLImageConversion::PackImageData(
     DataFormat source_format,
     unsigned source_image_width,
     unsigned source_image_height,
-    const IntRect& source_image_sub_rectangle,
+    const gfx::Rect& source_image_sub_rectangle,
     int depth,
     unsigned source_unpack_alignment,
     int unpack_image_height,
@@ -3937,8 +3937,8 @@ bool WebGLImageConversion::PackImageData(
 bool WebGLImageConversion::ExtractImageData(
     const void* image_data,
     DataFormat source_data_format,
-    const IntSize& image_data_size,
-    const IntRect& source_image_sub_rectangle,
+    const gfx::Size& image_data_size,
+    const gfx::Rect& source_image_sub_rectangle,
     int depth,
     int unpack_image_height,
     GLenum format,
@@ -4005,7 +4005,7 @@ bool WebGLImageConversion::ExtractTextureData(
 
   if (!PackPixels(src_data, source_data_format,
                   unpack_params.row_length ? unpack_params.row_length : width,
-                  height, IntRect(0, 0, width, height), 1,
+                  height, gfx::Rect(0, 0, width, height), 1,
                   unpack_params.alignment, 0, format, type,
                   (premultiply_alpha ? kAlphaDoPremultiply : kAlphaDoNothing),
                   data.data(), flip_y))
@@ -4014,19 +4014,20 @@ bool WebGLImageConversion::ExtractTextureData(
   return true;
 }
 
-bool WebGLImageConversion::PackPixels(const void* source_data,
-                                      DataFormat source_data_format,
-                                      unsigned source_data_width,
-                                      unsigned source_data_height,
-                                      const IntRect& source_data_sub_rectangle,
-                                      int depth,
-                                      unsigned source_unpack_alignment,
-                                      int unpack_image_height,
-                                      unsigned destination_format,
-                                      unsigned destination_type,
-                                      AlphaOp alpha_op,
-                                      void* destination_data,
-                                      bool flip_y) {
+bool WebGLImageConversion::PackPixels(
+    const void* source_data,
+    DataFormat source_data_format,
+    unsigned source_data_width,
+    unsigned source_data_height,
+    const gfx::Rect& source_data_sub_rectangle,
+    int depth,
+    unsigned source_unpack_alignment,
+    int unpack_image_height,
+    unsigned destination_format,
+    unsigned destination_type,
+    AlphaOp alpha_op,
+    void* destination_data,
+    bool flip_y) {
   DCHECK_GE(depth, 1);
   if (unpack_image_height == 0) {
     unpack_image_height = source_data_sub_rectangle.height();

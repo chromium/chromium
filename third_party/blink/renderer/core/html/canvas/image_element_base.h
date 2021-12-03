@@ -34,15 +34,15 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
 
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
 
   bool WouldTaintOrigin() const override;
 
-  FloatSize ElementSize(const FloatSize& default_object_size,
-                        const RespectImageOrientationEnum) const override;
-  FloatSize DefaultDestinationSize(
-      const FloatSize& default_object_size,
+  gfx::SizeF ElementSize(const gfx::SizeF& default_object_size,
+                         const RespectImageOrientationEnum) const override;
+  gfx::SizeF DefaultDestinationSize(
+      const gfx::SizeF& default_object_size,
       const RespectImageOrientationEnum) const override;
 
   bool IsAccelerated() const override;

@@ -112,12 +112,12 @@ class CORE_EXPORT HTMLVideoElement final
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool IsVideoElement() const override { return true; }
   bool WouldTaintOrigin() const override;
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override;
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override;
   const KURL& SourceURL() const override { return currentSrc(); }
   bool IsHTMLVideoElement() const override { return true; }
   // Video elements currently always go through RAM when used as a canvas image

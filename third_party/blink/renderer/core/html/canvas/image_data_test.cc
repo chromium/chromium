@@ -29,7 +29,7 @@ TEST_F(ImageDataTest, CreateImageDataTooBig) {
 
 TEST_F(ImageDataTest, ImageDataTooBigToAllocateDoesNotCrash) {
   ImageData* image_data = ImageData::CreateForTest(
-      IntSize(1, (v8::TypedArray::kMaxLength / 4) + 1));
+      gfx::Size(1, (v8::TypedArray::kMaxLength / 4) + 1));
   EXPECT_EQ(image_data, nullptr);
 }
 

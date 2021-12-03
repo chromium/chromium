@@ -70,7 +70,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                              bool,
                              bool,
                              const gfx::Point&,
-                             const IntRect&) {
+                             const gfx::Rect&) {
     NOTREACHED();
     return false;
   }

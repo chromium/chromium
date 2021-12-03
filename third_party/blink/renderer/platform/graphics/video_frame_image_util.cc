@@ -193,8 +193,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     DLOG(ERROR) << "An external CanvasResourceProvider must be provided when "
                    "providing a custom destination rect.";
     return nullptr;
-  } else if (!gfx::Rect(ToGfxSize(resource_provider->Size()))
-                  .Contains(final_dest_rect)) {
+  } else if (!gfx::Rect(resource_provider->Size()).Contains(final_dest_rect)) {
     DLOG(ERROR)
         << "Provided CanvasResourceProvider is too small. Expected at least "
         << final_dest_rect.ToString() << " got "
@@ -203,7 +202,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   auto raster_context_provider = GetRasterContextProvider();
-  const auto resource_provider_size = IntSize(final_dest_rect.size());
+  const auto resource_provider_size = final_dest_rect.size();
   std::unique_ptr<CanvasResourceProvider> local_resource_provider;
   if (!resource_provider) {
     local_resource_provider = CreateResourceProviderForVideoFrame(
@@ -241,7 +240,7 @@ bool DrawVideoFrameIntoResourceProvider(
     bool ignore_video_transformation) {
   DCHECK(frame);
   DCHECK(resource_provider);
-  DCHECK(gfx::Rect(ToGfxSize(resource_provider->Size())).Contains(dest_rect));
+  DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
 
   if (frame->HasTextures()) {
     if (!raster_context_provider) {
@@ -319,7 +318,7 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
-    IntSize size,
+    gfx::Size size,
     viz::RasterContextProvider* raster_context_provider) {
   if (!ShouldCreateAcceleratedImages(raster_context_provider)) {
     return CanvasResourceProvider::CreateBitmapProvider(

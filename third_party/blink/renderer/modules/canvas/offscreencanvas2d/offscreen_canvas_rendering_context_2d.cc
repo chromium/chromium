@@ -703,7 +703,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
       break;
   }
 
-  FloatRect bounds(
+  gfx::RectF bounds(
       location.x() - font_metrics.Height() / 2,
       location.y() - font_metrics.Ascent() - font_metrics.LineGap(),
       width + font_metrics.Height(), font_metrics.LineSpacing());
@@ -734,7 +734,8 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
+      gfx::RectFToSkRect(bounds), paint_type,
+      CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 
   // |paint_canvas| maybe rese during Draw. If that happens,

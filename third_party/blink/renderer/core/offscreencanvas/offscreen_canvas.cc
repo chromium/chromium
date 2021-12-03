@@ -50,7 +50,8 @@
 
 namespace blink {
 
-OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, const IntSize& size)
+OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
+                                 const gfx::Size& size)
     : CanvasRenderingContextHost(
           CanvasRenderingContextHost::HostType::kOffscreenCanvasHost),
       execution_context_(context),
@@ -85,7 +86,7 @@ OffscreenCanvas* OffscreenCanvas::Create(ExecutionContext* context,
                                          unsigned height) {
   UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.NewOffscreenCanvas", true);
   return MakeGarbageCollected<OffscreenCanvas>(
-      context, IntSize(ClampTo<int>(width), ClampTo<int>(height)));
+      context, gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
 }
 
 OffscreenCanvas::~OffscreenCanvas() {
@@ -148,18 +149,18 @@ void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
 }
 
 void OffscreenCanvas::setWidth(unsigned width) {
-  IntSize new_size = size_;
+  gfx::Size new_size = size_;
   new_size.set_width(ClampTo<int>(width));
   SetSize(new_size);
 }
 
 void OffscreenCanvas::setHeight(unsigned height) {
-  IntSize new_size = size_;
+  gfx::Size new_size = size_;
   new_size.set_height(ClampTo<int>(height));
   SetSize(new_size);
 }
 
-void OffscreenCanvas::SetSize(const IntSize& size) {
+void OffscreenCanvas::SetSize(const gfx::Size& size) {
   // Setting size of a canvas also resets it.
   if (size == size_) {
     if (context_ && context_->IsRenderingContext2D()) {
@@ -243,7 +244,7 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const AlphaDisposition alpha_disposition) {
   if (!context_) {
     *status = kInvalidSourceImageStatus;
@@ -269,7 +270,7 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
 }
 
 IntSize OffscreenCanvas::BitmapSourceSize() const {
-  return size_;
+  return IntSize(size_);
 }
 
 ScriptPromise OffscreenCanvas::CreateImageBitmap(

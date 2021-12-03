@@ -85,8 +85,8 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
   // there is a local WebCam associated, there might be sophisticated ways to
   // detect faces on it. Until then, treat as a normal <video> element.
 
-  const FloatSize size(
-      canvas_image_source->ElementSize(FloatSize(), kRespectImageOrientation));
+  const gfx::SizeF size =
+      canvas_image_source->ElementSize(gfx::SizeF(), kRespectImageOrientation);
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image =

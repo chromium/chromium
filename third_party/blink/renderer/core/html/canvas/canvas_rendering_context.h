@@ -239,9 +239,9 @@ class CORE_EXPORT CanvasRenderingContext
     NOTREACHED();
     return 0;
   }
-  virtual IntSize DrawingBufferSize() const {
+  virtual gfx::Size DrawingBufferSize() const {
     NOTREACHED();
-    return IntSize(0, 0);
+    return gfx::Size(0, 0);
   }
 
   // OffscreenCanvas-specific methods.

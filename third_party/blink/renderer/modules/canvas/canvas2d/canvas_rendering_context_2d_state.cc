@@ -410,7 +410,7 @@ void CanvasRenderingContext2DState::ValidateFilterState() const {
 }
 
 sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
-    IntSize canvas_size,
+    gfx::Size canvas_size,
     BaseRenderingContext2D* context) {
   ValidateFilterState();
   if (filter_state_ != FilterState::kUnresolved)
@@ -434,7 +434,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
   stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
   FilterEffectBuilder filter_effect_builder(
-      gfx::RectF(gfx::SizeF(ToGfxSize(canvas_size))),
+      gfx::RectF(gfx::SizeF(canvas_size)),
       1.0f,  // Deliberately ignore zoom on the canvas element.
       &fill_flags_for_filter, &stroke_flags_for_filter);
 
@@ -454,7 +454,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
 
 sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     Element* style_resolution_host,
-    IntSize canvas_size,
+    gfx::Size canvas_size,
     CanvasRenderingContext2D* context) {
   // TODO(1189879): Investigate refactoring all filter logic into the
   // CanvasFilterOperationResolver class
@@ -506,7 +506,7 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
   stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
   FilterEffectBuilder filter_effect_builder(
-      gfx::RectF(gfx::SizeF(ToGfxSize(canvas_size))),
+      gfx::RectF(gfx::SizeF(canvas_size)),
       1.0f,  // Deliberately ignore zoom on the canvas element.
       &fill_flags_for_filter, &stroke_flags_for_filter);
 

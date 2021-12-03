@@ -328,12 +328,12 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
 TEST_F(ImageBitmapTest,
        MAYBE_CreateImageBitmapFromTooBigImageDataDoesNotCrash) {
   ImageData* image_data =
-      ImageData::CreateForTest(IntSize(v8::TypedArray::kMaxLength / 16, 1));
+      ImageData::CreateForTest(gfx::Size(v8::TypedArray::kMaxLength / 16, 1));
   DCHECK(image_data);
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   options->setColorSpaceConversion("default");
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, gfx::Rect(ToGfxSize(image_data->Size())), options);
+      image_data, gfx::Rect(image_data->Size()), options);
   DCHECK(image_bitmap);
 }
 

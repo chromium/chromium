@@ -55,7 +55,7 @@
 
 namespace blink {
 
-Canvas2DLayerBridge::Canvas2DLayerBridge(const IntSize& size,
+Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
                                          RasterMode raster_mode,
                                          OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
@@ -662,9 +662,9 @@ void Canvas2DLayerBridge::FinalizeFrame() {
     rate_limiter_->Tick();
 }
 
-void Canvas2DLayerBridge::DoPaintInvalidation(const IntRect& dirty_rect) {
+void Canvas2DLayerBridge::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
   if (layer_ && raster_mode_ == RasterMode::kGPU)
-    layer_->SetNeedsDisplayRect(ToGfxRect(dirty_rect));
+    layer_->SetNeedsDisplayRect(dirty_rect);
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DLayerBridge::NewImageSnapshot() {

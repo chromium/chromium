@@ -446,7 +446,7 @@ class DrawingBufferForTests : public DrawingBuffer {
       std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
       const Platform::GraphicsInfo& graphics_info,
       DrawingBuffer::Client* client,
-      const IntSize& size,
+      const gfx::Size& size,
       PreserveDrawingBuffer preserve,
       UseMultisampling use_multisampling) {
     std::unique_ptr<Extensions3DUtil> extensions_util =

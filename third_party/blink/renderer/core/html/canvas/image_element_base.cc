@@ -47,7 +47,7 @@ bool ImageElementBase::IsImageElement() const {
 
 scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize& default_object_size,
+    const gfx::SizeF& default_object_size,
     const AlphaDisposition alpha_disposition) {
   // UnpremultiplyAlpha is not implemented yet.
   DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
@@ -66,7 +66,8 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
   scoped_refptr<Image> source_image = image_content->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(source_image.get())) {
     UseCounter::Count(GetElement().GetDocument(), WebFeature::kSVGInCanvas2D);
-    FloatSize image_size = svg_image->ConcreteObjectSize(default_object_size);
+    FloatSize image_size =
+        svg_image->ConcreteObjectSize(FloatSize(default_object_size));
     source_image = SVGImageForContainer::Create(
         svg_image, image_size, 1,
         GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()));
@@ -80,20 +81,22 @@ bool ImageElementBase::WouldTaintOrigin() const {
   return CachedImage() && !CachedImage()->IsAccessAllowed();
 }
 
-FloatSize ImageElementBase::ElementSize(
-    const FloatSize& default_object_size,
+gfx::SizeF ImageElementBase::ElementSize(
+    const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
   ImageResourceContent* image_content = CachedImage();
   if (!image_content || !image_content->HasImage())
-    return FloatSize();
+    return gfx::SizeF();
   Image* image = image_content->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image))
-    return svg_image->ConcreteObjectSize(default_object_size);
-  return FloatSize(image->Size(respect_orientation));
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    return ToGfxSizeF(
+        svg_image->ConcreteObjectSize(FloatSize(default_object_size)));
+  }
+  return gfx::SizeF(ToGfxSize(image->Size(respect_orientation)));
 }
 
-FloatSize ImageElementBase::DefaultDestinationSize(
-    const FloatSize& default_object_size,
+gfx::SizeF ImageElementBase::DefaultDestinationSize(
+    const gfx::SizeF& default_object_size,
     const RespectImageOrientationEnum respect_orientation) const {
   return ElementSize(default_object_size, respect_orientation);
 }
