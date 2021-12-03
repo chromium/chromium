@@ -1,7 +1,7 @@
 include_rules = [
   # Do not add chrome here (use a delegate instead).
-  "+chromeos/grit/chromeos_eche_bundle_resources.h",
-  "+chromeos/grit/chromeos_eche_bundle_resources_map.h",
+  "+ash/grit/ash_eche_bundle_resources.h",
+  "+ash/grit/ash_eche_bundle_resources_map.h",
   "+chromeos/services/device_sync/public/cpp",
   "+chromeos/services/secure_channel/public/cpp",
   "+components/keyed_service/core/keyed_service.h",

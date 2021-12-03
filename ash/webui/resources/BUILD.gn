@@ -322,23 +322,21 @@ grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.
   if (enable_cros_eche_app) {
     # Obtained via an internal CIPD package in src/DEPS.
-    source = "//ash/webui/eche_app_ui/resources/prod/eche_bundle_resources.grd"
-  } else {
     source =
-        "//ash/webui/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
+        "//ash/webui/eche_app_ui/resources/prod/ash_eche_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/eche_app_ui/resources/mock/ash_eche_bundle_mock_resources.grd"
   }
 
   use_brotli = true
 
-  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
-  # when .grd from internal CIPD package is updated.
   outputs = [
-    "grit/chromeos_eche_bundle_resources.h",
-    "grit/chromeos_eche_bundle_resources_map.cc",
-    "grit/chromeos_eche_bundle_resources_map.h",
-    "chromeos_eche_bundle_resources.pak",
+    "grit/ash_eche_bundle_resources.h",
+    "grit/ash_eche_bundle_resources_map.cc",
+    "grit/ash_eche_bundle_resources_map.h",
+    "ash_eche_bundle_resources.pak",
   ]
-  output_dir = "$root_gen_dir/chromeos"
+  output_dir = "$root_gen_dir/ash"
 }
 
 # Resources used by chrome://connectivity-diagnostics

@@ -509,14 +509,14 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [3300],
   },
-  # Both eche_bundle_resources.grd and eche_bundle_mock_resources.grd
+  # Both ash_eche_bundle_resources.grd and ash_eche_bundle_mock_resources.grd
   # start with the same id because only one of them is built depending on if
   # src_internal is available.
-  "ash/webui/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
+  "ash/webui/eche_app_ui/resources/prod/ash_eche_bundle_resources.grd": {
     "META": {"sizes": {"includes": [120],}},
     "includes": [3320],
   },
-  "ash/webui/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd": {
+  "ash/webui/eche_app_ui/resources/mock/ash_eche_bundle_mock_resources.grd": {
     "META": {"sizes": {"includes": [120],}},
     "includes": [3320],
   },

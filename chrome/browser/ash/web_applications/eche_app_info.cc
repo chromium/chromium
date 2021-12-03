@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_eche_bundle_resources.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_application_info.h"
-#include "chromeos/grit/chromeos_eche_bundle_resources.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/display/screen.h"
 
@@ -26,7 +26,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp() {
   info->title = u"Eche App";
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
-      {{"app_icon_256.png", 256, IDR_CHROMEOS_ECHE_APP_ICON_256_PNG}}, *info);
+      {{"app_icon_256.png", 256, IDR_ASH_ECHE_APP_ICON_256_PNG}}, *info);
   info->theme_color = 0xFFFFFFFF;
   info->background_color = 0xFFFFFFFF;
   info->display_mode = blink::mojom::DisplayMode::kMinimalUi;

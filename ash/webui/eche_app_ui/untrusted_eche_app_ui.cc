@@ -5,9 +5,9 @@
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 
 #include "ash/grit/ash_eche_app_resources.h"
+#include "ash/grit/ash_eche_bundle_resources.h"
+#include "ash/grit/ash_eche_bundle_resources_map.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_eche_bundle_resources.h"
-#include "chromeos/grit/chromeos_eche_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -35,11 +35,10 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(kChromeUIEcheAppGuestURL);
 
   html_source->AddResourcePath("untrusted_index.html",
-                               IDR_CHROMEOS_ECHE_UNTRUSTED_INDEX_HTML);
-  html_source->AddResourcePath("js/app_bundle.js",
-                               IDR_CHROMEOS_ECHE_APP_BUNDLE_JS);
+                               IDR_ASH_ECHE_UNTRUSTED_INDEX_HTML);
+  html_source->AddResourcePath("js/app_bundle.js", IDR_ASH_ECHE_APP_BUNDLE_JS);
   html_source->AddResourcePath("assets/app_bundle.css",
-                               IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
+                               IDR_ASH_ECHE_APP_BUNDLE_CSS);
   html_source->AddResourcePath(
       "message_pipe.js",
       IDR_ASH_ECHE_APP_______SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
@@ -47,8 +46,8 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("receiver.js", IDR_ASH_ECHE_APP_RECEIVER_JS);
 
-  html_source->AddResourcePaths(base::make_span(
-      kChromeosEcheBundleResources, kChromeosEcheBundleResourcesSize));
+  html_source->AddResourcePaths(
+      base::make_span(kAshEcheBundleResources, kAshEcheBundleResourcesSize));
 
   html_source->AddFrameAncestor(GURL(kChromeUIEcheAppURL));
 
