@@ -156,32 +156,6 @@ TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
                      LPDWORD thread_id);
 
 // -----------------------------------------------------------------------
-// Interceptors handled by the registry dispatcher.
-
-// Interception of NtCreateKey on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateKey64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG title_index,
-                    PUNICODE_STRING class_name,
-                    ULONG create_options,
-                    PULONG disposition);
-
-// Interception of NtOpenKey on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKey64(PHANDLE key,
-                  ACCESS_MASK desired_access,
-                  POBJECT_ATTRIBUTES object_attributes);
-
-// Interception of NtOpenKeyEx on the child process.
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKeyEx64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG open_options);
-
-// -----------------------------------------------------------------------
 // Interceptors handled by the process mitigations win32k lockdown code.
 
 // Interceptor for the GdiDllInitialize function.

@@ -32,16 +32,13 @@ SBOX_TESTS_COMMAND int UseOneDLL(int argc, wchar_t** argv) {
   return rv;
 }
 
-// Opens an HKLM registry key passed as the first parameter of argv.
-SBOX_TESTS_COMMAND int SimpleOpenKey(int argc, wchar_t** argv) {
-  if (argc != 1)
-    return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
-  HKEY handle;
-  if (::RegOpenKeyEx(HKEY_LOCAL_MACHINE, argv[0], 0, KEY_ENUMERATE_SUB_KEYS,
-                     &handle)) {
+// Opens the current executable's path.
+SBOX_TESTS_COMMAND int OpenExecutablePath(int argc, wchar_t** argv) {
+  WCHAR full_path[MAX_PATH];
+  if (!::GetModuleFileName(nullptr, full_path, MAX_PATH))
+    return SBOX_TEST_FIRST_ERROR;
+  if (::GetFileAttributes(full_path) == INVALID_FILE_ATTRIBUTES)
     return SBOX_TEST_FAILED;
-  }
-  ::CloseHandle(handle);
   return SBOX_TEST_SUCCEEDED;
 }
 
@@ -57,9 +54,8 @@ TEST(UnloadDllTest, MAYBE_BaselineAvicapDll) {
   runner.SetTimeout(2000);
   // Add a registry rule, because that ensures that the interception agent has
   // more than one item in its internal table.
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_REGISTRY,
-                             TargetPolicy::REG_ALLOW_ANY,
-                             L"HKEY_LOCAL_MACHINE\\Software\\Microsoft"));
+  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_FILES,
+                             TargetPolicy::FILES_ALLOW_QUERY, L"\\??\\*.exe"));
 
   // Note for the puzzled: avicap32.dll is a 64-bit dll in 64-bit versions of
   // windows so this test and the others just work.
@@ -87,18 +83,15 @@ TEST(UnloadDllTest, UnloadAviCapDllWithPatching) {
   // Add a couple of rules that ensures that the interception agent add EAT
   // patching on the client which makes sure that the unload dll record does
   // not interact badly with them.
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_REGISTRY,
-                             TargetPolicy::REG_ALLOW_READONLY,
-                             L"HKEY_LOCAL_MACHINE"));
-  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_REGISTRY,
-                             TargetPolicy::REG_ALLOW_ANY,
-                             L"HKEY_LOCAL_MACHINE\\Software\\Microsoft"));
+  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_FILES,
+                             TargetPolicy::FILES_ALLOW_QUERY, L"\\??\\*.exe"));
+  EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_FILES,
+                             TargetPolicy::FILES_ALLOW_QUERY, L"\\??\\*.log"));
 
   EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"UseOneDLL L avicap32.dll"));
 
   runner.SetTestState(AFTER_REVERT);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"SimpleOpenKey software\\microsoft"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"OpenExecutablePath"));
 }
 
 }  // namespace sandbox

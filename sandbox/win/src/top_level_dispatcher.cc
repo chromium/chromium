@@ -17,7 +17,6 @@
 #include "sandbox/win/src/named_pipe_dispatcher.h"
 #include "sandbox/win/src/process_mitigations_win32k_dispatcher.h"
 #include "sandbox/win/src/process_thread_dispatcher.h"
-#include "sandbox/win/src/registry_dispatcher.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/signed_dispatcher.h"
 #include "sandbox/win/src/socket_dispatcher.h"
@@ -49,11 +48,6 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
   ipc_targets_[static_cast<size_t>(IpcTag::NTOPENPROCESSTOKENEX)] = dispatcher;
   ipc_targets_[static_cast<size_t>(IpcTag::CREATETHREAD)] = dispatcher;
   thread_process_dispatcher_.reset(dispatcher);
-
-  dispatcher = new RegistryDispatcher(policy_);
-  ipc_targets_[static_cast<size_t>(IpcTag::NTCREATEKEY)] = dispatcher;
-  ipc_targets_[static_cast<size_t>(IpcTag::NTOPENKEY)] = dispatcher;
-  registry_dispatcher_.reset(dispatcher);
 
   dispatcher = new ProcessMitigationsWin32KDispatcher(policy_);
   ipc_targets_[static_cast<size_t>(IpcTag::GDI_GDIDLLINITIALIZE)] = dispatcher;

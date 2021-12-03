@@ -27,7 +27,6 @@
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/process_mitigations_win32k_policy.h"
 #include "sandbox/win/src/process_thread_policy.h"
-#include "sandbox/win/src/registry_policy.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
@@ -714,13 +713,6 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
     }
     case SUBSYS_NAMED_PIPES: {
       if (!NamedPipePolicy::GenerateRules(pattern, semantics, policy_maker_)) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SUBSYS_REGISTRY: {
-      if (!RegistryPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
         NOTREACHED();
         return SBOX_ERROR_BAD_PARAMS;
       }

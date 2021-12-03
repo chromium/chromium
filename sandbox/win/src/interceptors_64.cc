@@ -10,7 +10,6 @@
 #include "sandbox/win/src/policy_target.h"
 #include "sandbox/win/src/process_mitigations_win32k_interception.h"
 #include "sandbox/win/src/process_thread_interception.h"
-#include "sandbox/win/src/registry_interception.h"
 #include "sandbox/win/src/sandbox_nt_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/signed_interception.h"
@@ -229,43 +228,6 @@ TargetCreateThread64(LPSECURITY_ATTRIBUTES thread_attributes,
   return TargetCreateThread(orig_fn, thread_attributes, stack_size,
                             start_address, parameter, creation_flags,
                             thread_id);
-}
-
-// -----------------------------------------------------------------------
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtCreateKey64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG title_index,
-                    PUNICODE_STRING class_name,
-                    ULONG create_options,
-                    PULONG disposition) {
-  NtCreateKeyFunction orig_fn =
-      reinterpret_cast<NtCreateKeyFunction>(g_originals[CREATE_KEY_ID]);
-  return TargetNtCreateKey(orig_fn, key, desired_access, object_attributes,
-                           title_index, class_name, create_options,
-                           disposition);
-}
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKey64(PHANDLE key,
-                  ACCESS_MASK desired_access,
-                  POBJECT_ATTRIBUTES object_attributes) {
-  NtOpenKeyFunction orig_fn =
-      reinterpret_cast<NtOpenKeyFunction>(g_originals[OPEN_KEY_ID]);
-  return TargetNtOpenKey(orig_fn, key, desired_access, object_attributes);
-}
-
-SANDBOX_INTERCEPT NTSTATUS WINAPI
-TargetNtOpenKeyEx64(PHANDLE key,
-                    ACCESS_MASK desired_access,
-                    POBJECT_ATTRIBUTES object_attributes,
-                    ULONG open_options) {
-  NtOpenKeyExFunction orig_fn =
-      reinterpret_cast<NtOpenKeyExFunction>(g_originals[OPEN_KEY_EX_ID]);
-  return TargetNtOpenKeyEx(orig_fn, key, desired_access, object_attributes,
-                           open_options);
 }
 
 // -----------------------------------------------------------------------

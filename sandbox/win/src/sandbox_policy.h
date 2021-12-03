@@ -29,7 +29,6 @@ class TargetPolicy {
     SUBSYS_FILES,            // Creation and opening of files and pipes.
     SUBSYS_NAMED_PIPES,      // Creation of named pipes.
     SUBSYS_PROCESS,          // Creation of child processes.
-    SUBSYS_REGISTRY,         // Creation and opening of registry keys.
     SUBSYS_WIN32K_LOCKDOWN,  // Win32K Lockdown related policy.
     SUBSYS_SIGNED_BINARY,    // Signed binary policy.
     SUBSYS_SOCKET            // Socket brokering policy.
@@ -44,8 +43,6 @@ class TargetPolicy {
     FILES_ALLOW_DIR_ANY,   // Allows open or create with directory semantics
                            // only.
     NAMEDPIPES_ALLOW_ANY,  // Allows creation of a named pipe.
-    REG_ALLOW_READONLY,    // Allows readonly access to a registry key.
-    REG_ALLOW_ANY,         // Allows read and write access to a registry key.
     FAKE_USER_GDI_INIT,    // Fakes user32 and gdi32 initialization. This can
                            // be used to allow the DLLs to load and initialize
                            // even if the process cannot access that subsystem.

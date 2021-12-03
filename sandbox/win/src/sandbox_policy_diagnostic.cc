@@ -175,10 +175,6 @@ std::string GetIpcTagAsString(IpcTag service) {
       return "NtOpenProcessToken";
     case IpcTag::NTOPENPROCESSTOKENEX:
       return "NtOpenProcessTokenEx";
-    case IpcTag::NTCREATEKEY:
-      return "NtCreateKey";
-    case IpcTag::NTOPENKEY:
-      return "NtOpenKey";
     case IpcTag::GDI_GDIDLLINITIALIZE:
       return "GdiDllInitialize";
     case IpcTag::GDI_GETSTOCKOBJECT:
