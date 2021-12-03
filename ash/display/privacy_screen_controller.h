@@ -91,10 +91,6 @@ class ASH_EXPORT PrivacyScreenController
   // Retrieves the current user's PrivacyScreen preference.
   bool GetStateFromActiveUserPreference() const;
 
-  // Get the ID of the internal display that supports privacy screen. Return
-  // display::kInvalidDisplayId if none is found.
-  int64_t GetSupportedDisplayId() const;
-
   // Whether or not to alert observers about PrivacyScreen state change.
   bool ShouldNotifyObservers(bool from_user_pref_init) const;
 

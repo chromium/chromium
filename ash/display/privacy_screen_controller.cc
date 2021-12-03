@@ -18,6 +18,34 @@
 
 namespace ash {
 
+namespace {
+
+// Gets the DisplaySnapshot of the internal display that supports privacy
+// screen. Returns nullptr if none exists.
+display::DisplaySnapshot* GetSupportedDisplay() {
+  const auto& cached_displays =
+      Shell::Get()->display_configurator()->cached_displays();
+
+  for (auto* display : cached_displays) {
+    if (display->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL &&
+        display->privacy_screen_state() != display::kNotSupported &&
+        display->current_mode()) {
+      return display;
+    }
+  }
+  return nullptr;
+}
+
+// Gets the ID of the internal display that supports privacy screen. Returns
+// display::kInvalidDisplayId if none is found.
+int64_t GetSupportedDisplayId() {
+  auto* privacy_screen_display = GetSupportedDisplay();
+  return privacy_screen_display ? privacy_screen_display->display_id()
+                                : display::kInvalidDisplayId;
+}
+
+}  // namespace
+
 PrivacyScreenController::PrivacyScreenController() {
   Shell::Get()->session_controller()->AddObserver(this);
   Shell::Get()->display_configurator()->AddObserver(this);
@@ -119,10 +147,18 @@ void PrivacyScreenController::OnDisplayModeChanged(
     const std::vector<display::DisplaySnapshot*>& displays) {
   // OnDisplayModeChanged() may fire many times during Chrome's lifetime. We
   // limit automatic user pref initialization to login screen only.
-  if (applying_login_screen_prefs_) {
-    InitFromUserPrefs();
-    applying_login_screen_prefs_ = false;
-  }
+  if (!applying_login_screen_prefs_)
+    return;
+
+  // Extract the initial state of the privacy screen from the supporting panel
+  // at the time the display was configured.
+  display::DisplaySnapshot* privacy_screen_display = GetSupportedDisplay();
+  current_status_ =
+      privacy_screen_display &&
+      privacy_screen_display->privacy_screen_state() == display::kEnabled;
+
+  InitFromUserPrefs();
+  applying_login_screen_prefs_ = false;
 }
 
 bool PrivacyScreenController::CalculateCurrentStatus() const {
@@ -176,21 +212,6 @@ void PrivacyScreenController::InitFromUserPrefs() {
 bool PrivacyScreenController::GetStateFromActiveUserPreference() const {
   return active_user_pref_service_ && active_user_pref_service_->GetBoolean(
                                           prefs::kDisplayPrivacyScreenEnabled);
-}
-
-int64_t PrivacyScreenController::GetSupportedDisplayId() const {
-  const auto& cached_displays =
-      Shell::Get()->display_configurator()->cached_displays();
-
-  for (auto* display : cached_displays) {
-    if (display->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL &&
-        display->privacy_screen_state() != display::kNotSupported &&
-        display->current_mode()) {
-      return display->display_id();
-    }
-  }
-
-  return display::kInvalidDisplayId;
 }
 
 bool PrivacyScreenController::ShouldNotifyObservers(
