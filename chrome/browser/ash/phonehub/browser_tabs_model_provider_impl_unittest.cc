@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ash/phonehub/browser_tabs_model_provider_impl.h"
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "ash/components/phonehub/fake_browser_tabs_metadata_fetcher.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
 #include "ash/components/phonehub/phone_model_test_util.h"
@@ -71,10 +75,10 @@ multidevice::RemoteDeviceRef CreatePhoneDevice(const std::string& pii_name) {
   return builder.Build();
 }
 
-sync_sessions::SyncedSession* CreateNewSession(
+std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const base::Time& session_time = base::Time::FromDoubleT(0)) {
-  sync_sessions::SyncedSession* session = new sync_sessions::SyncedSession();
+  auto session = std::make_unique<sync_sessions::SyncedSession>();
   session->session_name = session_name;
   session->modified_time = session_time;
   return session;
@@ -210,8 +214,9 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
 
   // Test enabling tab sync with no matching pii name with session_name.
   std::vector<const sync_sessions::SyncedSession*> sessions;
-  sync_sessions::SyncedSession* session = CreateNewSession(kPhoneNameTwo);
-  sessions.emplace_back(session);
+  std::unique_ptr<sync_sessions::SyncedSession> session =
+      CreateNewSession(kPhoneNameTwo);
+  sessions.emplace_back(session.get());
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
   NotifySubscription();
@@ -223,8 +228,9 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
   // Test enabling tab sync with matching pii name with session_name, which
   // will cause the |fake_browser_tabs_metadata_fetcher()| to have a pending
   // callback.
-  sync_sessions::SyncedSession* new_session = CreateNewSession(kPhoneNameOne);
-  sessions.emplace_back(new_session);
+  std::unique_ptr<sync_sessions::SyncedSession> new_session =
+      CreateNewSession(kPhoneNameOne);
+  sessions.emplace_back(new_session.get());
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
   NotifySubscription();
@@ -243,8 +249,10 @@ TEST_F(BrowserTabsModelProviderImplTest, AttemptBrowserTabsModelUpdate) {
 
 TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
   SetPiiFreeName(kPhoneNameOne);
-  sync_sessions::SyncedSession* new_session = CreateNewSession(kPhoneNameOne);
-  std::vector<const sync_sessions::SyncedSession*> sessions({new_session});
+  std::unique_ptr<sync_sessions::SyncedSession> new_session =
+      CreateNewSession(kPhoneNameOne);
+  std::vector<const sync_sessions::SyncedSession*> sessions(
+      {new_session.get()});
 
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
@@ -266,17 +274,17 @@ TEST_F(BrowserTabsModelProviderImplTest, ClearTabMetadataDuringMetadataFetch) {
 
 TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
   SetPiiFreeName(kPhoneNameOne);
-  sync_sessions::SyncedSession* session_a =
+  std::unique_ptr<sync_sessions::SyncedSession> session_a =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(1));
-  sync_sessions::SyncedSession* session_b =
+  std::unique_ptr<sync_sessions::SyncedSession> session_b =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(3));
-  sync_sessions::SyncedSession* session_c =
+  std::unique_ptr<sync_sessions::SyncedSession> session_c =
       CreateNewSession(kPhoneNameOne, base::Time::FromDoubleT(2));
-  sync_sessions::SyncedSession* session_d =
+  std::unique_ptr<sync_sessions::SyncedSession> session_d =
       CreateNewSession(kPhoneNameTwo, base::Time::FromDoubleT(10));
 
   std::vector<const sync_sessions::SyncedSession*> sessions(
-      {session_a, session_b, session_c, session_d});
+      {session_a.get(), session_b.get(), session_c.get(), session_d.get()});
 
   set_enable_tab_sync(true);
   set_synced_sessions(&sessions);
@@ -285,7 +293,8 @@ TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
 
   // |session_b| should be the selected session because it is the has the same
   // session_name as the set phone name and the latest modified time.
-  EXPECT_EQ(fake_browser_tabs_metadata_fetcher()->GetSession(), session_b);
+  EXPECT_EQ(fake_browser_tabs_metadata_fetcher()->GetSession(),
+            session_b.get());
 }
 
 }  // namespace phonehub
