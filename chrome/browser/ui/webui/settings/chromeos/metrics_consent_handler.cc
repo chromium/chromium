@@ -63,13 +63,14 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
     base::Value::ConstListView args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
+  CHECK_EQ(args[1].type(), base::Value::Type::DICTIONARY);
 
   const base::Value& callback_id = args[0];
-  const bool metrics_consent = args[1].GetBool();
+  absl::optional<bool> metrics_consent = args[1].FindBoolKey("consent");
+  CHECK(metrics_consent);
 
   auto* stats_reporting_controller = ash::StatsReportingController::Get();
-
-  stats_reporting_controller->SetEnabled(profile_, metrics_consent);
+  stats_reporting_controller->SetEnabled(profile_, metrics_consent.value());
 
   // Re-read from |stats_reporting_controller|. If |profile_| is not owner, then
   // the consent should not have changed to |metrics_consent|.

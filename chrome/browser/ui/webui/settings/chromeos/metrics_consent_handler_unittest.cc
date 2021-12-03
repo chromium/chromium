@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/metrics_consent_handler.h"
 
 #include "ash/components/settings/cros_settings_names.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -62,7 +63,11 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
   void UpdateMetricsConsent(bool metrics_consent) {
     base::ListValue args;
     args.Append(base::Value("callback-id"));
-    args.Append(base::Value(metrics_consent));
+
+    base::DictionaryValue dict;
+    dict.SetBoolKey("consent", metrics_consent);
+    args.Append(std::move(dict));
+
     HandleUpdateMetricsConsent(args.GetList());
   }
 };
