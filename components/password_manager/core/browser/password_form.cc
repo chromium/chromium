@@ -275,8 +275,6 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.password_element_renderer_id == rhs.password_element_renderer_id &&
          lhs.password_value == rhs.password_value &&
          lhs.new_password_element == rhs.new_password_element &&
-         lhs.confirmation_password_element_renderer_id ==
-             rhs.confirmation_password_element_renderer_id &&
          lhs.confirmation_password_element ==
              rhs.confirmation_password_element &&
          lhs.confirmation_password_element_renderer_id ==
