@@ -85,8 +85,10 @@ class TestLiteVideoUserBlocklist : public LiteVideoUserBlocklist {
 class LiteVideoUserBlocklistTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+    // `ConfigBlocklistWithParams()` must be before base class SetUp. See the
+    // warning in ScopedFeatureList.h.
     ConfigBlocklistWithParams({});
+    content::RenderViewHostTestHarness::SetUp();
   }
   // Sets up a new blocklist with the given |params|.
   void ConfigBlocklistWithParams(
