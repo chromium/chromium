@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 #define MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 
+#include <linux/media/vp9-ctrls.h>
 #include <linux/videodev2.h>
 
 #include "base/files/memory_mapped_file.h"
@@ -152,6 +153,12 @@ class V4L2IoctlShim {
 
   // Starts streaming |queue| (via VIDIOC_STREAMON).
   bool StreamOn(const enum v4l2_buf_type type) const WARN_UNUSED_RESULT;
+
+  // Sets the value of a control which specifies VP9 decoding parameters
+  // for each frame.
+  bool SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
+                   v4l2_ctrl_vp9_frame_decode_params& frame_params) const
+      WARN_UNUSED_RESULT;
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.

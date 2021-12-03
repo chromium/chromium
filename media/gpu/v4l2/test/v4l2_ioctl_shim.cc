@@ -43,6 +43,7 @@ static const std::unordered_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMON),
+        V4L2_REQUEST_CODE_AND_STRING(VIDIOC_S_EXT_CTRLS),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC)};
 
 // Finds corresponding defined V4L2 request code name
@@ -238,6 +239,18 @@ bool V4L2IoctlShim::Ioctl(int request_code, int* arg) const {
   return ret == kIoctlOk;
 }
 
+template <>
+bool V4L2IoctlShim::Ioctl(int request_code,
+                          struct v4l2_ext_controls* ctrls) const {
+  DCHECK(request_code == static_cast<int>(VIDIOC_S_EXT_CTRLS));
+  LOG_ASSERT(ctrls != nullptr) << "|ctrls| check failed.";
+
+  const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, ctrls);
+  LogIoctlResult(ret, request_code);
+
+  return ret == kIoctlOk;
+}
+
 bool V4L2IoctlShim::EnumFrameSizes(uint32_t fourcc) const {
   struct v4l2_frmsizeenum frame_size;
 
@@ -360,6 +373,30 @@ bool V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
   int arg = static_cast<int>(type);
 
   return Ioctl(VIDIOC_STREAMON, &arg);
+}
+
+bool V4L2IoctlShim::SetExtCtrls(
+    const std::unique_ptr<V4L2Queue>& queue,
+    v4l2_ctrl_vp9_frame_decode_params& frame_params) const {
+  struct v4l2_ext_control ctrl = {
+      .id = V4L2_CID_MPEG_VIDEO_VP9_FRAME_DECODE_PARAMS,
+      .size = sizeof(frame_params),
+      .ptr = &frame_params};
+
+  // "If |request_fd| is set to a not-yet-queued request file descriptor
+  // and |which| is set to V4L2_CTRL_WHICH_REQUEST_VAL, then the controls
+  // are not applied immediately when calling VIDIOC_S_EXT_CTRLS, but
+  // instead are applied by the driver for the buffer associated with
+  // the same request.", see:
+  // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-ext-ctrls.html#description
+  struct v4l2_ext_controls ctrls = {.which = V4L2_CTRL_WHICH_REQUEST_VAL,
+                                    .count = 1,
+                                    .request_fd = queue->media_request_fd(),
+                                    .controls = &ctrl};
+
+  const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls);
+
+  return ret;
 }
 
 bool V4L2IoctlShim::MediaIocRequestAlloc(int* media_request_fd) const {

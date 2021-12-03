@@ -390,6 +390,9 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   FillV4L2VP9LoopFilterParams(lf_params, &v4l2_frame_params.lf);
   FillV4L2VP9SegmentationParams(segm_params, &v4l2_frame_params.seg);
 
+  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, v4l2_frame_params))
+    LOG(ERROR) << "VIDIOC_S_EXT_CTRLS failed.";
+
   // TODO(stevecho): call RefreshReferenceSlots() once decoded buffer is ready.
 
   return Vp9Decoder::kOk;
