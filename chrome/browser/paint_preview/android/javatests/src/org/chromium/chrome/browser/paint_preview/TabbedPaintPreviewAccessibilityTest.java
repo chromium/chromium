@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,6 +58,8 @@ public class TabbedPaintPreviewAccessibilityTest {
      */
     @Test
     @MediumTest
+    @DisableIf.
+    Build(message = "https://crbug.com/1276517", sdk_is_greater_than = Build.VERSION_CODES.O)
     public void smokeTest() throws ExecutionException, TimeoutException {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
