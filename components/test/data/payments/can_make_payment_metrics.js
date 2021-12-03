@@ -55,6 +55,8 @@ function noQueryShow() { // eslint-disable-line no-unused-vars, max-len
  * Do not query CanMakePayment before showing the Payment Request. This request
  * will be sent with the given methods.
  * @param {Array<Object>} methods An array of payment method objects.
+ * @return {string} 'success' if show() has been successfully called; otherwise,
+ *         return the error message.
  */
 function noQueryShowWithMethods(methods) { // eslint-disable-line no-unused-vars
   try {
@@ -72,8 +74,10 @@ function noQueryShowWithMethods(methods) { // eslint-disable-line no-unused-vars
         .catch(function(error) {
           print(error);
         });
+    return 'success';
   } catch (error) {
     print(error.message);
+    return error.message;
   }
 }
 
