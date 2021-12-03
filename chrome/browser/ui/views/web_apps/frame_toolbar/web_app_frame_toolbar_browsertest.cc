@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   // Validate that a point marked "app-region: no-drag" within a draggable
   // region is not draggable.
-  gfx::Point non_draggable_point(105, 105);
+  gfx::Point non_draggable_point(106, 106);
   views::View::ConvertPointToTarget(
       helper()->browser_view()->contents_web_view(), frame_view,
       &non_draggable_point);
@@ -816,6 +816,15 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_NE(frame_view->NonClientHitTest(kBorderPoint), HTCAPTION);
   EXPECT_TRUE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
       helper()->browser_view()->GetWidget()->GetNativeView(), kBorderPoint));
+
+  // Validate that draggable region does not clear after history.replaceState is
+  // invoked.
+  std::string kHistoryReplaceState =
+      "history.replaceState({ test: 'test' }, null);";
+  EXPECT_TRUE(ExecuteScript(helper()->browser_view()->GetActiveWebContents(),
+                            kHistoryReplaceState));
+  EXPECT_FALSE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
+      helper()->browser_view()->GetWidget()->GetNativeView(), draggable_point));
 
   // Validate that the draggable region is reset on navigation and the point is
   // no longer draggable.

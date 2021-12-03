@@ -290,7 +290,8 @@ void AppBrowserController::DidStartNavigation(
 
 void AppBrowserController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->IsSameDocument())
     return;
 
   // Reset the draggable regions so they are not cached on navigation.
