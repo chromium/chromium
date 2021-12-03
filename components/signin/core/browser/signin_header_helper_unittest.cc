@@ -329,7 +329,7 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestGoogleComSupervised) {
 
 // Mirror is always enabled on Android and iOS, so these tests are only relevant
 // on Desktop.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(SigninHeaderHelperTest, TestMirrorRequestGaiaURL) {
   // No request when account consistency is disabled.
@@ -636,7 +636,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
   }
 }
 
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that the Mirror header request is returned normally when the redirect
 // URL is eligible.

@@ -55,7 +55,6 @@ TEST_F('SigninReauthTest', 'Dialog', function() {
   mocha.run();
 });
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_LACROS)');
 /**
  * Test fixture for
  * chrome/browser/resources/signin/dice_web_signin_intercept/dice_web_signin_intercept.html.
@@ -71,7 +70,6 @@ var DiceWebSigninInterceptTest = class extends SigninBrowserTest {
 TEST_F('DiceWebSigninInterceptTest', 'Bubble', function() {
   mocha.run();
 });
-GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)');
 
 /**
  * Test fixture for

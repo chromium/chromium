@@ -346,16 +346,16 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
         !SessionStartupPref::TypeHasRecommendedValue(profile_->GetPrefs());
   }
 
-  // TODO(https://crbug.com/1276034): Cleanup this code, in particular on Ash
-  // where the welcome flow is never shown.
   bool welcome_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_))
-    welcome_enabled = false;
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   welcome_enabled =
       welcome::IsEnabled(profile_) && welcome::HasModulesToShow(profile_);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_))
+    welcome_enabled = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   const bool whats_new_enabled =
       promotional_tabs_enabled && whats_new::ShouldShowForState(local_state);

@@ -13,6 +13,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -43,7 +44,7 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
       BuildTestingProfile(/*is_new_profile=*/false);
 
   signin::AccountConsistencyMethod method =
-#if BUILDFLAG(ENABLE_MIRROR)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_LACROS)
       signin::AccountConsistencyMethod::kMirror;
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
       signin::AccountConsistencyMethod::kDice;
@@ -61,7 +62,9 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/1220066): Remove the lacros exclusion when DICE is disabled on
+// Lacros.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Checks that changing the signin-allowed pref changes the Dice state on next
 // startup.
 TEST(AccountConsistencyModeManagerTest, SigninAllowedChangesDiceState) {
@@ -199,9 +202,9 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
         profile.get()));
   }
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(ENABLE_MIRROR)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Mirror is enabled by default on Chrome OS, unless specified otherwise.
 TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
   // Creation of this object sets the current thread's id as UI thread.
@@ -255,5 +258,19 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
   EXPECT_EQ(signin::AccountConsistencyMethod::kDisabled,
             AccountConsistencyModeManager::GetMethodForProfile(otr_profile));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(ENABLE_MIRROR)
+// Test that Mirror is enabled for child accounts.
+TEST(AccountConsistencyModeManagerTest, MirrorChildAccount) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  profile.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  EXPECT_TRUE(
+      AccountConsistencyModeManager::IsMirrorEnabledForProfile(&profile));
+  EXPECT_FALSE(
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(&profile));
+  EXPECT_EQ(signin::AccountConsistencyMethod::kMirror,
+            AccountConsistencyModeManager::GetMethodForProfile(&profile));
+}
 #endif  // BUILDFLAG(ENABLE_MIRROR)
