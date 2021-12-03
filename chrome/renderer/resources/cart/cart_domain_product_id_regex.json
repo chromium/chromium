@@ -5,5 +5,6 @@
 "www.homesquare.com": "(images.cymax.com/Images/\\d+/(\\w+)-)"},
 "product_element":
 {"www.electronicexpress.com": "<a href=\"#modal-(\\w+)",
-"checkout.iherb.com": "product id: ([\\w|-]+)"}
+"checkout.iherb.com": "product id: ([\\w|-]+)",
+"www.zappos.com": "StockId</dt><dd class=\"[\\w|-]+\">(\\w+)"}
 }
