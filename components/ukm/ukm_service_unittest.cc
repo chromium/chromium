@@ -949,7 +949,7 @@ TEST_F(UkmServiceTest, UnreferencedNonWhitelistedSources) {
 
     std::vector<SourceId> ids;
     base::TimeTicks last_time = base::TimeTicks::Now();
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 1; i < 7; ++i) {
       // Wait until base::TimeTicks::Now() no longer equals |last_time|. This
       // ensures each source has a unique timestamp to avoid flakes. Should take
       // between 1-15ms per documented resolution of base::TimeTicks.
@@ -992,7 +992,7 @@ TEST_F(UkmServiceTest, UnreferencedNonWhitelistedSources) {
       EXPECT_EQ(1, proto_report.source_counts().navigation_sources());
       EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
 
-      EXPECT_EQ(5, proto_report.source_counts().deferred_sources());
+      EXPECT_EQ(4, proto_report.source_counts().deferred_sources());
       EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
 
       ASSERT_EQ(4, proto_report.sources_size());
@@ -1034,10 +1034,10 @@ TEST_F(UkmServiceTest, UnreferencedNonWhitelistedSources) {
       EXPECT_EQ(0, proto_report.source_counts().navigation_sources());
       EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
 
-      EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
+      EXPECT_EQ(2, proto_report.source_counts().deferred_sources());
 
-      EXPECT_EQ(5, proto_report.source_counts().carryover_sources());
-      ASSERT_EQ(4, proto_report.sources_size());
+      EXPECT_EQ(4, proto_report.source_counts().carryover_sources());
+      ASSERT_EQ(3, proto_report.sources_size());
     }
   }
 }

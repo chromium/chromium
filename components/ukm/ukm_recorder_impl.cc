@@ -381,6 +381,10 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         MarkSourceForDeletion(kv.first);
       }
     }
+    // Minimal validations before serializing into a proto message.
+    // See crbug/1274876.
+    DCHECK_NE(kv.second->id(), ukm::kInvalidSourceId);
+    DCHECK_NE(kv.second->urls().size(), 0u);
     Source* proto_source = report->add_sources();
     kv.second->PopulateProto(proto_source);
 
