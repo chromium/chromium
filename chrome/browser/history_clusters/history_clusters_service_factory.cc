@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
@@ -56,7 +57,8 @@ KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   return new history_clusters::HistoryClustersService(
-      history_service, TemplateURLServiceFactory::GetForProfile(profile),
+      g_browser_process->GetApplicationLocale(), history_service,
+      TemplateURLServiceFactory::GetForProfile(profile),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       url_loader_factory, site_engagement::SiteEngagementService::Get(profile));
 }

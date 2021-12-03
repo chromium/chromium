@@ -99,7 +99,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
-        history_service_.get(), /*template_url_service=*/nullptr,
+        "en-US", history_service_.get(), /*template_url_service=*/nullptr,
         /*entity_metadata_provider=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*url_loader_factory=*/nullptr);
@@ -246,6 +246,12 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase {
     scoped_feature_list_.InitAndEnableFeature(kJourneys);
   }
 };
+
+TEST_F(HistoryClustersServiceTest, ApplicationLocaleLanguage) {
+  EXPECT_EQ(
+      history_clusters_service_test_api_->GetServiceApplicationLocaleLanguage(),
+      "en");
+}
 
 TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   base::HistogramTester histogram_tester;

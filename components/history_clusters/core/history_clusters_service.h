@@ -84,6 +84,7 @@ class HistoryClustersService : public KeyedService {
   // In that case, HistoryClustersService will never instantiate a clustering
   // backend that requires it, such as the RemoteClusteringBackend.
   HistoryClustersService(
+      const std::string& application_locale,
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
       optimization_guide::EntityMetadataProvider* entity_metadata_provider,
@@ -199,13 +200,16 @@ class HistoryClustersService : public KeyedService {
                            QueryClustersCallback callback,
                            QueryClustersResult result) const;
 
+  // The language of the application locale the service was initialized with.
+  const std::string application_locale_language_;
+
+  // Non-owning pointer, but never nullptr.
+  history::HistoryService* const history_service_;
+
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history
   // database once completed (if persistence is enabled).
   IncompleteVisitMap incomplete_visit_context_annotations_;
-
-  // Non-owning pointer, but never nullptr.
-  history::HistoryService* const history_service_;
 
   // The backend used for clustering. This can be nullptr.
   std::unique_ptr<ClusteringBackend> backend_;

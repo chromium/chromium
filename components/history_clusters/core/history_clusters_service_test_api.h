@@ -65,6 +65,10 @@ class HistoryClustersServiceTestApi {
     loop.Run();
   }
 
+  const std::string& GetServiceApplicationLocaleLanguage() const {
+    return history_clusters_service_->application_locale_language_;
+  }
+
   HistoryClustersService* const history_clusters_service_;
   history::HistoryService* const history_service_;
 };

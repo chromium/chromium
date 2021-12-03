@@ -40,6 +40,7 @@
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
@@ -282,12 +283,14 @@ void VisitDeletionObserver::OnURLsDeleted(
 }
 
 HistoryClustersService::HistoryClustersService(
+    const std::string& application_locale,
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
-    : history_service_(history_service),
+    : application_locale_language_(l10n_util::GetLanguage(application_locale)),
+      history_service_(history_service),
       visit_deletion_observer_(this),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
