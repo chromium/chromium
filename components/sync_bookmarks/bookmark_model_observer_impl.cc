@@ -100,8 +100,7 @@ void BookmarkModelObserverImpl::BookmarkNodeAdded(
   // the tombstone was not committed yet. In that case the existing entity
   // should be updated.
   const SyncedBookmarkTracker::Entity* entity =
-      bookmark_tracker_->GetEntityForClientTagHash(
-          SyncedBookmarkTracker::GetClientTagHashFromGUID(node->guid()));
+      bookmark_tracker_->GetEntityForGUID(node->guid());
   const base::Time creation_time = base::Time::Now();
   if (entity) {
     // If there is a tracked entity with the same client tag hash (effectively

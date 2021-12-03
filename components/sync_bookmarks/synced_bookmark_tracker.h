@@ -150,6 +150,9 @@ class SyncedBookmarkTracker {
   const Entity* GetEntityForClientTagHash(
       const syncer::ClientTagHash& client_tag_hash) const;
 
+  // Convenience function, similar to GetEntityForClientTagHash().
+  const Entity* GetEntityForGUID(const base::GUID& guid) const;
+
   // Returns null if no entity is found.
   const SyncedBookmarkTracker::Entity* GetEntityForBookmarkNode(
       const bookmarks::BookmarkNode* node) const;

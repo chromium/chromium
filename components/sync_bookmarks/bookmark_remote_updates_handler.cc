@@ -187,6 +187,11 @@ void ApplyRemoteUpdate(
   const bookmarks::BookmarkNode* new_parent =
       new_parent_tracked_entity->bookmark_node();
 
+  DCHECK(old_parent);
+  DCHECK(new_parent);
+  DCHECK(old_parent->is_folder());
+  DCHECK(new_parent->is_folder());
+
   if (update_entity.specifics.bookmark().type() !=
       GetProtoTypeFromBookmarkNode(node)) {
     DLOG(ERROR) << "Could not update bookmark node due to conflicting types";
@@ -589,6 +594,8 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
 
   const bookmarks::BookmarkNode* node = tracked_entity->bookmark_node();
   const bookmarks::BookmarkNode* old_parent = node->parent();
+  DCHECK(old_parent);
+  DCHECK(old_parent->is_folder());
 
   const SyncedBookmarkTracker::Entity* new_parent_entity =
       bookmark_tracker_->GetEntityForSyncId(update_entity.parent_id);
@@ -700,6 +707,8 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
   // No deletions, there are potentially conflicting updates.
   const bookmarks::BookmarkNode* node = tracked_entity->bookmark_node();
   const bookmarks::BookmarkNode* old_parent = node->parent();
+  DCHECK(old_parent);
+  DCHECK(old_parent->is_folder());
 
   const SyncedBookmarkTracker::Entity* new_parent_entity =
       bookmark_tracker_->GetEntityForSyncId(update_entity.parent_id);

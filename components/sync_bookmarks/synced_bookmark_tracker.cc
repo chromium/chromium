@@ -226,6 +226,11 @@ SyncedBookmarkTracker::GetEntityForClientTagHash(
   return it != client_tag_hash_to_entities_map_.end() ? it->second : nullptr;
 }
 
+const SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::GetEntityForGUID(
+    const base::GUID& guid) const {
+  return GetEntityForClientTagHash(GetClientTagHashFromGUID(guid));
+}
+
 SyncedBookmarkTracker::Entity* SyncedBookmarkTracker::AsMutableEntity(
     const Entity* entity) {
   DCHECK(entity);
