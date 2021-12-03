@@ -37,8 +37,6 @@ _chrome_directory = "chrome"
 # Fuchsia device.
 _host_tools_directory = "host_tools"
 
-_archive_suffix = "_archive"
-
 # Extracts the numeric Chrome build ID and writes it to a file in the output
 # directory.
 #
@@ -91,7 +89,7 @@ template("cipd_archive") {
   action("${target_name}_license") {
     _license_path = "${target_gen_dir}/${target_name}/LICENSE"
     _invoker_dir = get_label_info(":${invoker.target_name}", "dir")
-    _license_target = "${_invoker_dir}:${invoker.target_name}${_archive_suffix}"
+    _license_target = "${_invoker_dir}:${invoker.target_name}"
     script = "//tools/licenses.py"
     inputs = [ "$_gn_path" ]
     outputs = [ _license_path ]
@@ -115,9 +113,9 @@ template("cipd_archive") {
   }
   sources += get_target_outputs(":${target_name}_license")
 
-  fuchsia_cipd_package("${target_name}${_archive_suffix}") {
-    package = "${package_base_path}/${package_subdirectory}/${targetarch}/${invoker.target_name}"
-    package_definition_name = "${invoker.target_name}.yaml"
+  fuchsia_cipd_package(target_name) {
+    package = "${package_base_path}/${package_subdirectory}/${targetarch}/${target_name}"
+    package_definition_name = "${target_name}.yaml"
 
     # Always use absolute path.
     use_absolute_root_path = true
@@ -345,7 +343,7 @@ _chrome_debug_symbols_outdir = "${target_gen_dir}/${_chrome_debug_symbols_archiv
 build_id_dir(_chrome_build_ids_target) {
   testonly = true  # Some of the archives contain test packages.
   output_path = _chrome_debug_symbols_outdir
-  deps = [ ":chrome${_archive_suffix}" ]
+  deps = [ ":chrome" ]
 }
 
 fuchsia_cipd_package(_chrome_debug_symbols_archive_name) {
@@ -365,9 +363,9 @@ fuchsia_cipd_package(_chrome_debug_symbols_archive_name) {
 # A group for production archives to ensure nothing is testonly.
 group("web_engine_production_archives") {
   deps = [
-    ":cast_runner${_archive_suffix}",
-    ":web_engine${_archive_suffix}",
-    ":web_runner${_archive_suffix}",
+    ":cast_runner",
+    ":web_engine",
+    ":web_runner",
   ]
 }
 
@@ -375,9 +373,9 @@ group("web_engine_production_archives") {
 group("web_engine_archives_with_symbols") {
   testonly = true  # tests and web_engine_shell are testonly.
   deps = [
-    ":tests${_archive_suffix}",
+    ":tests",
     ":web_engine_production_archives",
-    ":web_engine_shell${_archive_suffix}",
+    ":web_engine_shell",
   ]
 }
 
@@ -387,12 +385,12 @@ group("cipd") {
     ":web_engine_archives_with_symbols",
 
     # Symbols are not uploaded for the following.
-    ":chromedriver${_archive_suffix}",
+    ":chromedriver",
     ":web_engine_debug_symbols",
   ]
   if (!is_chrome_branded) {
     deps += [
-      ":chrome${_archive_suffix}",
+      ":chrome",
       ":chrome_debug_symbols",
     ]
   }
