@@ -317,6 +317,17 @@ buildflag_header("buildflags") {
   ]
 }
 
+if (is_apple) {
+  source_set("early_zone_registration_mac") {
+    sources = [
+      "early_zone_registration_mac.cc",
+      "early_zone_registration_mac.h",
+    ]
+
+    deps = [ ":buildflags" ]
+  }
+}
+
 # Used to shim malloc symbols on Android. see //base/allocator/README.md.
 config("wrap_malloc_symbols") {
   ldflags = [

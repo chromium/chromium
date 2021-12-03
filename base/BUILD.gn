@@ -1432,6 +1432,7 @@ component("base") {
       sources += [
         "allocator/allocator_shim_override_mac_default_zone.h",
         "allocator/allocator_shim_override_mac_symbols.h",
+        "allocator/early_zone_registration_mac.h",
       ]
     }
     if (is_chromeos || is_linux) {

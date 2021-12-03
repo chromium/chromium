@@ -13,6 +13,7 @@
 
 #include <string.h>
 
+#include "base/allocator/early_zone_registration_mac.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/bits.h"
 #include "base/ignore_result.h"
@@ -28,6 +29,8 @@ void PartitionAllocMallocHookOnAfterForkInChild();
 namespace allocator {
 
 namespace {
+
+constexpr const char kZoneName[] = "PartitionAlloc";
 
 // malloc_introspection_t's callback functions for our own zone
 
@@ -175,35 +178,18 @@ void MallocZoneFreeDefiniteSize(malloc_zone_t* zone, void* ptr, size_t size) {
 malloc_introspection_t g_mac_malloc_introspection{};
 malloc_zone_t g_mac_malloc_zone{};
 
-malloc_zone_t* GetDefaultZone() {
-  // The default zone is *not* returned by malloc_default_zone(), which returns
-  // the *initial* zone.
+malloc_zone_t* GetDefaultMallocZone() {
+  // malloc_default_zone() does not return... the default zone, but the initial
+  // one. The default one is the first element of the default zone array.
   unsigned int zone_count = 0;
   vm_address_t* zones = nullptr;
-  // Returned memory is a direct pointer into libsystem_malloc's storage. It is
-  // read-only, and does not need to be freed.
   kern_return_t result =
       malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
   MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
   return reinterpret_cast<malloc_zone_t*>(zones[0]);
 }
 
-// Replaces the default malloc zone with our own malloc zone backed by
-// PartitionAlloc.  Since we'd like to make as much code as possible to use our
-// own memory allocator (and reduce bugs caused by mixed use of the system
-// allocator and our own allocator), run the following function
-// `InitializeDefaultAllocatorPartitionRoot` with the highest priority.
-//
-// Note that, despite of the highest priority of the initialization order,
-// [NSThread init] runs before InitializeDefaultMallocZoneWithPartitionAlloc
-// unfortunately and allocates memory with the system allocator.  Plus, the
-// allocated memory will be deallocated with the default zone's `free` at that
-// moment without using a zone dispatcher.  Hence, our own `free` function
-// receives an address allocated by the system allocator.
-__attribute__((constructor(0))) void
-InitializeDefaultMallocZoneWithPartitionAlloc() {
-  static constexpr const char* kZoneName = "PartitionAlloc";
-
+bool IsAlreadyRegistered() {
   // HACK: This should really only be called once, but it is not.
   //
   // This function is a static constructor of its binary. If it is included in a
@@ -252,20 +238,14 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
       RAW_LOG(ERROR,
               "Trying to load the allocator multiple times. This is *not* "
               "supported.");
-      return;
+      return true;
     }
   }
 
-  // Instantiate the existing regular and purgeable zones in order to make the
-  // existing purgeable zone use the existing regular zone since PartitionAlloc
-  // doesn't support a purgeable zone.
-  ignore_result(malloc_default_zone());
-  ignore_result(malloc_default_purgeable_zone());
+  return false;
+}
 
-  // Initialize the default allocator's PartitionRoot with the existing zone.
-  InitializeDefaultAllocatorPartitionRoot();
-
-  // Create our own malloc zone.
+void InitializeZone() {
   g_mac_malloc_introspection.enumerator = MallocIntrospectionEnumerator;
   g_mac_malloc_introspection.good_size = MallocIntrospectionGoodSize;
   g_mac_malloc_introspection.check = MallocIntrospectionCheck;
@@ -295,7 +275,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   //   version >= 10: claimed_address is supported
   //   version >= 11: introspect.print_task is supported
   //   version >= 12: introspect.task_statistics is supported
-  g_mac_malloc_zone.version = 9;
+  g_mac_malloc_zone.version = partition_alloc::kZoneVersion;
   g_mac_malloc_zone.zone_name = kZoneName;
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
   g_mac_malloc_zone.size = MallocZoneSize;
@@ -311,25 +291,69 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   g_mac_malloc_zone.free_definite_size = MallocZoneFreeDefiniteSize;
   g_mac_malloc_zone.pressure_relief = nullptr;
   g_mac_malloc_zone.claimed_address = nullptr;
+}
 
+// Replaces the default malloc zone with our own malloc zone backed by
+// PartitionAlloc.  Since we'd like to make as much code as possible to use our
+// own memory allocator (and reduce bugs caused by mixed use of the system
+// allocator and our own allocator), run the following function
+// `InitializeDefaultAllocatorPartitionRoot` with the highest priority.
+//
+// Note that, despite of the highest priority of the initialization order,
+// [NSThread init] runs before InitializeDefaultMallocZoneWithPartitionAlloc
+// unfortunately and allocates memory with the system allocator.  Plus, the
+// allocated memory will be deallocated with the default zone's `free` at that
+// moment without using a zone dispatcher.  Hence, our own `free` function
+// receives an address allocated by the system allocator.
+__attribute__((constructor(0))) void
+InitializeDefaultMallocZoneWithPartitionAlloc() {
+  if (IsAlreadyRegistered())
+    return;
+
+  // Instantiate the existing regular and purgeable zones in order to make the
+  // existing purgeable zone use the existing regular zone since PartitionAlloc
+  // doesn't support a purgeable zone.
+  ignore_result(malloc_default_zone());
+  ignore_result(malloc_default_purgeable_zone());
+
+  // Initialize the default allocator's PartitionRoot with the existing zone.
+  InitializeDefaultAllocatorPartitionRoot();
+
+  // Create our own malloc zone.
+  InitializeZone();
+
+  malloc_zone_t* system_default_zone = GetDefaultMallocZone();
+  if (strcmp(system_default_zone->zone_name,
+             partition_alloc::kDelegatingZoneName) == 0) {
+    // The first zone is our zone, we can unregister it, replacing it with the
+    // new one. This relies on a precise zone setup, done in
+    // |EarlyMallocZoneRegistration()|.
+    malloc_zone_register(&g_mac_malloc_zone);
+    malloc_zone_unregister(system_default_zone);
+    return;
+  }
+
+  // Not in the path where the zone was registered early. This is either racy,
+  // or fine if the current process is not hosting multiple threads.
+  //
+  // This path is fine for e.g. most unit tests.
+  //
   // Make our own zone the default zone.
-  malloc_zone_t* system_default_zone = GetDefaultZone();
-
+  //
   // Put our own zone at the last position, so that it promotes to the default
   // zone.  The implementation logic of malloc_zone_unregister is:
   //   zone_table.swap(unregistered_zone, last_zone);
   //   zone_table.shrink_size_by_1();
   malloc_zone_register(&g_mac_malloc_zone);
   malloc_zone_unregister(system_default_zone);
-  // TODO(crbug.com/1272149): Between
-  // malloc_zone_unregister(system_default_zone) (above) and
+  // Between malloc_zone_unregister(system_default_zone) (above) and
   // malloc_zone_register(system_default_zone) (below), i.e. while absence of
   // system_default_zone, it's possible that another thread calls free(ptr) and
   // "no zone found" error is hit, crashing the process.
   malloc_zone_register(system_default_zone);
 
   // Confirm that our own zone is now the default zone.
-  CHECK_EQ(GetDefaultZone(), &g_mac_malloc_zone);
+  CHECK_EQ(GetDefaultMallocZone(), &g_mac_malloc_zone);
 }
 
 }  // namespace
