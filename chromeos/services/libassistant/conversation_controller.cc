@@ -10,15 +10,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/buildflag.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/internal_options.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/services/libassistant/util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "libassistant/shared/internal_api/assistant_manager_delegate.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -254,8 +255,11 @@ void ConversationController::OnAssistantClientCreated(
     assistant_client->RegisterActionModule(action_module_.get());
   }
 
+// TODO(b/196011844): Migrate `AssistantManagerDelegate` to V2.
+#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   assistant_client->assistant_manager_internal()->SetAssistantManagerDelegate(
       assistant_manager_delegate_.get());
+#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 }
 
 void ConversationController::OnAssistantClientRunning(

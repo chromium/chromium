@@ -3639,7 +3639,7 @@ if (!is_android && !is_fuchsia) {
           "//ash/assistant/ui",
           "//ash/assistant/ui:constants",
           "//chrome/browser/ui/ash/assistant/test_support",
-          "//chromeos/assistant/internal:internal",
+          "//chromeos/assistant/internal:libassistant",
           "//chromeos/assistant/test_support",
         ]
 

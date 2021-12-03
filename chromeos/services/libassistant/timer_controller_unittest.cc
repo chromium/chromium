@@ -5,12 +5,12 @@
 #include "chromeos/services/libassistant/timer_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/mojom/timer_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
-#include "libassistant/shared/public/alarm_timer_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

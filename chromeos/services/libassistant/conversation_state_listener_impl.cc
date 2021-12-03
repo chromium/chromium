@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
+
+#include "build/buildflag.h"
+#include "chromeos/assistant/internal/buildflags.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
-#include "libassistant/shared/public/assistant_manager.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -119,6 +122,11 @@ void ConversationStateListenerImpl::OnConversationTurnFinished(
     case Resolution::LONGFORM_KEEP_MIC_OPEN:
       NOTREACHED();
       return;
+#if BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
+    case Resolution::BLUE_STEEL_ON_DEVICE_REJECTION:
+      NOTREACHED();
+      return;
+#endif  // BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   }
 }
 

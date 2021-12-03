@@ -9,8 +9,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assistant_client {

@@ -12,9 +12,9 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/dbus/power/native_timer.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
-#include "libassistant/shared/public/platform_system.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 

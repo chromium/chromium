@@ -4,14 +4,13 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
-#include "libassistant/shared/internal_api/display_connection.h"
-#include "libassistant/shared/public/conversation_state_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

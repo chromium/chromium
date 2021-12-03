@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "libassistant/shared/public/assistant_manager.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
 namespace chromeos {
 namespace libassistant {

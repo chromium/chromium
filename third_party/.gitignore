@@ -134,9 +134,10 @@
 /leveldatabase/src
 /leveldb
 /libaom/source/libaom
-/libc++-static/libc++.a
 /libaddressinput/src
+/libassistant
 /libavif/src
+/libc++-static/libc++.a
 /libdrm/src
 /libFuzzer/src
 /libgav1/src
@@ -163,7 +164,6 @@
 /llvm-build
 /llvm-build-tools
 /lss
-/marble
 /material_design_icons/src
 /mesa/src
 /mingw-w64

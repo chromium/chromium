@@ -5,13 +5,13 @@
 #include "chromeos/services/libassistant/speaker_id_enrollment_controller.h"
 
 #include "base/scoped_observation.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom.h"
-#include "libassistant/shared/internal_api/speaker_id_enrollment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {

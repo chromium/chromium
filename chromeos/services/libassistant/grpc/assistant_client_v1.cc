@@ -13,8 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/update_settings_ui.pb.h"
@@ -30,15 +33,6 @@
 #include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
-#include "libassistant/shared/internal_api/alarm_timer_manager.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/internal_api/display_connection.h"
-#include "libassistant/shared/internal_api/fuchsia_api_helper.h"
-#include "libassistant/shared/internal_api/speaker_id_enrollment.h"
-#include "libassistant/shared/internal_api/voiceless_response.h"
-#include "libassistant/shared/public/alarm_timer_types.h"
-#include "libassistant/shared/public/device_state_listener.h"
-#include "libassistant/shared/public/media_manager.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -288,9 +282,11 @@ void AssistantClientV1::StartServices(
 
 void AssistantClientV1::SetChromeOSApiDelegate(
     assistant_client::ChromeOSApiDelegate* delegate) {
+#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   assistant_manager_internal()
       ->GetFuchsiaApiHelperOrDie()
       ->SetChromeOSApiDelegate(delegate);
+#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 }
 
 bool AssistantClientV1::StartGrpcServices() {

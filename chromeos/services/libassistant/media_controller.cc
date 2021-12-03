@@ -6,6 +6,9 @@
 
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/buildflag.h"
+#include "chromeos/assistant/internal/buildflags.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/assistant/internal/util_headers.h"
@@ -13,9 +16,6 @@
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/public/assistant_manager.h"
-#include "libassistant/shared/public/media_manager.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -136,11 +136,13 @@ class MediaController::LibassistantMediaHandler {
       assistant_client::AssistantManagerInternal* assistant_manager_internal)
       : parent_(parent),
         mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
+#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
     // Register handler for media actions.
     assistant_manager_internal->RegisterFallbackMediaHandler(
         [this](std::string action_name, std::string media_action_args_proto) {
           HandleMediaAction(action_name, media_action_args_proto);
         });
+#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   }
   LibassistantMediaHandler(const LibassistantMediaHandler&) = delete;
   LibassistantMediaHandler& operator=(const LibassistantMediaHandler&) = delete;

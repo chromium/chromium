@@ -10,10 +10,10 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/audio/audio_stream_handler.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
-#include "libassistant/shared/public/platform_audio_buffer.h"
 #include "media/audio/audio_device_description.h"
 
 namespace chromeos {

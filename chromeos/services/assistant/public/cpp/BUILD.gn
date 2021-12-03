@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chromeos/assistant/assistant.gni")
+
 # C++ headers and sources that can be used outside assistant.
 component("cpp") {
   output_name = "assistant_service_public"
@@ -46,4 +48,8 @@ component("cpp") {
     "//chromeos/assistant:buildflags",
     "//components/prefs",
   ]
+
+  if (enable_cros_libassistant) {
+    deps += [ "//chromeos/assistant/internal:buildflags" ]
+  }
 }

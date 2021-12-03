@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
-#include "libassistant/shared/public/platform_system.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"

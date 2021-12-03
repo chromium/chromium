@@ -34,6 +34,20 @@ class AssistantClientImpl : public AssistantClientV1 {
   // chromeos::libassistant::AssistantClientV1 overrides:
   void StartServices(ServicesStatusObserver* services_status_observer) override;
   bool StartGrpcServices() override;
+  void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
+  void AddSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
+      override;
+  void RemoveSpeakerIdEnrollmentEventObserver(
+      GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer)
+      override;
+  void StartSpeakerIdEnrollment(
+      const StartSpeakerIdEnrollmentRequest& request) override;
+  void CancelSpeakerIdEnrollment(
+      const CancelSpeakerIdEnrollmentRequest& request) override;
+  void GetSpeakerIdEnrollmentInfo(
+      const GetSpeakerIdEnrollmentInfoRequest& request,
+      base::OnceCallback<void(bool user_model_exists)> on_done) override;
   void ResetAllDataAndShutdown() override;
   void SendDisplayRequest(const OnDisplayRequestRequest& request) override;
   void AddDisplayEventObserver(
@@ -47,6 +61,9 @@ class AssistantClientImpl : public AssistantClientV1 {
       base::OnceCallback<void(bool)> on_done) override;
   void RegisterActionModule(
       assistant_client::ActionModule* action_module) override;
+  void SendScreenContextRequest(
+      const std::vector<std::string>& context_protos) override;
+  void StopAssistantInteraction(bool cancel_conversation) override;
 
   // Settings-related setters:
   void SetAuthenticationInfo(const AuthTokens& tokens) override;

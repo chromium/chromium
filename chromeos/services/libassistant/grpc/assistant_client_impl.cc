@@ -16,6 +16,7 @@
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/alarm_timer_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/audio_utils_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
@@ -29,7 +30,6 @@
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
 #include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
-#include "libassistant/shared/public/assistant_manager.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -104,6 +104,38 @@ bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
 }
 
+void AssistantClientImpl::AddExperimentIds(
+    const std::vector<std::string>& exp_ids) {
+  NOTIMPLEMENTED();
+}
+
+void AssistantClientImpl::AddSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
+  NOTIMPLEMENTED();
+}
+
+void AssistantClientImpl::RemoveSpeakerIdEnrollmentEventObserver(
+    GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>* observer) {
+  NOTIMPLEMENTED();
+}
+
+void AssistantClientImpl::StartSpeakerIdEnrollment(
+    const StartSpeakerIdEnrollmentRequest& request) {
+  NOTIMPLEMENTED();
+}
+
+void AssistantClientImpl::CancelSpeakerIdEnrollment(
+    const CancelSpeakerIdEnrollmentRequest& request) {
+  NOTIMPLEMENTED();
+}
+
+void AssistantClientImpl::GetSpeakerIdEnrollmentInfo(
+    const ::assistant::api::GetSpeakerIdEnrollmentInfoRequest& request,
+    base::OnceCallback<void(bool user_model_exists)> on_done) {
+  NOTIMPLEMENTED();
+  std::move(on_done).Run(/*user_model_exists=*/false);
+}
+
 void AssistantClientImpl::ResetAllDataAndShutdown() {
   // ResetAllDataAndShutdown request may have high latency. Server
   // recommendation is to set proper deadlines for every RPC.
@@ -157,6 +189,15 @@ void AssistantClientImpl::SendVoicelessInteraction(
 void AssistantClientImpl::RegisterActionModule(
     assistant_client::ActionModule* action_module) {
   grpc_services_.GetActionService()->RegisterActionModule(action_module);
+}
+
+void AssistantClientImpl::SendScreenContextRequest(
+    const std::vector<std::string>& context_protos) {
+  NOTIMPLEMENTED();
+}
+
+void AssistantClientImpl::StopAssistantInteraction(bool cancel_conversation) {
+  NOTIMPLEMENTED();
 }
 
 void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {

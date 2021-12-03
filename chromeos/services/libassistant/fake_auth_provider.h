@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_FAKE_AUTH_PROVIDER_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_FAKE_AUTH_PROVIDER_H_
 
-#include "libassistant/shared/public/platform_auth.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 
 #include <string>
 #include <vector>

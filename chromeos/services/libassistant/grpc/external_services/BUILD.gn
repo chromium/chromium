@@ -20,6 +20,7 @@ source_set("grpc_services_initializer") {
     ":heartbeat_event_handler_driver",
     "//base",
     "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/services/libassistant:callback_utils",
     "//chromeos/services/libassistant/grpc:grpc_client",
     "//chromeos/services/libassistant/grpc:grpc_service",
