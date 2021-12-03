@@ -681,22 +681,11 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     return AuthenticatorMakeCredential(std::move(options)).status;
   }
 
-  void EnableFeature(const base::Feature& feature) {
-    scoped_feature_list_.emplace();
-    scoped_feature_list_->InitAndEnableFeature(feature);
-  }
-
-  void DisableFeature(const base::Feature& feature) {
-    scoped_feature_list_.emplace();
-    scoped_feature_list_->InitAndDisableFeature(feature);
-  }
-
   scoped_refptr<::testing::NiceMock<device::MockBluetoothAdapter>>
       mock_adapter_ = base::MakeRefCounted<
           ::testing::NiceMock<device::MockBluetoothAdapter>>();
 
  private:
-  absl::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_global_values_ =
           device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
@@ -1422,10 +1411,13 @@ TEST_F(AuthenticatorImplTest, OversizedCredentialId) {
   }
 }
 
-TEST_F(AuthenticatorImplTest, NoSilentAuthenticationForCable) {
-  // https://crbug.com/954355
-  EnableFeature(features::kWebAuthCable);
+class AuthenticatorImplCableFlagSetTest : public AuthenticatorImplTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kWebAuthCable};
+};
 
+TEST_F(AuthenticatorImplCableFlagSetTest, NoSilentAuthenticationForCable) {
+  // https://crbug.com/954355
   NavigateAndCommit(GURL(kTestOrigin1));
 
   for (bool is_cable_device : {false, true}) {
@@ -2152,6 +2144,12 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
   }
 
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
+};
+
+class AuthenticatorContentBrowserClientWithCableFlagTest
+    : public AuthenticatorContentBrowserClientTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kWebAuthCable};
 };
 
 // Test that credentials can be created and used from an extension origin when
@@ -3174,14 +3172,13 @@ TEST_F(AuthenticatorContentBrowserClientTest,
             AuthenticatorStatus::SUCCESS);
 }
 
-TEST_F(AuthenticatorContentBrowserClientTest,
+TEST_F(AuthenticatorContentBrowserClientWithCableFlagTest,
        CableCredentialWithoutCableExtension) {
   // Exercise the case where a credential is marked as "cable" but no caBLE
   // extension is provided. The AuthenticatorRequestClientDelegate should see no
   // transports, which triggers it to cancel the request. (Outside of a testing
   // environment, Chrome's AuthenticatorRequestClientDelegate will show an
   // informative error and wait for the user to cancel the request.)
-  EnableFeature(features::kWebAuthCable);
   NavigateAndCommit(GURL(kTestOrigin1));
 
   PublicKeyCredentialRequestOptionsPtr options =
@@ -6519,6 +6516,19 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
+class ResidentKeyAuthenticatorImplWithFlagsTest
+    : public ResidentKeyAuthenticatorImplTest {
+ public:
+  ResidentKeyAuthenticatorImplWithFlagsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebAuthCable, device::kWebAuthCableSecondFactor},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
   for (const bool internal_uv : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "internal_uv=" << internal_uv);
@@ -7557,12 +7567,11 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
   EXPECT_TRUE(test_client_.is_conditional);
 }
 
-TEST_F(ResidentKeyAuthenticatorImplTest, NoDiscoverableCredentialsViaCable) {
+TEST_F(ResidentKeyAuthenticatorImplWithFlagsTest,
+       NoDiscoverableCredentialsViaCable) {
   // caBLE devices never support discoverable credentials currently and we
   // shouldn't offer them for such requests.
 
-  EnableFeature(features::kWebAuthCable);
-  EnableFeature(device::kWebAuthCableSecondFactor);
   NavigateAndCommit(GURL(kTestOrigin1));
 
   device::VirtualCtap2Device::Config config;
@@ -7774,13 +7783,15 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
                                 base::Unretained(this)))),
         browser_client_(base::BindRepeating(
             &CableV2AuthenticatorImplTest::MaybeContactPhones,
-            base::Unretained(this))) {}
+            base::Unretained(this))) {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebAuthCable, device::kWebAuthPhoneSupport},
+        /*disabled_features=*/{});
+  }
 
   void SetUp() override {
     AuthenticatorImplTest::SetUp();
 
-    EnableFeature(features::kWebAuthCable);
-    EnableFeature(device::kWebAuthPhoneSupport);
     NavigateAndCommit(GURL(kTestOrigin1));
 
     old_client_ = SetBrowserClientForTesting(&browser_client_);
@@ -7924,6 +7935,9 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   ContactWhenReadyContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
   base::OnceClosure maybe_contact_phones_callback_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
