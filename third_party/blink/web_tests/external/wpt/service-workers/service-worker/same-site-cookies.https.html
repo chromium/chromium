@@ -11,6 +11,8 @@
 <script>
 'use strict';
 
+const COOKIE_VALUE = 'COOKIE_VALUE';
+
 function make_nested_url(nested_origins, target_url) {
   for (let i = nested_origins.length - 1; i >= 0; --i) {
     target_url = new URL(
@@ -46,8 +48,6 @@ async function register_service_worker(origin, nested_origins=[]) {
 
 async function run_test(t, origin, navaction, swaction, expected,
                         redirect_origins=[], nested_origins=[]) {
-  const value = 'COOKIE_VALUE';
-  await resetSameSiteCookies(origin, value);
   if (swaction === 'navpreload') {
     assert_true('navigationPreload' in ServiceWorkerRegistration.prototype,
                 'navigation preload must be supported');
@@ -90,13 +90,19 @@ async function run_test(t, origin, navaction, swaction, expected,
   t.add_cleanup(() => w.close());
 
   const result = await wait_for_message('COOKIES');
-  verifySameSiteCookieState(expected, value, result.data);
+  verifySameSiteCookieState(expected, COOKIE_VALUE, result.data);
 }
 
 promise_test(async t => {
+  await resetSameSiteCookies(self.origin, COOKIE_VALUE);
   await register_service_worker(self.origin);
+
+  await resetSameSiteCookies(SECURE_SUBDOMAIN_ORIGIN, COOKIE_VALUE);
   await register_service_worker(SECURE_SUBDOMAIN_ORIGIN);
+
+  await resetSameSiteCookies(SECURE_CROSS_SITE_ORIGIN, COOKIE_VALUE);
   await register_service_worker(SECURE_CROSS_SITE_ORIGIN);
+
   await register_service_worker(self.origin,
       [self.origin, SECURE_CROSS_SITE_ORIGIN]);
 }, 'Setup service workers');

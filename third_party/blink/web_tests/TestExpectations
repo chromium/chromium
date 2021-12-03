@@ -7318,8 +7318,5 @@ crbug.com/1276199 [ Linux ] virtual/plz-dedicated-worker/external/wpt/fetch/priv
 crbug.com/1276206 http/tests/inspector-protocol/network/blocked-cookie-same-party.js [ Failure Pass Timeout ]
 crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
 crbug.com/1276208 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alpha-shadow.html [ Pass Timeout ]
-crbug.com/1276209 external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
-crbug.com/1276209 virtual/change-service-worker-priority-when-client-foreground-state-change/external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
-crbug.com/1276209 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
 crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Skip ]
 crbug.com/1276044 virtual/gpu-rasterization/images/color-profile-background-image-repeat.html [ Failure Pass ]
