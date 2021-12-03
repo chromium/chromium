@@ -1,5 +1,5 @@
 error[E0004]: non-exhaustive patterns: `A { repr: 2_u8..=u8::MAX }` not covered
-  --> $DIR/enum_match_without_wildcard.rs:12:11
+  --> tests/ui/enum_match_without_wildcard.rs:12:11
    |
 3  |     enum A {
    |     ------ `ffi::A` defined here

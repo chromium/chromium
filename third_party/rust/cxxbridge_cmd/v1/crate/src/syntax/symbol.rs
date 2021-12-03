@@ -42,7 +42,7 @@ impl Symbol {
     /// For example, for taking a symbol and then making a new symbol
     /// for a vec of that symbol.
     pub fn prefix_with(&self, prefix: &str) -> Symbol {
-        Symbol(format!("{}{}", prefix, self.to_string()))
+        Symbol(format!("{}{}", prefix, self))
     }
 }
 

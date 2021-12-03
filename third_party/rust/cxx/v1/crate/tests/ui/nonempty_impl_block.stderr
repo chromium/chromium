@@ -1,5 +1,5 @@
 error: expected an empty impl block
- --> $DIR/nonempty_impl_block.rs:7:23
+ --> tests/ui/nonempty_impl_block.rs:7:23
   |
 7 |       impl UniquePtr<S> {
   |  _______________________^

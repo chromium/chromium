@@ -1,10 +1,6 @@
 Name: cxxbridge-cmd
 URL: https://crates.io/crates/cxxbridge-cmd
 Description: C++ code generator for integrating `cxx` crate into a non-Cargo build.
-Version: 1.0.56
+Version: 1.0.57
 Security Critical: no
 License: Apache 2.0
-
-Patches:
-0001-Export-UniquePtr-and-similar-functions.patch
-Raised upstream at https://github.com/dtolnay/cxx/pull/967.

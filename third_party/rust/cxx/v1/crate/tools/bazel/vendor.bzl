@@ -2,7 +2,8 @@
 of a crate in the current workspace.
 """
 
-load("@rules_rust//rust:repositories.bzl", "DEFAULT_RUST_VERSION", "load_arbitrary_tool")
+load("@rules_rust//rust:repositories.bzl", "load_arbitrary_tool")
+load("@rules_rust//rust:defs.bzl", "rust_common")
 
 def _impl(repository_ctx):
     # Link cxx repository into @third-party.
@@ -77,7 +78,7 @@ vendor = repository_rule(
     attrs = {
         "cargo_version": attr.string(
             doc = "The version of cargo to use",
-            default = DEFAULT_RUST_VERSION,
+            default = rust_common.default_version,
         ),
         "cargo_iso_date": attr.string(
             doc = "The date of the tool (or None, if the version is a specific version)",

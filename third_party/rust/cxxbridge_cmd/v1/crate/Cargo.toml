@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.48"
 name = "cxxbridge-cmd"
-version = "1.0.56"
+version = "1.0.57"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 exclude = ["build.rs"]
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."

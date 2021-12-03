@@ -1,5 +1,5 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
-load("@rules_rust//rust:rust.bzl", "rust_binary", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_proc_macro")
 
 rust_library(
     name = "cxx",
@@ -39,10 +39,9 @@ cc_library(
     hdrs = ["include/cxx.h"],
 )
 
-rust_library(
+rust_proc_macro(
     name = "cxxbridge-macro",
     srcs = glob(["macro/src/**"]),
-    crate_type = "proc-macro",
     deps = [
         "//third-party:proc-macro2",
         "//third-party:quote",
