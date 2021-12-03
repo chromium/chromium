@@ -61,6 +61,7 @@
 #include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #endif
@@ -532,6 +533,10 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
   void SetUp() override {
     ActiveTabTest::SetUp();
 
+    // These tests need a real user manager.
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        ash::ChromeUserManagerImpl::CreateChromeUserManager());
+
     // Necessary to prevent instantiation of SyncService, which messes
     // with our signin state below.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -578,9 +583,12 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     ash::ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting();
     ash::ChromeUserManager::Get()->Shutdown();
 
+    scoped_user_manager_.reset();
+
     ActiveTabTest::TearDown();
   }
 
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   TestWallpaperController test_wallpaper_controller_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;

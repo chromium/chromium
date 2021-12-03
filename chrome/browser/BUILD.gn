@@ -7689,6 +7689,7 @@ static_library("test_support") {
       "//chromeos/login/auth",
       "//components/session_manager/core",
       "//components/soda",
+      "//components/user_manager:test_support",
       "//components/webapk:proto",
       "//extensions/browser/api/messaging",
       "//ui/base:test_support",

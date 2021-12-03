@@ -25,7 +25,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #else
@@ -52,6 +51,10 @@ class NavigationController;
 namespace crosapi {
 class CrosapiManager;
 }
+
+namespace user_manager {
+class ScopedUserManager;
+}  // namespace user_manager
 #endif
 
 class TestingProfileManager;
@@ -225,7 +228,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
 
