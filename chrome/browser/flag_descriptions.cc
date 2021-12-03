@@ -2954,11 +2954,6 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
-const char kBentoOfflineName[] =
-    "Enables an experiment for Offline Bento content on Android";
-const char kBentoOfflineDescription[] =
-    "Enables displaying Bento content on the offline page for Android.";
-
 const char kBookmarkBottomSheetName[] = "Enables bookmark bottom sheet";
 const char kBookmarkBottomSheetDescription[] =
     "Enables showing a bookmark bottom sheet when adding a bookmark.";
@@ -3101,6 +3096,25 @@ const char kContextualSearchTranslationsName[] =
 const char kContextualSearchTranslationsDescription[] =
     "Enables automatic translations of words on a page to be presented in the "
     "caption of the bottom bar.";
+
+const char kContextualTriggersSelectionHandlesName[] =
+    "Contextual Triggers selection handles";
+const char kContextualTriggersSelectionHandlesDescription[] =
+    "Shows the selection handles when selecting text in response to a tap "
+    "gesture on plain text.";
+
+const char kContextualTriggersSelectionMenuName[] =
+    "Contextual Triggers selection menu";
+const char kContextualTriggersSelectionMenuDescription[] =
+    "Shows the context menu when selecting text in response to a tap gesture "
+    "on plain text.";
+
+const char kContextualTriggersSelectionSizeName[] =
+    "Contextual Triggers selection size";
+const char kContextualTriggersSelectionSizeDescription[] =
+    "Selects a sentence instead of a single word when text is selected in "
+    "response to "
+    "a tap gesture on plain text.";
 
 const char kCpuAffinityRestrictToLittleCoresName[] = "Restrict to LITTLE cores";
 const char kCpuAffinityRestrictToLittleCoresDescription[] =
@@ -3511,11 +3525,6 @@ const char kSetMarketUrlForTestingName[] = "Set market URL for testing";
 const char kSetMarketUrlForTestingDescription[] =
     "When enabled, sets the market URL for use in testing the update menu "
     "item.";
-
-const char kSingleTouchSelectName[] =
-    "Enables selecting plain text with a single touch.";
-const char kSingleTouchSelectDescription[] =
-    "Enables selecting plain text with a single touch on Android.";
 
 const char kSiteIsolationForPasswordSitesName[] =
     "Site Isolation For Password Sites";

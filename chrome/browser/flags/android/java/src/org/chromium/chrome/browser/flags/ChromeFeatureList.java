@@ -244,7 +244,6 @@ public abstract class ChromeFeatureList {
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
     public static final String APP_TO_WEB_ATTRIBUTION = "AppToWebAttribution";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
-    public static final String BENTO_OFFLINE = "BentoOffline";
     public static final String BIOMETRIC_TOUCH_TO_FILL = "BiometricTouchToFill";
     public static final String BOOKMARK_BOTTOM_SHEET = "BookmarkBottomSheet";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
@@ -309,6 +308,12 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION =
             "ContextualSearchThinWebViewImplementation";
     public static final String CONTEXTUAL_SEARCH_TRANSLATIONS = "ContextualSearchTranslations";
+    public static final String CONTEXTUAL_TRIGGERS_SELECTION_HANDLES =
+            "ContextualTriggersSelectionHandles";
+    public static final String CONTEXTUAL_TRIGGERS_SELECTION_MENU =
+            "ContextualTriggersSelectionMenu";
+    public static final String CONTEXTUAL_TRIGGERS_SELECTION_SIZE =
+            "ContextualTriggersSelectionSize";
     public static final String CONTINUOUS_SEARCH = "ContinuousSearch";
     public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
@@ -494,7 +499,6 @@ public abstract class ChromeFeatureList {
     public static final String SHARED_HIGHLIGHTING_AMP = "SharedHighlightingAmp";
     public static final String SHARING_HUB_LINK_TOGGLE = "SharingHubLinkToggle";
     public static final String SHOPPING_LIST = "ShoppingList";
-    public static final String SINGLE_TOUCH_SELECT = "SingleTouchSelect";
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";

@@ -177,7 +177,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAppMenuMobileSiteOption,
     &kAppToWebAttribution,
     &kBackgroundThreadPool,
-    &kBentoOffline,
     &kBookmarkBottomSheet,
     &kCastDeviceFilter,
     &kCloseTabSuggestions,
@@ -223,6 +222,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchTapDisableOverride,
     &kContextualSearchThinWebViewImplementation,
     &kContextualSearchTranslations,
+    &kContextualTriggersSelectionHandles,
+    &kContextualTriggersSelectionMenu,
+    &kContextualTriggersSelectionSize,
     &kDirectActions,
     &kDownloadFileProvider,
     &kDownloadNotificationBadge,
@@ -272,7 +274,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareButtonInTopToolbar,
     &kSharedClipboardUI,
     &kSharingHubLinkToggle,
-    &kSingleTouchSelect,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -433,9 +434,6 @@ const base::Feature kAppToWebAttribution{"AppToWebAttribution",
 const base::Feature kBackgroundThreadPool{"BackgroundThreadPool",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kBentoOffline{"BentoOffline",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kBookmarkBottomSheet{"BookmarkBottomSheet",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -577,6 +575,15 @@ const base::Feature kContextualSearchThinWebViewImplementation{
 
 const base::Feature kContextualSearchTranslations{
     "ContextualSearchTranslations", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualTriggersSelectionHandles{
+    "ContextualTriggersSelectionHandles", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualTriggersSelectionMenu{
+    "ContextualTriggersSelectionMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualTriggersSelectionSize{
+    "ContextualTriggersSelectionSize", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kQuickActionSearchWidgetAndroidDinoVariant{
     "QuickActionSearchWidgetAndroidDinoVariant",
@@ -722,9 +729,6 @@ const base::Feature kShareButtonInTopToolbar{"ShareButtonInTopToolbar",
 
 const base::Feature kSharingHubLinkToggle{"SharingHubLinkToggle",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kSingleTouchSelect{"SingleTouchSelect",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kSpannableInlineAutocomplete{
     "SpannableInlineAutocomplete", base::FEATURE_ENABLED_BY_DEFAULT};

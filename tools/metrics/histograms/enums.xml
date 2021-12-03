@@ -49591,6 +49591,7 @@ from previous Chrome versions.
   <int value="-1580376019" label="ShowAllDialogsWithViewsToolkit:enabled"/>
   <int value="-1578781240" label="QuickAnswersV2:enabled"/>
   <int value="-1578677451" label="EnableAppGridGhost:disabled"/>
+  <int value="-1578620046" label="ContextualTriggersSelectionHandles:enabled"/>
   <int value="-1578503491" label="EnableContinueReading:disabled"/>
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
   <int value="-1576408607" label="ChromeTipsInMainMenu:enabled"/>
@@ -50602,6 +50603,7 @@ from previous Chrome versions.
   <int value="-861678473" label="disable-offer-upload-credit-cards"/>
   <int value="-861524874" label="AutofillParseMerchantPromoCodeFields:enabled"/>
   <int value="-861343291" label="ChromeHome:disabled"/>
+  <int value="-860936336" label="ContextualTriggersSelectionMenu:enabled"/>
   <int value="-860578793" label="TabGridLayoutAndroid:disabled"/>
   <int value="-860534647" label="SiteDetails:enabled"/>
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
@@ -50952,6 +50954,7 @@ from previous Chrome versions.
   <int value="-600792432" label="WebVrAutopresentFromIntent:disabled"/>
   <int value="-600726805" label="DeprecateMenagerieAPI:disabled"/>
   <int value="-599932554" label="DoodlesOnLocalNtp:disabled"/>
+  <int value="-599878733" label="ContextualTriggersSelectionHandles:disabled"/>
   <int value="-599005750" label="ScanningUI:disabled"/>
   <int value="-598191408" label="OmniboxKeywordSpaceTriggeringSetting:enabled"/>
   <int value="-598050737" label="disable-es3-apis"/>
@@ -51133,6 +51136,7 @@ from previous Chrome versions.
   <int value="-460313418" label="ProgressBarThrottle:enabled"/>
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
+  <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
   <int value="-457584339" label="TemporaryHoldingSpace:enabled"/>
   <int value="-457174225" label="Av1Decoder:enabled"/>
   <int value="-456321929" label="ForceEnableSystemAec:disabled"/>
@@ -53158,6 +53162,7 @@ from previous Chrome versions.
   <int value="1083020187" label="FractionalScrollOffsets:enabled"/>
   <int value="1083201516" label="PersistentWindowBounds:enabled"/>
   <int value="1084365949" label="ReleaseNotesNotification:disabled"/>
+  <int value="1084484359" label="ContextualTriggersSelectionSize:disabled"/>
   <int value="1084972292" label="WebXRAnchors:enabled"/>
   <int value="1085130793" label="LongPressBackForHistory:disabled"/>
   <int value="1086592430" label="WebAppEnableLinkCapturing:enabled"/>
@@ -53914,6 +53919,7 @@ from previous Chrome versions.
   <int value="1639314588" label="LookalikeUrlNavigationSuggestions:disabled"/>
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
+  <int value="1642478923" label="ContextualTriggersSelectionSize:enabled"/>
   <int value="1643626730" label="PrinterStatus:disabled"/>
   <int value="1643700095" label="PermissionQuietChip:enabled"/>
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>

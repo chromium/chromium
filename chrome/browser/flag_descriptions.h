@@ -1699,9 +1699,6 @@ extern const char kAutofillUseMobileLabelDisambiguationDescription[];
 extern const char kAppMenuMobileSiteOptionName[];
 extern const char kAppMenuMobileSiteOptionDescription[];
 
-extern const char kBentoOfflineName[];
-extern const char kBentoOfflineDescription[];
-
 extern const char kBookmarkBottomSheetName[];
 extern const char kBookmarkBottomSheetDescription[];
 
@@ -1776,6 +1773,15 @@ extern const char kContextualSearchThinWebViewImplementationDescription[];
 
 extern const char kContextualSearchTranslationsName[];
 extern const char kContextualSearchTranslationsDescription[];
+
+extern const char kContextualTriggersSelectionHandlesName[];
+extern const char kContextualTriggersSelectionHandlesDescription[];
+
+extern const char kContextualTriggersSelectionMenuName[];
+extern const char kContextualTriggersSelectionMenuDescription[];
+
+extern const char kContextualTriggersSelectionSizeName[];
+extern const char kContextualTriggersSelectionSizeDescription[];
 
 extern const char kCpuAffinityRestrictToLittleCoresName[];
 extern const char kCpuAffinityRestrictToLittleCoresDescription[];
@@ -1999,9 +2005,6 @@ extern const char kShareUsageRankingFixedMoreName[];
 extern const char kShareUsageRankingFixedMoreDescription[];
 extern const char kSwapAndroidShareHubRowsName[];
 extern const char kSwapAndroidShareHubRowsDescription[];
-
-extern const char kSingleTouchSelectName[];
-extern const char kSingleTouchSelectDescription[];
 
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];

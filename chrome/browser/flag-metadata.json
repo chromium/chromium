@@ -518,11 +518,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "bento-offline",
-    "owners": [ "ahawker@google.com", "donnd" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap" ],
     "expiry_milestone": 96
@@ -912,6 +907,21 @@
     "name": "contextual-search-twv-impl",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     "expiry_milestone": 100
+  },
+  {
+    "name": "contextual-triggers-selection-handles",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
+    "name": "contextual-triggers-selection-menu",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
+    "expiry_milestone": 104
+  },
+  {
+    "name": "contextual-triggers-selection-size",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
+    "expiry_milestone": 104
   },
   {
     "name": "continuous-search",
@@ -5103,11 +5113,6 @@
     "name": "single-ntp",
     "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
     "expiry_milestone": 106
-  },
-  {
-    "name": "single-touch-select",
-    "owners": [ "donnd", "contextual-search-eng@google.com" ],
-    "expiry_milestone": 99
   },
   {
     "_comment1": "Shipping some form of Site Isolation to Android is tracked",
