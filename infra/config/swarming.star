@@ -45,7 +45,6 @@ swarming.task_triggerers(
     pool_realm = "@root",
     groups = [
         "mdb/chrome-troopers",
-        "google/luci-task-force@google.com",
     ],
 )
 
