@@ -34,8 +34,10 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -808,6 +810,42 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
                       DockedMagnifierController::kSeparatorHeight +
                       (viewport_center.y() / scale2),
                   controller()->GetMinimumPointOfInterestHeightForTesting());
+}
+
+// Tests resizing docked magnifier by dragging the separator.
+TEST_F(DockedMagnifierTest, ResizeDockedMagnifier) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      std::vector<base::Feature>{::features::kDockedMagnifierResizing},
+      std::vector<base::Feature>{});
+
+  UpdateDisplay("800x600");
+  const auto root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(1u, root_windows.size());
+
+  controller()->SetEnabled(true);
+  EXPECT_TRUE(controller()->GetEnabled());
+  const views::Widget* viewport_widget =
+      controller()->GetViewportWidgetForTesting();
+  ASSERT_NE(nullptr, viewport_widget);
+  EXPECT_EQ(root_windows[0], viewport_widget->GetNativeView()->GetRootWindow());
+  const int viewport_height =
+      root_windows[0]->bounds().height() /
+      DockedMagnifierController::kDefaultScreenHeightDivisor;
+  EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height),
+            viewport_widget->GetWindowBoundsInScreen());
+
+  // Move cursor over docked magnifier separator (to drag for resizing).
+  gfx::Point mouse_location(400, viewport_height);
+  GetEventGenerator()->MoveMouseTo(mouse_location);
+
+  // Drag separator 100 pixels down.
+  mouse_location = gfx::Point(400, viewport_height + 100);
+  GetEventGenerator()->DragMouseTo(mouse_location);
+
+  // Assert docked magnifier viewport is now taller.
+  EXPECT_EQ(gfx::Rect(0, 0, 800, viewport_height + 100),
+            viewport_widget->GetWindowBoundsInScreen());
 }
 
 // Tests that there are no crashes observed when the docked magnifier switches
