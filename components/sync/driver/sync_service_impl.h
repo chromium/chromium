@@ -266,6 +266,21 @@ class SyncServiceImpl : public SyncService,
     ERROR_REASON_ACTIONABLE_ERROR,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ResetEngineReason {
+    kShutdown = 0,
+    kUnrecoverableError = 1,
+    kDisabledAccount = 2,
+    kRequestedPrefChange = 3,
+    kStopAndClear = 4,
+    kSetSyncAllowedByPlatform = 5,
+    kCredentialsChanged = 6,
+    kResetLocalData = 7,
+
+    kMaxValue = kResetLocalData
+  };
+
   // Callbacks for SyncAuthManager.
   void AccountStateChanged();
   void CredentialsChanged();
@@ -308,7 +323,8 @@ class SyncServiceImpl : public SyncService,
   // should be kept or not.
   // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
   // soon start up again (possibly in transport-only mode).
-  void ResetEngine(ShutdownReason reason);
+  void ResetEngine(ShutdownReason shutdown_reason,
+                   ResetEngineReason reset_reason);
 
   // Helper for OnUnrecoverableError.
   void OnUnrecoverableErrorImpl(const base::Location& from_here,

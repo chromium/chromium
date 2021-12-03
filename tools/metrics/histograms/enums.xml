@@ -83504,6 +83504,17 @@ would be helpful to identify which type is being sent.
   <int value="5" label="CLEAR_SERVER_DATA"/>
 </enum>
 
+<enum name="SyncResetEngineReason">
+  <int value="0" label="Shutdown"/>
+  <int value="1" label="Unrecoverable error"/>
+  <int value="2" label="Disabled account"/>
+  <int value="3" label="Requested pref change"/>
+  <int value="4" label="Stop and clear"/>
+  <int value="5" label="Set sync allowed by platform"/>
+  <int value="6" label="Credentials updated"/>
+  <int value="7" label="Reset local Sync data"/>
+</enum>
+
 <enum name="SyncSetupSettignsDisplayedSwaaState">
   <obsolete>
     Removed March 2020.

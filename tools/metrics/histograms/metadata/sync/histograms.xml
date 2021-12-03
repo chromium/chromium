@@ -1548,6 +1548,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ResetEngineReason" enum="SyncResetEngineReason"
+    expires_after="2022-05-01">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Recorded whenever the sync engine is restarted. The recorded value is the
+    calling site of ResetEngine.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SessionTabs" units="tabs" expires_after="2021-01-31">
   <obsolete>
     Removed 2021-01.
