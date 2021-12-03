@@ -279,11 +279,6 @@ class ScriptContext {
           v8::ScriptCompiler::NoCacheReason::kNoCacheNoReason);
 
  private:
-  // DEPRECATED.
-  v8::Local<v8::Value> CallFunction(const v8::Local<v8::Function>& function,
-                                    int argc,
-                                    v8::Local<v8::Value> argv[]) const;
-
   // Whether this context is valid.
   bool is_valid_;
 

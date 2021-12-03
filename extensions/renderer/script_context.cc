@@ -562,41 +562,4 @@ v8::Local<v8::Value> ScriptContext::RunScript(
   return handle_scope.Escape(result);
 }
 
-v8::Local<v8::Value> ScriptContext::CallFunction(
-    const v8::Local<v8::Function>& function,
-    int argc,
-    v8::Local<v8::Value> argv[]) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  v8::EscapableHandleScope handle_scope(isolate());
-  v8::Context::Scope scope(v8_context());
-
-  v8::MicrotasksScope microtasks(isolate(),
-                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
-  if (!is_valid_) {
-    return handle_scope.Escape(
-        v8::Local<v8::Primitive>(v8::Undefined(isolate())));
-  }
-
-  v8::Local<v8::Object> global = v8_context()->Global();
-  if (!web_frame_) {
-    v8::MaybeLocal<v8::Value> maybe_result =
-        function->Call(v8_context(), global, argc, argv);
-    v8::Local<v8::Value> result;
-    if (!maybe_result.ToLocal(&result)) {
-      return handle_scope.Escape(
-          v8::Local<v8::Primitive>(v8::Undefined(isolate())));
-    }
-    return handle_scope.Escape(result);
-  }
-
-  v8::MaybeLocal<v8::Value> result =
-      web_frame_->CallFunctionEvenIfScriptDisabled(function, global, argc,
-                                                   argv);
-
-  // TODO(devlin): Stop coercing this to a v8::Local.
-  v8::Local<v8::Value> coerced_result;
-  ignore_result(result.ToLocal(&coerced_result));
-  return handle_scope.Escape(coerced_result);
-}
-
 }  // namespace extensions
