@@ -152,6 +152,8 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
                 << info->connector()->connector_id;
     return nullptr;
   }
+  privacy_screen_property_ =
+      drm_->GetProperty(connector_.get(), kPrivacyScreen);
 
   display_id_ = params->display_id();
   modes_ = GetDrmModeVector(info->connector());
@@ -303,22 +305,14 @@ void DrmDisplay::SetGammaCorrection(
     CommitGammaCorrection(degamma_lut, gamma_lut);
 }
 
-// TODO(gildekel): consider reformatting this to use the new DRM API or cache
-// |privacy_screen_property| after crrev.com/c/1715751 lands.
 void DrmDisplay::SetPrivacyScreen(bool enabled) {
-  if (!connector_)
-    return;
-
-  ScopedDrmPropertyPtr privacy_screen_property(
-      drm_->GetProperty(connector_.get(), kPrivacyScreen));
-
-  if (!privacy_screen_property) {
+  if (!privacy_screen_property_) {
     LOG(ERROR) << "'" << kPrivacyScreen << "' property doesn't exist.";
     return;
   }
 
   if (!drm_->SetProperty(connector_->connector_id,
-                         privacy_screen_property->prop_id, enabled)) {
+                         privacy_screen_property_->prop_id, enabled)) {
     LOG(ERROR) << (enabled ? "Enabling" : "Disabling") << " property '"
                << kPrivacyScreen << "' failed!";
   }

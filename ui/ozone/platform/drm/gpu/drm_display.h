@@ -74,6 +74,7 @@ class DrmDisplay {
   gfx::Point origin_;
   bool is_hdr_capable_ = false;
   gfx::ColorSpace current_color_space_;
+  ScopedDrmPropertyPtr privacy_screen_property_;
 };
 
 }  // namespace ui
