@@ -5,6 +5,8 @@
 #include "base/ignore_result.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -246,9 +248,10 @@ class ContextMenuObserver {
   base::RunLoop run_loop_;
 };
 
-#if defined(OS_MAC)
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Disabled because it fails for mac specific context menu:
 // https://crbug.com/1275253
+// TODO(1276463): Flakily crashes under lacros.
 #define MAYBE_LinkGenerationTest DISABLED_LinkGenerationTest
 #else
 #define MAYBE_LinkGenerationTest LinkGenerationTest
