@@ -132,4 +132,28 @@ TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest,
   ASSERT_TRUE(access_token.empty());
 }
 
+// Verifies that completion of an access token fetch followed by the timeout
+// period for the fetch being reached doesn't cause a crash. Regression test for
+// crbug.com/1276273.
+TEST_F(SafeBrowsingPrimaryAccountTokenFetcherTest, TimeoutAfterSuccess) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  std::string access_token;
+  SafeBrowsingPrimaryAccountTokenFetcher fetcher(
+      identity_test_environment_.identity_manager());
+  fetcher.Start(
+      base::BindOnce([](std::string* target_token,
+                        const std::string& token) { *target_token = token; },
+                     &access_token));
+  identity_test_environment_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+          "token", base::Time::Now());
+  EXPECT_EQ(access_token, "token");
+
+  // Trigger a timeout of the now-completed fetch: this should not cause any
+  // adverse effects (e.g., a crash).
+  task_environment_.FastForwardBy(
+      base::Milliseconds(kTokenFetchTimeoutDelayFromMilliseconds));
+}
+
 }  // namespace safe_browsing
