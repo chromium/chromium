@@ -383,8 +383,8 @@ RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
   // If any of the previous values don't exist, or are malformed, return error.
   int64_t seq_id;
   int64_t gen_id;
-  if (!sequencing_id || generation_id->empty() || !generation_id ||
-      generation_id->empty() || !priority_result.has_value() ||
+  if (!sequencing_id || !generation_id || generation_id->empty() ||
+      !priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return Status(error::INVALID_ARGUMENT,
                   base::StrCat({"Provided value lacks some fields required by "
