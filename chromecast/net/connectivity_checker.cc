@@ -15,7 +15,10 @@ ConnectivityChecker::ConnectivityChecker(
     : RefCountedDeleteOnSequence(std::move(task_runner)),
       connectivity_observer_list_(
           base::MakeRefCounted<
-              base::ObserverListThreadSafe<ConnectivityObserver>>()) {}
+              base::ObserverListThreadSafe<ConnectivityObserver>>()),
+      connectivity_check_failure_observer_list_(
+          base::MakeRefCounted<base::ObserverListThreadSafe<
+              ConnectivityCheckFailureObserver>>()) {}
 
 ConnectivityChecker::~ConnectivityChecker() {
 }
@@ -34,6 +37,22 @@ void ConnectivityChecker::Notify(bool connected) {
   DCHECK(connectivity_observer_list_.get());
   connectivity_observer_list_->Notify(
       FROM_HERE, &ConnectivityObserver::OnConnectivityChanged, connected);
+}
+
+void ConnectivityChecker::AddConnectivityCheckFailureObserver(
+    ConnectivityCheckFailureObserver* observer) {
+  connectivity_check_failure_observer_list_->AddObserver(observer);
+}
+
+void ConnectivityChecker::RemoveConnectivityCheckFailureObserver(
+    ConnectivityCheckFailureObserver* observer) {
+  connectivity_check_failure_observer_list_->RemoveObserver(observer);
+}
+
+void ConnectivityChecker::NotifyCheckFailure() {
+  DCHECK(connectivity_check_failure_observer_list_.get());
+  connectivity_check_failure_observer_list_->Notify(
+      FROM_HERE, &ConnectivityCheckFailureObserver::OnConnectivityCheckFailed);
 }
 
 // static

@@ -321,6 +321,9 @@ void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   ++check_errors_;
   if (check_errors_ > kNumErrorsToNotifyOffline) {
+    LOG(INFO) << "Notify connectivity check failure.";
+    NotifyCheckFailure();
+
     // Only record event on the connectivity transition.
     if (connected_and_time_synced_) {
       cast_metrics_helper_->RecordEventWithValue(
