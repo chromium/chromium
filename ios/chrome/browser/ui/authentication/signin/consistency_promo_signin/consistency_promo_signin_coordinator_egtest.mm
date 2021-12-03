@@ -97,7 +97,7 @@
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           chrome_test_util::StaticTextWithAccessibilityLabelId(
-              IDS_IOS_SIGN_IN_AUTH_FAILURE)
+              IDS_IOS_WEBSIGN_ERROR_TITLE)
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
@@ -120,7 +120,7 @@
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           chrome_test_util::StaticTextWithAccessibilityLabelId(
-              IDS_IOS_SIGN_IN_AUTH_FAILURE)
+              IDS_IOS_WEBSIGN_ERROR_TITLE)
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
   [[EarlGrey selectElementWithMatcher:

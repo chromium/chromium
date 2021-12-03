@@ -259,8 +259,9 @@ enum class AccountConsistencyPromoAction : int {
   // The bottom sheet was suppressed as the user hit consecutive active
   // dismissal limit.
   SUPPRESSED_CONSECUTIVE_DISMISSALS = 16,
-
-  MAX = 17,
+  // The timeout erreur was shown to the user.
+  TIMEOUT_ERROR_SHOWN = 17,
+  MAX = 18,
 };
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 
+#import "base/cancelable_callback.h"
+#import "base/threading/thread_task_runner_handle.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -17,11 +19,21 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Sign-in time out duration.
+constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
+
+}
+
 @interface ConsistencyPromoSigninMediator () <
     IdentityManagerObserverBridgeDelegate> {
   // Observer for changes to the user's Google identities.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
+  // Closure to trigger the sign-in time out error. This closure has to be
+  // canceled if the sign-in is done in time (or fails).
+  base::CancelableOnceClosure _signinTimeoutClosure;
 }
 
 // List of gaia IDs added by the user with the consistency view.
@@ -34,6 +46,8 @@
 @property(nonatomic, assign) PrefService* userPrefService;
 // Identity for the sign-in in progress.
 @property(nonatomic, assign) ChromeIdentity* signingIdentity;
+// Duration before sign-in timeout. The property is overwritten in unittests.
+@property(nonatomic, assign, readonly) NSInteger signinTimeoutDurationSeconds;
 
 @end
 
@@ -104,6 +118,7 @@
       break;
     }
   }
+  _signinTimeoutClosure.Cancel();
   self.accountManagerService = nullptr;
   self.authenticationService = nullptr;
   self.identityManager = nullptr;
@@ -123,6 +138,43 @@
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
+  __weak __typeof(self) weakSelf = self;
+  _signinTimeoutClosure.Reset(base::BindOnce(^{
+    [weakSelf cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
+  }));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, _signinTimeoutClosure.callback(),
+      base::Seconds(self.signinTimeoutDurationSeconds));
+}
+
+#pragma mark - Properties
+
+- (NSInteger)signinTimeoutDurationSeconds {
+  return kSigninTimeoutDurationSeconds;
+}
+
+#pragma mark - Private
+
+// Cancels sign-in and calls the delegate to display the error.
+- (void)cancelSigninWithError:(ConsistencyPromoSigninMediatorError)error {
+  if (!self.authenticationService)
+    return;
+  self.signingIdentity = nil;
+  switch (error) {
+    case ConsistencyPromoSigninMediatorErrorTimeout:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::TIMEOUT_ERROR_SHOWN);
+      break;
+    case ConsistencyPromoSigninMediatorErrorGeneric:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN);
+      break;
+  }
+  __weak __typeof(self) weakSelf = self;
+  self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN, false, ^() {
+    [weakSelf.delegate consistencyPromoSigninMediator:weakSelf
+                                       errorDidHappen:error];
+  });
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -160,7 +212,7 @@
     // |DCHECK(!self.alertCoordinator)|.
     return;
   }
-  __weak __typeof(self) weakSelf = self;
+  _signinTimeoutClosure.Cancel();
   if (error.state() == GoogleServiceAuthError::State::NONE &&
       self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin) &&
@@ -173,13 +225,7 @@
                                     withIdentity:self.signingIdentity];
     return;
   }
-  self.signingIdentity = nil;
-  RecordConsistencyPromoUserAction(
-      signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN);
-  self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN, false, ^() {
-    [weakSelf.delegate
-        consistencyPromoSigninMediatorGenericErrorDidHappen:self];
-  });
+  [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];
 }
 
 @end

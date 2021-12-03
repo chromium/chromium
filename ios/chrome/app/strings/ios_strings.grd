@@ -2389,14 +2389,17 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGN_IN_DISMISS" desc="Title displayed when there is an unknown failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
        Dismiss 
       </message>
-      <message name="IDS_IOS_SIGN_IN_AUTH_FAILURE" desc="Message displayed when the user attempts to sign in, but the authentication step fails for an unknown reason. [iOS only]">
-        Something went wrong during sign-in.
-      </message>
       <message name="IDS_IOS_SIGN_IN_FAILED" desc="Explanatory message shown when Sign in to Chrome failed for an unknown technical reason.  [Length: 50em] [iOS only]">
         Failed to sign in. Please try again later.
       </message>
-      <message name="IDS_IOS_SIGN_IN_FAILURE_TITLE" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
-        Can't Sign In
+      <message name="IDS_IOS_WEBSIGN_ERROR_TITLE" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Something Went Wrong
+      </message>
+      <message name="IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Can't sign-in.
+      </message>
+      <message name="IDS_IOS_WEBSIGN_ERROR_TIMEOUT_ERROR" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Check your connection and try signing in again.
       </message>
       <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE" desc="Message of the alert displayed when the user sign in with a restricted account.">
         Your organization allows you to sign in only with certain accounts.
