@@ -10,10 +10,6 @@ import {InputController} from './../input_controller.js';
 import {Macro} from './../macros/macro.js';
 import {InputTextStrategy} from './input_text_strategy.js';
 import {ParseStrategy} from './parse_strategy.js';
-// PumpkinAvailability is based on the gn argument enable_pumpkin_for_dictation,
-// and pumpkin_availability.js is copied from either include_pumpkin.js
-// or exclude_pumpkin.js in the BUILD rule.
-import {PumpkinAvailability} from './pumpkin/pumpkin_availability.js';
 import {PumpkinParseStrategy} from './pumpkin_parse_strategy.js';
 import {SimpleParseStrategy} from './simple_parse_strategy.js';
 
