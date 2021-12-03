@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/real_time_domain.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_impl.h"
@@ -461,9 +462,12 @@ void SequenceManagerImpl::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::MoveReadyDelayedTasksToWorkQueues");
 
-  main_thread_only().wake_up_queue->MoveReadyDelayedTasksToWorkQueues(lazy_now);
+  EnqueueOrder delayed_task_group_enqueue_order = GetNextSequenceNumber();
+  main_thread_only().wake_up_queue->MoveReadyDelayedTasksToWorkQueues(
+      lazy_now, delayed_task_group_enqueue_order);
   main_thread_only()
-      .non_waking_wake_up_queue->MoveReadyDelayedTasksToWorkQueues(lazy_now);
+      .non_waking_wake_up_queue->MoveReadyDelayedTasksToWorkQueues(
+          lazy_now, delayed_task_group_enqueue_order);
 }
 
 void SequenceManagerImpl::OnBeginNestedRunLoop() {

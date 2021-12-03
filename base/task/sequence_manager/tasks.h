@@ -16,6 +16,8 @@ namespace sequence_manager {
 using TaskType = uint8_t;
 constexpr TaskType kTaskTypeNone = 0;
 
+class TaskOrder;
+
 namespace internal {
 
 // Wrapper around PostTask method arguments and the assigned task type.
@@ -99,6 +101,8 @@ struct BASE_EXPORT Task : public PendingTask {
 
   bool enqueue_order_set() const { return enqueue_order_; }
 
+  TaskOrder task_order() const;
+
   // OK to dispatch from a nested loop.
   Nestable nestable = Nestable::kNonNestable;
 
@@ -116,11 +120,11 @@ struct BASE_EXPORT Task : public PendingTask {
 #endif
 
  private:
-  // Similar to |sequence_num|, but ultimately the |enqueue_order| is what
-  // the scheduler uses for task ordering. For immediate tasks |enqueue_order|
-  // is set when posted, but for delayed tasks it's not defined until they are
-  // enqueued. This is because otherwise delayed tasks could run before
-  // an immediate task posted after the delayed task.
+  // `enqueue_order_` is the primary component used to order tasks (see
+  // `TaskOrder`). For immediate tasks, `enqueue_order` is set when posted, but
+  // for delayed tasks it's not defined until they are enqueued. This is because
+  // otherwise delayed tasks could run before an immediate task posted after the
+  // delayed task.
   EnqueueOrder enqueue_order_;
 };
 

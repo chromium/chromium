@@ -5249,8 +5249,7 @@ TEST_P(SequenceManagerTest, TaskObserverBlockedOrLowPriority_Mix) {
   sequence_manager()->RemoveTaskObserver(&observer);
 }
 
-// TODO(crbug.com/1249857): Enable this test again when a new fix is landed.
-TEST_P(SequenceManagerTest, DISABLED_DelayedTaskOrderFromMultipleQueues) {
+TEST_P(SequenceManagerTest, DelayedTaskOrderFromMultipleQueues) {
   // Regression test for crbug.com/1249857. The 4th task posted below should run
   // 4th despite being in queues[0].
   std::vector<EnqueueOrder> run_order;

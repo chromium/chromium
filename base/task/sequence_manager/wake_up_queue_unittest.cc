@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/test/mock_callback.h"
@@ -243,14 +244,16 @@ TEST_F(WakeUpQueueTest, MoveReadyDelayedTasksToWorkQueues) {
 
   EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
-  wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_1);
+  wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_1,
+                                                    EnqueueOrder());
   EXPECT_EQ(delayed_runtime, wake_up_queue_->NextScheduledRunTime());
 
   EXPECT_CALL(*wake_up_queue_.get(),
               OnNextWakeUpChanged_TimeTicks(TimeTicks::Max()));
   tick_clock_.SetNowTicks(delayed_runtime);
   LazyNow lazy_now_2(&tick_clock_);
-  wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_2);
+  wake_up_queue_->MoveReadyDelayedTasksToWorkQueues(&lazy_now_2,
+                                                    EnqueueOrder());
   ASSERT_TRUE(wake_up_queue_->NextScheduledRunTime().is_max());
 }
 

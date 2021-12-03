@@ -14,6 +14,7 @@
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
+#include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/task_queue_selector_logic.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "base/values.h"
@@ -138,42 +139,26 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   /*
    * SetOperation is used to configure ChooseWithPriority() and must have:
    *
-   * static WorkQueue* GetWithPriority(const WorkQueueSets& sets,
-   *                                   TaskQueue::QueuePriority priority);
-   *
-   * static WorkQueue* GetWithPriorityAndEnqueueOrder(
-   *     const WorkQueueSets& sets,
-   *     TaskQueue::QueuePriority priority
-   *     EnqueueOrder* enqueue_order);
+   * static absl::optional<WorkQueueAndTaskOrder>
+   * GetWithPriority(const WorkQueueSets& sets,
+   *                 TaskQueue::QueuePriority priority);
    */
 
   // The default
   struct SetOperationOldest {
-    static WorkQueue* GetWithPriority(const WorkQueueSets& sets,
-                                      TaskQueue::QueuePriority priority) {
-      return sets.GetOldestQueueInSet(priority);
-    }
-
-    static WorkQueue* GetWithPriorityAndEnqueueOrder(
+    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
         const WorkQueueSets& sets,
-        TaskQueue::QueuePriority priority,
-        EnqueueOrder* enqueue_order) {
-      return sets.GetOldestQueueAndEnqueueOrderInSet(priority, enqueue_order);
+        TaskQueue::QueuePriority priority) {
+      return sets.GetOldestQueueAndTaskOrderInSet(priority);
     }
   };
 
 #if DCHECK_IS_ON()
   struct SetOperationRandom {
-    static WorkQueue* GetWithPriority(const WorkQueueSets& sets,
-                                      TaskQueue::QueuePriority priority) {
-      return sets.GetRandomQueueInSet(priority);
-    }
-
-    static WorkQueue* GetWithPriorityAndEnqueueOrder(
+    static absl::optional<WorkQueueAndTaskOrder> GetWithPriority(
         const WorkQueueSets& sets,
-        TaskQueue::QueuePriority priority,
-        EnqueueOrder* enqueue_order) {
-      return sets.GetRandomQueueAndEnqueueOrderInSet(priority, enqueue_order);
+        TaskQueue::QueuePriority priority) {
+      return sets.GetRandomQueueAndTaskOrderInSet(priority);
     }
   };
 #endif  // DCHECK_IS_ON()
@@ -186,7 +171,7 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
           ChooseImmediateOnlyWithPriority<SetOperation>(priority);
       if (queue)
         return queue;
-      return SetOperation::GetWithPriority(delayed_work_queue_sets_, priority);
+      return ChooseDelayedOnlyWithPriority<SetOperation>(priority);
     }
     return ChooseImmediateOrDelayedTaskWithPriority<SetOperation>(priority);
   }
@@ -194,7 +179,21 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   template <typename SetOperation>
   WorkQueue* ChooseImmediateOnlyWithPriority(
       TaskQueue::QueuePriority priority) const {
-    return SetOperation::GetWithPriority(immediate_work_queue_sets_, priority);
+    if (auto queue_and_order = SetOperation::GetWithPriority(
+            immediate_work_queue_sets_, priority)) {
+      return queue_and_order->queue;
+    }
+    return nullptr;
+  }
+
+  template <typename SetOperation>
+  WorkQueue* ChooseDelayedOnlyWithPriority(
+      TaskQueue::QueuePriority priority) const {
+    if (auto queue_and_order =
+            SetOperation::GetWithPriority(delayed_work_queue_sets_, priority)) {
+      return queue_and_order->queue;
+    }
+    return nullptr;
   }
 
  private:
@@ -211,23 +210,17 @@ class BASE_EXPORT TaskQueueSelector : public WorkQueueSets::Observer {
   template <typename SetOperation>
   WorkQueue* ChooseImmediateOrDelayedTaskWithPriority(
       TaskQueue::QueuePriority priority) const {
-    EnqueueOrder immediate_enqueue_order;
-    WorkQueue* immediate_queue = SetOperation::GetWithPriorityAndEnqueueOrder(
-        immediate_work_queue_sets_, priority, &immediate_enqueue_order);
-    if (immediate_queue) {
-      EnqueueOrder delayed_enqueue_order;
-      WorkQueue* delayed_queue = SetOperation::GetWithPriorityAndEnqueueOrder(
-          delayed_work_queue_sets_, priority, &delayed_enqueue_order);
-      if (!delayed_queue)
-        return immediate_queue;
-
-      if (immediate_enqueue_order < delayed_enqueue_order) {
-        return immediate_queue;
-      } else {
-        return delayed_queue;
+    if (auto immediate_queue_and_order = SetOperation::GetWithPriority(
+            immediate_work_queue_sets_, priority)) {
+      if (auto delayed_queue_and_order = SetOperation::GetWithPriority(
+              delayed_work_queue_sets_, priority)) {
+        return immediate_queue_and_order->order < delayed_queue_and_order->order
+                   ? immediate_queue_and_order->queue
+                   : delayed_queue_and_order->queue;
       }
+      return immediate_queue_and_order->queue;
     }
-    return SetOperation::GetWithPriority(delayed_work_queue_sets_, priority);
+    return ChooseDelayedOnlyWithPriority<SetOperation>(priority);
   }
 
   // Returns the priority which is next after |priority|.

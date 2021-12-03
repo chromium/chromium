@@ -6,9 +6,12 @@
 
 #include "base/containers/stack_container.h"
 #include "base/debug/alias.h"
+#include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
+#include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/work_queue_sets.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace sequence_manager {
@@ -50,18 +53,17 @@ bool WorkQueue::BlockedByFence() const {
   // If the queue is empty then any future tasks will have a higher enqueue
   // order and will be blocked. The queue is also blocked if the head is past
   // the fence.
-  return tasks_.empty() || tasks_.front().enqueue_order() >= fence_;
+  return tasks_.empty() || tasks_.front().task_order() >= fence_->task_order();
 }
 
-bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
+absl::optional<TaskOrder> WorkQueue::GetFrontTaskOrder() const {
   if (tasks_.empty() || BlockedByFence())
-    return false;
+    return absl::nullopt;
   // Quick sanity check.
-  DCHECK_LE(tasks_.front().enqueue_order(), tasks_.back().enqueue_order())
+  DCHECK(tasks_.front().task_order() <= tasks_.back().task_order())
       << task_queue_->GetName() << " : " << work_queue_sets_->GetName() << " : "
       << name_;
-  *enqueue_order = tasks_.front().enqueue_order();
-  return true;
+  return tasks_.front().task_order();
 }
 
 void WorkQueue::Push(Task task) {
@@ -70,8 +72,13 @@ void WorkQueue::Push(Task task) {
   DCHECK(task.enqueue_order_set());
 #endif
 
-  // Make sure the |enqueue_order()| is monotonically increasing.
-  DCHECK(was_empty || tasks_.back().enqueue_order() < task.enqueue_order());
+  // Make sure the task order is strictly increasing.
+  DCHECK(was_empty || tasks_.back().task_order() < task.task_order());
+  // Make sure enqueue order is strictly increasing for immediate queues and
+  // monotonically increasing for delayed queues.
+  DCHECK(was_empty || tasks_.back().enqueue_order() < task.enqueue_order() ||
+         (queue_type_ == QueueType::kDelayed &&
+          tasks_.back().enqueue_order() == task.enqueue_order()));
 
   // Amortized O(1).
   tasks_.push_back(std::move(task));
@@ -99,9 +106,15 @@ void WorkQueue::TaskPusher::Push(Task task) {
   DCHECK(task.enqueue_order_set());
 #endif
 
-  // Make sure the |enqueue_order()| is monotonically increasing.
+  // Make sure the task order is strictly increasing.
   DCHECK(work_queue_->tasks_.empty() ||
-         work_queue_->tasks_.back().enqueue_order() < task.enqueue_order());
+         work_queue_->tasks_.back().task_order() < task.task_order());
+  // Make sure enqueue order is strictly increasing for immediate queues and
+  // monotonically increasing for delayed queues.
+  DCHECK(work_queue_->tasks_.empty() ||
+         work_queue_->tasks_.back().enqueue_order() < task.enqueue_order() ||
+         (work_queue_->queue_type_ == QueueType::kDelayed &&
+          work_queue_->tasks_.back().enqueue_order() == task.enqueue_order()));
 
   // Amortized O(1).
   work_queue_->tasks_.push_back(std::move(task));
@@ -130,8 +143,15 @@ void WorkQueue::PushNonNestableTaskToFront(Task task) {
 #endif
 
   if (!was_empty) {
-    // Make sure the |enqueue_order| is monotonically increasing.
-    DCHECK_LE(task.enqueue_order(), tasks_.front().enqueue_order())
+    // Make sure the task order is strictly increasing.
+    DCHECK(task.task_order() < tasks_.front().task_order())
+        << task_queue_->GetName() << " : " << work_queue_sets_->GetName()
+        << " : " << name_;
+    // Make sure the enqueue order is strictly increasing for immediate queues
+    // and monotonically increasing for delayed queues.
+    DCHECK(task.enqueue_order() < tasks_.front().enqueue_order() ||
+           (queue_type_ == QueueType::kDelayed &&
+            task.enqueue_order() == tasks_.front().enqueue_order()))
         << task_queue_->GetName() << " : " << work_queue_sets_->GetName()
         << " : " << name_;
   }
@@ -191,7 +211,7 @@ Task WorkQueue::TakeTaskFromWorkQueue() {
   // random so we can't use the (slightly) more efficient OnPopMinQueueInSet.
   work_queue_sets_->OnQueuesFrontTaskChanged(this);
 #else
-  // OnPopMinQueueInSet calls GetFrontTaskEnqueueOrder which checks
+  // OnPopMinQueueInSet calls GetFrontTaskOrder which checks
   // BlockedByFence() so we don't need to here.
   work_queue_sets_->OnPopMinQueueInSet(this);
 #endif
@@ -244,21 +264,21 @@ void WorkQueue::AssignSetIndex(size_t work_queue_set_index) {
   work_queue_set_index_ = work_queue_set_index;
 }
 
-bool WorkQueue::InsertFenceImpl(EnqueueOrder fence) {
-  DCHECK_NE(fence, 0u);
-  DCHECK(fence >= fence_ || fence == EnqueueOrder::blocking_fence());
+bool WorkQueue::InsertFenceImpl(Fence fence) {
+  DCHECK(!fence_ || fence.task_order() >= fence_->task_order() ||
+         fence.IsBlockingFence());
   bool was_blocked_by_fence = BlockedByFence();
   fence_ = fence;
   return was_blocked_by_fence;
 }
 
-void WorkQueue::InsertFenceSilently(EnqueueOrder fence) {
+void WorkQueue::InsertFenceSilently(Fence fence) {
   // Ensure that there is no fence present or a new one blocks queue completely.
-  DCHECK(!fence_ || fence_ == EnqueueOrder::blocking_fence());
+  DCHECK(!fence_ || fence_->IsBlockingFence());
   InsertFenceImpl(fence);
 }
 
-bool WorkQueue::InsertFence(EnqueueOrder fence) {
+bool WorkQueue::InsertFence(Fence fence) {
   bool was_blocked_by_fence = InsertFenceImpl(fence);
   if (!work_queue_sets_)
     return false;
@@ -276,7 +296,7 @@ bool WorkQueue::InsertFence(EnqueueOrder fence) {
 
 bool WorkQueue::RemoveFence() {
   bool was_blocked_by_fence = BlockedByFence();
-  fence_ = EnqueueOrder::none();
+  fence_ = absl::nullopt;
   if (work_queue_sets_ && !tasks_.empty() && was_blocked_by_fence) {
     work_queue_sets_->OnTaskPushedToEmptyQueue(this);
     return true;
@@ -294,10 +314,10 @@ void WorkQueue::PopTaskForTesting() {
   tasks_.pop_front();
 }
 
-void WorkQueue::CollectTasksOlderThan(EnqueueOrder reference,
+void WorkQueue::CollectTasksOlderThan(TaskOrder reference,
                                       std::vector<const Task*>* result) const {
   for (const Task& task : tasks_) {
-    if (task.enqueue_order() >= reference)
+    if (task.task_order() >= reference)
       break;
 
     result->push_back(&task);

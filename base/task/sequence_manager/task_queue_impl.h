@@ -25,6 +25,7 @@
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/atomic_flag_set.h"
 #include "base/task/sequence_manager/enqueue_order.h"
+#include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/lazily_deallocated_deque.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -200,10 +201,12 @@ class BASE_EXPORT TaskQueueImpl {
   bool RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
 
   // Enqueues any delayed tasks which should be run now on the
-  // |delayed_work_queue|. Must be called from the main thread.
-  void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now);
+  // `delayed_work_queue`, setting each task's enqueue order to `enqueue_order`.
+  // Must be called from the main thread.
+  void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now,
+                                        EnqueueOrder enqueue_order);
 
-  void OnWakeUp(LazyNow* lazy_now);
+  void OnWakeUp(LazyNow* lazy_now, EnqueueOrder enqueue_order);
 
   const WakeUpQueue* wake_up_queue() const {
     return main_thread_only().wake_up_queue;
@@ -389,7 +392,7 @@ class BASE_EXPORT TaskQueueImpl {
     HeapHandle heap_handle;
     bool is_enabled = true;
     raw_ptr<trace_event::BlameContext> blame_context = nullptr;  // Not owned.
-    EnqueueOrder current_fence;
+    absl::optional<Fence> current_fence;
     absl::optional<TimeTicks> delayed_fence;
     // Snapshots the next sequence number when the queue is unblocked, otherwise
     // it contains EnqueueOrder::none(). If the EnqueueOrder of a task just
@@ -412,6 +415,8 @@ class BASE_EXPORT TaskQueueImpl {
     // 3) When the queue is unblocked while at least as important as
     //    kNormalPriority, this snapshots the next sequence number. The
     //    EnqueueOrder of any already queued task will compare less than this.
+    //
+    // TODO(crbug.com/1249857): Change this to use `TaskOrder`.
     EnqueueOrder
         enqueue_order_at_which_we_became_unblocked_with_normal_priority;
     OnTaskStartedHandler on_task_started_handler;
@@ -467,8 +472,9 @@ class BASE_EXPORT TaskQueueImpl {
   // Returns a Task representation for `delayed_task`.
   Task MakeDelayedTask(PostedTask delayed_task, LazyNow* lazy_now) const;
 
-  // Activate a delayed fence if a time has come.
-  void ActivateDelayedFenceIfNeeded(TimeTicks now);
+  // Activate a delayed fence if a time has come based on `task`'s delayed run
+  // time.
+  void ActivateDelayedFenceIfNeeded(const Task& task);
 
   // Updates state protected by any_thread_lock_.
   void UpdateCrossThreadQueueStateLocked()
@@ -496,6 +502,8 @@ class BASE_EXPORT TaskQueueImpl {
 
   // Invoked when the queue becomes enabled and not blocked by a fence.
   void OnQueueUnblocked();
+
+  void InsertFence(Fence fence);
 
   const char* name_;
   const raw_ptr<SequenceManagerImpl> sequence_manager_;

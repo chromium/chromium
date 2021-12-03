@@ -4,6 +4,8 @@
 
 #include "base/task/sequence_manager/tasks.h"
 
+#include "base/task/sequence_manager/task_order.h"
+
 namespace base {
 namespace sequence_manager {
 
@@ -42,6 +44,10 @@ Task::Task(Task&& move_from) = default;
 Task::~Task() = default;
 
 Task& Task::operator=(Task&& other) = default;
+
+TaskOrder Task::task_order() const {
+  return TaskOrder(enqueue_order(), delayed_run_time, sequence_num);
+}
 
 namespace internal {
 

@@ -87,7 +87,9 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
     OnNextWakeUpChanged(lazy_now, GetNextWakeUp());
 }
 
-void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
+void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(
+    LazyNow* lazy_now,
+    EnqueueOrder enqueue_order) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   // Wake up any queues with pending delayed work.
   bool update_needed = false;
@@ -96,7 +98,7 @@ void WakeUpQueue::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
     internal::TaskQueueImpl* queue = wake_up_queue_.top().queue;
     // OnWakeUp() is expected to update the next wake-up for this queue with
     // SetNextWakeUpForQueue(), thus allowing us to make progress.
-    queue->OnWakeUp(lazy_now);
+    queue->OnWakeUp(lazy_now, enqueue_order);
     update_needed = true;
   }
   if (!update_needed || wake_up_queue_.empty())

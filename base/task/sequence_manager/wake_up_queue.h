@@ -16,6 +16,9 @@
 
 namespace base {
 namespace sequence_manager {
+
+class EnqueueOrder;
+
 namespace internal {
 
 class AssociatedThreadId;
@@ -48,7 +51,8 @@ class BASE_EXPORT WakeUpQueue {
 
   // Moves ready delayed tasks in TaskQueues to delayed WorkQueues, consuming
   // expired wake-ups in the process.
-  void MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now);
+  void MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now,
+                                         EnqueueOrder enqueue_order);
 
   // Schedule `queue` to wake up at certain time. Repeating calls with the same
   // `queue` invalidate previous requests. Nullopt `wake_up` cancels a
