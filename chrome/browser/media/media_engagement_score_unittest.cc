@@ -127,6 +127,18 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(details->last_media_playback_time,
               score->last_media_playback_time().ToJsTime());
   }
+};
+
+class MediaEngagementScoreWithOverrideFieldTrialsTest
+    : public MediaEngagementScoreTest {
+ public:
+  void SetUp() override {
+    MediaEngagementScoreTest::SetUp();
+    SetScore(20, 16);
+    // Raise the upper threshold. Since the score was already considered high
+    // it should still be considered high.
+    OverrideFieldTrial(5, 0.7, 0.9);
+  }
 
   void OverrideFieldTrial(int min_visits,
                           double lower_threshold,
@@ -154,6 +166,8 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
+  // Has to be initialized at the test harness level, not at the level of
+  // individual tests.
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
@@ -418,7 +432,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreThreshold) {
   EXPECT_FALSE(score_->high_score());
 }
 
-TEST_F(MediaEngagementScoreTest, OverrideFieldTrial) {
+TEST_F(MediaEngagementScoreTest, DefaultValues) {
   EXPECT_EQ(20, MediaEngagementScore::GetScoreMinVisits());
   EXPECT_EQ(0.2, MediaEngagementScore::GetHighScoreLowerThreshold());
   EXPECT_EQ(0.3, MediaEngagementScore::GetHighScoreUpperThreshold());
@@ -426,10 +440,9 @@ TEST_F(MediaEngagementScoreTest, OverrideFieldTrial) {
   SetScore(20, 16);
   EXPECT_EQ(0.8, score_->actual_score());
   EXPECT_TRUE(score_->high_score());
+}
 
-  // Raise the upper threshold, since the score was already considered high we
-  // should still be high.
-  OverrideFieldTrial(5, 0.7, 0.9);
+TEST_F(MediaEngagementScoreWithOverrideFieldTrialsTest, OverrideFieldTrial) {
   EXPECT_TRUE(score_->high_score());
   EXPECT_EQ(0.7, MediaEngagementScore::GetHighScoreLowerThreshold());
   EXPECT_EQ(0.9, MediaEngagementScore::GetHighScoreUpperThreshold());
@@ -446,12 +459,17 @@ TEST_F(MediaEngagementScoreTest, OverrideFieldTrial) {
   EXPECT_EQ(25, MediaEngagementScore::GetScoreMinVisits());
 }
 
+class MediaEngagementScoreWithHTTPSOnlyTest : public MediaEngagementScoreTest {
+ private:
+  // Has to be initialized at the test harness level, not at the level of
+  // individual tests.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      /*enable_feature=*/media::kMediaEngagementHTTPSOnly};
+};
+
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
-TEST_F(MediaEngagementScoreTest, PopulatedDictionary_HTTPSOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kMediaEngagementHTTPSOnly);
-
+TEST_F(MediaEngagementScoreWithHTTPSOnlyTest, PopulatedDictionary_HTTPSOnly) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
   dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);

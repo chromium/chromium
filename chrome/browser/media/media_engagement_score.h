@@ -105,6 +105,7 @@ class MediaEngagementScore final {
  private:
   friend class MediaEngagementServiceTest;
   friend class MediaEngagementScoreTest;
+  friend class MediaEngagementScoreWithOverrideFieldTrialsTest;
 
   // Update the dictionary continaing the latest score values and return whether
   // they have changed or not (since what was last retrieved from content
