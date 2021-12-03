@@ -2,9 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
+
+declare_args() {
+  # Note: the audio service must be sandboxed for us to do audio processing
+  # there.
+  chrome_wide_echo_cancellation_supported = is_win || is_mac
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [
+    "CHROME_WIDE_ECHO_CANCELLATION=$chrome_wide_echo_cancellation_supported",
+  ]
+}
 
 source_set("audio") {
   sources = [
@@ -42,18 +57,8 @@ source_set("audio") {
     "loopback_group_member.h",
     "loopback_stream.cc",
     "loopback_stream.h",
-    "mixing_graph.cc",
-    "mixing_graph.h",
-    "mixing_graph_impl.cc",
-    "mixing_graph_impl.h",
     "output_controller.cc",
     "output_controller.h",
-    "output_device_mixer.cc",
-    "output_device_mixer.h",
-    "output_device_mixer_impl.cc",
-    "output_device_mixer_impl.h",
-    "output_device_mixer_manager.cc",
-    "output_device_mixer_manager.h",
     "output_stream.cc",
     "output_stream.h",
     "owning_audio_manager_accessor.cc",
@@ -70,8 +75,6 @@ source_set("audio") {
     "stream_factory.cc",
     "stream_factory.h",
     "stream_monitor.h",
-    "sync_mixing_graph_input.cc",
-    "sync_mixing_graph_input.h",
     "sync_reader.cc",
     "sync_reader.h",
     "system_info.cc",
@@ -87,6 +90,7 @@ source_set("audio") {
   ]
 
   public_deps = [
+    ":buildflags",
     "//base",
     "//media",
     "//media/mojo/mojom",
@@ -103,6 +107,27 @@ source_set("audio") {
       "//sandbox/linux:sandbox_services",
       "//sandbox/policy",
     ]
+  }
+
+  if (chrome_wide_echo_cancellation_supported) {
+    sources += [
+      "audio_processor.cc",
+      "audio_processor.h",
+      "mixing_graph.cc",
+      "mixing_graph.h",
+      "mixing_graph_impl.cc",
+      "mixing_graph_impl.h",
+      "output_device_mixer.cc",
+      "output_device_mixer.h",
+      "output_device_mixer_impl.cc",
+      "output_device_mixer_impl.h",
+      "output_device_mixer_manager.cc",
+      "output_device_mixer_manager.h",
+      "sync_mixing_graph_input.cc",
+      "sync_mixing_graph_input.h",
+    ]
+
+    deps += []
   }
 
   configs += [
@@ -147,11 +172,7 @@ source_set("tests") {
     "local_muter_unittest.cc",
     "log_factory_manager_unittest.cc",
     "loopback_stream_unittest.cc",
-    "mixing_graph_impl_unittest.cc",
-    "mixing_graph_input_unittest.cc",
     "output_controller_unittest.cc",
-    "output_device_mixer_impl_unittest.cc",
-    "output_device_mixer_manager_unittest.cc",
     "output_stream_unittest.cc",
     "public/cpp/input_ipc_unittest.cc",
     "public/cpp/output_device_unittest.cc",
@@ -190,6 +211,15 @@ source_set("tests") {
     sources += [
       "public/cpp/sounds/audio_stream_handler_unittest.cc",
       "public/cpp/sounds/sounds_manager_unittest.cc",
+    ]
+  }
+
+  if (chrome_wide_echo_cancellation_supported) {
+    sources += [
+      "mixing_graph_impl_unittest.cc",
+      "mixing_graph_input_unittest.cc",
+      "output_device_mixer_impl_unittest.cc",
+      "output_device_mixer_manager_unittest.cc",
     ]
   }
 }

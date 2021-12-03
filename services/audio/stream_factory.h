@@ -19,9 +19,13 @@
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/audio/buildflags.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/loopback_coordinator.h"
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "services/audio/output_device_mixer_manager.h"
+#endif
 
 namespace base {
 class UnguessableToken;
@@ -112,7 +116,9 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   ConcurrentStreamMetricReporter stream_count_metric_reporter_;
 
   // Order of the following members is important for a clean shutdown.
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   const std::unique_ptr<OutputDeviceMixerManager> output_device_mixer_manager_;
+#endif
   LoopbackCoordinator coordinator_;
   std::vector<std::unique_ptr<LocalMuter>> muters_;
   base::Thread loopback_worker_thread_;

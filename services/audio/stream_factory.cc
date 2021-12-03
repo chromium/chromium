@@ -15,12 +15,16 @@
 #include "services/audio/input_stream.h"
 #include "services/audio/local_muter.h"
 #include "services/audio/loopback_stream.h"
-#include "services/audio/output_device_mixer.h"
 #include "services/audio/output_stream.h"
 #include "services/audio/user_input_monitor.h"
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "services/audio/output_device_mixer.h"
+#endif
+
 namespace audio {
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 const base::Feature kMixingForChromeWideAec{"MixingForChromeWideAec",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 namespace {
@@ -35,12 +39,16 @@ std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
 }
 
 }  // namespace
+#endif
 
 StreamFactory::StreamFactory(media::AudioManager* audio_manager)
     : audio_manager_(audio_manager),
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
-      loopback_worker_thread_("Loopback Worker") {}
+#endif
+      loopback_worker_thread_("Loopback Worker") {
+}
 
 StreamFactory::~StreamFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
@@ -77,7 +85,12 @@ void StreamFactory::CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_,
       UserInputMonitor::Create(std::move(key_press_count_buffer)),
-      &stream_count_metric_reporter_, output_device_mixer_manager_.get(),
+      &stream_count_metric_reporter_,
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+      output_device_mixer_manager_.get(),
+#else
+      nullptr,
+#endif
       device_id, params, shared_memory_count, enable_agc));
 }
 
@@ -129,11 +142,13 @@ void StreamFactory::CreateOutputStream(
   OutputStream::ManagedDeviceOutputStreamCreateCallback
       managed_device_output_stream_create_callback;
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (output_device_mixer_manager_) {
     managed_device_output_stream_create_callback = base::BindRepeating(
         &OutputDeviceMixerManager::MakeOutputStream,
         base::Unretained(output_device_mixer_manager_.get()));
   }
+#endif
 
   output_streams_.insert(std::make_unique<OutputStream>(
       std::move(created_callback), std::move(deleter_callback),
