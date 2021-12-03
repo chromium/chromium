@@ -65,6 +65,7 @@ class ChromeAppListItem {
   bool is_folder() const { return metadata_->is_folder; }
   bool is_persistent() const { return metadata_->is_persistent; }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
+  const ash::IconColor& icon_color() const { return metadata_->icon_color; }
   bool is_page_break() const { return metadata_->is_page_break; }
 
   void SetMetadata(std::unique_ptr<ash::AppListItemMetadata> metadata);

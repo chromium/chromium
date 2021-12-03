@@ -276,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     app_list_syncable_service->SetPinPosition(
         kExtensionId, syncer::StringOrdinal("testpinposition"));
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+              "kbmnembi { Nothing } [testapplistposition] "
+              "[testpinposition](INVALID COLOR)");
 #endif
   }
 
@@ -315,13 +316,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
       // Chrome OS shelf/list position should migrate.
       EXPECT_EQ(
           app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
-          base::StringPrintf(
-              "%s { Basic web app } [testapplistposition] [testpinposition]",
-              GetWebAppId().substr(0, 8).c_str()));
+          base::StringPrintf("%s { Basic web app } [testapplistposition] "
+                             "[testpinposition](INVALID COLOR)",
+                             GetWebAppId().substr(0, 8).c_str()));
       // Old Chrome app prefs are retained.
       EXPECT_EQ(
           app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-          "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+          "kbmnembi { Nothing } [testapplistposition] "
+          "[testpinposition](INVALID COLOR)");
 #endif
     }
   }
@@ -367,14 +369,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Chrome OS shelf/list position should re-migrate.
-    EXPECT_EQ(
-        app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
-        base::StringPrintf(
-            "%s { Basic web app } [testapplistposition] [testpinposition]",
-            GetWebAppId().substr(0, 8).c_str()));
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
+              base::StringPrintf("%s { Basic web app } [testapplistposition] "
+                                 "[testpinposition](INVALID COLOR)",
+                                 GetWebAppId().substr(0, 8).c_str()));
     // Old Chrome app prefs are retained.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+              "kbmnembi { Nothing } [testapplistposition] "
+              "[testpinposition](INVALID COLOR)");
 #endif
   }
 }
@@ -408,7 +410,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     app_list_syncable_service->SetPinPosition(
         kExtensionId, syncer::StringOrdinal("testpinposition"));
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+              "kbmnembi { Nothing } [testapplistposition] "
+              "[testpinposition](INVALID COLOR)");
 #endif
 
     // Set chrome://apps position.
@@ -459,14 +462,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Chrome OS shelf/list position should migrate.
-    EXPECT_EQ(
-        app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
-        base::StringPrintf(
-            "%s { Basic web app } [testapplistposition] [testpinposition]",
-            GetWebAppId().substr(0, 8).c_str()));
+    EXPECT_EQ(app_list_syncable_service->GetSyncItem(GetWebAppId())->ToString(),
+              base::StringPrintf("%s { Basic web app } [testapplistposition] "
+                                 "[testpinposition](INVALID COLOR)",
+                                 GetWebAppId().substr(0, 8).c_str()));
     // Chrome app shelf/list position should be retained.
     EXPECT_EQ(app_list_syncable_service->GetSyncItem(kExtensionId)->ToString(),
-              "kbmnembi { Nothing } [testapplistposition] [testpinposition]");
+              "kbmnembi { Nothing } [testapplistposition] "
+              "[testpinposition](INVALID COLOR)");
 #endif
 
     // chrome://apps position should migrate.

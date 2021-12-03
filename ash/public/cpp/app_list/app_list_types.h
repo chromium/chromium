@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/sync/protocol/app_list_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -54,6 +55,54 @@ enum class AppListConfigType {
   kDense,
 };
 
+// A structure holding an item icon' color information.
+class ASH_PUBLIC_EXPORT IconColor {
+ public:
+  // The minimum value of a valid hue. It is also the hue for the color that is
+  // close or equal to pure white.
+  static constexpr int kHueMin = -1;
+
+  // The maximum value of a valid hue. It is also the hue for the color that is
+  // close or equal to pure black.
+  static constexpr int kHueMax = 360;
+
+  static constexpr int kHueInvalid = kHueMin - 1;
+
+  IconColor();
+  IconColor(sync_pb::AppListSpecifics::ColorGroup background_color, int hue);
+  IconColor(const IconColor&);
+  IconColor& operator=(const IconColor&);
+  ~IconColor();
+
+  // The overloaded rational operators. NOTE: these operators assume that
+  // operands are valid.
+  bool operator<(const IconColor&);
+  bool operator>(const IconColor&);
+  bool operator>=(const IconColor&);
+  bool operator<=(const IconColor&);
+  bool operator==(const IconColor&);
+  bool operator!=(const IconColor&);
+
+  // Returns true only when all data members are valid: `background_color_` is
+  // non-empty and `hue_` is in the valid range.
+  bool IsValid() const;
+
+  sync_pb::AppListSpecifics::ColorGroup background_color() const {
+    return background_color_;
+  }
+  int hue() const { return hue_; }
+
+ private:
+  // Indicates an icon's background color.
+  sync_pb::AppListSpecifics::ColorGroup background_color_ =
+      sync_pb::AppListSpecifics::COLOR_EMPTY;
+
+  // Indicates an icon's hue. NOTE: `hue_` falls in the range of [-1,360] that
+  // is different from the normal range which is [0, 360). See the comments for
+  // `kHueMin` and `kHueMax`.
+  int hue_ = kHueInvalid;
+};
+
 // A structure holding the common information which is sent between ash and,
 // chrome representing an app list item.
 struct ASH_PUBLIC_EXPORT AppListItemMetadata {
@@ -61,8 +110,8 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   AppListItemMetadata(const AppListItemMetadata& rhs);
   ~AppListItemMetadata();
 
-  std::string id;          // Id of the app list item.
-  std::string name;        // Corresponding app/folder's name of the item.
+  std::string id;    // Id of the app list item.
+  std::string name;  // Corresponding app/folder's name of the item.
 
   AppStatus app_status = AppStatus::kReady;  // App status.
 
@@ -77,6 +126,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 
   int icon_version = 0;  // An int represent icon version. If changed, `icon`
                          // should be reloaded.
+
+  // The item's icon color.
+  IconColor icon_color;
 };
 
 // All possible orders to sort app list items.

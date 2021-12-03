@@ -12,6 +12,73 @@ const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
 // Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
 const char kCrostiniFolderId[] = "ddolnhmblagmcagkedkbfejapapdimlk";
 
+// IconColor -------------------------------------------------------------------
+
+// static
+constexpr int IconColor::kHueInvalid;
+constexpr int IconColor::kHueMin;
+constexpr int IconColor::kHueMax;
+
+IconColor::IconColor() = default;
+
+IconColor::IconColor(sync_pb::AppListSpecifics::ColorGroup background_color,
+                     int hue)
+    : background_color_(background_color), hue_(hue) {}
+
+IconColor::IconColor(const IconColor& rhs)
+    : background_color_(rhs.background_color()), hue_(rhs.hue()) {}
+
+IconColor& IconColor::operator=(const IconColor& rhs) = default;
+
+IconColor::~IconColor() = default;
+
+bool IconColor::operator<(const IconColor& rhs) {
+  DCHECK(IsValid());
+  DCHECK(rhs.IsValid());
+
+  // Compare background colors first.
+  if (background_color_ != rhs.background_color())
+    return background_color_ < rhs.background_color();
+
+  return hue_ < rhs.hue();
+}
+
+bool IconColor::operator>(const IconColor& rhs) {
+  DCHECK(IsValid());
+  DCHECK(rhs.IsValid());
+
+  // Compare background colors first.
+  if (background_color_ != rhs.background_color())
+    return background_color_ > rhs.background_color();
+
+  return hue_ > rhs.hue();
+}
+
+bool IconColor::operator>=(const IconColor& rhs) {
+  return !(*this < rhs);
+}
+
+bool IconColor::operator<=(const IconColor& rhs) {
+  return !(*this > rhs);
+}
+
+bool IconColor::operator==(const IconColor& rhs) {
+  return !(*this != rhs);
+}
+
+bool IconColor::operator!=(const IconColor& rhs) {
+  DCHECK(IsValid());
+  DCHECK(rhs.IsValid());
+
+  return *this < rhs || *this > rhs;
+}
+
+bool IconColor::IsValid() const {
+  const bool is_hue_valid = (hue_ >= kHueMin && hue_ <= kHueMax);
+  return background_color_ != sync_pb::AppListSpecifics::COLOR_EMPTY &&
+         is_hue_valid;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AppListItemMetadata:
 

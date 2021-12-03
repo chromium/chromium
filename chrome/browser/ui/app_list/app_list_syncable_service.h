@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -32,10 +33,6 @@ class AppListModelUpdater;
 class AppServiceAppModelBuilder;
 class ChromeAppListItem;
 class Profile;
-
-namespace ash {
-enum class AppListSortOrder;
-}
 
 namespace extensions {
 class ExtensionRegistry;
@@ -71,6 +68,7 @@ class AppListSyncableService : public syncer::SyncableService,
     std::string parent_id;
     syncer::StringOrdinal item_ordinal;
     syncer::StringOrdinal item_pin_ordinal;
+    ash::IconColor item_color;
 
     std::string ToString() const;
   };

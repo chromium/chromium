@@ -668,6 +668,11 @@ const base::Feature kHelpAppDiscoverTabNotificationAllChannels{
 const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the flag to synchronize launcher item colors. It is
+// in effect only when kLauncherAppSort is enabled.
+const base::Feature kLauncherItemColorSync{"LauncherItemColorSync",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable the search service integration in the Help app.
 const base::Feature kHelpAppSearchServiceIntegration{
     "HelpAppSearchServiceIntegration", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1412,6 +1417,11 @@ bool IsClipboardHistoryEnabled() {
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
+}
+
+bool IsLauncherItemColorSyncEnabled() {
+  return IsLauncherAppSortEnabled() &&
+         base::FeatureList::IsEnabled(kLauncherItemColorSync);
 }
 
 bool IsClipboardHistoryScreenshotNudgeEnabled() {

@@ -74,6 +74,8 @@ constexpr char kParentIdKey[] = "parent_id";
 constexpr char kPositionKey[] = "position";
 constexpr char kPinPositionKey[] = "pin_position";
 constexpr char kTypeKey[] = "type";
+constexpr char kBackgroundColorKey[] = "background_color";
+constexpr char kHueKey[] = "hue";
 
 void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
                                   sync_pb::AppListSpecifics* specifics) {
@@ -88,6 +90,13 @@ void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
   specifics->set_item_pin_ordinal(item->item_pin_ordinal.IsValid()
                                       ? item->item_pin_ordinal.ToInternalValue()
                                       : std::string());
+
+  if (ash::features::IsLauncherItemColorSyncEnabled() &&
+      item->item_color.IsValid()) {
+    specifics->mutable_item_color()->set_background_color(
+        item->item_color.background_color());
+    specifics->mutable_item_color()->set_hue(item->item_color.hue());
+  }
 }
 
 syncer::SyncData GetSyncDataFromSyncItem(
@@ -184,6 +193,20 @@ void UpdateSyncItemInLocalStorage(
                       : std::string()));
   dict_item->SetKey(kTypeKey,
                     base::Value(static_cast<int>(sync_item->item_type)));
+
+  if (ash::features::IsLauncherItemColorSyncEnabled()) {
+    // Handle the item color.
+    if (sync_item->item_color.IsValid()) {
+      dict_item->SetKey(kBackgroundColorKey,
+                        base::Value(sync_pb::AppListSpecifics::ColorGroup_Name(
+                            sync_item->item_color.background_color())));
+      dict_item->SetKey(kHueKey, base::Value(sync_item->item_color.hue()));
+    } else if (dict_item->FindKey(kBackgroundColorKey)) {
+      dict_item->RemoveKey(kBackgroundColorKey);
+      DCHECK(dict_item->FindKey(kHueKey));
+      dict_item->RemoveKey(kHueKey);
+    }
+  }
 }
 
 AppListSyncableService::ModelUpdaterFactoryCallback*
@@ -210,6 +233,21 @@ bool IsSystemCreatedSyncFolder(
     return false;
   return (folder_item.item_id == ash::kOemFolderId ||
           folder_item.item_id == ash::kCrostiniFolderId);
+}
+
+// Updates `target` if `target` is different from a valid new value. Returns
+// true if `target` gets updated.
+bool SetIconColorIfChanged(const ash::IconColor& new_color,
+                           ash::IconColor* target) {
+  if (!new_color.IsValid())
+    return false;
+
+  if (!target->IsValid() || *target != new_color) {
+    *target = new_color;
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -433,6 +471,29 @@ void AppListSyncableService::InitFromLocalStorage() {
       sync_item->item_ordinal = syncer::StringOrdinal(position);
     if (!pin_position.empty())
       sync_item->item_pin_ordinal = syncer::StringOrdinal(pin_position);
+
+    // Fetch icon colors from `dict_item` if any.
+    if (ash::features::IsLauncherItemColorSyncEnabled() &&
+        dict_item->HasKey(kBackgroundColorKey)) {
+      // Retrieve the background color.
+      std::string background_color_internal_string;
+      dict_item->GetString(kBackgroundColorKey,
+                           &background_color_internal_string);
+      sync_pb::AppListSpecifics::ColorGroup background_color;
+      sync_pb::AppListSpecifics::ColorGroup_Parse(
+          background_color_internal_string, &background_color);
+
+      // Retrieve the hue.
+      DCHECK(dict_item->HasKey(kHueKey));
+      int hue = ash::IconColor::kHueInvalid;
+      dict_item->GetInteger(kHueKey, &hue);
+
+      sync_item->item_color = ash::IconColor(background_color, hue);
+
+      // Assume that the color saved in pref is valid.
+      DCHECK(sync_item->item_color.IsValid());
+    }
+
     ProcessNewSyncItem(sync_item);
   }
 }
@@ -533,6 +594,9 @@ bool AppListSyncableService::TransferItemAttributes(
   attributes->item_ordinal = from_item->item_ordinal;
   attributes->item_pin_ordinal = from_item->item_pin_ordinal;
 
+  if (ash::features::IsLauncherItemColorSyncEnabled())
+    attributes->item_color = from_item->item_color;
+
   SyncItem* to_item = FindSyncItem(to_app_id);
   if (to_item) {
     // |to_app_id| already exists. Can apply attributes right now.
@@ -561,6 +625,10 @@ void AppListSyncableService::ApplyAppAttributes(
   item->parent_id = attributes->parent_id;
   item->item_ordinal = attributes->item_ordinal;
   item->item_pin_ordinal = attributes->item_pin_ordinal;
+
+  if (ash::features::IsLauncherItemColorSyncEnabled())
+    item->item_color = attributes->item_color;
+
   UpdateSyncItemInLocalStorage(profile_, item);
   SendSyncChange(item, SyncChange::ACTION_UPDATE);
   ProcessExistingSyncItem(item);
@@ -1502,6 +1570,16 @@ std::string AppListSyncableService::SyncItem::ToString() const {
       res += " <" + parent_id.substr(0, 8) + ">";
     res += " [" + item_pin_ordinal.ToDebugString() + "]";
   }
+
+  if (item_color.IsValid()) {
+    res += " (" +
+           sync_pb::AppListSpecifics::ColorGroup_Name(
+               item_color.background_color()) +
+           " ," + std::to_string(item_color.hue()) + " )";
+  } else {
+    res += "(INVALID COLOR)";
+  }
+
   return res;
 }
 
@@ -1599,6 +1677,22 @@ void AppListSyncableService::UpdateSyncItemFromSync(
     item->item_pin_ordinal =
         syncer::StringOrdinal(specifics.item_pin_ordinal());
   }
+
+  if (ash::features::IsLauncherItemColorSyncEnabled() &&
+      specifics.has_item_color()) {
+    const sync_pb::AppListSpecifics_IconColor& specifics_icon_color =
+        specifics.item_color();
+    const bool has_data = (specifics_icon_color.has_background_color() &&
+                           specifics_icon_color.has_hue());
+
+    if (has_data) {
+      ash::IconColor new_item_color(specifics_icon_color.background_color(),
+                                    specifics_icon_color.hue());
+      if (new_item_color.IsValid() &&
+          (!item->item_color.IsValid() || item->item_color != new_item_color))
+        item->item_color = new_item_color;
+    }
+  }
 }
 
 bool AppListSyncableService::UpdateSyncItemFromAppItem(
@@ -1625,6 +1719,12 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
     sync_item->item_ordinal = app_item->position();
     changed = true;
   }
+
+  if (ash::features::IsLauncherItemColorSyncEnabled()) {
+    changed =
+        SetIconColorIfChanged(app_item->icon_color(), &sync_item->item_color);
+  }
+
   return changed;
 }
 

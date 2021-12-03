@@ -562,6 +562,9 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
     data->folder_id = sync_item->parent_id;
   }
 
+  // Note that the icon and the icon color are not set here because the update
+  // on the icon as well the icon color is initiated from the ash side.
+
   if (!has_changes)
     return;
 

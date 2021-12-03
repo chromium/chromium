@@ -174,6 +174,9 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {
       ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(id(),
                                                                           icon);
 
+  // TODO(https://crbug.com/1270898): update `metadata_->icon_color` when icon
+  // is set.
+
   AppListModelUpdater* updater = model_updater();
   if (updater) {
     updater->SetItemIcon(id(), metadata_->icon);
