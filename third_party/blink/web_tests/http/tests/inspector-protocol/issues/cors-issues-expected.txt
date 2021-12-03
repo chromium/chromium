@@ -6,7 +6,7 @@ Cors issue: {
             clientSecurityState : {
                 initiatorIPAddressSpace : Local
                 initiatorIsSecureContext : true
-                privateNetworkRequestPolicy : WarnFromInsecureToMorePrivate
+                privateNetworkRequestPolicy : PreflightBlock
             }
             corsErrorStatus : {
                 corsError : AllowOriginMismatch
@@ -30,7 +30,7 @@ Cors issue: {
             clientSecurityState : {
                 initiatorIPAddressSpace : Local
                 initiatorIsSecureContext : true
-                privateNetworkRequestPolicy : WarnFromInsecureToMorePrivate
+                privateNetworkRequestPolicy : PreflightBlock
             }
             corsErrorStatus : {
                 corsError : AllowOriginMismatch
@@ -54,7 +54,7 @@ Cors issue: {
             clientSecurityState : {
                 initiatorIPAddressSpace : Local
                 initiatorIsSecureContext : true
-                privateNetworkRequestPolicy : WarnFromInsecureToMorePrivate
+                privateNetworkRequestPolicy : PreflightBlock
             }
             corsErrorStatus : {
                 corsError : MissingAllowOriginHeader
@@ -78,7 +78,7 @@ Cors issue: {
             clientSecurityState : {
                 initiatorIPAddressSpace : Local
                 initiatorIsSecureContext : true
-                privateNetworkRequestPolicy : WarnFromInsecureToMorePrivate
+                privateNetworkRequestPolicy : PreflightBlock
             }
             corsErrorStatus : {
                 corsError : PreflightInvalidAllowOriginValue
