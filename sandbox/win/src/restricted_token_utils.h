@@ -25,7 +25,7 @@ enum TokenType { IMPERSONATION = 0, PRIMARY };
 // effective token of process is used instead. The parameter security_level
 // determines how much the token isrestricted. The token_type determines if
 // the token will be used as a primarytoken or impersonation token. The
-// integrity level of the token is set to |integrity level| on Vista only.
+// integrity level of the token is set to |integrity level|.
 // |token| is the output value containing the handle of the newly created
 // restricted token.
 // |lockdown_default_dacl| indicates the token's default DACL should be locked

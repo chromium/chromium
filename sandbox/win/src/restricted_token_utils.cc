@@ -100,14 +100,6 @@ DWORD CreateRestrictedToken(
 
       break;
     }
-    case USER_NON_ADMIN: {
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
-      AddSidException(sid_exceptions, base::win::WellKnownSid::kInteractive);
-      AddSidException(sid_exceptions,
-                      base::win::WellKnownSid::kAuthenticatedUser);
-      break;
-    }
     case USER_RESTRICTED_NON_ADMIN: {
       AddSidException(sid_exceptions, base::win::WellKnownSid::kBuiltinUsers);
       AddSidException(sid_exceptions, base::win::WellKnownSid::kWorld);
@@ -154,11 +146,10 @@ DWORD CreateRestrictedToken(
       if (unique_restricted_sid)
         restricted_token.AddRestrictingSid(*unique_restricted_sid);
 
-      // This token has to be able to create objects in BNO.
-      // Unfortunately, on Vista+, it needs the current logon sid
-      // in the token to achieve this. You should also set the process to be
-      // low integrity level so it can't access object created by other
-      // processes.
+      // This token has to be able to create objects in BNO, it needs the
+      // current logon sid in the token to achieve this. You should also set the
+      // process to be low integrity level so it can't access object created by
+      // other processes.
       restricted_token.AddRestrictingSidLogonSession();
       break;
     }
@@ -177,7 +168,8 @@ DWORD CreateRestrictedToken(
         restricted_token.AddRestrictingSid(*unique_restricted_sid);
       break;
     }
-    default: { return ERROR_BAD_ARGUMENTS; }
+    case USER_LAST:
+      return ERROR_BAD_ARGUMENTS;
   }
 
   DWORD err_code = ERROR_SUCCESS;

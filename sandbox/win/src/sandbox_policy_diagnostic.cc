@@ -67,8 +67,6 @@ std::string GetTokenLevelInEnglish(TokenLevel token) {
       return "Limited";
     case USER_INTERACTIVE:
       return "Interactive";
-    case USER_NON_ADMIN:
-      return "Non Admin";
     case USER_RESTRICTED_SAME_ACCESS:
       return "Restricted Same Access";
     case USER_UNPROTECTED:

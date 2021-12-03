@@ -66,14 +66,6 @@ enum IntegrityLevel {
 //                             | User         | Authent-users  |          |
 //                             |              | User           |          |
 // ----------------------------|--------------|----------------|----------|
-// USER_NON_ADMIN              | None         | All except:    | Traverse |
-//                             |              | Users          |          |
-//                             |              | Everyone       |          |
-//                             |              | Interactive    |          |
-//                             |              | Local          |          |
-//                             |              | Authent-users  |          |
-//                             |              | User           |          |
-// ----------------------------|--------------|----------------|----------|
 // USER_RESTRICTED_SAME_ACCESS | All          | None           | All      |
 // ----------------------------|--------------|----------------|----------|
 // USER_UNPROTECTED            | None         | None           | All      |
@@ -95,7 +87,6 @@ enum TokenLevel {
   USER_LIMITED,
   USER_INTERACTIVE,
   USER_RESTRICTED_NON_ADMIN,
-  USER_NON_ADMIN,
   USER_RESTRICTED_SAME_ACCESS,
   USER_UNPROTECTED,
   USER_LAST

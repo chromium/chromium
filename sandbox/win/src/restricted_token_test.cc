@@ -154,13 +154,10 @@ TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
 }
 
 TEST(RestrictedTokenTest, CheckNonAdminRestricted) {
-  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_NON_ADMIN);
-  EXPECT_EQ(SBOX_TEST_FAILED,
-            runner.RunTest(L"RestrictedTokenTest_IsRestricted"));
-  TestRunner runner_restricted(JOB_NONE, USER_RESTRICTED_SAME_ACCESS,
-                               USER_RESTRICTED_NON_ADMIN);
+  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS,
+                    USER_RESTRICTED_NON_ADMIN);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner_restricted.RunTest(L"RestrictedTokenTest_IsRestricted"));
+            runner.RunTest(L"RestrictedTokenTest_IsRestricted"));
 }
 
 TEST(RestrictedTokenTest, OpenProcessSameSandboxRandomSid) {
