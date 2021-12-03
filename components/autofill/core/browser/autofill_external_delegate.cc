@@ -417,6 +417,10 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
 
     suggestions->push_back(Suggestion(value));
     suggestions->back().frontend_id = POPUP_ITEM_ID_CLEAR_FORM;
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillVisualImprovementsForSuggestionUi)) {
+      suggestions->back().icon = "clearIcon";
+    }
   }
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the

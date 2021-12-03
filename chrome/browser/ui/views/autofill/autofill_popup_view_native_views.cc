@@ -96,6 +96,7 @@ constexpr int kIconSize = 16;
 
 // Popup footer items that use a leading icon instead of a trailing one.
 constexpr autofill::PopupItemId kItemTypesUsingLeadingIcons[] = {
+    autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM,
     autofill::PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
     autofill::PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS,
     autofill::PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
@@ -165,6 +166,9 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 
   if (icon_str == "keyIcon")
     return ImageViewFromVectorIcon(kKeyIcon);
+
+  if (icon_str == "clearIcon")
+    return ImageViewFromVectorIcon(omnibox::kClearIcon);
 
   if (icon_str == "globeIcon")
     return ImageViewFromVectorIcon(kGlobeIcon);
