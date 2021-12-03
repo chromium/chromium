@@ -102,6 +102,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SyncError"/>
   <variant name=".TailoredSecurityEnabled"/>
   <variant name=".UpdatePassword"/>
+  <variant name=".VrServicesUpgrade"/>
 </variants>
 
 <variants name="ProviderPermissionType">

@@ -176,17 +176,20 @@
           Provide feedback
         </message>
 
-        <!-- VR services check infobar -->
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_INSTALL_TEXT" desc="Text to be displayed in the VR Services check infobar. When a WebVR page is loaded if the VR services that are needed to display WebVR don't exist an infobar will be shown to the user prompting them to install VR services.">
-          To view virtual reality content, install Google VR Services
+        <!-- VR services check message -->
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_INSTALL_TITLE" desc="Title to be displayed in the VR Services check message. When a WebVR page is loaded if the VR services that are needed to display WebVR don't exist a message will be shown to the user prompting them to install VR services.">
+          Install Google VR Services?
         </message>
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_UPDATE_TEXT" desc="Text to be displayed in the VR Services check infobar. When a WebVR page is loaded if the VR services that are needed to display WebVR are out of date an infobar will be shown to the user prompting them to update VR services.">
-          To view virtual reality content, update Google VR Services
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_UPDATE_TITLE" desc="Title to be displayed in the VR Services check message. When a WebVR page is loaded if the VR services that are needed to display WebVR are out of date a message will be shown to the user prompting them to update VR services.">
+          Update Google VR Services?
         </message>
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_INSTALL_BUTTON" desc="Text to be displayed in the VR Services check infobar confirm button for installing.">
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_DESCRIPTION" desc="Text to be displayed in the VR Services check message description.">
+          View virtual reality content
+        </message>
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_INSTALL_BUTTON" desc="Text to be displayed in the VR Services check message confirm button for installing.">
           Install
         </message>
-        <message name="IDS_VR_SERVICES_CHECK_INFOBAR_UPDATE_BUTTON" desc="Text to be displayed in the VR Services check infobar confirm button for updating.">
+        <message name="IDS_VR_SERVICES_CHECK_MESSAGE_UPDATE_BUTTON" desc="Text to be displayed in the VR Services check message confirm button for updating.">
           Update
         </message>
     </messages>

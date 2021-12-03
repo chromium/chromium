@@ -128,6 +128,8 @@ public class MessagesMetrics {
                 return "AutoDarkWebContents";
             case MessageIdentifier.TAILORED_SECURITY_ENABLED:
                 return "TailoredSecurityEnabled";
+            case MessageIdentifier.VR_SERVICES_UPGRADE:
+                return "VrServicesUpgrade";
             default:
                 return "Unknown";
         }
