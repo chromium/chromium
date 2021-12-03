@@ -436,39 +436,17 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const std::string& auction_config_json,
       const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
       WARN_UNUSED_RESULT {
-    // This is currently overly complicated to unambiguously distinguish the
-    // returns null case from the RunLoop unexpectedly quit case, as part of
-    // investigating issue https://crbug.com/1259733. RunLoop() should print out
-    // something to the console when it quits the message loop, anyways, but
-    // want to be completely sure that a null is really being returned.
-    //
-    // TODO(https://crbug.com/1259733): Once issue https://crbug.com/1259733 has
-    // been fixed, return this to its original, simpler form.
-    auto result = EvalJs(execution_target ? *execution_target : shell(),
-                         base::StringPrintf(
-                             R"(
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  base::StringPrintf(
+                      R"(
 (async function() {
-  let result;
   try {
-    result = await navigator.runAdAuction(%s);
+    return await navigator.runAdAuction(%s);
   } catch (e) {
-    result = e.toString();
+    return e.toString();
   }
-  if (result === null)
-    return 'result is indeed null';
-  return result;
-})();
-                             )",
-                             auction_config_json.c_str()));
-    if (!result.value.is_string()) {
-      ADD_FAILURE() << "Result should always be a string, but is: "
-                    << result.value;
-      return result;
-    }
-    if (result.value.GetString() == "result is indeed null") {
-      return content::EvalJsResult(base::Value(), /*error=*/std::string());
-    }
-    return result;
+})())",
+                      auction_config_json.c_str()));
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -2215,128 +2193,61 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
   }
 }
 
-// Sets an AuctionCompleteCallback that watches for auction completion, adding a
-// failure on errors. Clears the callback on destruction.
-//
-// TODO(https://crbug.com/1259733): Remove once issue 1259733 has been fixed.
-class ScopedWatchAuctionsForTesting {
- public:
-  ScopedWatchAuctionsForTesting() {
-    AdAuctionServiceImpl::SetOnAuctionCompleteCallbackForTesting(
-        base::BindRepeating([](const std::vector<std::string>& errors) {
-          LOG(WARNING) << "Auction completed";
-          for (const auto& error : errors) {
-            ADD_FAILURE() << "Error: " << error;
-          }
-        }));
-  }
-
-  ~ScopedWatchAuctionsForTesting() {
-    AdAuctionServiceImpl::SetOnAuctionCompleteCallbackForTesting(
-        AdAuctionServiceImpl::AuctionCompleteCallback());
-  }
-};
-
-// Make sure correct topFrameHostname is passed in. Check auctions from top
-// frames, and iframes of various depth. Also test running auctions in
-// cross-site iframes, and loading them into those iframes' fenced frames.
-//
-// TODO(https://crbug.com/1259733): Figure out why this is flaky and fix it.
-IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
-  // Buyer, seller, and iframe all use the same host.
-  const char kOtherHost[] = "b.test";
-  // Top frame host is unique.
+// Test running auctions in cross-site iframes, and loading the winner into a
+// nested fenced frame.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
+  // Use different hostnames for each participant.
   const char kTopFrameHost[] = "a.test";
-
-  ScopedWatchAuctionsForTesting watch_auctions_for_testing;
+  const char kBidderHost[] = "b.test";
+  const char kSellerHost[] = "c.test";
+  const char kIframeHost[] = "d.test";
+  const char kAdHost[] = "ad.d.test";
+  content_browser_client_.AddToAllowList(
+      {url::Origin::Create(https_server_->GetURL(kIframeHost, "/"))});
 
   // Navigate to bidder site, and add an interest group.
-  GURL other_url = https_server_->GetURL(kOtherHost, "/echo");
-  url::Origin other_origin = url::Origin::Create(other_url);
-  ASSERT_TRUE(NavigateToURL(shell(), other_url));
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
 
   GURL ad_url = https_server_->GetURL(
-      "c.test", "/set-header?Supports-Loading-Mode: fenced-frame");
-  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
-      /*expiry=*/base::Time(),
-      /*owner=*/other_origin,
+      kAdHost, "/set-header?Supports-Loading-Mode: fenced-frame");
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/bidder_origin,
       /*name=*/"cars",
       /*bidding_url=*/
-      https_server_->GetURL(
-          kOtherHost,
-          "/interest_group/bidding_logic_expect_top_frame_a_test.js"),
-      /*update_url=*/absl::nullopt,
-      /*trusted_bidding_signals_url=*/absl::nullopt,
-      /*trusted_bidding_signals_keys=*/absl::nullopt,
-      /*user_bidding_signals=*/absl::nullopt,
-      /*ads=*/{{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
-      /*ad_components=*/absl::nullopt)));
+      https_server_->GetURL(kBidderHost, "/interest_group/bidding_logic.js"),
+      /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
 
-  const struct {
-    int depth;
-    std::string top_frame_path;
-    const char* seller_path;
-  } kTestCases[] = {
-      {0, "/fenced_frames/basic.html",
-       "/interest_group/decision_logic_expect_top_frame_a_test.js"},
-      {1,
-       base::StringPrintf(
-           "/cross_site_iframe_factory.html?a.test(%s)",
-           https_server_->GetURL(kOtherHost, "/fenced_frames/basic.html")
-               .spec()
-               .c_str()),
-       "/interest_group/decision_logic_expect_top_frame_a_test.js"},
-      {2,
-       base::StringPrintf(
-           "/cross_site_iframe_factory.html?a.test(%s(%s))", kOtherHost,
-           https_server_->GetURL(kOtherHost, "/fenced_frames/basic.html")
-               .spec()
-               .c_str()),
-       "/interest_group/decision_logic_expect_top_frame_a_test.js"},
-  };
+  GURL main_frame_url = https_server_->GetURL(
+      kTopFrameHost,
+      base::StringPrintf(
+          "/cross_site_iframe_factory.html?%s(%s)", kTopFrameHost,
+          https_server_->GetURL(kIframeHost, "/fenced_frames/basic.html")
+              .spec()
+              .c_str()));
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.depth);
+  RenderFrameHost* iframe =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_EQ(kIframeHost, iframe->GetLastCommittedOrigin().host());
 
-    // Navigate to publisher, with the cross-site iframe..
-    ASSERT_TRUE(NavigateToURL(
-        shell(),
-        https_server_->GetURL(kTopFrameHost, test_case.top_frame_path)));
-
-    RenderFrameHost* frame = shell()->web_contents()->GetMainFrame();
-    EXPECT_EQ(https_server_->GetOrigin(kTopFrameHost),
-              frame->GetLastCommittedOrigin());
-    for (int i = 0; i < test_case.depth; ++i) {
-      frame = ChildFrameAt(frame, 0);
-      ASSERT_TRUE(frame);
-      EXPECT_EQ(other_origin, frame->GetLastCommittedOrigin());
-    }
-
-    // Run auction with a seller script with an "Access-Control-Allow-Origin"
-    // header, if needed. The auction should succeed.
-    GURL seller_logic_url =
-        https_server_->GetURL(kOtherHost, test_case.seller_path);
-    ASSERT_NO_FATAL_FAILURE(
-        RunAuctionAndNavigateFencedFrame(ad_url,
-                                         JsReplace(
-                                             R"(
+  GURL seller_logic_url =
+      https_server_->GetURL(kSellerHost, "/interest_group/decision_logic.js");
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url,
+      JsReplace(
+          R"(
 {
   seller: $1,
   decisionLogicUrl: $2,
-  interestGroupBuyers: [$1],
-  auctionSignals: {x: 1},
-  sellerSignals: {yet: 'more', info: 1},
-  perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+  interestGroupBuyers: [$3]
 }
-                                             )",
-                                             other_origin, seller_logic_url),
-                                         frame));
-
-    // Reporting urls should be fetched after an auction succeeded.
-    WaitForURL(https_server_->GetURL("/echoall?report_seller"));
-    WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
-    ClearReceivedRequests();
-  }
+          )",
+          url::Origin::Create(seller_logic_url), seller_logic_url,
+          bidder_origin),
+      iframe));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

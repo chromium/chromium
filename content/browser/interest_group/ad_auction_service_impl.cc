@@ -7,10 +7,8 @@
 #include <set>
 #include <string>
 
-#include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -47,13 +45,6 @@
 namespace content {
 
 namespace {
-
-AdAuctionServiceImpl::AuctionCompleteCallback& GetAuctionCompleteCallback() {
-  static base::NoDestructor<AdAuctionServiceImpl::AuctionCompleteCallback>
-      auction_complete_callback{
-          AdAuctionServiceImpl::AuctionCompleteCallback()};
-  return *auction_complete_callback.get();
-}
 
 constexpr base::TimeDelta kMaxExpiry = base::Days(30);
 
@@ -288,8 +279,6 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     return;
   }
   if (!IsAuctionValid(*config)) {
-    if (GetAuctionCompleteCallback())
-      GetAuctionCompleteCallback().Run({"Invalid auction config"});
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -299,8 +288,6 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   // If the interest group API is not allowed for this seller do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
           browser_context, frame_origin, config->seller.GetURL())) {
-    if (GetAuctionCompleteCallback())
-      GetAuctionCompleteCallback().Run({"Interest group API not allowed"});
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -318,8 +305,6 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   // If there are no buyers (either due to filtering, or in the original auction
   // request), fail the auction.
   if (filtered_buyers.empty()) {
-    if (GetAuctionCompleteCallback())
-      GetAuctionCompleteCallback().Run({"No valid buyers"});
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -423,12 +408,6 @@ AdAuctionServiceImpl::GetClientSecurityState() {
   return GetFrame()->BuildClientSecurityState();
 }
 
-void AdAuctionServiceImpl::SetOnAuctionCompleteCallbackForTesting(
-    base::RepeatingCallback<void(const std::vector<std::string>& errors)>
-        auction_complete_callback) {
-  GetAuctionCompleteCallback() = std::move(auction_complete_callback);
-}
-
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
@@ -453,16 +432,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!render_url) {
     DCHECK(!bidder_report_url);
     DCHECK(!seller_report_url);
-    if (GetAuctionCompleteCallback()) {
-      errors.push_back("No auction winner");
-      GetAuctionCompleteCallback().Run(errors);
-    }
     std::move(callback).Run(absl::nullopt);
     return;
   }
-
-  if (GetAuctionCompleteCallback())
-    GetAuctionCompleteCallback().Run(errors);
 
   // If fenced frames are enabled, create and return a URN URL instead of the
   // real URL.
