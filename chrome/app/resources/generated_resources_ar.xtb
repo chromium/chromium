@@ -3765,7 +3765,7 @@
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="4933484234309072027">مضمن في <ph name="URL" /></translation>
 <translation id="4936042273057045735">ميزة "مزامنة الإشعارات" غير متاحة للهواتف التي تحتوي على ملف شخصي للعمل.</translation>
-<translation id="4938788218358929252">وصفات طعام</translation>
+<translation id="4938788218358929252">وصفات الطعام</translation>
 <translation id="4939805055470675027">تعذَّر الاتصال بمشغّل شبكة الجوّال <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">تتوفّر <ph name="PRINTER_COUNT" /> طابعة للحفظ.</translation>
 <translation id="4940448324259979830">تتم إدارة هذا الحساب من قِبل <ph name="PROFILE_NAME" />.</translation>
@@ -6263,7 +6263,7 @@
 <translation id="7642778300616172920">إخفاء المحتوى الحسّاس</translation>
 <translation id="7643842463591647490">{0,plural, =1{هناك نافذة واحدة مفتوحة (#).}zero{هناك # نافذة مفتوحة.}two{هناك نافذتان مفتوحتان (#).}few{هناك # نوافذ مفتوحة.}many{هناك # نافذة مفتوحة.}other{هناك # نافذة مفتوحة.}}</translation>
 <translation id="7643932971554933646">هل تسمح للموقع الإلكتروني بعرض الملفات؟</translation>
-<translation id="7644543211198159466">اللون والتصميم</translation>
+<translation id="7644543211198159466">اللون والمظهر</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (المالك)</translation>
 <translation id="7645681574855902035">‏جارٍ إلغاء عملية الاحتفاظ بنسخة احتياطية من Linux</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
@@ -6849,7 +6849,8 @@
 <translation id="8203152941016626022">اسم الجهاز الذي يستخدم ميزة "المشاركة عن قرب"</translation>
 <translation id="8203732864715032075">تُرسِل إليك الإشعارات وتتذكر جهاز الكمبيوتر هذا لميزة "الرسائل". <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">قد تتم إعادة ضبط الشاشات والأجهزة الملحقة لفترة قصيرة. يُرجى فصل أجهزتك الملحقة ثم إعادة توصيلها حتى يسري مفعول هذا التغيير.</translation>
-<translation id="820568752112382238">المواقع الأكثر زيارة</translation>
+<translation id="820568752112382238">المواقع الإلكترونية الأكثر زيارة
+</translation>
 <translation id="8206745257863499010">موسيقي</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{إشعار واحد جديد}zero{# إشعار جديد}two{إشعاران جديدان}few{# إشعارات جديدة}many{# إشعارًا جديدًا}other{# إشعار جديد}}</translation>
