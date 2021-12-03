@@ -1484,6 +1484,10 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2716623398185506073">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori relativi al consumo di energia.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative al consumo di energia.</translation>
+<translation id="2717628606602248727">Questo criterio è impostato su Attivato per impostazione predefinita. Consente di stabilire se i dispositivi registrati devono segnalare o meno le informazioni sulla memoria.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni sulla memoria.
+      Eccezione: le informazioni relative alla memoria libera vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="2721185634942265347">Disattiva i suggerimenti di ricerca</translation>
 <translation id="2721582713721006926">Disattiva definizioni di Risposte rapide</translation>
 <translation id="2723692978495226412">Se il criterio viene impostato su Attivato, vengono visualizzati dei consigli per le app precedentemente installate dall'utente su altri dispositivi. Questi consigli vengono visualizzati in Avvio app in seguito ai consigli sulle app locali, se non viene inserito alcun testo di ricerca.
@@ -3986,6 +3990,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio è impostato su False o non è configurato, le informazioni non vengono segnalate.
       Se è impostato su True, le informazioni sui VPD del dispositivo vengono segnalate.
       I Vital Product Data (VPD) sono una raccolta di dati informativi e di configurazione (come numeri di serie o di componenti) associati al dispositivo.</translation>
+<translation id="576158229686912964">Questo criterio è stato ritirato nella versione M96. Usa i criteri <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> e <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
+
+      Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di interfacce di rete con i relativi tipi e indirizzi hardware. Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'interfaccia di rete.</translation>
 <translation id="5762969307102447459">Disattiva la compilazione automatica per gli indirizzi</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
@@ -5404,6 +5411,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questo criterio non viene impostato, per tutti i siti viene usato il valore predefinito globale del criterio "DefaultKeygenSetting" (se impostato) o della configurazione personale dell'utente (se non impostato).
 
           Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="7394023172636522064">Se il criterio viene impostato su Attivato, viene segnalato lo stato di sicurezza TPM dei dispositivi.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non registrano o non segnalano lo stato di sicurezza TPM.
+      Eccezione: le informazioni relative a TPM vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="739556497251174388">Consenti il riutilizzo delle credenziali di accesso di <ph name="PRODUCT_OS_NAME" /> per l'autenticazione della rete</translation>
 <translation id="7400971609879083218">Se il criterio viene impostato su Attivato, le immagini di terze parti su una pagina possono visualizzare un prompt di autenticazione.
 
@@ -5481,6 +5492,9 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio non viene configurato, il valore predefinito è <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> per gli utenti gestiti a livello aziendale e <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> per gli utenti non gestiti.
 
       In futuro sarà possibile impostare <ph name="LACROS_NAME" /> come unico browser disponibile in <ph name="PRODUCT_OS_NAME" /> impostando il valore <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" />.</translation>
+<translation id="7509761893401042250">Questo criterio è stato ritirato a partire dalla versione M96. Usa i criteri <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> e <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
+
+      Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano statistiche hardware quali l'utilizzo di CPU/RAM. Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano le statistiche hardware.</translation>
 <translation id="7519218194072744342">L'URL del gestore di protocollo.</translation>
 <translation id="7519251620064708155">Consenti la generazione di chiavi su questi siti</translation>
 <translation id="7529144158022474049">Fattore di dispersione aggiornamento automatico</translation>
@@ -5488,6 +5502,10 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se il criterio non viene impostato o viene impostato su True, viene mostrato un avviso per ricordare agli utenti di uscire dalla modalità a schermo intero prima di digitare la password. Se il criterio viene impostato su False, l'avviso non viene mostrato.</translation>
 <translation id="7534199150025803530">Questa norma non influisce sull'app Google Drive per Android. Se vuoi impedire l'utilizzo di Google Drive tramite rete cellulare, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
+<translation id="7538583957913002726">Questo criterio è impostato su Attivato per impostazione predefinita. Consente di stabilire se i dispositivi registrati devono segnalare o meno informazioni quali nome del modello, architettura e velocità di clock massima della CPU (oltre a utilizzo e temperatura della CPU per M96 e versioni successive).
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni sulla CPU.
+      Eccezione: la segnalazione dell'utilizzo e della temperatura della CPU viene controllata tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="7540622499178214923">Permette di consentire l'uso del controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
 <translation id="7540826630642174841">Impostare il criterio significa che i criteri relativi ai dispositivi specificati vengono ignorati (si usano le impostazioni predefinite di questi criteri) durante gli intervalli indicati. I criteri relativi ai dispositivi vengono applicati di nuovo da <ph name="PRODUCT_NAME" /> all'inizio o alla fine del periodo del criterio. L'utente viene avvisato e deve disconnettersi quando questo periodo e le impostazioni dei criteri relativi ai dispositivi cambiano (ad esempio, quando un utente accede con un account non autorizzato).</translation>
 <translation id="7540945123920084379">La configurazione del criterio consente di stabilire le modalità di sblocco rapido che è possibile usare per sbloccare la schermata di blocco.
@@ -5663,6 +5681,10 @@ Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visu
 
       Nota: per esempi approfonditi, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="7717938661004793600">Configura le funzioni di accessibilità di <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="7718127720248642697">Questo criterio è impostato su Attivato per impostazione predefinita. Consente di stabilire se i dispositivi registrati devono segnalare o meno statistiche hardware e identificatori per i dispositivi di archiviazione.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano statistiche relative all'archiviazione.
+      Eccezione: le dimensioni del disco e lo spazio libero su disco vengono controllati tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="7721944091689270995">ID utente <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Se il criterio è impostato su 1, i siti web possono mostrare i popup. Se il criterio è impostato su 2, i popup vengono negati.
 
@@ -6793,6 +6815,10 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="9068629430243705879">porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
+<translation id="9069588907259547232">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano il relativo volume dell'audio.
+
+      Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano o non segnalano lo stato dell'audio.
+      Eccezione: le informazioni relative al livello del volume di sistema vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="9073405975862312795">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano i periodi di attività di un utente sul dispositivo.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano e non segnalano i tempi di attività.</translation>
