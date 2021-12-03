@@ -28,6 +28,8 @@
 //  class Worker {
 //   public:
 //    static void StartNew(WeakPtr<Controller> controller) {
+//      // Move WeakPtr when possible to avoid atomic refcounting churn on its
+//      // internal state.
 //      Worker* worker = new Worker(std::move(controller));
 //      // Kick off asynchronous processing...
 //    }

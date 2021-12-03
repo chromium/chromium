@@ -176,10 +176,8 @@ class PaymentRequestBrowserTestBase
 
   content::WebContents* GetActiveWebContents();
 
-  // Convenience method to get a list of PaymentRequest associated with
-  // |web_contents|.
-  const std::vector<PaymentRequest*> GetPaymentRequests(
-      content::WebContents* web_contents);
+  // Convenience method to get all the `PaymentRequest`s that are still alive.
+  const std::vector<PaymentRequest*> GetPaymentRequests();
 
   autofill::PersonalDataManager* GetDataManager();
   // Adds the various models to the database, waiting until the personal data
@@ -296,6 +294,7 @@ class PaymentRequestBrowserTestBase
   bool is_valid_ssl_ = true;
   bool is_browser_window_active_ = true;
   bool skip_ui_for_basic_card_ = false;
+  std::vector<base::WeakPtr<PaymentRequest>> requests_;
 
   base::WeakPtrFactory<PaymentRequestBrowserTestBase> weak_ptr_factory_{this};
 };

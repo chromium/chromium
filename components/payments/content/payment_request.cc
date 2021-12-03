@@ -18,7 +18,6 @@
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_details_converter.h"
 #include "components/payments/content/payment_request_converter.h"
-#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds.h"
 #include "components/payments/core/can_make_payment_query.h"
 #include "components/payments/core/error_message_util.h"
@@ -37,6 +36,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -70,15 +70,15 @@ mojom::PaymentAddressPtr RedactShippingAddress(
 PaymentRequest::PaymentRequest(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-    base::WeakPtr<PaymentRequestWebContentsManager> manager,
     base::WeakPtr<PaymentRequestDisplayManager> display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
     SPCTransactionMode spc_transaction_mode,
     base::WeakPtr<ObserverForTest> observer_for_testing)
-    : initiator_frame_routing_id_(render_frame_host->GetGlobalId()),
+    : DocumentService(render_frame_host, std::move(receiver)),
+      WebContentsObserver(
+          content::WebContents::FromRenderFrameHost(render_frame_host)),
       log_(web_contents()),
       delegate_(std::move(delegate)),
-      manager_(manager),
       display_manager_(display_manager),
       display_handle_(nullptr),
       top_level_origin_(url_formatter::FormatUrlForSecurityDisplay(
@@ -90,18 +90,24 @@ PaymentRequest::PaymentRequest(
       observer_for_testing_(observer_for_testing),
       journey_logger_(delegate_->IsOffTheRecord(),
                       ukm::GetSourceIdForWebContentsDocument(web_contents())) {
-  receiver_.Bind(std::move(receiver));
-  // TerminateConnection will be called when the Mojo pipe is closed. This
-  // will happen as a result of many renderer-side events (both successful and
-  // erroneous in nature).
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &PaymentRequest::TerminateConnection, weak_ptr_factory_.GetWeakPtr()));
-
   payment_handler_host_ = std::make_unique<PaymentHandlerHost>(
       web_contents(), weak_ptr_factory_.GetWeakPtr());
 }
 
-PaymentRequest::~PaymentRequest() = default;
+PaymentRequest::~PaymentRequest() {
+  client_.reset();
+  payment_handler_host_->Disconnect();
+  delegate_->CloseDialog();
+  display_handle_.reset();
+  if (observer_for_testing_)
+    observer_for_testing_->OnConnectionTerminated();
+
+  // If another reason wasn't recorded, we were self-deleted, along with closing
+  // the mojo connection. We just self-delete immediately instead of waiting
+  // for the round trip of reporting an error to the renderer, but we report it
+  // as if we did wait for the round trip.
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_MOJO_CONNECTION_ERROR);
+}
 
 void PaymentRequest::Init(
     mojo::PendingRemote<mojom::PaymentRequestClient> client,
@@ -112,7 +118,7 @@ void PaymentRequest::Init(
 
   if (is_initialized_) {
     log_.Error(errors::kAttemptedInitializationTwice);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -124,7 +130,7 @@ void PaymentRequest::Init(
   const GURL last_committed_url = delegate_->GetLastCommittedURL();
   if (!network::IsUrlPotentiallyTrustworthy(last_committed_url)) {
     log_.Error(errors::kNotInASecureOrigin);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -149,13 +155,13 @@ void PaymentRequest::Init(
     client_->OnError(
         mojom::PaymentErrorReason::NOT_SUPPORTED_FOR_INVALID_ORIGIN_OR_SSL,
         reject_show_error_message_);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (method_data.empty()) {
     log_.Error(errors::kMethodDataRequired);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -164,34 +170,26 @@ void PaymentRequest::Init(
                     return !datum || datum->supported_method.empty();
                   })) {
     log_.Error(errors::kMethodNameRequired);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!details || !details->id || !details->total) {
     log_.Error(errors::kInvalidPaymentDetails);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!options) {
     log_.Error(errors::kInvalidPaymentOptions);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   std::string error;
   if (!ValidatePaymentDetails(ConvertPaymentDetails(details), &error)) {
     log_.Error(error);
-    TerminateConnection();
-    return;
-  }
-
-  auto* initiator_frame =
-      content::RenderFrameHost::FromID(initiator_frame_routing_id_);
-  if (!initiator_frame) {
-    log_.Error(errors::kInvalidInitiatorFrame);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -200,8 +198,9 @@ void PaymentRequest::Init(
       /*observer=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale());
   state_ = std::make_unique<PaymentRequestState>(
-      initiator_frame, top_level_origin_, frame_origin_, frame_security_origin_,
-      spec(), /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
+      render_frame_host(), top_level_origin_, frame_origin_,
+      frame_security_origin_, spec(),
+      /*delegate=*/weak_ptr_factory_.GetWeakPtr(),
       delegate_->GetApplicationLocale(), delegate_->GetPersonalDataManager(),
       delegate_->GetContentWeakPtr(), journey_logger_.GetWeakPtr());
 
@@ -280,13 +279,13 @@ void PaymentRequest::Init(
 void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotShowWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (is_show_called_) {
     log_.Error(errors::kCannotShowTwice);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -307,7 +306,7 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
         JourneyLogger::NOT_SHOWN_REASON_CONCURRENT_REQUESTS);
     client_->OnError(mojom::PaymentErrorReason::ALREADY_SHOWING,
                      errors::kAnotherUiShowing);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -318,7 +317,7 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
     journey_logger_.SetNotShown(JourneyLogger::NOT_SHOWN_REASON_OTHER);
     client_->OnError(mojom::PaymentErrorReason::USER_CANCEL,
                      errors::kCannotShowInBackgroundTab);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -352,13 +351,13 @@ void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {
 void PaymentRequest::Retry(mojom::PaymentValidationErrorsPtr errors) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotRetryWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotRetryWithoutShow);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -367,7 +366,7 @@ void PaymentRequest::Retry(mojom::PaymentValidationErrorsPtr errors) {
                                                                 &error)) {
     log_.Error(error);
     client_->OnError(mojom::PaymentErrorReason::USER_CANCEL, error);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -382,27 +381,27 @@ void PaymentRequest::Retry(mojom::PaymentValidationErrorsPtr errors) {
 void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotUpdateWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotUpdateWithoutShow);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   // ID cannot be updated. Updating the total is optional.
   if (!details || details->id) {
     log_.Error(errors::kInvalidPaymentDetails);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   std::string error;
   if (!ValidatePaymentDetails(ConvertPaymentDetails(details), &error)) {
     log_.Error(error);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -410,7 +409,7 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
       !PaymentsValidators::IsValidAddressErrorsFormat(
           details->shipping_address_errors, &error)) {
     log_.Error(error);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -454,13 +453,13 @@ void PaymentRequest::OnPaymentDetailsNotUpdated() {
   // be more verbose.
   if (!IsInitialized()) {
     log_.Error(errors::kNotInitialized);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kNotShown);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -475,19 +474,19 @@ void PaymentRequest::OnPaymentDetailsNotUpdated() {
 void PaymentRequest::Abort() {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotAbortWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotAbortWithoutShow);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   // The API user has decided to abort. If a successful abort message is
   // returned to the renderer, the Mojo message pipe is closed, which triggers
-  // PaymentRequest::TerminateConnection, which destroys this object.
+  // the destruction of this object.
   // Otherwise, the abort promise is rejected and the pipe is not closed.
   // The abort is only successful if the payment app wasn't yet invoked.
   // TODO(crbug.com/716546): Add a merchant abort metric
@@ -507,13 +506,13 @@ void PaymentRequest::Abort() {
 void PaymentRequest::Complete(mojom::PaymentComplete result) {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotCompleteWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
   if (!IsThisPaymentRequestShowing()) {
     log_.Error(errors::kCannotAbortWithoutShow);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -536,8 +535,7 @@ void PaymentRequest::Complete(mojom::PaymentComplete result) {
 
     delegate_->GetPrefService()->SetBoolean(kPaymentsFirstTransactionCompleted,
                                             true);
-    // When the renderer closes the connection,
-    // PaymentRequest::TerminateConnection will be called.
+    // When the renderer closes the connection this object will be destroyed.
     client_->OnComplete();
     state_->RecordUseStats();
   }
@@ -546,7 +544,7 @@ void PaymentRequest::Complete(mojom::PaymentComplete result) {
 void PaymentRequest::CanMakePayment() {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotCallCanMakePaymentWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -567,7 +565,7 @@ void PaymentRequest::CanMakePayment() {
 void PaymentRequest::HasEnrolledInstrument() {
   if (!IsInitialized()) {
     log_.Error(errors::kCannotCallHasEnrolledInstrumentWithoutInit);
-    TerminateConnection();
+    delete this;
     return;
   }
 
@@ -646,7 +644,8 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
     observer_for_testing_->OnAppListReady(weak_ptr_factory_.GetWeakPtr());
   }
 
-  if (web_contents() && spec_->IsSecurePaymentConfirmationRequested() &&
+  if (render_frame_host()->IsActive() &&
+      spec_->IsSecurePaymentConfirmationRequested() &&
       state()->available_apps().empty() &&
       base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
       // In most cases, we show the 'No Matching Payment Credential' dialog in
@@ -687,7 +686,7 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
                          (error_message.empty() ? "" : " " + error_message));
     if (observer_for_testing_)
       observer_for_testing_->OnNotSupportedError();
-    TerminateConnection();
+    delete this;
   }
 }
 
@@ -706,8 +705,7 @@ void PaymentRequest::OnInitialized(InitializationTask* initialization_task) {
 }
 
 bool PaymentRequest::IsInitialized() const {
-  return is_initialized_ && client_ && client_.is_bound() &&
-         receiver_.is_bound() && state_ && spec_;
+  return is_initialized_ && client_ && client_.is_bound() && state_ && spec_;
 }
 
 bool PaymentRequest::IsThisPaymentRequestShowing() const {
@@ -822,56 +820,68 @@ void PaymentRequest::OnUserCancelled() {
           ? errors::kWebAuthnOperationTimedOutOrNotAllowed
           : (!reject_show_error_message_.empty() ? reject_show_error_message_
                                                  : errors::kUserCancelled));
-
-  // We close all bindings and ask to be destroyed.
-  client_.reset();
-  receiver_.reset();
-  payment_handler_host_->Disconnect();
-  if (observer_for_testing_)
-    observer_for_testing_->OnConnectionTerminated();
-
-  if (manager_)
-    manager_->DestroyRequest(weak_ptr_factory_.GetWeakPtr());
+  delete this;
 }
 
-void PaymentRequest::DidStartMainFrameNavigationToDifferentDocument(
-    bool is_user_initiated) {
+void PaymentRequest::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  auto navigation_in_frame_will_destroy_or_cache_document_in_frame =
+      [](content::GlobalRenderFrameHostId previous_frame_id,
+         content::RenderFrameHost* frame) {
+        if (!previous_frame_id)
+          return false;
+
+        // If a navigation to a new document is happening inside this frame, or
+        // an ancestor, then the current document will be gone shortly. We have
+        // to look at the `previous_frame_id` as the navigation may be occurring
+        // in a new RenderFrameHost, replacing the current RenderFrameHost.
+        for (; frame; frame = frame->GetParentOrOuterDocument()) {
+          if (frame->GetGlobalId() == previous_frame_id)
+            return true;
+        }
+        return false;
+      };
+
+  // This method watches for cross-document navigations that would lead to the
+  // PaymentRequest being destroyed in the future; and it wants to track if such
+  // a navigation is browser- or renderer-initiated.
+  //
+  // We could track that as a state on PaymentRequest that is used at time of
+  // destruction, but we instead just record the metrics event here, which has a
+  // slight chance of being incorrect - for instance if the tab is torn down
+  // instead of completing the navigation.
+
+  // This checks if the upcoming navigation would destroy (or put into the
+  // BackForwardCache) the current document in `render_frame_host()`, which the
+  // PaymentRequest is attached to.
+  if (!navigation_in_frame_will_destroy_or_cache_document_in_frame(
+          navigation_handle->GetPreviousRenderFrameHostId(),
+          render_frame_host())) {
+    return;
+  }
+
+  // Since the PaymentRequest dialog blocks the content of the WebContents,
+  // the user cannot click on a link to navigate away. Therefore, if the
+  // navigation is initiated in the renderer, it does not come from the user.
+  bool is_user_initiated = !navigation_handle->IsRendererInitiated();
   RecordFirstAbortReason(is_user_initiated
                              ? JourneyLogger::ABORT_REASON_USER_NAVIGATION
                              : JourneyLogger::ABORT_REASON_MERCHANT_NAVIGATION);
 }
 
-void PaymentRequest::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  DCHECK_EQ(render_frame_host->GetGlobalId(), initiator_frame_routing_id_);
-  // RenderFrameHost is usually deleted explicitly before PaymentRequest
-  // destruction if the user closes the tab or browser window without closing
-  // the payment request dialog.
-  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
-  // But don't bother sending errors to |client_| because the mojo pipe will be
-  // torn down anyways when RenderFrameHost is destroyed. It's not safe to call
-  // OnUserCancelled() here because it is not re-entrant.
-  // TODO(crbug.com/1121841) Make OnUserCancelled re-entrant.
-  TerminateConnection();
-}
-
-void PaymentRequest::TerminateConnection() {
-  // We are here because of a browser-side error, or likely as a result of the
-  // disconnect_handler on |receiver_|, which can mean that the renderer
-  // has decided to close the pipe for various reasons (see all uses of
-  // PaymentRequest::clearResolversAndCloseMojoConnection() in Blink). We close
-  // the binding and the dialog, and ask to be deleted.
-  client_.reset();
-  receiver_.reset();
-  payment_handler_host_->Disconnect();
-  delegate_->CloseDialog();
-  if (observer_for_testing_)
-    observer_for_testing_->OnConnectionTerminated();
-
-  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_MOJO_CONNECTION_ERROR);
-
-  if (manager_)
-    manager_->DestroyRequest(weak_ptr_factory_.GetWeakPtr());
+void PaymentRequest::WillBeDestroyed(
+    content::DocumentServiceDestructionReason reason) {
+  switch (reason) {
+    case content::DocumentServiceDestructionReason::kConnectionTerminated:
+      RecordFirstAbortReason(JourneyLogger::ABORT_REASON_MOJO_CONNECTION_ERROR);
+      break;
+    case content::DocumentServiceDestructionReason::kEndOfDocumentLifetime:
+      // RenderFrameHost is usually deleted explicitly before PaymentRequest
+      // destruction if the user closes the tab or browser window without
+      // closing the payment request dialog.
+      RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
+      break;
+  }
 }
 
 void PaymentRequest::Pay() {
@@ -928,10 +938,6 @@ JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
   return JourneyLogger::PaymentMethodCategory::kOther;
 }
 
-void PaymentRequest::HideIfNecessary() {
-  display_handle_.reset();
-}
-
 bool PaymentRequest::IsOffTheRecord() const {
   return delegate_->IsOffTheRecord();
 }
@@ -942,12 +948,6 @@ void PaymentRequest::OnPaymentHandlerOpenWindowCalled() {
   // invoked payment app is shown to the user.
   journey_logger_.SetPaymentAppUkmSourceId(
       state_->selected_app()->UkmSourceId());
-}
-
-content::WebContents* PaymentRequest::web_contents() {
-  auto* rfh = content::RenderFrameHost::FromID(initiator_frame_routing_id_);
-  return rfh && rfh->IsActive() ? content::WebContents::FromRenderFrameHost(rfh)
-                                : nullptr;
 }
 
 void PaymentRequest::RecordFirstAbortReason(
@@ -973,15 +973,11 @@ void PaymentRequest::CanMakePaymentCallback(bool can_make_payment) {
 
 void PaymentRequest::HasEnrolledInstrumentCallback(
     bool has_enrolled_instrument) {
-  auto* rfh = content::RenderFrameHost::FromID(initiator_frame_routing_id_);
-  if (!rfh)
-    return;
-
   VLOG(2) << "PaymentRequest (" << *spec_->details().id
           << "): hasEnrolledInstrument = " << has_enrolled_instrument;
 
   if (!spec_ || CanMakePaymentQueryFactory::GetInstance()
-                    ->GetForContext(rfh->GetBrowserContext())
+                    ->GetForContext(render_frame_host()->GetBrowserContext())
                     ->CanQuery(top_level_origin_, frame_origin_,
                                spec_->query_for_quota())) {
     RespondToHasEnrolledInstrumentQuery(has_enrolled_instrument,

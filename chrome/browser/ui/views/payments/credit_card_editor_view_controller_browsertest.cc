@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // No apps are available.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(0U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // No apps are available.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(0U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
 
   // One app is available, and it's selected because that's allowed for expired
   // credit cards.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_NE(nullptr, request->state()->selected_app());
 
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // One app is available, but it's not selected.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // One app is available, but it's not selected.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // One app is available, it is not selected, but is properly named.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
   EXPECT_EQ(
@@ -645,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // One app is available, but it's not selected.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // One app is available, but it's not selected.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // Still have one app, but now it's selected.
-  request = GetPaymentRequests(GetActiveWebContents()).front();
+  request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(request->state()->available_apps().back().get(),
             request->state()->selected_app());
@@ -818,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   InvokePaymentRequestUI();
 
   // No apps are available.
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(0U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
 

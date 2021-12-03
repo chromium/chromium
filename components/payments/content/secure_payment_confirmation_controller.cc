@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
-#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/method_strings.h"
 #include "components/strings/grit/components_strings.h"

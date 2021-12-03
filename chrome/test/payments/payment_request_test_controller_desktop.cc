@@ -271,21 +271,28 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
          content::RenderFrameHost* render_frame_host) {
         DCHECK(render_frame_host);
         DCHECK(render_frame_host->IsActive());
+        auto* web_contents =
+            content::WebContents::FromRenderFrameHost(render_frame_host);
+        DCHECK(web_contents);
+        auto* manager =
+            PaymentRequestWebContentsManager::GetOrCreateForWebContents(
+                *web_contents);
         auto delegate = std::make_unique<ChromePaymentRequestTestDelegate>(
             render_frame_host, is_off_the_record, valid_ssl, prefs,
             twa_package_name, has_authenticator, observer_for_test);
         *delegate_weakptr = delegate->GetContentWeakPtr();
-        PaymentRequestWebContentsManager* manager =
-            PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-                content::WebContents::FromRenderFrameHost(render_frame_host));
         if (!twa_payment_app_method_name.empty()) {
           AndroidAppCommunication::GetForBrowserContext(
               render_frame_host->GetBrowserContext())
               ->SetAppForTesting(twa_package_name, twa_payment_app_method_name,
                                  twa_payment_app_response);
         }
-        manager->CreatePaymentRequest(render_frame_host, std::move(delegate),
-                                      std::move(receiver), observer_for_test);
+        auto display_manager = delegate->GetDisplayManager()->GetWeakPtr();
+        // PaymentRequest is a DocumentService, whose lifetime is managed by the
+        // RenderFrameHost passed in here.
+        new PaymentRequest(render_frame_host, std::move(delegate),
+                           std::move(display_manager), std::move(receiver),
+                           manager->transaction_mode(), observer_for_test);
       },
       observer_converter_->GetWeakPtr(), is_off_the_record_, valid_ssl_,
       prefs_.get(), twa_package_name_, has_authenticator_,

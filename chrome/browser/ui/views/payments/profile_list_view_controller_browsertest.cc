@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
 
   InvokePaymentRequestUI();
 
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
 
   // The complete profile should be selected.
   ASSERT_TRUE(request->state()->selected_shipping_profile());

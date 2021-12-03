@@ -17,6 +17,13 @@
 
 namespace content {
 
+enum class DocumentServiceDestructionReason : int {
+  // The mojo connection terminated.
+  kConnectionTerminated,
+  // The document pointed to by `render_frame_host()` is being destroyed.
+  kEndOfDocumentLifetime,
+};
+
 // Helper to provide the safe equivalent of the mojo::MakeStrongReceiver<T>(...)
 // pattern for document-scoped Mojo interface implementations. Use of this
 // helper prevents logic bugs when Mojo IPCs for `Interface` race against Mojo
@@ -61,7 +68,11 @@ class DocumentService : public Interface, public internal::DocumentServiceBase {
         receiver_(this, std::move(pending_receiver)) {
     // |this| owns |receiver_|, so unretained is safe.
     receiver_.set_disconnect_handler(base::BindOnce(
-        [](DocumentServiceBase* document_service) { delete document_service; },
+        [](DocumentServiceBase* document_service) {
+          document_service->WillBeDestroyed(
+              DocumentServiceDestructionReason::kConnectionTerminated);
+          delete document_service;
+        },
         base::Unretained(this)));
   }
 

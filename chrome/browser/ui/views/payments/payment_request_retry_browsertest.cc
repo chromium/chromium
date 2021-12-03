@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestRetryTest,
 
   // Confirm that there are two payment apps available.
   InvokePaymentRequestUI();
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(2U, request->state()->available_apps().size());
 
   // Enter a valid CVC format for the Visa card.

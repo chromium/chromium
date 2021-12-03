@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, HappyPath) {
             profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
                              GetLocale()));
 
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->contact_profiles().size());
   EXPECT_EQ(request->state()->contact_profiles().back(),
             request->state()->selected_contact_profile());
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   InvokePaymentRequestUI();
   OpenContactInfoScreen();
 
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
 
   // No contact profiles are selected because both are incomplete.
   EXPECT_EQ(nullptr, request->state()->selected_contact_profile());
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   // In incognito, the profile should be available in contact_profiles but it
   // shouldn't be saved to the PersonalDataManager.
   ASSERT_EQ(0UL, personal_data_manager->GetProfiles().size());
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->contact_profiles().size());
   EXPECT_EQ(request->state()->contact_profiles().back(),
             request->state()->selected_contact_profile());
