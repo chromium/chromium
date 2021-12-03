@@ -1287,6 +1287,41 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 }
 
+// The network request for updating interest groups times out, so the update
+// fails.
+TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
+  update_responder_->RegisterDeferredResponse(kDailyUpdateUrlPath);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
+  interest_group.trusted_bidding_signals_keys.emplace();
+  interest_group.trusted_bidding_signals_keys->push_back("key1");
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  ad.metadata = "{\"ad\":\"metadata\",\"here\":[1,2,3]}";
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->FastForwardBy(base::Seconds(30) + base::Seconds(1));
+  task_environment()->RunUntilIdle();
+
+  // The request times out (ERR_TIMED_OUT), so the ads should not change.
+  std::vector<StorageInterestGroup> groups =
+      GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(groups.size(), 1u);
+  const auto& group = groups[0].bidding_group->group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 1u);
+  EXPECT_EQ(group.ads.value()[0].render_url.spec(),
+            "https://example.com/render");
+  EXPECT_EQ(group.ads.value()[0].metadata,
+            "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
+}
+
 // Start an update, and delay the server response so that the interest group
 // expires before the interest group updates. Don't advance time enough for DB
 // maintenance tasks to run -- that is the interest group will only exist on

@@ -178,9 +178,9 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
         client_security_state.Clone();
     auto simple_url_loader = network::SimpleURLLoader::Create(
         std::move(resource_request), kTrafficAnnotation);
+    simple_url_loader->SetTimeoutDuration(base::Seconds(30));
     auto simple_url_loader_it =
         url_loaders_.insert(url_loaders_.end(), std::move(simple_url_loader));
-    // TODO(crbug.com/1186444): Time out these requests if they take too long.
     (*simple_url_loader_it)
         ->DownloadToString(
             url_loader_factory_.get(),

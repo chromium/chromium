@@ -105,6 +105,17 @@ TEST_F(AuctionDownloaderTest, HttpError) {
       last_error_msg());
 }
 
+TEST_F(AuctionDownloaderTest, Timeout) {
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, kAllowFledgeHeader,
+              net::HTTP_REQUEST_TIMEOUT);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Failed to load https://url.test/script.js HTTP status = 408 Request "
+      "Timeout.",
+      last_error_msg());
+}
+
 TEST_F(AuctionDownloaderTest, AllowFledge) {
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
               kAsciiResponseBody, "X-Allow-FLEDGE: true");

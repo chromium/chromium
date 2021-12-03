@@ -127,6 +127,8 @@ AuctionDownloader::AuctionDownloader(
   simple_url_loader_->SetOnRedirectCallback(base::BindRepeating(
       &AuctionDownloader::OnRedirect, base::Unretained(this)));
 
+  simple_url_loader_->SetTimeoutDuration(base::Seconds(30));
+
   // TODO(mmenke): Consider limiting the size of response bodies.
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory, base::BindOnce(&AuctionDownloader::OnBodyReceived,
