@@ -115,8 +115,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionView.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewProperties.java",
-    "java/src/org/chromium/chrome/browser/omnibox/suggestions/tiles/TileSuggestionProcessor.java",
-    "java/src/org/chromium/chrome/browser/omnibox/suggestions/tiles/TileSuggestionProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentUi.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchService.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java",

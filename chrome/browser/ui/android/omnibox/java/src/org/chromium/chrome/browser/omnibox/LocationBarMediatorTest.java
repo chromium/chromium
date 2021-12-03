@@ -744,25 +744,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testSetUrlBarFocus_focusedFromQueryTiles() {
-        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.QUERY_TILES_NTP_TAP);
-        assertTrue(mMediator.didFocusUrlFromQueryTiles());
-        assertTrue(mMediator.didFocusUrlFromFakebox());
-        verify(mUrlCoordinator).requestFocus();
-    }
-
-    @Test
-    public void testSetUrlBarFocus_triggersObservers() {
-        mMediator.onUrlFocusChange(true);
-        mMediator.addUrlFocusChangeListener(mUrlCoordinator);
-        mMediator.addUrlFocusChangeListener(mAutocompleteCoordinator);
-        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.setUrlBarFocus(true, null, OmniboxFocusReason.QUERY_TILES_NTP_TAP);
-        verify(mUrlCoordinator).onUrlFocusChange(true);
-        verify(mAutocompleteCoordinator).onUrlFocusChange(true);
-    }
-
-    @Test
     public void testSetUrlBarFocus_notFocused() {
         mMediator.setUrlBarFocus(false, null, OmniboxFocusReason.FAKE_BOX_TAP);
         verify(mUrlCoordinator).clearFocus();

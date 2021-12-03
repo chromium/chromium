@@ -166,7 +166,6 @@ class LocationBarMediator
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
-    private boolean mUrlFocusedFromQueryTiles;
     private boolean mUrlFocusedWithoutAnimations;
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
@@ -272,7 +271,6 @@ class LocationBarMediator
             }
         } else {
             mUrlFocusedFromFakebox = false;
-            mUrlFocusedFromQueryTiles = false;
             mUrlFocusedWithoutAnimations = false;
         }
 
@@ -515,10 +513,6 @@ class LocationBarMediator
 
     /* package */ boolean didFocusUrlFromFakebox() {
         return mUrlFocusedFromFakebox;
-    }
-
-    /* package */ boolean didFocusUrlFromQueryTiles() {
-        return mUrlFocusedFromQueryTiles;
     }
 
     /** Recalculates the visibility of the buttons inside the location bar. */
@@ -1212,11 +1206,6 @@ class LocationBarMediator
                     || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS
                     || reason == OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP) {
                 mUrlFocusedFromFakebox = true;
-            }
-
-            if (reason == OmniboxFocusReason.QUERY_TILES_NTP_TAP) {
-                mUrlFocusedFromFakebox = true;
-                mUrlFocusedFromQueryTiles = true;
             }
 
             if (urlHasFocus && mUrlFocusedWithoutAnimations) {

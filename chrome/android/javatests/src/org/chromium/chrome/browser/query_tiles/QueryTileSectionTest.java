@@ -6,13 +6,9 @@ package org.chromium.chrome.browser.query_tiles;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.query_tiles.ListMatchers.matchList;
 import static org.chromium.chrome.browser.query_tiles.ViewActions.scrollTo;
@@ -81,7 +77,6 @@ public class QueryTileSectionTest {
     @SmallTest
     public void testShowQueryTileSection() throws Exception {
         matchList(withParent(withId(R.id.query_tiles)), mTileProvider.getChildrenOf());
-        onView(withId(R.id.query_tiles_chip)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -109,7 +104,6 @@ public class QueryTileSectionTest {
     public void testFocusOmniboxWithZeroSuggest() throws Exception {
         Matcher<View> recyclerViewMatcher = withParent(withId(R.id.query_tiles));
         matchList(recyclerViewMatcher, mTileProvider.getChildrenOf());
-        onView(withId(R.id.query_tiles_chip)).check(matches(not(isDisplayed())));
 
         // Click on the search box. Omnibox should show up.
         onView(withId(R.id.search_box_text)).perform(click());

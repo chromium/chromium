@@ -418,11 +418,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     }
 
     @Override
-    public boolean didFocusUrlFromQueryTiles() {
-        return mLocationBarMediator.didFocusUrlFromQueryTiles();
-    }
-
-    @Override
     public void clearOmniboxFocus() {
         mLocationBarMediator.clearOmniboxFocus();
     }

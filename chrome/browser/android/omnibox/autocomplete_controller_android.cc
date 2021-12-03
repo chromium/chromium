@@ -55,8 +55,6 @@
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
-#include "components/query_tiles/switches.h"
-#include "components/query_tiles/tile_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -172,19 +170,16 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     autocomplete_controller_->AddObserver(emitter);
 }
 
-void AutocompleteControllerAndroid::Start(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_text,
-    jint j_cursor_pos,
-    const JavaRef<jstring>& j_desired_tld,
-    const JavaRef<jstring>& j_current_url,
-    jint j_page_classification,
-    bool prevent_inline_autocomplete,
-    bool prefer_keyword,
-    bool allow_exact_keyword_match,
-    bool want_asynchronous_matches,
-    const JavaRef<jstring>& j_query_tile_id,
-    bool is_query_started_from_tiles) {
+void AutocompleteControllerAndroid::Start(JNIEnv* env,
+                                          const JavaRef<jstring>& j_text,
+                                          jint j_cursor_pos,
+                                          const JavaRef<jstring>& j_desired_tld,
+                                          const JavaRef<jstring>& j_current_url,
+                                          jint j_page_classification,
+                                          bool prevent_inline_autocomplete,
+                                          bool prefer_keyword,
+                                          bool allow_exact_keyword_match,
+                                          bool want_asynchronous_matches) {
   autocomplete_controller_->result().DestroyJavaObject();
 
   std::string desired_tld;
@@ -204,15 +199,6 @@ void AutocompleteControllerAndroid::Start(
   input_.set_prefer_keyword(prefer_keyword);
   input_.set_allow_exact_keyword_match(allow_exact_keyword_match);
   input_.set_want_asynchronous_matches(want_asynchronous_matches);
-  if (!j_query_tile_id.is_null()) {
-    std::string tile_id = ConvertJavaStringToUTF8(env, j_query_tile_id);
-    input_.set_query_tile_id(tile_id);
-    if (base::FeatureList::IsEnabled(
-            query_tiles::features::kQueryTilesLocalOrdering)) {
-      provider_client_->GetQueryTileService()->OnTileClicked(tile_id);
-    }
-  }
-  is_query_started_from_tiles_ = is_query_started_from_tiles;
   autocomplete_controller_->Start(input_);
 }
 
@@ -225,7 +211,7 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
 
   inside_synchronous_start_ = true;
   Start(env, j_text, -1, nullptr, nullptr, true, false, false, false,
-        focused_from_fakebox, JavaRef<jstring>(), false);
+        focused_from_fakebox);
   inside_synchronous_start_ = false;
   DCHECK(autocomplete_controller_->done());
   const AutocompleteResult& result = autocomplete_controller_->result();
@@ -290,7 +276,6 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
   input_.set_focus_type(OmniboxFocusType::ON_FOCUS);
-  is_query_started_from_tiles_ = false;
   autocomplete_controller_->Start(input_);
 }
 
@@ -358,7 +343,6 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       base::Milliseconds(elapsed_time_since_first_modified), completed_length,
       now - autocomplete_controller_->last_time_default_match_changed(),
       autocomplete_controller_->result());
-  log.is_query_started_from_tile = is_query_started_from_tiles_;
   autocomplete_controller_->AddProviderAndTriggeringLogs(&log);
 
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
@@ -391,18 +375,6 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
           std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
     } else {
       match.search_terms_args->search_terms = query;
-    }
-    if (match.type == AutocompleteMatchType::TILE_SUGGESTION &&
-        base::FeatureList::IsEnabled(
-            query_tiles::features::kQueryTilesLocalOrdering)) {
-      // If the search is from clicking on a tile, report the click
-      // so that we can adjust the ordering of the tiles later.
-      // Because we don't have tile Id here, pass parent tile's Id
-      // and the full query string to TileService to locate the Id.
-      // In future, we could simplify this by passing the last tile
-      // Id to native.
-      provider_client_->GetQueryTileService()->OnQuerySelected(
-          input_.query_tile_id(), query);
     }
   }
 

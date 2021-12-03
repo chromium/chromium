@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
@@ -69,7 +68,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private final @NonNull ViewGroup mParent;
     private final @NonNull ObservableSupplier<Profile> mProfileSupplier;
     private final @NonNull Callback<Profile> mProfileChangeCallback;
-    private final @NonNull OmniboxQueryTileCoordinator mQueryTileCoordinator;
     private final @NonNull AutocompleteMediator mMediator;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
 
@@ -96,12 +94,11 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
         listModel.set(SuggestionListProperties.VISIBLE, false);
         listModel.set(SuggestionListProperties.SUGGESTION_MODELS, listItems);
 
-        mQueryTileCoordinator = new OmniboxQueryTileCoordinator(context, this::onTileSelected);
         mMediator = new AutocompleteMediator(context, delegate, urlBarEditingTextProvider,
                 listModel, new Handler(), modalDialogManagerSupplier, activityTabSupplier,
                 shareDelegateSupplier, locationBarDataProvider, bringToForegroundCallback,
                 tabWindowManagerSupplier, bookmarkState, jankTracker, exploreIconProvider);
-        mMediator.initDefaultProcessors(mQueryTileCoordinator::setTiles);
+        mMediator.initDefaultProcessors();
 
         listModel.set(SuggestionListProperties.OBSERVER, mMediator);
 
@@ -124,7 +121,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      */
     public void destroy() {
         mProfileSupplier.removeObserver(mProfileChangeCallback);
-        mQueryTileCoordinator.destroy();
         mMediator.destroy();
         if (mDropdown != null) {
             mDropdown.destroy();
@@ -194,11 +190,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
 
                 adapter.registerType(
-                        OmniboxSuggestionUiType.TILE_SUGGESTION,
-                        parent -> mQueryTileCoordinator.createView(parent.getContext()),
-                        mQueryTileCoordinator::bind);
-
-                adapter.registerType(
                         OmniboxSuggestionUiType.TILE_NAVSUGGEST,
                         MostVisitedTilesProcessor::createView,
                         BaseCarouselSuggestionViewBinder::bind);
@@ -248,7 +239,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setAutocompleteProfile(Profile profile) {
         mMediator.setAutocompleteProfile(profile);
-        mQueryTileCoordinator.setProfile(profile);
     }
 
     /**
@@ -410,9 +400,5 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public ModelList getSuggestionModelListForTest() {
         return mMediator.getSuggestionModelListForTest();
-    }
-
-    private void onTileSelected(QueryTile queryTile) {
-        mMediator.onQueryTileSelected(queryTile);
     }
 }

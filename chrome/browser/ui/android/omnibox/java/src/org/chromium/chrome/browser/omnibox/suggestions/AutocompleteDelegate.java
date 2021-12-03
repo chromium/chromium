@@ -70,9 +70,4 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
      * @return Whether the URL currently has focus.
      */
     boolean isUrlBarFocused();
-
-    /**
-     * @return Whether the omnibox was focused because of tapping on query tiles.
-     */
-    boolean didFocusUrlFromQueryTiles();
 }

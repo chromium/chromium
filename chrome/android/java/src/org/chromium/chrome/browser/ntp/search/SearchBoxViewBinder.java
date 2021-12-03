@@ -14,7 +14,6 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * Responsible for building and setting properties on the search box on new tab page.
@@ -28,7 +27,6 @@ class SearchBoxViewBinder
         ImageView lensButton = view.findViewById(org.chromium.chrome.R.id.lens_camera_button);
         View searchBoxContainer = view;
         final TextView searchBoxTextView = searchBoxContainer.findViewById(R.id.search_box_text);
-        final ChipView chipView = searchBoxContainer.findViewById(R.id.query_tiles_chip);
 
         if (SearchBoxProperties.VISIBILITY == propertyKey) {
             searchBoxContainer.setVisibility(

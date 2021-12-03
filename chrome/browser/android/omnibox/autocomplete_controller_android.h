@@ -47,9 +47,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
              bool prevent_inline_autocomplete,
              bool prefer_keyword,
              bool allow_exact_keyword_match,
-             bool want_asynchronous_matches,
-             const base::android::JavaRef<jstring>& j_query_tile_id,
-             bool is_query_started_from_tiles);
+             bool want_asynchronous_matches);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_text,
@@ -138,10 +136,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // Whether we're currently inside a call to Start() that's called
   // from Classify().
   bool inside_synchronous_start_{false};
-
-  // Whether the omnibox input is a query that starts building
-  // by clicking on an image tile.
-  bool is_query_started_from_tiles_{false};
 
   // The Profile associated with this instance of AutocompleteControllerAndroid.
   // There should be only one instance of AutocompleteControllerAndroid per

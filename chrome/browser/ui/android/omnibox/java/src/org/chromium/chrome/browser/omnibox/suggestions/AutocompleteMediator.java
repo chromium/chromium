@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -173,9 +172,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     /**
      * Initialize the Mediator with default set of suggestion processors.
      */
-    void initDefaultProcessors(Callback<List<QueryTile>> queryTileSuggestionCallback) {
+    void initDefaultProcessors() {
         mDropdownViewInfoListBuilder.initDefaultProcessors(
-                mContext, this, mDelegate, mUrlBarEditingTextProvider, queryTileSuggestionCallback);
+                mContext, this, mDelegate, mUrlBarEditingTextProvider);
     }
 
     /**
@@ -378,31 +377,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     long getCurrentNativeAutocompleteResult() {
         return mAutocompleteResult.getNativeObjectRef();
-    }
-
-    /** Called when a query tile is selected by the user. */
-    void onQueryTileSelected(QueryTile queryTile) {
-        // For last level tile, start a search query, unless we want to let user have a chance to
-        // edit the query.
-        if (queryTile.children.isEmpty()) {
-            launchSearchUrlForQueryTileSuggestion(queryTile);
-            return;
-        }
-
-        // If the tile has sub-tiles, start a new request to the backend to get the new set
-        // of tiles. Also set the tile text in omnibox.
-        stopAutocomplete(false);
-        String refineText = TextUtils.concat(queryTile.queryText, " ").toString();
-        mDelegate.setOmniboxEditingText(refineText);
-
-        mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
-        mEditSessionState = EditSessionState.ACTIVATED_BY_QUERY_TILE;
-
-        mAutocomplete.start(mDataProvider.getCurrentUrl(),
-                mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox()),
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                mUrlBarEditingTextProvider.getSelectionStart(),
-                !mUrlBarEditingTextProvider.shouldAutocomplete(), queryTile.id, true);
     }
 
     /**
@@ -667,12 +641,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 int pageClassification =
                         mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
                 String currentUrl = mDataProvider.getCurrentUrl();
-                boolean isQueryStartedFromTiles = mDelegate.didFocusUrlFromQueryTiles()
-                        || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE;
 
                 postAutocompleteRequest(() -> {
                     mAutocomplete.start(currentUrl, pageClassification, textWithoutAutocomplete,
-                            cursorPosition, preventAutocomplete, null, isQueryStartedFromTiles);
+                            cursorPosition, preventAutocomplete);
                 }, OMNIBOX_SUGGESTION_START_DELAY_MS);
             }
         }
@@ -896,7 +868,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         stopAutocomplete(false);
         if (mDataProvider.hasTab()) {
             mAutocomplete.start(mDataProvider.getCurrentUrl(),
-                    mDataProvider.getPageClassification(false), query, -1, false, null, false);
+                    mDataProvider.getPageClassification(false), query, -1, false);
         }
     }
 
@@ -970,37 +942,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         return mNewOmniboxEditSessionTimestamp > 0
                 ? (SystemClock.elapsedRealtime() - mNewOmniboxEditSessionTimestamp)
                 : -1;
-    }
-
-    /**
-     * Launches the search URL for the query tile suggestion.
-     * @param queryTile The query tile user selected.
-     */
-    @SuppressWarnings("VisibleForTests")
-    private void launchSearchUrlForQueryTileSuggestion(QueryTile queryTile) {
-        SuggestionsMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
-        int position = -1;
-        int suggestionCount = getSuggestionCount();
-        AutocompleteMatch suggestion = null;
-        // Find the suggestion position and hashCode.
-        for (int i = 0; i < suggestionCount; ++i) {
-            suggestion = getSuggestionAt(i);
-            if (suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION) {
-                position = i;
-                break;
-            }
-        }
-        if (suggestion == null) return;
-        GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(position,
-                getElapsedTimeSinceInputChange(), queryTile.queryText, queryTile.searchParams);
-
-        // Abort if the Autocomplete has just become invalid/profile was destroyed.
-        if (updatedUrl == null) return;
-
-        // RecordMetrics has to be called before loadUrl, or otherwise the native AutocompleteResult
-        // object will be reset and the suggestion will fail validation.
-        recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);
-        mDelegate.loadUrl(updatedUrl.getSpec(), PageTransition.LINK, mLastActionUpTimestamp);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
