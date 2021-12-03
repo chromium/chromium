@@ -5709,7 +5709,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Segmentation_AutoNoWait_20210907",
+                    "name": "Segmentation_AutoNoWait_20211201",
                     "params": {
                         "default_segment": "new-tab",
                         "disable_ui": "false",
@@ -5719,15 +5719,14 @@
                         "show_ui_only_after_ready": "false"
                     },
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
+                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ],
                     "disable_features": [
                         "AdaptiveButtonInTopToolbar"
                     ]
                 },
                 {
-                    "name": "Segmentation_Auto_20210907",
+                    "name": "Segmentation_Auto_20211201",
                     "params": {
                         "default_segment": "new-tab",
                         "disable_ui": "false",
@@ -5737,15 +5736,14 @@
                         "show_ui_only_after_ready": "true"
                     },
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
+                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ],
                     "disable_features": [
                         "AdaptiveButtonInTopToolbar"
                     ]
                 },
                 {
-                    "name": "Segmentation_Default_Segment_20210907",
+                    "name": "Segmentation_Default_Segment_20211201",
                     "params": {
                         "default_segment": "new-tab",
                         "disable_ui": "false",
@@ -5755,19 +5753,17 @@
                         "show_ui_only_after_ready": "true"
                     },
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
+                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ],
                     "disable_features": [
                         "AdaptiveButtonInTopToolbar"
                     ]
                 },
                 {
-                    "name": "Segmentation_Control_20210907",
+                    "name": "Segmentation_Control_20211201",
                     "disable_features": [
                         "AdaptiveButtonInTopToolbar",
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "SegmentationPlatform"
+                        "AdaptiveButtonInTopToolbarCustomizationV2"
                     ]
                 },
                 {
