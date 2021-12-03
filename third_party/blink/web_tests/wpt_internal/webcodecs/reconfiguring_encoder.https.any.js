@@ -1,7 +1,8 @@
 // META: global=window,dedicatedworker
 // META: script=/wpt_internal/webcodecs/encoder_utils.js
 
-async function change_encoding_params_test(codec, acc) {
+async function change_encoding_params_test(codec) {
+  const acc = "prefer-software";
   let original_w = 800;
   let original_h = 600;
   let original_bitrate = 5_000_000;
@@ -38,7 +39,14 @@ async function change_encoding_params_test(codec, acc) {
   };
 
   const init = {
-    output: process_video_chunk,
+    output: (chunk, md) => {
+      try {
+        process_video_chunk(chunk, md);
+      } catch (e) {
+        errors++;
+        console.log(e.message);
+      }
+    },
     error: (e) => {
       errors++;
       console.log(e.message);
@@ -50,14 +58,18 @@ async function change_encoding_params_test(codec, acc) {
     width: original_w,
     height: original_h,
     bitrate: original_bitrate,
+    scalabilityMode: "L1T2",
     framerate: 30,
   };
   let encoder = new VideoEncoder(init);
   encoder.configure(params);
 
+  // Remove this flush after crbug.com/1275789 is fixed
+  await encoder.flush();
+
   // Encode |frames_to_encode| frames with original settings
   for (let i = 0; i < frames_to_encode; i++) {
-    var frame = await createFrame(original_w, original_h, next_ts++);
+    var frame = createFrame(original_w, original_h, next_ts++);
     encoder.encode(frame, {});
   }
 
@@ -70,7 +82,7 @@ async function change_encoding_params_test(codec, acc) {
   reconf_ts = next_ts;
 
   for (let i = 0; i < frames_to_encode; i++) {
-    var frame = await createFrame(new_w, new_h, next_ts++);
+    var frame = createFrame(new_w, new_h, next_ts++);
     encoder.encode(frame, {});
   }
 
@@ -90,22 +102,18 @@ async function change_encoding_params_test(codec, acc) {
 }
 
 promise_test(
-    change_encoding_params_test.bind(null, 'vp8', 'no-preference'),
+    change_encoding_params_test.bind(null, 'vp8'),
     'reconfiguring vp8');
 
 promise_test(
-    change_encoding_params_test.bind(null, 'vp09.00.10.08', 'no-preference'),
+    change_encoding_params_test.bind(null, 'vp09.00.10.08'),
     'reconfiguring vp9 profile0');
 
 promise_test(
-    change_encoding_params_test.bind(null, 'vp09.02.10.10', 'no-preference'),
+    change_encoding_params_test.bind(null, 'vp09.02.10.10'),
     'reconfiguring vp9 profile2');
 
 promise_test(
-    change_encoding_params_test.bind(null, 'avc1.42001E', 'no-preference'),
+    change_encoding_params_test.bind(null, 'avc1.42001E'),
     'reconfiguring avc1.42001E');
-
-/* Uncomment this for manual testing, before we have GPU tests for that */
-//promise_test(change_encoding_params_test.bind(null, "avc1.42001E", "require"),
-//  "reconfiguring avc1.42001E hw");
 

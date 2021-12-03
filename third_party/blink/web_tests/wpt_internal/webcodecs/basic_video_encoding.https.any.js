@@ -1,9 +1,10 @@
 // META: global=window,dedicatedworker
 // META: script=/wpt_internal/webcodecs/encoder_utils.js
 
-async function encode_decode_test(codec, acc, avc_format) {
-  const w = 640;
-  const h = 360;
+async function encode_decode_test(codec, avc_format) {
+  const acc = "prefer-software";
+  const w = 320;
+  const h = 200;
   let next_ts = 0
   let frames_to_encode = 16;
   let frames_encoded = 0;
@@ -16,6 +17,8 @@ async function encode_decode_test(codec, acc, avc_format) {
       assert_equals(frame.visibleRect.height, h, "visibleRect.height");
       assert_equals(frame.timestamp, next_ts++, "timestamp");
       frames_decoded++;
+      assert_true(validateBlackDots(frame, frame.timestamp),
+        "frame doesn't match. ts: " + frame.timestamp);
       frame.close();
     },
     error(e) {
@@ -56,7 +59,7 @@ async function encode_decode_test(codec, acc, avc_format) {
   encoder.configure(encoder_config);
 
   for (let i = 0; i < frames_to_encode; i++) {
-    let frame = await createFrame(w, h, i);
+    let frame = createFrame(w, h, i);
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
     frame.close();
@@ -70,9 +73,10 @@ async function encode_decode_test(codec, acc, avc_format) {
   assert_equals(errors, 0);
 }
 
-async function encode_test(codec, acc) {
-  let w = 640;
-  let h = 360;
+async function encode_test(codec) {
+  const acc = "prefer-software";
+  let w = 320;
+  let h = 200;
   let next_ts = 0
   let frames_to_encode = 25;
   let frames_processed = 0;
@@ -113,7 +117,7 @@ async function encode_test(codec, acc) {
   encoder.configure(params);
   for (let i = 0; i < frames_to_encode; i++) {
     let size_mismatch = (i % 16);
-    let frame = await createFrame(w + size_mismatch, h + size_mismatch, i);
+    let frame = createFrame(w + size_mismatch, h + size_mismatch, i);
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
     frame.close();
@@ -125,27 +129,25 @@ async function encode_test(codec, acc) {
 }
 
 promise_test(
-    encode_test.bind(null, 'vp09.00.10.08', 'no-preference'),
-    'encoding vp9 profile0');
+    encode_test.bind(null, 'vp09.00.10.08'), 'encoding vp9 profile0');
 
 promise_test(
-    encode_test.bind(null, 'vp09.02.10.10', 'no-preference'),
-    'encoding vp9 profile2');
+    encode_test.bind(null, 'vp09.02.10.10'), 'encoding vp9 profile2');
 
 promise_test(
-    encode_decode_test.bind(null, 'vp09.02.10.10', 'no-preference', null),
+    encode_decode_test.bind(null, 'vp09.02.10.10', null),
     'encoding and decoding vp9 profile2');
 
-promise_test(encode_test.bind(null, 'vp8', 'no-preference'), 'encoding vp8');
+promise_test(encode_test.bind(null, 'vp8'), 'encoding vp8');
 
 promise_test(
-    encode_decode_test.bind(null, 'vp8', 'no-preference', null),
+    encode_decode_test.bind(null, 'vp8', null),
     'encoding and decoding vp8');
 
 promise_test(
-    encode_decode_test.bind(null, 'avc1.42001E', 'no-preference', 'annexb'),
+    encode_decode_test.bind(null, 'avc1.42001E', 'annexb'),
     'encoding and decoding avc1.42001E (annexb)');
 
 promise_test(
-    encode_decode_test.bind(null, 'avc1.42001E', 'no-preference', 'avc'),
+    encode_decode_test.bind(null, 'avc1.42001E', 'avc'),
     'encoding and decoding avc1.42001E (avc)');

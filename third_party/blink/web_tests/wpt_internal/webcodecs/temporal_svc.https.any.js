@@ -4,12 +4,13 @@
 async function svc_test(codec, layers, base_layer_decimator) {
   const w = 320;
   const h = 200;
-  let acc = "prefer-software";
+  const acc = "prefer-software";
   let frames_to_encode = 40;
   let frames_decoded = 0;
   let frames_encoded = 0;
   let errors = 0;
   let chunks = [];
+  let corrupted_frames = [];
 
   const encoder_init = {
     output(chunk, metadata) {
@@ -43,10 +44,9 @@ async function svc_test(codec, layers, base_layer_decimator) {
   encoder.configure(encoder_config);
 
   for (let i = 0; i < frames_to_encode; i++) {
-    let frame = await createFrame(w, h, i);
+    let frame = createFrame(w, h, i);
     encoder.encode(frame, { keyFrame: false });
     frame.close();
-    await delay(1);
   }
   await encoder.flush();
   assert_equals(errors, 0);
@@ -54,6 +54,12 @@ async function svc_test(codec, layers, base_layer_decimator) {
   let decoder = new VideoDecoder({
     output(frame) {
       frames_decoded++;
+      // Check that we have intended number of dots and no more.
+      // Completely black frame shouldn't pass the test.
+      if(!validateBlackDots(frame, frame.timestamp) ||
+         validateBlackDots(frame, frame.timestamp + 1)) {
+        corrupted_frames.push(frame.timestamp)
+      }
       frame.close();
     },
     error(e) {
@@ -83,6 +89,8 @@ async function svc_test(codec, layers, base_layer_decimator) {
   let base_layer_frames = frames_to_encode / base_layer_decimator;
   assert_equals(chunks.length, base_layer_frames);
   assert_equals(frames_decoded, base_layer_frames);
+  assert_equals(corrupted_frames.length, 0,
+    `corrupted_frames: ${corrupted_frames}`);
 }
 
 promise_test(svc_test.bind(null, "avc1.42001E", 2, 2), "SVC H264 L1T2");
@@ -96,3 +104,11 @@ promise_test(svc_test.bind(null, "vp09.00.10.08", 3, 4), "SVC VP9 8 L1T3");
 
 promise_test(svc_test.bind(null, "vp09.02.10.10", 2, 2), "SVC VP9 10 L1T2");
 promise_test(svc_test.bind(null, "vp09.02.10.10", 3, 4), "SVC VP9 10 L1T3");
+
+promise_test(async t => {
+  for (let i = 0; i < 10; i++) {
+    let frame = createFrame(320, 200, i);
+    assert_true(validateBlackDots(frame, i));
+    assert_false(validateBlackDots(frame, i + 1));
+  }
+}, "Dot counting self test");

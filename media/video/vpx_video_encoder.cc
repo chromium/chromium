@@ -148,8 +148,10 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
       config->ts_rate_decimator[0] = 2;
       config->ts_rate_decimator[1] = 1;
       // Bitrate allocation L0: 60% L1: 40%
-      config->ts_target_bitrate[0] = 60 * config->rc_target_bitrate / 100;
-      config->ts_target_bitrate[1] = config->rc_target_bitrate;
+      config->layer_target_bitrate[0] = config->ts_target_bitrate[0] =
+          60 * config->rc_target_bitrate / 100;
+      config->layer_target_bitrate[1] = config->ts_target_bitrate[1] =
+          config->rc_target_bitrate;
       config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0101;
       config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
       break;
@@ -171,9 +173,12 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
       config->ts_rate_decimator[1] = 2;
       config->ts_rate_decimator[2] = 1;
       // Bitrate allocation L0: 50% L1: 20% L2: 30%
-      config->ts_target_bitrate[0] = 50 * config->rc_target_bitrate / 100;
-      config->ts_target_bitrate[1] = 70 * config->rc_target_bitrate / 100;
-      config->ts_target_bitrate[2] = config->rc_target_bitrate;
+      config->layer_target_bitrate[0] = config->ts_target_bitrate[0] =
+          50 * config->rc_target_bitrate / 100;
+      config->layer_target_bitrate[1] = config->ts_target_bitrate[1] =
+          70 * config->rc_target_bitrate / 100;
+      config->layer_target_bitrate[2] = config->ts_target_bitrate[2] =
+          config->rc_target_bitrate;
       config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0212;
       config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
       break;
@@ -184,6 +189,18 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   }
 
   return Status();
+}
+
+vpx_svc_extra_cfg_t MakeSvcExtraConfig(const vpx_codec_enc_cfg_t& config) {
+  vpx_svc_extra_cfg_t result = {};
+  result.temporal_layering_mode = config.temporal_layering_mode;
+  for (size_t i = 0; i < config.ts_number_layers; ++i) {
+    result.scaling_factor_num[i] = 1;
+    result.scaling_factor_den[i] = 1;
+    result.max_quantizers[i] = config.rc_max_quantizer;
+    result.min_quantizers[i] = config.rc_min_quantizer;
+  }
+  return result;
 }
 
 Status ReallocateVpxImageIfNeeded(vpx_image_t* vpx_image,
@@ -335,6 +352,23 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
 
     // Turn on row level multi-threading.
     vpx_codec_control(codec.get(), VP9E_SET_ROW_MT, 1);
+
+    if (codec_config_.ts_number_layers > 1) {
+      vpx_svc_extra_cfg_t svc_conf = MakeSvcExtraConfig(codec_config_);
+
+      // VP9 needs SVC to be turned on explicitly
+      vpx_codec_control(codec.get(), VP9E_SET_SVC_PARAMETERS, &svc_conf);
+      vpx_error = vpx_codec_control(codec.get(), VP9E_SET_SVC, 1);
+      if (vpx_error != VPX_CODEC_OK) {
+        std::string msg =
+            base::StringPrintf("Can't activate SVC encoding: %s",
+                               vpx_codec_err_to_string(vpx_error));
+        DLOG(ERROR) << msg;
+        status = Status(StatusCode::kEncoderInitializationError, msg);
+        std::move(done_cb).Run(status);
+        return;
+      }
+    }
 
     // In CBR mode use aq-mode=3 is enabled for quality improvement
     if (codec_config_.rc_end_usage == VPX_CBR)
@@ -577,8 +611,14 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
-  auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);
-  if (vpx_error == VPX_CODEC_OK) {
+  auto error = vpx_codec_enc_config_set(codec_.get(), &new_config);
+  const bool is_vp9 = (profile_ != VP8PROFILE_ANY);
+  if (is_vp9 && error == VPX_CODEC_OK && new_config.ts_number_layers > 1) {
+    vpx_svc_extra_cfg_t svc_conf = MakeSvcExtraConfig(new_config);
+    vpx_codec_control(codec_.get(), VP9E_SET_SVC_PARAMETERS, &svc_conf);
+    error = vpx_codec_control(codec_.get(), VP9E_SET_SVC, 1);
+  }
+  if (error == VPX_CODEC_OK) {
     codec_config_ = new_config;
     options_ = options;
     if (!output_cb.is_null())
@@ -586,7 +626,7 @@ void VpxVideoEncoder::ChangeOptions(const Options& options,
   } else {
     status = Status(StatusCode::kEncoderUnsupportedConfig,
                     "Failed to set new VPX config")
-                 .WithData("vpx_error", vpx_error);
+                 .WithData("vpx_error", error);
   }
 
   std::move(done_cb).Run(std::move(status));
