@@ -5841,6 +5841,35 @@
             ]
         }
     ],
+    "PageContentAnnotationsDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PageContentAnnotationsWithVisibility_JourneysWithOmniboxAction_20211202",
+                    "params": {
+                        "annotate_title_instead_of_page_content": "true",
+                        "bag_of_words_entities": "false",
+                        "extract_related_searches": "true",
+                        "min_page_topics_model_version_for_visibility": "2110051800",
+                        "models_to_execute": "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES",
+                        "write_to_history_service": "true"
+                    },
+                    "enable_features": [
+                        "Journeys",
+                        "JourneysOmniboxAction",
+                        "LoadModelFileForEachExecution",
+                        "PageContentAnnotations"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSite": [
         {
             "platforms": [
