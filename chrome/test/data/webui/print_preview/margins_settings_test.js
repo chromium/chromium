@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {MarginsType, PrintPreviewMarginsSettingsElement, PrintPreviewModelElement, State} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
@@ -10,16 +11,21 @@ import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 import {selectOption} from './print_preview_test_utils.js';
 
 suite('MarginsSettingsTest', function() {
-  let marginsSection: PrintPreviewMarginsSettingsElement;
+  /** @type {!PrintPreviewMarginsSettingsElement} */
+  let marginsSection;
 
-  let model: PrintPreviewModelElement;
+  /** @type {!PrintPreviewModelElement} */
+  let model;
 
+  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    model = document.createElement('print-preview-model');
+    model = /** @type {!PrintPreviewModelElement} */ (
+        document.createElement('print-preview-model'));
     document.body.appendChild(model);
 
-    marginsSection = document.createElement('print-preview-margins-settings');
+    marginsSection = /** @type {!PrintPreviewMarginsSettingsElement} */ (
+        document.createElement('print-preview-margins-settings'));
     document.body.appendChild(marginsSection);
     marginsSection.settings = model.settings;
     marginsSection.disabled = false;
@@ -29,7 +35,7 @@ suite('MarginsSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const select = marginsSection.shadowRoot!.querySelector('select')!;
+    const select = marginsSection.shadowRoot.querySelector('select');
     assertEquals(MarginsType.DEFAULT.toString(), select.value);
 
     marginsSection.setSetting('margins', MarginsType.MINIMUM);
@@ -40,7 +46,7 @@ suite('MarginsSettingsTest', function() {
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = marginsSection.shadowRoot!.querySelector('select')!;
+    const select = marginsSection.shadowRoot.querySelector('select');
     assertEquals(MarginsType.DEFAULT.toString(), select.value);
     assertEquals(
         MarginsType.DEFAULT, marginsSection.getSettingValue('margins'));
@@ -57,7 +63,7 @@ suite('MarginsSettingsTest', function() {
   // This test verifies that changing pages per sheet to N > 1 disables the
   // margins dropdown and changes the value to DEFAULT.
   test('disabled by pages per sheet', async () => {
-    const select = marginsSection.shadowRoot!.querySelector('select')!;
+    const select = marginsSection.shadowRoot.querySelector('select');
     await selectOption(marginsSection, MarginsType.MINIMUM.toString());
     assertEquals(
         MarginsType.MINIMUM, marginsSection.getSettingValue('margins'));
@@ -79,7 +85,7 @@ suite('MarginsSettingsTest', function() {
   // Test that changing the layout or media size setting clears a custom
   // margins setting.
   test('custom margins cleared by layout and media size', async () => {
-    const select = marginsSection.shadowRoot!.querySelector('select')!;
+    const select = marginsSection.shadowRoot.querySelector('select');
     await selectOption(marginsSection, MarginsType.CUSTOM.toString());
     assertEquals(MarginsType.CUSTOM, marginsSection.getSettingValue('margins'));
 

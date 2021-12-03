@@ -102,11 +102,5 @@ export class PrintPreviewMarginsSettingsElement extends
   }
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'print-preview-margins-settings': PrintPreviewMarginsSettingsElement;
-  }
-}
-
 customElements.define(
     PrintPreviewMarginsSettingsElement.is, PrintPreviewMarginsSettingsElement);

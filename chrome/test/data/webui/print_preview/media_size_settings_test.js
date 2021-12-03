@@ -3,26 +3,29 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {MediaSizeCapability, PrintPreviewMediaSizeSettingsElement} from 'chrome://print/print_preview.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('MediaSizeSettingsTest', function() {
-  let mediaSizeSection: PrintPreviewMediaSizeSettingsElement;
+  /** @type {!PrintPreviewMediaSizeSettingsElement} */
+  let mediaSizeSection;
 
-  const mediaSizeCapability: MediaSizeCapability =
-      getCddTemplate('FooPrinter').capabilities!.printer!.media_size!;
+  const mediaSizeCapability = /** @type {!SelectOption} */ (
+      getCddTemplate('FooPrinter').capabilities.printer.media_size);
 
+  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    const model = document.createElement('print-preview-model');
+    const model = /** @type {!PrintPreviewModelElement} */ (
+        document.createElement('print-preview-model'));
     document.body.appendChild(model);
 
-    mediaSizeSection =
-        document.createElement('print-preview-media-size-settings');
+    mediaSizeSection = /** @type {!PrintPreviewMediaSizeSettingsElement} */ (
+        document.createElement('print-preview-media-size-settings'));
     mediaSizeSection.settings = model.settings;
     mediaSizeSection.capability = mediaSizeCapability;
     mediaSizeSection.disabled = false;
@@ -32,26 +35,26 @@ suite('MediaSizeSettingsTest', function() {
   });
 
   test('settings select', function() {
-    const settingsSelect = mediaSizeSection.shadowRoot!.querySelector(
-        'print-preview-settings-select')!;
+    const settingsSelect = mediaSizeSection.shadowRoot.querySelector(
+        'print-preview-settings-select');
     assertFalse(settingsSelect.disabled);
     assertEquals(mediaSizeCapability, settingsSelect.capability);
     assertEquals('mediaSize', settingsSelect.settingName);
   });
 
   test('update from setting', function() {
-    const letterOption = mediaSizeCapability.option[0]!;
-    const squareOption = mediaSizeCapability.option[1]!;
+    const letterOption = mediaSizeCapability.option[0];
+    const squareOption = mediaSizeCapability.option[1];
 
     // Default is letter
-    const settingsSelect = mediaSizeSection.shadowRoot!.querySelector(
-        'print-preview-settings-select')!;
+    const settingsSelect = mediaSizeSection.shadowRoot.querySelector(
+        'print-preview-settings-select');
     assertDeepEquals(letterOption, JSON.parse(settingsSelect.selectedValue));
     assertDeepEquals(
         letterOption, mediaSizeSection.getSettingValue('mediaSize'));
 
     // Change to square
-    mediaSizeSection.setSetting('mediaSize', mediaSizeCapability.option[1]!);
+    mediaSizeSection.setSetting('mediaSize', mediaSizeCapability.option[1]);
     assertDeepEquals(squareOption, JSON.parse(settingsSelect.selectedValue));
 
     // Set the setting to an option that is not supported by the
