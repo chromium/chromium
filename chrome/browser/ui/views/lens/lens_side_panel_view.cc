@@ -113,12 +113,13 @@ void LensSidePanelView::CreateAndInstallHeader(
     base::RepeatingClosure close_callback,
     base::RepeatingClosure launch_callback) {
   auto header = std::make_unique<views::FlexLayoutView>();
-  // LayoutProvider for providing margins.
-  views::LayoutProvider* const layout_provider = views::LayoutProvider::Get();
+  // ChromeLayoutProvider for providing margins.
+  ChromeLayoutProvider* const chrome_layout_provider =
+      ChromeLayoutProvider::Get();
 
   // Set the interior margins of the header on the left and right sides.
   header->SetInteriorMargin(gfx::Insets(
-      0, layout_provider->GetDistanceMetric(
+      0, chrome_layout_provider->GetDistanceMetric(
              views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   // Set alignments for horizontal (main) and vertical (cross) axes.
   header->SetMainAxisAlignment(views::LayoutAlignment::kStart);
@@ -146,16 +147,16 @@ void LensSidePanelView::CreateAndInstallHeader(
       this, launch_callback, views::kLaunchIcon,
       gfx::Insets(
           0, 0, 0,
-          layout_provider->GetDistanceMetric(
+          chrome_layout_provider->GetDistanceMetric(
               views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)),
       l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
   close_button_ = header->AddChildView(CreateControlButton(
       this, close_callback, views::kIcCloseIcon, gfx::Insets(),
       l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE),
       ChromeLayoutProvider::Get()->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE)));
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
 
   // Install header.
   AddChildView(std::move(header));
