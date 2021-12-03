@@ -137,6 +137,7 @@
 #include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/psi_memory_metrics.h"
 #include "chrome/browser/ash/quick_pair/quick_pair_browser_delegate_impl.h"
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -1149,6 +1150,15 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
   external_metrics_ = new ExternalMetrics;
   external_metrics_->Start();
 
+  // Aiming to collect memory metrics even prior to login, start them
+  // early.
+  if (base::FeatureList::IsEnabled(features::kMemoryPressureMetricsDetail)) {
+    // Start background collection of memory pressure data for Chrome OS.
+    memory_pressure_detail_ = base::MakeRefCounted<PSIMemoryMetrics>(
+        features::kMemoryPressureMetricsDetailLogPeriod.Get());
+    memory_pressure_detail_->Start();
+  }
+
   // -- This used to be in ChromeBrowserMainParts::PreMainMessageLoopRun()
   // -- immediately after ChildProcess::WaitForDebugger().
 
@@ -1278,6 +1288,11 @@ void ChromeBrowserMainPartsAsh::OnFirstIdle() {
 // shutdown calls and test |pre_profile_init_called_| if necessary. See
 // crbug.com/702403 for details.
 void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
+  // Do this early to keep logging from taking time during shutdown.
+  if (memory_pressure_detail_ != nullptr) {
+    memory_pressure_detail_->Stop();
+  }
+
   SystemProxyManager::Shutdown();
   device_activity_controller_.reset();
   crostini_unsupported_action_notifier_.reset();

@@ -842,6 +842,14 @@ const base::Feature kMediaAppHandlesAudio{"MediaAppHandlesAudio",
 const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature to continuously log PSI memory pressure data to UMA.
+const base::Feature kMemoryPressureMetricsDetail{
+    "MemoryPressureMetricsDetail", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls how frequently memory pressure is logged
+const base::FeatureParam<int> kMemoryPressureMetricsDetailLogPeriod{
+    &kMemoryPressureMetricsDetail, "period", 10};
+
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
 const base::Feature kMicMuteNotifications{"MicMuteNotifications",

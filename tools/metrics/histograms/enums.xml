@@ -12107,6 +12107,14 @@ not CDM specific. See media/base/cdm_promise.h. -->
   <int value="3" label="Fail to parse PSI CPU values"/>
 </enum>
 
+<enum name="ChromeOSParsePSIMemStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to read file /proc/pressure/memory"/>
+  <int value="2" label="Unexpected data format in PSI Memory file"/>
+  <int value="3" label="Unexpected numeric format in PSI Memory file"/>
+  <int value="4" label="Fail to parse PSI Memory values"/>
+</enum>
+
 <enum name="ChromeOSPlatformVerificationBrowserResult">
   <summary>
     Possible results of a platform verification attempt at the browser layer.

@@ -81,6 +81,7 @@ class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class PowerMetricsReporter;
+class PSIMemoryMetrics;
 class QuickAnswersController;
 class RendererFreezer;
 class ShortcutMappingPrefService;
@@ -179,6 +180,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       accessibility_event_rewriter_delegate_;
 
   scoped_refptr<ExternalMetrics> external_metrics_;
+
+  scoped_refptr<PSIMemoryMetrics> memory_pressure_detail_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
 

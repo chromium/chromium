@@ -571,6 +571,35 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.CWP.ParsePSIMemory" enum="ChromeOSParsePSIMemStatus"
+    expires_after="2022-06-01">
+  <owner>raging@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    A count of successes and various failure modes related to the parsing of PSI
+    Memory data on Chrome OS. Recorded after each perf collection.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.PSIMemPressure.{PType}" units="failures"
+    expires_after="2022-12-01">
+  <owner>raging@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Reports periodic memory pressure metrics, as seen ChromeOS-wide. Metrics
+    originally come from /proc/pressure/memory readings, expressed as a
+    percentage with 2 decimal points (99.99%), but expressed as p*100, in an
+    integer in the range (1-9999) meaning (00.01% to 99.99%). Underflow value 0
+    means &quot;no pressure&quot; - 0%.
+  </summary>
+  <token key="PType">
+    <variant name="Full"
+        summary="Percentage of time fully halted waiting on memory operations"/>
+    <variant name="Some"
+        summary="Percentage of time when there was some blocking on memory"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
     expires_after="2022-01-30">
   <owner>dubin@google.com</owner>
