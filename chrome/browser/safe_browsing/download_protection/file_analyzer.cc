@@ -143,7 +143,6 @@ void FileAnalyzer::OnFileAnalysisFinished(FileAnalyzer::Results results) {
 void FileAnalyzer::StartExtractZipFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  zip_analysis_start_time_ = base::TimeTicks::Now();
   // We give the zip analyzer a weak pointer to this object.  Since the
   // analyzer is refcounted, it might outlive the request.
   zip_analyzer_ = new SandboxedZipAnalyzer(
@@ -167,10 +166,6 @@ void FileAnalyzer::OnZipAnalysisFinished(
   results_.archived_archive = archive_results.has_archive;
   CopyArchivedBinaries(archive_results.archived_binary,
                        &results_.archived_binaries);
-
-  // Log metrics for ZIP analysis
-  UMA_HISTOGRAM_MEDIUM_TIMES("SBClientDownload.ExtractZipFeaturesTimeMedium",
-                             base::TimeTicks::Now() - zip_analysis_start_time_);
 
   if (!results_.archived_executable) {
     if (archive_results.has_archive) {

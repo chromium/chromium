@@ -156,24 +156,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkDuration" units="ms"
-    expires_after="2021-05-05">
+    expires_after="2022-06-01">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service ping. It is
     not recorded for requests that were cancelled.
+
+    Warning: this histogram was expired from 2021-05-06 to 2021-12-02; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2021-05-05">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-06-01">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the results of SafeBrowsing binary download checks which caused a
     server ping.
+
+    Warning: this histogram was expired from 2021-05-06 to 2021-12-02; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -240,6 +246,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.ExtractZipFeaturesTimeMedium" units="ms"
     expires_after="2021-05-05">
+  <obsolete>
+    Removed December 2021 due to lack of use.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>

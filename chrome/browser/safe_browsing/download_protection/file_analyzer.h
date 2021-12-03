@@ -124,7 +124,6 @@ class FileAnalyzer {
   Results results_;
 
   scoped_refptr<SandboxedZipAnalyzer> zip_analyzer_;
-  base::TimeTicks zip_analysis_start_time_;
 
   scoped_refptr<SandboxedRarAnalyzer> rar_analyzer_;
 
