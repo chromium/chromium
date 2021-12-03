@@ -1358,7 +1358,6 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_orchestrator_pair(
     name = "linux-rel",
-    bootstrap = True,
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     use_clang_coverage = True,
