@@ -80,6 +80,11 @@ constexpr char kScanClientNameWatchAdvertisements[] =
     "Web Bluetooth watchAdvertisements()";
 constexpr char kScanClientNameRequestLeScan[] = "Web Bluetooth requestLeScan()";
 
+// The renderer performs its own checks so a request that gets to the browser
+// process indicates some failure to check for fenced frames.
+const char kFencedFrameError[] =
+    "Use Web Bluetooth API is blocked in a fenced frame tree.";
+
 blink::mojom::WebBluetoothResult TranslateGATTErrorAndRecord(
     GattErrorCode error_code,
     UMAGATTOperation operation) {
@@ -523,6 +528,15 @@ WebBluetoothServiceImpl* WebBluetoothServiceImpl::Create(
     mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(render_frame_host);
+
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    // The renderer is supposed to disallow the use of web bluetooth when inside
+    // a fenced frame. Anything getting past the renderer checks must be marked
+    // as a bad request.
+    mojo::ReportBadMessage(kFencedFrameError);
+    return nullptr;
+  }
+
   return new WebBluetoothServiceImpl(render_frame_host, std::move(receiver));
 }
 
@@ -561,9 +575,13 @@ WebBluetoothServiceImpl::~WebBluetoothServiceImpl() {
 
 blink::mojom::WebBluetoothResult
 WebBluetoothServiceImpl::GetBluetoothAllowed() {
+  // The use of render_frame_host()->GetMainFrame() below is safe as fenced
+  // frames are disallowed.
+  DCHECK(!render_frame_host()->IsNestedWithinFencedFrame());
+
   const url::Origin& requesting_origin = origin();
   const url::Origin& embedding_origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
 
   // TODO(crbug.com/518042): Enforce correctly-delegated permissions instead of
   // matching origins. When relaxing this, take care to handle non-sandboxed
@@ -602,6 +620,10 @@ bool WebBluetoothServiceImpl::IsDevicePaired(
 void WebBluetoothServiceImpl::OnBluetoothScanningPromptEvent(
     BluetoothScanningPrompt::Event event,
     BluetoothDeviceScanningPromptController* prompt_controller) {
+  // The use of render_frame_host()->GetMainFrame() below is safe as fenced
+  // frames are disallowed.
+  DCHECK(!render_frame_host()->IsNestedWithinFencedFrame());
+
   // It is possible for |scanning_clients_| to be empty if a Mojo connection
   // error has occurred before this method was called.
   if (scanning_clients_.empty())
@@ -619,7 +641,7 @@ void WebBluetoothServiceImpl::OnBluetoothScanningPromptEvent(
     result = blink::mojom::WebBluetoothResult::SCANNING_BLOCKED;
     const url::Origin requesting_origin = origin();
     const url::Origin embedding_origin =
-        web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+        render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
     GetContentClient()->browser()->BlockBluetoothScanning(
         web_contents()->GetBrowserContext(), requesting_origin,
         embedding_origin);
@@ -649,6 +671,10 @@ void WebBluetoothServiceImpl::OnBluetoothScanningPromptEvent(
 }
 
 void WebBluetoothServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
+  // The use of render_frame_host()->GetMainFrame() below is safe as fenced
+  // frames are disallowed.
+  DCHECK(!render_frame_host()->IsNestedWithinFencedFrame());
+
   if (render_frame_host()->GetMainFrame()->GetLastCommittedOrigin() != origin) {
     return;
   }
@@ -1478,10 +1504,13 @@ void WebBluetoothServiceImpl::RequestScanningStart(
     blink::mojom::WebBluetoothRequestLEScanOptionsPtr options,
     RequestScanningStartCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // The use of render_frame_host()->GetMainFrame() below is safe as fenced
+  // frames are disallowed.
+  DCHECK(!render_frame_host()->IsNestedWithinFencedFrame());
 
   const url::Origin requesting_origin = origin();
   const url::Origin embedding_origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      render_frame_host()->GetMainFrame()->GetLastCommittedOrigin();
 
   bool blocked = GetContentClient()->browser()->IsBluetoothScanningBlocked(
       web_contents()->GetBrowserContext(), requesting_origin, embedding_origin);

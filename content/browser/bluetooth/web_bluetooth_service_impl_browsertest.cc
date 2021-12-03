@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -637,6 +638,76 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_EQ(messages.size(), 1u);
   EXPECT_EQ(messages.back().source_frame, sub_frame);
   EXPECT_CALL(*adapter(), RemoveObserver(_));
+}
+
+class WebBluetoothServiceImplFencedFramesBrowserTest
+    : public WebBluetoothServiceImplBrowserTest {
+ public:
+  WebBluetoothServiceImplFencedFramesBrowserTest() = default;
+  ~WebBluetoothServiceImplFencedFramesBrowserTest() override = default;
+  WebBluetoothServiceImplFencedFramesBrowserTest(
+      const WebBluetoothServiceImplFencedFramesBrowserTest&) = delete;
+
+  WebBluetoothServiceImplFencedFramesBrowserTest& operator=(
+      const WebBluetoothServiceImplFencedFramesBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplFencedFramesBrowserTest,
+                       BlockFromFencedFrame) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Setup the fake device.
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  EXPECT_CALL(*adapter(), AddObserver(_));
+  EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
+
+  EXPECT_EQ("", content::EvalJs(GetWebContents(), R"(
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  // WebBluetoothService is created for the main frame.
+  EXPECT_NE(GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame()),
+            nullptr);
+
+  // Loads a fenced frame
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/empty.html");
+  content::RenderFrameHost* render_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+  EXPECT_NE(nullptr, render_frame_host);
+
+  // Tries to request a device from the fenced, which must cause an error.
+  constexpr char kFencedFrameError[] =
+      "Web Bluetooth is not allowed in a fenced frame tree.";
+  auto result = content::EvalJs(render_frame_host, R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))");
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kFencedFrameError));
+
+  // No service should be created, as this is a fenced-frame
+  EXPECT_EQ(nullptr, GetWebBluetoothServiceForTesting(render_frame_host));
+
+  EXPECT_CALL(*adapter(), RemoveObserver(GetWebBluetoothServiceForTesting(
+                              GetWebContents()->GetMainFrame())));
 }
 
 }  // namespace content

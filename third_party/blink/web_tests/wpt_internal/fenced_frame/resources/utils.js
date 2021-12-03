@@ -77,6 +77,8 @@ const KEYS = {
 
   "referrer.value"                              : "00000000-0000-0000-0000-000000000027",
   "referrer.value ACK"                          : "00000000-0000-0000-0000-000000000028",
+
+  "bluetooth.requestDevice"                     : "00000000-0000-0000-0000-000000000029",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

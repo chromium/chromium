@@ -47,6 +47,8 @@
 
 namespace blink {
 
+namespace {
+
 // Per the Bluetooth Spec: The name is a user-friendly name associated with the
 // device and consists of a maximum of 248 bytes coded according to the UTF-8
 // standard.
@@ -56,6 +58,22 @@ const char kDeviceNameTooLong[] =
 const char kInactiveDocumentError[] = "Document not active";
 const char kHandleGestureForPermissionRequest[] =
     "Must be handling a user gesture to show a permission request.";
+const char kFencedFrameError[] =
+    "Web Bluetooth is not allowed in a fenced frame tree.";
+
+// Does basic checks that are common to all IDL calls, mainly that the window is
+// valid, and the request is not being done from a fenced frame tree. Returns
+// true if exceptions have been flagged, and false otherwise.
+bool IsRequestDenied(LocalDOMWindow* window, ExceptionState& exception_state) {
+  if (!window) {
+    exception_state.ThrowTypeError(kInactiveDocumentError);
+  } else if (window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      kFencedFrameError);
+  }
+
+  return exception_state.HadException();
+}
 
 // Remind developers when they are using Web Bluetooth on unsupported platforms.
 // TODO(https://crbug.com/570344): Remove this method when all platforms are
@@ -72,7 +90,7 @@ void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
 #endif
 }
 
-static void CanonicalizeFilter(
+void CanonicalizeFilter(
     const BluetoothLEScanFilterInit* filter,
     mojom::blink::WebBluetoothLeScanFilterPtr& canonicalized_filter,
     ExceptionState& exception_state) {
@@ -196,7 +214,7 @@ static void CanonicalizeFilter(
   }
 }
 
-static void ConvertRequestDeviceOptions(
+void ConvertRequestDeviceOptions(
     const RequestDeviceOptions* options,
     mojom::blink::WebBluetoothRequestDeviceOptionsPtr& result,
     ExecutionContext* execution_context,
@@ -255,11 +273,12 @@ static void ConvertRequestDeviceOptions(
   }
 }
 
+}  // namespace
+
 ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
 
@@ -314,8 +333,7 @@ void Bluetooth::RequestDeviceCallback(
 ScriptPromise Bluetooth::getDevices(ScriptState* script_state,
                                     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
 
@@ -337,8 +355,7 @@ ScriptPromise Bluetooth::requestDevice(ScriptState* script_state,
                                        const RequestDeviceOptions* options,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
 
@@ -437,8 +454,7 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
                                        const BluetoothLEScanOptions* options,
                                        ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-  if (!window) {
-    exception_state.ThrowTypeError(kInactiveDocumentError);
+  if (IsRequestDenied(window, exception_state)) {
     return ScriptPromise();
   }
 
