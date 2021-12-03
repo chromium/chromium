@@ -26,10 +26,6 @@ bool RenderViewHostDelegate::IsGuest() {
   return false;
 }
 
-bool RenderViewHostDelegate::IsPortal() {
-  return false;
-}
-
 absl::optional<SkColor> RenderViewHostDelegate::GetBaseBackgroundColor() {
   return absl::nullopt;
 }

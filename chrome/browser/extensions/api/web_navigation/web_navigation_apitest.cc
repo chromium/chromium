@@ -52,6 +52,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -639,5 +640,31 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Xslt) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/xslt")) << message_;
 }
+
+class WebNavigationApiFencedFrameTest
+    : public WebNavigationApiTest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ protected:
+  WebNavigationApiFencedFrameTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{blink::features::kFencedFrames,
+                               {{"implementation_type",
+                                 GetParam() ? "shadow_dom" : "mparch"}}}},
+        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
+  }
+  ~WebNavigationApiFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebNavigationApiFencedFrameTest, Load) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webnavigation/fencedFrames")) << message_;
+}
+
+INSTANTIATE_TEST_SUITE_P(WebNavigationApiFencedFrameTest,
+                         WebNavigationApiFencedFrameTest,
+                         testing::Bool());
 
 }  // namespace extensions

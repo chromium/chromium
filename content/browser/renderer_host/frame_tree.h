@@ -153,6 +153,9 @@ class CONTENT_EXPORT FrameTree {
     // FrameTreeNode, this method returns
     // FrameTreeNode::kFrameTreeNodeInvalidId.
     virtual int GetOuterDelegateFrameTreeNodeId() = 0;
+
+    // Returns if this FrameTree represents a portal.
+    virtual bool IsPortal() = 0;
   };
 
   // Type of FrameTree instance.

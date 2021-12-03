@@ -55,6 +55,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   bool IsHidden() override;
   void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override;
+  bool IsPortal() override;
 
   // FrameTreeNode::Observer.
   // We are monitoring the destruction of the outer delegate dummy

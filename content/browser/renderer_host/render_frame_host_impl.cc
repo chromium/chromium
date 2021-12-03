@@ -6085,7 +6085,7 @@ bool RenderFrameHostImpl::UnloadHandlerExistsInSameSiteInstanceSubtree() {
 }
 
 bool RenderFrameHostImpl::InsidePortal() {
-  return render_view_host()->GetDelegate()->IsPortal();
+  return frame_tree()->delegate()->IsPortal();
 }
 
 void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
@@ -12239,34 +12239,11 @@ void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() {
-  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/false);
+  return frame_tree_node()->GetParentOrOuterDocument();
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder() {
-  return GetParentOrOuterDocumentHelper(/*escape_guest_view=*/true);
-}
-
-RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocumentHelper(
-    bool escape_guest_view) {
-  // Find the parent in the FrameTree (iframe).
-  if (parent_)
-    return parent_;
-
-  if (!escape_guest_view) {
-    // If we are not a FF root nor inside a portal then return early.
-    // This code does not escape GuestViews.
-    if (!IsFencedFrameRoot() && !InsidePortal())
-      return nullptr;
-  }
-
-  // Find the parent in the outer embedder (GuestView, Portal, or Fenced Frame).
-  FrameTreeNode* frame_in_embedder =
-      frame_tree_node()->render_manager()->GetOuterDelegateNode();
-  if (frame_in_embedder)
-    return frame_in_embedder->current_frame_host()->GetParent();
-
-  // No parent found.
-  return nullptr;
+  return frame_tree_node()->GetParentOrOuterDocumentOrEmbedder();
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetOutermostMainFrameOrEmbedder() {

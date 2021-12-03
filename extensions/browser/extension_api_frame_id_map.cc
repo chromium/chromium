@@ -69,7 +69,7 @@ ExtensionApiFrameIdMap* ExtensionApiFrameIdMap::Get() {
 int ExtensionApiFrameIdMap::GetFrameId(content::RenderFrameHost* rfh) {
   if (!rfh)
     return kInvalidFrameId;
-  if (rfh->GetParent())
+  if (rfh->GetParentOrOuterDocument())
     return rfh->GetFrameTreeNodeId();
   return kTopFrameId;
 }
@@ -77,20 +77,20 @@ int ExtensionApiFrameIdMap::GetFrameId(content::RenderFrameHost* rfh) {
 // static
 int ExtensionApiFrameIdMap::GetFrameId(
     content::NavigationHandle* navigation_handle) {
-  return navigation_handle->IsInMainFrame()
+  return !navigation_handle->GetParentFrameOrOuterDocument()
              ? kTopFrameId
              : navigation_handle->GetFrameTreeNodeId();
 }
 
 // static
 int ExtensionApiFrameIdMap::GetParentFrameId(content::RenderFrameHost* rfh) {
-  return rfh ? GetFrameId(rfh->GetParent()) : kInvalidFrameId;
+  return rfh ? GetFrameId(rfh->GetParentOrOuterDocument()) : kInvalidFrameId;
 }
 
 // static
 int ExtensionApiFrameIdMap::GetParentFrameId(
     content::NavigationHandle* navigation_handle) {
-  return GetFrameId(navigation_handle->GetParentFrame());
+  return GetFrameId(navigation_handle->GetParentFrameOrOuterDocument());
 }
 
 // static

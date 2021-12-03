@@ -473,7 +473,7 @@ bool RenderViewHostImpl::CreateRenderView(
       window_was_opened_by_another_window;
   params->base_background_color = delegate_->GetBaseBackgroundColor();
 
-  bool is_portal = delegate_->IsPortal();
+  bool is_portal = frame_tree_->delegate()->IsPortal();
   bool is_guest_view = delegate_->IsGuest();
   bool is_fenced_frame = frame_tree_->type() == FrameTree::Type::kFencedFrame;
 

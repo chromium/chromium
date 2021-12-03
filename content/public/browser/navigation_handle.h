@@ -166,6 +166,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // during a navigation.
   virtual RenderFrameHost* GetParentFrame() = 0;
 
+  // Returns the document owning the frame this NavigationHandle is located
+  // in, which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe> and <portal>). See documentation for
+  // `RenderFrameHost::GetParentOrOuterDocument()` for more details.
+  virtual RenderFrameHost* GetParentFrameOrOuterDocument() = 0;
+
   // The WebContents the navigation is taking place in.
   virtual WebContents* GetWebContents();
 

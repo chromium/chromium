@@ -83,6 +83,10 @@ class MockNavigationHandle : public NavigationHandle {
   RenderFrameHost* GetParentFrame() override {
     return render_frame_host_ ? render_frame_host_->GetParent() : nullptr;
   }
+  RenderFrameHost* GetParentFrameOrOuterDocument() override {
+    return render_frame_host_ ? render_frame_host_->GetParentOrOuterDocument()
+                              : nullptr;
+  }
   WebContents* GetWebContents() override { return web_contents_; }
   MOCK_METHOD0(NavigationStart, base::TimeTicks());
   MOCK_METHOD0(NavigationInputStart, base::TimeTicks());

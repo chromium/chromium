@@ -146,6 +146,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // the invalid ID here.
     return FrameTreeNode::kFrameTreeNodeInvalidId;
   }
+  bool IsPortal() override { return false; }
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}

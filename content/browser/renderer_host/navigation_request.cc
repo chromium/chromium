@@ -6167,6 +6167,10 @@ RenderFrameHostImpl* NavigationRequest::GetParentFrame() {
   return IsInMainFrame() ? nullptr : frame_tree_node()->parent();
 }
 
+RenderFrameHostImpl* NavigationRequest::GetParentFrameOrOuterDocument() {
+  return frame_tree_node()->GetParentOrOuterDocument();
+}
+
 bool NavigationRequest::IsInPrimaryMainFrame() const {
   return GetNavigatingFrameType() == NavigatingFrameType::kPrimaryMainFrame;
 }

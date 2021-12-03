@@ -127,6 +127,14 @@ class CONTENT_EXPORT FrameTreeNode {
 
   RenderFrameHostImpl* parent() const { return parent_; }
 
+  // See `RenderFrameHost::GetParentOrOuterDocument()` for
+  // documentation.
+  RenderFrameHostImpl* GetParentOrOuterDocument();
+
+  // See `RenderFrameHostImpl::GetParentOrOuterDocumentOrEmbedder()` for
+  // documentation.
+  RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder();
+
   FrameTreeNode* opener() const { return opener_; }
 
   FrameTreeNode* original_opener() const { return original_opener_; }
@@ -509,6 +517,10 @@ class CONTENT_EXPORT FrameTreeNode {
   // fenced_frame_nonce() for when it is set to a non-null value. Invoked
   // by FrameTree::Init() or FrameTree::AddFrame().
   void SetFencedFrameNonceIfNeeded();
+
+  // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
+  // Do not use directly.
+  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view);
 
   // Sets the unique_name and name fields on replication_state_. To be used in
   // prerender activation to make sure the FrameTreeNode replication state is

@@ -19,8 +19,7 @@ content::GlobalRenderFrameHostId GetFrameRoutingId(
   if (!host)
     return content::GlobalRenderFrameHostId();
 
-  return content::GlobalRenderFrameHostId(host->GetProcess()->GetID(),
-                                          host->GetRoutingID());
+  return host->GetGlobalId();
 }
 
 }  // namespace
@@ -37,7 +36,8 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
           window_id,
           ExtensionApiFrameIdMap::GetFrameId(navigation_handle),
           ExtensionApiFrameIdMap::GetParentFrameId(navigation_handle),
-          GetFrameRoutingId(navigation_handle->GetParentFrame())) {
+          GetFrameRoutingId(
+              navigation_handle->GetParentFrameOrOuterDocument())) {
   // TODO(clamy): See if it would be possible to have just one source for the
   // FrameData that works both for navigations and subresources loads.
 }
@@ -52,7 +52,7 @@ ExtensionNavigationUIData::ExtensionNavigationUIData(
           window_id,
           ExtensionApiFrameIdMap::GetFrameId(frame_host),
           ExtensionApiFrameIdMap::GetParentFrameId(frame_host),
-          GetFrameRoutingId(frame_host->GetParent())) {}
+          GetFrameRoutingId(frame_host->GetParentOrOuterDocument())) {}
 
 // static
 std::unique_ptr<ExtensionNavigationUIData>

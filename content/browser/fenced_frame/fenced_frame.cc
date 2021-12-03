@@ -102,6 +102,10 @@ int FencedFrame::GetOuterDelegateFrameTreeNodeId() {
   return outer_delegate_frame_tree_node_->frame_tree_node_id();
 }
 
+bool FencedFrame::IsPortal() {
+  return false;
+}
+
 RenderFrameProxyHost* FencedFrame::GetProxyToInnerMainFrame() {
   DCHECK(proxy_to_inner_main_frame_);
   return proxy_to_inner_main_frame_;

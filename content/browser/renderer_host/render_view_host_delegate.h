@@ -118,9 +118,6 @@ class RenderViewHostDelegate {
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();
 
-  // Returns true if the render view is rendering a portal.
-  virtual bool IsPortal();
-
   // Called on RenderView creation to get the initial base background color
   // for this RenderView. Nullopt means a color is not set, and the blink
   // default color should be used.

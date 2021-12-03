@@ -2603,10 +2603,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       net::IsolationInfo::RequestType request_type,
       bool anonymous);
 
-  // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
-  // Do not use directly.
-  RenderFrameHostImpl* GetParentOrOuterDocumentHelper(bool escape_guest_view);
-
   // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
   // This is equivalent to check that |ancestor| is reached by iterating on
   // GetParent().

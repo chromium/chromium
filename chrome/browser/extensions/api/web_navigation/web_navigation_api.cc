@@ -487,7 +487,7 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
   frame_details.error_occurred =
       frame_navigation_state->GetErrorOccurredInFrame();
   frame_details.parent_frame_id =
-      ExtensionApiFrameIdMap::GetFrameId(render_frame_host->GetParent());
+      ExtensionApiFrameIdMap::GetParentFrameId(render_frame_host);
   return RespondNow(ArgumentList(GetFrame::Results::Create(frame_details)));
 }
 
@@ -511,7 +511,10 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
 
   std::vector<GetAllFrames::Results::DetailsType> result_list;
 
-  web_contents->ForEachFrame(base::BindRepeating(
+  // We only iterate the frames in the active page. We currently do not
+  // expose back/forward cached frames or prerender frames in the GetAllFrames
+  // API.
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](std::vector<GetAllFrames::Results::DetailsType>& result_list,
          content::RenderFrameHost* render_frame_host) {
         auto* navigation_state =
@@ -526,7 +529,7 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
         frame.url = navigation_state->GetUrl().spec();
         frame.frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
         frame.parent_frame_id =
-            ExtensionApiFrameIdMap::GetFrameId(render_frame_host->GetParent());
+            ExtensionApiFrameIdMap::GetParentFrameId(render_frame_host);
         frame.process_id = render_frame_host->GetProcess()->GetID();
         frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
         result_list.push_back(std::move(frame));

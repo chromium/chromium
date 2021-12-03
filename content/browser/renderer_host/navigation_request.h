@@ -293,6 +293,7 @@ class CONTENT_EXPORT NavigationRequest
   const std::vector<GURL>& GetRedirectChain() override;
   int GetFrameTreeNodeId() override;
   RenderFrameHostImpl* GetParentFrame() override;
+  RenderFrameHostImpl* GetParentFrameOrOuterDocument() override;
   base::TimeTicks NavigationStart() override;
   base::TimeTicks NavigationInputStart() override;
   const NavigationHandleTiming& GetNavigationHandleTiming() override;
