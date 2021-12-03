@@ -245,6 +245,19 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
 #endif
 }
 
+bool IsNotificationEligibleForSuppression(const DownloadUIModel* item) {
+  // Only notifications for in-progress downloads are eligible for suppression.
+  if (item->GetState() != download::DownloadItem::IN_PROGRESS)
+    return false;
+  // Notifications associated with dangerous or mixed content downloads are not
+  // eligible for suppression as they likely contain important information.
+  if (item->IsDangerous() || item->IsMixedContent())
+    return false;
+  // Otherwise notifications are assumed to be informational only and are
+  // therefore eligible for suppression.
+  return true;
+}
+
 }  // namespace
 
 DownloadItemNotification::DownloadItemNotification(
@@ -492,17 +505,14 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   const bool was_suppressed = suppressed_;
 
   // When holding space in-progress downloads notification suppression is
-  // enabled, download in-progress notifications should be suppressed so long as
-  // they do not `force_pop_up`, such as is done in the case of dangerous or
-  // mixed content downloads. Note that download notifications associated with
-  // an incognito profile are only suppressed if holding space incognito profile
-  // integration is also enabled.
+  // enabled, eligible download notifications should be suppressed. Note that
+  // download notifications associated with an incognito profile are only
+  // suppressed if holding space incognito profile integration is also enabled.
   if (!item_->profile()->IsIncognitoProfile() ||
       IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     suppressed_ =
-        display && !force_pop_up &&
-        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() &&
-        item_->GetState() == download::DownloadItem::IN_PROGRESS;
+        display && IsNotificationEligibleForSuppression(item_.get()) &&
+        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
   } else {
     suppressed_ = false;
   }
