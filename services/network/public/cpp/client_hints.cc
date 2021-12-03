@@ -14,6 +14,8 @@
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 
@@ -92,7 +94,7 @@ const DecodeMap& GetDecodeMap() {
 absl::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseClientHintsHeader(const std::string& header) {
   // Accept-CH is an sh-list of tokens; see:
-  // https://httpwg.org/http-extensions/client-hints.html#rfc.section.3.1
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-header-structure-19#section-3.1
   absl::optional<net::structured_headers::List> maybe_list =
       net::structured_headers::ParseList(header);
   if (!maybe_list.has_value())
@@ -118,6 +120,39 @@ ParseClientHintsHeader(const std::string& header) {
     if (iter != decode_map.end())
       result.push_back(iter->second);
   }  // for list_item
+  return absl::make_optional(std::move(result));
+}
+
+absl::optional<ClientHintToDelegatedThirdPartiesMap>
+ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header) {
+  // Accept-CH is an sh-dictionary of tokens to origins; see:
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-header-structure-19#section-3.2
+  absl::optional<net::structured_headers::Dictionary> maybe_dictionary =
+      // We need to lower-case the string here or dictionary parsing refuses to
+      // see the keys.
+      net::structured_headers::ParseDictionary(base::ToLowerASCII(header));
+  if (!maybe_dictionary.has_value())
+    return absl::nullopt;
+
+  ClientHintToDelegatedThirdPartiesMap result;
+
+  // Now convert those to actual hint enums.
+  const DecodeMap& decode_map = GetDecodeMap();
+  for (const auto& dictionary_pair : maybe_dictionary.value()) {
+    std::vector<url::Origin> delegates;
+    for (const auto& member : dictionary_pair.second.member) {
+      if (!member.item.is_token())
+        continue;
+      const GURL maybe_gurl = GURL(member.item.GetString());
+      if (!maybe_gurl.is_valid())
+        continue;
+      delegates.push_back(url::Origin::Create(maybe_gurl));
+    }
+    const std::string& client_hint_string = dictionary_pair.first;
+    auto iter = decode_map.find(client_hint_string);
+    if (iter != decode_map.end())
+      result.insert(std::make_pair(iter->second, delegates));
+  }  // for dictionary_pair
   return absl::make_optional(std::move(result));
 }
 

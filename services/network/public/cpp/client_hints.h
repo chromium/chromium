@@ -14,6 +14,10 @@
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace network {
 
 using ClientHintToNameMap =
@@ -31,6 +35,18 @@ const ClientHintToNameMap& GetClientHintToNameMap();
 absl::optional<std::vector<network::mojom::WebClientHintsType>>
     COMPONENT_EXPORT(NETWORK_CPP)
         ParseClientHintsHeader(const std::string& header);
+
+using ClientHintToDelegatedThirdPartiesMap =
+    base::flat_map<network::mojom::WebClientHintsType,
+                   std::vector<url::Origin>>;
+
+// Tries to parse an Accept-CH header w/ third-party delegation ability (i.e. a
+// named meta tag). Returns absl::nullopt if parsing failed and the header
+// should be ignored; otherwise returns a (possibly empty) map of hints to
+// delegated third-parties.
+absl::optional<ClientHintToDelegatedThirdPartiesMap> COMPONENT_EXPORT(
+    NETWORK_CPP)
+    ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header);
 
 }  // namespace network
 
