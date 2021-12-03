@@ -1405,9 +1405,11 @@ void DownloadManagerImpl::BeginDownloadInternal(
   bool content_initiated = params->content_initiated();
 
   if (rfh && content_initiated) {
-    // Cancel downloads from non-active documents (e.g prerendered, bfcached).
+    // Cancel downloads from non-active documents (e.g prerendered, bfcached) or
+    // fenced frames.
     if (rfh->IsInactiveAndDisallowActivation(
-            DisallowActivationReasonId::kBeginDownload)) {
+            DisallowActivationReasonId::kBeginDownload) ||
+        rfh->IsNestedWithinFencedFrame()) {
       DropDownload();
       return;
     }

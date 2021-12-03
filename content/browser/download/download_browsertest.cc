@@ -56,6 +56,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
@@ -1481,6 +1482,57 @@ class DownloadPrerenderTest : public DownloadContentTest {
   WebContents* GetWebContents() { return shell()->web_contents(); }
 
   test::PrerenderTestHelper prerender_helper_;
+};
+
+class DownloadFencedFrameTest
+    : public ::testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType>,
+      public DownloadContentTest {
+ public:
+  DownloadFencedFrameTest() {
+    if (GetParam() ==
+        blink::features::FencedFramesImplementationType::kMPArch) {
+      fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+    } else {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          blink::features::kFencedFrames,
+          {{"implementation_type", "shadow_dom"}});
+    }
+  }
+
+  ~DownloadFencedFrameTest() override = default;
+
+  void SetUpOnMainThread() override {
+    DownloadContentTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Started());
+  }
+
+ protected:
+  RenderFrameHost* CreateFencedFrame(RenderFrameHost* fenced_frame_parent,
+                                     const GURL& url) {
+    if (fenced_frame_helper_)
+      return fenced_frame_helper_->CreateFencedFrame(fenced_frame_parent, url);
+
+    // FencedFrameTestHelper only supports the MPArch version of fenced frames.
+    // So need to maually create a fenced frame for the ShadowDOM version.
+    TestNavigationManager navigation(shell()->web_contents(), url);
+    constexpr char kAddFencedFrameScript[] = R"({
+        const fenced_frame = document.createElement('fencedframe');
+        fenced_frame.src = $1;
+        document.body.appendChild(fenced_frame);
+    })";
+    EXPECT_TRUE(
+        ExecJs(fenced_frame_parent, JsReplace(kAddFencedFrameScript, url)));
+    navigation.WaitForNavigationFinished();
+
+    RenderFrameHost* new_frame = ChildFrameAt(fenced_frame_parent, 0);
+
+    return new_frame;
+  }
+
+ private:
+  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -5080,6 +5132,47 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
 }
+
+// Verify that downloads not triggered by navigation are discarded when
+// initiated from a fenced frame.
+IN_PROC_BROWSER_TEST_P(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  const GURL kDownloadUrl =
+      embedded_test_server()->GetURL("/download/download-test.lib");
+
+  // Create fenced frame
+  EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  RenderFrameHost* fenced_frame_host = CreateFencedFrame(
+      shell()->web_contents()->GetMainFrame(), kFencedFrameUrl);
+
+  // Do a download without navigation from the fenced frame render frame host.
+  // The download will be dropped.
+  auto* download_manager =
+      fenced_frame_host->GetBrowserContext()->GetDownloadManager();
+  MockDownloadManagerObserver dm_observer(download_manager);
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(0);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(1);
+
+  auto params = blink::mojom::DownloadURLParams::New();
+  params->url = kDownloadUrl;
+  static_cast<RenderFrameHostImpl*>(fenced_frame_host)
+      ->DownloadURL(std::move(params));
+
+  // Verify there were no downloads.
+  EXPECT_TRUE(EnsureNoPendingDownloads());
+  std::vector<download::DownloadItem*> downloads;
+  download_manager->GetAllDownloads(&downloads);
+  EXPECT_TRUE(downloads.empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    DownloadFencedFrameTest,
+    DownloadFencedFrameTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch));
 
 // A download triggered by clicking on a link with a |download| attribute should
 // have the user-gesture flag set.
