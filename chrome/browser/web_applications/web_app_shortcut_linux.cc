@@ -370,6 +370,8 @@ bool DeleteShortcutOnDesktop(const base::FilePath& shortcut_filename) {
 
 bool DeleteShortcutInAutoStart(base::Environment* env,
                                const base::FilePath& shortcut_filename) {
+  // TODO(crbug.com/1276141): Support shortcut testing in Auto Start.
+  DCHECK(!web_app::GetShortcutOverrideForTesting());
   base::FilePath autostart_path = AutoStart::GetAutostartDirectory(env);
   return base::DeleteFile(autostart_path.Append(shortcut_filename));
 }
@@ -377,6 +379,8 @@ bool DeleteShortcutInAutoStart(base::Environment* env,
 bool DeleteShortcutInApplicationsMenu(
     const base::FilePath& shortcut_filename,
     const base::FilePath& directory_filename) {
+  // TODO(crbug.com/1276141): Support shortcut testing in Applications Menu.
+  DCHECK(!web_app::GetShortcutOverrideForTesting());
   std::vector<std::string> argv;
   argv.push_back("xdg-desktop-menu");
   argv.push_back("uninstall");
@@ -583,11 +587,14 @@ bool DeleteDesktopShortcuts(base::Environment* env,
   // directory. It doesn't matter: this will still delete the shortcut even if
   // it isn't in the directory.
 
-  bool deleted_from_autostart =
-      DeleteShortcutInAutoStart(env, shortcut_filename);
+  bool deleted_from_autostart = true;
+  if (!web_app::GetShortcutOverrideForTesting())
+    deleted_from_autostart = DeleteShortcutInAutoStart(env, shortcut_filename);
 
-  bool deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
-      shortcut_filename, base::FilePath(kDirectoryFilename));
+  bool deleted_from_application_menu = true;
+  if (!web_app::GetShortcutOverrideForTesting())
+    deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
+        shortcut_filename, base::FilePath(kDirectoryFilename));
   return (deleted_from_desktop && deleted_from_autostart &&
           deleted_from_application_menu);
 }
@@ -615,7 +622,8 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, autostart_path);
   for (const auto& shortcut : shortcut_filenames_autostart) {
-    if (!DeleteShortcutInAutoStart(env, shortcut))
+    if (!web_app::GetShortcutOverrideForTesting() &&
+        !DeleteShortcutInAutoStart(env, shortcut))
       result = false;
   }
 
@@ -627,7 +635,8 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, applications_menu);
   for (const auto& menu : shortcut_filenames_app_menu) {
-    if (!DeleteShortcutInApplicationsMenu(menu,
+    if (!web_app::GetShortcutOverrideForTesting() &&
+        !DeleteShortcutInApplicationsMenu(menu,
                                           base::FilePath(kDirectoryFilename))) {
       result = false;
     }
