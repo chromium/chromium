@@ -166,7 +166,7 @@ You can then upload the resulting isolate to the CAS server:
 
 ```
 $ tools/luci-go/isolate archive \
-      -cas-instance chroimum-swarm \
+      -cas-instance chromium-swarm \
       -i $outdir/$target.isolate \
       -dump-json $outdir/$target.archive.json
 ```
