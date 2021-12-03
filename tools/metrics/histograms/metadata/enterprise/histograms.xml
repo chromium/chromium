@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
-    units="ms" expires_after="2022-01-09">
+    units="ms" expires_after="2022-07-09">
   <owner>amraboelkher@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
