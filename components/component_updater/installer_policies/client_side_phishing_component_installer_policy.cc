@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/client_side_phishing_component_installer.h"
+#include "components/component_updater/installer_policies/client_side_phishing_component_installer_policy.h"
+
+#include <stdint.h>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
-#include "base/feature_list.h"
+#include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/location.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/variations/variations_associated_data.h"
+#include "base/values.h"
+#include "base/version.h"
+#include "components/component_updater/component_installer.h"
 
-using component_updater::ComponentUpdateService;
-
-namespace {
-
+namespace component_updater {
 const base::FilePath::CharType kClientModelBinaryPbFileName[] =
     FILE_PATH_LITERAL("client_model.pb");
 const base::FilePath::CharType kVisualTfLiteModelFileName[] =
     FILE_PATH_LITERAL("visual_model.tflite");
 
+namespace {
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: imefjhfbkmcmebodilednhmaccmincoa
 const uint8_t kClientSidePhishingPublicKeySHA256[32] = {
@@ -34,35 +33,18 @@ const uint8_t kClientSidePhishingPublicKeySHA256[32] = {
 
 const char kClientSidePhishingManifestName[] = "Client Side Phishing Detection";
 
-void LoadFromDisk(const base::FilePath& pb_path,
-                  const base::FilePath& visual_tflite_model_path) {
-  if (pb_path.empty())
-    return;
-
-  std::string binary_pb;
-  if (!base::ReadFileToString(pb_path, &binary_pb))
-    binary_pb.clear();
-
-  base::File visual_tflite_model(visual_tflite_model_path,
-                                 base::File::FLAG_OPEN | base::File::FLAG_READ);
-
-  // The ClientSidePhishingModel singleton will react appropriately if the
-  // |binary_pb| is empty or |visual_tflite_model| is invalid.
-  safe_browsing::ClientSidePhishingModel::GetInstance()
-      ->PopulateFromDynamicUpdate(binary_pb, std::move(visual_tflite_model));
-}
-
-base::FilePath GetInstalledProtoPath(const base::FilePath& base) {
-  return base.Append(kClientModelBinaryPbFileName);
-}
-
-base::FilePath GetInstalledTfLitePath(const base::FilePath& base) {
-  return base.Append(kVisualTfLiteModelFileName);
-}
-
 }  // namespace
 
-namespace component_updater {
+ClientSidePhishingComponentInstallerPolicy::
+    ClientSidePhishingComponentInstallerPolicy(
+        const ReadFilesCallback& read_files_callback,
+        const InstallerAttributesCallback& installer_attributes_callback)
+    : read_files_callback_(std::move(read_files_callback)),
+      installer_attributes_callback_(std::move(installer_attributes_callback)) {
+}
+
+ClientSidePhishingComponentInstallerPolicy::
+    ~ClientSidePhishingComponentInstallerPolicy() = default;
 
 bool ClientSidePhishingComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -87,10 +69,7 @@ void ClientSidePhishingComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LoadFromDisk, GetInstalledProtoPath(install_dir),
-                     GetInstalledTfLitePath(install_dir)));
+  read_files_callback_.Run(install_dir);
 }
 
 // Called during startup and installation before ComponentReady().
@@ -99,8 +78,8 @@ bool ClientSidePhishingComponentInstallerPolicy::VerifyInstallation(
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in PopulateFromDynamicUpdate().
-  return base::PathExists(GetInstalledProtoPath(install_dir)) ||
-         base::PathExists(GetInstalledTfLitePath(install_dir));
+  return base::PathExists(install_dir.Append(kClientModelBinaryPbFileName)) ||
+         base::PathExists(install_dir.Append(kVisualTfLiteModelFileName));
 }
 
 base::FilePath
@@ -121,18 +100,7 @@ std::string ClientSidePhishingComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 ClientSidePhishingComponentInstallerPolicy::GetInstallerAttributes() const {
-  update_client::InstallerAttributes attributes;
-
-  // Pass the tag parameter to the installer as the "tag" attribute; it will
-  // be used to choose which binary is downloaded.
-  attributes["tag"] = safe_browsing::GetClientSideDetectionTag();
-  return attributes;
-}
-
-void RegisterClientSidePhishingComponent(ComponentUpdateService* cus) {
-  auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<ClientSidePhishingComponentInstallerPolicy>());
-  installer->Register(cus, base::OnceClosure());
+  return installer_attributes_callback_.Run();
 }
 
 }  // namespace component_updater

@@ -6,6 +6,8 @@ static_library("installer_policies") {
   sources = [
     "autofill_states_component_installer.cc",
     "autofill_states_component_installer.h",
+    "client_side_phishing_component_installer_policy.cc",
+    "client_side_phishing_component_installer_policy.h",
     "on_device_head_suggest_component_installer.cc",
     "on_device_head_suggest_component_installer.h",
     "optimization_hints_component_installer.cc",
