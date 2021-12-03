@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+Found 51 tests; 34 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Initial color
+PASS add .test to subject_ancestor
+PASS remove .test from subject_ancestor
+PASS add .test to subject_parent
+PASS remove .test from subject_parent
+FAIL add .test to subject assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS remove .test from subject
+FAIL add .test to subject_child assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove .test from subject_child
+FAIL add .test to subject_descendant assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove .test from subject_descendant
+PASS insert element div.test before subject_ancestor
+PASS remove element div.test before subject_ancestor
+PASS insert element div.test before subject_parent
+PASS remove element div.test before subject_parent
+FAIL insert element div.test before subject assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS remove element div.test before subject
+FAIL insert element div.test before subject_child assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove element div.test before subject_child
+FAIL insert element div.test before subject_descendant assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove element div.test before subject_descendant
+PASS insert element div.test after subject_ancestor
+PASS remove element div.test after subject_ancestor
+FAIL insert element div.test after subject_parent assert_equals: expected "rgb(0, 0, 255)" but got "rgb(128, 128, 128)"
+PASS remove element div.test after subject_parent
+FAIL insert element div.test after subject assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS remove element div.test after subject
+FAIL insert element div.test after subject_child assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove element div.test after subject_child
+FAIL insert element div.test after subject_descendant assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove element div.test after subject_descendant
+PASS insert tree div>div.test before subject_ancestor
+PASS remove tree div>div.test before subject_ancestor
+PASS insert tree div>div.test before subject_parent
+PASS remove tree div>div.test before subject_parent
+FAIL insert tree div>div.test before subject assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test before subject
+FAIL insert tree div>div.test before subject_child assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test before subject_child
+FAIL insert tree div>div.test before subject_descendant assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test before subject_descendant
+PASS insert tree div>div.test after subject_ancestor
+PASS remove tree div>div.test after subject_ancestor
+FAIL insert tree div>div.test after subject_parent assert_equals: expected "rgb(255, 192, 203)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test after subject_parent
+FAIL insert tree div>div.test after subject assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test after subject
+FAIL insert tree div>div.test after subject_child assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test after subject_child
+FAIL insert tree div>div.test after subject_descendant assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS remove tree div>div.test after subject_descendant
+Harness: the test ran to completion.
+
