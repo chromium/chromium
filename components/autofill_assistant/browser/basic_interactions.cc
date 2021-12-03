@@ -415,15 +415,15 @@ base::WeakPtr<BasicInteractions> BasicInteractions::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-BasicInteractions::BasicInteractions(ScriptExecutorDelegate* delegate)
-    : delegate_(delegate) {}
+BasicInteractions::BasicInteractions(ScriptExecutorDelegate* delegate,
+                                     ClientSettings* settings)
+    : delegate_(delegate), settings_(settings) {}
 
 BasicInteractions::~BasicInteractions() {}
 
 const ClientSettings& BasicInteractions::GetClientSettings() {
-  return delegate_->GetSettings();
+  return *settings_;
 }
-
 bool BasicInteractions::SetValue(const SetModelValueProto& proto) {
   if (proto.model_identifier().empty()) {
     DVLOG(2) << "Error setting value: model_identifier empty";

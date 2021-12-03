@@ -622,7 +622,7 @@ class Controller : public ScriptExecutorDelegate,
 
   EventHandler event_handler_;
   UserModel user_model_;
-  BasicInteractions basic_interactions_{this};
+  BasicInteractions basic_interactions_{this, &settings_};
 
   bool expand_sheet_for_prompt_action_ = true;
   std::vector<std::string> browse_domains_allowlist_;

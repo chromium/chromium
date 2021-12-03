@@ -21,7 +21,7 @@ class ScriptExecutorDelegate;
 class BasicInteractions {
  public:
   // Constructor. |delegate| must outlive this instance.
-  BasicInteractions(ScriptExecutorDelegate* delegate);
+  BasicInteractions(ScriptExecutorDelegate* delegate, ClientSettings* settings);
   ~BasicInteractions();
 
   BasicInteractions(const BasicInteractions&) = delete;
@@ -88,6 +88,7 @@ class BasicInteractions {
 
  private:
   raw_ptr<ScriptExecutorDelegate> delegate_;
+  raw_ptr<ClientSettings> settings_;
   // Only valid during a ShowGenericUiAction.
   base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
   base::OnceCallback<void(const ClientStatus&)>

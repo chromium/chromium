@@ -39,8 +39,9 @@ class BasicInteractionsTest : public testing::Test {
   ~BasicInteractionsTest() override {}
 
   FakeScriptExecutorDelegate delegate_;
+  ClientSettings settings_;
   UserModel user_model_;
-  BasicInteractions basic_interactions_{&delegate_};
+  BasicInteractions basic_interactions_{&delegate_, &settings_};
 };
 
 TEST_F(BasicInteractionsTest, SetValue) {
@@ -779,11 +780,10 @@ TEST_F(BasicInteractionsTest, RunConditionalCallback) {
 }
 
 TEST_F(BasicInteractionsTest, GetClientSettings) {
-  ClientSettings* client_settings = delegate_.GetMutableSettings();
-  client_settings->display_strings_locale = "hi-IN";
+  settings_.display_strings_locale = "hi-IN";
   EXPECT_EQ(basic_interactions_.GetClientSettings().display_strings_locale,
             "hi-IN");
-  client_settings->display_strings_locale = "";
+  settings_.display_strings_locale = "";
   EXPECT_TRUE(
       basic_interactions_.GetClientSettings().display_strings_locale.empty());
 }

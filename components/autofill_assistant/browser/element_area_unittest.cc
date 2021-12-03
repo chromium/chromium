@@ -81,10 +81,8 @@ class ElementAreaTest : public testing::Test {
  protected:
   ElementAreaTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        element_area_(&delegate_) {
-    delegate_.SetWebController(&mock_web_controller_);
-    delegate_.GetMutableSettings()->element_position_update_interval =
-        base::Milliseconds(100);
+        element_area_(&settings_, &mock_web_controller_) {
+    settings_.element_position_update_interval = base::Milliseconds(100);
 
     test_util::MockFindAnyElement(mock_web_controller_);
     ON_CALL(mock_web_controller_, GetElementRect(_, _))
@@ -125,7 +123,7 @@ class ElementAreaTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   MockWebController mock_web_controller_;
-  FakeScriptExecutorDelegate delegate_;
+  ClientSettings settings_;
   ElementArea element_area_;
   int on_update_call_count_ = 0;
   RectF reported_visual_viewport_;

@@ -2294,7 +2294,8 @@ void Controller::OnInputTextFocusChanged(bool is_text_focused) {
 
 ElementArea* Controller::touchable_element_area() {
   if (!touchable_element_area_) {
-    touchable_element_area_ = std::make_unique<ElementArea>(this);
+    touchable_element_area_ =
+        std::make_unique<ElementArea>(&settings_, GetWebController());
     touchable_element_area_->SetOnUpdate(base::BindRepeating(
         &Controller::OnTouchableAreaChanged, weak_ptr_factory_.GetWeakPtr()));
   }

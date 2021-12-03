@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
-#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -38,9 +37,10 @@ std::string ToDebugString(const std::vector<RectF>& rectangles) {
 
 }  // namespace
 
-ElementArea::ElementArea(ScriptExecutorDelegate* delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate_);
+ElementArea::ElementArea(ClientSettings* settings,
+                         WebController* web_controller)
+    : settings_(settings), web_controller_(web_controller) {
+  DCHECK(settings_ && web_controller_);
 }
 
 ElementArea::~ElementArea() = default;
@@ -66,7 +66,7 @@ void ElementArea::SetFromProto(const ElementAreaProto& proto) {
   Update();
   if (!timer_.IsRunning()) {
     timer_.Start(
-        FROM_HERE, delegate_->GetSettings().element_position_update_interval,
+        FROM_HERE, settings_->element_position_update_interval,
         base::BindRepeating(
             &ElementArea::Update,
             // This ElementArea instance owns |update_element_positions_|
@@ -124,17 +124,17 @@ void ElementArea::Update() {
   // (and move with a scroll) as elements whose position is absolute (and don't
   // move with a scroll.) Being able to tell the difference would be more
   // effective and allow refreshing element positions less aggressively.
-  delegate_->GetWebController()->GetVisualViewport(base::BindOnce(
+  web_controller_->GetVisualViewport(base::BindOnce(
       &ElementArea::OnGetVisualViewport, weak_ptr_factory_.GetWeakPtr()));
 
   for (auto& rectangle : rectangles_) {
     for (auto& position : rectangle.positions) {
-      delegate_->GetWebController()->FindElement(
+      web_controller_->FindElement(
           position.selector, /* strict= */ true,
           base::BindOnce(
               &element_action_util::TakeElementAndGetProperty<const RectF&>,
               base::BindOnce(&WebController::GetElementRect,
-                             delegate_->GetWebController()->GetWeakPtr()),
+                             web_controller_->GetWeakPtr()),
               RectF(),
               base::BindOnce(&ElementArea::OnGetElementRect,
                              weak_ptr_factory_.GetWeakPtr(),
