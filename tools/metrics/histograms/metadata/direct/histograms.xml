@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Gfx.InitializeTime" units="ms"
-    expires_after="M98">
+    expires_after="2022-10-15">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
