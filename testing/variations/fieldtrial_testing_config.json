@@ -7322,48 +7322,6 @@
             ]
         }
     ],
-    "SharingHubLinkToggle": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:sharing_hub_link_toggle_triggered;comparator:<5;window:360;storage:360",
-                        "event_trigger_2": "name:sharing_hub_link_toggle_triggered;comparator:<1;window:7;storage:360",
-                        "event_used": "name:sharing_hub_link_toggle_clicked;comparator:<2;window:360;storage:360",
-                        "session_rate": "any",
-                        "session_rate_impact": "all"
-                    },
-                    "enable_features": [
-                        "IPH_SharingHubLinkToggle",
-                        "SharingHubLinkToggle"
-                    ]
-                },
-                {
-                    "name": "Enabled_withImages",
-                    "params": {
-                        "image_enabled": "true"
-                    },
-                    "enable_features": [
-                        "SharingHubLinkToggle"
-                    ]
-                },
-                {
-                    "name": "Enabled_withScreenshots",
-                    "params": {
-                        "screenshot_enabled": "true"
-                    },
-                    "enable_features": [
-                        "SharingHubLinkToggle"
-                    ]
-                }
-            ]
-        }
-    ],
     "SideSearchGoogle": [
         {
             "platforms": [
