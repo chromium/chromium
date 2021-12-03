@@ -10,6 +10,11 @@
 
 namespace feature_engagement {
 
+// A feature for enabling automatic snooze mode for In-Product Help (IPH). When
+// this flag is enabled, we don't show snooze button/UI on the IPH, but on
+// dismiss we will implicitly snooze it until the snooze limit count is reached.
+extern const base::Feature kEnableAutomaticSnooze;
+
 // A feature for enabling a demonstration mode for In-Product Help (IPH).
 extern const base::Feature kIPHDemoMode;
 
