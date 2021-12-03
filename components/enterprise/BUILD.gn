@@ -100,7 +100,7 @@ source_set("unit_tests") {
       "browser/reporting/report_uploader_unittest.cc",
     ]
 
-    deps = [
+    deps += [
       ":enterprise",
       ":test_support",
       "//base",
