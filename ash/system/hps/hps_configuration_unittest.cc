@@ -24,7 +24,7 @@ MATCHER_P(ProtoEquals, expected_message, "") {
 TEST(HpsFeatureConfigTest, EmptyParamsValid) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {features::kLeaveDetection, features::kSnoopingProtection},
+      {features::kQuickDim, features::kSnoopingProtection},
       {} /* disabled_features */);
 
   EXPECT_TRUE(GetEnableHpsSenseConfig().has_value());
@@ -35,8 +35,7 @@ TEST(HpsFeatureConfigTest, ReturnNullIfTypeIsNotRecognizable) {
   const base::FieldTrialParams params = {{"filter_config_case", "0"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kLeaveDetection, params},
-       {features::kSnoopingProtection, params}},
+      {{features::kQuickDim, params}, {features::kSnoopingProtection, params}},
       {});
 
   EXPECT_FALSE(GetEnableHpsSenseConfig().has_value());
@@ -48,8 +47,7 @@ TEST(HpsFeatureConfigTest, VerifyBasicFilterConfig) {
       {"filter_config_case", "1"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kLeaveDetection, params},
-       {features::kSnoopingProtection, params}},
+      {{features::kQuickDim, params}, {features::kSnoopingProtection, params}},
       {});
 
   hps::FeatureConfig expected_config;
@@ -67,8 +65,7 @@ TEST(HpsFeatureConfigTest, VerifyConsecutiveResultsFilterConfig) {
       {"initial_state", "false"}};
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {{features::kLeaveDetection, params},
-       {features::kSnoopingProtection, params}},
+      {{features::kQuickDim, params}, {features::kSnoopingProtection, params}},
       {});
 
   hps::FeatureConfig expected_config;

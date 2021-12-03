@@ -715,10 +715,6 @@ const base::Feature kHoldingSpaceIncognitoProfileIntegration{
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether the HPS Sense prototype is enabled.
-const base::Feature kLeaveDetection{"LeaveDetection",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable or disable MOZC IME to use protobuf as interactive message format.
 const base::Feature kImeMozcProto{"ImeMozcProto",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1002,6 +998,9 @@ const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
 // We are deprecating the old marker tools in favor of the annotator tools.
 const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether the quick dim prototype is enabled.
+const base::Feature kQuickDim{"QuickDim", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables the Quick Settings Network revamp, which updates Network
 // Quick Settings UI and related infrastructure. See https://crbug.com/1169479.
@@ -1533,10 +1532,6 @@ bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection);
 }
 
-bool IsLeaveDetectionEnabled() {
-  return base::FeatureList::IsEnabled(kLeaveDetection);
-}
-
 bool IsIdleInhibitEnabled() {
   return base::FeatureList::IsEnabled(kEnableIdleInhibit);
 }
@@ -1737,6 +1732,10 @@ bool IsProjectorFeaturePodEnabled() {
 bool IsProjectorAnnotatorEnabled() {
   return IsProjectorEnabled() &&
          base::FeatureList::IsEnabled(kProjectorAnnotator);
+}
+
+bool IsQuickDimEnabled() {
+  return base::FeatureList::IsEnabled(kQuickDim);
 }
 
 bool IsQuickSettingsNetworkRevampEnabled() {

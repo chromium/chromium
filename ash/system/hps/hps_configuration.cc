@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,6 +31,12 @@ constexpr int kConsecutiveResultsFilterThresholdDefault = 0;
 // Default value for
 // `FeatureConfig.consecutive_results_filter_config.initial_state`.
 constexpr bool kConsecutiveResultsFilterIntialStateDefault = false;
+
+// Default quick dim delay to configure power_manager.
+constexpr base::TimeDelta kQuickDimDelayDefault = base::Seconds(60);
+
+// Default value determines whether send feedback to configure power_manager.
+constexpr int kShouldSendFeedbackIfUndimmed = false;
 
 // This function constructs a FeatureConfig proto From Finch.
 // The FeatureConfig contains one type of FilterConfig that will be used for
@@ -72,11 +79,24 @@ absl::optional<hps::FeatureConfig> ConstructHpsFilterConfigFromFinch(
 }  // namespace
 
 absl::optional<hps::FeatureConfig> GetEnableHpsSenseConfig() {
-  return ConstructHpsFilterConfigFromFinch(features::kLeaveDetection);
+  return ConstructHpsFilterConfigFromFinch(features::kQuickDim);
 }
 
 absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig() {
   return ConstructHpsFilterConfigFromFinch(features::kSnoopingProtection);
+}
+
+base::TimeDelta GetQuickDimDelay() {
+  const int quick_dim_ms = base::GetFieldTrialParamByFeatureAsInt(
+      features::kQuickDim, "quick_dim_ms",
+      kQuickDimDelayDefault.InMilliseconds());
+  return base::Milliseconds(quick_dim_ms);
+}
+
+bool GetQuickDimFeedbackEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(features::kQuickDim,
+                                                 "send_feedback_if_undimmed",
+                                                 kShouldSendFeedbackIfUndimmed);
 }
 
 }  // namespace ash

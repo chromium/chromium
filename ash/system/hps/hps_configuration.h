@@ -9,6 +9,10 @@
 #include "chromeos/dbus/hps/hps_service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace ash {
 
 // Gets FeatureConfig for enabling HpsSense from Finch.
@@ -18,6 +22,14 @@ ASH_EXPORT absl::optional<hps::FeatureConfig> GetEnableHpsSenseConfig();
 // Gets FeatureConfig for enabling HpsNotify from Finch.
 // Returns nullopt if feature is not enabled or can't be parsed correctly.
 ASH_EXPORT absl::optional<hps::FeatureConfig> GetEnableHpsNotifyConfig();
+
+// Gets quick dim delay to configure power_manager.
+ASH_EXPORT base::TimeDelta GetQuickDimDelay();
+
+// If true, quick dim functionality should be temporarily disabled when a quick
+// dim is undimmed within a short period of time.
+// Used to configure power_manager.
+ASH_EXPORT bool GetQuickDimFeedbackEnabled();
 
 }  // namespace ash
 
