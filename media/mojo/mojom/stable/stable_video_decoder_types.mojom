@@ -397,7 +397,7 @@ struct NativePixmapHandle {
 [Stable]
 struct NativeGpuMemoryBufferHandle {
   gfx.mojom.GpuMemoryBufferId id@0;
-  NativePixmapHandle? platform_handle@1;
+  NativePixmapHandle platform_handle@1;
 };
 
 // Based on |media.mojom.GpuMemoryBufferVideoFrameData| but does not depend

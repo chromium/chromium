@@ -512,6 +512,79 @@ struct StructTraits<media::stable::mojom::HDRMetadataDataView,
 };
 
 template <>
+struct EnumTraits<media::stable::mojom::MediaLogRecord_Type,
+                  media::MediaLogRecord::Type> {
+  static media::stable::mojom::MediaLogRecord_Type ToMojom(
+      media::MediaLogRecord::Type input) {
+    switch (input) {
+      case media::MediaLogRecord::Type::kMessage:
+        return media::stable::mojom::MediaLogRecord_Type::kMessage;
+      case media::MediaLogRecord::Type::kMediaPropertyChange:
+        return media::stable::mojom::MediaLogRecord_Type::kMediaPropertyChange;
+      case media::MediaLogRecord::Type::kMediaEventTriggered:
+        return media::stable::mojom::MediaLogRecord_Type::kMediaEventTriggered;
+      case media::MediaLogRecord::Type::kMediaStatus:
+        return media::stable::mojom::MediaLogRecord_Type::kMediaStatus;
+    }
+
+    NOTREACHED();
+    return media::stable::mojom::MediaLogRecord_Type::kMessage;
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::stable::mojom::MediaLogRecord_Type input,
+                        media::MediaLogRecord::Type* output) {
+    switch (input) {
+      case media::stable::mojom::MediaLogRecord_Type::kMessage:
+        *output = media::MediaLogRecord::Type::kMessage;
+        return true;
+      case media::stable::mojom::MediaLogRecord_Type::kMediaPropertyChange:
+        *output = media::MediaLogRecord::Type::kMediaPropertyChange;
+        return true;
+      case media::stable::mojom::MediaLogRecord_Type::kMediaEventTriggered:
+        *output = media::MediaLogRecord::Type::kMediaEventTriggered;
+        return true;
+      case media::stable::mojom::MediaLogRecord_Type::kMediaStatus:
+        *output = media::MediaLogRecord::Type::kMediaStatus;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct StructTraits<media::stable::mojom::MediaLogRecordDataView,
+                    media::MediaLogRecord> {
+  static int32_t id(const media::MediaLogRecord& input);
+
+  static media::MediaLogRecord::Type type(const media::MediaLogRecord& input);
+
+  static const base::Value& params(const media::MediaLogRecord& input);
+
+  static base::TimeTicks time(const media::MediaLogRecord& input);
+
+  static bool Read(media::stable::mojom::MediaLogRecordDataView input,
+                   media::MediaLogRecord* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
+                    gfx::GpuMemoryBufferHandle> {
+  static const gfx::GpuMemoryBufferId& id(
+      const gfx::GpuMemoryBufferHandle& input);
+
+  static gfx::NativePixmapHandle platform_handle(
+      gfx::GpuMemoryBufferHandle& input);
+
+  static bool Read(
+      media::stable::mojom::NativeGpuMemoryBufferHandleDataView data,
+      gfx::GpuMemoryBufferHandle* output);
+};
+
+template <>
 struct StructTraits<media::stable::mojom::NativePixmapHandleDataView,
                     gfx::NativePixmapHandle> {
   static std::vector<gfx::NativePixmapPlane>& planes(
@@ -901,6 +974,48 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+struct StructTraits<media::stable::mojom::VideoFrameDataView,
+                    scoped_refptr<media::VideoFrame>> {
+  static bool IsNull(const scoped_refptr<media::VideoFrame>& input) {
+    return !input;
+  }
+
+  static void SetToNull(scoped_refptr<media::VideoFrame>* input) {
+    *input = nullptr;
+  }
+
+  static media::VideoPixelFormat format(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const gfx::Size& coded_size(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const gfx::Rect& visible_rect(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const gfx::Size& natural_size(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static base::TimeDelta timestamp(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static gfx::ColorSpace color_space(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static media::stable::mojom::VideoFrameDataPtr data(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const media::VideoFrameMetadata& metadata(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static bool Read(media::stable::mojom::VideoFrameDataView input,
+                   scoped_refptr<media::VideoFrame>* output);
 };
 
 template <>

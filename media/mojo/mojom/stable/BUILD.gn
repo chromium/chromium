@@ -58,6 +58,19 @@ mojom("stable_video_decoder") {
           cpp = "::gfx::HDRMetadata"
         },
         {
+          mojom = "media.stable.mojom.MediaLogRecord.Type"
+          cpp = "::media::MediaLogRecord::Type"
+        },
+        {
+          mojom = "media.stable.mojom.MediaLogRecord"
+          cpp = "::media::MediaLogRecord"
+        },
+        {
+          mojom = "media.stable.mojom.NativeGpuMemoryBufferHandle"
+          cpp = "::gfx::GpuMemoryBufferHandle"
+          move_only = true
+        },
+        {
           mojom = "media.stable.mojom.NativePixmapHandle"
           cpp = "::gfx::NativePixmapHandle"
           move_only = true
@@ -87,6 +100,11 @@ mojom("stable_video_decoder") {
           cpp = "::media::VideoDecoderType"
         },
         {
+          mojom = "media.stable.mojom.VideoFrame"
+          cpp = "::scoped_refptr<::media::VideoFrame>"
+          nullable_is_same_type = true
+        },
+        {
           mojom = "media.stable.mojom.VideoFrameMetadata"
           cpp = "::media::VideoFrameMetadata"
         },
@@ -101,6 +119,7 @@ mojom("stable_video_decoder") {
       ]
       traits_headers = [ "stable_video_decoder_types_mojom_traits.h" ]
       traits_sources = [ "stable_video_decoder_types_mojom_traits.cc" ]
+      traits_public_deps = [ "//media/gpu" ]
     },
   ]
 
