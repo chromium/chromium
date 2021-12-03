@@ -699,4 +699,61 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         deviceHandler.completePairDevice(/*success=*/ true);
         await finishedPromise;
       });
+
+  test('Cancel pairing and fail pairing ', async function() {
+    await init();
+    assertTrue(!!getDeviceSelectionPage());
+    const deviceId = '123456';
+
+    const device = createDefaultBluetoothDevice(
+        deviceId,
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    const pairingCode = '123456';
+
+    // Try pairing.
+    await selectDevice(device.deviceProperties);
+    await flushTasks();
+
+    let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.requireAuthentication(
+        PairingAuthType.CONFIRM_PASSKEY, pairingCode);
+    await flushTasks();
+
+    // Confirmation code page should be shown.
+    assertTrue(!!getConfirmCodePage());
+    assertEquals(getConfirmCodePage().code, pairingCode);
+
+    // Simulate pairing failure.
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushTasks();
+
+    // The device selection page should be shown and failed device ID
+    // should be set since the pairing operation failed.
+    assertTrue(!!getDeviceSelectionPage());
+    assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId);
+
+    // Retry pairing.
+    await selectDevice(device.deviceProperties);
+    await flushTasks();
+
+    deviceHandler.requireAuthentication(
+        PairingAuthType.CONFIRM_PASSKEY, pairingCode);
+    await flushTasks();
+
+    // Simulate clicking 'Cancel'.
+    await simulateCancelation();
+    await flushTasks();
+
+    // The device selection page should be shown, but no failed device ID
+    // should be set since the operation was cancelled and did not explicitly
+    // fail.
+    assertTrue(!!getDeviceSelectionPage());
+    assertFalse(!!getDeviceSelectionPage().failedPairingDeviceId);
+  });
 });

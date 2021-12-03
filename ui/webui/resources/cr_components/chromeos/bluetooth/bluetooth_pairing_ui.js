@@ -120,6 +120,8 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       },
 
       /**
+       * This can be null if no pairing attempt was started or a pairing attempt
+       * was cancelled by user.
        * @private {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
        */
       devicePendingPairing_: {
@@ -342,7 +344,10 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.pairingDeviceAddress = null;
 
     this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE;
-    this.lastFailedPairingDeviceId_ = this.devicePendingPairing_.id;
+    if (this.devicePendingPairing_) {
+      this.lastFailedPairingDeviceId_ = this.devicePendingPairing_.id;
+    }
+
     this.devicePendingPairing_ = null;
 
     if (this.queuedDevicePendingPairing_) {
@@ -486,6 +491,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    */
   onCancelClick_(event) {
     event.stopPropagation();
+    this.devicePendingPairing_ = null;
     if (this.pairingDelegateReceiver_) {
       this.pairingDelegateReceiver_.$.close();
     }
