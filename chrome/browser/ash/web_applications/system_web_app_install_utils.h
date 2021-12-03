@@ -28,6 +28,10 @@ void CreateIconInfoForSystemWebApp(
     const std::initializer_list<IconResourceInfo>& manifest_icons,
     WebApplicationInfo& web_app);
 
+// Get correct ChromeOS background color based on if dark mode is requested and
+// if kSemanticColorsDebugOverride is enabled.
+SkColor GetDefaultBackgroundColor(const bool use_dark_mode);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_SYSTEM_WEB_APP_INSTALL_UTILS_H_
