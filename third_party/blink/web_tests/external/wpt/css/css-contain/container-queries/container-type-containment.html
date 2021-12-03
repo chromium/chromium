@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+<!doctype html>
+<title>CSS Container Queries Test: applied containment for container-type</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-type">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -32,72 +34,47 @@
 <hr>
 
 <div id=test2 class=square>
-  <div id=float2 class=half style="float:left"></div>
-  <div id=child2 class=half style="container-type:block-size"></div>
+  <div id=ref2 style="float:left">A</div>
+  <div id=child2 style="float:left; container-type:inline-size">A</div>
 </div>
 <script>
   test(() => {
-    assert_equals(child2.offsetLeft, test2.offsetLeft + float2.offsetWidth);
-  }, 'container-type:block-size turns on layout containment');
-</script>
-
-<hr>
-
-<div id=test3 class=square>
-  <div id=ref3 style="float:left">A</div>
-  <div id=child3 style="float:left; container-type:inline-size">A</div>
-</div>
-<script>
-  test(() => {
-    assert_equals(child3.offsetWidth, 0);
-    assert_equals(child3.offsetHeight, ref3.offsetHeight);
+    assert_equals(child2.offsetWidth, 0);
+    assert_equals(child2.offsetHeight, ref2.offsetHeight);
   }, 'container-type:inline-size turns on inline-size containment');
 </script>
 
 <hr>
 
-<div id=test4 class=square>
-  <div id=ref4>A</div>
-  <div id=child4 style="container-type:block-size">A</div>
+<div id=test3 class=square>
+  <div id=child3 style="float:left; container-type:size">A</div>
 </div>
 <script>
   test(() => {
-    assert_equals(child4.offsetHeight, 0);
-    assert_equals(child4.offsetWidth, ref4.offsetWidth);
-  }, 'container-type:block-size turns on block-size containment');
-</script>
-
-<hr>
-
-<div id=test5 class=square>
-  <div id=child5 style="float:left; container-type:size">A</div>
-</div>
-<script>
-  test(() => {
-    assert_equals(child5.offsetHeight, 0);
-    assert_equals(child5.offsetWidth, 0);
+    assert_equals(child3.offsetHeight, 0);
+    assert_equals(child3.offsetWidth, 0);
   }, 'container-type:size turns on full size containment');
 </script>
 
 <hr>
 
 <style>
-  #ref6::before, #child6::before {
+  #ref4::before, #child4::before {
     content: counter(foo);
   }
 </style>
-<div id=test6 class=square style="counter-set: foo 5">
-  <div id=ref6 style="float:left"></div>
+<div id=test4 class=square style="counter-set: foo 5">
+  <div id=ref4 style="float:left"></div>
   <section style="container-type:inline-size">
     <span style="counter-increment: foo 1000;"></span>
   </section>
-  <section style="container-type:block-size">
+  <section style="container-type:size">
     <span style="counter-increment: foo 1000;"></span>
   </section>
-  <div id=child6 style="float:left"></div>
+  <div id=child4 style="float:left"></div>
 </div>
 <script>
   test(() => {
-    assert_equals(child6.offsetWidth, ref6.offsetWidth);
-  }, 'container-type:inline/block-size turns on style containment');
+    assert_equals(child4.offsetWidth, ref4.offsetWidth);
+  }, 'container-type:inline/size turns on style containment');
 </script>

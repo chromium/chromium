@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<title>Container Queries: Recalculate style inside a container</title>
+<!doctype html>
+<title>CSS Container Queries Test: recompute style inside a @container</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-queries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -8,19 +9,17 @@
     #content { color: green; }
   }
 </style>
-<div id=container>
-  <div id=content>
-    Test
-  </div>
+<div id="container">
+  <div id="content"></div>
 </div>
 <script>
   test(() => {
-    assert_equals(getComputedStyle(content).color, 'rgb(0, 128, 0)');
+    assert_equals(getComputedStyle(content).color, "rgb(0, 128, 0)");
 
     // Dirty style of an element inside the container:
-    content.style.backgroundColor = 'lightgray';
+    content.style.backgroundColor = "lime";
 
     // The container query should still evaluate correctly:
     assert_equals(getComputedStyle(content).color, 'rgb(0, 128, 0)');
-  }, 'Hello');
+  }, "Basic test for container query evaluation stability");
 </script>
