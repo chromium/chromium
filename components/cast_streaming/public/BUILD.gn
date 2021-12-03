@@ -39,6 +39,8 @@ source_set("remoting_utils") {
     "remoting_proto_enum_utils.h",
     "remoting_proto_utils.cc",
     "remoting_proto_utils.h",
+    "rpc_call_message_handler.cc",
+    "rpc_call_message_handler.h",
   ]
 
   public_configs =
@@ -74,5 +76,6 @@ source_set("unit_tests") {
     "config_conversions_unittest.cc",
     "remoting_message_factories_unittest.cc",
     "remoting_proto_utils_unittest.cc",
+    "rpc_call_message_handler_unittest.cc",
   ]
 }

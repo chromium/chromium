@@ -75,7 +75,7 @@ Receiver::~Receiver() {
 
 // Receiver::Initialize() will be called by the local pipeline, it would only
 // keep the |init_cb| in order to continue the initialization once it receives
-// RPC_R_INITIALIZE, which means Receiver::RpcInitialize() is called.
+// RPC_R_INITIALIZE, which means Receiver::OnRpcInitialize() is called.
 void Receiver::Initialize(MediaResource* media_resource,
                           RendererClient* client,
                           PipelineStatusCallback init_cb) {
@@ -122,25 +122,8 @@ void Receiver::OnReceivedRpc(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message);
-  switch (message->proc()) {
-    case openscreen::cast::RpcMessage::RPC_R_INITIALIZE:
-      RpcInitialize(std::move(message));
-      break;
-    case openscreen::cast::RpcMessage::RPC_R_FLUSHUNTIL:
-      RpcFlushUntil(std::move(message));
-      break;
-    case openscreen::cast::RpcMessage::RPC_R_STARTPLAYINGFROM:
-      RpcStartPlayingFrom(std::move(message));
-      break;
-    case openscreen::cast::RpcMessage::RPC_R_SETPLAYBACKRATE:
-      RpcSetPlaybackRate(std::move(message));
-      break;
-    case openscreen::cast::RpcMessage::RPC_R_SETVOLUME:
-      RpcSetVolume(std::move(message));
-      break;
-    default:
-      VLOG(1) << __func__ << ": Unknown RPC message. proc=" << message->proc();
-  }
+
+  cast_streaming::remoting::DispatchRpcCall(std::move(message), this);
 }
 
 void Receiver::SetRemoteHandle(int remote_handle) {
@@ -158,8 +141,7 @@ void Receiver::VerifyAcquireRendererDone() {
   std::move(acquire_renderer_done_cb_).Run(rpc_handle_);
 }
 
-void Receiver::RpcInitialize(
-    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+void Receiver::OnRpcInitialize() {
   DCHECK(renderer_);
   rpc_initialize_received_ = true;
   ShouldInitializeRenderer();
@@ -167,10 +149,10 @@ void Receiver::RpcInitialize(
 
 void Receiver::ShouldInitializeRenderer() {
   // ShouldInitializeRenderer() will be called from Initialize() and
-  // RpcInitialize() in different orders.
+  // OnRpcInitialize() in different orders.
   //
   // |renderer_| must be initialized when both Initialize() and
-  // RpcInitialize() are called.
+  // OnRpcInitialize() are called.
   if (!rpc_initialize_received_ || !init_cb_)
     return;
 
@@ -193,11 +175,9 @@ void Receiver::OnRendererInitialized(PipelineStatus status) {
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
-void Receiver::RpcSetPlaybackRate(
-    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+void Receiver::OnRpcSetPlaybackRate(double playback_rate) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  const double playback_rate = message->double_value();
   renderer_->SetPlaybackRate(playback_rate);
 
   if (playback_rate == 0.0) {
@@ -212,17 +192,10 @@ void Receiver::RpcSetPlaybackRate(
   }
 }
 
-void Receiver::RpcFlushUntil(
-    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+void Receiver::OnRpcFlush(uint32_t audio_count, uint32_t video_count) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(message->has_renderer_flushuntil_rpc());
 
-  const openscreen::cast::RendererFlushUntil flush_message =
-      message->renderer_flushuntil_rpc();
-  DCHECK_EQ(flush_message.callback_handle(), remote_handle_);
-
-  receiver_controller_->OnRendererFlush(flush_message.audio_count(),
-                                        flush_message.video_count());
+  receiver_controller_->OnRendererFlush(audio_count, video_count);
 
   time_update_timer_.Stop();
   renderer_->Flush(
@@ -235,11 +208,9 @@ void Receiver::OnFlushDone() {
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
-void Receiver::RpcStartPlayingFrom(
-    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+void Receiver::OnRpcStartPlayingFrom(base::TimeDelta time) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  base::TimeDelta time = base::Microseconds(message->integer64_value());
   renderer_->StartPlayingFrom(time);
   ScheduleMediaTimeUpdates();
 }
@@ -253,10 +224,9 @@ void Receiver::ScheduleMediaTimeUpdates() {
                                                weak_factory_.GetWeakPtr()));
 }
 
-void Receiver::RpcSetVolume(
-    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+void Receiver::OnRpcSetVolume(double volume) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  renderer_->SetVolume(message->double_value());
+  renderer_->SetVolume(volume);
 }
 
 void Receiver::SendMediaTimeUpdate() {

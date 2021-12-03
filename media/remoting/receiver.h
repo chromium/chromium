@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
+#include "components/cast_streaming/public/rpc_call_message_handler.h"
 #include "media/base/buffering_state.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer.h"
@@ -45,7 +46,9 @@ class ReceiverController;
 // via RPC calls. When Receiver receives RPC calls, it will call the
 // corresponding functions of |renderer_| to control the media playback of
 // the remoting media.
-class Receiver final : public Renderer, public RendererClient {
+class Receiver final : public Renderer,
+                       public RendererClient,
+                       public cast_streaming::remoting::RpcCallMessageHandler {
  public:
   Receiver(int rpc_handle,
            int remote_handle,
@@ -87,21 +90,19 @@ class Receiver final : public Renderer, public RendererClient {
   base::WeakPtr<Receiver> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
+  // cast_streaming::remoting::RpcCallMessageHandler overrides.
+  void OnRpcInitialize() override;
+  void OnRpcSetPlaybackRate(double playback_rate) override;
+  void OnRpcFlush(uint32_t audio_count, uint32_t video_count) override;
+  void OnRpcStartPlayingFrom(base::TimeDelta time) override;
+  void OnRpcSetVolume(double volume) override;
+
   // Send RPC message on |main_task_runner_|.
   void SendRpcMessageOnMainThread(
       std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   // Callback function when RPC message is received.
   void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
-
-  // RPC message handlers.
-  void RpcInitialize(std::unique_ptr<openscreen::cast::RpcMessage> message);
-  void RpcSetPlaybackRate(
-      std::unique_ptr<openscreen::cast::RpcMessage> message);
-  void RpcFlushUntil(std::unique_ptr<openscreen::cast::RpcMessage> message);
-  void RpcStartPlayingFrom(
-      std::unique_ptr<openscreen::cast::RpcMessage> message);
-  void RpcSetVolume(std::unique_ptr<openscreen::cast::RpcMessage> message);
 
   void ShouldInitializeRenderer();
   void OnRendererInitialized(PipelineStatus status);
