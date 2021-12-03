@@ -25,7 +25,15 @@ DeviceSensorEntry::~DeviceSensorEntry() = default;
 
 void DeviceSensorEntry::Start(
     device::mojom::blink::SensorProvider* sensor_provider) {
-  if (!sensor_remote_.is_bound() || state_ == State::kNotInitialized) {
+  // If sensor remote is not bound, reset to |kNotInitialized| state (in case
+  // we're in some other state), unless we're currently being initialized (which
+  // is indicated by either |kInitializing| or |kShouldSuspend| state).
+  if (!sensor_remote_.is_bound() && state_ != State::kInitializing &&
+      state_ != State::kShouldSuspend) {
+    state_ = State::kNotInitialized;
+  }
+
+  if (state_ == State::kNotInitialized) {
     state_ = State::kInitializing;
     sensor_provider->GetSensor(type_,
                                WTF::Bind(&DeviceSensorEntry::OnSensorCreated,
