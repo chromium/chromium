@@ -2574,8 +2574,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - Private Methods: Tab creation and selection
 
 // Add all delegates to the provided |webState|.
+// Unregistration happens when the WebState is removed from the WebStateList.
 - (void)installDelegatesForWebState:(web::WebState*)webState {
-  // Unregistration happens when the WebState is removed from the WebStateList.
+  // If the WebState is unrealized, don't install the delegate. Instead they
+  // will be installed when -webStateRealized: method is called.
+  if (!webState->IsRealized())
+    return;
 
   // There should be no pre-rendered Tabs for this BrowserState.
   PrerenderService* prerenderService =
@@ -2634,6 +2638,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Remove delegates from the provided |webState|.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
+  // If the WebState is unrealized, then the delegate had not been installed
+  // and thus don't need to be uninstalled.
+  if (!webState->IsRealized())
+    return;
+
   // TODO(crbug.com/1069763): do not pass the browser to PasswordTabHelper.
   if (PasswordTabHelper* passwordTabHelper =
           PasswordTabHelper::FromWebState(webState)) {
@@ -3343,6 +3352,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       [self.currentWebState->GetWebViewProxy() becomeFirstResponder];
     }
   }
+}
+
+- (void)webStateRealized:(web::WebState*)webState {
+  // The delegate were not installed because the WebState was not realized.
+  // Do it now so that the WebState behaves correctly.
+  [self installDelegatesForWebState:webState];
 }
 
 #pragma mark - OmniboxPopupPresenterDelegate methods.
