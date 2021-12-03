@@ -3505,13 +3505,6 @@ const char kEnhancedProtectionPromoAndroidDescription[] =
     "Enable enhanced protection promo card for users that have not signed up "
     "for enhanced protection.";
 
-const char kSafeBrowsingUseLocalBlacklistsV2Name[] =
-    "Use local Safe Browsing blacklists";
-const char kSafeBrowsingUseLocalBlacklistsV2Description[] =
-    "If enabled, maintain a copy of Safe Browsing blacklists in the browser "
-    "process to check the Safe Browsing reputation of URLs without calling "
-    "into GmsCore for every URL.";
-
 const char kScrollCaptureName[] = "Scroll Capture";
 const char kScrollCaptureDescription[] =
     "Enables scrolling screenshot capture for web contents.";
