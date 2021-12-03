@@ -209,7 +209,7 @@ If the above step fails or to run stuff without Chromium testing script (ex.
 ContentShell.apk, or any third party apk or binary), device setup is needed:
 ```shell
 tools/android/asan/third_party/asan_device_setup.sh \
-    --lib third_party/llvm-build/Release+Asserts/lib/clang/*/lib/linux/libclang_rt.asan-arm-android.so
+    --lib third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/*/lib/linux
 # wait a few seconds for the device to reload
 ```
 **Note:** You need to replace `-arm-` part in `libclang_rt.asan-arm-android.so`
