@@ -6,7 +6,7 @@
 #define UI_BASE_IME_ASH_IME_BRIDGE_H_
 
 #include "base/component_export.h"
-#include "build/build_config.h"
+#include "base/observer_list.h"
 #include "ui/base/ime/ash/ime_assistive_window_handler_interface.h"
 #include "ui/base/ime/ash/ime_bridge_observer.h"
 #include "ui/base/ime/ash/ime_candidate_window_handler_interface.h"
@@ -24,8 +24,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
  public:
   IMEBridge(const IMEBridge&) = delete;
   IMEBridge& operator=(const IMEBridge&) = delete;
-
-  virtual ~IMEBridge();
+  ~IMEBridge();
 
   // Allocates the global instance. Must be called before any calls to Get().
   static void Initialize();
@@ -38,55 +37,59 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
 
   // Returns current InputContextHandler. This function returns nullptr if input
   // context is not ready to use.
-  virtual IMEInputContextHandlerInterface* GetInputContextHandler() const = 0;
+  IMEInputContextHandlerInterface* GetInputContextHandler() const;
 
   // Updates current InputContextHandler. If there is no active input context,
   // pass nullptr for |handler|. Caller must release |handler|.
-  virtual void SetInputContextHandler(
-      IMEInputContextHandlerInterface* handler) = 0;
+  void SetInputContextHandler(IMEInputContextHandlerInterface* handler);
 
   // Updates current EngineHandler. If there is no active engine service, pass
   // nullptr for |handler|. Caller must release |handler|.
-  virtual void SetCurrentEngineHandler(IMEEngineHandlerInterface* handler) = 0;
+  void SetCurrentEngineHandler(IMEEngineHandlerInterface* handler);
 
   // Returns current EngineHandler. This function returns nullptr if current
   // engine is not ready to use.
-  virtual IMEEngineHandlerInterface* GetCurrentEngineHandler() const = 0;
+  IMEEngineHandlerInterface* GetCurrentEngineHandler() const;
 
   // Updates the current input context.
   // This is called from `InputMethodAsh`.
-  virtual void SetCurrentInputContext(
-      const IMEEngineHandlerInterface::InputContext& input_context) = 0;
+  void SetCurrentInputContext(
+      const IMEEngineHandlerInterface::InputContext& input_context);
 
   // Returns the current input context.
   // This is called from InputMethodEngine.
-  virtual const IMEEngineHandlerInterface::InputContext&
-  GetCurrentInputContext() const = 0;
+  const IMEEngineHandlerInterface::InputContext& GetCurrentInputContext() const;
 
   // Add or remove observers of events such as switching engines, etc.
-  virtual void AddObserver(ui::IMEBridgeObserver* observer) = 0;
-  virtual void RemoveObserver(ui::IMEBridgeObserver* observer) = 0;
+  void AddObserver(ui::IMEBridgeObserver* observer);
+  void RemoveObserver(ui::IMEBridgeObserver* observer);
 
   // Switches the engine handler upon top level window focus change.
-  virtual void MaybeSwitchEngine() = 0;
+  void MaybeSwitchEngine();
 
   // Returns current CandidateWindowHandler. This function returns nullptr if
   // current candidate window is not ready to use.
-  virtual ash::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler()
-      const = 0;
+  ash::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() const;
 
   // Updates current CandidatWindowHandler. If there is no active candidate
   // window service, pass nullptr for |handler|. Caller must release |handler|.
-  virtual void SetCandidateWindowHandler(
-      ash::IMECandidateWindowHandlerInterface* handler) = 0;
+  void SetCandidateWindowHandler(
+      ash::IMECandidateWindowHandlerInterface* handler);
 
-  virtual ash::IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler()
-      const = 0;
-  virtual void SetAssistiveWindowHandler(
-      ash::IMEAssistiveWindowHandlerInterface* handler) = 0;
+  ash::IMEAssistiveWindowHandlerInterface* GetAssistiveWindowHandler() const;
+  void SetAssistiveWindowHandler(
+      ash::IMEAssistiveWindowHandlerInterface* handler);
 
- protected:
+ private:
   IMEBridge();
+
+  IMEInputContextHandlerInterface* input_context_handler_ = nullptr;
+  IMEEngineHandlerInterface* engine_handler_ = nullptr;
+  base::ObserverList<IMEBridgeObserver> observers_;
+  IMEEngineHandlerInterface::InputContext current_input_context_;
+
+  ash::IMECandidateWindowHandlerInterface* candidate_window_handler_ = nullptr;
+  ash::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ = nullptr;
 };
 
 }  // namespace ui
