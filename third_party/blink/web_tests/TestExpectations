@@ -3327,7 +3327,6 @@ crbug.com/626703 [ Mac11 ] external/wpt/webauthn/getcredential-badargs-userverif
 crbug.com/626703 [ Mac11 ] external/wpt/webauthn/credblob-supported.https.html [ Crash ]
 crbug.com/626703 [ Mac11 ] external/wpt/webauthn/createcredential-large-blob-not-supported.https.html [ Crash ]
 crbug.com/626703 [ Mac11 ] external/wpt/webauthn/createcredential-extensions.https.html [ Crash Skip Timeout ]
-crbug.com/626703 external/wpt/css/css-grid/alignment/grid-content-alignment-overflow-002.html [ Failure ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.html [ Pass Timeout ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.worker.html [ Pass Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.html [ Failure Timeout ]

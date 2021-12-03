@@ -540,15 +540,15 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
         ComputeUsedTrackSizes(grid_geometry, grid_properties, sizing_constraint,
                               &column_track_collection, &grid_items);
 
-    if (grid_properties.HasBaseline(kForRows)) {
-      CalculateAlignmentBaselines(kForRows, sizing_constraint, &grid_geometry,
-                                  &grid_items, &needs_additional_pass);
-    }
-
     if (needs_additional_pass || HasBlockSizeDependentGridItem(grid_items)) {
       // If we need to calculate the row geometry, we have a dependency on our
       // block constraints.
       depends_on_block_constraints = true;
+
+      if (grid_properties.HasBaseline(kForRows)) {
+        CalculateAlignmentBaselines(kForRows, sizing_constraint, &grid_geometry,
+                                    &grid_items, &needs_additional_pass);
+      }
 
       absl::optional<SetGeometry> initial_row_geometry;
       if (!needs_additional_pass)
