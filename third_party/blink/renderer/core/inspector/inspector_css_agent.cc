@@ -874,6 +874,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
   if (!response.IsSuccess())
     return response;
 
+  Element* animating_element = element;
   PseudoId element_pseudo_id = element->GetPseudoId();
   if (element_pseudo_id) {
     element = element->ParentOrShadowHostElement();
@@ -943,7 +944,7 @@ Response InspectorCSSAgent::getMatchedStylesForNode(
     inherited_entries->fromJust()->emplace_back(std::move(entry));
   }
 
-  *css_keyframes_rules = AnimationsForNode(element);
+  *css_keyframes_rules = AnimationsForNode(element, animating_element);
   return Response::Success();
 }
 
@@ -966,7 +967,8 @@ static CSSKeyframesRule* FindKeyframesRule(CSSRuleCollection* css_rules,
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>
-InspectorCSSAgent::AnimationsForNode(Element* element) {
+InspectorCSSAgent::AnimationsForNode(Element* element,
+                                     Element* animating_element) {
   auto css_keyframes_rules =
       std::make_unique<protocol::Array<protocol::CSS::CSSKeyframesRule>>();
   Document& document = element->GetDocument();
@@ -982,8 +984,8 @@ InspectorCSSAgent::AnimationsForNode(Element* element) {
     AtomicString animation_name(animation_data->NameList()[i]);
     if (animation_name == CSSAnimationData::InitialName())
       continue;
-    StyleRuleKeyframes* keyframes_rule =
-        style_resolver.FindKeyframesRule(element, animation_name);
+    StyleRuleKeyframes* keyframes_rule = style_resolver.FindKeyframesRule(
+        element, animating_element, animation_name);
     if (!keyframes_rule)
       continue;
 
