@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -22,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -33,6 +38,7 @@ import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -92,6 +98,20 @@ public class BookmarkSaveFlowTest {
         });
 
         loadBookmarkModel();
+        doAnswer((invocation) -> {
+            ((Callback<Integer>) invocation.getArgument(1))
+                    .onResult(SubscriptionsManager.StatusCode.OK);
+            return null;
+        })
+                .when(mSubscriptionsManager)
+                .subscribe(any(CommerceSubscription.class), any());
+        doAnswer((invocation) -> {
+            ((Callback<Integer>) invocation.getArgument(1))
+                    .onResult(SubscriptionsManager.StatusCode.OK);
+            return null;
+        })
+                .when(mSubscriptionsManager)
+                .unsubscribe(any(CommerceSubscription.class), any());
     }
 
     @Test
@@ -119,6 +139,7 @@ public class BookmarkSaveFlowTest {
                             .setShoppingSpecifics(ShoppingSpecifics.newBuilder()
                                                           .setProductClusterId(1234L)
                                                           .build());
+            mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
             mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false, meta.build());
             return null;
         });
@@ -139,11 +160,40 @@ public class BookmarkSaveFlowTest {
                             .setShoppingSpecifics(ShoppingSpecifics.newBuilder()
                                                           .setProductClusterId(1234L)
                                                           .build());
+            mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
             mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/true, meta.build());
             return null;
         });
         mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
                 "bookmark_save_flow_shopping_list_item_from_heuristic");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testBookmarkSaveFlow_WithShoppingListItem_fromHeuristicEntryPoint_saveFailed()
+            throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            PowerBookmarkMeta.Builder meta =
+                    PowerBookmarkMeta.newBuilder()
+                            .setType(PowerBookmarkType.SHOPPING)
+                            .setShoppingSpecifics(
+                                    ShoppingSpecifics.newBuilder().setProductClusterId(1234L));
+            mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false, meta.build());
+            return null;
+        });
+        doAnswer((invocation) -> {
+            ((Callback<Integer>) invocation.getArgument(1))
+                    .onResult(SubscriptionsManager.StatusCode.NETWORK_ERROR);
+            return null;
+        })
+                .when(mSubscriptionsManager)
+                .subscribe(any(CommerceSubscription.class), any());
+        onView(withId(R.id.notification_switch)).perform(click());
+        mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
+                "bookmark_save_flow_shopping_list_item_from_heuristic_save_failed");
     }
 
     @Test

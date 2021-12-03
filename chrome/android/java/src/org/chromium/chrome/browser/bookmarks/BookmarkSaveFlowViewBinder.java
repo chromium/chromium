@@ -4,12 +4,19 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
+
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -45,6 +52,9 @@ public class BookmarkSaveFlowViewBinder
         } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE) {
             ((TextView) view.findViewById(R.id.notification_switch_title))
                     .setText(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE));
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED) {
+            ((CompoundButton) view.findViewById(R.id.notification_switch))
+                    .setChecked(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
         } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER) {
             ((CompoundButton) view.findViewById(R.id.notification_switch))
                     .setOnCheckedChangeListener(model.get(
@@ -58,6 +68,23 @@ public class BookmarkSaveFlowViewBinder
                     .setVisibility(model.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE)
                                     ? View.VISIBLE
                                     : View.GONE);
+        } else if (propertyKey == BookmarkSaveFlowProperties.NOTIFICATION_UI_ENABLED) {
+            boolean enabled = model.get(BookmarkSaveFlowProperties.NOTIFICATION_UI_ENABLED);
+            Drawable drawable = ((ImageView) view.findViewById(R.id.notification_switch_start_icon))
+                                        .getDrawable();
+            if (drawable != null) {
+                final @ColorInt int color = enabled
+                        ? SemanticColorUtils.getDefaultIconColor(view.getContext())
+                        : ContextCompat.getColor(
+                                view.getContext(), R.color.default_icon_color_disabled);
+
+                drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            }
+
+            ApiCompatibilityUtils.setTextAppearance(
+                    view.findViewById(R.id.notification_switch_title),
+                    enabled ? R.style.TextAppearance_TextMedium_Primary
+                            : R.style.TextAppearance_TextMedium_Disabled);
         } else if (propertyKey == BookmarkSaveFlowProperties.SUBTITLE_TEXT) {
             ((TextView) view.findViewById(R.id.subtitle_text))
                     .setText(model.get(BookmarkSaveFlowProperties.SUBTITLE_TEXT));

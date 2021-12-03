@@ -73,7 +73,7 @@
         android:id="@+id/notification_switch_divider"
         style="@style/HorizontalDivider"
         android:visibility="gone"
-        android:layout_margin="16dp"/>
+        android:layout_marginTop="16dp"/>
 
     <LinearLayout
         android:id="@+id/notification_switch_container"
@@ -108,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
       </LinearLayout>
 
       <androidx.appcompat.widget.SwitchCompat

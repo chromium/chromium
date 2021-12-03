@@ -37,6 +37,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
     private SubscriptionsManager mSubscriptionsManager;
     private CommerceSubscription mSubscription;
     private Callback<Integer> mSubscriptionsManagerCallback;
+    private String mFolderName;
 
     /**
      * @param bookmarkModel The {@link BookmarkModel} which supplies the data.
@@ -97,7 +98,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
     private void bindBookmarkProperties(
             BookmarkId bookmarkId, PowerBookmarkMeta meta, boolean fromExplicitTrackUi) {
         BookmarkItem item = mBookmarkModel.getBookmarkById(bookmarkId);
-        String folderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
+        mFolderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
         mPropertyModel.set(BookmarkSaveFlowProperties.TITLE_TEXT,
                 mContext.getResources().getString(R.string.bookmark_save_flow_title));
         mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON,
@@ -105,7 +106,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
         mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED, item.isMovable());
         mPropertyModel.set(BookmarkSaveFlowProperties.SUBTITLE_TEXT,
                 mContext.getResources().getString(
-                        R.string.bookmark_page_saved_location, folderName));
+                        R.string.bookmark_page_saved_location, mFolderName));
     }
 
     private void bindPowerBookmarkProperties(
@@ -113,46 +114,60 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
         if (meta == null) return;
 
         if (meta.getType() == PowerBookmarkType.SHOPPING) {
+            setPriceTrackingNotificationUiEnabled(true);
+            setPriceTrackingIconForEnabledState(false);
+            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE, true);
+            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE,
+                    mContext.getResources().getString(R.string.enable_price_tracking_menu_item));
+            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
+                    this::handleNotificationSwitchToggle);
+
             if (fromExplicitTrackUi) {
                 mPropertyModel.set(BookmarkSaveFlowProperties.TITLE_TEXT,
                         mContext.getResources().getString(R.string.price_tracking_title));
-                // TODO(crbug.com/1266191): Add a snackbar for this case.
-                PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
-                        mBookmarkId, /*enabled=*/true, (status) -> {});
-                return;
+                mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED, true);
             }
-
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE, true);
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON,
-                    ResourcesCompat.getDrawable(mContext.getResources(),
-                            R.drawable.price_tracking_enabled_filled, /*theme=*/null));
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE,
-                    mContext.getResources().getString(R.string.enable_price_tracking_menu_item));
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE,
-                    mContext.getResources().getString(
-                            R.string.price_tracking_save_flow_notification_switch_subtitle));
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
-                    this::handleNotificationSwitchToggle);
         }
     }
 
     void handleNotificationSwitchToggle(CompoundButton view, boolean toggled) {
         if (mSubscriptionsManagerCallback == null) {
             mSubscriptionsManagerCallback = mCallbackController.makeCancelable((Integer status) -> {
-                if (status != SubscriptionsManager.StatusCode.OK) {
+                boolean statusOk = (status == SubscriptionsManager.StatusCode.OK);
+                if (statusOk) {
+                    setPriceTrackingIconForEnabledState(toggled);
+                } else {
                     // Set it back to the previous state if the request.
                     mPropertyModel.set(
                             BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER, null);
-                    view.setChecked(!view.isChecked());
+                    view.setChecked(!toggled);
                     mPropertyModel.set(
                             BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
                             this::handleNotificationSwitchToggle);
+                    setPriceTrackingIconForEnabledState(!toggled);
                 }
+                setPriceTrackingNotificationUiEnabled(statusOk);
             });
         }
         // TODO(crbug.com/1243383): Follow-up with UX about failure.
         PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
                 mBookmarkId, toggled, mSubscriptionsManagerCallback);
+    }
+
+    void setPriceTrackingNotificationUiEnabled(boolean enabled) {
+        mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_UI_ENABLED, enabled);
+        mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE,
+                mContext.getResources().getString(enabled
+                                ? R.string.price_tracking_save_flow_notification_switch_subtitle
+                                : R.string.price_tracking_save_flow_notification_switch_subtitle_error));
+    }
+
+    void setPriceTrackingIconForEnabledState(boolean enabled) {
+        mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON,
+                ResourcesCompat.getDrawable(mContext.getResources(),
+                        enabled ? R.drawable.price_tracking_enabled_filled
+                                : R.drawable.price_tracking_disabled,
+                        /*theme=*/null));
     }
 
     void destroy() {
