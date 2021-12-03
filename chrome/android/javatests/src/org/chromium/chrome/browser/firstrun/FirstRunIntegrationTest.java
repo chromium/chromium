@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -116,6 +118,8 @@ public class FirstRunIntegrationTest {
     public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
+    private ExternalAuthUtils mExternalAuthUtilsMock;
+    @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
     @Mock
     public EnterpriseInfo mEnterpriseInfo;
@@ -139,6 +143,8 @@ public class FirstRunIntegrationTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
