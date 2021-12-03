@@ -481,15 +481,10 @@ class Driver(object):
             deadline = time.time() + DRIVER_START_TIMEOUT_SECS
             if not self._wait_for_server_process_output(
                     self._server_process, deadline, b'#READY'):
-                text = '%s took too long to startup.' % server_name
-                _log.error(text)
-                return False, DriverOutput(None,
-                                           None,
-                                           None,
-                                           None,
-                                           timeout=True,
-                                           error=text,
-                                           command=' '.join(cmd_line))
+                _log.error('%s took too long to startup.' % server_name)
+                # Even though the server hasn't started up, we pretend it has
+                # so that the rest of the error-handling code can deal with
+                # this as if the test has simply crashed.
 
         if self._port.get_option(
                 'initialize_webgpu_adapter_at_startup_timeout_ms'):
