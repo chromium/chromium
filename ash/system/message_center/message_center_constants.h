@@ -54,6 +54,7 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kHeaderViewLabelSize = 12;
 constexpr char kNotificationBodyFontWeight = 13;
 
+// Animation durations for children which are animated via LayerAnimations.
 constexpr int kTitleRowTimestampFadeInAnimationDelayMs = 100;
 constexpr int kTitleRowTimestampFadeInAnimationDurationMs = 100;
 constexpr int kHeaderRowFadeInAnimationDelayMs = 50;
@@ -67,6 +68,14 @@ constexpr int kActionsRowFadeInAnimationDurationMs = 100;
 constexpr int kActionButtonsFadeOutAnimationDurationMs = 100;
 constexpr int kInlineReplyFadeInAnimationDurationMs = 100;
 constexpr int kInlineReplyFadeOutAnimationDurationMs = 50;
+
+// Animation durations for expand/collapse of MessageCenterView.
+constexpr int kLargeImageExpandAndCollapseAnimationDuration = 300;
+constexpr int kInlineReplyAndGroupedParentExpandAnimationDuration = 250;
+constexpr int kInlineReplyAndGroupedParentCollapseAnimationDuration = 200;
+constexpr int kInlineSettingsExpandAndCollapseAnimationDuration = 200;
+constexpr int kGeneralExpandAnimationDuration = 300;
+constexpr int kGeneralCollapseAnimationDuration = 200;
 
 }  // namespace ash
 

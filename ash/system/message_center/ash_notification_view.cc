@@ -20,6 +20,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -460,6 +461,33 @@ void AshNotificationView::ToggleExpand() {
   SetExpanded(!IsExpanded());
 
   PerformExpandCollapseAnimation();
+}
+
+base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
+    const message_center::Notification& notification) const {
+  // This is called after the parent gets notified of
+  // `ChildPreferredSizeChanged()`, so the current expanded state is the target
+  // state.
+  if (!notification.image().IsEmpty())
+    return base::Milliseconds(kLargeImageExpandAndCollapseAnimationDuration);
+
+  if (HasInlineReply(notification) || is_grouped_parent_view_) {
+    if (IsExpanded()) {
+      return base::Milliseconds(
+          kInlineReplyAndGroupedParentExpandAnimationDuration);
+    }
+    return base::Milliseconds(
+        kInlineReplyAndGroupedParentCollapseAnimationDuration);
+  }
+
+  if (inline_settings_row() && inline_settings_row()->GetVisible()) {
+    return base::Milliseconds(
+        kInlineSettingsExpandAndCollapseAnimationDuration);
+  }
+
+  if (IsExpanded())
+    return base::Milliseconds(kGeneralExpandAnimationDuration);
+  return base::Milliseconds(kGeneralCollapseAnimationDuration);
 }
 
 void AshNotificationView::AddGroupNotification(

@@ -222,6 +222,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // buttons.
   virtual void ActionButtonPressed(size_t index, const ui::Event& event);
 
+  // Whether `notification` is configured to have an inline reply field.
+  bool HasInlineReply(const Notification& notification) const;
+
   NotificationControlButtonsView* control_buttons_view() {
     return control_buttons_view_;
   }

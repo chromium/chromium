@@ -1955,7 +1955,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.ClearAllStacked.AnimationSmoothness"
     units="%" expires_after="2022-07-02">
-  <owner>newcomer@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;clear all&quot; animation in the CrOS
@@ -1967,7 +1967,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Notification.ClearAllVisible.AnimationSmoothness"
     units="%" expires_after="2022-07-02">
-  <owner>newcomer@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;clear all&quot; animation in the CrOS
@@ -1976,9 +1976,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Notification.ExpandOrCollapse.AnimationSmoothness"
+    units="%" expires_after="2022-07-02">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;Expand or Collapse&quot; animation in the
+    CrOS message center. This occurs when the notification requests a size
+    change due to being expanded or collapsed. Usually involves other layer
+    animations which are named (get name from leandre@).
+  </summary>
+</histogram>
+
 <histogram name="Ash.Notification.MoveDown.AnimationSmoothness" units="%"
     expires_after="2022-07-02">
-  <owner>newcomer@chromium.org</owner>
+  <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Animation smoothness of the &quot;move down&quot; animation in the CrOS

@@ -46,6 +46,11 @@ class ASH_EXPORT AshNotificationView
   // Toggle the expand state of the notification.
   void ToggleExpand();
 
+  // Gets the animation duration for a recent bounds change. Called after
+  // `PreferredSizeChanged()`, so the current state is the target state.
+  base::TimeDelta GetBoundsAnimationDuration(
+      const message_center::Notification& notification) const;
+
   // message_center::MessageView:
   void AddGroupNotification(const message_center::Notification& notification,
                             bool newest_first) override;
@@ -139,7 +144,8 @@ class ASH_EXPORT AshNotificationView
   // Update the color and icon for `app_icon_view_`.
   void UpdateAppIconView();
 
-  // Perform expand/collapse animation in children views.
+  // AshNotificationView will animate its expand/collapse in the parent's
+  // ChildPreferredSizeChange(). Child views are animated here.
   void PerformExpandCollapseAnimation();
 
   // Owned by views hierarchy.

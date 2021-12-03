@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
@@ -18,15 +19,18 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -48,12 +52,15 @@ constexpr base::TimeDelta kClearAllVisibleAnimationDuration =
     base::Milliseconds(160);
 
 constexpr char kMessageViewContainerClassName[] = "MessageViewContainer";
+
 constexpr char kMoveDownAnimationSmoothnessHistogramName[] =
     "Ash.Notification.MoveDown.AnimationSmoothness";
 constexpr char kClearAllStackedAnimationSmoothnessHistogramName[] =
     "Ash.Notification.ClearAllStacked.AnimationSmoothness";
 constexpr char kClearAllVisibleAnimationSmoothnessHistogramName[] =
     "Ash.Notification.ClearAllVisible.AnimationSmoothness";
+constexpr char kExpandOrCollapseAnimationSmoothnessHistogramName[] =
+    "Ash.Notification.ExpandOrCollapse.AnimationSmoothness";
 
 void RecordAnimationSmoothness(const std::string& histogram_name,
                                int smoothness) {
@@ -78,8 +85,8 @@ void SetupThroughputTrackerForAnimationSmoothness(
 // Container view of notification and swipe control.
 // All children of UnifiedMessageListView should be MessageViewContainer.
 class UnifiedMessageListView::MessageViewContainer
-    : public views::View,
-      public MessageView::Observer {
+    : public MessageView::Observer,
+      public views::View {
  public:
   MessageViewContainer(MessageView* message_view,
                        UnifiedMessageListView* list_view)
@@ -101,6 +108,15 @@ class UnifiedMessageListView::MessageViewContainer
   MessageViewContainer& operator=(const MessageViewContainer&) = delete;
 
   ~MessageViewContainer() override { message_view_->RemoveObserver(this); }
+
+  base::TimeDelta GetBoundsAnimationDuration() const {
+    auto* notification = MessageCenter::Get()->FindNotificationById(
+        message_view()->notification_id());
+    if (!notification)
+      return base::Milliseconds(0);
+    return static_cast<const AshNotificationView*>(message_view())
+        ->GetBoundsAnimationDuration(*notification);
+  }
 
   // Update the border and background corners based on if the notification is
   // at the top or the bottom. If `force_update` is true, ignore previous states
@@ -132,6 +148,7 @@ class UnifiedMessageListView::MessageViewContainer
   // restores the state.
   void LoadExpandedState(UnifiedSystemTrayModel* model, bool is_latest) {
     DCHECK(model);
+    base::AutoReset<bool> scoped_reset(&loading_expanded_state_, true);
     absl::optional<bool> manually_expanded =
         model->GetNotificationExpanded(GetNotificationId());
     if (manually_expanded.has_value()) {
@@ -181,13 +198,47 @@ class UnifiedMessageListView::MessageViewContainer
     return message_view_->GetSlideAmount() < 0 ? -1 : 1;
   }
 
+  // Allows UnifiedMessageListView to force preferred size to change during
+  // animations.
+  void TriggerPreferredSizeChangedForAnimation() {
+    views::View::PreferredSizeChanged();
+  }
+
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override {
     // If we've already been removed, ignore new child size changes.
     if (is_removed_)
       return;
 
-    PreferredSizeChanged();
+    // PreferredSizeChanged will trigger
+    // UnifiedMessageListView::ChildPreferredSizeChanged.
+    base::ScopedClosureRunner defer_preferred_size_changed(base::BindOnce(
+        &MessageViewContainer::PreferredSizeChanged, base::Unretained(this)));
+
+    if (!features::IsNotificationsRefreshEnabled())
+      return;
+
+    // Ignore non user triggered expand/collapses.
+    if (loading_expanded_state_)
+      return;
+
+    auto* notification = MessageCenter::Get()->FindNotificationById(
+        message_view()->notification_id());
+    if (!notification)
+      return;
+
+    needs_bounds_animation_ = true;
+  }
+
+  gfx::Size CalculatePreferredSize() const override {
+    if (list_view_->IsAnimatingExpandOrCollapseContainer(this)) {
+      // Width should never change, only height.
+      return gfx::Size(list_view_->message_view_width_,
+                       gfx::Tween::IntValueBetween(
+                           list_view_->GetCurrentValue(),
+                           start_bounds_.height(), target_bounds_.height()));
+    }
+    return gfx::Size(list_view_->message_view_width_, target_bounds_.height());
   }
 
   const char* GetClassName() const override {
@@ -213,15 +264,18 @@ class UnifiedMessageListView::MessageViewContainer
   }
 
   gfx::Rect start_bounds() const { return start_bounds_; }
-  gfx::Rect ideal_bounds() const { return ideal_bounds_; }
+  gfx::Rect target_bounds() const { return target_bounds_; }
   bool is_removed() const { return is_removed_; }
+
+  void ResetNeedsBoundsAnimation() { needs_bounds_animation_ = false; }
+  bool needs_bounds_animation() const { return needs_bounds_animation_; }
 
   void set_start_bounds(const gfx::Rect& start_bounds) {
     start_bounds_ = start_bounds;
   }
 
-  void set_ideal_bounds(const gfx::Rect& ideal_bounds) {
-    ideal_bounds_ = ideal_bounds;
+  void set_target_bounds(const gfx::Rect& ideal_bounds) {
+    target_bounds_ = ideal_bounds;
   }
 
   void set_is_removed() { is_removed_ = true; }
@@ -229,6 +283,7 @@ class UnifiedMessageListView::MessageViewContainer
   bool is_slid_out() { return is_slid_out_; }
 
   MessageView* message_view() { return message_view_; }
+  const MessageView* message_view() const { return message_view_; }
 
  private:
   // The bounds that the container starts animating from. If not animating, it's
@@ -237,7 +292,7 @@ class UnifiedMessageListView::MessageViewContainer
 
   // The final bounds of the container. If not animating, it's same as the
   // actual bounds().
-  gfx::Rect ideal_bounds_;
+  gfx::Rect target_bounds_;
 
   // True when the notification is removed and during slide out animation.
   bool is_removed_ = false;
@@ -253,6 +308,13 @@ class UnifiedMessageListView::MessageViewContainer
   // this to prevent unnecessary update.
   bool is_top_ = false;
   bool is_bottom_ = false;
+
+  // Whether expanded state is being set programmatically. Used to prevent
+  // animating programmatic expands which occur on open.
+  bool loading_expanded_state_ = false;
+
+  // Set to flag the view as requiring an expand or collapse animation.
+  bool needs_bounds_animation_ = false;
 
   MessageView* const message_view_;
   UnifiedMessageListView* const list_view_;
@@ -414,9 +476,48 @@ bool UnifiedMessageListView::IsAnimating() const {
   return animation_->is_animating();
 }
 
+bool UnifiedMessageListView::IsAnimatingExpandOrCollapseContainer(
+    const views::View* view) const {
+  if (!view || !expand_or_collapsing_container_)
+    return false;
+
+  DCHECK_EQ(kMessageViewContainerClassName, view->GetClassName())
+      << view->GetClassName() << " is not a " << kMessageViewContainerClassName;
+  const MessageViewContainer* message_view_container = AsMVC(view);
+  return message_view_container == expand_or_collapsing_container_;
+}
+
 void UnifiedMessageListView::ChildPreferredSizeChanged(views::View* child) {
   if (ignore_size_change_)
     return;
+
+  // No State::EXPAND_OR_COLLAPSE animation in the old UI.
+  if (!features::IsNotificationsRefreshEnabled()) {
+    ResetBounds();
+    return;
+  }
+
+  auto* message_view_container = AsMVC(child);
+  // Immediately complete the old expand/collapse animation. It will be snapped
+  // to the target bounds when UpdateBounds() is called. If the other animations
+  // are occurring, prefer them over expand/collapse.
+  if (message_view_container->needs_bounds_animation() &&
+      (state_ == State::IDLE || state_ == State::EXPAND_OR_COLLAPSE)) {
+    if (animation_->is_animating()) {
+      // Finish the previous expand animation instantly.
+      animation_->End();
+    }
+    expand_or_collapsing_container_ = message_view_container;
+    expand_or_collapsing_container_->ResetNeedsBoundsAnimation();
+    UpdateBounds();
+    state_ = State::EXPAND_OR_COLLAPSE;
+    StartAnimation();
+    return;
+  }
+
+  if (state_ == State::EXPAND_OR_COLLAPSE)
+    return;
+
   ResetBounds();
 }
 
@@ -429,8 +530,12 @@ void UnifiedMessageListView::PreferredSizeChanged() {
 void UnifiedMessageListView::Layout() {
   for (auto* child : children()) {
     auto* view = AsMVC(child);
+    if (state_ == State::IDLE) {
+      view->SetBoundsRect(view->target_bounds());
+      continue;
+    }
     view->SetBoundsRect(gfx::Tween::RectValueBetween(
-        GetCurrentValue(), view->start_bounds(), view->ideal_bounds()));
+        GetCurrentValue(), view->start_bounds(), view->target_bounds()));
   }
 }
 
@@ -456,9 +561,12 @@ gfx::Rect UnifiedMessageListView::GetNotificationBoundsBelowY(
 }
 
 gfx::Size UnifiedMessageListView::CalculatePreferredSize() const {
+  if (state_ == State::IDLE)
+    return gfx::Size(message_view_width_, target_height_);
+
   return gfx::Size(message_view_width_,
                    gfx::Tween::IntValueBetween(GetCurrentValue(), start_height_,
-                                               ideal_height_));
+                                               target_height_));
 }
 
 const char* UnifiedMessageListView::GetClassName() const {
@@ -619,15 +727,24 @@ void UnifiedMessageListView::AnimationEnded(const gfx::Animation* animation) {
   }
 
   // This is also called from AnimationCanceled().
+  // TODO(crbug/1272104): Can we do better? If we are interrupting an animation,
+  // this does not look good.
   animation_->SetCurrentValue(1.0);
   PreferredSizeChanged();
 
-  if (state_ == State::MOVE_DOWN) {
-    state_ = State::IDLE;
-  } else if (state_ == State::CLEAR_ALL_STACKED ||
-             state_ == State::CLEAR_ALL_VISIBLE) {
-    DeleteRemovedNotifications();
-    UpdateClearAllAnimation();
+  switch (state_) {
+    case State::IDLE:
+    case State::EXPAND_OR_COLLAPSE:
+      expand_or_collapsing_container_ = nullptr;
+      FALLTHROUGH;
+    case State::MOVE_DOWN:
+      state_ = State::IDLE;
+      break;
+    case State::CLEAR_ALL_STACKED:
+    case State::CLEAR_ALL_VISIBLE:
+      DeleteRemovedNotifications();
+      UpdateClearAllAnimation();
+      break;
   }
 
   UpdateBorders(/*force_update=*/false);
@@ -638,6 +755,9 @@ void UnifiedMessageListView::AnimationEnded(const gfx::Animation* animation) {
 
 void UnifiedMessageListView::AnimationProgressed(
     const gfx::Animation* animation) {
+  if (state_ == State::EXPAND_OR_COLLAPSE)
+    expand_or_collapsing_container_->TriggerPreferredSizeChangedForAnimation();
+
   PreferredSizeChanged();
 }
 
@@ -725,22 +845,25 @@ void UnifiedMessageListView::UpdateBounds() {
   int y = 0;
   for (auto* child : children()) {
     auto* view = AsMVC(child);
+    // Height is taken from preferred size, which is calculated based on the
+    // tween and animation state when animations are occurring. So views which
+    // are animating will provide the correct interpolated height here.
     const int height = view->GetHeightForWidth(message_view_width_);
     const int direction = view->GetSlideDirection();
 
     if (y > 0 && is_notifications_refresh_enabled_)
       y += kMessageListNotificationSpacing;
 
-    view->set_start_bounds(view->ideal_bounds());
-    view->set_ideal_bounds(view->is_removed()
-                               ? gfx::Rect(message_view_width_ * direction, y,
-                                           message_view_width_, height)
-                               : gfx::Rect(0, y, message_view_width_, height));
+    view->set_start_bounds(view->target_bounds());
+    view->set_target_bounds(view->is_removed()
+                                ? gfx::Rect(message_view_width_ * direction, y,
+                                            message_view_width_, height)
+                                : gfx::Rect(0, y, message_view_width_, height));
     y += height;
   }
 
-  start_height_ = ideal_height_;
-  ideal_height_ = y;
+  start_height_ = target_height_;
+  target_height_ = y;
 }
 
 void UnifiedMessageListView::ResetBounds() {
@@ -811,6 +934,14 @@ void UnifiedMessageListView::StartAnimation() {
           kClearAllVisibleAnimationSmoothnessHistogramName);
       animation_duration = kClearAllVisibleAnimationDuration;
       break;
+    case State::EXPAND_OR_COLLAPSE:
+      SetupThroughputTrackerForAnimationSmoothness(
+          GetWidget(), throughput_tracker_,
+          kExpandOrCollapseAnimationSmoothnessHistogramName);
+      DCHECK(expand_or_collapsing_container_);
+      animation_duration =
+          expand_or_collapsing_container_->GetBoundsAnimationDuration();
+      break;
   }
 
   animation_->SetDuration(animation_duration);
@@ -839,10 +970,10 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
 
       DeleteRemovedNotifications();
       UpdateBounds();
-      start_height_ = ideal_height_;
+      start_height_ = target_height_;
       for (auto* child : children()) {
         auto* view = AsMVC(child);
-        view->set_start_bounds(view->ideal_bounds());
+        view->set_start_bounds(view->target_bounds());
       }
       PreferredSizeChanged();
     } else {
@@ -853,7 +984,7 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
   if (state_ == State::CLEAR_ALL_VISIBLE) {
     UpdateBounds();
 
-    if (view || start_height_ != ideal_height_)
+    if (view || start_height_ != target_height_)
       state_ = State::CLEAR_ALL_VISIBLE;
     else
       state_ = State::IDLE;
@@ -861,10 +992,26 @@ void UnifiedMessageListView::UpdateClearAllAnimation() {
 }
 
 double UnifiedMessageListView::GetCurrentValue() const {
-  return gfx::Tween::CalculateValue(state_ == State::CLEAR_ALL_VISIBLE
-                                        ? gfx::Tween::EASE_IN
-                                        : gfx::Tween::FAST_OUT_SLOW_IN,
-                                    animation_->GetCurrentValue());
+  gfx::Tween::Type tween;
+  switch (state_) {
+    case State::IDLE:
+      // No animations are used for State::IDLE.
+      NOTREACHED();
+      tween = gfx::Tween::LINEAR;
+      break;
+    case State::CLEAR_ALL_STACKED:
+    case State::MOVE_DOWN:
+      tween = gfx::Tween::FAST_OUT_SLOW_IN;
+      break;
+    case State::CLEAR_ALL_VISIBLE:
+      tween = gfx::Tween::EASE_IN;
+      break;
+    case State::EXPAND_OR_COLLAPSE:
+      tween = gfx::Tween::FAST_OUT_SLOW_IN_3;
+      break;
+  }
+
+  return gfx::Tween::CalculateValue(tween, animation_->GetCurrentValue());
 }
 
 }  // namespace ash

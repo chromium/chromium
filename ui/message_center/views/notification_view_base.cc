@@ -759,8 +759,7 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
 
   // Hide inline reply field if it doesn't exist anymore.
   if (inline_reply_->GetVisible()) {
-    const size_t index = inline_reply_->GetTextfieldIndex();
-    if (index >= buttons.size() || !buttons[index].placeholder.has_value()) {
+    if (HasInlineReply(notification)) {
       action_buttons_row_->SetVisible(true);
       inline_reply_->SetVisible(false);
     }
@@ -844,6 +843,13 @@ void NotificationViewBase::ActionButtonPressed(size_t index,
     MessageCenter::Get()->ClickOnNotificationButton(notification_id(),
                                                     static_cast<int>(index));
   }
+}
+
+bool NotificationViewBase::HasInlineReply(
+    const Notification& notification) const {
+  auto buttons = notification.buttons();
+  const size_t index = inline_reply_->GetTextfieldIndex();
+  return index >= buttons.size() || !buttons[index].placeholder.has_value();
 }
 
 void NotificationViewBase::SetExpandButtonEnabled(bool enabled) {
