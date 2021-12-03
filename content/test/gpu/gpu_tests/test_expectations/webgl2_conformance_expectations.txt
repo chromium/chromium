@@ -185,7 +185,7 @@ crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # Were skipped to allow ANGLE changes to merge, but should be fine now.
-crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ FAilure ]
+crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/864524 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/864524 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/864524 [ linux ] WebglExtension_OVR_multiview2 [ Failure ]
