@@ -150,8 +150,8 @@ TEST(IPAddressTest, IsPubliclyRoutableIPv4) {
                {"172.32.0.0", NOT_RESERVED},
                {"191.255.255.255", NOT_RESERVED},
                // 192.0.0.0/24 (including sub ranges)
-               {"192.0.0.0", NOT_RESERVED},
-               {"192.0.0.255", NOT_RESERVED},
+               {"192.0.0.0", RESERVED},
+               {"192.0.0.255", RESERVED},
                // Unreserved block(s)
                {"192.0.1.0", NOT_RESERVED},
                {"192.0.1.255", NOT_RESERVED},
