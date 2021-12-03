@@ -71,7 +71,9 @@ public class SingleActionMessage implements MessageStateHandler {
                 ? mModel.get(MessageBannerProperties.DISMISSAL_DURATION)
                 : 0;
 
-        mAutodismissDurationMs = () -> autodismissDurationProvider.get(dismissalDuration);
+        mAutodismissDurationMs = ()
+                -> autodismissDurationProvider.get(
+                        model.get(MessageBannerProperties.MESSAGE_IDENTIFIER), dismissalDuration);
 
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
