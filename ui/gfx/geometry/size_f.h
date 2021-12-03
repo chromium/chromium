@@ -66,8 +66,8 @@ class GEOMETRY_EXPORT SizeF {
   void SetToMin(const SizeF& other);
   void SetToMax(const SizeF& other);
 
-  bool IsEmpty() const { return !width() || !height(); }
-  bool IsZero() const { return !width() && !height(); }
+  constexpr bool IsEmpty() const { return !width() || !height(); }
+  constexpr bool IsZero() const { return !width() && !height(); }
 
   void Scale(float scale) {
     Scale(scale, scale);
@@ -97,11 +97,11 @@ class GEOMETRY_EXPORT SizeF {
   float height_;
 };
 
-inline bool operator==(const SizeF& lhs, const SizeF& rhs) {
+constexpr bool operator==(const SizeF& lhs, const SizeF& rhs) {
   return lhs.width() == rhs.width() && lhs.height() == rhs.height();
 }
 
-inline bool operator!=(const SizeF& lhs, const SizeF& rhs) {
+constexpr bool operator!=(const SizeF& lhs, const SizeF& rhs) {
   return !(lhs == rhs);
 }
 

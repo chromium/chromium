@@ -119,7 +119,7 @@ class GEOMETRY_EXPORT RectF {
   InsetsF InsetsFrom(const RectF& inner) const;
 
   // Returns true if the area of the rectangle is zero.
-  bool IsEmpty() const { return size_.IsEmpty(); }
+  constexpr bool IsEmpty() const { return size_.IsEmpty(); }
 
   // A rect is less than another rect if its origin is less than
   // the other rect's origin. If the origins are equal, then the
@@ -243,11 +243,11 @@ class GEOMETRY_EXPORT RectF {
   SizeF size_;
 };
 
-inline bool operator==(const RectF& lhs, const RectF& rhs) {
+constexpr bool operator==(const RectF& lhs, const RectF& rhs) {
   return lhs.origin() == rhs.origin() && lhs.size() == rhs.size();
 }
 
-inline bool operator!=(const RectF& lhs, const RectF& rhs) {
+constexpr bool operator!=(const RectF& lhs, const RectF& rhs) {
   return !(lhs == rhs);
 }
 
