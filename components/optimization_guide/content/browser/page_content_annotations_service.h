@@ -71,17 +71,13 @@ class PageContentAnnotationsService : public KeyedService,
 
   // This is the main entry point for page content annotations by external
   // callers.
-  //
-  // TODO(crbug/1249632): Flesh out description more as implementation
-  // progresses and we see what is most important to write here.
   void BatchAnnotate(BatchAnnotationCallback callback,
                      const std::vector<std::string>& inputs,
                      AnnotationType annotation_type);
 
   // Overrides the PageContentAnnotator for testing. See
   // test_page_content_annotator.h for an implementation designed for testing.
-  void OverridePageContentAnnotatorForTesting(
-      std::unique_ptr<PageContentAnnotator> annotator);
+  void OverridePageContentAnnotatorForTesting(PageContentAnnotator* annotator);
 
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |absl::nullopt| if no model is being
@@ -104,12 +100,10 @@ class PageContentAnnotationsService : public KeyedService,
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 #endif
 
-  // TODO(crbug/1249632): This will take the place of |model_manager_| where
-  // |PageContentAnnotationsModelManager| implements the virtual interface.
-  //
-  // The annotator to use for requests to |BatchAnnotate|. Override-able for
-  // testing.
-  std::unique_ptr<PageContentAnnotator> annotator_;
+  // The annotator to use for requests to |BatchAnnotate|. In prod, this is
+  // simply |model_manager_.get()| but is set as a separate pointer here in
+  // order to be override-able for testing.
+  raw_ptr<PageContentAnnotator> annotator_;
 
   // Requests to annotate |text|, which is associated with |web_contents|.
   //

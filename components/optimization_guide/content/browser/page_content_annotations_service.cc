@@ -84,6 +84,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
       optimization_guide_model_provider);
+  annotator_ = model_manager_.get();
 #endif
 }
 
@@ -108,8 +109,8 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
 }
 
 void PageContentAnnotationsService::OverridePageContentAnnotatorForTesting(
-    std::unique_ptr<PageContentAnnotator> annotator) {
-  annotator_ = std::move(annotator);
+    PageContentAnnotator* annotator) {
+  annotator_ = annotator;
 }
 
 void PageContentAnnotationsService::BatchAnnotate(
