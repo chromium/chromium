@@ -80,14 +80,9 @@ public class ScreenshotMonitor {
                 return;
             }
 
-            if (!doesChangeLookLikeScreenshot(uri)) return;
-
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
-                @Override
-                public void run() {
-                    if (mScreenshotMonitor == null) return;
-                    mScreenshotMonitor.onEventOnUiThread(uriPath);
-                }
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                if (mScreenshotMonitor == null || !doesChangeLookLikeScreenshot(uri)) return;
+                mScreenshotMonitor.onEventOnUiThread(uriPath);
             });
         }
     }
@@ -96,6 +91,7 @@ public class ScreenshotMonitor {
     // location of the file in storage by looking for the word "Screenshot", and the width and
     // height of the image.  We do this to differentiate between screenshots and downloaded images.
     private boolean doesChangeLookLikeScreenshot(Uri storeUri) {
+        ThreadUtils.assertOnUiThread();
         // Unit tests do not have a media database to query, so return true here.
         if (mSkipOsCallsForUnitTesting) return true;
 
