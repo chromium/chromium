@@ -31,6 +31,12 @@ void UpdateCertificatePolicyCacheFromWebState(
     const web::WebState* web_state) {
   DCHECK(web_state);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
+
+  // The WebState install its certificate policy cache upon realization, so
+  // unrealized WebState can be skipped (to avoid forcing their realization).
+  if (!web_state->IsRealized())
+    return;
+
   web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache(
       policy_cache);
 }
