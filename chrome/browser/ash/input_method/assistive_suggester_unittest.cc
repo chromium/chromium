@@ -17,6 +17,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
 namespace input_method {
@@ -25,6 +27,33 @@ namespace {
 using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
+
+ui::KeyEvent GenerateKeyEvent(const ui::DomCode& code,
+                              const ui::EventType& event_type,
+                              int flags) {
+  return ui::KeyEvent(event_type, ui::VKEY_UNKNOWN, code, flags,
+                      ui::DomKey::NONE, ui::EventTimeForNow());
+}
+
+ui::KeyEvent PressKey(const ui::DomCode& code) {
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
+                          ui::EventFlags::EF_NONE);
+}
+
+ui::KeyEvent PressKeyWithAlt(const ui::DomCode& code) {
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
+                          ui::EventFlags::EF_ALT_DOWN);
+}
+
+ui::KeyEvent PressKeyWithCtrl(const ui::DomCode& code) {
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
+                          ui::EventFlags::EF_CONTROL_DOWN);
+}
+
+ui::KeyEvent PressKeyWithShift(const ui::DomCode& code) {
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
+                          ui::EventFlags::EF_SHIFT_DOWN);
+}
 
 }  // namespace
 
@@ -569,6 +598,61 @@ TEST_F(AssistiveSuggesterMultiWordTest,
   histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Coverage", 2);
   histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Coverage",
                                        AssistiveType::kMultiWordPrediction, 2);
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest, PressingTabShouldAcceptSuggestion) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_TRUE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::TAB)));
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest, AltPlusTabShouldNotAcceptSuggestion) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_FALSE(
+      assistive_suggester_->OnKeyEvent(PressKeyWithAlt(ui::DomCode::TAB)));
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest, CtrlPlusTabShouldNotAcceptSuggestion) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_FALSE(
+      assistive_suggester_->OnKeyEvent(PressKeyWithCtrl(ui::DomCode::TAB)));
+}
+
+TEST_F(AssistiveSuggesterMultiWordTest, ShiftPlusTabShouldNotAcceptSuggestion) {
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "aren\'t you"}};
+
+  assistive_suggester_->OnFocus(5);
+  assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
+  assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
+
+  EXPECT_FALSE(
+      assistive_suggester_->OnKeyEvent(PressKeyWithShift(ui::DomCode::TAB)));
 }
 
 class AssistiveSuggesterEmojiTest : public testing::Test {
