@@ -109,6 +109,7 @@ class AccountSelectionMediator {
         return false;
     }
 
+    // This method should not be used when the VERIFY header is needed.
     private void addHeader(GURL rpUrl, GURL idpUrl, List<Account> accounts) {
         boolean useSignInHeader = false;
         for (Account account : accounts) {
@@ -170,6 +171,26 @@ class AccountSelectionMediator {
         }
     }
 
+    void showVerifySheet(Account account) {
+        mSheetItems.clear();
+
+        Runnable closeOnClickRunnable = () -> {
+            onDismissed(BottomSheetController.StateChangeReason.NONE);
+        };
+        mSheetItems.add(new ListItem(ItemType.HEADER,
+                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                        .with(HeaderProperties.CLOSE_ON_CLICK_LISTENER, closeOnClickRunnable)
+                        .with(HeaderProperties.TYPE, HeaderType.VERIFY)
+                        .build()));
+
+        addAccounts(mIdpUrl, Arrays.asList(account), /*areAccountsClickable=*/false);
+        showContent();
+    }
+
+    void hideBottomSheet() {
+        if (mVisible) hideContent();
+    }
+
     void showAccounts(GURL rpUrl, GURL idpUrl, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn) {
@@ -218,6 +239,8 @@ class AccountSelectionMediator {
     @VisibleForTesting
     void showContent() {
         if (mBottomSheetController.requestShowContent(mBottomSheetContent, true)) {
+            if (mVisible) return;
+
             mVisible = true;
             mBottomSheetController.addObserver(mBottomSheetObserver);
         } else {
@@ -275,8 +298,9 @@ class AccountSelectionMediator {
                     mClientMetadata, /*isAutoSignIn=*/false);
             return;
         }
-        hideContent();
+
         mDelegate.onAccountSelected(selectedAccount);
+        showVerifySheet(selectedAccount);
     }
 
     void onDismissed(@StateChangeReason int reason) {

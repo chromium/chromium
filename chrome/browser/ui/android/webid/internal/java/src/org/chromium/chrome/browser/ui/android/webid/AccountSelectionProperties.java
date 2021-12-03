@@ -76,7 +76,7 @@ class AccountSelectionProperties {
      * sheet.
      */
     static class HeaderProperties {
-        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN }
+        public enum HeaderType { SINGLE_ACCOUNT, MULTIPLE_ACCOUNT, SIGN_IN, VERIFY }
         static final ReadableObjectPropertyKey<Runnable> CLOSE_ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("close_on_click_listener");
         static final ReadableObjectPropertyKey<String> FORMATTED_IDP_URL =

@@ -138,4 +138,9 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
             boolean isAutoSignIn) {
         mMediator.showAccounts(rpUrl, idpUrl, accounts, idpMetadata, clientMetadata, isAutoSignIn);
     }
+
+    @Override
+    public void hideBottomSheet() {
+        mMediator.hideBottomSheet();
+    }
 }

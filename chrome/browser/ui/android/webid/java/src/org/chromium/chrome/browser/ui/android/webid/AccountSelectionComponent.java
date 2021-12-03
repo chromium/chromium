@@ -62,4 +62,9 @@ public interface AccountSelectionComponent {
     void showAccounts(GURL rpUrl, GURL idpUrl, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn);
+
+    /**
+     * Hides the outstanding bottom sheet.
+     */
+    void hideBottomSheet();
 }

@@ -335,7 +335,9 @@ public class AccountSelectionControllerTest {
 
         mSheetItems.get(2).model.get(ContinueButtonProperties.ON_CLICK_LISTENER).onResult(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
-        assertEquals("Incorrectly visible", false, mMediator.isVisible());
+        assertEquals(true, mMediator.isVisible());
+        mMediator.hideBottomSheet();
+        assertEquals(false, mMediator.isVisible());
     }
 
     @Test
@@ -348,7 +350,9 @@ public class AccountSelectionControllerTest {
 
         mSheetItems.get(1).model.get(AccountProperties.ON_CLICK_LISTENER).onResult(CARL);
         verify(mMockDelegate).onAccountSelected(CARL);
-        assertEquals("Incorrectly visible", false, mMediator.isVisible());
+        assertEquals(true, mMediator.isVisible());
+        mMediator.hideBottomSheet();
+        assertEquals(false, mMediator.isVisible());
     }
 
     @Test
@@ -378,7 +382,9 @@ public class AccountSelectionControllerTest {
                 CLIENT_ID_METADATA, false);
         mMediator.onAccountSelected(ANA);
         verify(mMockDelegate).onAccountSelected(ANA);
-        assertEquals("Incorrectly visible", false, mMediator.isVisible());
+        assertEquals(true, mMediator.isVisible());
+        mMediator.hideBottomSheet();
+        assertEquals(false, mMediator.isVisible());
     }
 
     @Test
@@ -421,7 +427,9 @@ public class AccountSelectionControllerTest {
         // Auto signs in if no action is taken.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mMockDelegate).onAccountSelected(ANA);
-        assertEquals("Incorrectly visible", false, mMediator.isVisible());
+        assertEquals(true, mMediator.isVisible());
+        mMediator.hideBottomSheet();
+        assertEquals(false, mMediator.isVisible());
     }
 
     @Test
@@ -483,6 +491,17 @@ public class AccountSelectionControllerTest {
                 dataSharingProperties.mFormattedRpUrl);
         assertEquals("Incorrect provider url", formatForSecurityDisplay(TEST_URL_2),
                 dataSharingProperties.mFormattedIdpUrl);
+    }
+
+    @Test
+    public void testShowVerifySheet() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showVerifySheet(ANA);
+
+        assertEquals(2, mSheetItems.size());
+        assertEquals(ItemType.HEADER, mSheetItems.get(0).type);
+        assertEquals(HeaderType.VERIFY, mSheetItems.get(0).model.get(TYPE));
+        assertEquals(ItemType.ACCOUNT, mSheetItems.get(1).type);
     }
 
     private void pressBack() {

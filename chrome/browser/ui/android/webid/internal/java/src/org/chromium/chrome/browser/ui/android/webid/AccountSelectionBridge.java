@@ -45,6 +45,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private void destroy() {
+        mAccountSelectionComponent.hideBottomSheet();
         mNativeView = 0;
     }
 

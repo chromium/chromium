@@ -297,6 +297,9 @@ class AccountSelectionViewBinder {
                 case SIGN_IN:
                     titleStringId = R.string.sign_in_sheet_title;
                     break;
+                case VERIFY:
+                    titleStringId = R.string.verify_sheet_title;
+                    break;
             }
 
             String title = String.format(view.getContext().getString(titleStringId),
