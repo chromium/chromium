@@ -82,8 +82,9 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
   EXPECT_EQ(url_spec, base::UTF16ToUTF8(output_string));
 }
 
-// Test that setting the URL does not overwrite a previously set custom string.
-TEST_F(OSExchangeDataTest, URLAndString) {
+// Test that setting the URL does not overwrite a previously set custom string
+// and that the synthesized URL shortcut file is ignored by GetFileContents().
+TEST_F(OSExchangeDataTest, URLStringFileContents) {
   OSExchangeData data;
   std::u16string string = u"I can has cheezburger?";
   data.SetString(string);
@@ -102,6 +103,15 @@ TEST_F(OSExchangeDataTest, URLAndString) {
                                   &output_url, &output_title));
   EXPECT_EQ(url_spec, output_url.spec());
   EXPECT_EQ(url_title, output_title);
+
+  // HasFileContents() should be false, and GetFileContents() should be empty
+  // (https://crbug.com/1274395).
+  EXPECT_FALSE(data.HasFileContents());
+  base::FilePath filename;
+  std::string contents;
+  EXPECT_FALSE(data.GetFileContents(&filename, &contents));
+  EXPECT_TRUE(filename.empty());
+  EXPECT_TRUE(contents.empty());
 }
 
 TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
