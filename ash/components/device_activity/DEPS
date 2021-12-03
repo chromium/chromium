@@ -2,6 +2,7 @@ include_rules = [
   "+crypto",
   "+google_apis",
   "+third_party/private_membership",
+  "+third_party/shell-encryption",
 ]
 
 specific_include_rules = {

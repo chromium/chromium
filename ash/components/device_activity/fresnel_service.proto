@@ -1,0 +1,61 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.device_activity;
+
+import "private_membership_rlwe.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// This proto represents the data transmitted over network
+// requests while reporting Device Actives to Fresnel server.
+
+// The Chrome OS device metadata. Currently the device metadata is empty.
+// Each new field to this message requires privacy approval.
+message DeviceMetadata {}
+
+// This proto will represent the data sent to Fresnel used to generate a PSM
+// import request on the server side.
+message ImportDataRequest {
+  // The Device active ping window timestamp depending on the RlweUseCase.
+  // This is the timestamp window of the unencrypted plaintext identifier.
+  optional string window_identifier = 1;
+
+  // Device active metadata sent along with active pings for counting purposes.
+  optional DeviceMetadata device_metadata = 2;
+
+  // The name of the use case associated with the plaintext_id.
+  optional private_membership.rlwe.RlweUseCase use_case = 3;
+
+  // The plaintext identifier.
+  optional string plaintext_identifier = 4;
+}
+
+// The request of PsmRlweOprf sent by the client for checking PSM membership.
+message FresnelPsmRlweOprfRequest {
+  optional private_membership.rlwe.PrivateMembershipRlweOprfRequest
+      rlwe_oprf_request = 1;
+}
+
+// The response of PsmRlweOprf sent by the Fresnel Service for checking
+// PSM membership.
+message FresnelPsmRlweOprfResponse {
+  optional private_membership.rlwe.PrivateMembershipRlweOprfResponse
+      rlwe_oprf_response = 1;
+}
+
+// The request of PsmRlweQuery sent by the client for checking PSM membership.
+message FresnelPsmRlweQueryRequest {
+  optional private_membership.rlwe.PrivateMembershipRlweQueryRequest
+      rlwe_query_request = 1;
+}
+
+// The response of PsmRlweQuery sent by the Fresnel Service for checking
+// PSM membership.
+message FresnelPsmRlweQueryResponse {
+  optional private_membership.rlwe.PrivateMembershipRlweQueryResponse
+      rlwe_query_response = 1;
+}

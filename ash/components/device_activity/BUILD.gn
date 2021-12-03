@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
@@ -11,6 +12,7 @@ component("device_activity") {
   defines = [ "IS_ASH_DEVICE_ACTIVITY_IMPL" ]
 
   deps = [
+    ":fresnel_service_proto",
     "//base",
     "//base:i18n",
     "//chromeos/network",
@@ -44,6 +46,7 @@ source_set("unit_tests") {
 
   deps = [
     ":device_activity",
+    ":fresnel_service_proto",
     "//base",
     "//base/test:test_support",
     "//chromeos/network",
@@ -55,4 +58,21 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/private_membership:private_membership",
   ]
+}
+
+proto_library("fresnel_service_proto") {
+  sources = [ "fresnel_service.proto" ]
+
+  extra_configs =
+      [ "//third_party/private_membership:private_membership_config" ]
+
+  import_dirs = [
+    "//third_party/private_membership/src",
+    "//third_party/shell-encryption/src",
+    ".",
+  ]
+
+  proto_in_dir = "//"
+
+  link_deps = [ "//third_party/private_membership:private_membership_proto" ]
 }
