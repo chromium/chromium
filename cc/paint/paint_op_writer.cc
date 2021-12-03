@@ -601,7 +601,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
     return;
   }
   WriteEnum(filter->type());
-  auto* crop_rect = filter->crop_rect();
+  auto* crop_rect = filter->GetCropRect();
   WriteSimple(static_cast<uint32_t>(!!crop_rect));
   if (crop_rect) {
     WriteSimple(*crop_rect);
