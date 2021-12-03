@@ -107,14 +107,12 @@ void EmbeddedSearchClientFactoryImpl::Connect(
 SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
                                  Delegate* delegate,
                                  std::unique_ptr<Policy> policy)
-    : WebContentsObserver(web_contents),
-      delegate_(delegate),
+    : delegate_(delegate),
       policy_(std::move(policy)),
       commit_counter_(0),
       is_active_tab_(false),
       embedded_search_client_factory_(
           new EmbeddedSearchClientFactoryImpl(web_contents, &receiver_)) {
-  DCHECK(web_contents);
   DCHECK(delegate);
   DCHECK(policy_.get());
 }

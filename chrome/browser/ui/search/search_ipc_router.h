@@ -18,7 +18,6 @@
 #include "chrome/common/search/search.mojom.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
 #if defined(OS_ANDROID)
@@ -28,6 +27,7 @@
 class GURL;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -35,8 +35,7 @@ class SearchIPCRouterTest;
 
 // SearchIPCRouter is responsible for receiving and sending IPC messages between
 // the browser and the Instant page.
-class SearchIPCRouter : public content::WebContentsObserver,
-                        public search::mojom::EmbeddedSearch {
+class SearchIPCRouter : public search::mojom::EmbeddedSearch {
  public:
   // SearchIPCRouter calls its delegate in response to messages received from
   // the page.
