@@ -215,9 +215,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("opened",
             EvalJs(current_frame_host(),
                    JsReplace("window.testOpenWebTransport($1);", port())));
-  // testOpenWebTransport sends the IPC (BackForwardCacheController::
-  // HostDidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a
-  // script to wait for the IPC reaching to the browser.
+  // testOpenWebTransport sends the IPC (BackForwardCacheController.
+  // DidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a script
+  // to wait for the IPC reaching to the browser.
   EXPECT_EQ(42, EvalJs(current_frame_host(), "42;"));
   EXPECT_TRUE(
       DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
@@ -263,9 +263,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("opened",
             EvalJs(current_frame_host(),
                    JsReplace("window.testOpenWebTransport($1);", port())));
-  // testOpenWebTransport sends the IPC (BackForwardCacheController::
-  // HostDidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a
-  // script to wait for the IPC reaching to the browser.
+  // testOpenWebTransport sends the IPC (BackForwardCacheController.
+  // DidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a script
+  // to wait for the IPC reaching to the browser.
   EXPECT_EQ(42, EvalJs(current_frame_host(), "42;"));
   EXPECT_TRUE(
       DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
@@ -277,9 +277,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("closed",
             EvalJs(current_frame_host(),
                    JsReplace("window.testCloseWebTransport($1);", port())));
-  // testOpenWebTransport sends the IPC (BackForwardCacheController::
-  // HostDidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a
-  // script to wait for the IPC reaching to the browser.
+  // testOpenWebTransport sends the IPC (BackForwardCacheController.
+  // DidChangeBackForwardCacheDisablingFeatures) from a renderer. Run a script
+  // to wait for the IPC reaching to the browser.
   EXPECT_EQ(42, EvalJs(current_frame_host(), "42;"));
   EXPECT_TRUE(DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
                   current_frame_host())
