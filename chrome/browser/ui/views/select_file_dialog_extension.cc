@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/extension_system.h"
@@ -205,6 +206,20 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
 
   void SetModal(bool modal) {
     set_modal_type(modal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE);
+  }
+
+  FrameKind GetWebDialogFrameKind() const override {
+    // The default is kDialog, however it doesn't allow to customize the title
+    // color and to make the dialog movable and re-sizable.
+    return FrameKind::kNonClient;
+  }
+
+  void AdjustWidgetInitParams(views::Widget::InitParams* params) override {
+    params->init_properties_container.SetProperty(
+        chromeos::kFrameActiveColorKey, kFilePickerActiveTitleColor);
+    // Enabling the color below makes the Browser process to crash:
+    // params->init_properties_container.SetProperty(chromeos::kFrameInactiveColorKey,
+    // kFilePickerInactiveTitleColor);
   }
 
   void GetMinimumDialogSize(gfx::Size* size) const override {
