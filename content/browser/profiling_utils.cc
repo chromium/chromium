@@ -19,11 +19,16 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_data.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/profiling_utils.h"
+
+#if defined(OS_WIN)
+#include "sandbox/policy/mojom/sandbox.mojom-shared.h"
+#endif
 
 namespace content {
 
@@ -116,6 +121,14 @@ void WaitForAllChildrenToDumpProfilingData() {
   // Ask all the other child processes to dump their profiling data
   for (content::BrowserChildProcessHostIterator browser_child_iter;
        !browser_child_iter.Done(); ++browser_child_iter) {
+#if defined(OS_WIN)
+    // On Windows, elevated processes are never passed the profiling data file
+    // so cannot dump their data.
+    if (browser_child_iter.GetData().sandbox_type ==
+        sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
+      continue;
+    }
+#endif
     browser_child_iter.GetHost()->DumpProfilingData(base::BindOnce(
         &base::WaitableEvent::Signal,
         base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));

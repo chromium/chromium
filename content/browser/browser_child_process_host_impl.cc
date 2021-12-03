@@ -8,6 +8,7 @@
 
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/dump_without_crashing.h"
@@ -65,6 +66,10 @@
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#endif
+
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+#include "content/public/common/profiling_utils.h"
 #endif
 
 namespace content {
@@ -323,6 +328,15 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
   // connection status notifications until we observe OnChannelConnected().
   if (!has_legacy_ipc_channel_)
     notify_child_connection_status_ = true;
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
+  bool is_elevated = false;
+#if defined(OS_WIN)
+  is_elevated = (delegate->GetSandboxType() ==
+                 sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges);
+#endif
+  if (!is_elevated)
+    child_process_host_->SetProfilingFile(OpenProfilingFile());
+#endif
 
   child_process_ = std::make_unique<ChildProcessLauncher>(
       std::move(delegate), std::move(cmd_line), data_.id, this,

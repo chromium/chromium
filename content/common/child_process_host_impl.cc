@@ -46,10 +46,6 @@
 #include "content/common/mac_helpers.h"
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
-#include "content/public/common/profiling_utils.h"
-#endif
-
 namespace {
 
 // Global atomic to generate child process unique IDs.
@@ -145,10 +141,6 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
     receiver_.set_disconnect_handler(
         base::BindOnce(&ChildProcessHostImpl::OnDisconnectedFromChildProcess,
                        base::Unretained(this)));
-
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
-    child_process_->SetProfilingFile(OpenProfilingFile());
-#endif
   }
 }
 
@@ -389,6 +381,10 @@ void ChildProcessHostImpl::OnBadMessageReceived(const IPC::Message& message) {
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 void ChildProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
   child_process_->WriteClangProfilingProfile(std::move(callback));
+}
+
+void ChildProcessHostImpl::SetProfilingFile(base::File file) {
+  child_process_->SetProfilingFile(std::move(file));
 }
 #endif
 

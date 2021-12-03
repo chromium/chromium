@@ -24,6 +24,7 @@
 #endif
 
 namespace base {
+class File;
 class FilePath;
 }
 
@@ -188,6 +189,10 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // Write out the accumulated code profiling profile to the configured file.
   // The callback is invoked once the profile has been flushed to disk.
   virtual void DumpProfilingData(base::OnceClosure callback) = 0;
+
+  // Sets the profiling file for the child process.
+  // Used for the coverage builds.
+  virtual void SetProfilingFile(base::File file) = 0;
 #endif
 };
 

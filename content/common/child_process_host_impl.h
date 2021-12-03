@@ -110,6 +110,7 @@ class CONTENT_EXPORT ChildProcessHostImpl
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   void DumpProfilingData(base::OnceClosure callback) override;
+  void SetProfilingFile(base::File file) override;
 #endif
 
   // The outgoing Mojo invitation which must be consumed to bootstrap Mojo IPC
