@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "url/mojom/url.mojom";
+
+// Corresponds to DlpRulesManager::Level enum.
+[Stable, Extensible]
+enum DlpRestrictionLevel {
+  kAllow = 0,
+  kReport = 1,
+  kWarn = 2,
+  kBlock = 3,
+};
+
+// Corresponds to RestrictionLevelAndUrl struct.
+[Stable, Extensible]
+struct DlpRestrictionLevelAndUrl {
+  DlpRestrictionLevel level@0;
+  url.mojom.Url url@1;
+};
+
+// Corresponds to DlpContentRestrictionSet class.
+[Stable, Extensible]
+struct DlpRestrictionSet {
+  DlpRestrictionLevelAndUrl screenshot@0;
+  DlpRestrictionLevelAndUrl privacy_screen@1;
+  DlpRestrictionLevelAndUrl print@2;
+  DlpRestrictionLevelAndUrl screen_share@3;
+};
+
+// Interface to communicate from Lacros DLP layer to Ash. Used to notify Ash
+// about changes in restrictions applied to web content in Lacros.
+[Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
+interface Dlp {
+  // Called when |restrictions| are changed for window with |window_id|.
+  DlpRestrictionsUpdated@0(string window_id, DlpRestrictionSet restrictions);
+};

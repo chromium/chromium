@@ -19,6 +19,7 @@ import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_settings_service.mojom";
+import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
@@ -91,8 +92,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 60
-// Next method id: 64
+// Next version: 61
+// Next method id: 65
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -200,6 +201,11 @@ interface Crosapi {
   // Added in 96.
   [MinVersion=55] BindDeviceSettingsService@59(
     pending_receiver<DeviceSettingsService> receiver);
+
+  // Binds the DLP (Data Leak Prevention) interface for notifying Ash about
+  // content restrictions applied to web content in Lacros.
+  // Added in M98.
+  [MinVersion=60] BindDlp@64(pending_receiver<Dlp> receiver);
 
   // Binds the DownloadController interface, which allows Lacros download
   // information to be passed into Ash Chrome.

@@ -35,6 +35,7 @@ class ClipboardHistoryAsh;
 class ContentProtectionAsh;
 class DeviceAttributesAsh;
 class DeviceSettingsAsh;
+class DlpAsh;
 class DownloadControllerAsh;
 class DriveIntegrationServiceAsh;
 class FeedbackAsh;
@@ -124,6 +125,7 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDeviceSettingsService(
       mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) override;
+  void BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) override;
   void BindHoldingSpaceService(
       mojo::PendingReceiver<mojom::HoldingSpaceService> receiver) override;
   void BindDownloadController(
@@ -279,6 +281,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
+  std::unique_ptr<DlpAsh> dlp_ash_;
   std::unique_ptr<DownloadControllerAsh> download_controller_ash_;
   std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;

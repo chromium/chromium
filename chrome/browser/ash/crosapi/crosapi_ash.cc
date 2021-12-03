@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_settings_ash.h"
+#include "chrome/browser/ash/crosapi/dlp_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
@@ -133,6 +134,7 @@ CrosapiAsh::CrosapiAsh()
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
+      dlp_ash_(std::make_unique<DlpAsh>()),
       download_controller_ash_(std::make_unique<DownloadControllerAsh>()),
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
@@ -449,6 +451,10 @@ void CrosapiAsh::BindDeviceAttributes(
 void CrosapiAsh::BindDeviceSettingsService(
     mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) {
   device_settings_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDlp(mojo::PendingReceiver<mojom::Dlp> receiver) {
+  dlp_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDownloadController(

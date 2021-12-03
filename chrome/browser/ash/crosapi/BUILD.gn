@@ -72,6 +72,8 @@ source_set("crosapi") {
     "device_attributes_ash.h",
     "device_settings_ash.cc",
     "device_settings_ash.h",
+    "dlp_ash.cc",
+    "dlp_ash.h",
     "download_controller_ash.cc",
     "download_controller_ash.h",
     "drive_integration_service_ash.cc",
