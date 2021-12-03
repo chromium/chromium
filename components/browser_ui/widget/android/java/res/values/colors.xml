@@ -8,9 +8,4 @@
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
     <color name="toolbar_text_box_background">@color/omnibox_bg_color</color>
     <color name="search_box_hint">@color/default_text_color_secondary</color>
-
-    <!-- Progress Bar colors -->
-    <color name="progress_bar_foreground">@color/default_control_color_active</color>
-    <color name="progress_bar_secondary">@color/modern_grey_600</color>
-    <color name="progress_bar_background">@color/progress_bar_background_deprecated</color>
 </resources>

@@ -116,7 +116,7 @@
     <color name="iph_highlight_blue_light">@color/modern_blue_300_alpha_50</color>
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
-    <!-- Same as ?attr/colorOnSurface. -->
+    <!-- Same as ?attr/colorPrimary. -->
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/baseline_primary_600</color>
     <color name="default_control_color_active_dark" tools:ignore="UnusedResources">@color/baseline_primary_200</color>
     <!-- Same as ?attr/colorOnSurfaceVariant. -->

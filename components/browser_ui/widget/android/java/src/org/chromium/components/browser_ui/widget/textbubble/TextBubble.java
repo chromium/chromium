@@ -27,6 +27,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -330,8 +331,8 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
                     mContext.getResources(), R.color.default_bg_color));
         } else {
-            mBubbleDrawable.setBubbleColor(ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_control_color_active));
+            mBubbleDrawable.setBubbleColor(
+                    SemanticColorUtils.getDefaultControlColorActive(mContext));
         }
         return mBubbleDrawable;
     }
@@ -514,8 +515,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         ImageView imageView = view.findViewById(R.id.image);
         imageView.setImageDrawable(mImageDrawable);
         if (mInverseColor) {
-            imageView.setColorFilter(ApiCompatibilityUtils.getColor(
-                    mContext.getResources(), R.color.default_control_color_active));
+            imageView.setColorFilter(SemanticColorUtils.getDefaultControlColorActive(mContext));
         }
         setText(view.findViewById(R.id.message));
         return view;

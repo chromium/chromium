@@ -347,7 +347,7 @@
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleInstance"
-        android:theme="@style/Theme.Chromium.AlertDialog.NoActionBar"
+        android:theme="@style/Theme.BrowserUI.AlertDialog.NoActionBar"
         android:windowSoftInputMode="stateHidden|adjustPan">
     </activity>  # DIFF-ANCHOR: 67932092
     <activity  # DIFF-ANCHOR: bb612a34

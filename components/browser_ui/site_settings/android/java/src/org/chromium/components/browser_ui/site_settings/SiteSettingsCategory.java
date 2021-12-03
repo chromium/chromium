@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.site_settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
@@ -24,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.subresource_filter.SubresourceFilterFeatureList;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -368,8 +368,7 @@ public class SiteSettingsCategory {
         String globalMessage = getMessageForEnablingOsGlobalPermission(context);
         String unsupportedMessage = getMessageIfNotSupported(context);
 
-        Resources resources = context.getResources();
-        int color = ApiCompatibilityUtils.getColor(resources, R.color.default_control_color_active);
+        int color = SemanticColorUtils.getDefaultControlColorActive(context);
         ForegroundColorSpan linkSpan = new ForegroundColorSpan(color);
 
         if (perAppIntent != null) {
@@ -410,8 +409,7 @@ public class SiteSettingsCategory {
         Drawable icon = ApiCompatibilityUtils.getDrawable(
                 context.getResources(), R.drawable.exclamation_triangle);
         icon.mutate();
-        int disabledColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.default_control_color_active);
+        int disabledColor = SemanticColorUtils.getDefaultControlColorActive(context);
         icon.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN);
         return icon;
     }

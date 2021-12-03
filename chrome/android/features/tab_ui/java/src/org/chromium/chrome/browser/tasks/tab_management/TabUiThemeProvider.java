@@ -524,7 +524,7 @@ public class TabUiThemeProvider {
         if (!themeRefactorEnabled()) {
             return ApiCompatibilityUtils.getColor(context.getResources(),
                     isIncognito ? R.color.default_control_color_active_dark
-                                : R.color.default_control_color_active);
+                                : R.color.default_control_color_active_baseline);
         } else {
             if (isIncognito) {
                 return ApiCompatibilityUtils.getColor(context.getResources(),

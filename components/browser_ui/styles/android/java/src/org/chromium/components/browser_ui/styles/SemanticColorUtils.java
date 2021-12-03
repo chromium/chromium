@@ -75,4 +75,14 @@ public class SemanticColorUtils {
     public static @ColorInt int getTabGridCardDividerTintColor(Context context) {
         return getDividerLineBgColor(context);
     }
+
+    /** Returns the semantic color value that corresponds to default_control_color_active. */
+    public static @ColorInt int getDefaultControlColorActive(Context context) {
+        return resolve(R.attr.colorPrimary, R.color.default_control_color_active_baseline, context);
+    }
+
+    /** Returns the semantic color value that corresponds to progress_bar_foreground. */
+    public static @ColorInt int getProgressBarForeground(Context context) {
+        return getDefaultControlColorActive(context);
+    }
 }

@@ -22,7 +22,7 @@
     <color name="tab_grid_card_thumbnail_placeholder_color">@color/default_bg_color_secondary</color>
     <color name="tab_grid_card_thumbnail_placeholder_color_incognito">@color/default_bg_color_dark_elev_3</color>
 
-    <color name="tab_grid_card_selected_color">@color/default_control_color_active</color>
+    <color name="tab_grid_card_selected_color">@color/default_control_color_active_baseline</color>
     <color name="tab_grid_card_selected_color_incognito">@color/default_control_color_active_dark</color>
 
     <!-- Tab Group related colors. -->

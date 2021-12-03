@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.third_party.android.swiperefresh.CircleImageView;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
@@ -64,7 +65,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         instance.setProgressBackgroundColorSchemeResource(
                 org.chromium.ui.R.color.default_bg_color_elev_2);
-        instance.setColorSchemeResources(org.chromium.ui.R.color.default_control_color_active);
+        instance.setColorSchemeColors(SemanticColorUtils.getDefaultControlColorActive(activity));
         instance.setEnabled(false);
         final DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
         instance.setProgressViewOffset(false, (int) (SPINNER_START_OFFSET * metrics.density),

@@ -32,6 +32,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -69,6 +70,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.T
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -1479,9 +1481,10 @@ class TabListMediator {
             // TODO(995876): Update color modern_blue_300 to active_color_dark when the associated
             // bug is landed.
             ColorStateList actionbuttonSelectedBackgroundColorList =
-                    AppCompatResources.getColorStateList(mContext,
-                            pseudoTab.isIncognito() ? R.color.modern_blue_300
-                                                    : R.color.default_control_color_active);
+                    ColorStateList.valueOf(pseudoTab.isIncognito()
+                                    ? ApiCompatibilityUtils.getColor(
+                                            mContext.getResources(), R.color.modern_blue_300)
+                                    : SemanticColorUtils.getDefaultControlColorActive(mContext));
 
             tabInfo.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, checkedDrawableColorList);
             tabInfo.set(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,

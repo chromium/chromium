@@ -19,7 +19,6 @@
 
     <!-- Control colors for toggles, checkboxes, ratio buttons, list item highlight, and accent.
      Note that these should NOT be used for icon tint. -->
-    <color name="control_normal_color">@color/default_control_color_normal_light</color>
     <color name="control_highlight_color" tools:ignore="UnusedResources">
         @color/default_control_color_highlight_light
     </color>
@@ -35,4 +34,8 @@
     <!-- This is the color that will appear on the system recents UI. It is a neutral background
          color that adapts to dark/light modes but not a dynamic color. -->
     <color name="default_task_description_color">@color/default_bg_color</color>
+
+    <!-- Progress Bar colors -->
+    <macro name="progress_bar_foreground">@macro/default_control_color_active</macro>
+    <color name="progress_bar_secondary">@color/modern_grey_600</color>
 </resources>

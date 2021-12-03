@@ -94,6 +94,7 @@
 
     <!-- TODO(https://crbug.com/1242702): Rename to ThemeOverlay.Chromium.AlertDialog. -->
     <!-- AlertDialog styles -->
+    <!-- This should be kept in sync with |Theme.BrowserUI.AlertDialog.NoActionBar|. -->
     <style name="Base.Theme.Chromium.AlertDialog"
         parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:textColorPrimary">@macro/default_text_color</item>
@@ -102,11 +103,7 @@
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
 
         <!--  Overriding AppCompat values -->
-        <item name="colorAccent">@color/default_control_color_active</item>
-        <item name="colorControlActivated">@color/default_control_color_active</item>
-        <item name="colorControlNormal">@color/control_normal_color</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
-        <item name="colorPrimary">@color/default_control_color_active</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
 
         <!-- Depending on if the support library or framework is inflating the
@@ -117,7 +114,6 @@
         <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
     </style>
-
     <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
 
     <style name="Theme.Chromium.AlertDialog.NoActionBar">

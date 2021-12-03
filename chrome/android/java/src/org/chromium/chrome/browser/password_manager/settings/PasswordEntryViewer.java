@@ -35,12 +35,12 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.password_manager.ReauthResult;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -146,9 +146,8 @@ public class PasswordEntryViewer
             } else {
                 mView.findViewById(R.id.password_data).setVisibility(View.GONE);
                 if (isPasswordSyncingUser()) {
-                    ForegroundColorSpan colorSpan =
-                            new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                                    getResources(), R.color.default_control_color_active));
+                    ForegroundColorSpan colorSpan = new ForegroundColorSpan(
+                            SemanticColorUtils.getDefaultControlColorActive(getContext()));
                     SpannableString passwordLink =
                             SpanApplier.applySpans(getString(R.string.manage_passwords_text),
                                     new SpanApplier.SpanInfo("<link>", "</link>", colorSpan));

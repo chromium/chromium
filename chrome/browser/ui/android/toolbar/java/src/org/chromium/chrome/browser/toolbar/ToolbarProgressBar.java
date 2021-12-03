@@ -27,6 +27,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -454,10 +455,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
 
         // The default toolbar has specific colors to use.
         if ((isDefaultTheme || ColorUtils.isThemeColorTooBright(color)) && !isIncognito) {
-            setForegroundColor(ApiCompatibilityUtils.getColor(
-                    getResources(), R.color.progress_bar_foreground));
-            setBackgroundColor(ApiCompatibilityUtils.getColor(
-                    getResources(), R.color.progress_bar_background));
+            setForegroundColor(SemanticColorUtils.getProgressBarForeground(getContext()));
+            setBackgroundColor(getContext().getColor(R.color.progress_bar_bg_color));
             return;
         }
 

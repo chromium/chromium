@@ -6,6 +6,5 @@
 <resources>
     <!-- Control colors for toggles, checkboxes, radio buttons, list item highlight, and accent.
          Note that these should NOT be used for icon tint. -->
-    <color name="control_normal_color">@color/default_control_color_normal_dark</color>
     <color name="control_highlight_color">@color/default_control_color_highlight_dark</color>
 </resources>

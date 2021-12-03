@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -127,10 +128,11 @@ public abstract class LanguageItemListFragment
                         scrollView, inflatedView.findViewById(R.id.shadow)));
 
         TextView addLanguageButton = (TextView) inflatedView.findViewById(R.id.add_language);
+        final TintedDrawable tintedDrawable =
+                TintedDrawable.constructTintedDrawable(getContext(), R.drawable.plus);
+        tintedDrawable.setTint(SemanticColorUtils.getDefaultControlColorActive(getContext()));
         addLanguageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                TintedDrawable.constructTintedDrawable(
-                        getContext(), R.drawable.plus, R.color.default_control_color_active),
-                null, null, null);
+                tintedDrawable, null, null, null);
 
         addLanguageButton.setOnClickListener(view -> { // Lambda for View.OnClickListener
             recordAddLanguageImpression();

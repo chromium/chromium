@@ -6,6 +6,6 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
         android:width="2dp"
-        android:color="@color/default_control_color_active" />
+        android:color="@macro/default_control_color_active" />
     <corners android:radius="@dimen/tab_list_card_radius" />
 </shape>

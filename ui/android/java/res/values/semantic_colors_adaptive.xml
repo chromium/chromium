@@ -72,8 +72,8 @@
     <color name="ripple_color_blue">@color/ripple_color_blue_dark</color>
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
-    <color name="default_control_color_normal" tools:ignore="UnusedResources">@color/default_control_color_normal_light</color>
-    <color name="default_control_color_active" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
+    <color name="default_control_color_normal_baseline" tools:ignore="UnusedResources">@color/default_control_color_normal_light</color>
+    <color name="default_control_color_active_baseline" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
 
     <!-- Chip colors -->
     <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>

@@ -30,6 +30,4 @@
     <color name="find_result_bar_result_border" tools:ignore="UnusedResources">#C9AF35</color>
     <color name="find_result_bar_active" tools:ignore="UnusedResources">#FF9632</color>
     <color name="find_result_bar_active_border" tools:ignore="UnusedResources">#C37E3B</color>
-
-    <color name="progress_bar_background_deprecated" tools:ignore="UnusedResources">#3D4386F7</color>
 </resources>

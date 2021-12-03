@@ -13,7 +13,7 @@
     <item android:maxLevel="@integer/list_item_level_selected">
         <shape android:shape="rectangle">
             <corners android:radius="@dimen/list_item_v2_start_icon_corner_radius" />
-            <solid android:color="@color/default_control_color_active" />
+            <solid android:color="@macro/default_control_color_active" />
         </shape>
     </item>
     <item android:maxLevel="@integer/list_item_level_incognito">

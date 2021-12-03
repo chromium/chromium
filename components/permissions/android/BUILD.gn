@@ -22,6 +22,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "res/color/item_chooser_row_background.xml",
     "res/color/item_chooser_row_icon_color.xml",
     "res/color/item_chooser_row_text_color.xml",
     "res/drawable-hdpi/exclamation_triangle.png",
@@ -82,7 +83,6 @@ android_resources("java_resources") {
     "res/drawable/ic_signal_cellular_2_bar.xml",
     "res/drawable/ic_signal_cellular_3_bar.xml",
     "res/drawable/ic_signal_cellular_4_bar.xml",
-    "res/drawable/item_chooser_row_background.xml",
     "res/layout/bluetooth_scanning_permission_dialog.xml",
     "res/layout/bluetooth_scanning_permission_dialog_row.xml",
     "res/layout/device_item_list.xml",

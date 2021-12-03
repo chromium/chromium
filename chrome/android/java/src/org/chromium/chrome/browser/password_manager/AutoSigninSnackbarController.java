@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -46,8 +46,7 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
                 new AutoSigninSnackbarController(snackbarManager, tab);
         Snackbar snackbar = Snackbar.make(
                 text, snackbarController, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_LOGIN);
-        int backgroundColor = ApiCompatibilityUtils.getColor(
-                activity.getResources(), R.color.default_control_color_active);
+        int backgroundColor = SemanticColorUtils.getDefaultControlColorActive(activity);
         Drawable icon = AppCompatResources.getDrawable(activity, R.drawable.logo_avatar_anonymous);
         snackbar.setSingleLine(false)
                 .setBackgroundColor(backgroundColor)

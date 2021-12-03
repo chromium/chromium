@@ -57,8 +57,8 @@
     <color name="ripple_color_blue">@color/ripple_color_blue_light</color>
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
-    <color name="default_control_color_normal">@color/default_control_color_normal_dark</color>
-    <color name="default_control_color_active">@color/default_control_color_active_dark</color>
+    <color name="default_control_color_normal_baseline">@color/default_control_color_normal_dark</color>
+    <color name="default_control_color_active_baseline">@color/default_control_color_active_dark</color>
 
     <!-- Chip colors -->
     <color name="default_chip_outline_color">@color/default_chip_outline_color_dark</color>
