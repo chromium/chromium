@@ -1964,6 +1964,8 @@ static_library("ui") {
       "app_list/search/omnibox_result.h",
       "app_list/search/os_settings_provider.cc",
       "app_list/search/os_settings_provider.h",
+      "app_list/search/ranking/answer_ranker.cc",
+      "app_list/search/ranking/answer_ranker.h",
       "app_list/search/ranking/category_item_ranker.cc",
       "app_list/search/ranking/category_item_ranker.h",
       "app_list/search/ranking/category_usage_ranker.cc",
