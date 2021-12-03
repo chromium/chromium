@@ -102,9 +102,9 @@ class Mediator final : public FeatureStatusTracker::Observer,
 
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;
   std::unique_ptr<ScannerBroker> scanner_broker_;
-  std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
   std::unique_ptr<PairerBroker> pairer_broker_;
+  std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector_;
   std::unique_ptr<UIBroker> ui_broker_;
   std::unique_ptr<FastPairRepository> fast_pair_repository_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
@@ -117,11 +117,11 @@ class Mediator final : public FeatureStatusTracker::Observer,
       feature_status_tracker_observation_{this};
   base::ScopedObservation<ScannerBroker, ScannerBroker::Observer>
       scanner_broker_observation_{this};
+  base::ScopedObservation<PairerBroker, PairerBroker::Observer>
+      pairer_broker_observation_{this};
   base::ScopedObservation<RetroactivePairingDetector,
                           RetroactivePairingDetector::Observer>
       retroactive_pairing_detector_observation_{this};
-  base::ScopedObservation<PairerBroker, PairerBroker::Observer>
-      pairer_broker_observation_{this};
   base::ScopedObservation<UIBroker, UIBroker::Observer> ui_broker_observation_{
       this};
 };

@@ -135,13 +135,13 @@ class RetroactivePairingDetectorImpl final
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<RetroactivePairingDetector::Observer> observers_;
 
-  base::ScopedObservation<MessageStreamLookup, MessageStreamLookup::Observer>
-      message_stream_lookup_observation_{this};
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};
   base::ScopedObservation<PairerBroker, PairerBroker::Observer>
       pairer_broker_observation_{this};
+  base::ScopedObservation<MessageStreamLookup, MessageStreamLookup::Observer>
+      message_stream_lookup_observation_{this};
   base::WeakPtrFactory<RetroactivePairingDetectorImpl> weak_ptr_factory_{this};
 };
 

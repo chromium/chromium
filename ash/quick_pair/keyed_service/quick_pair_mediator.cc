@@ -74,9 +74,9 @@ Mediator::Mediator(
     std::unique_ptr<QuickPairProcessManager> process_manager)
     : feature_status_tracker_(std::move(feature_status_tracker)),
       scanner_broker_(std::move(scanner_broker)),
-      retroactive_pairing_detector_(std::move(retroactive_pairing_detector)),
       message_stream_lookup_(std::move(message_stream_lookup)),
       pairer_broker_(std::move(pairer_broker)),
+      retroactive_pairing_detector_(std::move(retroactive_pairing_detector)),
       ui_broker_(std::move(ui_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)),
       process_manager_(std::move(process_manager)),
