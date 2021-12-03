@@ -1878,6 +1878,13 @@ void Browser::EnumerateDirectory(
   FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
 }
 
+bool Browser::CanEnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  return exclusive_access_manager_->fullscreen_controller()
+      ->CanEnterFullscreenModeForTab(requesting_frame, options.display_id);
+}
+
 void Browser::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {

@@ -443,8 +443,15 @@ class CONTENT_EXPORT WebContentsDelegate {
                                base::OnceCallback<void()> on_confirm,
                                base::OnceCallback<void()> on_cancel);
 
+  // Returns whether entering fullscreen with |EnterFullscreenModeForTab()| is
+  // allowed.
+  virtual bool CanEnterFullscreenModeForTab(
+      RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options);
+
   // Called when the renderer puts a tab into fullscreen mode.
   // |requesting_frame| is the specific content frame requesting fullscreen.
+  // |CanEnterFullscreenModeForTab()| must return true on entry.
   virtual void EnterFullscreenModeForTab(
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) {}

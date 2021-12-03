@@ -277,8 +277,11 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
       content::WebContents* const active_tab =
           GetBrowser()->tab_strip_model()->GetActiveWebContents();
       if (event == TAB_FULLSCREEN_TRUE) {
-        GetFullscreenController()->EnterFullscreenModeForTab(
-            active_tab->GetMainFrame());
+        if (GetFullscreenController()->CanEnterFullscreenModeForTab(
+                active_tab->GetMainFrame())) {
+          GetFullscreenController()->EnterFullscreenModeForTab(
+              active_tab->GetMainFrame());
+        }
       } else {
         GetFullscreenController()->ExitFullscreenModeForTab(active_tab);
       }
