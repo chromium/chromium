@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -33,8 +35,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"

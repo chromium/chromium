@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/arc/mojom/app.mojom.h"
 
 namespace extensions {
 class Extension;

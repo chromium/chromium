@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -21,7 +22,6 @@
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "content/public/test/browser_task_environment.h"

@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"

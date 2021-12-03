@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

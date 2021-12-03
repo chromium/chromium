@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -35,8 +37,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

@@ -10,6 +10,7 @@
 
 #include "apps/launcher.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
@@ -70,7 +71,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/custom_tab.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -695,8 +695,8 @@ void ChromeNewWindowClient::OpenArcCustomTab(
       std::move(web_contents), /* foreground= */ true);
 
   // TODO(crbug.com/955171): Remove this temporary conversion to InterfacePtr
-  // once OnOpenCustomTab from //components/arc/mojom/intent_helper.mojom could
-  // take pending_remote directly. Refer to crrev.com/c/1868870.
+  // once OnOpenCustomTab from //ash/components/arc/mojom/intent_helper.mojom
+  // could take pending_remote directly. Refer to crrev.com/c/1868870.
   auto custom_tab_remote(
       CustomTabSessionImpl::Create(std::move(custom_tab), custom_tab_browser));
   std::move(callback).Run(std::move(custom_tab_remote));

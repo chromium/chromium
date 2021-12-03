@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/models/image_model.h"

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -59,7 +60,6 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"

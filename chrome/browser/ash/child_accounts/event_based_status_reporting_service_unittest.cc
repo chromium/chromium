@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -20,7 +21,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"

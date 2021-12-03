@@ -7,11 +7,11 @@
 
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
-#include "components/arc/mojom/file_system.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 

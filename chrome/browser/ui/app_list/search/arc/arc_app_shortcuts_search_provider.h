@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "components/arc/mojom/app.mojom-forward.h"
 
 class AppListControllerDelegate;
 class Profile;

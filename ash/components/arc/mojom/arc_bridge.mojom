@@ -7,6 +7,8 @@ module arc.mojom;
 import "ash/components/arc/mojom/accessibility_helper.mojom";
 import "ash/components/arc/mojom/adbd.mojom";
 import "ash/components/arc/mojom/appfuse.mojom";
+import "ash/components/arc/mojom/app.mojom";
+import "ash/components/arc/mojom/app_permissions.mojom";
 import "ash/components/arc/mojom/audio.mojom";
 import "ash/components/arc/mojom/auth.mojom";
 import "ash/components/arc/mojom/backup_settings.mojom";
@@ -16,14 +18,17 @@ import "ash/components/arc/mojom/camera.mojom";
 import "ash/components/arc/mojom/cast_receiver.mojom";
 import "ash/components/arc/mojom/cert_store.mojom";
 import "ash/components/arc/mojom/clipboard.mojom";
+import "ash/components/arc/mojom/compatibility_mode.mojom";
 import "ash/components/arc/mojom/crash_collector.mojom";
 import "ash/components/arc/mojom/dark_theme.mojom";
 import "ash/components/arc/mojom/digital_goods.mojom";
 import "ash/components/arc/mojom/disk_quota.mojom";
 import "ash/components/arc/mojom/enterprise_reporting.mojom";
+import "ash/components/arc/mojom/file_system.mojom";
 import "ash/components/arc/mojom/iio_sensor.mojom";
 import "ash/components/arc/mojom/ime.mojom";
 import "ash/components/arc/mojom/input_method_manager.mojom";
+import "ash/components/arc/mojom/intent_helper.mojom";
 import "ash/components/arc/mojom/keyboard_shortcut.mojom";
 import "ash/components/arc/mojom/keymaster.mojom";
 import "ash/components/arc/mojom/kiosk.mojom";
@@ -58,11 +63,6 @@ import "ash/components/arc/mojom/volume_mounter.mojom";
 import "ash/components/arc/mojom/wake_lock.mojom";
 import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
-import "components/arc/mojom/app.mojom";
-import "components/arc/mojom/app_permissions.mojom";
-import "components/arc/mojom/compatibility_mode.mojom";
-import "components/arc/mojom/file_system.mojom";
-import "components/arc/mojom/intent_helper.mojom";
 
 // Next MinVersion: 61
 // Deprecated method IDs: 101, 105, 121

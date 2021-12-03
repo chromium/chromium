@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/mojom/intent_common.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
@@ -52,9 +55,6 @@
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/mojom/intent_common.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"

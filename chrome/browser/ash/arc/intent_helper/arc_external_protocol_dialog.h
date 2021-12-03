@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"

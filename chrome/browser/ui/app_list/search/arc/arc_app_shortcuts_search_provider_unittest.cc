@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
-#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {

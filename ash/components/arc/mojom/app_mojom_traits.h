@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
 
+#include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "components/arc/app/arc_playstore_search_request_state.h"
-#include "components/arc/mojom/app.mojom-shared.h"
 
 namespace mojo {
 
@@ -122,4 +122,4 @@ struct EnumTraits<arc::mojom::AppDiscoveryRequestState,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_MOJOM_APP_MOJOM_TRAITS_H_

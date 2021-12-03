@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -20,7 +21,6 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"

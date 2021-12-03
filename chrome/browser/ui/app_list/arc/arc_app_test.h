@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
 
 namespace arc {
 namespace mojom {

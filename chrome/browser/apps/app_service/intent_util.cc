@@ -34,6 +34,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/mojom/intent_common.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/file_path.h"
@@ -42,8 +44,6 @@
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
-#include "components/arc/mojom/intent_common.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif
 

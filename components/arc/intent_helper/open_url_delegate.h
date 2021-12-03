@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 #define COMPONENTS_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 
-#include "components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 
 class GURL;
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/mojom/file_system.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -11,11 +11,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/intent_helper/activity_icon_loader.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 

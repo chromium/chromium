@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item.h"
@@ -53,7 +54,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_pause_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "content/public/test/browser_test.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {

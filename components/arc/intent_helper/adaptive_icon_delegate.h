@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/callback.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace arc {

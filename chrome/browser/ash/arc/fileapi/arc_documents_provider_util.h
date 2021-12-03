@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "base/files/file_path.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
 
 class GURL;
 

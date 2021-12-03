@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INTENT_HELPER_INTENT_FILTER_MOJOM_TRAITS_H_
-#define COMPONENTS_ARC_INTENT_HELPER_INTENT_FILTER_MOJOM_TRAITS_H_
+#ifndef ASH_COMPONENTS_ARC_INTENT_HELPER_INTENT_FILTER_MOJOM_TRAITS_H_
+#define ASH_COMPONENTS_ARC_INTENT_HELPER_INTENT_FILTER_MOJOM_TRAITS_H_
 
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
 #include "base/containers/span.h"
 #include "components/arc/intent_helper/intent_filter.h"
-#include "components/arc/mojom/intent_helper.mojom-shared.h"
 
 namespace mojo {
 
@@ -94,4 +94,4 @@ struct StructTraits<arc::mojom::PatternMatcherDataView,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ARC_INTENT_HELPER_INTENT_FILTER_MOJOM_TRAITS_H_
+#endif  // ASH_COMPONENTS_ARC_INTENT_HELPER_INTENT_FILTER_MOJOM_TRAITS_H_

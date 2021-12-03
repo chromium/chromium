@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

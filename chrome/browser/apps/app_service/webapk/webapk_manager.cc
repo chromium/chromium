@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"

@@ -8,11 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_application_info.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;

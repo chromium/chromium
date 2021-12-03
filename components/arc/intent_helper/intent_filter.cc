@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "url/gurl.h"
 

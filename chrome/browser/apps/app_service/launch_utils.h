@@ -20,7 +20,7 @@
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/app.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Browser;

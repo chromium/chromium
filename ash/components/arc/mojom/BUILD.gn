@@ -17,6 +17,8 @@ if (is_chromeos_ash) {
       "accessibility_helper.mojom",
       "adbd.mojom",
       "anr.mojom",
+      "app.mojom",
+      "app_permissions.mojom",
       "appfuse.mojom",
       "arc_bridge.mojom",
       "audio.mojom",
@@ -28,14 +30,18 @@ if (is_chromeos_ash) {
       "cast_receiver.mojom",
       "cert_store.mojom",
       "clipboard.mojom",
+      "compatibility_mode.mojom",
       "crash_collector.mojom",
       "dark_theme.mojom",
       "digital_goods.mojom",
       "disk_quota.mojom",
       "enterprise_reporting.mojom",
+      "file_system.mojom",
       "iio_sensor.mojom",
       "ime.mojom",
       "input_method_manager.mojom",
+      "intent_common.mojom",
+      "intent_helper.mojom",
       "keyboard_shortcut.mojom",
       "keymaster.mojom",
       "kiosk.mojom",
@@ -56,6 +62,7 @@ if (is_chromeos_ash) {
       "process.mojom",
       "property.mojom",
       "rotation_lock.mojom",
+      "scale_factor.mojom",
       "screen_capture.mojom",
       "sensor.mojom",
       "sensor_service.mojom",
@@ -96,6 +103,15 @@ if (is_chromeos_ash) {
       {
         types = [
           {
+            mojom = "arc.mojom.AppDiscoveryRequestState"
+            cpp = "::arc::ArcPlayStoreSearchRequestState"
+          },
+        ]
+        traits_headers = [ "app_mojom_traits.h" ]
+      },
+      {
+        types = [
+          {
             mojom = "arc.mojom.BluetoothDeviceType"
             cpp = "::device::BluetoothTransport"
           },
@@ -131,6 +147,19 @@ if (is_chromeos_ash) {
       {
         types = [
           {
+            mojom = "arc.mojom.ChangeType"
+            cpp = "::storage::WatcherManager::ChangeType"
+          },
+        ]
+        traits_headers =
+            [ "//ash/components/arc/file_system/file_system_mojom_traits.h" ]
+        traits_sources =
+            [ "//ash/components/arc/file_system/file_system_mojom_traits.cc" ]
+        traits_public_deps = [ "//storage/browser" ]
+      },
+      {
+        types = [
+          {
             mojom = "arc.mojom.TextInputType"
             cpp = "::ui::TextInputType"
           },
@@ -144,6 +173,31 @@ if (is_chromeos_ash) {
         traits_public_deps = [
           "//ui/base/ime",
           "//ui/events",
+        ]
+      },
+      {
+        types = [
+          {
+            mojom = "arc.mojom.IntentFilter"
+            cpp = "::arc::IntentFilter"
+            move_only = true
+          },
+          {
+            mojom = "arc.mojom.AuthorityEntry"
+            cpp = "::arc::IntentFilter::AuthorityEntry"
+            move_only = true
+          },
+          {
+            mojom = "arc.mojom.PatternMatcher"
+            cpp = "::arc::IntentFilter::PatternMatcher"
+            move_only = true
+          },
+        ]
+        traits_headers = [
+          "//ash/components/arc/intent_helper/intent_filter_mojom_traits.h",
+        ]
+        traits_sources = [
+          "//ash/components/arc/intent_helper/intent_filter_mojom_traits.cc",
         ]
       },
       {

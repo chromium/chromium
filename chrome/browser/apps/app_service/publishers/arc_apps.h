@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/callback.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"

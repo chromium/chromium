@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "url/gurl.h"
 
 namespace content {

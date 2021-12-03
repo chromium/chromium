@@ -12,13 +12,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "components/arc/mojom/file_system.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/watcher_manager.h"
 

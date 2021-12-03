@@ -10,4 +10,7 @@ specific_include_rules = {
     "+ash/wm/window_state_observer.h",
     "+components/app_restore/full_restore_utils.h",
   ],
+  "chrome/browser/ui/views/apps/app_dialog/app_dialog_view_browsertest.cc": [
+    "+ash/components/arc/mojom/app.mojom.h",
+  ],
 }

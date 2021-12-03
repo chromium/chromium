@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/mojom/app.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

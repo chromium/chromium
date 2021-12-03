@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_COMPAT_MODE_METRICS_H_
 #define ASH_COMPONENTS_ARC_COMPAT_MODE_METRICS_H_
 
-#include "components/arc/mojom/compatibility_mode.mojom.h"
+#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 
 namespace arc {
 

@@ -7,6 +7,8 @@
 // These header is necessary for instantiation of ConnectionHolder.
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "ash/components/arc/mojom/adbd.mojom.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "ash/components/arc/mojom/appfuse.mojom.h"
 #include "ash/components/arc/mojom/arc_bridge.mojom.h"
 #include "ash/components/arc/mojom/audio.mojom.h"
@@ -22,9 +24,11 @@
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "ash/components/arc/mojom/iio_sensor.mojom.h"
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/kiosk.mojom.h"
@@ -56,10 +60,6 @@
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
 #include "ash/components/arc/mojom/wake_lock.mojom.h"
 #include "ash/components/arc/mojom/wallpaper.mojom.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/app_permissions.mojom.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 
 namespace arc {
 

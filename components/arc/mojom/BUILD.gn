@@ -10,17 +10,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 # inclusion is done through read_file(), which does not respect the global
 # defines for GN, so it itself cannot use the "is_chromeos" variable.
 if (is_chromeos_ash) {
+  # TODO(b:129295708): Remove this target in next CL.
   mojom("mojom") {
-    sources = [
-      "app.mojom",
-      "app_permissions.mojom",
-      "compatibility_mode.mojom",
-      "file_system.mojom",
-      "intent_common.mojom",
-      "intent_helper.mojom",
-      "scale_factor.mojom",
-    ]
-
     public_deps = [
       "//ash/components/arc/mojom:camera_intent",
       "//ash/components/arc/mojom:media",
@@ -39,54 +30,6 @@ if (is_chromeos_ash) {
       "//ui/accessibility/mojom:ax_assistant_mojom",
       "//ui/gfx/geometry/mojom",
       "//url/mojom:url_mojom_gurl",
-    ]
-
-    cpp_typemaps = [
-      {
-        types = [
-          {
-            mojom = "arc.mojom.AppDiscoveryRequestState"
-            cpp = "::arc::ArcPlayStoreSearchRequestState"
-          },
-        ]
-        traits_headers = [ "app_mojom_traits.h" ]
-      },
-      {
-        types = [
-          {
-            mojom = "arc.mojom.ChangeType"
-            cpp = "::storage::WatcherManager::ChangeType"
-          },
-        ]
-        traits_headers =
-            [ "//components/arc/file_system/file_system_mojom_traits.h" ]
-        traits_sources =
-            [ "//components/arc/file_system/file_system_mojom_traits.cc" ]
-        traits_public_deps = [ "//storage/browser" ]
-      },
-      {
-        types = [
-          {
-            mojom = "arc.mojom.IntentFilter"
-            cpp = "::arc::IntentFilter"
-            move_only = true
-          },
-          {
-            mojom = "arc.mojom.AuthorityEntry"
-            cpp = "::arc::IntentFilter::AuthorityEntry"
-            move_only = true
-          },
-          {
-            mojom = "arc.mojom.PatternMatcher"
-            cpp = "::arc::IntentFilter::PatternMatcher"
-            move_only = true
-          },
-        ]
-        traits_headers =
-            [ "//components/arc/intent_helper/intent_filter_mojom_traits.h" ]
-        traits_sources =
-            [ "//components/arc/intent_helper/intent_filter_mojom_traits.cc" ]
-      },
     ]
   }
 }

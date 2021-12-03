@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_common.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -20,8 +22,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
-#include "components/arc/mojom/intent_common.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"

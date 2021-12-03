@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/arc/mojom/file_system.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

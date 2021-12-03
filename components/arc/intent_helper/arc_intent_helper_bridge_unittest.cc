@@ -9,15 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
-#include "components/arc/mojom/intent_helper.mojom-shared.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

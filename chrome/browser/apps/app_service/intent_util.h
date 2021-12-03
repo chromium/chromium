@@ -19,8 +19,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/mojom/intent_common.mojom-forward.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/mojom/intent_common.mojom-forward.h"
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
 class IntentFilter;
