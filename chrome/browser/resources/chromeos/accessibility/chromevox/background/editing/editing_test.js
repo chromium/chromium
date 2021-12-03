@@ -2046,7 +2046,7 @@ TEST_F('ChromeVoxEditingTest', 'InputTextBrailleContractions', function() {
 
     // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
     // contracted braille).
-    localStorage['brailleTable'] = 'en-UEB-g2';
+    localStorage['brailleTable'] = 'en-ueb-g2';
 
     async function waitForBrailleDots(expectedDots) {
       return new Promise(r => {

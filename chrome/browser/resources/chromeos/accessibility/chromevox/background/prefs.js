@@ -117,7 +117,7 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'brailleSideBySide': true,
   'brailleTableType': 'brailleTable8',
   'brailleTable6': 'en-UEB-g2',
-  'brailleTable8': 'en-US-comp8',
+  'brailleTable8': 'en-nabcc',
   'capitalStrategy': 'increasePitch',
   'cvoxKey': '',
   'enableBrailleLogging': false,

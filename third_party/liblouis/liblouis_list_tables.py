@@ -15,12 +15,23 @@ INCLUDE_RE = re.compile(r"^\s*include\s+([^#\s]+)")
 
 # Exclude these files from table validation.
 IGNORE_TABLES = set()
-IGNORE_TABLES.add('boxes.ctb')
-IGNORE_TABLES.add('unicode-braille.utb')
 IGNORE_TABLES.add('IPA.utb')
-IGNORE_TABLES.add('spaces.ctb')
+IGNORE_TABLES.add('bh.ctb')
+IGNORE_TABLES.add('bo.ctb')
+IGNORE_TABLES.add('boxes.ctb')
+IGNORE_TABLES.add('de-chess.ctb')
+IGNORE_TABLES.add('dra.ctb')
+IGNORE_TABLES.add('en-chess.ctb')
 IGNORE_TABLES.add('ethio-g1.ctb')
+IGNORE_TABLES.add('gon.ctb')
+IGNORE_TABLES.add('kok.ctb')
+IGNORE_TABLES.add('kru.ctb')
+IGNORE_TABLES.add('mun.ctb')
+IGNORE_TABLES.add('mwr.ctb')
 IGNORE_TABLES.add('or-in-g1.utb')
+IGNORE_TABLES.add('pi.ctb')
+IGNORE_TABLES.add('spaces.ctb')
+IGNORE_TABLES.add('unicode-braille.utb')
 
 def Error(msg):
   sys.stderr.write('liblouis_list_tables: %s' % msg)
@@ -63,6 +74,17 @@ def GetIncludeFiles(filename):
       match = INCLUDE_RE.match(line)
       if match:
         result.append(match.group(1))
+  return result
+
+
+def GetAdditionalFileTableData(filename):
+  result = {}
+  INCLUDE_RE = re.compile(r"^#[\+-](\S+):\s*(.+)")
+  with open(ToNativePath(filename), 'r') as fh:
+    for line in fh.readlines():
+      match = INCLUDE_RE.match(line)
+      if match:
+        result[match.groups(1)[0]] = match.groups(1)[1]
   return result
 
 
