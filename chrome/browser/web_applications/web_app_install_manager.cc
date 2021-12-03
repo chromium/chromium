@@ -54,14 +54,17 @@ void WebAppInstallManager::Start() {
 }
 
 void WebAppInstallManager::Shutdown() {
+  // Set the `started_` flag to false first so when we delete tasks below any
+  // task that re-enters or uses this manager instance will see we're (going)
+  // offline.
+  started_ = false;
+
   tasks_.clear();
   {
     TaskQueue empty;
     task_queue_.swap(empty);
   }
   web_contents_.reset();
-
-  started_ = false;
 }
 
 void WebAppInstallManager::SetSubsystems(
@@ -384,6 +387,9 @@ void WebAppInstallManager::EnqueueTask(std::unique_ptr<WebAppInstallTask> task,
 }
 
 void WebAppInstallManager::MaybeStartQueuedTask() {
+  if (!started_)
+    return;
+
   DCHECK(web_contents_);
 
   if (current_queued_task_)
