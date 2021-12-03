@@ -9,6 +9,10 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/gl/features.gni")
+if (is_android) {
+  # Pull in enable_chrome_android_internal.
+  import("//build/config/android/config.gni")
+}
 
 config("gpu_implementation") {
   defines = [ "GPU_IMPLEMENTATION" ]
@@ -448,6 +452,10 @@ test("gl_tests") {
   }
 
   data_deps = [ "//testing/buildbot/filters:gl_tests_filters" ]
+
+  if (is_android && enable_chrome_android_internal) {
+    data_deps += [ "//clank/build/bot/filters:gl_tests_filters" ]
+  }
 }
 
 test("gpu_unittests") {
