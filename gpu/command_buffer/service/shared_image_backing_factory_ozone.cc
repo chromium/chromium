@@ -31,8 +31,7 @@ gfx::BufferUsage GetBufferUsage(uint32_t usage) {
   } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
     return gfx::BufferUsage::SCANOUT;
   } else {
-    NOTREACHED() << "Unsupported usage flags.";
-    return gfx::BufferUsage::SCANOUT;
+    return gfx::BufferUsage::GPU_READ;
   }
 }
 
@@ -71,12 +70,19 @@ SharedImageBackingFactoryOzone::CreateSharedImageInternal(
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
       surface_handle, vk_device, size, buffer_format, GetBufferUsage(usage));
+  // Fallback to GPU_READ if cannot create pixmap with SCANOUT
+  if (!pixmap) {
+    pixmap = surface_factory->CreateNativePixmap(surface_handle, vk_device,
+                                                 size, buffer_format,
+                                                 gfx::BufferUsage::GPU_READ);
+  }
   if (!pixmap) {
     return nullptr;
   }
   return std::make_unique<SharedImageBackingOzone>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      shared_context_state_, std::move(pixmap), dawn_procs_);
+      mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
+      surface_origin, alpha_type, usage, shared_context_state_,
+      std::move(pixmap), dawn_procs_);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -147,8 +153,8 @@ SharedImageBackingFactoryOzone::CreateSharedImage(
     }
 
     backing = std::make_unique<SharedImageBackingOzone>(
-        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        shared_context_state_, std::move(pixmap), dawn_procs_);
+        mailbox, format, plane, size, color_space, surface_origin, alpha_type,
+        usage, shared_context_state_, std::move(pixmap), dawn_procs_);
     backing->SetCleared();
   } else if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
     SharedMemoryRegionWrapper shm_wrapper;

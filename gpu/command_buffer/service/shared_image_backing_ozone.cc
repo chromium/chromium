@@ -159,8 +159,8 @@ SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBackingOzone::ProduceGLTexture(SharedImageManager* manager,
                                           MemoryTypeTracker* tracker) {
-  return SharedImageRepresentationGLTextureOzone::Create(manager, this, tracker,
-                                                         pixmap_, format());
+  return SharedImageRepresentationGLTextureOzone::Create(
+      manager, this, tracker, pixmap_, format(), plane_);
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
@@ -168,7 +168,7 @@ SharedImageBackingOzone::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   return SharedImageRepresentationGLTexturePassthroughOzone::Create(
-      manager, this, tracker, pixmap_, format());
+      manager, this, tracker, pixmap_, format(), plane_);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
@@ -211,6 +211,7 @@ SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
 SharedImageBackingOzone::SharedImageBackingOzone(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
+    gfx::BufferPlane plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -228,6 +229,7 @@ SharedImageBackingOzone::SharedImageBackingOzone(
                                       usage,
                                       GetPixmapSizeInBytes(*pixmap),
                                       false),
+      plane_(plane),
       pixmap_(std::move(pixmap)),
       dawn_procs_(std::move(dawn_procs)),
       context_state_(std::move(context_state)) {}

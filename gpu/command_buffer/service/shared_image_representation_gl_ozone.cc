@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
@@ -71,10 +72,13 @@ void SharedImageRepresentationGLOzoneShared::EndAccess(
 scoped_refptr<gl::GLImageNativePixmap>
 SharedImageRepresentationGLOzoneShared::CreateGLImage(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    gfx::BufferFormat buffer_format) {
+    gfx::BufferFormat buffer_format,
+    gfx::BufferPlane plane) {
+  gfx::Size plane_size = GetPlaneSize(plane, pixmap->GetBufferSize());
+  gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, buffer_format);
   scoped_refptr<gl::GLImageNativePixmap> image =
-      base::MakeRefCounted<gl::GLImageNativePixmap>(pixmap->GetBufferSize(),
-                                                    buffer_format);
+      base::MakeRefCounted<gl::GLImageNativePixmap>(plane_size, plane_format,
+                                                    plane);
   if (!image->Initialize(std::move(pixmap))) {
     LOG(ERROR) << "Unable to initialize GL image from pixmap";
     return nullptr;
@@ -113,13 +117,15 @@ SharedImageRepresentationGLTextureOzone::Create(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    viz::ResourceFormat format) {
+    viz::ResourceFormat format,
+    gfx::BufferPlane plane) {
   gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  GLenum target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format)
-                      ? GL_TEXTURE_2D
-                      : gpu::GetPlatformSpecificTextureTarget();
+  GLenum target =
+      !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
+          ? GL_TEXTURE_2D
+          : gpu::GetPlatformSpecificTextureTarget();
   auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
-      pixmap, buffer_format);
+      pixmap, buffer_format, plane);
   if (!image) {
     return nullptr;
   }
@@ -138,9 +144,9 @@ SharedImageRepresentationGLTextureOzone::Create(
   texture->set_wrap_t(GL_CLAMP_TO_EDGE);
   texture->set_wrap_s(GL_CLAMP_TO_EDGE);
 
-  GLuint internal_format = viz::TextureStorageFormat(format);
-  GLenum gl_format = viz::GLDataFormat(format);
-  GLenum gl_type = viz::GLDataType(format);
+  GLuint internal_format = image->GetInternalFormat();
+  GLenum gl_format = image->GetDataFormat();
+  GLenum gl_type = image->GetDataType();
   texture->SetLevelInfo(target, 0, internal_format,
                         pixmap->GetBufferSize().width(),
                         pixmap->GetBufferSize().height(), 1, 0, gl_format,
@@ -189,13 +195,15 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    viz::ResourceFormat format) {
+    viz::ResourceFormat format,
+    gfx::BufferPlane plane) {
   gfx::BufferFormat buffer_format = viz::BufferFormat(format);
-  GLenum target = !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format)
-                      ? GL_TEXTURE_2D
-                      : gpu::GetPlatformSpecificTextureTarget();
+  GLenum target =
+      !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
+          ? GL_TEXTURE_2D
+          : gpu::GetPlatformSpecificTextureTarget();
   auto image = SharedImageRepresentationGLOzoneShared::CreateGLImage(
-      pixmap, buffer_format);
+      pixmap, buffer_format, plane);
   if (!image) {
     return nullptr;
   }
@@ -206,9 +214,9 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
     return nullptr;
   }
 
-  GLuint internal_format = viz::TextureStorageFormat(format);
-  GLenum gl_format = viz::GLDataFormat(format);
-  GLenum gl_type = viz::GLDataType(format);
+  GLuint internal_format = image->GetInternalFormat();
+  GLenum gl_format = image->GetDataFormat();
+  GLenum gl_type = image->GetDataType();
 
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
       base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
