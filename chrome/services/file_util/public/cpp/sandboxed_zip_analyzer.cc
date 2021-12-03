@@ -56,7 +56,7 @@ void SandboxedZipAnalyzer::PrepareFileToAnalyze() {
   if (base::CreateTemporaryFile(&temp_path)) {
     temp_file.Initialize(
         temp_path, (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                    base::File::FLAG_WRITE | base::File::FLAG_TEMPORARY |
+                    base::File::FLAG_WRITE | base::File::FLAG_WIN_TEMPORARY |
                     base::File::FLAG_DELETE_ON_CLOSE));
   }
 
