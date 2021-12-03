@@ -762,6 +762,13 @@ void ArcNotificationContentView::OnThemeChanged() {
   // OnThemeChanged may be called before container is set.
   if (GetWidget() && GetNativeViewContainer())
     UpdateMask(true);
+
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    // Adjust control button color.
+    control_buttons_view_.SetButtonIconColors(
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary));
+  }
 }
 
 void ArcNotificationContentView::OnRemoteInputActivationChanged(
