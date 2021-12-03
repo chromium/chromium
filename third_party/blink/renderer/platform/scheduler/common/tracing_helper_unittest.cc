@@ -34,7 +34,7 @@ const char* SignOfInt(int value) {
 }
 
 class TraceableStateForTest
-    : public TraceableState<int, TracingCategoryName::kDefault> {
+    : public TraceableState<int, TracingCategory::kDefault> {
  public:
   TraceableStateForTest(TraceableVariableController* controller)
       : TraceableState(0, "State", controller, SignOfInt) {
@@ -58,13 +58,7 @@ class TraceableStateForTest
 
 // TODO(kraynov): TraceableCounter tests.
 
-#if defined(COMPONENT_BUILD)
-// TODO(https://crbug.com/1275221): Figure out, re-enable.
-#define MAYBE_TraceableState DISABLED_TraceableState
-#else
-#define MAYBE_TraceableState TraceableState
-#endif
-TEST(TracingHelperTest, MAYBE_TraceableState) {
+TEST(TracingHelperTest, TraceableState) {
   TraceableVariableController controller;
   TraceableStateForTest state(&controller);
   controller.OnTraceLogEnabled();
@@ -77,18 +71,12 @@ TEST(TracingHelperTest, MAYBE_TraceableState) {
   ExpectTraced("negative");
 }
 
-#if defined(COMPONENT_BUILD)
-// TODO(https://crbug.com/1275221): Figure out, re-enable.
-#define MAYBE_TraceableStateOperators DISABLED_TraceableStateOperators
-#else
-#define MAYBE_TraceableStateOperators TraceableStateOperators
-#endif
-TEST(TracingHelperTest, MAYBE_TraceableStateOperators) {
+TEST(TracingHelperTest, TraceableStateOperators) {
   TraceableVariableController controller;
-  TraceableState<int, TracingCategoryName::kDebug> x(-1, "X", &controller,
-                                                     SignOfInt);
-  TraceableState<int, TracingCategoryName::kDebug> y(1, "Y", &controller,
-                                                     SignOfInt);
+  TraceableState<int, TracingCategory::kDebug> x(-1, "X", &controller,
+                                                 SignOfInt);
+  TraceableState<int, TracingCategory::kDebug> y(1, "Y", &controller,
+                                                 SignOfInt);
   EXPECT_EQ(0, x + y);
   EXPECT_FALSE(x == y);
   EXPECT_TRUE(x != y);

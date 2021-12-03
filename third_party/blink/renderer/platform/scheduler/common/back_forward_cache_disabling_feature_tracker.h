@@ -80,7 +80,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
       back_forward_cache_disabling_feature_counts_{};
   std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
       back_forward_cache_disabling_features_{};
-  TraceableState<bool, TracingCategoryName::kInfo>
+  TraceableState<bool, TracingCategory::kInfo>
       opted_out_from_back_forward_cache_;
 
   // The last set of features passed to FrameOrWorkerScheduler::Delegate::

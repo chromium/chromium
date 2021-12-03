@@ -92,7 +92,7 @@ class PLATFORM_EXPORT CPUTimeBudgetPool : public BudgetPool {
   // that at least one task will be run every max_throttling_delay.
   absl::optional<base::TimeDelta> max_throttling_delay_;
 
-  TraceableCounter<base::TimeDelta, TracingCategoryName::kInfo>
+  TraceableCounter<base::TimeDelta, TracingCategory::kInfo>
       current_budget_level_;
   base::TimeTicks last_checkpoint_;
   double cpu_percentage_;
