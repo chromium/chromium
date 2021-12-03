@@ -72,7 +72,7 @@ void NativeWebContentsModalDialogManagerViews::ManageDialog() {
   wm::SetChildWindowVisibilityChangesAnimated(parent);
   // No animations should get performed on the window since that will re-order
   // the window stack which will then cause many problems.
-  if (parent && parent->parent()) {
+  if (parent->parent()) {
     parent->parent()->SetProperty(aura::client::kAnimationsDisabledKey, true);
   }
 

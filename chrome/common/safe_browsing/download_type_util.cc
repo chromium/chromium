@@ -72,7 +72,6 @@ ClientDownloadRequest::DownloadType GetDownloadType(
            file.MatchesExtension(FILE_PATH_LITERAL(".xldm")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".xltx")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".xltm")) ||
-           file.MatchesExtension(FILE_PATH_LITERAL(".xlsb")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".xla")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".xlam")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".xll")) ||
@@ -88,7 +87,6 @@ ClientDownloadRequest::DownloadType GetDownloadType(
            file.MatchesExtension(FILE_PATH_LITERAL(".ppsx")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".ppsm")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".sldx")) ||
-           file.MatchesExtension(FILE_PATH_LITERAL(".xldm")) ||
            file.MatchesExtension(FILE_PATH_LITERAL(".rtf")))
     return ClientDownloadRequest::DOCUMENT;
 

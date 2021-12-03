@@ -531,7 +531,7 @@ void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
       manager ? PasswordManagerMetricsRecorder::FormManagerAvailable::kSuccess
               : PasswordManagerMetricsRecorder::FormManagerAvailable::
                     kMissingManual;
-  if (client_ && client_->GetMetricsRecorder())
+  if (client_->GetMetricsRecorder())
     client_->GetMetricsRecorder()->RecordFormManagerAvailable(availability);
 
   ShowManualFallbackForSaving(manager, form_data);
@@ -670,7 +670,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
           ? PasswordManagerMetricsRecorder::FormManagerAvailable::kSuccess
           : PasswordManagerMetricsRecorder::FormManagerAvailable::
                 kMissingProvisionallySave;
-  if (client_ && client_->GetMetricsRecorder())
+  if (client_->GetMetricsRecorder())
     client_->GetMetricsRecorder()->RecordFormManagerAvailable(availability);
 
   if (!matched_manager) {
@@ -1206,7 +1206,7 @@ void PasswordManager::RecordProvisionalSaveFailure(
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
         client_->GetLogManager());
   }
-  if (client_ && client_->GetMetricsRecorder()) {
+  if (client_->GetMetricsRecorder()) {
     client_->GetMetricsRecorder()->RecordProvisionalSaveFailure(
         failure, submitted_form_url_, form_origin, logger.get());
   }
