@@ -1051,24 +1051,29 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
       kTraceCategory, "PipelineReporter", trace_track, args_.frame_time,
       [&](perfetto::EventContext context) {
         using perfetto::protos::pbzero::ChromeFrameReporter;
-        bool frame_dropped = TestReportType(FrameReportType::kDroppedFrame);
         ChromeFrameReporter::State state;
-        if (frame_dropped) {
-          state = ChromeFrameReporter::STATE_DROPPED;
-        } else if (frame_termination_status_ ==
-                   FrameTerminationStatus::kDidNotProduceFrame) {
-          state = ChromeFrameReporter::STATE_NO_UPDATE_DESIRED;
-        } else {
-          state = has_partial_update_
-                      ? ChromeFrameReporter::STATE_PRESENTED_PARTIAL
-                      : ChromeFrameReporter::STATE_PRESENTED_ALL;
+        switch (info.final_state) {
+          case FrameInfo::FrameFinalState::kPresentedAll:
+            state = ChromeFrameReporter::STATE_PRESENTED_ALL;
+            break;
+          case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
+          case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
+            state = ChromeFrameReporter::STATE_PRESENTED_PARTIAL;
+            break;
+          case FrameInfo::FrameFinalState::kNoUpdateDesired:
+            state = ChromeFrameReporter::STATE_NO_UPDATE_DESIRED;
+            break;
+          case FrameInfo::FrameFinalState::kDropped:
+            state = ChromeFrameReporter::STATE_DROPPED;
+            break;
         }
+
         auto* reporter = context.event()->set_chrome_frame_reporter();
         reporter->set_state(state);
         reporter->set_frame_source(args_.frame_id.source_id);
         reporter->set_frame_sequence(args_.frame_id.sequence_number);
         reporter->set_layer_tree_host_id(layer_tree_host_id_);
-        reporter->set_has_missing_content(has_missing_content_);
+        reporter->set_has_missing_content(info.has_missing_content);
         if (info.IsDroppedAffectingSmoothness()) {
           DCHECK(state == ChromeFrameReporter::STATE_DROPPED ||
                  state == ChromeFrameReporter::STATE_PRESENTED_PARTIAL);
