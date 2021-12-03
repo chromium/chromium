@@ -331,6 +331,7 @@
 <translation id="4121993058175073134">エクスポート データのみを送信するには、設定アプリでメール アカウントを設定してください。</translation>
 <translation id="4124987746317609294">期間</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
+<translation id="4153925727916232411">写真を撮影してアップロードしたり、QR コードをスキャンしたりできます。</translation>
 <translation id="4172051516777682613">常に表示</translation>
 <translation id="418156467088430727">オフライン版を新しいタブで表示</translation>
 <translation id="4181841719683918333">言語</translation>
@@ -547,7 +548,6 @@
 <translation id="6255097610484507482">クレジットカードの編集</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />を翻訳するか尋ねる</translation>
 <translation id="6293101329759844770">セーフ ブラウジングをオンにするには、[<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />] を開いて [セーフ ブラウジング] をタップします。</translation>
-<translation id="6308436439357671616">写真を撮影してアップロードできます。</translation>
 <translation id="6321526113093607004">ブックマークに追加</translation>
 <translation id="6324528485781869530">同期アカウントの切り替え</translation>
 <translation id="6324669097367352121">ログインの設定</translation>

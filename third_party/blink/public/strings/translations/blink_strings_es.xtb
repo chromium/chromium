@@ -38,7 +38,7 @@
 <translation id="1637811476055996098">Elegir archivos</translation>
 <translation id="1650423536718072820">cita</translation>
 <translation id="1658806147928973309">Icono de silenciar micrófono</translation>
-<translation id="1677491356035817504">Icono de la comilla angular hacia abajo, que puede ser de mostrar</translation>
+<translation id="1677491356035817504">Icono de corchete angular hacia abajo, que puede significar mostrar</translation>
 <translation id="1681022320378710418">hora actual</translation>
 <translation id="1727839386348365796">Cuentagotas</translation>
 <translation id="1727886345390570319">ocultar menú de subtítulos</translation>
@@ -149,7 +149,7 @@
 <translation id="4371899966896349864">ocultar menú de velocidad de reproducción</translation>
 <translation id="4384249794467006333">Esta imagen no tiene texto. Abre el menú Más opciones, arriba a la derecha, para obtener descripciones de imágenes.</translation>
 <translation id="4384583879834880242">Preguntas</translation>
-<translation id="4436211924730548766">Icono de la comilla angular izquierda</translation>
+<translation id="4436211924730548766">Icono del corchete angular izquierdo</translation>
 <translation id="4444765639179266822">Parece que pone: <ph name="OCR_TEXT" /></translation>
 <translation id="4446524499724042288">referencia de glosario</translation>
 <translation id="4522570452068850558">Detalles</translation>
@@ -324,7 +324,7 @@
 <translation id="775297008183122718">Entrada no válida</translation>
 <translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">pausar</translation>
-<translation id="7796968532285333302">Icono de la comilla angular hacia abajo, que puede ser de ocultar</translation>
+<translation id="7796968532285333302">Icono del corchete angular hacia abajo, que puede significar ocultar</translation>
 <translation id="7802800022689234070">triángulo de revelación</translation>
 <translation id="7819026464394689674">Icono de pausa</translation>
 <translation id="7852167693871241274">Control deslizante del tono</translation>
@@ -347,7 +347,7 @@
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8208673686607688524">selector de fecha y hora locales</translation>
 <translation id="8261464734335370856">La ortografía no es válida</translation>
-<translation id="8276790177939055966">Icono de la comilla angular derecha</translation>
+<translation id="8276790177939055966">Icono de corchete angular derecho</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8346634859695247203">sección</translation>
 <translation id="835897206747267392">Valor no válido</translation>

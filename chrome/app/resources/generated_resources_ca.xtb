@@ -2771,7 +2771,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3839526976593488376">Personalitza per a cada lloc web</translation>
 <translation id="3841964634449506551">La contrasenya no és vàlida</translation>
 <translation id="3842552989725514455">Tipus de lletra Serif</translation>
-<translation id="3843464315703645664">Inclòs internament a la llista de permesos</translation>
+<translation id="3843464315703645664">Inclòs internament a la llista d'accés permès</translation>
 <translation id="3844888638014364087">S'ha inserit l'emoji</translation>
 <translation id="384513009320852920">Comprova que el dispositiu Bluetooth es trobi a prop i en mode de vinculació. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3846116211488856547">Obtén eines per desenvolupar llocs web i aplicacions d'Android, entre d'altres. En instal·lar Linux, es baixaran <ph name="DOWNLOAD_SIZE" /> de dades.</translation>
@@ -6653,7 +6653,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7978412674231730200">Clau privada</translation>
 <translation id="7978450511781612192">Aquesta acció tancarà la sessió dels Comptes de Google. Les adreces d'interès, l'historial, les contrasenyes i altres opcions es deixaran de sincronitzar.</translation>
 <translation id="7980084013673500153">Identificador de l'element: <ph name="ASSET_ID" /></translation>
-<translation id="7981313251711023384">Carrega les pàgines prèviament per poder-hi navegar i fer cerques més de pressa</translation>
+<translation id="7981313251711023384">Precarrega les pàgines per navegar i fer cerques més de pressa</translation>
 <translation id="798145602633458219">Afegeix el suggeriment <ph name="SUGGESTION_NAME" /> al quadre de cerca</translation>
 <translation id="7981662863948574132">Mostra la finestra emergent amb el codi QR i amb l'EID del dispositiu</translation>
 <translation id="7982083145464587921">Reinicieu el dispositiu per corregir aquest error.</translation>
@@ -7466,7 +7466,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8838601485495657486">Opac</translation>
 <translation id="8838770651474809439">Hamburguesa</translation>
 <translation id="883911313571074303">Afegeix una anotació a la imatge</translation>
-<translation id="8841843049738266382">Llegir i canviar els usuaris de la llista de permesos</translation>
+<translation id="8841843049738266382">Llegir i canviar els usuaris de la llista d'accés permès</translation>
 <translation id="8842594465773264717">Suprimeix aquesta empremta digital</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8846132060409673887">Consultar el fabricant i el model d'aquest ordinador</translation>

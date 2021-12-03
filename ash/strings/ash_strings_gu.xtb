@@ -743,7 +743,7 @@
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" />ને પછીથી માતાપિતાની પરવાનગી સાથે ઉમેરી શકાય છે.</translation>
 <translation id="6291221004442998378">ચાર્જ થઈ રહ્યું નથી</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> ને <ph name="ROTATION" /> પર ફેરવવામાં આવ્યું હતું</translation>
-<translation id="6315170314923504164">Voice</translation>
+<translation id="6315170314923504164">અવાજ</translation>
 <translation id="6328378651911184878"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તરત જ આ <ph name="DEVICE_TYPE" /> અપડેટ કરો.</translation>
 <translation id="6330012934079202188">બધી ડેસ્ક પરથી વિન્ડો બતાવી રહ્યાં છીએ, વર્તમાન ડેસ્ક પરની વિન્ડો બતાવવા માટે ઉપરની ઍરો કી દબાવો</translation>
 <translation id="6338485349199627913">મેનેજ કરાયેલું સત્ર <ph name="DISPLAY_NAME" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -889,9 +889,9 @@
 <translation id="740790383907119240">ઍપ શૉર્ટકટ</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
 <translation id="7413851974711031813">બંધ કરવા માટે Escape કી દબાવો</translation>
-<translation id="742594950370306541">કૅમેરો ઉપયોગમાં છે.</translation>
+<translation id="742594950370306541">કૅમેરા ઉપયોગમાં છે.</translation>
 <translation id="742608627846767349">ગુડ મોર્નિંગ,</translation>
-<translation id="743058460480092004">કૅમેરો અને માઇક્રોફોન ઉપયોગમાં છે.</translation>
+<translation id="743058460480092004">કૅમેરા અને માઇક્રોફોન ઉપયોગમાં છે.</translation>
 <translation id="7434543979546293336">મુખ્ય વિચાર તરીકે માર્ક કર્યો</translation>
 <translation id="7452560014878697800">કોઈ ઍપ્લિકેશન તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7456049842111127849">કૅપ્ચર મોડ, ડિફૉલ્ટ તરીકે <ph name="SOURCE" /> <ph name="TYPE" /> છે.</translation>

@@ -1177,7 +1177,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
 <translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
-<translation id="7981313251711023384">Carrega les pàgines prèviament per poder-hi navegar i fer cerques més de pressa</translation>
+<translation id="7981313251711023384">Precarrega les pàgines per navegar i fer cerques més de pressa</translation>
 <translation id="7986497153528221272">Per veure les contrasenyes, primer has d'establir un bloqueig de pantalla al dispositiu</translation>
 <translation id="799576009106109668">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="7998918019931843664">Torna a obrir la pestanya tancada</translation>

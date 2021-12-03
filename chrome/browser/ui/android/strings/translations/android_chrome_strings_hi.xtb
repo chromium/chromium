@@ -604,6 +604,7 @@
 <translation id="4696983787092045100">अपने डिवाइस पर मैसेज भेजें</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4714588616299687897">अपना 60% तक डेटा बचाएं</translation>
+<translation id="471759387343966120">जारी रखने का मतलब है कि आप Google की <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" />और <ph name="BEGIN_PRIVACY_LINK" />निजता\u00A0नीति<ph name="END_PRIVACY_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> में खोलें</translation>
 <translation id="4720982865791209136">Chrome को बेहतर बनाने में सहायता करें. <ph name="BEGIN_LINK" />सर्वे में भाग लें<ph name="END_LINK" /></translation>
@@ -1205,6 +1206,7 @@
 <translation id="808747664143081553">डिवाइस से कनेक्ट किया गया</translation>
 <translation id="8088176524274673045">आस-पास के लोगों से शेयर करने के लिए, उन्हें यह क्यूआर कोड स्कैन करने दें</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
+<translation id="8105613260829665809">जारी रखने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="8110024788458304985">Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
@@ -1286,6 +1288,7 @@
 <translation id="8551513938758868521">Chrome को बंद करते समय, अपने गुप्त टैब लॉक करें</translation>
 <translation id="8555836665334561807">वाई-फ़ाई पर</translation>
 <translation id="8559990750235505898">अन्य भाषाओं में पेज का अनुवाद करना ऑफ़र करें</translation>
+<translation id="8560560256644480257">GIF बन रहा है <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Bookmarks में अपनी पढ़ने की चीज़ों की सूची खोजें</translation>
 <translation id="8562452229998620586">सहेजे गए पासवर्ड यहां दिखाई देंगे.</translation>
 <translation id="856481929701340285">डेस्‍कटॉप साइट का अनुरोध करें</translation>

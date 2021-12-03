@@ -40,7 +40,7 @@
     કોઈ ટૅબને બંધ કરવા માટે, Control+W દબાવો.
     ખુલ્લા ટૅબમાં આગળ જવા માટે, Control+Tabનો ઉપયોગ કરો.
     Chrome બ્રાઉઝર મેનૂ ખોલવા માટે, Alt+F દબાવો.</translation>
-<translation id="1213216066620407844">ChromeVox - Chrome ને વૉઇસ આપવો</translation>
+<translation id="1213216066620407844">ChromeVox - Chromeને વૉઇસ આપવો</translation>
 <translation id="1225969361094801578">ઘાટો સ્લેટ ગ્રે</translation>
 <translation id="1230503547248836149">પસંદગીની શરૂઆત</translation>
 <translation id="1236794971743289975">અંતિમ નોંધ</translation>
@@ -201,7 +201,7 @@
 <translation id="2390264819538553347">આગળ જવા માટે, enter દબાવો, પાછળ જવા માટે backspace દબાવો.</translation>
 <translation id="2398579267367951220">પેજ શોધવા માટે ટાઇપ કરો. પરિણામ પર જવા માટે Enter, પરિણામો બ્રાઉઝ કરવા માટે ઉપર અથવા નીચેનો ઍરો દબાવો, તમારી શોધમાં ફેરફાર કરવા માટે ટાઇપ કરવાનું ચાલુ રાખો અથવા રદ કરવા માટે Escape દબાવો.</translation>
 <translation id="240709722712693803">ભૂરો જાંબલી</translation>
-<translation id="2410298923485357543">જ્યારે ડિવાઇસ ઑનલાઇન હોય, ત્યારે નૈસર્ગિક અવાજનો ઉપયોગ કરો</translation>
+<translation id="2410298923485357543">જ્યારે ડિવાઇસ ઑનલાઇન હોય, ત્યારે સાહજિક અવાજનો ઉપયોગ કરો</translation>
 <translation id="2416512023405990736">અનચેક કરેલુંં ચેકબોક્સ</translation>
 <translation id="2417569100218200841">કન્ટેન્ટ માહિતી</translation>
 <translation id="2417948780551741035">અંતિમ નોંધ</translation>
@@ -431,7 +431,7 @@
 <translation id="3813387282697781382">આછો લાલ</translation>
 <translation id="3816633764618089385">આગલું મીડિયા</translation>
 <translation id="3840823741487267909">સંક્ષેપ</translation>
-<translation id="3841319830220785495">ડિફૉલ્ટ તરીકે સેટ કરેલો નૈસર્ગિક અવાજ</translation>
+<translation id="3841319830220785495">ડિફૉલ્ટ તરીકે સેટ કરેલો સાહજિક અવાજ</translation>
 <translation id="385383972552776628">વિકલ્પોનું પેજ ખોલો</translation>
 <translation id="3856075812838139784">ફક્ત વાંચવા માટે</translation>
 <translation id="3857141338659865495">મધ્યમ પીરોજી</translation>
@@ -654,7 +654,7 @@
 <translation id="5452267669091857717">કોઈ આગલું 'લેવલ 1' મથાળું નથી</translation>
 <translation id="5455441614648621694">પૂરક</translation>
 <translation id="5462510922370980473">પેજ સૂચિ</translation>
-<translation id="5471768120198416576">કેમ છો! હું તમારો ટેક્સ્ટ-ટુ-સ્પીચ વૉઇસ છું.</translation>
+<translation id="5471768120198416576">કેમ છો! હું તમારો ટેક્સ્ટ-ટૂ-સ્પીચ વૉઇસ છું.</translation>
 <translation id="5495517933067991341">આવશ્યક કી: Shift</translation>
 <translation id="549602578321198708">શબ્દ</translation>
 <translation id="5513242761114685513">સંદર્ભ મેનૂ</translation>
@@ -927,7 +927,7 @@
 <translation id="743783356331413498">ઉદાહરણ</translation>
 <translation id="7439060726180460871">ડિરેક્ટરી</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7465123027577412805">નૈસર્ગિક અવાજનો ઉપયોગ કરીએ?</translation>
+<translation id="7465123027577412805">સાહજિક અવાજનો ઉપયોગ કરીએ?</translation>
 <translation id="7491962110804786152">ટેબ</translation>
 <translation id="7492497529767769458">આગળના વિભાગ પર ખસેડો. ઉદાહરણોમાં સ્ટેટસ ટ્રે અને લૉન્ચર શામેલ છે.</translation>
 <translation id="7505149250476994901">અક્ષર પહેલાં "કૅપિટલ" બોલો</translation>
@@ -959,7 +959,7 @@
 <translation id="7693840228159394336">પાછલું રેડિયો બટન</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7701196182766842984">autolst</translation>
-<translation id="7713139339518499741">નૈસર્ગિક અવાજ</translation>
+<translation id="7713139339518499741">સાહજિક અવાજ</translation>
 <translation id="7714340021005120797">કોઈ આગલું કૉમ્બો બૉક્સ નથી</translation>
 <translation id="772146615414628379">અભિનંદન! તમે ChromeVoxનો સફળતાપૂર્વક ઉપયોગ કરવા માટેની જરૂરી વસ્તુઓ શીખી લીધી છે. યાદ રાખો કે તમે Search+Period દબાવીને કોઈપણ સમયે ChromeVox આદેશ મેનૂ ખોલી શકો છો. ChromeVox અને Chrome OS વિશે હજી વધુ જાણવા માટે, નીચે આપેલા લેખો વાંચો.
     જો તમે ટ્યૂટૉરિઅલ પૂરું કરી લીધું હોય, તો બંધ કરો બટન પર નૅવિગેટ કરવા અને તેને ક્લિક કરવા માટે ChromeVoxનો ઉપયોગ કરો.</translation>

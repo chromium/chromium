@@ -24,7 +24,7 @@
  જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chrome પ્રોફાઇલ બનશે</translation>
-<translation id="1587223624401073077">Google Chrome તમારા કેમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="1587223624401073077">Google Chrome તમારા કૅમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="1597911401261118146">ડેટા ઉલ્લંઘન અને અન્ય સુરક્ષાની સમસ્યાથી તમારા પાસવર્ડ સુરક્ષિત છે કે નહીં તે ચેક કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાં સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome ને સુરક્ષિત બનાવવા માટે, અમે નીચેના એક્સ્ટેન્શનને અક્ષમ કર્યું છે કે જે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
@@ -273,7 +273,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome વિશે</translation>
 <translation id="822971176939352383">નીચે જણાવેલા એકાઉન્ટ દ્વારા કોઈ Chrome પ્રોફાઇલમાં સાઇન ઇન કરવામાં આવ્યું નથી. જો તમે અન્ય પ્રોફાઇલમાં એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો પહેલાં તે પ્રોફાઇલને કાઢી નાખો.</translation>
-<translation id="8255190535488645436">Google Chrome તમારા કેમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
+<translation id="8255190535488645436">Google Chrome તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="8286862437124483331">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="828798499196665338">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
 <translation id="8290100596633877290">ઓહ! Google Chrome ક્રેશ થઈ ગયું. હમણાં ફરીથી લોંચ કરીએ?</translation>
