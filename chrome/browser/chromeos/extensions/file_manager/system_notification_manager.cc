@@ -533,6 +533,9 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   if (event_arguments.size() < 1) {
     return;
   }
+  // For some events we always display a system notification regardless of if
+  // there are any SWA windows open.
+  bool force_as_system_notification = false;
   std::unique_ptr<message_center::Notification> notification;
   switch (event.histogram_value) {
     case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
@@ -540,6 +543,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
       break;
     case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
       notification = MakeDriveConfirmDialogNotification(event, event_arguments);
+      force_as_system_notification = true;
       break;
     case extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
     case extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
@@ -553,7 +557,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   if (notification) {
     // Check if we need to remove any progress notification when there
     // are active SWA windows.
-    if (DoFilesSwaWindowsExist()) {
+    if (!force_as_system_notification && DoFilesSwaWindowsExist()) {
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, notification->id());
       return;

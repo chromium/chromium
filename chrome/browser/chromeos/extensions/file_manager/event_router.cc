@@ -439,6 +439,12 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
         urls.insert(listener->listener_url());
       }
     }
+    // In SWA, there may not be a window open to listen to the event, so always
+    // add the File Manager URL so events can be sent to the
+    // SystemNotificationManager.
+    if (ash::features::IsFileManagerSwaEnabled()) {
+      urls.insert(file_manager::util::GetFileManagerURL());
+    }
     return urls;
   }
 
