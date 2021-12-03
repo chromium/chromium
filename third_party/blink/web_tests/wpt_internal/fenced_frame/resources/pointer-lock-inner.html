@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame content to test pointer lock</title>
+
+<body>
+<button id="button">Button</button>
+<script>
+window.addEventListener("load", (async () => {
+  // Wait requestAnimationFrame to ensure that the page is updated, and
+  // test_driver.click() works.
+  await new Promise(resolve => { requestAnimationFrame(resolve); });
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  const button = document.getElementById("button");
+  button.addEventListener('click', async () => {
+    const pointer_lock_key = KEYS['pointer-lock'];
+    const pointerlockerror_promise = new Promise(resolve => {
+      document.addEventListener('pointerlockerror', resolve);
+    });
+    try {
+      await canvas.requestPointerLock();
+      writeValueToServer(pointer_lock_key, 'Pointer lock succeeded');
+    } catch (e) {
+      await pointerlockerror_promise;
+      writeValueToServer(pointer_lock_key, 'Pointer lock failed');
+    }
+    document.exitPointerLock();
+  });
+  test_driver.click(button);
+}));
+</script>
+</body>
