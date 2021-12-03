@@ -312,7 +312,7 @@ void BrowserTestBase::SetUp() {
   command_line->AppendSwitch(switches::kDomAutomationController);
 
   // It is sometimes useful when looking at browser test failures to know which
-  // GPU blacklisting decisions were made.
+  // GPU blocklist decisions were made.
   command_line->AppendSwitch(switches::kLogGpuControlListDecisions);
 
   // Make sure software compositing tests don't attempt to force hardware

@@ -121,7 +121,7 @@ export function makeInfoView(browserBridge) {
       const gpuInfo = browserBridge.gpuInfo;
       let i;
       if (gpuInfo) {
-        // Not using jstemplate here for blacklist status because we construct
+        // Not using jstemplate here for blocklist status because we construct
         // href from data, which jstemplate can't seem to do.
         if (gpuInfo.featureStatus) {
           this.appendFeatureInfo_(

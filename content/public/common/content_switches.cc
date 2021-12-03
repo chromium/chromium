@@ -558,7 +558,7 @@ const char kEnableUnsafeFastJSCalls[] = "enable-unsafe-fast-js-calls";
 // Flag to launch tests in the browser process.
 const char kLaunchAsBrowser[] = "as-browser";
 
-// Logs GPU control list decisions when enforcing blacklist rules.
+// Logs GPU control list decisions when enforcing blocklist rules.
 const char kLogGpuControlListDecisions[]    = "log-gpu-control-list-decisions";
 
 // Sets the minimum log level. Valid values are from 0 to 3:
