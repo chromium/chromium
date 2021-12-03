@@ -4138,6 +4138,7 @@ CSSCustomIdentValue* ConsumeCustomIdentForGridLine(
 CSSGridLineNamesValue* ConsumeGridLineNames(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
+    bool is_subgrid_track_list,
     CSSGridLineNamesValue* line_names = nullptr) {
   CSSParserTokenRange range_copy = range;
   if (range_copy.ConsumeIncludingWhitespace().GetType() != kLeftBracketToken)
@@ -4145,6 +4146,7 @@ CSSGridLineNamesValue* ConsumeGridLineNames(
 
   if (!line_names)
     line_names = MakeGarbageCollected<CSSGridLineNamesValue>();
+
   while (CSSCustomIdentValue* line_name =
              ConsumeCustomIdentForGridLine(range_copy, context)) {
     line_names->Append(*line_name);
@@ -4154,16 +4156,18 @@ CSSGridLineNamesValue* ConsumeGridLineNames(
     return nullptr;
   range = range_copy;
 
-  if (line_names->length() == 0U)
+  if (!is_subgrid_track_list && line_names->length() == 0U)
     return nullptr;
+
   return line_names;
 }
 
 bool AppendLineNames(CSSParserTokenRange& range,
                      const CSSParserContext& context,
+                     bool is_subgrid_track_list,
                      CSSValueList* values) {
   if (CSSGridLineNamesValue* line_names =
-          ConsumeGridLineNames(range, context)) {
+          ConsumeGridLineNames(range, context, is_subgrid_track_list)) {
     values->Append(*line_names);
     return true;
   }
@@ -4201,12 +4205,13 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
     return false;
 
   wtf_size_t number_of_line_name_sets =
-      AppendLineNames(args, context, repeated_values);
+      AppendLineNames(args, context, is_subgrid_track_list, repeated_values);
   wtf_size_t number_of_tracks = 0;
   while (!args.AtEnd()) {
     if (is_subgrid_track_list) {
       if (!number_of_line_name_sets ||
-          !AppendLineNames(args, context, repeated_values)) {
+          !AppendLineNames(args, context, is_subgrid_track_list,
+                           repeated_values)) {
         return false;
       }
       ++number_of_line_name_sets;
@@ -4218,7 +4223,7 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
         all_tracks_are_fixed_sized = IsGridTrackFixedSized(*track_size);
       repeated_values->Append(*track_size);
       ++number_of_tracks;
-      AppendLineNames(args, context, repeated_values);
+      AppendLineNames(args, context, is_subgrid_track_list, repeated_values);
     }
   }
 
@@ -4272,7 +4277,8 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
   do {
     // Handle leading <custom-ident>*.
     bool has_previous_line_names = line_names;
-    line_names = ConsumeGridLineNames(range, context, line_names);
+    line_names = ConsumeGridLineNames(
+        range, context, /* is_subgrid_track_list */ false, line_names);
     if (line_names && !has_previous_line_names)
       template_rows_value_list->Append(*line_names);
 
@@ -4291,7 +4297,8 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
     template_rows_value_list->Append(*value);
 
     // This will handle the trailing/leading <custom-ident>* in the grammar.
-    line_names = ConsumeGridLineNames(range, context);
+    line_names =
+        ConsumeGridLineNames(range, context, /* is_subgrid_track_list */ false);
     if (line_names)
       template_rows_value_list->Append(*line_names);
   } while (!range.AtEnd() && !(range.Peek().GetType() == kDelimiterToken &&
@@ -4389,9 +4396,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenRange& range,
       return nullptr;
   }
 
-  // TODO(ansollan): Allow explicit empty line names sets in the track list for
-  // subgrid.
-  AppendLineNames(range, context, values);
+  AppendLineNames(range, context, is_subgrid_track_list, values);
 
   bool allow_repeat =
       is_subgrid_track_list || track_list_type == TrackListType::kGridTemplate;
@@ -4433,7 +4438,8 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenRange& range,
     if (!allow_grid_line_names && range.Peek().GetType() == kLeftBracketToken)
       return nullptr;
 
-    bool did_append_line_names = AppendLineNames(range, context, values);
+    bool did_append_line_names =
+        AppendLineNames(range, context, is_subgrid_track_list, values);
     if (is_subgrid_track_list && !did_append_line_names &&
         range.Peek().FunctionId() != CSSValueID::kRepeat) {
       return IsRangeAtEnd(range) ? values : nullptr;
