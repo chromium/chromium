@@ -984,11 +984,11 @@ TEST_F(ChildProcessSecurityPolicyTest, FilePermissions) {
   // Grant permissions for the file (should overwrite the permissions granted
   // for the directory).
   GrantPermissionsForFile(p, kRendererID, granted_file,
-                             base::File::FLAG_TEMPORARY);
+                          base::File::FLAG_WIN_TEMPORARY);
   EXPECT_FALSE(p->HasPermissionsForFile(kRendererID, granted_file,
                                         base::File::FLAG_OPEN));
   EXPECT_TRUE(p->HasPermissionsForFile(kRendererID, granted_file,
-                                       base::File::FLAG_TEMPORARY));
+                                       base::File::FLAG_WIN_TEMPORARY));
 
   // Revoke all permissions for the file (it should inherit its permissions
   // from the directory again).
@@ -997,7 +997,7 @@ TEST_F(ChildProcessSecurityPolicyTest, FilePermissions) {
                                        base::File::FLAG_OPEN |
                                        base::File::FLAG_READ));
   EXPECT_FALSE(p->HasPermissionsForFile(kRendererID, granted_file,
-                                        base::File::FLAG_TEMPORARY));
+                                        base::File::FLAG_WIN_TEMPORARY));
   p->Remove(kRendererID);
 
   p->AddForTesting(kRendererID, browser_context());
