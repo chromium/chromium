@@ -30,8 +30,6 @@ export class PrintPreviewLayoutSettingsElement extends
     };
   }
 
-  disabled: boolean;
-
   static get observers() {
     return ['onLayoutSettingChange_(settings.layout.value)'];
   }
@@ -42,12 +40,6 @@ export class PrintPreviewLayoutSettingsElement extends
 
   onProcessSelectChange(value: string) {
     this.setSetting('layout', value === 'landscape');
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'print-preview-layout-settings': PrintPreviewLayoutSettingsElement;
   }
 }
 

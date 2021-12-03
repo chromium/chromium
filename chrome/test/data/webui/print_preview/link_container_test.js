@@ -4,31 +4,33 @@
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
-const link_container_test = {
-  suiteName: 'LinkContainerTest',
-  TestNames: {
-    HideInAppKioskMode: 'hide in app kiosk mode',
-    SystemDialogLinkClick: 'system dialog link click',
-    InvalidState: 'invalid state',
-    OpenInPreviewLinkClick: 'open in preview link click',
-  },
+window.link_container_test = {};
+const link_container_test = window.link_container_test;
+link_container_test.suiteName = 'LinkContainerTest';
+/** @enum {string} */
+link_container_test.TestNames = {
+  HideInAppKioskMode: 'hide in app kiosk mode',
+  SystemDialogLinkClick: 'system dialog link click',
+  InvalidState: 'invalid state',
+  OpenInPreviewLinkClick: 'open in preview link click',
 };
 
-Object.assign(window, {link_container_test: link_container_test});
-
 suite(link_container_test.suiteName, function() {
-  let linkContainer: PrintPreviewLinkContainerElement;
+  /** @type {!PrintPreviewLinkContainerElement} */
+  let linkContainer;
 
+  /** @override */
   setup(function() {
     document.body.innerHTML = '';
-    linkContainer = document.createElement('print-preview-link-container');
+    linkContainer = /** @type {!PrintPreviewLinkContainerElement} */ (
+        document.createElement('print-preview-link-container'));
     document.body.appendChild(linkContainer);
 
     /** Set inputs to some defaults. */
@@ -44,7 +46,9 @@ suite(link_container_test.suiteName, function() {
 
   /** Tests that the system dialog link is hidden in App Kiosk mode. */
   test(assert(link_container_test.TestNames.HideInAppKioskMode), function() {
-    const systemDialogLink = linkContainer.$.systemDialogLink;
+    const systemDialogLink =
+        /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector('#systemDialogLink'));
     assertFalse(systemDialogLink.hidden);
     linkContainer.set('appKioskMode', true);
     assertTrue(systemDialogLink.hidden);
@@ -56,10 +60,13 @@ suite(link_container_test.suiteName, function() {
    */
   test(assert(link_container_test.TestNames.SystemDialogLinkClick), function() {
     const promise = eventToPromise('print-with-system-dialog', linkContainer);
-    const throbber = linkContainer.$.systemDialogThrobber;
+    const throbber = /** @type {!HTMLDivElement} */ (
+        linkContainer.shadowRoot.querySelector('#systemDialogThrobber'));
     assertTrue(throbber.hidden);
 
-    const link = linkContainer.$.systemDialogLink;
+    const link =
+        /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector('#systemDialogLink'));
     link.click();
     return promise.then(function() {
       assertEquals(isWindows, throbber.hidden);
@@ -72,44 +79,52 @@ suite(link_container_test.suiteName, function() {
    * and enabled on other platforms.
    */
   test(assert(link_container_test.TestNames.InvalidState), function() {
-    const systemDialogLink = linkContainer.$.systemDialogLink;
+    const systemDialogLink =
+        /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector('#systemDialogLink'));
 
-    function validateLinkState(link: HTMLDivElement, disabled: boolean) {
+    /**
+     * @param {!HTMLDivElement} link
+     * @param {boolean} disabled
+     */
+    const validateLinkState = (link, disabled) => {
       assertFalse(link.hidden);
       assertEquals(!disabled, link.hasAttribute('actionable'));
-      assertEquals(disabled, link.querySelector('cr-icon-button')!.disabled);
-    }
+      assertEquals(disabled, link.querySelector('cr-icon-button').disabled);
+    };
 
     validateLinkState(systemDialogLink, false);
-    // <if expr="is_macosx">
-    const openInPreviewLink = linkContainer.$.openPdfInPreviewLink;
-    validateLinkState(openInPreviewLink, false);
-    // </if>
+    let openInPreviewLink;
+    if (isMac) {
+      openInPreviewLink = /** @type {!HTMLDivElement} */ (
+          linkContainer.shadowRoot.querySelector('#openPdfInPreviewLink'));
+      validateLinkState(openInPreviewLink, false);
+    }
 
     // Set disabled to true, indicating that there is a validation error or
     // printer error.
     linkContainer.disabled = true;
     validateLinkState(systemDialogLink, isWindows);
-    // <if expr="is_macosx">
-    validateLinkState(assert(openInPreviewLink), true);
-    // </if>
+    if (isMac) {
+      validateLinkState(assert(openInPreviewLink), true);
+    }
   });
 
-  // <if expr="is_macosx">
   /**
    * Test that clicking the open in preview link correctly results in a
    * property change and that the throbber appears. Mac only.
    */
   test(
       assert(link_container_test.TestNames.OpenInPreviewLinkClick), function() {
-        const throbber = linkContainer.$.openPdfInPreviewThrobber;
+        const throbber = /** @type {!HTMLDivElement} */ (
+            linkContainer.shadowRoot.querySelector(
+                '#openPdfInPreviewThrobber'));
         assertTrue(throbber.hidden);
         const promise = eventToPromise('open-pdf-in-preview', linkContainer);
 
-        linkContainer.$.openPdfInPreviewLink.click();
+        linkContainer.shadowRoot.querySelector('#openPdfInPreviewLink').click();
         return promise.then(function() {
           assertFalse(throbber.hidden);
         });
       });
-  // </if>
 });

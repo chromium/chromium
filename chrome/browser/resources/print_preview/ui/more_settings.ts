@@ -13,13 +13,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
-interface PrintPreviewMoreSettingsElement {
-  $: {
-    label: HTMLElement,
-  };
-}
-
-
 class PrintPreviewMoreSettingsElement extends PolymerElement {
   static get is() {
     return 'print-preview-more-settings';
@@ -69,12 +62,6 @@ class PrintPreviewMoreSettingsElement extends PolymerElement {
         this.settingsExpandedByUser ?
             PrintSettingsUiBucket.MORE_SETTINGS_CLICKED :
             PrintSettingsUiBucket.LESS_SETTINGS_CLICKED);
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'print-preview-more-settings': PrintPreviewMoreSettingsElement;
   }
 }
 
