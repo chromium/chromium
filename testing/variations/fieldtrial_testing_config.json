@@ -7104,11 +7104,7 @@
     "SendTabToSelfV2": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {

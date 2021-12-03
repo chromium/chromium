@@ -5,6 +5,7 @@
 #include "components/send_tab_to_self/features.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/sync_prefs.h"
@@ -30,8 +31,14 @@ const base::Feature kSendTabToSelfManageDevicesLink{
 #endif
 };
 
-const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSendTabToSelfV2{
+  "SendTabToSelfV2",
+#if defined(OS_ANDROID) || defined(OS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs) {
   // TODO(crbug.com/1015322): SyncPrefs is used directly instead of methods in
