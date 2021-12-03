@@ -47,20 +47,28 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
 
 class LacrosStartedObserver : public crosapi::BrowserManagerObserver {
  public:
-  explicit LacrosStartedObserver(base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)) {}
+  LacrosStartedObserver() = default;
   LacrosStartedObserver(const LacrosStartedObserver&) = delete;
   LacrosStartedObserver& operator=(const LacrosStartedObserver&) = delete;
   ~LacrosStartedObserver() override = default;
 
   void OnStateChanged() override {
     if (crosapi::BrowserManager::Get()->IsRunning()) {
-      std::move(quit_closure_).Run();
+      run_loop_.Quit();
     }
   }
 
+  void Wait(base::TimeDelta timeout) {
+    if (crosapi::BrowserManager::Get()->IsRunning()) {
+      return;
+    }
+    base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop_.QuitClosure(),
+                                      timeout);
+    run_loop_.Run();
+  }
+
  private:
-  base::OnceClosure quit_closure_;
+  base::RunLoop run_loop_;
 };
 
 void WaitForExoStarted(const base::FilePath& xdg_path) {
@@ -85,13 +93,12 @@ void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
 
   crosapi::BrowserManager::Get()->NewWindow(/*incongnito=*/false);
-  base::RunLoop run_loop;
-  LacrosStartedObserver observer(run_loop.QuitClosure());
+
+  LacrosStartedObserver observer;
   crosapi::BrowserManager::Get()->AddObserver(&observer);
-  base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                                    TestTimeouts::action_max_timeout());
-  run_loop.Run();
+  observer.Wait(TestTimeouts::action_max_timeout());
   crosapi::BrowserManager::Get()->RemoveObserver(&observer);
+
   CHECK(crosapi::BrowserManager::Get()->IsRunning());
 
   // Create a new ash browser window so browser() can work.
