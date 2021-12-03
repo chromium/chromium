@@ -172,6 +172,9 @@ class FakeDownloadItem : public download::DownloadItem {
   void SetDummyFilePath(const base::FilePath& dummy_file_path);
   void SetIsDangerous(bool is_dangerous);
   void SetIsMixedContent(bool is_mixed_content);
+  void SetDangerType(download::DownloadDangerType danger_type);
+  void SetMixedContentStatus(
+      download::DownloadItem::MixedContentStatus mixed_content_status);
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
@@ -209,6 +212,10 @@ class FakeDownloadItem : public download::DownloadItem {
   bool is_dangerous_ = false;
   bool is_mixed_content_ = false;
   absl::optional<net::IsolationInfo> isolation_info_;
+  download::DownloadDangerType danger_type_ =
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+  download::DownloadItem::MixedContentStatus mixed_content_status_ =
+      download::DownloadItem::MixedContentStatus::UNKNOWN;
 
   // The members below are to be returned by methods, which return by reference.
   GURL dummy_url;

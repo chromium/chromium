@@ -265,6 +265,15 @@ void FakeDownloadItem::SetIsMixedContent(bool is_mixed_content) {
   is_mixed_content_ = is_mixed_content;
 }
 
+void FakeDownloadItem::SetDangerType(download::DownloadDangerType danger_type) {
+  danger_type_ = danger_type;
+}
+
+void FakeDownloadItem::SetMixedContentStatus(
+    download::DownloadItem::MixedContentStatus mixed_content_status) {
+  mixed_content_status_ = mixed_content_status;
+}
+
 bool FakeDownloadItem::GetOpenWhenComplete() const {
   return open_when_complete_;
 }
@@ -483,14 +492,12 @@ bool FakeDownloadItem::ShouldShowIncognitoWarning() const {
 }
 
 download::DownloadDangerType FakeDownloadItem::GetDangerType() const {
-  NOTREACHED();
-  return download::DownloadDangerType();
+  return danger_type_;
 }
 
 download::DownloadItem::MixedContentStatus
 FakeDownloadItem::GetMixedContentStatus() const {
-  NOTREACHED();
-  return download::DownloadItem::MixedContentStatus();
+  return mixed_content_status_;
 }
 
 bool FakeDownloadItem::TimeRemaining(base::TimeDelta* remaining) const {

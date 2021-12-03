@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_utils.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -38,55 +39,19 @@ using ItemFailureToLaunchReason =
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns a mojo download state converted from the specified item `state`.
-crosapi::mojom::DownloadState ConvertToMojoDownloadState(
-    download::DownloadItem::DownloadState state) {
-  switch (state) {
-    case download::DownloadItem::IN_PROGRESS:
-      return crosapi::mojom::DownloadState::kInProgress;
-    case download::DownloadItem::COMPLETE:
-      return crosapi::mojom::DownloadState::kComplete;
-    case download::DownloadItem::CANCELLED:
-      return crosapi::mojom::DownloadState::kCancelled;
-    case download::DownloadItem::INTERRUPTED:
-      return crosapi::mojom::DownloadState::kInterrupted;
-    case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      return crosapi::mojom::DownloadState::kUnknown;
-  }
-}
-
 // Returns a mojo download item converted from the specified `item`.
 crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
     const download::DownloadItem* item) {
-  auto mojo_download_item = crosapi::mojom::DownloadItem::New();
-  mojo_download_item->guid = item->GetGuid();
-  mojo_download_item->state = ConvertToMojoDownloadState(item->GetState());
-  mojo_download_item->target_file_path = item->GetTargetFilePath();
-  mojo_download_item->full_path = item->GetFullPath();
-  mojo_download_item->is_paused = item->IsPaused();
-  mojo_download_item->has_is_paused = true;
-  mojo_download_item->open_when_complete = item->GetOpenWhenComplete();
-  mojo_download_item->has_open_when_complete = true;
-  mojo_download_item->received_bytes = item->GetReceivedBytes();
-  mojo_download_item->has_received_bytes = true;
-  mojo_download_item->total_bytes = item->GetTotalBytes();
-  mojo_download_item->has_total_bytes = true;
-  mojo_download_item->start_time = item->GetStartTime();
-  mojo_download_item->is_dangerous = item->IsDangerous();
-  mojo_download_item->has_is_dangerous = true;
-  mojo_download_item->is_mixed_content = item->IsMixedContent();
-  mojo_download_item->has_is_mixed_content = true;
-
   // NOTE: `browser_context` may be `nullptr` in tests. We assume in this case
   // that the item is not from an incognito profile; tests exercising incognito
   // behavior should make sure `browser_context` is not `nullptr`.
   auto* browser_context = content::DownloadItemUtils::GetBrowserContext(item);
-  mojo_download_item->is_from_incognito_profile =
+  const bool is_from_incognito_profile =
       browser_context
           ? Profile::FromBrowserContext(browser_context)->IsIncognitoProfile()
           : false;
-
-  return mojo_download_item;
+  return download::download_item_utils::ConvertToMojoDownloadItem(
+      item, is_from_incognito_profile);
 }
 
 // Returns a `gfx::ImageSkia` to show as a placeholder in a holding space image

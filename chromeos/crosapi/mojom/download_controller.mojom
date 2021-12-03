@@ -18,6 +18,46 @@ enum DownloadState {
     kInterrupted
 };
 
+// This mirrors `download::DownloadDangerType`, anything added or removed here
+// must also be added or removed there.
+[Stable, Extensible]
+enum DownloadDangerType {
+  [Default] kDownloadDangerTypeInvalid = -1,
+  kDownloadDangerTypeNotDangerous = 0,
+  kDownloadDangerTypeDangerousFile = 1,
+  kDownloadDangerTypeDangerousUrl = 2,
+  kDownloadDangerTypeDangerousContent = 3,
+  kDownloadDangerTypeMaybeDangerousContent = 4,
+  kDownloadDangerTypeUncommonContent = 5,
+  kDownloadDangerTypeUserValidated = 6,
+  kDownloadDangerTypeDangerousHost = 7,
+  kDownloadDangerTypePotentiallyUnwanted = 8,
+  kDownloadDangerTypeAllowlistedByPolicy = 9,
+  kDownloadDangerTypeAsyncScanning = 10,
+  kDownloadDangerTypeBlockedPasswordProtected = 11,
+  kDownloadDangerTypeBlockedTooLarge = 12,
+  kDownloadDangerTypeSensitiveContentWarning = 13,
+  kDownloadDangerTypeSensitiveContentBlock = 14,
+  kDownloadDangerTypeDeepScannedSafe = 15,
+  kDownloadDangerTypeDeepScannedOpenedDangerous = 16,
+  kDownloadDangerTypePromptForScanning = 17,
+  kDownloadDangerTypeBlockedUnsupportedFiletype = 18,
+  kDownloadDangerTypeDangerousAccountCompromise = 19,
+};
+
+// This mirrors `download::DownloadItem::MixedContentStatus`, anything added or
+// removed here must also be added or removed there.
+[Stable, Extensible]
+enum DownloadMixedContentStatus {
+  [Default] kInvalid = -1,
+  kUnknown = 0,
+  kSafe = 1,
+  kValidated = 2,
+  kWarn = 3,
+  kBlock = 4,
+  kSilentBlock = 5,
+};
+
 // This mirrors `download::DownloadItem`. See:
 // https://source.chromium.org/chromium/chromium/src/+/main:components/download/public/common/download_item.h?q=download_item.h
 //
@@ -25,8 +65,8 @@ enum DownloadState {
 // non-nullable `field`. This is for backwards compatibility, so that older
 // clients know when values are present or are absent by default.
 //
-// Next MinVersion: 4
-// Next ID: 18
+// Next MinVersion: 5
+// Next ID: 20
 [Stable, RenamedFrom="crosapi.mojom.DownloadEvent"]
 struct DownloadItem {
   DownloadState state@0;
@@ -47,6 +87,8 @@ struct DownloadItem {
   [MinVersion=3] bool is_dangerous@15;
   [MinVersion=3] bool has_is_mixed_content@16;
   [MinVersion=3] bool is_mixed_content@17;
+  [MinVersion=4] DownloadDangerType danger_type@18;
+  [MinVersion=4] DownloadMixedContentStatus mixed_content_status@19;
 };
 
 // A client implemented in lacros-chrome for the DownloadController which is

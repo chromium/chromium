@@ -10,6 +10,7 @@
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_item_utils.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -17,49 +18,12 @@
 
 namespace {
 
-crosapi::mojom::DownloadState ConvertMojoDownloadState(
-    download::DownloadItem::DownloadState value) {
-  switch (value) {
-    case download::DownloadItem::IN_PROGRESS:
-      return crosapi::mojom::DownloadState::kInProgress;
-    case download::DownloadItem::COMPLETE:
-      return crosapi::mojom::DownloadState::kComplete;
-    case download::DownloadItem::CANCELLED:
-      return crosapi::mojom::DownloadState::kCancelled;
-    case download::DownloadItem::INTERRUPTED:
-      return crosapi::mojom::DownloadState::kInterrupted;
-    case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
-      return crosapi::mojom::DownloadState::kUnknown;
-  }
-}
-
 crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
     download::DownloadItem* item) {
-  auto* profile = Profile::FromBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(item));
-
-  auto download = crosapi::mojom::DownloadItem::New();
-  download->guid = item->GetGuid();
-  download->state = ConvertMojoDownloadState(item->GetState());
-  download->full_path = item->GetFullPath();
-  download->target_file_path = item->GetTargetFilePath();
-  download->is_from_incognito_profile = profile->IsIncognitoProfile();
-  download->is_paused = item->IsPaused();
-  download->has_is_paused = true;
-  download->open_when_complete = item->GetOpenWhenComplete();
-  download->has_open_when_complete = true;
-  download->received_bytes = item->GetReceivedBytes();
-  download->has_received_bytes = true;
-  download->total_bytes = item->GetTotalBytes();
-  download->has_total_bytes = true;
-  download->start_time = item->GetStartTime();
-  download->is_dangerous = item->IsDangerous();
-  download->has_is_dangerous = true;
-  download->is_mixed_content = item->IsMixedContent();
-  download->has_is_mixed_content = true;
-
-  return download;
+  return download::download_item_utils::ConvertToMojoDownloadItem(
+      item, /*is_from_incognito_profile=*/Profile::FromBrowserContext(
+                content::DownloadItemUtils::GetBrowserContext(item))
+                ->IsIncognitoProfile());
 }
 
 }  // namespace

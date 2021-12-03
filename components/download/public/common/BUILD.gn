@@ -106,6 +106,14 @@ component("public") {
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
   }
+
+  if (is_chromeos) {
+    sources += [
+      "download_item_utils.cc",
+      "download_item_utils.h",
+    ]
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
 }
 
 if (is_android) {
