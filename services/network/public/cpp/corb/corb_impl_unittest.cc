@@ -325,7 +325,10 @@ const TestScenario kScenarios[] = {
         kVerdictPacketForHeadersBasedVerdict,   // verdict_packet
     },
     {
-        "Allowed: Cross-site XHR to HTML over FTP",
+        // This case won't be reached in practice today, because CORB is only
+        // used by certain URLLoaderFactories (e.g. in the NetworkService, when
+        // handling http(s) URLs) and is not used for ftp://... URLs.
+        "Blocked: Cross-site XHR to HTML over FTP",
         __LINE__,
         "ftp://www.b.com/resource.html",            // target_url
         "http://www.a.com/",                        // initiator_origin
@@ -336,11 +339,14 @@ const TestScenario kScenarios[] = {
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
         CrossOriginProtectionDecision::kAllow,      // protection_decision
-        Verdict::kAllow,                            // verdict
-        kVerdictPacketForHeadersBasedVerdict,       // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     {
-        "Allowed: Cross-site XHR to HTML from file://",
+        // This case won't be reached in practice today, because CORB is only
+        // used by certain URLLoaderFactories (e.g. in the NetworkService, when
+        // handling http(s) URLs) and is not used for file://... URLs.
+        "Blocked: Cross-site XHR to HTML from file://",
         __LINE__,
         "file:///foo/resource.html",                // target_url
         "http://www.a.com/",                        // initiator_origin
@@ -351,8 +357,8 @@ const TestScenario kScenarios[] = {
         {"<html><head>this should sniff as HTML"},  // packets
         false,                                      // resource_is_sensitive
         CrossOriginProtectionDecision::kAllow,      // protection_decision
-        Verdict::kAllow,                            // verdict
-        kVerdictPacketForHeadersBasedVerdict,       // verdict_packet
+        Verdict::kBlock,                            // verdict
+        0,                                          // verdict_packet
     },
     {
         // Blocked, because the unit test doesn't make a call to
@@ -2238,22 +2244,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // The following individual tests check the behaviour of various methods in
 // isolation.
 // =============================================================================
-
-TEST(CrossOriginReadBlockingTest, IsBlockableScheme) {
-  GURL data_url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA==");
-  GURL ftp_url("ftp://google.com");
-  GURL mailto_url("mailto:google@google.com");
-  GURL about_url("about:chrome");
-  GURL http_url("http://google.com");
-  GURL https_url("https://google.com");
-
-  EXPECT_FALSE(CrossOriginReadBlocking::IsBlockableScheme(data_url));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsBlockableScheme(ftp_url));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsBlockableScheme(mailto_url));
-  EXPECT_FALSE(CrossOriginReadBlocking::IsBlockableScheme(about_url));
-  EXPECT_TRUE(CrossOriginReadBlocking::IsBlockableScheme(http_url));
-  EXPECT_TRUE(CrossOriginReadBlocking::IsBlockableScheme(https_url));
-}
 
 TEST(CrossOriginReadBlockingTest, SniffForHTML) {
   using CORB = CrossOriginReadBlocking;

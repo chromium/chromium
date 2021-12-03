@@ -345,14 +345,6 @@ MimeType CrossOriginReadBlocking::GetCanonicalMimeType(
 }
 
 // static
-bool CrossOriginReadBlocking::IsBlockableScheme(const GURL& url) {
-  // We exclude ftp:// from here. FTP doesn't provide a Content-Type
-  // header which our policy depends on, so we cannot protect any
-  // response from FTP servers.
-  return url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme);
-}
-
-// static
 // This function is a slight modification of |net::SniffForHTML|.
 SniffingResult CrossOriginReadBlocking::SniffForHTML(StringPiece data) {
   // The content sniffers used by Chrome and Firefox are using "<!--" as one of
@@ -706,12 +698,6 @@ CrossOriginReadBlocking::CorbResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // Don't block same-origin documents.
   url::Origin target_origin = url::Origin::Create(request_url);
   if (initiator.IsSameOriginWith(target_origin))
-    return Decision::kAllow;
-
-  // Only block documents from HTTP(S) schemes.  Checking the scheme of
-  // |target_origin| ensures that we also protect content of blob: and
-  // filesystem: URLs if their nested origins have a HTTP(S) scheme.
-  if (!IsBlockableScheme(target_origin.GetURL()))
     return Decision::kAllow;
 
   // Only apply CORB to `no-cors` requests.

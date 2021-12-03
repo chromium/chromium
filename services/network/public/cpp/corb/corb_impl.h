@@ -314,11 +314,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
   static MimeType GetCanonicalMimeType(base::StringPiece mime_type);
 
  private:
-  // Returns whether this scheme is a target of the cross-origin read blocking
-  // (CORB) policy.  This returns true only for http://* and https://* urls.
-  static bool IsBlockableScheme(const GURL& frame_origin);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, IsBlockableScheme);
-
   static SniffingResult SniffForHTML(base::StringPiece data);
   static SniffingResult SniffForXML(base::StringPiece data);
   static SniffingResult SniffForJSON(base::StringPiece data);
