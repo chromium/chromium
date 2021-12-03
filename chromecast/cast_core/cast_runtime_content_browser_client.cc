@@ -113,8 +113,7 @@ CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
       app->GetUrlRewriteRulesManager();
   DCHECK(url_rewrite_rules_manager);
 
-  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
-      url_rewrite_rules_manager->GetCachedRules();
+  const auto& rules = url_rewrite_rules_manager->GetCachedRules();
   if (!rules) {
     LOG(WARNING) << "Can't create URL throttle as URL rules are not available";
     return nullptr;

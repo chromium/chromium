@@ -62,8 +62,8 @@ bool UrlRequestRewriteRulesManager::OnRulesUpdated(
   return true;
 }
 
-scoped_refptr<UrlRequestRewriteRules>&
-UrlRequestRewriteRulesManager::GetCachedRules() {
+const scoped_refptr<UrlRequestRewriteRules>&
+UrlRequestRewriteRulesManager::GetCachedRules() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_rules_;
 }
@@ -74,7 +74,7 @@ size_t UrlRequestRewriteRulesManager::GetUpdatersSizeForTesting() const {
 
 UrlRequestRewriteRulesManager::Updater::Updater(
     content::WebContents* web_contents,
-    scoped_refptr<UrlRequestRewriteRules>& cached_rules)
+    const scoped_refptr<UrlRequestRewriteRules>& cached_rules)
     : content::WebContentsObserver(web_contents), cached_rules_(cached_rules) {}
 
 UrlRequestRewriteRulesManager::Updater::~Updater() {
@@ -82,7 +82,7 @@ UrlRequestRewriteRulesManager::Updater::~Updater() {
 }
 
 void UrlRequestRewriteRulesManager::Updater::OnRulesUpdated(
-    scoped_refptr<UrlRequestRewriteRules>& cached_rules) {
+    const scoped_refptr<UrlRequestRewriteRules>& cached_rules) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(cached_rules);
 

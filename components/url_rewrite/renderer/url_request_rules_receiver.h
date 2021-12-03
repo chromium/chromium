@@ -27,7 +27,7 @@ class UrlRequestRulesReceiver : public mojom::UrlRequestRulesReceiver {
   UrlRequestRulesReceiver(const UrlRequestRulesReceiver&) = delete;
   UrlRequestRulesReceiver& operator=(const UrlRequestRulesReceiver&) = delete;
 
-  scoped_refptr<UrlRequestRewriteRules>& GetCachedRules();
+  const scoped_refptr<UrlRequestRewriteRules>& GetCachedRules() const;
 
  private:
   void OnUrlRequestRulesReceiverAssociatedReceiver(

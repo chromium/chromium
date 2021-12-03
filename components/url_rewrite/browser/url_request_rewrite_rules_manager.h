@@ -41,7 +41,7 @@ class UrlRequestRewriteRulesManager {
   // rules have been successfully validated and updated, false otherwise.
   bool OnRulesUpdated(mojom::UrlRequestRewriteRulesPtr rules);
 
-  scoped_refptr<UrlRequestRewriteRules>& GetCachedRules();
+  const scoped_refptr<UrlRequestRewriteRules>& GetCachedRules() const;
 
   // Used for testing.
   size_t GetUpdatersSizeForTesting() const;
@@ -52,13 +52,14 @@ class UrlRequestRewriteRulesManager {
   class Updater final : public content::WebContentsObserver {
    public:
     Updater(content::WebContents* web_contents,
-            scoped_refptr<UrlRequestRewriteRules>& cached_rules);
+            const scoped_refptr<UrlRequestRewriteRules>& cached_rules);
     Updater(const Updater&) = delete;
     Updater& operator=(const Updater&) = delete;
     ~Updater() override;
 
     // Notifies UrlRequestRulesReceivers that URL rewrite rules are updated.
-    void OnRulesUpdated(scoped_refptr<UrlRequestRewriteRules>& cached_rules);
+    void OnRulesUpdated(
+        const scoped_refptr<UrlRequestRewriteRules>& cached_rules);
 
    private:
     // content::WebContentsObserver implementation.

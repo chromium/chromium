@@ -44,8 +44,7 @@ CastRuntimeURLLoaderThrottleProvider::CreateThrottles(
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
-  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
-      renderer_client_->GetUrlRewriteRules(render_frame_id);
+  const auto& rules = renderer_client_->GetUrlRewriteRules(render_frame_id);
   if (rules) {
     auto url_loader_throttle = std::make_unique<url_rewrite::URLLoaderThrottle>(
         rules, base::BindRepeating(&IsHeaderCorsExempt));

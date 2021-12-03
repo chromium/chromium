@@ -27,8 +27,8 @@ UrlRequestRulesReceiver::~UrlRequestRulesReceiver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-scoped_refptr<UrlRequestRewriteRules>&
-UrlRequestRulesReceiver::GetCachedRules() {
+const scoped_refptr<UrlRequestRewriteRules>&
+UrlRequestRulesReceiver::GetCachedRules() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_rules_;
 }

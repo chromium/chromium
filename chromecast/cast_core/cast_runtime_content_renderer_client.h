@@ -37,8 +37,8 @@ class CastRuntimeContentRendererClient
       CastRuntimeContentRendererClient&&) = delete;
 
   // Returns URL rewrite rules for provided RenderFrame |routing_id|.
-  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetUrlRewriteRules(
-      int routing_id);
+  const scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetUrlRewriteRules(
+      int routing_id) const;
 
   // content::ContentRendererClient overrides.
   void RenderFrameCreated(content::RenderFrame* render_frame) override;

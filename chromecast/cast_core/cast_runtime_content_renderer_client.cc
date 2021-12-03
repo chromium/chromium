@@ -23,8 +23,8 @@ CastRuntimeContentRendererClient::CastRuntimeContentRendererClient()
 
 CastRuntimeContentRendererClient::~CastRuntimeContentRendererClient() = default;
 
-scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
-CastRuntimeContentRendererClient::GetUrlRewriteRules(int routing_id) {
+const scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
+CastRuntimeContentRendererClient::GetUrlRewriteRules(int routing_id) const {
   auto iter = url_rewrite_rules_providers_.find(routing_id);
   DCHECK(iter != url_rewrite_rules_providers_.end());
   return iter->second->GetCachedRules();
