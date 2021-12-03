@@ -1835,13 +1835,13 @@ bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
 
   const auto& box = To<LayoutBox>(object_);
   const auto* scrollable_area = box.GetScrollableArea();
-  IntRect scroll_controls_bounds =
+  gfx::Rect scroll_controls_bounds =
       scrollable_area->ScrollCornerAndResizerRect();
   if (const auto* scrollbar = scrollable_area->HorizontalScrollbar())
     scroll_controls_bounds.Union(scrollbar->FrameRect());
   if (const auto* scrollbar = scrollable_area->VerticalScrollbar())
     scroll_controls_bounds.Union(scrollbar->FrameRect());
-  IntRect pixel_snapped_border_box_rect(
+  gfx::Rect pixel_snapped_border_box_rect(
       gfx::Point(),
       box.PixelSnappedBorderBoxSize(context_.current.paint_offset));
   return !pixel_snapped_border_box_rect.Contains(scroll_controls_bounds);
@@ -2142,8 +2142,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // integer offsets used in CompositedLayerMapping.
       state.container_rect = ToPixelSnappedRect(
           box.OverflowClipRect(context_.current.paint_offset));
-      state.contents_size = ToGfxSize(scrollable_area->PixelSnappedContentsSize(
-          context_.current.paint_offset));
+      state.contents_size = scrollable_area->PixelSnappedContentsSize(
+          context_.current.paint_offset);
 
       state.user_scrollable_horizontal =
           scrollable_area->UserInputScrollable(kHorizontalScrollbar);

@@ -42,7 +42,7 @@ class MODULES_EXPORT PaintWorklet : public Worklet,
   // The |container_size| is without subpixel snapping.
   scoped_refptr<Image> Paint(const String& name,
                              const ImageResourceObserver&,
-                             const FloatSize& container_size,
+                             const gfx::SizeF& container_size,
                              const CSSStyleValueVector*,
                              float device_scale_factor);
 

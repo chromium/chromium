@@ -96,19 +96,18 @@ bool StyleFetchedImageSet::IsAccessAllowed(String& failing_url) const {
   return false;
 }
 
-FloatSize StyleFetchedImageSet::ImageSize(
+gfx::SizeF StyleFetchedImageSet::ImageSize(
     float multiplier,
-    const FloatSize& default_object_size,
+    const gfx::SizeF& default_object_size,
     RespectImageOrientationEnum respect_orientation) const {
   Image* image = best_fit_image_->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(image)) {
     return ImageSizeForSVGImage(svg_image, multiplier, default_object_size);
   }
   respect_orientation = ForceOrientationIfNecessary(respect_orientation);
-  FloatSize natural_size(image->Size(respect_orientation));
-  FloatSize scaled_image_size(ApplyZoom(natural_size, multiplier));
-  scaled_image_size.Scale(1 / image_scale_factor_);
-  return scaled_image_size;
+  gfx::SizeF natural_size(image->Size(respect_orientation));
+  gfx::SizeF scaled_image_size(ApplyZoom(natural_size, multiplier));
+  return gfx::ScaleSize(scaled_image_size, 1 / image_scale_factor_);
 }
 
 bool StyleFetchedImageSet::HasIntrinsicSize() const {
@@ -127,7 +126,7 @@ scoped_refptr<Image> StyleFetchedImageSet::GetImage(
     const ImageResourceObserver&,
     const Document&,
     const ComputedStyle& style,
-    const FloatSize& target_size) const {
+    const gfx::SizeF& target_size) const {
   Image* image = best_fit_image_->GetImage();
   if (image->IsPlaceholderImage()) {
     static_cast<PlaceholderImage*>(image)->SetIconAndTextScaleFactor(

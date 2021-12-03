@@ -45,7 +45,7 @@ class PaintControllerTestBase : public testing::Test {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
     DrawingRecorder recorder(context, client, type, bounds);
-    context.DrawRect(IntRect(bounds), AutoDarkMode::Disabled());
+    context.DrawRect(bounds, AutoDarkMode::Disabled());
   }
 
  protected:

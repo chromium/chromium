@@ -333,7 +333,7 @@ class TableCellBackgroundClipper {
     PhysicalRect clip_rect = cell_rect;
     clip_rect.Expand(table_cell.BorderInsets());
     context.Save();
-    context.Clip(PixelSnappedIntRect(clip_rect));
+    context.Clip(ToPixelSnappedRect(clip_rect));
   }
 
   ~TableCellBackgroundClipper() {

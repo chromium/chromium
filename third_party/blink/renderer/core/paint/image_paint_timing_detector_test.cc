@@ -98,7 +98,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     return *performance;
   }
 
-  IntRect GetViewportRect(LocalFrameView& view) {
+  gfx::Rect GetViewportRect(LocalFrameView& view) {
     ScrollableArea* scrollable_area = view.GetScrollableArea();
     DCHECK(scrollable_area);
     return scrollable_area->VisibleContentRect();

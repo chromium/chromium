@@ -165,7 +165,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // Returns size of one slider tick mark for a horizontal track.
   // For vertical tracks we rotate it and use it. i.e. Width is always length
   // along the track.
-  virtual IntSize SliderTickSize() const = 0;
+  virtual gfx::Size SliderTickSize() const = 0;
   // Returns the distance of slider tick origin from the slider track center.
   virtual int SliderTickOffsetFromTrackCenter() const = 0;
 

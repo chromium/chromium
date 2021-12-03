@@ -95,10 +95,10 @@ Color LayoutThemeDefault::PlatformInactiveSelectionForegroundColor(
   return inactive_selection_foreground_color_;
 }
 
-IntSize LayoutThemeDefault::SliderTickSize() const {
+gfx::Size LayoutThemeDefault::SliderTickSize() const {
   // The value should be synchronized with a -webkit-slider-container rule in
   // html.css.
-  return IntSize(1, 4);
+  return gfx::Size(1, 4);
 }
 
 int LayoutThemeDefault::SliderTickOffsetFromTrackCenter() const {

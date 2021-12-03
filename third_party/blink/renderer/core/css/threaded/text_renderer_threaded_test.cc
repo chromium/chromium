@@ -47,7 +47,7 @@ TSAN_TEST(TextRendererThreadedTest, MeasureText) {
         TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
         TextDirection::kLtr, false);
     text_run.SetNormalizeSpace(true);
-    FloatRect text_bounds = font.SelectionRectForText(
+    gfx::RectF text_bounds = font.SelectionRectForText(
         text_run, gfx::PointF(), font.GetFontDescription().ComputedSize(), 0,
         -1);
 

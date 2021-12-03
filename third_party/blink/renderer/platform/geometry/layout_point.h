@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -202,6 +203,10 @@ inline LayoutPoint CeiledLayoutPoint(const gfx::PointF& p) {
 inline IntSize PixelSnappedIntSize(const LayoutSize& s, const LayoutPoint& p) {
   return IntSize(SnapSizeToPixel(s.Width(), p.X()),
                  SnapSizeToPixel(s.Height(), p.Y()));
+}
+inline gfx::Size ToPixelSnappedSize(const LayoutSize& s, const LayoutPoint& p) {
+  return gfx::Size(SnapSizeToPixel(s.Width(), p.X()),
+                   SnapSizeToPixel(s.Height(), p.Y()));
 }
 
 inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {

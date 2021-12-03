@@ -120,8 +120,10 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
 
   // The offset is the origin of the layoutObject minus the origin of the
   // graphics layer (so either zero or negative).
-  IntSize OffsetFromLayoutObject() const { return offset_from_layout_object_; }
-  void SetOffsetFromLayoutObject(const IntSize&);
+  gfx::Vector2d OffsetFromLayoutObject() const {
+    return offset_from_layout_object_;
+  }
+  void SetOffsetFromLayoutObject(const gfx::Vector2d&);
 
   // The size of the layer.
   const gfx::Size& Size() const;
@@ -153,13 +155,13 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   void InvalidateContents();
 
   // Set that the position/size of the contents (image or video).
-  void SetContentsRect(const IntRect&);
+  void SetContentsRect(const gfx::Rect&);
 
   void SetContentsToCcLayer(scoped_refptr<cc::Layer> contents_layer);
   bool HasContentsLayer() const { return ContentsLayer(); }
   cc::Layer* ContentsLayer() const { return contents_layer_.get(); }
 
-  const IntRect& ContentsRect() const { return contents_rect_; }
+  const gfx::Rect& ContentsRect() const { return contents_rect_; }
 
   // For hosting this GraphicsLayer in a native layer hierarchy.
   cc::PictureLayer& CcLayer() const { return *layer_; }
@@ -170,7 +172,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   bool HasTrackedRasterInvalidations() const;
   RasterInvalidationTracking* GetRasterInvalidationTracking() const;
   void TrackRasterInvalidation(const DisplayItemClient&,
-                               const IntRect&,
+                               const gfx::Rect&,
                                PaintInvalidationReason);
 
   // Returns true if any layer is repainted.
@@ -218,7 +220,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
     needs_check_raster_invalidation_ = true;
   }
 
-  void PaintForTesting(const IntRect& interest_rect, bool record_debug_info);
+  void PaintForTesting(const gfx::Rect& interest_rect, bool record_debug_info);
 
   void SetShouldCreateLayersAfterPaint(bool);
   bool ShouldCreateLayersAfterPaint() const {
@@ -248,7 +250,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   void Paint(HeapVector<PreCompositedLayerInfo>&,
              PaintBenchmarkMode,
              PaintController::CycleScope*,
-             const IntRect* interest_rect = nullptr);
+             const gfx::Rect* interest_rect = nullptr);
 
   // Adds a child without calling NotifyChildListChange(), so that adding
   // children can be batched before updating.
@@ -271,7 +273,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   Member<GraphicsLayerClient> client_;
 
   // Offset from the owning layoutObject
-  IntSize offset_from_layout_object_;
+  gfx::Vector2d offset_from_layout_object_;
 
   TransformationMatrix transform_;
 
@@ -292,7 +294,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   HeapVector<Member<GraphicsLayer>> children_;
   Member<GraphicsLayer> parent_;
 
-  IntRect contents_rect_;
+  gfx::Rect contents_rect_;
 
   scoped_refptr<cc::PictureLayer> layer_;
   scoped_refptr<cc::Layer> contents_layer_;
@@ -304,7 +306,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   mutable std::unique_ptr<PaintController> paint_controller_;
 
   // Used only when CullRectUpdate is not enabled.
-  IntRect previous_interest_rect_;
+  gfx::Rect previous_interest_rect_;
 
   struct LayerState {
     // In theory, it's unnecessary to use RefCountedPropertyTreeState because

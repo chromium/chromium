@@ -1740,16 +1740,16 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (!image || !image->PaintImageForCurrentFrame())
     return false;
 
-  IntRect src_rect(gfx::Point(), image->Size());
-  IntRect dest_rect(gfx::Point(), IntSize(resource_provider->Size()));
+  gfx::Rect src_rect(image->Size());
+  gfx::Rect dest_rect(resource_provider->Size());
   PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
   // We use this draw helper as we need to take into account the
   // ImageOrientation of the UnacceleratedStaticBitmapImage.
   ImageDrawOptions draw_options;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
-              FloatRect(src_rect), draw_options);
+  image->Draw(resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
+              gfx::RectF(src_rect), draw_options);
   return true;
 }
 
@@ -5171,15 +5171,15 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
   if (!image->CurrentFrameKnownToBeOpaque())
     resource_provider->Canvas()->clear(SK_ColorTRANSPARENT);
 
-  IntRect src_rect(gfx::Point(), image->Size());
-  IntRect dest_rect(0, 0, size.width(), size.height());
+  gfx::Rect src_rect(image->Size());
+  gfx::Rect dest_rect(size);
   PaintFlags flags;
   // TODO(ccameron): WebGL should produce sRGB images.
   // https://crbug.com/672299
   ImageDrawOptions draw_options;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
-              FloatRect(src_rect), draw_options);
+  image->Draw(resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
+              gfx::RectF(src_rect), draw_options);
   return resource_provider->Snapshot();
 }
 
@@ -6285,7 +6285,7 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
   PaintImage paint_image = bitmap->BitmapImage()->PaintImageForCurrentFrame();
   if (!image->HasDefaultOrientation()) {
     paint_image = Image::ResizeAndOrientImage(
-        paint_image, image->CurrentFrameOrientation(), FloatSize(1, 1), 1,
+        paint_image, image->CurrentFrameOrientation(), gfx::Vector2dF(1, 1), 1,
         kInterpolationNone);
   }
 
@@ -6352,9 +6352,8 @@ void WebGLRenderingContextBase::TexImageHelperImageBitmap(
     // In the case of ImageBitmap, we do not need to apply flipY or
     // premultiplyAlpha.
     if (!WebGLImageConversion::ExtractImageData(
-            pixel_data_ptr, data_format, ToGfxSize(bitmap->Size()),
-            source_sub_rect, depth, unpack_image_height, format, type, false,
-            false, data)) {
+            pixel_data_ptr, data_format, bitmap->Size(), source_sub_rect, depth,
+            unpack_image_height, format, type, false, false, data)) {
       SynthesizeGLError(GL_INVALID_VALUE, func_name,
                         "error extracting data from ImageBitmap");
       return;

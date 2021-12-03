@@ -756,9 +756,10 @@ void SVGInlineTextBoxPainter::PaintTextMarkerBackground(
       state_saver.Save();
       paint_info.context.ConcatCTM(fragment.BuildFragmentTransform());
     }
-    FloatRect fragment_rect = svg_inline_text_box_.SelectionRectForTextFragment(
-        fragment, text_match_info.start_position, text_match_info.end_position,
-        style);
+    gfx::RectF fragment_rect =
+        svg_inline_text_box_.SelectionRectForTextFragment(
+            fragment, text_match_info.start_position,
+            text_match_info.end_position, style);
     paint_info.context.SetFillColor(color);
     paint_info.context.FillRect(
         fragment_rect,

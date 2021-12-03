@@ -35,7 +35,7 @@ TEST_P(DataTransferTest, NodeImage) {
   Element* sample = GetDocument().getElementById("sample");
   const std::unique_ptr<DragImage> image =
       DataTransfer::NodeImage(GetFrame(), *sample);
-  EXPECT_EQ(IntSize(100, 100), image->Size());
+  EXPECT_EQ(gfx::Size(100, 100), image->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageWithNestedElement) {
@@ -66,7 +66,7 @@ TEST_P(DataTransferTest, NodeImageWithPsuedoClassWebKitDrag) {
   Element* sample = GetDocument().getElementById("sample");
   const std::unique_ptr<DragImage> image =
       DataTransfer::NodeImage(GetFrame(), *sample);
-  EXPECT_EQ(IntSize(200, 200), image->Size())
+  EXPECT_EQ(gfx::Size(200, 200), image->Size())
       << ":-webkit-drag should affect dragged image.";
 }
 
@@ -122,7 +122,7 @@ TEST_P(DataTransferTest, NodeImageExceedsViewportBounds) {
   )HTML");
   Element& node = *GetDocument().getElementById("node");
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
-  EXPECT_EQ(IntSize(800, 600), image->Size());
+  EXPECT_EQ(gfx::Size(800, 600), image->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
@@ -145,14 +145,14 @@ TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
   Element& first = *GetDocument().getElementById("first");
   const auto first_image = DataTransfer::NodeImage(GetFrame(), first);
   const int first_height = 500;
-  EXPECT_EQ(IntSize(500, first_height), first_image->Size());
+  EXPECT_EQ(gfx::Size(500, first_height), first_image->Size());
 
   // The second div should also be offset by the scroll offset. In addition,
   // the second div should be clipped by the viewport.
   Element& second = *GetDocument().getElementById("second");
   const auto second_image = DataTransfer::NodeImage(GetFrame(), second);
   const int viewport_height = 600;
-  EXPECT_EQ(IntSize(800, viewport_height - (first_height - scroll_amount)),
+  EXPECT_EQ(gfx::Size(800, viewport_height - (first_height - scroll_amount)),
             second_image->Size());
 }
 
@@ -171,9 +171,9 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
   const int node_width = 200;
   const int node_height = 141;
-  EXPECT_EQ(
-      IntSize(node_width * page_scale_factor, node_height * page_scale_factor),
-      image->Size());
+  EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
+                      node_height * page_scale_factor),
+            image->Size());
 
   // Check that a scroll offset is scaled to device coordinates which includes
   // page scale factor.
@@ -182,9 +182,9 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
   const auto image_with_offset = DataTransfer::NodeImage(GetFrame(), node);
-  EXPECT_EQ(
-      IntSize(node_width * page_scale_factor, node_height * page_scale_factor),
-      image_with_offset->Size());
+  EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
+                      node_height * page_scale_factor),
+            image_with_offset->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
@@ -202,8 +202,8 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
   const int node_width = 800;
   const int node_height = 601;
-  EXPECT_EQ(IntSize(node_width * page_scale_factor,
-                    (node_height - 1) * page_scale_factor),
+  EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
+                      (node_height - 1) * page_scale_factor),
             image->Size());
 
   // Check that a scroll offset is scaled to device coordinates which includes
@@ -213,8 +213,8 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
   const auto image_with_offset = DataTransfer::NodeImage(GetFrame(), node);
-  EXPECT_EQ(IntSize(node_width * page_scale_factor,
-                    (node_height - scroll_amount) * page_scale_factor),
+  EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
+                      (node_height - scroll_amount) * page_scale_factor),
             image_with_offset->Size());
 }
 
@@ -240,8 +240,8 @@ TEST_P(DataTransferTest, NodeImageWithPageScaleFactor) {
   const auto image = DataTransfer::NodeImage(GetFrame(), blue_green);
   const int blue_green_width = 2;
   const int blue_green_height = 1;
-  EXPECT_EQ(IntSize(blue_green_width * page_scale_factor,
-                    blue_green_height * page_scale_factor),
+  EXPECT_EQ(gfx::Size(blue_green_width * page_scale_factor,
+                      blue_green_height * page_scale_factor),
             image->Size());
 
   // Even though #bluegreen is offset by a margin of 1px (which is 2px in device
@@ -281,7 +281,7 @@ TEST_P(DataTransferTest, NodeImageFullyOffscreen) {
   Element& target = *GetDocument().getElementById("target");
   const auto image = DataTransfer::NodeImage(GetFrame(), target);
 
-  EXPECT_EQ(IntSize(200, 100), image->Size());
+  EXPECT_EQ(gfx::Size(200, 100), image->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageWithScrolling) {
@@ -303,7 +303,7 @@ TEST_P(DataTransferTest, NodeImageWithScrolling) {
   Element& target = *GetDocument().getElementById("target");
   const auto image = DataTransfer::NodeImage(GetFrame(), target);
 
-  EXPECT_EQ(IntSize(200, 100), image->Size());
+  EXPECT_EQ(gfx::Size(200, 100), image->Size());
 }
 
 TEST_P(DataTransferTest, NodeImageInOffsetStackingContext) {
@@ -329,7 +329,7 @@ TEST_P(DataTransferTest, NodeImageInOffsetStackingContext) {
   const auto image = DataTransfer::NodeImage(GetFrame(), drag);
   constexpr int drag_width = 5;
   constexpr int drag_height = 5;
-  EXPECT_EQ(IntSize(drag_width, drag_height), image->Size());
+  EXPECT_EQ(gfx::Size(drag_width, drag_height), image->Size());
 
   // The dragged image should be (drag_width x drag_height) and fully green.
   Color green = 0xFF00FF00;
@@ -371,7 +371,7 @@ TEST_P(DataTransferTest, NodeImageWithLargerPositionedDescendant) {
   // The positioned #child should expand the dragged image's size.
   constexpr int drag_width = 1;
   constexpr int drag_height = 3;
-  EXPECT_EQ(IntSize(drag_width, drag_height), image->Size());
+  EXPECT_EQ(gfx::Size(drag_width, drag_height), image->Size());
 
   // The dragged image should be (drag_width x drag_height) and fully green
   // which is the color of the #child which fully covers the dragged element.
@@ -392,7 +392,7 @@ TEST_P(DataTransferTest, NodeImageOutOfView) {
 
   auto image = DataTransfer::NodeImage(GetFrame(),
                                        *GetDocument().getElementById("drag"));
-  EXPECT_EQ(IntSize(100, 100), image->Size());
+  EXPECT_EQ(gfx::Size(100, 100), image->Size());
   Color green(0, 0x80, 0);
   const SkBitmap& bitmap = image->Bitmap();
   for (int x = 0; x < 100; ++x) {
@@ -417,7 +417,7 @@ TEST_P(DataTransferTest, NodeImageFixedChild) {
 
   auto image = DataTransfer::NodeImage(GetFrame(),
                                        *GetDocument().getElementById("drag"));
-  EXPECT_EQ(IntSize(100, 100), image->Size());
+  EXPECT_EQ(gfx::Size(100, 100), image->Size());
   Color green(0, 0x80, 0);
   Color blue(0, 0, 0xFF);
   const SkBitmap& bitmap = image->Bitmap();

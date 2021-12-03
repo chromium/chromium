@@ -219,7 +219,7 @@ void RunPaintTestOnWorklet(WorkerThread* thread,
   std::vector<cc::PaintWorkletInput::PropertyKey> property_keys;
   scoped_refptr<CSSPaintWorkletInput> input =
       base::MakeRefCounted<CSSPaintWorkletInput>(
-          "foo", FloatSize(100, 100), 1.0f, 1.0f, 1, std::move(data),
+          "foo", gfx::SizeF(100, 100), 1.0f, 1.0f, 1, std::move(data),
           std::move(input_arguments), std::move(property_keys));
   sk_sp<PaintRecord> record = proxy_client->Paint(input.get(), {});
   EXPECT_NE(record, nullptr);

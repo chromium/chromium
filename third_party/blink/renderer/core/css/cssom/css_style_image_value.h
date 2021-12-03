@@ -37,7 +37,7 @@ class CORE_EXPORT CSSStyleImageValue : public CSSResourceValue,
  protected:
   CSSStyleImageValue() = default;
 
-  virtual absl::optional<IntSize> IntrinsicSize() const = 0;
+  virtual absl::optional<gfx::Size> IntrinsicSize() const = 0;
 };
 
 }  // namespace blink

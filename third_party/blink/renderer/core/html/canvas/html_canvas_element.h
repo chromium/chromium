@@ -231,7 +231,7 @@ class CORE_EXPORT HTMLCanvasElement final
                                unaccelerated_bridge_used_for_testing = nullptr);
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override;
+  gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
                                   absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,

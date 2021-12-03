@@ -266,7 +266,7 @@ void CaretDisplayItemClient::PaintCaret(
                      ToGfxRect(EnclosingIntRect(drawing_rect)));
   }
 
-  IntRect paint_rect = PixelSnappedIntRect(drawing_rect);
+  gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
   context.FillRect(paint_rect, is_visible_if_active_ ? color_ : Color(),
                    PaintAutoDarkMode(layout_block_->StyleRef(),
                                      DarkModeFilter::ElementRole::kForeground));

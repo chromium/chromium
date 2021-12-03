@@ -12252,13 +12252,13 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
                                                    nullptr);
 
   EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
-      box1_rect));
+      ToGfxRect(box1_rect)));
   result_rect = static_cast<FloatRect>(web_match_rects[1]);
   frame->EnsureTextFinder().SelectNearestFindMatch(result_rect.CenterPoint(),
                                                    nullptr);
 
-  EXPECT_TRUE(
-      frame_view->GetScrollableArea()->VisibleContentRect().Contains(box2_rect))
+  EXPECT_TRUE(frame_view->GetScrollableArea()->VisibleContentRect().Contains(
+      ToGfxRect(box2_rect)))
       << "Box [" << box2_rect.ToString() << "] is not visible in viewport ["
       << frame_view->GetScrollableArea()->VisibleContentRect().ToString()
       << "]";
@@ -12395,7 +12395,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
 
   auto* frame = To<LocalFrame>(WebView().GetPage()->MainFrame());
   LocalFrameView* frame_view = frame->View();
-  IntRect inputRect(200, 600, 100, 20);
+  gfx::Rect inputRect(200, 600, 100, 20);
 
   frame_view->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
@@ -12516,7 +12516,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
       ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic);
 
   LocalFrameView* frame_view = frame->View();
-  IntRect inputRect(200, 700, 100, 20);
+  gfx::Rect inputRect(200, 700, 100, 20);
   ASSERT_EQ(1, visual_viewport.Scale());
   ASSERT_EQ(gfx::Point(0, 300),
             frame_view->GetScrollableArea()->VisibleContentRect().origin());
@@ -12616,18 +12616,18 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
       ->ScrollFocusedEditableElementIntoView();
 
   Element* input = GetDocument().getElementById("target");
-  IntRect input_rect(input->getBoundingClientRect()->top(),
-                     input->getBoundingClientRect()->left(),
-                     input->getBoundingClientRect()->width(),
-                     input->getBoundingClientRect()->height());
+  gfx::Rect input_rect(input->getBoundingClientRect()->top(),
+                       input->getBoundingClientRect()->left(),
+                       input->getBoundingClientRect()->width(),
+                       input->getBoundingClientRect()->height());
 
-  IntRect visible_content_rect(gfx::Point(), frame_view->Size());
+  gfx::Rect visible_content_rect(ToGfxSize(frame_view->Size()));
   EXPECT_TRUE(visible_content_rect.Contains(input_rect))
       << "Layout viewport [" << visible_content_rect.ToString()
       << "] does not contain input rect [" << input_rect.ToString()
       << "] after scroll into view.";
 
-  EXPECT_TRUE(visual_viewport.VisibleRect().Contains(input_rect))
+  EXPECT_TRUE(visual_viewport.VisibleRect().Contains(gfx::RectF(input_rect)))
       << "Visual viewport [" << visual_viewport.VisibleRect().ToString()
       << "] does not contain input rect [" << input_rect.ToString()
       << "] after scroll into view.";
@@ -12731,7 +12731,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
   auto* frame = To<LocalFrame>(WebView().GetPage()->MainFrame());
   LocalFrameView* frame_view = frame->View();
   VisualViewport& visual_viewport = frame->GetPage()->GetVisualViewport();
-  IntRect target_rect_in_document(2000, 3000, 100, 100);
+  gfx::Rect target_rect_in_document(2000, 3000, 100, 100);
 
   ASSERT_EQ(0.5f, visual_viewport.Scale());
 
@@ -12944,7 +12944,7 @@ TEST_F(WebFrameSimTest, DisplayNoneIFramePrints) {
   Document* iframe_doc = frame_owner_element->contentDocument();
   EXPECT_FALSE(iframe_doc->documentElement()->GetLayoutObject());
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   float maximum_shrink_ratio = 1.0;
   iframe_doc->GetFrame()->StartPrinting(page_size, page_size,
                                         maximum_shrink_ratio);
@@ -13013,7 +13013,7 @@ TEST_F(WebFrameSimTest, LayoutViewportExceedsLayoutOverflow) {
   Compositor().BeginFrame();
   ScrollableArea* area = GetDocument().View()->LayoutViewport();
   ASSERT_EQ(540, area->VisibleHeight());
-  ASSERT_EQ(IntSize(400, 570), area->ContentsSize());
+  ASSERT_EQ(gfx::Size(400, 570), area->ContentsSize());
 
   // Hide browser controls, growing layout viewport without affecting ICB.
   WebView().ResizeWithBrowserControls(gfx::Size(400, 600), 60, 0, false);
@@ -13021,7 +13021,7 @@ TEST_F(WebFrameSimTest, LayoutViewportExceedsLayoutOverflow) {
 
   // ContentsSize() should grow to accommodate new visible size.
   ASSERT_EQ(600, area->VisibleHeight());
-  ASSERT_EQ(IntSize(400, 600), area->ContentsSize());
+  ASSERT_EQ(gfx::Size(400, 600), area->ContentsSize());
 }
 
 TEST_F(WebFrameSimTest, LayoutViewLocalVisualRect) {

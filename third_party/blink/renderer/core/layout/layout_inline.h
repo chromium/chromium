@@ -402,10 +402,10 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  IntRect BorderBoundingBox() const final {
+  gfx::Rect BorderBoundingBox() const final {
     NOT_DESTROYED();
-    IntRect bounding_box = EnclosingIntRect(PhysicalLinesBoundingBox());
-    return IntRect(0, 0, bounding_box.width(), bounding_box.height());
+    gfx::Rect bounding_box = ToEnclosingRect(PhysicalLinesBoundingBox());
+    return gfx::Rect(bounding_box.size());
   }
 
   virtual InlineFlowBox* CreateInlineFlowBox();  // Subclassed by SVG and Ruby

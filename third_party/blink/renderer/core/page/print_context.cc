@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 
 namespace blink {
@@ -42,7 +43,7 @@ LayoutBoxModelObject* EnclosingBoxModelObject(LayoutObject* object) {
   return To<LayoutBoxModelObject>(object);
 }
 
-bool IsCoordinateInPage(int top, int left, const IntRect& page) {
+bool IsCoordinateInPage(int top, int left, const gfx::Rect& page) {
   return page.x() <= left && left < page.right() && page.y() <= top &&
          top < page.bottom();
 }
@@ -59,39 +60,39 @@ PrintContext::~PrintContext() {
   DCHECK(!is_printing_);
 }
 
-void PrintContext::ComputePageRects(const FloatSize& print_size) {
+void PrintContext::ComputePageRects(const gfx::SizeF& print_size) {
   page_rects_.clear();
 
   if (!IsFrameValid())
     return;
 
   if (!use_printing_layout_) {
-    IntRect page_rect(0, 0, print_size.width(), print_size.height());
+    gfx::Rect page_rect(0, 0, print_size.width(), print_size.height());
     page_rects_.push_back(page_rect);
     return;
   }
 
   auto* view = frame_->GetDocument()->GetLayoutView();
   const PhysicalRect& document_rect = view->DocumentRect();
-  FloatSize page_size = frame_->ResizePageRectsKeepingRatio(
-      print_size, FloatSize(document_rect.Width(), document_rect.Height()));
+  gfx::SizeF page_size = frame_->ResizePageRectsKeepingRatio(
+      print_size, gfx::SizeF(document_rect.size));
   ComputePageRectsWithPageSizeInternal(page_size);
 }
 
 void PrintContext::ComputePageRectsWithPageSize(
-    const FloatSize& page_size_in_pixels) {
+    const gfx::SizeF& page_size_in_pixels) {
   page_rects_.clear();
   ComputePageRectsWithPageSizeInternal(page_size_in_pixels);
 }
 
 void PrintContext::ComputePageRectsWithPageSizeInternal(
-    const FloatSize& page_size_in_pixels) {
+    const gfx::SizeF& page_size_in_pixels) {
   if (!IsFrameValid())
     return;
 
   auto* view = frame_->GetDocument()->GetLayoutView();
 
-  IntRect snapped_doc_rect = PixelSnappedIntRect(view->DocumentRect());
+  gfx::Rect snapped_doc_rect = ToPixelSnappedRect(view->DocumentRect());
 
   int page_width = page_size_in_pixels.width();
   // We scaled with floating point arithmetic and need to ensure results like
@@ -132,10 +133,10 @@ void PrintContext::ComputePageRectsWithPageSizeInternal(
                                 : inline_direction_start - page_logical_width;
 
     auto* scrollable_area = GetFrame()->View()->LayoutViewport();
-    IntRect page_rect(page_logical_left, page_logical_top, page_logical_width,
-                      page_logical_height);
+    gfx::Rect page_rect(page_logical_left, page_logical_top, page_logical_width,
+                        page_logical_height);
     if (!is_horizontal)
-      page_rect = page_rect.TransposedRect();
+      page_rect.Transpose();
     page_rect.Offset(-scrollable_area->ScrollOffsetInt());
     page_rects_.push_back(page_rect);
   }
@@ -149,10 +150,10 @@ void PrintContext::BeginPrintMode(float width, float height) {
   // without going back to screen mode.
   is_printing_ = true;
 
-  FloatSize original_page_size = FloatSize(width, height);
-  FloatSize min_layout_size = frame_->ResizePageRectsKeepingRatio(
-      original_page_size, FloatSize(width * kPrintingMinimumShrinkFactor,
-                                    height * kPrintingMinimumShrinkFactor));
+  gfx::SizeF original_page_size(width, height);
+  gfx::SizeF min_layout_size = frame_->ResizePageRectsKeepingRatio(
+      original_page_size, gfx::SizeF(width * kPrintingMinimumShrinkFactor,
+                                     height * kPrintingMinimumShrinkFactor));
 
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
@@ -178,11 +179,11 @@ void PrintContext::EndPrintMode() {
 
 // static
 int PrintContext::PageNumberForElement(Element* element,
-                                       const FloatSize& page_size_in_pixels) {
+                                       const gfx::SizeF& page_size_in_pixels) {
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
   LocalFrame* frame = element->GetDocument().GetFrame();
-  FloatRect page_rect(gfx::PointF(0, 0), page_size_in_pixels);
+  gfx::RectF page_rect(page_size_in_pixels);
   ScopedPrintContext print_context(frame);
   print_context->BeginPrintMode(page_rect.width(), page_rect.height());
 
@@ -191,7 +192,7 @@ int PrintContext::PageNumberForElement(Element* element,
   if (!box)
     return -1;
 
-  FloatSize scaled_page_size = page_size_in_pixels;
+  gfx::SizeF scaled_page_size = page_size_in_pixels;
   scaled_page_size.Scale(
       frame->View()->LayoutViewport()->ContentsSize().width() /
       page_rect.width());
@@ -230,7 +231,7 @@ void PrintContext::CollectLinkedDestinations(Node* node) {
 }
 
 void PrintContext::OutputLinkedDestinations(GraphicsContext& context,
-                                            const IntRect& page_rect) {
+                                            const gfx::Rect& page_rect) {
   if (!linked_destinations_valid_) {
     // Collect anchors in the top-level frame only because our PrintContext
     // supports only one namespace for the anchors.
@@ -313,14 +314,14 @@ String PrintContext::PageSizeAndMarginsInPixels(LocalFrame* frame,
 
 // static
 int PrintContext::NumberOfPages(LocalFrame* frame,
-                                const FloatSize& page_size_in_pixels) {
+                                const gfx::SizeF& page_size_in_pixels) {
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
-  FloatRect page_rect(gfx::PointF(0, 0), page_size_in_pixels);
+  gfx::RectF page_rect(page_size_in_pixels);
   ScopedPrintContext print_context(frame);
   print_context->BeginPrintMode(page_rect.width(), page_rect.height());
   // Account for shrink-to-fit.
-  FloatSize scaled_page_size = page_size_in_pixels;
+  gfx::SizeF scaled_page_size = page_size_in_pixels;
   scaled_page_size.Scale(
       frame->View()->LayoutViewport()->ContentsSize().width() /
       page_rect.width());

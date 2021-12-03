@@ -14,7 +14,9 @@ class CORE_EXPORT ScrollbarThemeOverlayMobile : public ScrollbarThemeOverlay {
  public:
   static ScrollbarThemeOverlayMobile& GetInstance();
 
-  void PaintThumb(GraphicsContext&, const Scrollbar&, const IntRect&) override;
+  void PaintThumb(GraphicsContext&,
+                  const Scrollbar&,
+                  const gfx::Rect&) override;
   bool AllowsHitTest() const override { return false; }
   bool IsSolidColor() const override { return true; }
   bool UsesNinePatchThumbResource() const override { return false; }

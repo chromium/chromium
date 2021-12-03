@@ -221,7 +221,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   SkPixmap GetSkPixmap() const;
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override { return IntSize(size_); }
+  gfx::Size BitmapSourceSize() const override { return size_; }
   ScriptPromise CreateImageBitmap(ScriptState*,
                                   absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,

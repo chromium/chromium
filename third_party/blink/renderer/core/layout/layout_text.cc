@@ -545,15 +545,15 @@ static LayoutRect LocalQuadForTextBox(InlineTextBox* box,
   return LayoutRect();
 }
 
-static IntRect EllipsisRectForBox(InlineTextBox* box,
-                                  unsigned start_pos,
-                                  unsigned end_pos) {
+static gfx::Rect EllipsisRectForBox(InlineTextBox* box,
+                                    unsigned start_pos,
+                                    unsigned end_pos) {
   if (!box)
-    return IntRect();
+    return gfx::Rect();
 
   uint16_t truncation = box->Truncation();
   if (truncation == kCNoTruncation)
-    return IntRect();
+    return gfx::Rect();
 
   if (EllipsisBox* ellipsis = box->Root().GetEllipsisBox()) {
     int ellipsis_start_position = std::max<int>(start_pos - box->Start(), 0);
@@ -568,7 +568,7 @@ static IntRect EllipsisRectForBox(InlineTextBox* box,
       return ellipsis->SelectionRect();
   }
 
-  return IntRect();
+  return gfx::Rect();
 }
 
 template <typename PhysicalRectCollector>
@@ -593,9 +593,9 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
       UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
   for (InlineTextBox* box : TextBoxes()) {
     LayoutRect boundaries = box->FrameRect();
-    const IntRect ellipsis_rect = (option == kClipToEllipsis)
-                                      ? EllipsisRectForBox(box, 0, TextLength())
-                                      : IntRect();
+    const gfx::Rect ellipsis_rect =
+        (option == kClipToEllipsis) ? EllipsisRectForBox(box, 0, TextLength())
+                                    : gfx::Rect();
     if (!ellipsis_rect.IsEmpty()) {
       if (IsHorizontalWritingMode())
         boundaries.SetWidth(ellipsis_rect.right() - boundaries.X());

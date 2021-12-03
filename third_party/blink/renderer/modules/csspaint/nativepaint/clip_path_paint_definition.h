@@ -8,10 +8,13 @@
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/native_css_paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
 class Animation;
-class FloatRect;
 class Image;
 class LocalFrame;
 class Node;
@@ -33,7 +36,7 @@ class MODULES_EXPORT ClipPathPaintDefinition final
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
   scoped_refptr<Image> Paint(float zoom,
-                             const FloatRect& reference_box,
+                             const gfx::RectF& reference_box,
                              const Node&);
   static Animation* GetAnimationIfCompositable(const Element* element);
   void Trace(Visitor* visitor) const override;

@@ -31,7 +31,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PaintRenderingContext2D(const IntSize& container_size,
+  PaintRenderingContext2D(const gfx::Size& container_size,
                           const PaintRenderingContext2DSettings*,
                           float zoom,
                           float device_scale_factor,
@@ -115,7 +115,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
 
   std::unique_ptr<PaintRecorder> paint_recorder_;
   sk_sp<PaintRecord> previous_frame_;
-  IntSize container_size_;
+  gfx::Size container_size_;
   Member<const PaintRenderingContext2DSettings> context_settings_;
   bool did_record_draw_commands_in_paint_recorder_;
   // The paint worklet canvas operates on CSS pixels, and that's different than

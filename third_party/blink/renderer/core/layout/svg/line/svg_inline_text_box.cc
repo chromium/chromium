@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/paint/svg_inline_text_box_painter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -97,7 +98,7 @@ LayoutUnit SVGInlineTextBox::PositionForOffset(int) const {
   return LayoutUnit();
 }
 
-FloatRect SVGInlineTextBox::SelectionRectForTextFragment(
+gfx::RectF SVGInlineTextBox::SelectionRectForTextFragment(
     const SVGTextFragment& fragment,
     int start_position,
     int end_position,
@@ -114,7 +115,7 @@ FloatRect SVGInlineTextBox::SelectionRectForTextFragment(
   const SimpleFontData* font_data = scaled_font.PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return FloatRect();
+    return gfx::RectF();
 
   const FontMetrics& scaled_font_metrics = font_data->GetFontMetrics();
   gfx::PointF text_origin(fragment.x, fragment.y);
@@ -123,7 +124,7 @@ FloatRect SVGInlineTextBox::SelectionRectForTextFragment(
 
   text_origin.Offset(0, -scaled_font_metrics.FloatAscent());
 
-  FloatRect selection_rect = scaled_font.SelectionRectForText(
+  gfx::RectF selection_rect = scaled_font.SelectionRectForText(
       ConstructTextRun(style, fragment), text_origin,
       fragment.height * scaling_factor, start_position, end_position);
   if (scaling_factor == 1)
@@ -145,7 +146,7 @@ LayoutRect SVGInlineTextBox::LocalSelectionRect(
 
   const ComputedStyle& style = GetLineLayoutItem().StyleRef();
 
-  FloatRect selection_rect;
+  gfx::RectF selection_rect;
   int fragment_start_position = 0;
   int fragment_end_position = 0;
 
@@ -159,7 +160,7 @@ LayoutRect SVGInlineTextBox::LocalSelectionRect(
             fragment, fragment_start_position, fragment_end_position))
       continue;
 
-    FloatRect fragment_rect = SelectionRectForTextFragment(
+    gfx::RectF fragment_rect = SelectionRectForTextFragment(
         fragment, fragment_start_position, fragment_end_position, style);
     if (fragment.IsTransformed())
       fragment_rect = fragment.BuildFragmentTransform().MapRect(fragment_rect);
@@ -167,7 +168,7 @@ LayoutRect SVGInlineTextBox::LocalSelectionRect(
     selection_rect.Union(fragment_rect);
   }
 
-  return LayoutRect(EnclosingIntRect(selection_rect));
+  return LayoutRect(gfx::ToEnclosingRect(selection_rect));
 }
 
 void SVGInlineTextBox::Paint(const PaintInfo& paint_info,

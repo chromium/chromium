@@ -67,8 +67,8 @@ UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
   }
 }
 
-IntSize UnacceleratedStaticBitmapImage::SizeInternal() const {
-  return IntSize(paint_image_.width(), paint_image_.height());
+gfx::Size UnacceleratedStaticBitmapImage::SizeInternal() const {
+  return gfx::Size(paint_image_.width(), paint_image_.height());
 }
 
 bool UnacceleratedStaticBitmapImage::IsPremultiplied() const {
@@ -82,8 +82,8 @@ bool UnacceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
 void UnacceleratedStaticBitmapImage::Draw(
     cc::PaintCanvas* canvas,
     const cc::PaintFlags& flags,
-    const FloatRect& dst_rect,
-    const FloatRect& src_rect,
+    const gfx::RectF& dst_rect,
+    const gfx::RectF& src_rect,
     const ImageDrawOptions& draw_options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   StaticBitmapImage::DrawHelper(canvas, flags, dst_rect, src_rect, draw_options,

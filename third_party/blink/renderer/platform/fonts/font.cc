@@ -470,19 +470,19 @@ void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }
 
-static inline FloatRect PixelSnappedSelectionRect(FloatRect rect) {
+static inline gfx::RectF PixelSnappedSelectionRect(const gfx::RectF& rect) {
   // Using roundf() rather than ceilf() for the right edge as a compromise to
   // ensure correct caret positioning.
   float rounded_x = roundf(rect.x());
-  return FloatRect(rounded_x, rect.y(), roundf(rect.right() - rounded_x),
-                   rect.height());
+  return gfx::RectF(rounded_x, rect.y(), roundf(rect.right() - rounded_x),
+                    rect.height());
 }
 
-FloatRect Font::SelectionRectForText(const TextRun& run,
-                                     const gfx::PointF& point,
-                                     float height,
-                                     int from,
-                                     int to) const {
+gfx::RectF Font::SelectionRectForText(const TextRun& run,
+                                      const gfx::PointF& point,
+                                      float height,
+                                      int from,
+                                      int to) const {
   to = (to == -1 ? run.length() : to);
 
   FontCachePurgePreventer purge_preventer;
@@ -491,7 +491,7 @@ FloatRect Font::SelectionRectForText(const TextRun& run,
   CharacterRange range = shaper.GetCharacterRange(run, from, to);
 
   return PixelSnappedSelectionRect(
-      FloatRect(point.x() + range.start, point.y(), range.Width(), height));
+      gfx::RectF(point.x() + range.start, point.y(), range.Width(), height));
 }
 
 int Font::OffsetForPosition(const TextRun& run,

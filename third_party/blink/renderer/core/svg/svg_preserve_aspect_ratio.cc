@@ -181,12 +181,12 @@ bool SVGPreserveAspectRatio::Parse(const UChar*& ptr,
   return ParseInternal(ptr, end, validate) == SVGParseStatus::kNoError;
 }
 
-void SVGPreserveAspectRatio::TransformRect(FloatRect& dest_rect,
-                                           FloatRect& src_rect) const {
+void SVGPreserveAspectRatio::TransformRect(gfx::RectF& dest_rect,
+                                           gfx::RectF& src_rect) const {
   if (align_ == kSvgPreserveaspectratioNone)
     return;
 
-  FloatSize image_size = src_rect.size();
+  gfx::SizeF image_size = src_rect.size();
   float orig_dest_width = dest_rect.width();
   float orig_dest_height = dest_rect.height();
   switch (meet_or_slice_) {

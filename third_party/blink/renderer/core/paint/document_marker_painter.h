@@ -9,11 +9,14 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
 class ComputedStyle;
 class Document;
-class FloatRect;
 class GraphicsContext;
 class LayoutUnit;
 class Node;
@@ -35,7 +38,7 @@ class DocumentMarkerPainter {
                                             const StyleableMarker& marker,
                                             const ComputedStyle& style,
                                             const Document& document,
-                                            const FloatRect& marker_rect,
+                                            const gfx::RectF& marker_rect,
                                             LayoutUnit logical_height,
                                             bool in_dark_mode);
   static void PaintDocumentMarker(

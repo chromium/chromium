@@ -49,6 +49,9 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 class SkPath;
 class SkRRect;
@@ -60,7 +63,6 @@ class PaintPreviewTracker;
 
 namespace blink {
 
-class FloatRect;
 class FloatRoundedRect;
 class KURL;
 class PaintController;
@@ -71,17 +73,17 @@ struct TextRunPaintInfo;
 struct ImageTilingInfo {
   // The part of the Image (the |image| argument to the method) to tile. It's in
   // the space of the image.
-  FloatRect image_rect;
+  gfx::RectF image_rect;
 
   // Scale factor from image space to destination space. Will include
   // image-resolution information.
-  FloatSize scale{1.0f, 1.0f};
+  gfx::Vector2dF scale{1.0f, 1.0f};
 
   // Origin of the full image in destination space.
   gfx::PointF phase;
 
   // Additional spacing between tiles in destination space.
-  FloatSize spacing;
+  gfx::SizeF spacing;
 };
 
 struct ImageDrawOptions {
@@ -233,7 +235,7 @@ class PLATFORM_EXPORT GraphicsContext {
 
   // DrawRect() fills and always strokes using a 1-pixel stroke inset from
   // the rect borders (of the pre-set stroke color).
-  void DrawRect(const IntRect&, const AutoDarkMode& auto_dark_mode);
+  void DrawRect(const gfx::Rect&, const AutoDarkMode& auto_dark_mode);
 
   // DrawLine() only operates on horizontal or vertical lines and uses the
   // current stroke settings. For dotted or dashed stroke, the line need to be
@@ -258,16 +260,16 @@ class PLATFORM_EXPORT GraphicsContext {
                   const int length = 0,
                   const int dash_thickness = 0);
 
-  void FillEllipse(const FloatRect&, const AutoDarkMode& auto_dark_mode);
-  void StrokeEllipse(const FloatRect&, const AutoDarkMode& auto_dark_mode);
+  void FillEllipse(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
+  void StrokeEllipse(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
 
-  void FillRect(const IntRect&, const AutoDarkMode& auto_dark_mode);
-  void FillRect(const IntRect&,
+  void FillRect(const gfx::Rect&, const AutoDarkMode& auto_dark_mode);
+  void FillRect(const gfx::Rect&,
                 const Color&,
                 const AutoDarkMode& auto_dark_mode,
                 SkBlendMode = SkBlendMode::kSrcOver);
-  void FillRect(const FloatRect&, const AutoDarkMode& auto_dark_mode);
-  void FillRect(const FloatRect&,
+  void FillRect(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
+  void FillRect(const gfx::RectF&,
                 const Color&,
                 const AutoDarkMode& auto_dark_mode,
                 SkBlendMode = SkBlendMode::kSrcOver);
@@ -278,37 +280,37 @@ class PLATFORM_EXPORT GraphicsContext {
                   const FloatRoundedRect&,
                   const Color&,
                   const AutoDarkMode& auto_dark_mode);
-  void FillRectWithRoundedHole(const FloatRect&,
+  void FillRectWithRoundedHole(const gfx::RectF&,
                                const FloatRoundedRect& rounded_hole_rect,
                                const Color&,
                                const AutoDarkMode& auto_dark_mode);
 
-  void StrokeRect(const FloatRect&,
+  void StrokeRect(const gfx::RectF&,
                   float line_width,
                   const AutoDarkMode& auto_dark_mode);
 
   void DrawRecord(sk_sp<const PaintRecord>);
   void CompositeRecord(sk_sp<PaintRecord>,
-                       const FloatRect& dest,
-                       const FloatRect& src,
+                       const gfx::RectF& dest,
+                       const gfx::RectF& src,
                        SkBlendMode);
 
   void DrawImage(Image*,
                  Image::ImageDecodingMode,
                  const AutoDarkMode& auto_dark_mode,
-                 const FloatRect& dest_rect,
-                 const FloatRect* src_rect = nullptr,
+                 const gfx::RectF& dest_rect,
+                 const gfx::RectF* src_rect = nullptr,
                  SkBlendMode = SkBlendMode::kSrcOver,
                  RespectImageOrientationEnum = kRespectImageOrientation);
   void DrawImageRRect(Image*,
                       Image::ImageDecodingMode,
                       const AutoDarkMode& auto_dark_mode,
                       const FloatRoundedRect& dest,
-                      const FloatRect& src_rect,
+                      const gfx::RectF& src_rect,
                       SkBlendMode = SkBlendMode::kSrcOver,
                       RespectImageOrientationEnum = kRespectImageOrientation);
   void DrawImageTiled(Image* image,
-                      const FloatRect& dest_rect,
+                      const gfx::RectF& dest_rect,
                       const ImageTilingInfo& tiling_info,
                       const AutoDarkMode& auto_dark_mode,
                       SkBlendMode = SkBlendMode::kSrcOver,
@@ -330,16 +332,16 @@ class PLATFORM_EXPORT GraphicsContext {
                  const PaintFlags&,
                  const AutoDarkMode& auto_dark_mode);
 
-  void Clip(const IntRect& rect) { ClipRect(rect); }
-  void Clip(const FloatRect& rect) { ClipRect(rect); }
+  void Clip(const gfx::Rect& rect) { ClipRect(gfx::RectToSkRect(rect)); }
+  void Clip(const gfx::RectF& rect) { ClipRect(gfx::RectFToSkRect(rect)); }
   void ClipRoundedRect(const FloatRoundedRect&,
                        SkClipOp = SkClipOp::kIntersect,
                        AntiAliasingMode = kAntiAliased);
-  void ClipOut(const IntRect& rect) {
-    ClipRect(rect, kNotAntiAliased, SkClipOp::kDifference);
+  void ClipOut(const gfx::Rect& rect) {
+    ClipRect(gfx::RectToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
-  void ClipOut(const FloatRect& rect) {
-    ClipRect(rect, kNotAntiAliased, SkClipOp::kDifference);
+  void ClipOut(const gfx::RectF& rect) {
+    ClipRect(gfx::RectFToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
   void ClipOut(const Path&);
   void ClipOutRoundedRect(const FloatRoundedRect&);
@@ -415,7 +417,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // (i.e. endLayer()).
   void BeginLayer(float opacity = 1.0f,
                   SkBlendMode = SkBlendMode::kSrcOver,
-                  const FloatRect* = nullptr,
+                  const gfx::RectF* = nullptr,
                   ColorFilter = kColorFilterNone,
                   sk_sp<PaintFilter> = nullptr);
   void EndLayer();
@@ -423,7 +425,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // Instead of being dispatched to the active canvas, draw commands following
   // beginRecording() are stored in a display list that can be replayed at a
   // later time. Pass in the bounding rectangle for the content in the list.
-  void BeginRecording(const FloatRect&);
+  void BeginRecording(const gfx::RectF&);
 
   // Returns a record with any recorded draw commands since the prerequisite
   // call to beginRecording().  The record is guaranteed to be non-null (but
@@ -461,24 +463,24 @@ class PLATFORM_EXPORT GraphicsContext {
   // ---------- End transformation methods -----------------
 
   PaintFlags::FilterQuality ComputeFilterQuality(Image*,
-                                                 const FloatRect& dest,
-                                                 const FloatRect& src) const;
+                                                 const gfx::RectF& dest,
+                                                 const gfx::RectF& src) const;
 
   SkSamplingOptions ComputeSamplingOptions(Image* image,
-                                           const FloatRect& dest,
-                                           const FloatRect& src) const {
+                                           const gfx::RectF& dest,
+                                           const gfx::RectF& src) const {
     return PaintFlags::FilterQualityToSkSamplingOptions(
         ComputeFilterQuality(image, dest, src));
   }
 
   // Sets target URL of a clickable area.
-  void SetURLForRect(const KURL&, const IntRect&);
+  void SetURLForRect(const KURL&, const gfx::Rect&);
 
   // Sets the destination of a clickable area of a URL fragment (in a URL
   // pointing to the same web page). When the area is clicked, the page should
   // be scrolled to the location set by setURLDestinationLocation() for the
   // destination whose name is |name|.
-  void SetURLFragmentForRect(const String& name, const IntRect&);
+  void SetURLFragmentForRect(const String& name, const gfx::Rect&);
 
   // Sets location of a URL destination (a.k.a. anchor) in the page.
   void SetURLDestinationLocation(const String& name, const gfx::Point&);

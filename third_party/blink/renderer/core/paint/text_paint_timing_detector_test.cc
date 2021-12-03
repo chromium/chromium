@@ -50,7 +50,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
   Document& GetDocument() { return *GetFrame()->GetDocument(); }
 
-  IntRect GetViewportRect(LocalFrameView& view) {
+  gfx::Rect GetViewportRect(LocalFrameView& view) {
     ScrollableArea* scrollable_area = view.GetScrollableArea();
     DCHECK(scrollable_area);
     return scrollable_area->VisibleContentRect();

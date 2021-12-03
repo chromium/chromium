@@ -63,7 +63,7 @@ class CORE_EXPORT RootFrameViewport final
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const mojom::blink::ScrollIntoViewParamsPtr&) override;
-  IntRect VisibleContentRect(
+  gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   PhysicalRect VisibleScrollSnapportRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
@@ -76,7 +76,7 @@ class CORE_EXPORT RootFrameViewport final
   bool IsActive() const override;
   int ScrollSize(ScrollbarOrientation) const override;
   bool IsScrollCornerVisible() const override;
-  IntRect ScrollCornerRect() const override;
+  gfx::Rect ScrollCornerRect() const override;
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType) override;
   gfx::Vector2d ScrollOffsetInt() const override;
@@ -84,7 +84,7 @@ class CORE_EXPORT RootFrameViewport final
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;
   ScrollOffset MaximumScrollOffset() const override;
-  IntSize ContentsSize() const override;
+  gfx::Size ContentsSize() const override;
   bool UsesCompositedScrolling() const override;
   bool ShouldScrollOnMainThread() const override;
   bool ScrollbarsCanBeActive() const override;

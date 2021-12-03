@@ -269,8 +269,8 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
 }
 
-IntSize OffscreenCanvas::BitmapSourceSize() const {
-  return IntSize(size_);
+gfx::Size OffscreenCanvas::BitmapSourceSize() const {
+  return size_;
 }
 
 ScriptPromise OffscreenCanvas::CreateImageBitmap(

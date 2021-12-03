@@ -121,20 +121,20 @@ class DraggedNodeImageBuilder {
       absolute_bounding_box.Intersect(visible_rect);
     }
 
-    FloatRect bounding_box =
-        layer->GetLayoutObject()
-            .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
-            .BoundingBox();
+    gfx::RectF bounding_box =
+        ToGfxRectF(layer->GetLayoutObject()
+                       .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
+                       .BoundingBox());
     absl::optional<OverriddenCullRectScope> cull_rect_scope;
     if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-      FloatRect cull_rect = bounding_box;
-      cull_rect.Offset(
-          FloatSize(layer->GetLayoutObject().FirstFragment().PaintOffset()));
+      gfx::RectF cull_rect = bounding_box;
+      cull_rect.Offset(gfx::Vector2dF(
+          layer->GetLayoutObject().FirstFragment().PaintOffset()));
       cull_rect_scope.emplace(*layer,
-                              CullRect(ToGfxRect(EnclosingIntRect(cull_rect))));
+                              CullRect(gfx::ToEnclosingRect(cull_rect)));
     }
     PaintLayerPaintingInfo painting_info(
-        layer, CullRect(ToGfxRect(EnclosingIntRect(bounding_box))),
+        layer, CullRect(gfx::ToEnclosingRect(bounding_box)),
         kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 
@@ -376,24 +376,13 @@ void DataTransfer::SetDragImageElement(Node* node, const gfx::Point& loc) {
   setDragImage(nullptr, node, loc);
 }
 
-FloatRect DataTransfer::ClipByVisualViewport(const FloatRect& absolute_rect,
-                                             const LocalFrame& frame) {
-  IntRect viewport_in_root_frame =
-      EnclosingIntRect(frame.GetPage()->GetVisualViewport().VisibleRect());
-  FloatRect absolute_viewport =
-      FloatRect(frame.View()->ConvertFromRootFrame(viewport_in_root_frame));
+gfx::RectF DataTransfer::ClipByVisualViewport(const gfx::RectF& absolute_rect,
+                                              const LocalFrame& frame) {
+  gfx::Rect viewport_in_root_frame =
+      ToEnclosingRect(frame.GetPage()->GetVisualViewport().VisibleRect());
+  gfx::RectF absolute_viewport(ToGfxRect(
+      frame.View()->ConvertFromRootFrame(IntRect(viewport_in_root_frame))));
   return IntersectRects(absolute_viewport, absolute_rect);
-}
-
-// static
-// Converts from size in CSS space to device space based on the given frame.
-FloatSize DataTransfer::DeviceSpaceSize(const FloatSize& css_size,
-                                        const LocalFrame& frame) {
-  float device_scale_factor = frame.GetPage()->DeviceScaleFactorDeprecated();
-  float page_scale_factor = frame.GetPage()->GetVisualViewport().Scale();
-  FloatSize device_size(css_size);
-  device_size.Scale(device_scale_factor * page_scale_factor);
-  return device_size;
 }
 
 // static
@@ -402,19 +391,19 @@ FloatSize DataTransfer::DeviceSpaceSize(const FloatSize& css_size,
 std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     LocalFrame& frame,
     float opacity,
-    const FloatSize& css_size,
+    const gfx::SizeF& layout_size,
     const gfx::Vector2dF& paint_offset,
     PaintRecordBuilder& builder,
     const PropertyTreeState& property_tree_state) {
-  float device_scale_factor = frame.GetPage()->DeviceScaleFactorDeprecated();
-  float page_scale_factor = frame.GetPage()->GetVisualViewport().Scale();
+  float layout_to_device_scale = frame.GetPage()->GetVisualViewport().Scale() *
+                                 frame.GetPage()->DeviceScaleFactorDeprecated();
 
-  FloatSize device_size = DeviceSpaceSize(css_size, frame);
+  gfx::SizeF device_size = gfx::ScaleSize(layout_size, layout_to_device_scale);
   AffineTransform transform;
-  FloatSize paint_offset_size =
-      DeviceSpaceSize(FloatSize(paint_offset.x(), paint_offset.y()), frame);
-  transform.Translate(-paint_offset_size.width(), -paint_offset_size.height());
-  transform.Scale(device_scale_factor * page_scale_factor);
+  gfx::Vector2dF device_paint_offset =
+      gfx::ScaleVector2d(paint_offset, layout_to_device_scale);
+  transform.Translate(-device_paint_offset.x(), -device_paint_offset.y());
+  transform.Scale(layout_to_device_scale);
 
   // Rasterize upfront, since DragImage::create() is going to do it anyway
   // (SkImage::asLegacyBitmap).

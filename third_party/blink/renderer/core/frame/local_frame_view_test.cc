@@ -150,7 +150,7 @@ TEST_F(LocalFrameViewTest, HideTooltipWhenScrollPositionChanges) {
 TEST_F(LocalFrameViewTest, NoOverflowInIncrementVisuallyNonEmptyPixelCount) {
   EXPECT_FALSE(GetDocument().View()->IsVisuallyNonEmpty());
   GetDocument().View()->IncrementVisuallyNonEmptyPixelCount(
-      IntSize(65536, 65536));
+      gfx::Size(65536, 65536));
   EXPECT_TRUE(GetDocument().View()->IsVisuallyNonEmpty());
 }
 
@@ -182,7 +182,7 @@ TEST_F(LocalFrameViewTest, UpdateLifecyclePhasesForPrintingDetachedFrame) {
   SetBodyInnerHTML("<iframe style='display: none'></iframe>");
   SetChildFrameHTML("A");
 
-  ChildFrame().StartPrinting(FloatSize(200, 200), FloatSize(200, 200), 1);
+  ChildFrame().StartPrinting(gfx::SizeF(200, 200), gfx::SizeF(200, 200), 1);
   ChildDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   // The following checks that the detached frame has been walked for PrePaint.
@@ -198,7 +198,7 @@ TEST_F(LocalFrameViewTest, PrintFrameUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<iframe></iframe>");
   SetChildFrameHTML("A");
 
-  ChildFrame().StartPrinting(FloatSize(200, 200), FloatSize(200, 200), 1);
+  ChildFrame().StartPrinting(gfx::SizeF(200, 200), gfx::SizeF(200, 200), 1);
   ChildDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   EXPECT_EQ(DocumentLifecycle::kCompositingAssignmentsClean,

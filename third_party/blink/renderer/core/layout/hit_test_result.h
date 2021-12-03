@@ -153,7 +153,7 @@ class CORE_EXPORT HitTestResult {
   const AtomicString& AltDisplayString() const;
   static Image* GetImage(const Node* node);
   Image* GetImage() const;
-  IntRect ImageRect() const;
+  gfx::Rect ImageRect() const;
   static KURL AbsoluteImageURL(const Node* node);
   KURL AbsoluteImageURL() const;
   KURL AbsoluteMediaURL() const;

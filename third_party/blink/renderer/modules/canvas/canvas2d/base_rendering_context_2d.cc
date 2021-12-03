@@ -1556,10 +1556,7 @@ void BaseRenderingContext2D::DrawImageInternal(
     c->translate(-src_rect.x(), -src_rect.y());
     HTMLVideoElement* video = static_cast<HTMLVideoElement*>(image_source);
     video->PaintCurrentFrame(
-        c,
-        IntRect(gfx::Point(),
-                IntSize(video->videoWidth(), video->videoHeight())),
-        &image_flags);
+        c, gfx::Rect(video->videoWidth(), video->videoHeight()), &image_flags);
   } else if (image_source->IsVideoFrame()) {
     VideoFrame* frame = static_cast<VideoFrame*>(image_source);
     auto media_frame = frame->frame();
@@ -1590,19 +1587,18 @@ void BaseRenderingContext2D::DrawImageInternal(
     // the source of the image.
     RespectImageOrientationEnum respect_orientation =
         RespectImageOrientationInternal(image_source);
-    FloatRect corrected_src_rect(src_rect);
+    gfx::RectF corrected_src_rect = src_rect;
     if (respect_orientation == kRespectImageOrientation &&
         !image->HasDefaultOrientation()) {
       corrected_src_rect = image->CorrectSrcRectForImageOrientation(
-          image->SizeAsFloat(kRespectImageOrientation), FloatRect(src_rect));
+          image->SizeAsFloat(kRespectImageOrientation), src_rect);
     }
     image_flags.setAntiAlias(ShouldDrawImageAntialiased(dst_rect));
     ImageDrawOptions draw_options;
     draw_options.sampling_options = sampling;
     draw_options.respect_orientation = respect_orientation;
     draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-    image->Draw(c, image_flags, FloatRect(dst_rect), corrected_src_rect,
-                draw_options);
+    image->Draw(c, image_flags, dst_rect, corrected_src_rect, draw_options);
   }
 
   c->restoreToCount(initial_save_count);

@@ -316,8 +316,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
   // not populated with image data. To avoid thrashing as bytes come in, only
   // create the frame once.
   if (!yuv_frame_) {
-    const auto coded_size =
-        ToGfxSize(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
+    const auto coded_size = decoder_->DecodedYUVSize(cc::YUVIndex::kY);
 
     // Plane sizes are guaranteed to fit in an int32_t by
     // ImageDecoder::SetSize(); since YUV is 1 byte-per-channel, we can just

@@ -66,8 +66,7 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
   scoped_refptr<Image> source_image = image_content->GetImage();
   if (auto* svg_image = DynamicTo<SVGImage>(source_image.get())) {
     UseCounter::Count(GetElement().GetDocument(), WebFeature::kSVGInCanvas2D);
-    FloatSize image_size =
-        svg_image->ConcreteObjectSize(FloatSize(default_object_size));
+    gfx::SizeF image_size = svg_image->ConcreteObjectSize(default_object_size);
     source_image = SVGImageForContainer::Create(
         svg_image, image_size, 1,
         GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()));
@@ -88,11 +87,9 @@ gfx::SizeF ImageElementBase::ElementSize(
   if (!image_content || !image_content->HasImage())
     return gfx::SizeF();
   Image* image = image_content->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return ToGfxSizeF(
-        svg_image->ConcreteObjectSize(FloatSize(default_object_size)));
-  }
-  return gfx::SizeF(ToGfxSize(image->Size(respect_orientation)));
+  if (auto* svg_image = DynamicTo<SVGImage>(image))
+    return svg_image->ConcreteObjectSize(default_object_size);
+  return gfx::SizeF(image->Size(respect_orientation));
 }
 
 gfx::SizeF ImageElementBase::DefaultDestinationSize(
@@ -117,10 +114,10 @@ bool ImageElementBase::IsOpaque() const {
   return image->CurrentFrameKnownToBeOpaque();
 }
 
-IntSize ImageElementBase::BitmapSourceSize() const {
+gfx::Size ImageElementBase::BitmapSourceSize() const {
   ImageResourceContent* image = CachedImage();
   if (!image)
-    return IntSize();
+    return gfx::Size();
   // This method is called by ImageBitmap when creating and cropping the image.
   // Return un-oriented size because the cropping must happen before
   // orienting.
@@ -130,7 +127,7 @@ IntSize ImageElementBase::BitmapSourceSize() const {
 static bool HasDimensionsForImage(SVGImage* svg_image,
                                   absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions* options) {
-  if (!svg_image->ConcreteObjectSize(FloatSize()).IsEmpty())
+  if (!svg_image->ConcreteObjectSize(gfx::SizeF()).IsEmpty())
     return true;
   if (crop_rect)
     return true;

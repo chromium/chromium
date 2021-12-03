@@ -1119,10 +1119,10 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
   GetDocument().GetPage()->GetVisualViewport().SetLocation(gfx::PointF(0, 100));
   UpdateAllLifecyclePhasesForTest();
   // The visual viewport.
-  EXPECT_EQ(IntRect(0, 100, 200, 500),
+  EXPECT_EQ(gfx::Rect(0, 100, 200, 500),
             GetDocument().View()->GetScrollableArea()->VisibleContentRect());
   // The layout viewport .
-  EXPECT_EQ(IntRect(0, 0, 800, 600),
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             GetDocument().View()->LayoutViewport()->VisibleContentRect());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
 

@@ -54,9 +54,9 @@ class TestImage : public Image {
     return base::AdoptRef(new TestImage(size));
   }
 
-  IntSize SizeWithConfig(SizeConfig) const override {
+  gfx::Size SizeWithConfig(SizeConfig) const override {
     DCHECK(image_);
-    return IntSize(image_->width(), image_->height());
+    return gfx::Size(image_->width(), image_->height());
   }
 
   bool CurrentFrameKnownToBeOpaque() override { return false; }
@@ -67,8 +67,8 @@ class TestImage : public Image {
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& dest_rect,
-            const FloatRect& src_rect,
+            const gfx::RectF& dest_rect,
+            const gfx::RectF& src_rect,
             const ImageDrawOptions&) override {
     // Image pure virtual stub.
   }
@@ -114,7 +114,7 @@ TEST(DragImageTest, NonNullHandling) {
   ASSERT_TRUE(drag_image);
 
   drag_image->Scale(0.5, 0.5);
-  IntSize size = drag_image->Size();
+  gfx::Size size = drag_image->Size();
   EXPECT_EQ(1, size.width());
   EXPECT_EQ(1, size.height());
 }

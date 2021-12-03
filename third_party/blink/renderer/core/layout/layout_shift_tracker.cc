@@ -284,7 +284,7 @@ void LayoutShiftTracker::ObjectShifted(
   if (frame_view_->GetFrame().IsMainFrame()) {
     // Apply the visual viewport clip.
     clip_rect.Intersect(FloatClipRect(
-        ToGfxRectF(frame_view_->GetPage()->GetVisualViewport().VisibleRect())));
+        frame_view_->GetPage()->GetVisualViewport().VisibleRect()));
   }
 
   // If the clip region is empty, then the resulting layout shift isn't visible
@@ -495,12 +495,12 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
 
   // Intersect with the portion of the local root that overlaps the main frame.
   local_root.View()->MapToVisualRectInRemoteRootFrame(subframe_rect);
-  IntSize subframe_visible_size = subframe_rect.PixelSnappedSize();
+  gfx::Size subframe_visible_size = subframe_rect.PixelSnappedSize();
   IntSize main_frame_size = frame.GetPage()->GetVisualViewport().Size();
 
   // TODO(crbug.com/940711): This comparison ignores page scale and CSS
   // transforms above the local root.
-  return static_cast<double>(subframe_visible_size.Area()) /
+  return static_cast<double>(subframe_visible_size.Area64()) /
          main_frame_size.Area();
 }
 
@@ -510,7 +510,7 @@ void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
   if (region_.IsEmpty())
     return;
 
-  IntRect viewport = frame_view_->GetScrollableArea()->VisibleContentRect();
+  gfx::Rect viewport = frame_view_->GetScrollableArea()->VisibleContentRect();
   if (viewport.IsEmpty())
     return;
 

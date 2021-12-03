@@ -95,27 +95,26 @@ static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
 }
 
 gfx::RectF FEImage::MapInputs(const gfx::RectF&) const {
-  FloatRect dest_rect(
-      GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion()));
+  gfx::RectF dest_rect =
+      GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
   if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
-    FloatRect src_rect(GetLayoutObjectRepaintRect(*layout_object));
+    gfx::RectF src_rect = GetLayoutObjectRepaintRect(*layout_object);
     if (element_->HasRelativeLengths()) {
       auto viewport_transform =
-          ComputeViewportAdjustmentTransform(element_, ToGfxRectF(dest_rect));
+          ComputeViewportAdjustmentTransform(element_, dest_rect);
       if (viewport_transform)
         src_rect = viewport_transform->MapRect(src_rect);
     } else {
-      src_rect = FloatRect(
-          GetFilter()->MapLocalRectToAbsoluteRect(ToGfxRectF(src_rect)));
+      src_rect = GetFilter()->MapLocalRectToAbsoluteRect(src_rect);
       src_rect.Offset(dest_rect.x(), dest_rect.y());
     }
     dest_rect.Intersect(src_rect);
-    return ToGfxRectF(dest_rect);
+    return dest_rect;
   }
   if (image_) {
-    FloatRect src_rect = FloatRect(gfx::PointF(), FloatSize(image_->Size()));
+    gfx::RectF src_rect(gfx::SizeF(image_->Size()));
     preserve_aspect_ratio_->TransformRect(dest_rect, src_rect);
-    return ToGfxRectF(dest_rect);
+    return dest_rect;
   }
   return gfx::RectF();
 }
@@ -130,7 +129,7 @@ WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
                                                  int indent) const {
   gfx::Size image_size;
   if (image_) {
-    image_size = ToGfxSize(image_->Size());
+    image_size = image_->Size();
   } else if (const LayoutObject* layout_object = ReferencedLayoutObject()) {
     image_size =
         gfx::ToEnclosingRect(GetLayoutObjectRepaintRect(*layout_object)).size();
@@ -202,18 +201,18 @@ sk_sp<PaintFilter> FEImage::CreateImageFilter() {
 
   if (PaintImage image =
           image_ ? image_->PaintImageForCurrentFrame() : PaintImage()) {
-    FloatRect src_rect = FloatRect(gfx::PointF(), FloatSize(image_->Size()));
-    FloatRect dst_rect(
-        GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion()));
+    gfx::RectF src_rect(gfx::SizeF(image_->Size()));
+    gfx::RectF dst_rect =
+        GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
     preserve_aspect_ratio_->TransformRect(dst_rect, src_rect);
     // Clip the filter primitive rect by the filter region and adjust the source
     // rectangle if needed.
-    FloatRect crop_rect(
-        IntersectWithFilterRegion(GetFilter(), ToGfxRectF(dst_rect)));
+    gfx::RectF crop_rect = IntersectWithFilterRegion(GetFilter(), dst_rect);
     if (crop_rect != dst_rect)
-      src_rect = blink::MapRect(crop_rect, dst_rect, src_rect);
-    return sk_make_sp<ImagePaintFilter>(std::move(image), src_rect, crop_rect,
-                                        cc::PaintFlags::FilterQuality::kHigh);
+      src_rect = gfx::MapRect(crop_rect, dst_rect, src_rect);
+    return sk_make_sp<ImagePaintFilter>(
+        std::move(image), gfx::RectFToSkRect(src_rect),
+        gfx::RectFToSkRect(crop_rect), cc::PaintFlags::FilterQuality::kHigh);
   }
   // "A href reference that is an empty image (zero width or zero height),
   //  that fails to download, is non-existent, or that cannot be displayed

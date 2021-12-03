@@ -147,7 +147,7 @@ void PNGImageDecoder::InitializeNewFrame(wtf_size_t index) {
   if (decode_to_half_float_)
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
 
-  DCHECK(IntRect(gfx::Point(), Size()).Contains(frame_info.frame_rect));
+  DCHECK(gfx::Rect(Size()).Contains(frame_info.frame_rect));
   buffer.SetOriginalFrameRect(frame_info.frame_rect);
 
   buffer.SetDuration(base::Milliseconds(frame_info.duration));
@@ -532,7 +532,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
         png_get_interlace_type(png, reader_->InfoPtr())) {
       unsigned color_channels = has_alpha_channel_ ? 4 : 3;
       base::CheckedNumeric<int> interlace_buffer_size = color_channels;
-      interlace_buffer_size *= Size().Area();
+      interlace_buffer_size *= Size().GetCheckedArea();
       if (decode_to_half_float_)
         interlace_buffer_size *= 2;
       if (!interlace_buffer_size.IsValid()) {
@@ -547,8 +547,8 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
     current_buffer_saw_alpha_ = false;
   }
 
-  const IntRect& frame_rect = buffer.OriginalFrameRect();
-  DCHECK(IntRect(gfx::Point(), Size()).Contains(frame_rect));
+  const gfx::Rect& frame_rect = buffer.OriginalFrameRect();
+  DCHECK(gfx::Rect(Size()).Contains(frame_rect));
 
   /* libpng comments (here to explain what follows).
    *

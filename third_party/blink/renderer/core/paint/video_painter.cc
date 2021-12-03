@@ -37,7 +37,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
 
   PhysicalRect replaced_rect = layout_video_.ReplacedContentRect();
   replaced_rect.Move(paint_offset);
-  IntRect snapped_replaced_rect = PixelSnappedIntRect(replaced_rect);
+  gfx::Rect snapped_replaced_rect = ToPixelSnappedRect(replaced_rect);
 
   if (snapped_replaced_rect.IsEmpty())
     return;
@@ -80,7 +80,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
       !force_software_video_paint;
   if (paint_with_foreign_layer) {
     if (cc::Layer* layer = layout_video_.MediaElement()->CcLayer()) {
-      layer->SetBounds(ToGfxSize(snapped_replaced_rect.size()));
+      layer->SetBounds(snapped_replaced_rect.size());
       layer->SetIsDrawable(true);
       layer->SetHitTestable(true);
       RecordForeignLayer(context, layout_video_,

@@ -124,21 +124,36 @@ inline bool BorderStylesRequireMiter(BoxSide side,
   return BorderStyleHasUnmatchedColorsAtCorner(style, side, adjacent_side);
 }
 
-FloatRect CalculateSideRect(const FloatRoundedRect& outer_border,
-                            const BorderEdge& edge,
-                            BoxSide side) {
-  FloatRect side_rect(outer_border.Rect());
+void SetToRightSideRect(gfx::RectF& rect, float edge_width) {
+  rect.set_x(rect.right() - edge_width);
+  rect.set_width(edge_width);
+}
+
+void SetToBottomSideRect(gfx::RectF& rect, float edge_width) {
+  rect.set_y(rect.bottom() - edge_width);
+  rect.set_height(edge_width);
+}
+
+gfx::RectF CalculateSideRect(const FloatRoundedRect& outer_border,
+                             const BorderEdge& edge,
+                             BoxSide side) {
+  gfx::RectF side_rect = outer_border.Rect();
   float width = edge.Width();
 
-  if (side == BoxSide::kTop)
-    side_rect.set_height(width);
-  else if (side == BoxSide::kBottom)
-    side_rect.ShiftYEdgeTo(side_rect.bottom() - width);
-  else if (side == BoxSide::kLeft)
-    side_rect.set_width(width);
-  else
-    side_rect.ShiftXEdgeTo(side_rect.right() - width);
-
+  switch (side) {
+    case BoxSide::kTop:
+      side_rect.set_height(width);
+      break;
+    case BoxSide::kBottom:
+      SetToBottomSideRect(side_rect, width);
+      break;
+    case BoxSide::kLeft:
+      side_rect.set_width(width);
+      break;
+    case BoxSide::kRight:
+      SetToRightSideRect(side_rect, width);
+      break;
+  }
   return side_rect;
 }
 
@@ -231,11 +246,11 @@ FloatRoundedRect CalculateAdjustedInnerBorder(
 }
 
 void DrawSolidBorderRect(GraphicsContext& context,
-                         const FloatRect& border_rect,
+                         const gfx::RectF& border_rect,
                          float border_width,
                          const Color& color,
                          const AutoDarkMode& auto_dark_mode) {
-  FloatRect stroke_rect(border_rect);
+  gfx::RectF stroke_rect = border_rect;
   border_width = floorf(border_width);
   stroke_rect.Outset(-border_width / 2);
 
@@ -433,18 +448,18 @@ void DrawDoubleBoxSide(GraphicsContext& context,
     switch (side) {
       case BoxSide::kTop:
       case BoxSide::kBottom:
-        context.DrawRect(IntRect(x1, y1, length, third_of_thickness),
+        context.DrawRect(gfx::Rect(x1, y1, length, third_of_thickness),
                          auto_dark_mode);
         context.DrawRect(
-            IntRect(x1, y2 - third_of_thickness, length, third_of_thickness),
+            gfx::Rect(x1, y2 - third_of_thickness, length, third_of_thickness),
             auto_dark_mode);
         break;
       case BoxSide::kLeft:
       case BoxSide::kRight:
-        context.DrawRect(IntRect(x1, y1, third_of_thickness, length),
+        context.DrawRect(gfx::Rect(x1, y1, third_of_thickness, length),
                          auto_dark_mode);
         context.DrawRect(
-            IntRect(x2 - third_of_thickness, y1, third_of_thickness, length),
+            gfx::Rect(x2 - third_of_thickness, y1, third_of_thickness, length),
             auto_dark_mode);
         break;
     }
@@ -632,7 +647,8 @@ void DrawSolidBoxSide(GraphicsContext& context,
     bool was_antialiased = context.ShouldAntialias();
     if (antialias != was_antialiased)
       context.SetShouldAntialias(antialias);
-    context.FillRect(IntRect(x1, y1, x2 - x1, y2 - y1), color, auto_dark_mode);
+    context.FillRect(gfx::Rect(x1, y1, x2 - x1, y2 - y1), color,
+                     auto_dark_mode);
     if (antialias != was_antialiased)
       context.SetShouldAntialias(was_antialiased);
     return;
@@ -816,8 +832,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
       if (is_uniform_width_ && !outer_.IsRounded()) {
         // 4-side, solid, uniform-width, rectangular border => one drawRect()
         DrawSolidBorderRect(
-            context_, FloatRect(outer_.Rect()), FirstEdge().Width(),
-            FirstEdge().color,
+            context_, outer_.Rect(), FirstEdge().Width(), FirstEdge().color,
             PaintAutoDarkMode(style_,
                               DarkModeFilter::ElementRole::kBackground));
       } else {
@@ -849,7 +864,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
          {BoxSide::kTop, BoxSide::kRight, BoxSide::kBottom, BoxSide::kLeft}) {
       const BorderEdge& curr_edge = Edge(side);
       if (curr_edge.ShouldRender())
-        path.AddRect(ToGfxRectF(CalculateSideRect(outer_, curr_edge, side)));
+        path.AddRect(CalculateSideRect(outer_, curr_edge, side));
     }
 
     context_.SetFillColor(FirstEdge().color);
@@ -1115,7 +1130,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
   const Color color(edge.color.Red(), edge.color.Green(), edge.color.Blue(),
                     alpha);
 
-  FloatRect side_rect(outer_.Rect());
+  gfx::RectF side_rect = outer_.Rect();
   const Path* path = nullptr;
 
   // TODO(fmalita): find a way to consolidate these without sacrificing
@@ -1143,7 +1158,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       if (use_path)
         path = &border_info.rounded_border_path;
       else
-        side_rect.ShiftYEdgeTo(side_rect.bottom() - floorf(edge.Width()));
+        SetToBottomSideRect(side_rect, floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kBottom, BoxSide::kLeft,
                          BoxSide::kRight, path, color, completed_edges);
@@ -1171,7 +1186,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       if (use_path)
         path = &border_info.rounded_border_path;
       else
-        side_rect.ShiftXEdgeTo(side_rect.right() - floorf(edge.Width()));
+        SetToRightSideRect(side_rect, floorf(edge.Width()));
 
       PaintOneBorderSide(side_rect, BoxSide::kRight, BoxSide::kTop,
                          BoxSide::kBottom, path, color, completed_edges);
@@ -1227,7 +1242,7 @@ bool BoxBorderPainter::MitersRequireClipping(MiterType miter1,
 }
 
 void BoxBorderPainter::PaintOneBorderSide(
-    const FloatRect& side_rect,
+    const gfx::RectF& side_rect,
     BoxSide side,
     BoxSide adjacent_side1,
     BoxSide adjacent_side2,
@@ -1327,7 +1342,7 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
   context_.SetStrokeStyle(kNoStroke);
   context_.SetFillColor(color);
   context_.DrawRect(
-      IntRect(gfx::ToRoundedRect(outer_.Rect())),
+      gfx::ToRoundedRect(outer_.Rect()),
       PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
 }
 
@@ -1460,9 +1475,9 @@ void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
                       color, s2);
 }
 
-FloatRect BoxBorderPainter::CalculateSideRectIncludingInner(
+gfx::RectF BoxBorderPainter::CalculateSideRectIncludingInner(
     BoxSide side) const {
-  FloatRect side_rect(outer_.Rect());
+  gfx::RectF side_rect = outer_.Rect();
   float width;
 
   switch (side) {
@@ -1472,7 +1487,7 @@ FloatRect BoxBorderPainter::CalculateSideRectIncludingInner(
       break;
     case BoxSide::kBottom:
       width = side_rect.height() - Edge(BoxSide::kTop).Width();
-      side_rect.ShiftYEdgeTo(side_rect.bottom() - width);
+      SetToBottomSideRect(side_rect, width);
       break;
     case BoxSide::kLeft:
       width = side_rect.width() - Edge(BoxSide::kRight).Width();
@@ -1480,7 +1495,7 @@ FloatRect BoxBorderPainter::CalculateSideRectIncludingInner(
       break;
     case BoxSide::kRight:
       width = side_rect.width() - Edge(BoxSide::kLeft).Width();
-      side_rect.ShiftXEdgeTo(side_rect.right() - width);
+      SetToRightSideRect(side_rect, width);
       break;
   }
 

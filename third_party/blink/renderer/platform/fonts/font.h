@@ -166,11 +166,11 @@ class PLATFORM_EXPORT Font {
                         float position,
                         IncludePartialGlyphsOption,
                         BreakGlyphsOption) const;
-  FloatRect SelectionRectForText(const TextRun&,
-                                 const gfx::PointF&,
-                                 float height,
-                                 int from = 0,
-                                 int to = -1) const;
+  gfx::RectF SelectionRectForText(const TextRun&,
+                                  const gfx::PointF&,
+                                  float height,
+                                  int from = 0,
+                                  int to = -1) const;
   CharacterRange GetCharacterRange(const TextRun&,
                                    unsigned from,
                                    unsigned to) const;

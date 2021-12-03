@@ -60,30 +60,30 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
  public:
   static scoped_refptr<SVGImageForContainer> Create(
       SVGImage* image,
-      const FloatSize& target_size,
+      const gfx::SizeF& target_size,
       float zoom,
       const KURL& url) {
-    FloatSize container_size_without_zoom(target_size);
-    container_size_without_zoom.Scale(1 / zoom);
+    gfx::SizeF container_size_without_zoom =
+        gfx::ScaleSize(target_size, 1 / zoom);
     return base::AdoptRef(new SVGImageForContainer(
         image, container_size_without_zoom, zoom, url));
   }
 
-  IntSize SizeWithConfig(SizeConfig) const override;
-  FloatSize SizeWithConfigAsFloat(SizeConfig) const override;
+  gfx::Size SizeWithConfig(SizeConfig) const override;
+  gfx::SizeF SizeWithConfigAsFloat(SizeConfig) const override;
 
   bool HasIntrinsicSize() const override { return image_->HasIntrinsicSize(); }
 
   bool ApplyShader(cc::PaintFlags&,
                    const SkMatrix& local_matrix,
-                   const FloatRect& dst_rect,
-                   const FloatRect& src_rect,
+                   const gfx::RectF& dst_rect,
+                   const gfx::RectF& src_rect,
                    const ImageDrawOptions& draw_options) override;
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& dest_rect,
-            const FloatRect& src_rect,
+            const gfx::RectF& dest_rect,
+            const gfx::RectF& src_rect,
             const ImageDrawOptions&) override;
 
   // FIXME: Implement this to be less conservative.
@@ -96,13 +96,13 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
  protected:
   void DrawPattern(GraphicsContext&,
                    const cc::PaintFlags&,
-                   const FloatRect& dest_rect,
+                   const gfx::RectF& dest_rect,
                    const ImageTilingInfo&,
                    const ImageDrawOptions& draw_options) override;
 
  private:
   SVGImageForContainer(SVGImage* image,
-                       const FloatSize& container_size,
+                       const gfx::SizeF& container_size,
                        float zoom,
                        const KURL& url)
       : image_(image),
@@ -113,7 +113,7 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
   void DestroyDecodedData() override {}
 
   SVGImage* image_;
-  const FloatSize container_size_;
+  const gfx::SizeF container_size_;
   const float zoom_;
   const KURL url_;
 };

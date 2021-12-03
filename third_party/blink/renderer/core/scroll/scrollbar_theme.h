@@ -29,9 +29,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -102,11 +102,11 @@ class CORE_EXPORT ScrollbarTheme {
   virtual void PaintScrollCorner(GraphicsContext&,
                                  const Scrollbar* vertical_scrollbar,
                                  const DisplayItemClient&,
-                                 const IntRect& corner_rect,
+                                 const gfx::Rect& corner_rect,
                                  mojom::blink::ColorScheme color_scheme);
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
-                              const IntRect&);
+                              const gfx::Rect&);
 
   virtual bool ShouldCenterOnThumb(const Scrollbar&, const WebMouseEvent&) {
     return false;
@@ -152,20 +152,22 @@ class CORE_EXPORT ScrollbarTheme {
 
   // All these rects are in the same coordinate space as the scrollbar's
   // FrameRect.
-  virtual IntRect BackButtonRect(const Scrollbar&) = 0;
-  virtual IntRect ForwardButtonRect(const Scrollbar&) = 0;
-  virtual IntRect TrackRect(const Scrollbar&) = 0;
-  virtual IntRect ThumbRect(const Scrollbar&);
+  virtual gfx::Rect BackButtonRect(const Scrollbar&) = 0;
+  virtual gfx::Rect ForwardButtonRect(const Scrollbar&) = 0;
+  virtual gfx::Rect TrackRect(const Scrollbar&) = 0;
+  virtual gfx::Rect ThumbRect(const Scrollbar&);
 
   virtual int MinimumThumbLength(const Scrollbar&) = 0;
 
   virtual void SplitTrack(const Scrollbar&,
-                          const IntRect& track,
-                          IntRect& start_track,
-                          IntRect& thumb,
-                          IntRect& end_track);
+                          const gfx::Rect& track,
+                          gfx::Rect& start_track,
+                          gfx::Rect& thumb,
+                          gfx::Rect& end_track);
 
-  virtual void PaintThumb(GraphicsContext&, const Scrollbar&, const IntRect&) {}
+  virtual void PaintThumb(GraphicsContext&,
+                          const Scrollbar&,
+                          const gfx::Rect&) {}
 
   // |offset| is from the space of the scrollbar's FrameRect() to |context|'s
   // current space.
@@ -180,8 +182,8 @@ class CORE_EXPORT ScrollbarTheme {
   virtual base::TimeDelta InitialAutoscrollTimerDelay();
   virtual base::TimeDelta AutoscrollTimerDelay();
 
-  virtual IntRect ConstrainTrackRectToTrackPieces(const Scrollbar&,
-                                                  const IntRect& rect) {
+  virtual gfx::Rect ConstrainTrackRectToTrackPieces(const Scrollbar&,
+                                                    const gfx::Rect& rect) {
     return rect;
   }
 
@@ -195,16 +197,16 @@ class CORE_EXPORT ScrollbarTheme {
   // painting code will use to paint the scrollbar into. The actual scrollbar
   // dimensions will be ignored for purposes of painting since the resource can
   // be then resized without a repaint.
-  virtual IntSize NinePatchThumbCanvasSize(const Scrollbar&) const {
+  virtual gfx::Size NinePatchThumbCanvasSize(const Scrollbar&) const {
     NOTREACHED();
-    return IntSize();
+    return gfx::Size();
   }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
-  virtual IntRect NinePatchThumbAperture(const Scrollbar&) const {
+  virtual gfx::Rect NinePatchThumbAperture(const Scrollbar&) const {
     NOTREACHED();
-    return IntRect();
+    return gfx::Rect();
   }
 
   virtual bool AllowsHitTest() const { return true; }
@@ -214,10 +216,12 @@ class CORE_EXPORT ScrollbarTheme {
   virtual ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&);
 
   virtual int TickmarkBorderWidth() { return 0; }
-  virtual void PaintTrack(GraphicsContext&, const Scrollbar&, const IntRect&) {}
+  virtual void PaintTrack(GraphicsContext&,
+                          const Scrollbar&,
+                          const gfx::Rect&) {}
   virtual void PaintButton(GraphicsContext&,
                            const Scrollbar&,
-                           const IntRect&,
+                           const gfx::Rect&,
                            ScrollbarPart) {}
 
   // |offset| is the offset of the |context|'s current space to the space of
@@ -229,7 +233,7 @@ class CORE_EXPORT ScrollbarTheme {
   // Paint the thumb with Opacity() applied.
   virtual void PaintThumbWithOpacity(GraphicsContext& context,
                                      const Scrollbar& scrollbar,
-                                     const IntRect& rect) {
+                                     const gfx::Rect& rect) {
     // By default this method just calls PaintThumb(). A theme with custom
     // Opacity() should override this method to apply the opacity.
     DCHECK_EQ(1.0f, Opacity(scrollbar));

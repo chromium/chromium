@@ -32,11 +32,14 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class GraphicsContext;
 class GraphicsLayer;
-class IntRect;
 class ScrollableArea;
 class PaintArtifactCompositor;
 
@@ -58,11 +61,11 @@ class PLATFORM_EXPORT GraphicsLayerClient : public GarbageCollectedMixin {
   virtual ~GraphicsLayerClient() = default;
 
   // Used only when CullRectUpdate is not enabled.
-  virtual IntRect ComputeInterestRect(
+  virtual gfx::Rect ComputeInterestRect(
       const GraphicsLayer*,
-      const IntRect& previous_interest_rect) const = 0;
+      const gfx::Rect& previous_interest_rect) const = 0;
   // Used when CullRectUpdate is enabled.
-  virtual IntRect PaintableRegion(const GraphicsLayer*) const = 0;
+  virtual gfx::Rect PaintableRegion(const GraphicsLayer*) const = 0;
 
   virtual LayoutSize SubpixelAccumulation() const { return LayoutSize(); }
   // Returns whether the client needs to be repainted with respect to the given
@@ -71,7 +74,7 @@ class PLATFORM_EXPORT GraphicsLayerClient : public GarbageCollectedMixin {
   virtual void PaintContents(const GraphicsLayer*,
                              GraphicsContext&,
                              GraphicsLayerPaintingPhase,
-                             const IntRect& interest_rect) const = 0;
+                             const gfx::Rect& interest_rect) const = 0;
 
   virtual bool ShouldSkipPaintingSubtree() const { return false; }
 

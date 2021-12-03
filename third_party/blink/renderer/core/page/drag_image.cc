@@ -71,11 +71,11 @@ const float kDragLinkUrlFontSize = 10;
 
 }  // anonymous namespace
 
-FloatSize DragImage::ClampedImageScale(const IntSize& image_size,
-                                       const IntSize& size,
-                                       const IntSize& max_size) {
+gfx::Vector2dF DragImage::ClampedImageScale(const gfx::Size& image_size,
+                                            const gfx::Size& size,
+                                            const gfx::Size& max_size) {
   // Non-uniform scaling for size mapping.
-  FloatSize image_scale(
+  gfx::Vector2dF image_scale(
       static_cast<float>(size.width()) / image_size.width(),
       static_cast<float>(size.height()) / image_size.height());
 
@@ -99,7 +99,7 @@ std::unique_ptr<DragImage> DragImage::Create(
     float device_scale_factor,
     InterpolationQuality interpolation_quality,
     float opacity,
-    FloatSize image_scale) {
+    gfx::Vector2dF image_scale) {
   if (!image)
     return nullptr;
 
@@ -168,18 +168,18 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   // First step is drawing the link drag image width.
   TextRun label_run(label.Impl());
   TextRun url_run(url_string.Impl());
-  IntSize label_size(label_font.Width(label_run),
-                     label_font_data->GetFontMetrics().Ascent() +
-                         label_font_data->GetFontMetrics().Descent());
+  gfx::Size label_size(label_font.Width(label_run),
+                       label_font_data->GetFontMetrics().Ascent() +
+                           label_font_data->GetFontMetrics().Descent());
 
   if (label_size.width() > max_drag_label_string_width_dip) {
     label_size.set_width(max_drag_label_string_width_dip);
     clip_label_string = true;
   }
 
-  IntSize url_string_size;
-  IntSize image_size(label_size.width() + kDragLabelBorderX * 2,
-                     label_size.height() + kDragLabelBorderY * 2);
+  gfx::Size url_string_size;
+  gfx::Size image_size(label_size.width() + kDragLabelBorderX * 2,
+                       label_size.height() + kDragLabelBorderY * 2);
 
   if (draw_url_string) {
     url_string_size.set_width(url_font.Width(url_run));
@@ -198,8 +198,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
 
   // We now know how big the image needs to be, so we create and
   // fill the background
-  IntSize scaled_image_size = image_size;
-  scaled_image_size.Scale(device_scale_factor);
+  gfx::Size scaled_image_size =
+      gfx::ScaleToFlooredSize(image_size, device_scale_factor);
   // TODO(fserb): are we sure this should be software?
   std::unique_ptr<CanvasResourceProvider> resource_provider(
       CanvasResourceProvider::CreateBitmapProvider(
@@ -214,7 +214,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
 
   const float kDragLabelRadius = 5;
 
-  IntRect rect(gfx::Point(), image_size);
+  gfx::Rect rect(image_size);
   PaintFlags background_paint;
   background_paint.setColor(SkColorSetRGB(140, 140, 140));
   background_paint.setAntiAlias(true);

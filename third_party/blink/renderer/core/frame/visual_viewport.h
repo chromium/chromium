@@ -120,7 +120,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // relative to the layout viewport's top-left corner. i.e. As the page scale
   // is increased, this rect shrinks. Does not account for browser-zoom (ctrl
   // +/- zooming).
-  FloatRect VisibleRect(IncludeScrollbarsInRect = kExcludeScrollbars) const;
+  gfx::RectF VisibleRect(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 
   // Resets the viewport to initial state.
   void Reset();
@@ -197,7 +197,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool IsActive() const override { return false; }
   int ScrollSize(ScrollbarOrientation) const override;
   bool IsScrollCornerVisible() const override { return false; }
-  IntRect ScrollCornerRect() const override { return IntRect(); }
+  gfx::Rect ScrollCornerRect() const override { return gfx::Rect(); }
   gfx::Vector2d ScrollOffsetInt() const override {
     return gfx::ToFlooredVector2d(offset_);
   }
@@ -208,7 +208,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // Note: Because scrollbars are conceptually owned by the LayoutView,
   // ContentsSize includes the main frame's scrollbars. This is necessary for
   // correct cc Layer sizing.
-  IntSize ContentsSize() const override;
+  gfx::Size ContentsSize() const override;
   bool ScrollbarsCanBeActive() const override { return false; }
   bool UserInputScrollable(ScrollbarOrientation) const override;
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }
@@ -224,7 +224,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   bool UsesCompositedScrolling() const override { return true; }
   cc::AnimationHost* GetCompositorAnimationHost() const override;
   CompositorAnimationTimeline* GetCompositorAnimationTimeline() const override;
-  IntRect VisibleContentRect(
+  gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner()
       const override;

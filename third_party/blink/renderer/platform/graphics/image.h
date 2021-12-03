@@ -44,6 +44,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 class SkMatrix;
 
@@ -55,7 +56,6 @@ class ImageDecodeCache;
 
 namespace blink {
 
-class FloatRect;
 class GraphicsContext;
 class Image;
 class WebGraphicsContext3DProvider;
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   static PaintImage ResizeAndOrientImage(
       const PaintImage&,
       ImageOrientation,
-      FloatSize image_scale = FloatSize(1, 1),
+      gfx::Vector2dF image_scale = gfx::Vector2dF(1, 1),
       float opacity = 1.0,
       InterpolationQuality = kInterpolationNone);
 
@@ -120,16 +120,16 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   };
 
   // Size of the Image optionally modified per the provided SizeConfig.
-  virtual IntSize SizeWithConfig(SizeConfig) const = 0;
-  virtual FloatSize SizeWithConfigAsFloat(SizeConfig config) const {
-    return FloatSize(SizeWithConfig(config));
+  virtual gfx::Size SizeWithConfig(SizeConfig) const = 0;
+  virtual gfx::SizeF SizeWithConfigAsFloat(SizeConfig config) const {
+    return gfx::SizeF(SizeWithConfig(config));
   }
 
   // Size of the Image.
-  IntSize Size() const { return SizeWithConfig({}); }
+  gfx::Size Size() const { return SizeWithConfig({}); }
 
   // Size of the Image with density correction applied.
-  IntSize DensityCorrectedSize() const {
+  gfx::Size DensityCorrectedSize() const {
     SizeConfig config;
     config.apply_density = true;
     return SizeWithConfig(config);
@@ -137,7 +137,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   // Size of the Image with density correction and orientation applied
   // regardless of any settings or style affecting orientation.
-  IntSize PreferredDisplaySize() const {
+  gfx::Size PreferredDisplaySize() const {
     SizeConfig config;
     config.apply_density = true;
     config.apply_orientation = true;
@@ -146,7 +146,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   // Size of the Image with density correction applied. If the argument is
   // kRespectImageOrientation orientation is applied as well.
-  IntSize Size(RespectImageOrientationEnum respect_orientation) const {
+  gfx::Size Size(RespectImageOrientationEnum respect_orientation) const {
     SizeConfig config;
     config.apply_density = true;
     config.apply_orientation = respect_orientation == kRespectImageOrientation;
@@ -156,14 +156,15 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // Same as Size(RespectImageOrientationEnum) above, but returns a floating
   // point representation of the size. For subclasses of Image that can have a
   // fractional size this will return the unrounded size.
-  FloatSize SizeAsFloat(RespectImageOrientationEnum respect_orientation) const {
+  gfx::SizeF SizeAsFloat(
+      RespectImageOrientationEnum respect_orientation) const {
     SizeConfig config;
     config.apply_density = true;
     config.apply_orientation = respect_orientation == kRespectImageOrientation;
     return SizeWithConfigAsFloat(config);
   }
 
-  IntRect Rect() const { return IntRect(gfx::Point(), Size()); }
+  gfx::Rect Rect() const { return gfx::Rect(Size()); }
   int width() const { return Size().width(); }
   int height() const { return Size().height(); }
 
@@ -283,8 +284,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // to call this method. The image_size is the oriented size of the image (i.e.
   // after orientation has been applied). src_rect may be a subset of the image,
   // also oriented.
-  FloatRect CorrectSrcRectForImageOrientation(FloatSize image_size,
-                                              FloatRect src_rect) const;
+  gfx::RectF CorrectSrcRectForImageOrientation(gfx::SizeF image_size,
+                                               gfx::RectF src_rect) const;
 
   enum ImageClampingMode {
     kClampImageToSourceRect,
@@ -293,8 +294,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual void Draw(cc::PaintCanvas*,
                     const cc::PaintFlags&,
-                    const FloatRect& dst_rect,
-                    const FloatRect& src_rect,
+                    const gfx::RectF& dst_rect,
+                    const gfx::RectF& src_rect,
                     const ImageDrawOptions& draw_options) = 0;
 
   // Apply this Image as a shader to the passed PaintFlags. This is currently
@@ -302,8 +303,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // of that function the shader should use a clamping tile mode if possible.
   virtual bool ApplyShader(cc::PaintFlags&,
                            const SkMatrix& local_matrix,
-                           const FloatRect& dst_rect,
-                           const FloatRect& src_rect,
+                           const gfx::RectF& dst_rect,
+                           const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options);
 
   // Use ContextProvider() for immediate use only, use
@@ -329,7 +330,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual void DrawPattern(GraphicsContext&,
                            const cc::PaintFlags&,
-                           const FloatRect& dest_rect,
+                           const gfx::RectF& dest_rect,
                            const ImageTilingInfo& tiling_info,
                            const ImageDrawOptions& draw_options);
 

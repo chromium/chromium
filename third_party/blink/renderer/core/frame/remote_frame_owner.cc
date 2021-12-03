@@ -76,8 +76,7 @@ void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
   DCHECK(result);
 
   auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
-      ToGfxSizeF(intrinsic_sizing_info.size),
-      ToGfxSizeF(intrinsic_sizing_info.aspect_ratio),
+      intrinsic_sizing_info.size, intrinsic_sizing_info.aspect_ratio,
       intrinsic_sizing_info.has_width, intrinsic_sizing_info.has_height);
   WebLocalFrameImpl::FromFrame(local_frame)
       ->FrameWidgetImpl()

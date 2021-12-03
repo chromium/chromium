@@ -15,14 +15,14 @@ namespace blink {
 // interpolation.
 class CORE_EXPORT InterpolableAspectRatio final : public InterpolableValue {
  public:
-  explicit InterpolableAspectRatio(const FloatSize& ratio);
+  explicit InterpolableAspectRatio(const gfx::SizeF& ratio);
   explicit InterpolableAspectRatio(std::unique_ptr<InterpolableValue> value)
       : value_(std::move(value)) {}
 
   static std::unique_ptr<InterpolableAspectRatio> MaybeCreate(
       const StyleAspectRatio&);
 
-  FloatSize GetRatio() const;
+  gfx::SizeF GetRatio() const;
 
   // InterpolableValue implementation:
   void Interpolate(const InterpolableValue& to,

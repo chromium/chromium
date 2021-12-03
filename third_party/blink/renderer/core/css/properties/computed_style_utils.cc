@@ -1942,7 +1942,7 @@ CSSValueID ComputedStyleUtils::CSSValueIDForRotateOperation(
 CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
     const TransformOperation& operation,
     float zoom,
-    FloatSize box_size) {
+    gfx::SizeF box_size) {
   switch (operation.GetType()) {
     case TransformOperation::kScaleX:
     case TransformOperation::kScaleY:
@@ -2025,7 +2025,7 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
       // TODO(https://github.com/w3c/csswg-drafts/issues/5011):
       // Update this once there is consensus.
       TransformationMatrix matrix;
-      operation.Apply(matrix, FloatSize(0, 0));
+      operation.Apply(matrix, gfx::SizeF(0, 0));
       return ValueForTransformationMatrix(matrix, zoom,
                                           /*force_matrix3d=*/false);
     }
@@ -2092,7 +2092,7 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
 CSSValue* ComputedStyleUtils::ValueForTransformList(
     const TransformOperations& transform_list,
     float zoom,
-    FloatSize box_size) {
+    gfx::SizeF box_size) {
   if (!transform_list.Operations().size())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
@@ -2104,7 +2104,7 @@ CSSValue* ComputedStyleUtils::ValueForTransformList(
   return components;
 }
 
-FloatRect ComputedStyleUtils::ReferenceBoxForTransform(
+gfx::RectF ComputedStyleUtils::ReferenceBoxForTransform(
     const LayoutObject& layout_object,
     UsePixelSnappedBox pixel_snap_box) {
   if (layout_object.IsSVGChild())
@@ -2112,16 +2112,16 @@ FloatRect ComputedStyleUtils::ReferenceBoxForTransform(
   if (layout_object.IsBox()) {
     const auto& layout_box = To<LayoutBox>(layout_object);
     if (pixel_snap_box == kUsePixelSnappedBox)
-      return FloatRect(layout_box.PixelSnappedBorderBoxRect());
-    return FloatRect(layout_box.BorderBoxRect());
+      return gfx::RectF(layout_box.PixelSnappedBorderBoxRect());
+    return gfx::RectF(layout_box.BorderBoxRect());
   }
-  return FloatRect();
+  return gfx::RectF();
 }
 
 CSSValue* ComputedStyleUtils::ComputedTransformList(
     const ComputedStyle& style,
     const LayoutObject* layout_object) {
-  FloatSize box_size(0, 0);
+  gfx::SizeF box_size(0, 0);
   if (layout_object)
     box_size = ReferenceBoxForTransform(*layout_object).size();
 
@@ -2135,7 +2135,7 @@ CSSValue* ComputedStyleUtils::ResolvedTransform(
   if (!layout_object || !style.HasTransformOperations())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
 
-  FloatRect reference_box = ReferenceBoxForTransform(*layout_object);
+  gfx::RectF reference_box = ReferenceBoxForTransform(*layout_object);
 
   TransformationMatrix transform;
   style.ApplyTransform(transform, reference_box,

@@ -26,13 +26,14 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
 AffineTransform ImageOrientation::TransformFromDefault(
-    const FloatSize& drawn_size) const {
+    const gfx::SizeF& drawn_size) const {
   float w = drawn_size.width();
   float h = drawn_size.height();
 

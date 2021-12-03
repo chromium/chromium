@@ -97,7 +97,7 @@ class CORE_EXPORT TextDecorationInfo {
   float DoubleOffset() const;
 
   // Compute bounds for the given line and the current decoration.
-  FloatRect Bounds() const;
+  gfx::RectF Bounds() const;
 
   // Return a path for current decoration.
   absl::optional<Path> StrokePath() const;
@@ -107,8 +107,8 @@ class CORE_EXPORT TextDecorationInfo {
       const TextDecorationThickness& applied_decoration_thickness,
       const ComputedStyle* decorating_box_style);
 
-  FloatRect BoundsForDottedOrDashed() const;
-  FloatRect BoundsForWavy() const;
+  gfx::RectF BoundsForDottedOrDashed() const;
+  gfx::RectF BoundsForWavy() const;
   float WavyDecorationSizing() const;
   float ControlPointDistanceFromResolvedThickness() const;
   float StepFromResolvedThickness() const;

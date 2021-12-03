@@ -34,8 +34,8 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   ON_CALL(*mock_scrollable_area, HorizontalScrollbar())
       .WillByDefault(Return(horizontal_scrollbar));
 
-  IntRect vertical_rect(1010, 0, 14, 768);
-  IntRect horizontal_rect(0, 754, 1024, 14);
+  gfx::Rect vertical_rect(1010, 0, 14, 768);
+  gfx::Rect horizontal_rect(0, 754, 1024, 14);
   vertical_scrollbar->SetFrameRect(vertical_rect);
   horizontal_scrollbar->SetFrameRect(horizontal_rect);
 

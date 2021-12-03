@@ -68,11 +68,11 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   int Y() const { return frame_rect_.y(); }
   int Width() const { return frame_rect_.width(); }
   int Height() const { return frame_rect_.height(); }
-  IntSize Size() const { return frame_rect_.size(); }
+  gfx::Size Size() const { return frame_rect_.size(); }
   gfx::Point Location() const { return frame_rect_.origin(); }
 
-  void SetFrameRect(const IntRect&);
-  const IntRect& FrameRect() const { return frame_rect_; }
+  void SetFrameRect(const gfx::Rect&);
+  const gfx::Rect& FrameRect() const { return frame_rect_; }
 
   ScrollbarOverlayColorTheme GetScrollbarOverlayColorTheme() const;
   bool HasTickmarks() const;
@@ -150,7 +150,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   ScrollbarTheme& GetTheme() const { return theme_; }
 
-  IntRect ConvertToContainingEmbeddedContentView(const IntRect&) const;
+  gfx::Rect ConvertToContainingEmbeddedContentView(const gfx::Rect&) const;
   gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
 
   void MoveThumb(int pos, bool dragging_document = false);
@@ -261,7 +261,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // additional state is necessary.
   bool scrollbar_manipulation_in_progress_on_cc_thread_;
 
-  IntRect frame_rect_;
+  gfx::Rect frame_rect_;
   Member<Element> style_source_;
 
   // Tracks scroll delta that has been injected into the compositor thread as a

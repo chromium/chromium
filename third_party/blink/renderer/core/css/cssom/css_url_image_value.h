@@ -20,7 +20,7 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
   const String& url() const;
 
   // CSSStyleImageValue
-  absl::optional<IntSize> IntrinsicSize() const final;
+  absl::optional<gfx::Size> IntrinsicSize() const final;
 
   // CanvasImageSource
   ResourceStatus Status() const final;

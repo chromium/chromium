@@ -476,7 +476,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     // the original style.
     {
       GraphicsContextStateSaver inner_state_saver(context);
-      context.ClipOut(FloatRect(selection_rect));
+      context.ClipOut(gfx::RectF(selection_rect));
       text_painter.Paint(selection_start, selection_end, length, text_style,
                          node_id, auto_dark_mode);
     }
@@ -484,7 +484,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     // the selection style.
     {
       GraphicsContextStateSaver inner_state_saver(context);
-      context.Clip(FloatRect(selection_rect));
+      context.Clip(gfx::RectF(selection_rect));
       text_painter.Paint(selection_start, selection_end, length,
                          selection_style, node_id, auto_dark_mode);
     }
@@ -727,7 +727,7 @@ void InlineTextBoxPainter::PaintDocumentMarker(const PaintInfo& paint_info,
     TextRun run = inline_text_box_.ConstructTextRun(style);
 
     // FIXME: Convert the document markers to float rects.
-    IntRect marker_rect = EnclosingIntRect(
+    gfx::Rect marker_rect = gfx::ToEnclosingRect(
         font.SelectionRectForText(run, gfx::PointF(start_point), sel_height,
                                   marker_offsets.start, marker_offsets.end));
     start = marker_rect.x() - start_point.left;
@@ -862,7 +862,7 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
   GraphicsContextStateSaver state_saver(context);
 
   context.FillRect(
-      FloatRect(selection_rect), c,
+      gfx::RectF(selection_rect), c,
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
   return selection_rect;
 }
@@ -890,7 +890,7 @@ void InlineTextBoxPainter::PaintStyleableMarkerUnderline(
   const PaintOffsets marker_offsets = MarkerPaintStartAndEnd(marker);
   const TextRun& run = inline_text_box_.ConstructTextRun(style);
   // Pass 0 for height since we only care about the width
-  const FloatRect& marker_rect = font.SelectionRectForText(
+  const gfx::RectF& marker_rect = font.SelectionRectForText(
       run, gfx::PointF(), 0, marker_offsets.start, marker_offsets.end);
   DocumentMarkerPainter::PaintStyleableMarkerUnderline(
       context, box_origin, marker, style,
@@ -986,7 +986,7 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
   PhysicalRect box_rect(box_origin,
                         PhysicalSize(inline_text_box_.LogicalWidth(),
                                      inline_text_box_.LogicalHeight()));
-  context.Clip(FloatRect(box_rect));
+  context.Clip(gfx::RectF(box_rect));
   context.DrawHighlightForText(
       font, run, gfx::PointF(box_origin), box_rect.Height().ToInt(), color,
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground),

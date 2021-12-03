@@ -83,9 +83,9 @@ void BoxPainter::PaintBoxDecorationBackground(
 
     background_client = &layout_box_.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect = ToGfxRect(
+    visual_rect =
         layout_box_.GetScrollableArea()->ScrollingBackgroundVisualRect(
-            paint_offset));
+            paint_offset);
   } else {
     paint_rect = layout_box_.PhysicalBorderBoxRect();
     paint_rect.Move(paint_offset);
@@ -184,7 +184,7 @@ void BoxPainter::PaintBoxDecorationBackgroundWithRect(
   // If we have a native theme appearance, paint that before painting our
   // background.  The theme will tell us whether or not we should also paint the
   // CSS background.
-  IntRect snapped_paint_rect(PixelSnappedIntRect(paint_rect));
+  gfx::Rect snapped_paint_rect = ToPixelSnappedRect(paint_rect);
   ThemePainter& theme_painter = LayoutTheme::GetTheme().Painter();
   bool theme_painted =
       box_decoration_data.HasAppearance() &&

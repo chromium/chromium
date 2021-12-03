@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class BackgroundImageGeometry;
@@ -23,7 +27,6 @@ class Document;
 class FillLayer;
 class FloatRoundedRect;
 class ImageResourceObserver;
-class IntRect;
 class LayoutBox;
 class Node;
 struct PaintInfo;
@@ -153,7 +156,7 @@ class BoxPainterBase {
                                  const PhysicalRect& scrolled_paint_rect,
                                  bool object_has_multiple_boxes);
   virtual void PaintTextClipMask(const PaintInfo&,
-                                 const IntRect& mask_rect,
+                                 const gfx::Rect& mask_rect,
                                  const PhysicalOffset& paint_offset,
                                  bool object_has_multiple_boxes) = 0;
 

@@ -507,7 +507,7 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
   }
 
   matrix_.MakeIdentity();
-  operations.Apply(FloatSize(0, 0), matrix_);
+  operations.Apply(gfx::SizeF(0, 0), matrix_);
 
   is2d_ = !operations.Has3DOperation();
 

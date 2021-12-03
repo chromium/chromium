@@ -11,6 +11,10 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
+namespace gfx {
+class SizeF;
+}
+
 namespace blink {
 
 struct LogicalOffset;
@@ -44,7 +48,7 @@ struct CORE_EXPORT LogicalSize {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
 
-  static LogicalSize AspectRatioFromFloatSize(const FloatSize&);
+  static LogicalSize AspectRatioFromSizeF(const gfx::SizeF&);
 };
 
 inline LogicalSize& operator-=(LogicalSize& a, const NGBoxStrut& b) {

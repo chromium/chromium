@@ -48,7 +48,7 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
   if (!image)
     return;
 
-  const auto size = ToGfxSize(image->Size());
+  const auto size = image->Size();
   if (!media::VideoFrame::IsValidSize(size, gfx::Rect(size), size)) {
     DVLOG(1) << __func__ << " received frame with invalid size "
              << size.ToString();

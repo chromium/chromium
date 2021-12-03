@@ -163,7 +163,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   // is disabled and the element has no sizing info.
   bool OverrideIntrinsicSizingInfo(IntrinsicSizingInfo&) const;
   bool HasOverriddenIntrinsicSize() const;
-  FloatSize ImageSizeOverriddenByIntrinsicSize(float multiplier) const;
+  gfx::SizeF ImageSizeOverriddenByIntrinsicSize(float multiplier) const;
 
   // This member wraps the associated decoded image.
   //

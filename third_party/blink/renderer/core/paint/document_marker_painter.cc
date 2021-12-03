@@ -139,7 +139,7 @@ void DocumentMarkerPainter::PaintStyleableMarkerUnderline(
     const StyleableMarker& marker,
     const ComputedStyle& style,
     const Document& document,
-    const FloatRect& marker_rect,
+    const gfx::RectF& marker_rect,
     LayoutUnit logical_height,
     bool in_dark_mode) {
   // start of line to draw, relative to box_origin.X()

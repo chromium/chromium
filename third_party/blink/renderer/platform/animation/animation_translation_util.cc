@@ -42,7 +42,7 @@ namespace blink {
 void ToCompositorTransformOperations(
     const TransformOperations& transform_operations,
     CompositorTransformOperations* out_transform_operations,
-    const FloatSize& box_size) {
+    const gfx::SizeF& box_size) {
   // We need to do a deep copy the transformOperations may contain ref pointers
   // to TransformOperation objects.
   for (const auto& operation : transform_operations.Operations()) {

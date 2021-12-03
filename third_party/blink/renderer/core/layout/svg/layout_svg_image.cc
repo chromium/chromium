@@ -120,8 +120,7 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
 
     RespectImageOrientationEnum respect_orientation =
         LayoutObject::ShouldRespectImageOrientation(this);
-    intrinsic_size =
-        ToGfxSizeF(cached_image->GetImage()->SizeAsFloat(respect_orientation));
+    intrinsic_size = cached_image->GetImage()->SizeAsFloat(respect_orientation);
     if (auto* svg_image = DynamicTo<SVGImage>(cached_image->GetImage())) {
       IntrinsicSizingInfo intrinsic_sizing_info;
       has_intrinsic_ratio &=

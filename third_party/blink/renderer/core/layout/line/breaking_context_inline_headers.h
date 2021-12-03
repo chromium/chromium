@@ -917,7 +917,7 @@ ALWAYS_INLINE bool BreakingContext::RewindToMidWordBreak(
                                      word_measurement);
   }
 
-  FloatRect rect = font.SelectionRectForText(run, gfx::PointF(), 0, 0, len);
+  gfx::RectF rect = font.SelectionRectForText(run, gfx::PointF(), 0, 0, len);
   return RewindToMidWordBreak(word_measurement, end, rect.width());
 }
 

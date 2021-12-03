@@ -229,10 +229,10 @@ blink::Image* ImageResourceContent::GetImage() const {
   return image_.get();
 }
 
-IntSize ImageResourceContent::IntrinsicSize(
+gfx::Size ImageResourceContent::IntrinsicSize(
     RespectImageOrientationEnum should_respect_image_orientation) const {
   if (!image_)
-    return IntSize();
+    return gfx::Size();
   RespectImageOrientationEnum respect_orientation =
       ForceOrientationIfNecessary(should_respect_image_orientation);
   return image_->Size(respect_orientation);
@@ -485,7 +485,7 @@ bool ImageResourceContent::IsAcceptableCompressionRatio(
   if (!image_)
     return true;
 
-  uint64_t pixels = image_->Size().Area();
+  uint64_t pixels = image_->Size().Area64();
   if (!pixels)
     return true;
 

@@ -28,13 +28,16 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace gfx {
+class SizeF;
+}
 
 namespace blink {
 
 class Element;
-class FloatSize;
 class GraphicsContext;
-class IntRect;
 class LocalFrame;
 class Node;
 
@@ -63,19 +66,19 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   // FIXME: This means that CSS page breaks won't be on page boundary if the
   // size is different than what was passed to BeginPrintMode(). That's probably
   // not always desirable.
-  virtual void ComputePageRects(const FloatSize& print_size);
+  virtual void ComputePageRects(const gfx::SizeF& print_size);
 
   // Deprecated. Page size computation is already in this class, clients
   // shouldn't be copying it.
   virtual void ComputePageRectsWithPageSize(
-      const FloatSize& page_size_in_pixels);
+      const gfx::SizeF& page_size_in_pixels);
 
   // These are only valid after page rects are computed.
   wtf_size_t PageCount() const { return page_rects_.size(); }
-  const IntRect& PageRect(wtf_size_t page_number) const {
+  const gfx::Rect& PageRect(wtf_size_t page_number) const {
     return page_rects_[page_number];
   }
-  const Vector<IntRect>& PageRects() const { return page_rects_; }
+  const Vector<gfx::Rect>& PageRects() const { return page_rects_; }
 
   // Enter print mode, updating layout for new page size.
   // This function can be called multiple times to apply new print options
@@ -89,7 +92,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
 
   // Returns -1 if page isn't found.
   static int PageNumberForElement(Element*,
-                                  const FloatSize& page_size_in_pixels);
+                                  const gfx::SizeF& page_size_in_pixels);
   static String PageProperty(LocalFrame*,
                              const char* property_name,
                              uint32_t page_number);
@@ -102,7 +105,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
                                            int margin_right,
                                            int margin_bottom,
                                            int margin_left);
-  static int NumberOfPages(LocalFrame*, const FloatSize& page_size_in_pixels);
+  static int NumberOfPages(LocalFrame*, const gfx::SizeF& page_size_in_pixels);
 
   virtual void Trace(Visitor*) const;
 
@@ -111,14 +114,14 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
  protected:
   friend class PrintContextTest;
 
-  void OutputLinkedDestinations(GraphicsContext&, const IntRect& page_rect);
+  void OutputLinkedDestinations(GraphicsContext&, const gfx::Rect& page_rect);
 
   Member<LocalFrame> frame_;
-  Vector<IntRect> page_rects_;
+  Vector<gfx::Rect> page_rects_;
 
  private:
   void ComputePageRectsWithPageSizeInternal(
-      const FloatSize& page_size_in_pixels);
+      const gfx::SizeF& page_size_in_pixels);
   void CollectLinkedDestinations(Node*);
   bool IsFrameValid() const;
 

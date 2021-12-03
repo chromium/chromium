@@ -41,7 +41,7 @@ void ViewPainter::Paint(const PaintInfo& paint_info) {
 // BaseBackgroundColor on the LocalFrameView.
 // https://drafts.fxtf.org/compositing/#rootgroup
 void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
-                                 const IntRect& pixel_snapped_background_rect,
+                                 const gfx::Rect& pixel_snapped_background_rect,
                                  const Document& document,
                                  const DisplayItemClient& client,
                                  const PropertyTreeStateOrAlias& state) {
@@ -62,7 +62,7 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
           context, client, DisplayItem::kDocumentRootBackdrop)) {
     DrawingRecorder recorder(context, client,
                              DisplayItem::kDocumentRootBackdrop,
-                             ToGfxRect(pixel_snapped_background_rect));
+                             pixel_snapped_background_rect);
     context.FillRect(
         pixel_snapped_background_rect, base_background_color,
         PaintAutoDarkMode(layout_view_.StyleRef(),
@@ -132,7 +132,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                              ->GetScrollingBackgroundDisplayItemClient();
   }
 
-  IntRect pixel_snapped_background_rect(PixelSnappedIntRect(background_rect));
+  gfx::Rect pixel_snapped_background_rect = ToPixelSnappedRect(background_rect);
 
   auto root_element_background_painting_state =
       layout_view_.FirstFragment().ContentsProperties();
@@ -241,7 +241,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 //    possible.
 void ViewPainter::PaintRootElementGroup(
     const PaintInfo& paint_info,
-    const IntRect& pixel_snapped_background_rect,
+    const gfx::Rect& pixel_snapped_background_rect,
     const PropertyTreeStateOrAlias& background_paint_state,
     const DisplayItemClient& background_client,
     bool painted_separate_backdrop,
@@ -253,7 +253,7 @@ void ViewPainter::PaintRootElementGroup(
   }
   DrawingRecorder recorder(context, background_client,
                            DisplayItem::kDocumentBackground,
-                           ToGfxRect(pixel_snapped_background_rect));
+                           pixel_snapped_background_rect);
 
   const Document& document = layout_view_.GetDocument();
   const LocalFrameView& frame_view = *layout_view_.GetFrameView();
@@ -293,7 +293,7 @@ void ViewPainter::PaintRootElementGroup(
   // transforms apply. The strategy is to issue draw commands in the root
   // element's local space, which requires mapping the document background rect.
   bool background_renderable = true;
-  IntRect paint_rect = pixel_snapped_background_rect;
+  gfx::Rect paint_rect = pixel_snapped_background_rect;
   // Offset for BackgroundImageGeometry to offset the image's origin. This makes
   // background tiling start at the root element's origin instead of the view.
   // This is different from the offset for painting, which is in |paint_rect|.
@@ -338,7 +338,7 @@ void ViewPainter::PaintRootElementGroup(
     return;
   }
 
-  recorder.UniteVisualRect(ToGfxRect(paint_rect));
+  recorder.UniteVisualRect(paint_rect);
 
   BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
   bool should_draw_background_in_separate_buffer =

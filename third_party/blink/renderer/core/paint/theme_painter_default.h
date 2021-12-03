@@ -46,67 +46,67 @@ class ThemePainterDefault final : public ThemePainter {
                      const Document&,
                      const ComputedStyle&,
                      const PaintInfo&,
-                     const IntRect&) override;
+                     const gfx::Rect&) override;
   bool PaintRadio(const Element&,
                   const Document&,
                   const ComputedStyle&,
                   const PaintInfo&,
-                  const IntRect&) override;
+                  const gfx::Rect&) override;
   bool PaintButton(const Element&,
                    const Document&,
                    const ComputedStyle&,
                    const PaintInfo&,
-                   const IntRect&) override;
+                   const gfx::Rect&) override;
   bool PaintTextField(const Element&,
                       const ComputedStyle&,
                       const PaintInfo&,
-                      const IntRect&) override;
+                      const gfx::Rect&) override;
   bool PaintMenuList(const Element&,
                      const Document&,
                      const ComputedStyle&,
                      const PaintInfo&,
-                     const IntRect&) override;
+                     const gfx::Rect&) override;
   bool PaintMenuListButton(const Element&,
                            const Document&,
                            const ComputedStyle&,
                            const PaintInfo&,
-                           const IntRect&) override;
+                           const gfx::Rect&) override;
   bool PaintSliderTrack(const Element& element,
                         const LayoutObject&,
                         const PaintInfo&,
-                        const IntRect&,
+                        const gfx::Rect&,
                         const ComputedStyle&) override;
   bool PaintSliderThumb(const Element&,
                         const ComputedStyle&,
                         const PaintInfo&,
-                        const IntRect&) override;
+                        const gfx::Rect&) override;
   bool PaintInnerSpinButton(const Element&,
                             const ComputedStyle&,
                             const PaintInfo&,
-                            const IntRect&) override;
+                            const gfx::Rect&) override;
   bool PaintProgressBar(const Element& element,
                         const LayoutObject&,
                         const PaintInfo&,
-                        const IntRect&,
+                        const gfx::Rect&,
                         const ComputedStyle&) override;
   bool PaintTextArea(const Element&,
                      const ComputedStyle&,
                      const PaintInfo&,
-                     const IntRect&) override;
+                     const gfx::Rect&) override;
   bool PaintSearchField(const Element&,
                         const ComputedStyle&,
                         const PaintInfo&,
-                        const IntRect&) override;
+                        const gfx::Rect&) override;
   bool PaintSearchFieldCancelButton(const LayoutObject&,
                                     const PaintInfo&,
-                                    const IntRect&) override;
+                                    const gfx::Rect&) override;
 
   void SetupMenuListArrow(const Document&,
                           const ComputedStyle&,
-                          const IntRect&,
+                          const gfx::Rect&,
                           WebThemeEngine::ExtraParams&);
 
-  gfx::Rect ApplyZoomToRect(const IntRect&,
+  gfx::Rect ApplyZoomToRect(const gfx::Rect&,
                             const PaintInfo&,
                             GraphicsContextStateSaver&,
                             float zoom_level);

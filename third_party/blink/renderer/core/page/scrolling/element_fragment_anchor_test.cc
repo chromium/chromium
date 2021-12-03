@@ -149,10 +149,9 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentNoLayoutUntilLoad) {
       iframe->contentDocument()->View()->LayoutViewport();
   Element* fragment = iframe->contentDocument()->getElementById("fragment");
 
-  IntRect fragment_rect_in_frame(
-      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(gfx::Point(),
-                        child_viewport->VisibleContentRect().size());
+  gfx::Rect fragment_rect_in_frame =
+      ToGfxRect(fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  gfx::Rect viewport_rect(child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
       << "Fragment element at [" << fragment_rect_in_frame.ToString()
@@ -210,10 +209,9 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentDirtyLayoutAfterLoad) {
       iframe->contentDocument()->View()->LayoutViewport();
   Element* fragment = iframe->contentDocument()->getElementById("fragment");
 
-  IntRect fragment_rect_in_frame(
-      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(gfx::Point(),
-                        child_viewport->VisibleContentRect().size());
+  gfx::Rect fragment_rect_in_frame =
+      ToGfxRect(fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  gfx::Rect viewport_rect(child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
       << "Fragment element at [" << fragment_rect_in_frame.ToString()
@@ -339,9 +337,9 @@ TEST_F(ElementFragmentAnchorTest, HasURLEncodedCharacters) {
   Element* fragment = GetDocument().getElementById(u"\u00F6");
   ASSERT_NE(nullptr, fragment);
 
-  IntRect fragment_rect_in_frame(
-      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(gfx::Point(), viewport->VisibleContentRect().size());
+  gfx::Rect fragment_rect_in_frame =
+      ToGfxRect(fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  gfx::Rect viewport_rect(viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
       << "Fragment element at [" << fragment_rect_in_frame.ToString()

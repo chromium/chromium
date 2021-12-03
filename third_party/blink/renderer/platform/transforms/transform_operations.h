@@ -26,10 +26,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORM_OPERATIONS_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 class FloatBox;
@@ -50,7 +50,7 @@ class PLATFORM_EXPORT TransformOperations {
 
   // Constructs a transformation matrix from the operations. The parameter
   // |border_box_size| is used when computing styles that are size-dependent.
-  void Apply(const FloatSize& border_box_size, TransformationMatrix& t) const {
+  void Apply(const gfx::SizeF& border_box_size, TransformationMatrix& t) const {
     for (auto& operation : operations_)
       operation->Apply(t, border_box_size);
   }
@@ -59,7 +59,7 @@ class PLATFORM_EXPORT TransformOperations {
   // |start|. This process facilitates mixing pairwise operations for a common
   // prefix and matrix interpolation for the remainder.  The parameter
   // |border_box_size| is used when computing styles that are size-dependent.
-  void ApplyRemaining(const FloatSize& border_box_size,
+  void ApplyRemaining(const gfx::SizeF& border_box_size,
                       wtf_size_t start,
                       TransformationMatrix& t) const;
 

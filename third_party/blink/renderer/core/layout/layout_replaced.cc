@@ -179,7 +179,7 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
   // information, since the final result does not depend on it.
   if (ShouldApplySizeContainment()) {
     // Reset the size in case it was already populated.
-    intrinsic_sizing_info.size = FloatSize();
+    intrinsic_sizing_info.size = gfx::SizeF();
 
     const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
     if (!aspect_ratio.IsAuto()) {
@@ -213,14 +213,13 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
   // obtained for comparison against min and max widths.
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty() &&
       !intrinsic_sizing_info.size.IsEmpty()) {
-    intrinsic_size_ =
-        LayoutSize(IsHorizontalWritingMode()
-                       ? intrinsic_sizing_info.size
-                       : intrinsic_sizing_info.size.TransposedSize());
+    intrinsic_size_ = LayoutSize(intrinsic_sizing_info.size);
+    if (!IsHorizontalWritingMode())
+      intrinsic_size_ = intrinsic_size_.TransposedSize();
   }
 }
 
-FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
+gfx::SizeF LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
     const IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   // Constrain the intrinsic size along each axis according to minimum and
@@ -230,7 +229,7 @@ FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
   // these values independently along each axis, the final returned size may in
   // fact not preserve the aspect ratio.
   // TODO(davve): Investigate using only the intrinsic aspect ratio here.
-  FloatSize constrained_size = intrinsic_sizing_info.size;
+  gfx::SizeF constrained_size = intrinsic_sizing_info.size;
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty() &&
       !intrinsic_sizing_info.size.IsEmpty() &&
       StyleRef().LogicalWidth().IsAuto() &&
@@ -703,8 +702,8 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-  intrinsic_sizing_info.size = FloatSize(IntrinsicLogicalWidth().ToFloat(),
-                                         IntrinsicLogicalHeight().ToFloat());
+  intrinsic_sizing_info.size = gfx::SizeF(IntrinsicLogicalWidth().ToFloat(),
+                                          IntrinsicLogicalHeight().ToFloat());
 
   const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
   if (!aspect_ratio.IsAuto()) {
@@ -712,10 +711,8 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
         aspect_ratio.GetRatio().width());
     intrinsic_sizing_info.aspect_ratio.set_height(
         aspect_ratio.GetRatio().height());
-    if (!IsHorizontalWritingMode()) {
-      intrinsic_sizing_info.aspect_ratio =
-          intrinsic_sizing_info.aspect_ratio.TransposedSize();
-    }
+    if (!IsHorizontalWritingMode())
+      intrinsic_sizing_info.aspect_ratio.Transpose();
   }
   if (aspect_ratio.GetType() == EAspectRatioType::kRatio)
     return;
@@ -769,7 +766,7 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
   IntrinsicSizingInfo intrinsic_sizing_info;
   ComputeIntrinsicSizingInfoForReplacedContent(intrinsic_sizing_info);
 
-  FloatSize constrained_size =
+  gfx::SizeF constrained_size =
       ConstrainIntrinsicSizeToMinMax(intrinsic_sizing_info);
 
   if (StyleRef().LogicalWidth().IsAuto()) {
@@ -872,7 +869,7 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
   IntrinsicSizingInfo intrinsic_sizing_info;
   ComputeIntrinsicSizingInfoForReplacedContent(intrinsic_sizing_info);
 
-  FloatSize constrained_size =
+  gfx::SizeF constrained_size =
       ConstrainIntrinsicSizeToMinMax(intrinsic_sizing_info);
 
   bool width_is_auto = StyleRef().LogicalWidth().IsAuto();

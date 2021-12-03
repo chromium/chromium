@@ -54,8 +54,8 @@ class CORE_EXPORT LayoutImageResource
   void ResetAnimation();
   bool MaybeAnimated() const;
 
-  virtual scoped_refptr<Image> GetImage(const FloatSize&) const;
-  scoped_refptr<Image> GetImage(const IntSize&) const;
+  virtual scoped_refptr<Image> GetImage(const gfx::SizeF&) const;
+  scoped_refptr<Image> GetImage(const gfx::Size&) const;
   virtual bool ErrorOccurred() const {
     return cached_image_ && cached_image_->ErrorOccurred();
   }
@@ -66,10 +66,10 @@ class CORE_EXPORT LayoutImageResource
 
   virtual bool HasIntrinsicSize() const;
 
-  virtual FloatSize ImageSize(float multiplier) const;
+  virtual gfx::SizeF ImageSize(float multiplier) const;
   // Default size is effective when this is LayoutImageResourceStyleImage.
-  virtual FloatSize ImageSizeWithDefaultSize(float multiplier,
-                                             const FloatSize&) const;
+  virtual gfx::SizeF ImageSizeWithDefaultSize(float multiplier,
+                                              const gfx::SizeF&) const;
   virtual RespectImageOrientationEnum ImageOrientation() const;
   virtual WrappedImagePtr ImagePtr() const { return cached_image_.Get(); }
 

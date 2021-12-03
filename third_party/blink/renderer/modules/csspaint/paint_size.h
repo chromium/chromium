@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_SIZE_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -15,7 +15,7 @@ class PaintSize : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit PaintSize(FloatSize size) : size_(size) {}
+  explicit PaintSize(gfx::SizeF size) : size_(size) {}
 
   PaintSize(const PaintSize&) = delete;
   PaintSize& operator=(const PaintSize&) = delete;
@@ -26,7 +26,7 @@ class PaintSize : public ScriptWrappable {
   float height() const { return size_.height(); }
 
  private:
-  FloatSize size_;
+  gfx::SizeF size_;
 };
 
 }  // namespace blink

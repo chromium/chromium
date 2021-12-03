@@ -43,7 +43,7 @@ bool InterpolatedTransformOperation::operator==(
 
 void InterpolatedTransformOperation::Apply(
     TransformationMatrix& transform,
-    const FloatSize& border_box_size) const {
+    const gfx::SizeF& border_box_size) const {
   TransformationMatrix from_transform;
   TransformationMatrix to_transform;
   from_.ApplyRemaining(border_box_size, starting_index_, from_transform);

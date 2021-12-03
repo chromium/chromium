@@ -30,9 +30,9 @@ std::unique_ptr<JSONObject> GraphicsLayerAsJSON(const GraphicsLayer* layer,
   }
 
   if (flags & kLayerTreeIncludesDebugInfo &&
-      layer->OffsetFromLayoutObject() != IntSize()) {
+      !layer->OffsetFromLayoutObject().IsZero()) {
     json->SetArray("offsetFromLayoutObject",
-                   SizeAsJSONArray(ToGfxSize(layer->OffsetFromLayoutObject())));
+                   VectorAsJSONArray(layer->OffsetFromLayoutObject()));
   }
 
   if (!layer->ContentsAreVisible())

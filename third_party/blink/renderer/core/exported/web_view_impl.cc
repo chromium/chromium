@@ -2127,7 +2127,8 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
       MainFrameImpl()->GetFrame()->View()->GetScrollableArea();
 
   // If the caret is offscreen, then animate.
-  if (!root_viewport->VisibleContentRect().Contains(caret_bounds_in_content))
+  if (!root_viewport->VisibleContentRect().Contains(
+          ToGfxRect(caret_bounds_in_content)))
     need_animation = true;
 
   // If the box is partially offscreen and it's possible to bring it fully
@@ -2136,7 +2137,8 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
           element_bounds_in_content.width() &&
       visual_viewport.VisibleRect().height() >=
           element_bounds_in_content.height() &&
-      !root_viewport->VisibleContentRect().Contains(element_bounds_in_content))
+      !root_viewport->VisibleContentRect().Contains(
+          ToGfxRect(element_bounds_in_content)))
     need_animation = true;
 
   if (!need_animation)
@@ -2267,7 +2269,7 @@ gfx::PointF WebViewImpl::VisualViewportOffset() const {
 
 gfx::SizeF WebViewImpl::VisualViewportSize() const {
   DCHECK(GetPage());
-  return ToGfxSizeF(GetPage()->GetVisualViewport().VisibleRect().size());
+  return GetPage()->GetVisualViewport().VisibleRect().size();
 }
 
 void WebViewImpl::SetPageScaleFactorAndLocation(float scale_factor,

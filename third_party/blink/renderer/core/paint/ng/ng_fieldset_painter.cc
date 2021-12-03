@@ -118,7 +118,7 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
     // normal.
     PhysicalRect legend_cutout_rect = fieldset_paint_info.legend_cutout_rect;
     legend_cutout_rect.Move(paint_rect.offset);
-    graphics_context.ClipOut(PixelSnappedIntRect(legend_cutout_rect));
+    graphics_context.ClipOut(ToPixelSnappedRect(legend_cutout_rect));
 
     const LayoutObject* layout_object = fieldset_.GetLayoutObject();
     Node* node = layout_object->GeneratingNode();

@@ -489,7 +489,7 @@ class ComplexOutlinePainter {
     switch (outline_style_) {
       case EBorderStyle::kSolid:
         context_.FillRect(
-            outer_path.getBounds(),
+            gfx::SkRectToRectF(outer_path.getBounds()),
             PaintAutoDarkMode(style_,
                               DarkModeFilter::ElementRole::kBackground));
         break;
@@ -537,7 +537,8 @@ class ComplexOutlinePainter {
     context_.FillPath(inner_third_path, auto_dark_mode);
     MakeClipOutPath(outer_third_path);
     context_.ClipPath(outer_third_path, kAntiAliased);
-    context_.FillRect(right_angle_outer_path_.getBounds(), auto_dark_mode);
+    context_.FillRect(gfx::SkRectToRectF(right_angle_outer_path_.getBounds()),
+                      auto_dark_mode);
   }
 
   void PaintDottedOrDashedOutline() {

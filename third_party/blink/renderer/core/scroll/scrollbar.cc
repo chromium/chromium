@@ -74,7 +74,7 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
   theme_.RegisterScrollbar(*this);
   int thickness =
       theme_.ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
-  frame_rect_ = IntRect(0, 0, thickness, thickness);
+  frame_rect_ = gfx::Rect(0, 0, thickness, thickness);
   current_pos_ = ScrollableAreaCurrentPos();
 }
 
@@ -87,7 +87,7 @@ void Scrollbar::Trace(Visitor* visitor) const {
   DisplayItemClient::Trace(visitor);
 }
 
-void Scrollbar::SetFrameRect(const IntRect& frame_rect) {
+void Scrollbar::SetFrameRect(const gfx::Rect& frame_rect) {
   if (frame_rect == frame_rect_)
     return;
 
@@ -747,8 +747,8 @@ gfx::Point Scrollbar::ConvertFromRootFrame(
   return point_in_root_frame;
 }
 
-IntRect Scrollbar::ConvertToContainingEmbeddedContentView(
-    const IntRect& local_rect) const {
+gfx::Rect Scrollbar::ConvertToContainingEmbeddedContentView(
+    const gfx::Rect& local_rect) const {
   if (scrollable_area_) {
     return scrollable_area_
         ->ConvertFromScrollbarToContainingEmbeddedContentView(*this,

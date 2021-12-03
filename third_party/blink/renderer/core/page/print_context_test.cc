@@ -164,7 +164,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
   }
 
   void PrintSinglePage(SkCanvas& canvas) {
-    IntRect page_rect(0, 0, kPageWidth, kPageHeight);
+    gfx::Rect page_rect(0, 0, kPageWidth, kPageHeight);
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
@@ -174,7 +174,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GraphicsContext& context = builder->Context();
     context.SetPrinting(true);
     GetDocument().View()->PaintContentsOutsideOfLifecycle(
-        context, kGlobalPaintAddUrlMetadata, CullRect(ToGfxRect(page_rect)));
+        context, kGlobalPaintAddUrlMetadata, CullRect(page_rect));
     {
       DrawingRecorder recorder(
           context, *GetDocument().GetLayoutView(),
@@ -432,7 +432,7 @@ TEST_P(PrintContextTest, ScaledVerticalRL) {
   )HTML");
 
   int page_count = PrintContext::NumberOfPages(GetDocument().GetFrame(),
-                                               FloatSize(500, 500));
+                                               gfx::SizeF(500, 500));
   EXPECT_EQ(2, page_count);
 }
 
@@ -500,7 +500,7 @@ TEST_P(PrintContextFrameTest, WithScrolledSubframe) {
 
 // This tests that we properly resize and re-layout pages for printing.
 TEST_P(PrintContextFrameTest, BasicPrintPageLayout) {
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   float maximum_shrink_ratio = 1.1;
   auto* node = GetDocument().documentElement();
 
@@ -856,7 +856,7 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
       <iframe id="target" src='http://b.com/' width='100%' height='100%'
       style='border: 0px; margin: 0px; position: absolute; top: 0px;
       left: 0px'></iframe>)HTML");
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   float maximum_shrink_ratio = 1.1;
   auto* parent = GetDocument().documentElement();
   // The child document element inside iframe.

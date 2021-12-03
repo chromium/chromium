@@ -60,7 +60,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     t = min_progress + (max_progress - min_progress) * t;
     TransformOperations operations = from.Blend(to, t);
     TransformationMatrix matrix;
-    operations.Apply(FloatSize(0, 0), matrix);
+    operations.Apply(gfx::SizeF(0, 0), matrix);
     FloatBox transformed = box;
     matrix.TransformBox(transformed);
 
@@ -460,7 +460,7 @@ TEST(TransformOperationsTest, NonCommutativeRotations) {
 
   TransformOperations operations = to_ops.Blend(from_ops, max_progress);
   TransformationMatrix blended_transform;
-  operations.Apply(FloatSize(0, 0), blended_transform);
+  operations.Apply(gfx::SizeF(0, 0), blended_transform);
 
   FloatPoint3D blended_point(0.9f, 0.9f, 0);
   blended_point = blended_transform.MapPoint(blended_point);
@@ -532,7 +532,7 @@ TEST(TransformOperationsTest, ZoomTest) {
   FloatPoint3D unzoomed_point = original_point;
   TransformOperations unzoomed_ops = ops;
   TransformationMatrix unzoomed_matrix;
-  ops.Apply(FloatSize(0, 0), unzoomed_matrix);
+  ops.Apply(gfx::SizeF(0, 0), unzoomed_matrix);
   FloatPoint3D result1 = unzoomed_matrix.MapPoint(unzoomed_point);
   result1.Scale(zoom_factor, zoom_factor, zoom_factor);
 
@@ -541,7 +541,7 @@ TEST(TransformOperationsTest, ZoomTest) {
   zoomed_point.Scale(zoom_factor, zoom_factor, zoom_factor);
   TransformOperations zoomed_ops = ops.Zoom(zoom_factor);
   TransformationMatrix zoomed_matrix;
-  zoomed_ops.Apply(FloatSize(0, 0), zoomed_matrix);
+  zoomed_ops.Apply(gfx::SizeF(0, 0), zoomed_matrix);
   FloatPoint3D result2 = zoomed_matrix.MapPoint(zoomed_point);
 
   EXPECT_EQ(result1, result2);
@@ -671,7 +671,7 @@ TEST(TransformOperationsTest, InterpolatedTransformBlendIdentityTest) {
   ops_d3.Operations().push_back(
       RotateTransformOperation::Create(11.25, TransformOperation::kRotate));
 
-  const FloatSize box_size(100, 100);
+  const gfx::SizeF box_size(100, 100);
   TransformationMatrix mat_d1, mat_d2, mat_d3;
   ops_d1.Apply(box_size, mat_d1);
   ops_d2.Apply(box_size, mat_d2);
@@ -744,7 +744,7 @@ TEST(TransformOperationsTest, OutOfRangePercentage) {
       TransformOperation::kTranslate));
 
   TransformationMatrix mat;
-  ops.Apply(FloatSize(800, 600), mat);
+  ops.Apply(gfx::SizeF(800, 600), mat);
 
   // There should not be inf or nan in the transformation result.
   EXPECT_TRUE(isfinite(mat.M11()));

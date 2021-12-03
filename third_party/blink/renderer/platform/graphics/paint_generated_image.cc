@@ -13,19 +13,20 @@ namespace blink {
 
 void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                const PaintFlags& flags,
-                               const FloatRect& dest_rect,
-                               const FloatRect& src_rect,
+                               const gfx::RectF& dest_rect,
+                               const gfx::RectF& src_rect,
                                const ImageDrawOptions&) {
   PaintCanvasAutoRestore ar(canvas, true);
-  canvas->clipRect(dest_rect);
-  canvas->concat(SkMatrix::RectToRect(src_rect, dest_rect));
-  SkRect bounds = src_rect;
-  canvas->saveLayer(&bounds, &flags);
+  SkRect sk_dest_rect = gfx::RectFToSkRect(dest_rect);
+  SkRect sk_src_rect = gfx::RectFToSkRect(src_rect);
+  canvas->clipRect(sk_dest_rect);
+  canvas->concat(SkMatrix::RectToRect(sk_src_rect, sk_dest_rect));
+  canvas->saveLayer(&sk_src_rect, &flags);
   canvas->drawPicture(record_);
 }
 
 void PaintGeneratedImage::DrawTile(GraphicsContext& context,
-                                   const FloatRect& src_rect,
+                                   const gfx::RectF& src_rect,
                                    const ImageDrawOptions&) {
   context.DrawRecord(record_);
 }

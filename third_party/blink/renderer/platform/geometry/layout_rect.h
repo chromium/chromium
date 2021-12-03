@@ -90,9 +90,9 @@ class PLATFORM_EXPORT LayoutRect {
   constexpr LayoutSize Size() const { return size_; }
 
   gfx::Point PixelSnappedLocation() const { return ToRoundedPoint(location_); }
-  IntSize PixelSnappedSize() const {
-    return IntSize(SnapSizeToPixel(size_.Width(), location_.X()),
-                   SnapSizeToPixel(size_.Height(), location_.Y()));
+  gfx::Size PixelSnappedSize() const {
+    return gfx::Size(SnapSizeToPixel(size_.Width(), location_.X()),
+                     SnapSizeToPixel(size_.Height(), location_.Y()));
   }
 
   void SetLocation(const LayoutPoint& location) { location_ = location; }

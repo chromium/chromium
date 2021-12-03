@@ -265,7 +265,7 @@ void GraphicsLayer::RemoveFromParent() {
   client_->GraphicsLayersDidChange();
 }
 
-void GraphicsLayer::SetOffsetFromLayoutObject(const IntSize& offset) {
+void GraphicsLayer::SetOffsetFromLayoutObject(const gfx::Vector2d& offset) {
   if (offset == offset_from_layout_object_)
     return;
 
@@ -324,7 +324,7 @@ bool GraphicsLayer::PaintRecursively(
   return repainted;
 }
 
-void GraphicsLayer::PaintForTesting(const IntRect& interest_rect,
+void GraphicsLayer::PaintForTesting(const gfx::Rect& interest_rect,
                                     bool record_debug_info) {
   HeapVector<PreCompositedLayerInfo> pre_composited_layers;
   PaintController::CycleScope cycle_scope(record_debug_info);
@@ -336,7 +336,7 @@ void GraphicsLayer::Paint(
     HeapVector<PreCompositedLayerInfo>& pre_composited_layers,
     PaintBenchmarkMode benchmark_mode,
     PaintController::CycleScope* cycle_scope,
-    const IntRect* interest_rect) {
+    const gfx::Rect* interest_rect) {
   repainted_ = false;
 
   DCHECK(!client_->ShouldSkipPaintingSubtree());
@@ -361,7 +361,7 @@ void GraphicsLayer::Paint(
 #endif
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
 
-  IntRect new_interest_rect;
+  gfx::Rect new_interest_rect;
   if (!RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
     new_interest_rect = interest_rect ? *interest_rect
                                       : client_->ComputeInterestRect(
@@ -494,8 +494,7 @@ void GraphicsLayer::UpdateContentsLayerBounds() {
   if (!contents_layer_)
     return;
 
-  IntSize contents_size = contents_rect_.size();
-  contents_layer_->SetBounds(ToGfxSize(contents_size));
+  contents_layer_->SetBounds(contents_rect_.size());
 }
 
 void GraphicsLayer::SetContentsToCcLayer(
@@ -563,7 +562,7 @@ RasterInvalidationTracking* GraphicsLayer::GetRasterInvalidationTracking()
 }
 
 void GraphicsLayer::TrackRasterInvalidation(const DisplayItemClient& client,
-                                            const IntRect& rect,
+                                            const gfx::Rect& rect,
                                             PaintInvalidationReason reason) {
   if (RasterInvalidationTracking::ShouldAlwaysTrack())
     EnsureRasterInvalidator().EnsureTracking();
@@ -572,8 +571,7 @@ void GraphicsLayer::TrackRasterInvalidation(const DisplayItemClient& client,
   // directly, e.g. from SetContentsNeedsDisplay(), etc. Other raster
   // invalidations are tracked in RasterInvalidator.
   if (auto* tracking = GetRasterInvalidationTracking()) {
-    tracking->AddInvalidation(client.Id(), client.DebugName(), ToGfxRect(rect),
-                              reason);
+    tracking->AddInvalidation(client.Id(), client.DebugName(), rect, reason);
   }
 }
 
@@ -670,7 +668,7 @@ void GraphicsLayer::InvalidateRaster(const gfx::Rect& rect) {
   CcLayer().SetNeedsDisplayRect(rect);
 }
 
-void GraphicsLayer::SetContentsRect(const IntRect& rect) {
+void GraphicsLayer::SetContentsRect(const gfx::Rect& rect) {
   if (rect == contents_rect_)
     return;
 
@@ -735,9 +733,9 @@ void GraphicsLayer::SetContentsLayerState(
 }
 
 gfx::Rect GraphicsLayer::PaintableRegion() const {
-  return ToGfxRect(RuntimeEnabledFeatures::CullRectUpdateEnabled()
-                       ? client_->PaintableRegion(this)
-                       : previous_interest_rect_);
+  return RuntimeEnabledFeatures::CullRectUpdateEnabled()
+             ? client_->PaintableRegion(this)
+             : previous_interest_rect_;
 }
 
 scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList() {

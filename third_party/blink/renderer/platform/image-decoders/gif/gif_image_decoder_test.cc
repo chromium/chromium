@@ -345,7 +345,7 @@ TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
           ->CopyAs<Vector<char>>();
 
   std::unique_ptr<ImageDecoder> decoder;
-  IntSize frame_size;
+  gfx::Size frame_size;
 
   // Compute hashes when the file is truncated.
   for (size_t i = 1; i <= full_data.size(); ++i) {
@@ -469,7 +469,7 @@ TEST(GIFImageDecoderTest, externalAllocator) {
   decoder->SetMemoryAllocator(nullptr);
 
   ASSERT_TRUE(frame);
-  EXPECT_EQ(IntRect(gfx::Point(), decoder->Size()), frame->OriginalFrameRect());
+  EXPECT_EQ(gfx::Rect(decoder->Size()), frame->OriginalFrameRect());
   EXPECT_FALSE(frame->HasAlpha());
 }
 

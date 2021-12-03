@@ -536,7 +536,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     underline_position = ResolvedUnderlinePosition::kUnder;
   }
 
-  FloatRect accumulated_bound;
+  gfx::RectF accumulated_bound;
   for (wtf_size_t applied_decoration_index = 0;
        applied_decoration_index < decorations.size();
        ++applied_decoration_index) {

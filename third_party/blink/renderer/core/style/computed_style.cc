@@ -1280,14 +1280,13 @@ void ComputedStyle::ApplyTransform(
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
     const {
-  ApplyTransform(result, FloatRect(gfx::PointF(), FloatSize(border_box_size)),
-                 apply_origin, apply_motion_path,
-                 apply_independent_transform_properties);
+  ApplyTransform(result, gfx::RectF(gfx::SizeF(border_box_size)), apply_origin,
+                 apply_motion_path, apply_independent_transform_properties);
 }
 
 void ComputedStyle::ApplyTransform(
     TransformationMatrix& result,
-    const FloatRect& bounding_box,
+    const gfx::RectF& bounding_box,
     ApplyTransformOrigin apply_origin,
     ApplyMotionPath apply_motion_path,
     ApplyIndependentTransformProperties apply_independent_transform_properties)
@@ -1301,7 +1300,7 @@ void ComputedStyle::ApplyTransform(
   float origin_y = 0;
   float origin_z = 0;
 
-  const FloatSize& box_size = bounding_box.size();
+  const gfx::SizeF& box_size = bounding_box.size();
   if (apply_transform_origin ||
       // We need to calculate originX and originY for applying motion path.
       apply_motion_path == kIncludeMotionPath) {
@@ -1345,7 +1344,7 @@ bool ComputedStyle::HasFilters() const {
 void ComputedStyle::ApplyMotionPathTransform(
     float origin_x,
     float origin_y,
-    const FloatRect& bounding_box,
+    const gfx::RectF& bounding_box,
     TransformationMatrix& transform) const {
   // TODO(ericwilligers): crbug.com/638055 Apply offset-position.
   if (!OffsetPath()) {
@@ -1397,7 +1396,7 @@ void ComputedStyle::ApplyMotionPathTransform(
   // they will have the default value, auto.
   gfx::PointF anchor_point(origin_x, origin_y);
   if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
-    anchor_point = PointForLengthPoint(anchor, ToGfxSizeF(bounding_box.size()));
+    anchor_point = PointForLengthPoint(anchor, bounding_box.size());
     anchor_point += bounding_box.OffsetFromOrigin();
 
     // Shift the origin from transform-origin to offset-anchor.

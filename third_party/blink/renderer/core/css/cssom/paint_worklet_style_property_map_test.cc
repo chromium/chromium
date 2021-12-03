@@ -132,7 +132,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, UnregisteredCustomProperty) {
   std::vector<cc::PaintWorkletInput::PropertyKey> property_keys;
   scoped_refptr<CSSPaintWorkletInput> input =
       base::MakeRefCounted<CSSPaintWorkletInput>(
-          "test", FloatSize(100, 100), 1.0f, 1.0f, 1, std::move(data.value()),
+          "test", gfx::SizeF(100, 100), 1.0f, 1.0f, 1, std::move(data.value()),
           std::move(input_arguments), std::move(property_keys));
   ASSERT_TRUE(input);
 
@@ -180,7 +180,7 @@ TEST_F(PaintWorkletStylePropertyMapTest, SupportedCrossThreadData) {
   std::vector<cc::PaintWorkletInput::PropertyKey> property_keys;
   scoped_refptr<CSSPaintWorkletInput> input =
       base::MakeRefCounted<CSSPaintWorkletInput>(
-          "test", FloatSize(100, 100), 1.0f, 1.0f, 1, std::move(data.value()),
+          "test", gfx::SizeF(100, 100), 1.0f, 1.0f, 1, std::move(data.value()),
           std::move(input_arguments), std::move(property_keys));
   DCHECK(input);
 

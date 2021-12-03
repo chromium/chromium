@@ -134,20 +134,16 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   DataObject* GetDataObject() const;
 
   // Clip to the visible area of the visual viewport.
-  static FloatRect ClipByVisualViewport(const FloatRect& rect_in_document,
-                                        const LocalFrame&);
+  static gfx::RectF ClipByVisualViewport(const gfx::RectF& rect_in_document,
+                                         const LocalFrame&);
 
-  // Returns the size with device scale factor and page scale factor applied.
-  static FloatSize DeviceSpaceSize(const FloatSize& css_size,
-                                   const LocalFrame&);
-
-  // |css_size| is the size of the image in CSS pixels.
-  // |paint_offset| is the offset from the origin of the dragged
-  // object of the PaintRecordBuilder.
+  // |layout_size| is the size of the image in layout pixels.
+  // |paint_offset| is the offset from the origin of the dragged object of the
+  // PaintRecordBuilder.
   static std::unique_ptr<DragImage> CreateDragImageForFrame(
       LocalFrame&,
       float,
-      const FloatSize& css_size,
+      const gfx::SizeF& layout_size,
       const gfx::Vector2dF& paint_offset,
       PaintRecordBuilder&,
       const PropertyTreeState&);

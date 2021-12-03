@@ -46,8 +46,8 @@ namespace {
 
 // Returns two point ranges (<left, width> pairs) at row |canvasY| which belong
 // to |src| but not |dst|. A range is empty if its width is 0.
-inline void findBlendRangeAtRow(const blink::IntRect& src,
-                                const blink::IntRect& dst,
+inline void findBlendRangeAtRow(const gfx::Rect& src,
+                                const gfx::Rect& dst,
                                 int canvasY,
                                 int& left1,
                                 int& width1,
@@ -399,7 +399,7 @@ void WEBPImageDecoder::OnInitFrameBuffer(wtf_size_t frame_index) {
       buffer.RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
     frame_background_has_alpha_ =
-        !buffer.OriginalFrameRect().Contains(IntRect(gfx::Point(), Size()));
+        !buffer.OriginalFrameRect().Contains(gfx::Rect(Size()));
   } else {
     const ImageFrame& prev_buffer =
         frame_buffer_cache_[required_previous_frame_index];
@@ -439,17 +439,17 @@ void WEBPImageDecoder::DecodeToYUV() {
   }
 }
 
-IntSize WEBPImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
+gfx::Size WEBPImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
   switch (index) {
     case cc::YUVIndex::kY:
       return Size();
     case cc::YUVIndex::kU:
     case cc::YUVIndex::kV:
-      return IntSize((Size().width() + 1) / 2, (Size().height() + 1) / 2);
+      return gfx::Size((Size().width() + 1) / 2, (Size().height() + 1) / 2);
   }
   NOTREACHED();
-  return IntSize(0, 0);
+  return gfx::Size(0, 0);
 }
 
 wtf_size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
@@ -533,7 +533,7 @@ void WEBPImageDecoder::ApplyPostProcessing(wtf_size_t frame_index) {
   if (decoded_height <= 0)
     return;
 
-  const IntRect& frame_rect = buffer.OriginalFrameRect();
+  const gfx::Rect& frame_rect = buffer.OriginalFrameRect();
   SECURITY_DCHECK(width == frame_rect.width());
   SECURITY_DCHECK(decoded_height <= frame_rect.height());
   const int left = frame_rect.x();
@@ -586,7 +586,7 @@ void WEBPImageDecoder::ApplyPostProcessing(wtf_size_t frame_index) {
         blend_function_(buffer, prev_buffer, top + y, left, width);
       }
     } else if (prev_disposal_method == ImageFrame::kDisposeOverwriteBgcolor) {
-      const IntRect& prev_rect = prev_buffer.OriginalFrameRect();
+      const gfx::Rect& prev_rect = prev_buffer.OriginalFrameRect();
       // We need to blend a transparent pixel with the starting value (from just
       // after the InitFrame() call). If the pixel belongs to prev_rect, the
       // starting value was fully transparent, so this is a no-op. Otherwise, we
@@ -625,10 +625,9 @@ void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
   WebPDemuxGetFrame(demux_, index + 1, &animated_frame);
   DCHECK_EQ(animated_frame.complete, 1);
   ImageFrame* buffer = &frame_buffer_cache_[index];
-  IntRect frame_rect(animated_frame.x_offset, animated_frame.y_offset,
-                     animated_frame.width, animated_frame.height);
-  buffer->SetOriginalFrameRect(
-      IntersectRects(frame_rect, IntRect(gfx::Point(), Size())));
+  gfx::Rect frame_rect(animated_frame.x_offset, animated_frame.y_offset,
+                       animated_frame.width, animated_frame.height);
+  buffer->SetOriginalFrameRect(IntersectRects(frame_rect, gfx::Rect(Size())));
   buffer->SetDuration(base::Milliseconds(animated_frame.duration));
   buffer->SetDisposalMethod(animated_frame.dispose_method ==
                                     WEBP_MUX_DISPOSE_BACKGROUND
@@ -762,10 +761,10 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
     // is loading. The correct alpha value for the frame will be set when
     // it is fully decoded.
     buffer.SetHasAlpha(true);
-    buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
+    buffer.SetOriginalFrameRect(gfx::Rect(Size()));
   }
 
-  const IntRect& frame_rect = buffer.OriginalFrameRect();
+  const gfx::Rect& frame_rect = buffer.OriginalFrameRect();
   if (!decoder_) {
     // Set up decoder_buffer_ with output mode
     WebPInitDecBuffer(&decoder_buffer_);

@@ -1500,8 +1500,8 @@ Response InspectorPageAgent::getLayoutMetrics(
   main_frame->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kInspector);
 
-  IntRect visible_contents =
-      main_frame->View()->LayoutViewport()->VisibleContentRect();
+  IntRect visible_contents(
+      main_frame->View()->LayoutViewport()->VisibleContentRect());
   *out_layout_viewport = protocol::Page::LayoutViewport::create()
                              .setPageX(visible_contents.x())
                              .setPageY(visible_contents.y())
@@ -1525,7 +1525,7 @@ Response InspectorPageAgent::getLayoutMetrics(
   LocalFrameView* frame_view = main_frame->View();
   ScrollOffset page_offset = frame_view->GetScrollableArea()->GetScrollOffset();
 
-  IntSize content_size = frame_view->GetScrollableArea()->ContentsSize();
+  gfx::Size content_size = frame_view->GetScrollableArea()->ContentsSize();
   *out_content_size = protocol::DOM::Rect::create()
                           .setX(0)
                           .setY(0)
@@ -1538,7 +1538,7 @@ Response InspectorPageAgent::getLayoutMetrics(
   // pixels. Details: https://crbug.com/1181313
   IntRect css_content_size =
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
-          IntRect(gfx::Point(0, 0), content_size), main_frame->View());
+          IntRect(gfx::Point(), IntSize(content_size)), main_frame->View());
   *out_css_content_size = protocol::DOM::Rect::create()
                               .setX(css_content_size.x())
                               .setY(css_content_size.y())
@@ -1554,7 +1554,7 @@ Response InspectorPageAgent::getLayoutMetrics(
       page_zoom /
       main_frame->GetPage()->GetChromeClient().WindowToViewportScalar(
           main_frame, 1);
-  FloatRect visible_rect = visual_viewport.VisibleRect();
+  gfx::RectF visible_rect = visual_viewport.VisibleRect();
   float scale = visual_viewport.Scale();
   *out_visual_viewport = protocol::Page::VisualViewport::create()
                              .setOffsetX(AdjustForAbsoluteZoom::AdjustScroll(

@@ -92,13 +92,13 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
 
   // GraphicsLayerClient implementation. Not needed for CompositeAfterPaint.
   bool NeedsRepaint(const GraphicsLayer&) const override { return true; }
-  IntRect ComputeInterestRect(const GraphicsLayer*,
-                              const IntRect&) const override;
-  IntRect PaintableRegion(const GraphicsLayer*) const override;
+  gfx::Rect ComputeInterestRect(const GraphicsLayer*,
+                                const gfx::Rect&) const override;
+  gfx::Rect PaintableRegion(const GraphicsLayer*) const override;
   void PaintContents(const GraphicsLayer*,
                      GraphicsContext&,
                      GraphicsLayerPaintingPhase,
-                     const IntRect& interest_rect) const override;
+                     const gfx::Rect& interest_rect) const override;
   void GraphicsLayersDidChange() override;
   PaintArtifactCompositor* GetPaintArtifactCompositor() override;
   String DebugName(const GraphicsLayer*) const override;

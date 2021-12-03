@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
 // static
-LogicalSize LogicalSize::AspectRatioFromFloatSize(const FloatSize& size) {
+LogicalSize LogicalSize::AspectRatioFromSizeF(const gfx::SizeF& size) {
   // Try and preserve as much precision as possible in the LayoutUnit space.
   // For ratios with values smaller than 1.0f, pre-divide to reduce loss. E.g:
   // "0.25f/0.01f" becomes "25/1" instead of "0.25/0.015625".

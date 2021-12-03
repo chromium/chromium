@@ -202,14 +202,14 @@ std::unique_ptr<Shape> Shape::CreateEmptyRasterShape(WritingMode writing_mode,
   std::unique_ptr<RasterShapeIntervals> intervals =
       std::make_unique<RasterShapeIntervals>(0, 0);
   std::unique_ptr<RasterShape> raster_shape =
-      std::make_unique<RasterShape>(std::move(intervals), IntSize());
+      std::make_unique<RasterShape>(std::move(intervals), gfx::Size());
   raster_shape->writing_mode_ = writing_mode;
   raster_shape->margin_ = margin;
   return std::move(raster_shape);
 }
 
 static bool ExtractImageData(Image* image,
-                             const IntSize& image_size,
+                             const gfx::Size& image_size,
                              ArrayBufferContents& contents,
                              RespectImageOrientationEnum respect_orientation) {
   if (!image)
@@ -248,14 +248,14 @@ static bool ExtractImageData(Image* image,
   // for layout, which is not allowed. See https://crbug.com/429346
   ImageObserverDisabler disabler(image);
   PaintFlags flags;
-  FloatRect image_source_rect(gfx::PointF(), FloatSize(image->Size()));
-  IntRect image_dest_rect(gfx::Point(), image_size);
+  gfx::RectF image_source_rect(gfx::SizeF(image->Size()));
+  gfx::Rect image_dest_rect(image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());
   canvas.clear(SK_ColorTRANSPARENT);
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = respect_orientation;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(&canvas, flags, FloatRect(image_dest_rect), image_source_rect,
+  image->Draw(&canvas, flags, gfx::RectF(image_dest_rect), image_source_rect,
               draw_options);
   return true;
 }
@@ -263,8 +263,8 @@ static bool ExtractImageData(Image* image,
 static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
     ArrayBufferContents& contents,
     float threshold,
-    const IntRect& image_rect,
-    const IntRect& margin_rect) {
+    const gfx::Rect& image_rect,
+    const gfx::Rect& margin_rect) {
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
   DOMUint8ClampedArray* pixel_array =
       DOMUint8ClampedArray::Create(array_buffer, 0, array_buffer->ByteLength());
@@ -272,7 +272,7 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
   unsigned pixel_array_offset = 3;  // Each pixel is four bytes: RGBA.
   uint8_t alpha_pixel_threshold = threshold * 255;
 
-  DCHECK_EQ(image_rect.size().Area() * 4, pixel_array->length());
+  DCHECK_EQ(image_rect.size().Area64() * 4, pixel_array->length());
 
   int min_buffer_y = std::max(0, margin_rect.y() - image_rect.y());
   int max_buffer_y =
@@ -302,12 +302,12 @@ static std::unique_ptr<RasterShapeIntervals> ExtractIntervalsFromImageData(
   return intervals;
 }
 
-static bool IsValidRasterShapeSize(const IntSize& size) {
+static bool IsValidRasterShapeSize(const gfx::Size& size) {
   // Some platforms don't limit MaxDecodedImageBytes.
   constexpr size_t size32_max_bytes = 0xFFFFFFFF / 4;
   static const size_t max_image_size_bytes =
       std::min(size32_max_bytes, Platform::Current()->MaxDecodedImageBytes());
-  return size.Area() * 4 < max_image_size_bytes;
+  return size.Area64() * 4 < max_image_size_bytes;
 }
 
 std::unique_ptr<Shape> Shape::CreateRasterShape(
@@ -318,8 +318,8 @@ std::unique_ptr<Shape> Shape::CreateRasterShape(
     WritingMode writing_mode,
     float margin,
     RespectImageOrientationEnum respect_orientation) {
-  IntRect image_rect = PixelSnappedIntRect(image_r);
-  IntRect margin_rect = PixelSnappedIntRect(margin_r);
+  gfx::Rect image_rect = ToPixelSnappedRect(image_r);
+  gfx::Rect margin_rect = ToPixelSnappedRect(margin_r);
 
   if (!IsValidRasterShapeSize(margin_rect.size()) ||
       !IsValidRasterShapeSize(image_rect.size())) {

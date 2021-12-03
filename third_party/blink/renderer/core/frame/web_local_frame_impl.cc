@@ -292,7 +292,7 @@ class ChromePrintContext : public PrintContext {
   }
 
   virtual float GetPageShrink(uint32_t page_number) const {
-    IntRect page_rect = page_rects_[page_number];
+    gfx::Rect page_rect = page_rects_[page_number];
     return printed_page_width_ / page_rect.width();
   }
 
@@ -309,7 +309,7 @@ class ChromePrintContext : public PrintContext {
 
     // The page rect gets scaled and translated, so specify the entire
     // print content area here as the recording rect.
-    FloatRect bounds(0, 0, printed_page_height_, printed_page_width_);
+    gfx::RectF bounds(0, 0, printed_page_height_, printed_page_width_);
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
     context.SetPrintingMetafile(canvas->GetPrintingMetafile());
@@ -322,8 +322,8 @@ class ChromePrintContext : public PrintContext {
 
   void SpoolAllPagesWithBoundariesForTesting(
       cc::PaintCanvas* canvas,
-      const FloatSize& page_size_in_pixels,
-      const FloatSize& spool_size_in_pixels) {
+      const gfx::SizeF& page_size_in_pixels,
+      const gfx::SizeF& spool_size_in_pixels) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
@@ -336,8 +336,7 @@ class ChromePrintContext : public PrintContext {
 
     ComputePageRects(page_size_in_pixels);
 
-    FloatRect all_pages_rect(0, 0, spool_size_in_pixels.width(),
-                             spool_size_in_pixels.height());
+    gfx::RectF all_pages_rect(spool_size_in_pixels);
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
@@ -406,7 +405,7 @@ class ChromePrintContext : public PrintContext {
   // On Linux, we don't have the problem with NativeTheme, hence we let WebKit
   // do the scaling and ignore the return value.
   virtual float SpoolPage(GraphicsContext& context, int page_number) {
-    IntRect page_rect = page_rects_[page_number];
+    gfx::Rect page_rect = page_rects_[page_number];
     float scale = printed_page_width_ / page_rect.width();
 
     AffineTransform transform;
@@ -417,7 +416,7 @@ class ChromePrintContext : public PrintContext {
                         static_cast<float>(-page_rect.y()));
     context.Save();
     context.ConcatCTM(transform);
-    context.ClipRect(page_rect);
+    context.ClipRect(gfx::RectToSkRect(page_rect));
 
     auto* frame_view = GetFrame()->View();
     DCHECK(frame_view);
@@ -429,7 +428,7 @@ class ChromePrintContext : public PrintContext {
         builder->Context(),
         kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
             kGlobalPaintAddUrlMetadata,
-        CullRect(ToGfxRect(page_rect)));
+        CullRect(page_rect));
     {
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
           builder->Context().GetPaintController(), property_tree_state,
@@ -492,14 +491,14 @@ class ChromePluginPrintContext final : public ChromePrintContext {
     return 1.0;
   }
 
-  void ComputePageRects(const FloatSize& print_size) override {
-    IntRect rect(gfx::Point(0, 0), FlooredIntSize(print_size));
-    print_params_.print_content_area = ToGfxRect(rect);
+  void ComputePageRects(const gfx::SizeF& print_size) override {
+    gfx::Rect rect(gfx::ToFlooredSize(print_size));
+    print_params_.print_content_area = rect;
     page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
   }
 
   void ComputePageRectsWithPageSize(
-      const FloatSize& page_size_in_pixels) override {
+      const gfx::SizeF& page_size_in_pixels) override {
     NOTREACHED();
   }
 
@@ -530,7 +529,7 @@ class PaintPreviewContext : public PrintContext {
   ~PaintPreviewContext() override = default;
 
   bool Capture(cc::PaintCanvas* canvas,
-               const IntRect& bounds,
+               const gfx::Rect& bounds,
                bool include_linked_destinations) {
     // This code is based on ChromePrintContext::SpoolSinglePage()/SpoolPage().
     // It differs in that it:
@@ -561,7 +560,7 @@ class PaintPreviewContext : public PrintContext {
       flags |= kGlobalPaintAddUrlMetadata;
 
     frame_view->PaintContentsOutsideOfLifecycle(builder->Context(), flags,
-                                                CullRect(ToGfxRect(bounds)));
+                                                CullRect(bounds));
     if (include_linked_destinations) {
       // Add anchors.
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
@@ -810,7 +809,7 @@ bool WebLocalFrameImpl::HasVisibleContent() const {
 
 gfx::Rect WebLocalFrameImpl::VisibleContentRect() const {
   if (LocalFrameView* view = GetFrameView())
-    return ToGfxRect(view->LayoutViewport()->VisibleContentRect());
+    return view->LayoutViewport()->VisibleContentRect();
   return gfx::Rect();
 }
 
@@ -1719,7 +1718,7 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
         GetFrame(), print_params.use_printing_layout);
   }
 
-  FloatSize size(print_params.print_content_area.size());
+  gfx::SizeF size(print_params.print_content_area.size());
   print_context_->BeginPrintMode(size.width(), size.height());
   print_context_->ComputePageRects(size);
 
@@ -1772,7 +1771,7 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
     GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());
-    success = paint_preview_context->Capture(canvas, IntRect(bounds),
+    success = paint_preview_context->Capture(canvas, bounds,
                                              include_linked_destinations);
     GetFrame()->EndPaintPreview();
   }
@@ -1818,7 +1817,8 @@ void WebLocalFrameImpl::PrintPagesForTesting(
   DCHECK(print_context_);
 
   print_context_->SpoolAllPagesWithBoundariesForTesting(
-      canvas, FloatSize(page_size_in_pixels), FloatSize(spool_size_in_pixels));
+      canvas, gfx::SizeF(page_size_in_pixels),
+      gfx::SizeF(spool_size_in_pixels));
 }
 
 gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {

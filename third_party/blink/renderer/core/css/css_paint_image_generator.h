@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -51,7 +51,7 @@ class CORE_EXPORT CSSPaintImageGenerator
   // representing an invalid image if an error occurred.
   // The |container_size| is the container size with subpixel snapping.
   virtual scoped_refptr<Image> Paint(const ImageResourceObserver&,
-                                     const FloatSize& container_size,
+                                     const gfx::SizeF& container_size,
                                      const CSSStyleValueVector*,
                                      float device_scale_factor) = 0;
 

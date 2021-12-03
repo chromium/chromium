@@ -36,6 +36,10 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
 #include "ui/gfx/geometry/point.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
 class DataTransfer;
@@ -44,7 +48,6 @@ class DragData;
 class DragImage;
 class DragState;
 class LocalFrame;
-class FloatRect;
 class FrameSelection;
 class HTMLInputElement;
 class Node;
@@ -89,7 +92,7 @@ class CORE_EXPORT DragController final
 
   // Return the selection bounds in absolute coordinates for the frame, clipped
   // to the visual viewport.
-  static FloatRect ClippedSelection(const LocalFrame&);
+  static gfx::RectF ClippedSelection(const LocalFrame&);
 
   // ExecutionContextLifecycleObserver.
   void ContextDestroyed() final;

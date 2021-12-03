@@ -810,13 +810,13 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     Image* broken_canvas = broken_canvas_and_image_scale_factor.first;
     context.Save();
     context.FillRect(
-        FloatRect(r), Color(),
+        gfx::RectF(r), Color(),
         PaintAutoDarkMode(ComputedStyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
         SkBlendMode::kClear);
     // Place the icon near the upper left, like the missing image icon
     // for image elements. Offset it a bit from the upper corner.
-    FloatSize icon_size(broken_canvas->Size());
+    gfx::SizeF icon_size(broken_canvas->Size());
     icon_size.Scale(0.5f);
     gfx::PointF upper_left =
         gfx::PointF(r.PixelSnappedOffset()) +
@@ -825,7 +825,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         broken_canvas, Image::kSyncDecode,
         PaintAutoDarkMode(ComputedStyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
-        FloatRect(upper_left, icon_size));
+        gfx::RectF(upper_left, icon_size));
     context.Restore();
     return;
   }
@@ -850,7 +850,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         image_for_printing.get(), Image::kSyncDecode,
         PaintAutoDarkMode(ComputedStyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
-        FloatRect(PixelSnappedIntRect(r)));
+        gfx::RectF(ToPixelSnappedRect(r)));
     return;
   }
 
@@ -892,8 +892,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
         !context_ || context_->CreationAttributes().alpha
             ? SkBlendMode::kSrcOver
             : SkBlendMode::kSrc;
-    FloatRect src_rect =
-        FloatRect(gfx::PointF(), FloatSize(gfx::SizeF(Size())));
+    gfx::RectF src_rect((gfx::SizeF(Size())));
     scoped_refptr<StaticBitmapImage> snapshot =
         canvas2d_bridge_
             ? canvas2d_bridge_->NewImageSnapshot()
@@ -906,13 +905,13 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
           snapshot.get(), Image::kSyncDecode,
           PaintAutoDarkMode(ComputedStyleRef(),
                             DarkModeFilter::ElementRole::kBackground),
-          FloatRect(PixelSnappedIntRect(r)), &src_rect, composite_operator);
+          gfx::RectF(ToPixelSnappedRect(r)), &src_rect, composite_operator);
     }
   } else {
     // When alpha is false, we should draw to opaque black.
     if (!context_->CreationAttributes().alpha) {
       context.FillRect(
-          FloatRect(r), Color(0, 0, 0),
+          gfx::RectF(r), Color(0, 0, 0),
           PaintAutoDarkMode(ComputedStyleRef(),
                             DarkModeFilter::ElementRole::kBackground));
     }
@@ -1477,8 +1476,8 @@ gfx::SizeF HTMLCanvasElement::ElementSize(
   return gfx::SizeF(width(), height());
 }
 
-IntSize HTMLCanvasElement::BitmapSourceSize() const {
-  return IntSize(Size());
+gfx::Size HTMLCanvasElement::BitmapSourceSize() const {
+  return Size();
 }
 
 ScriptPromise HTMLCanvasElement::CreateImageBitmap(
@@ -1711,8 +1710,7 @@ bool HTMLCanvasElement::HasImageBitmapContext() const {
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::GetTransparentImage() {
-  if (!transparent_image_ ||
-      ToGfxSize(transparent_image_.get()->Size()) != Size())
+  if (!transparent_image_ || transparent_image_.get()->Size() != Size())
     transparent_image_ = CreateTransparentImage(Size());
   return transparent_image_;
 }

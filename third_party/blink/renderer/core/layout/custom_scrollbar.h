@@ -52,9 +52,9 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
                                             ScrollbarOrientation,
                                             Element* style_source);
 
-  IntRect ButtonRect(ScrollbarPart) const;
-  IntRect TrackRect(int start_length, int end_length) const;
-  IntRect TrackPieceRectWithMargins(ScrollbarPart, const IntRect&) const;
+  gfx::Rect ButtonRect(ScrollbarPart) const;
+  gfx::Rect TrackRect(int start_length, int end_length) const;
+  gfx::Rect TrackPieceRectWithMargins(ScrollbarPart, const gfx::Rect&) const;
 
   int MinimumThumbLength() const;
 

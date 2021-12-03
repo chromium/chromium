@@ -388,13 +388,13 @@ Image* HitTestResult::GetImage(const Node* node) {
   return nullptr;
 }
 
-IntRect HitTestResult::ImageRect() const {
+gfx::Rect HitTestResult::ImageRect() const {
   if (!GetImage())
-    return IntRect();
-  return InnerNodeOrImageMapImage()
-      ->GetLayoutBox()
-      ->AbsoluteContentQuad()
-      .EnclosingBoundingBox();
+    return gfx::Rect();
+  return ToGfxRect(InnerNodeOrImageMapImage()
+                       ->GetLayoutBox()
+                       ->AbsoluteContentQuad()
+                       .EnclosingBoundingBox());
 }
 
 KURL HitTestResult::AbsoluteImageURL(const Node* node) {

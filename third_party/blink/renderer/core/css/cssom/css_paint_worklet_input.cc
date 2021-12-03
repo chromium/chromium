@@ -10,7 +10,7 @@ namespace blink {
 
 CSSPaintWorkletInput::CSSPaintWorkletInput(
     const String& name,
-    const FloatSize& container_size,
+    const gfx::SizeF& container_size,
     float effective_zoom,
     float device_scale_factor,
     int worklet_id,

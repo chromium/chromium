@@ -7,10 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -43,9 +43,9 @@ class CORE_EXPORT RotationViewportAnchor {
   void SetAnchor();
   void RestoreToAnchor();
 
-  gfx::PointF GetInnerOrigin(const FloatSize& inner_size) const;
+  gfx::PointF GetInnerOrigin(const gfx::SizeF& inner_size) const;
 
-  void ComputeOrigins(const FloatSize& inner_size,
+  void ComputeOrigins(const gfx::SizeF& inner_size,
                       gfx::Point& main_frame_origin,
                       gfx::PointF& visual_viewport_origin) const;
   ScrollableArea& LayoutViewport() const;

@@ -58,10 +58,10 @@ ScrollbarPart CustomScrollbarTheme::HitTest(const Scrollbar& scrollbar,
 void CustomScrollbarTheme::ButtonSizesAlongTrackAxis(const Scrollbar& scrollbar,
                                                      int& before_size,
                                                      int& after_size) {
-  IntRect first_button = ButtonRect(scrollbar, kBackButtonStartPart);
-  IntRect second_button = ButtonRect(scrollbar, kForwardButtonStartPart);
-  IntRect third_button = ButtonRect(scrollbar, kBackButtonEndPart);
-  IntRect fourth_button = ButtonRect(scrollbar, kForwardButtonEndPart);
+  gfx::Rect first_button = ButtonRect(scrollbar, kBackButtonStartPart);
+  gfx::Rect second_button = ButtonRect(scrollbar, kForwardButtonStartPart);
+  gfx::Rect third_button = ButtonRect(scrollbar, kBackButtonEndPart);
+  gfx::Rect fourth_button = ButtonRect(scrollbar, kForwardButtonEndPart);
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
     before_size = first_button.width() + second_button.width();
     after_size = third_button.width() + fourth_button.width();
@@ -88,20 +88,20 @@ int CustomScrollbarTheme::MinimumThumbLength(const Scrollbar& scrollbar) {
   return To<CustomScrollbar>(scrollbar).MinimumThumbLength();
 }
 
-IntRect CustomScrollbarTheme::ButtonRect(const Scrollbar& scrollbar,
-                                         ScrollbarPart part_type) {
+gfx::Rect CustomScrollbarTheme::ButtonRect(const Scrollbar& scrollbar,
+                                           ScrollbarPart part_type) {
   return To<CustomScrollbar>(scrollbar).ButtonRect(part_type);
 }
 
-IntRect CustomScrollbarTheme::BackButtonRect(const Scrollbar& scrollbar) {
+gfx::Rect CustomScrollbarTheme::BackButtonRect(const Scrollbar& scrollbar) {
   return ButtonRect(scrollbar, kBackButtonStartPart);
 }
 
-IntRect CustomScrollbarTheme::ForwardButtonRect(const Scrollbar& scrollbar) {
+gfx::Rect CustomScrollbarTheme::ForwardButtonRect(const Scrollbar& scrollbar) {
   return ButtonRect(scrollbar, kForwardButtonEndPart);
 }
 
-IntRect CustomScrollbarTheme::TrackRect(const Scrollbar& scrollbar) {
+gfx::Rect CustomScrollbarTheme::TrackRect(const Scrollbar& scrollbar) {
   if (!HasButtons(scrollbar))
     return scrollbar.FrameRect();
 
@@ -112,15 +112,16 @@ IntRect CustomScrollbarTheme::TrackRect(const Scrollbar& scrollbar) {
   return To<CustomScrollbar>(scrollbar).TrackRect(start_length, end_length);
 }
 
-IntRect CustomScrollbarTheme::ConstrainTrackRectToTrackPieces(
+gfx::Rect CustomScrollbarTheme::ConstrainTrackRectToTrackPieces(
     const Scrollbar& scrollbar,
-    const IntRect& rect) {
-  IntRect back_rect = To<CustomScrollbar>(scrollbar).TrackPieceRectWithMargins(
-      kBackTrackPart, rect);
-  IntRect forward_rect =
+    const gfx::Rect& rect) {
+  gfx::Rect back_rect =
+      To<CustomScrollbar>(scrollbar).TrackPieceRectWithMargins(kBackTrackPart,
+                                                               rect);
+  gfx::Rect forward_rect =
       To<CustomScrollbar>(scrollbar).TrackPieceRectWithMargins(
           kForwardTrackPart, rect);
-  IntRect result = rect;
+  gfx::Rect result = rect;
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
     result.set_x(back_rect.x());
     result.set_width(forward_rect.right() - back_rect.x());
@@ -135,14 +136,14 @@ void CustomScrollbarTheme::PaintScrollCorner(
     GraphicsContext& context,
     const Scrollbar* vertical_scrollbar,
     const DisplayItemClient& display_item_client,
-    const IntRect& corner_rect,
+    const gfx::Rect& corner_rect,
     mojom::blink::ColorScheme color_scheme) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
                                                   DisplayItem::kScrollCorner))
     return;
 
   DrawingRecorder recorder(context, display_item_client,
-                           DisplayItem::kScrollCorner, ToGfxRect(corner_rect));
+                           DisplayItem::kScrollCorner, corner_rect);
   // FIXME: Implement.
   context.FillRect(corner_rect, Color::kWhite, AutoDarkMode::Disabled());
 }
@@ -170,13 +171,13 @@ void CustomScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
                 kForwardButtonEndPart);
   }
 
-  IntRect track_rect = TrackRect(scrollbar);
+  gfx::Rect track_rect = TrackRect(scrollbar);
   PaintPart(context, scrollbar, track_rect, kTrackBGPart);
 
   if (HasThumb(scrollbar)) {
-    IntRect start_track_rect;
-    IntRect thumb_rect;
-    IntRect end_track_rect;
+    gfx::Rect start_track_rect;
+    gfx::Rect thumb_rect;
+    gfx::Rect end_track_rect;
     SplitTrack(scrollbar, track_rect, start_track_rect, thumb_rect,
                end_track_rect);
     PaintPart(context, scrollbar, start_track_rect, kBackTrackPart);
@@ -186,20 +187,20 @@ void CustomScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
 
 void CustomScrollbarTheme::PaintButton(GraphicsContext& context,
                                        const Scrollbar& scrollbar,
-                                       const IntRect& rect,
+                                       const gfx::Rect& rect,
                                        ScrollbarPart part) {
   PaintPart(context, scrollbar, rect, part);
 }
 
 void CustomScrollbarTheme::PaintThumb(GraphicsContext& context,
                                       const Scrollbar& scrollbar,
-                                      const IntRect& rect) {
+                                      const gfx::Rect& rect) {
   PaintPart(context, scrollbar, rect, kThumbPart);
 }
 
 void CustomScrollbarTheme::PaintTickmarks(GraphicsContext& context,
                                           const Scrollbar& scrollbar,
-                                          const IntRect& rect) {
+                                          const gfx::Rect& rect) {
   GetTheme().PaintTickmarks(context, scrollbar, rect);
 }
 
@@ -207,16 +208,16 @@ void CustomScrollbarTheme::PaintIntoRect(
     const LayoutCustomScrollbarPart& layout_custom_scrollbar_part,
     GraphicsContext& graphics_context,
     const PhysicalRect& rect) {
-  PaintInfo paint_info(
-      graphics_context, CullRect(ToGfxRect(PixelSnappedIntRect(rect))),
-      PaintPhase::kForeground, kGlobalPaintNormalPhase, kPaintLayerNoFlag);
+  PaintInfo paint_info(graphics_context, CullRect(ToPixelSnappedRect(rect)),
+                       PaintPhase::kForeground, kGlobalPaintNormalPhase,
+                       kPaintLayerNoFlag);
   ObjectPainter(layout_custom_scrollbar_part)
       .PaintAllPhasesAtomically(paint_info);
 }
 
 void CustomScrollbarTheme::PaintPart(GraphicsContext& context,
                                      const Scrollbar& scrollbar,
-                                     const IntRect& rect,
+                                     const gfx::Rect& rect,
                                      ScrollbarPart part) {
   const auto& custom_scrollbar = To<CustomScrollbar>(scrollbar);
   const auto* part_layout_object = custom_scrollbar.GetPart(part);

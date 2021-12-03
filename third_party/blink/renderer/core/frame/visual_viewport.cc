@@ -223,7 +223,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
   {
     ScrollPaintPropertyNode::State state;
     state.container_rect = gfx::Rect(ToGfxSize(size_));
-    state.contents_size = ToGfxSize(ContentsSize());
+    state.contents_size = ContentsSize();
 
     state.user_scrollable_horizontal =
         UserInputScrollable(kHorizontalScrollbar);
@@ -431,13 +431,13 @@ void VisualViewport::MainFrameDidChangeSize() {
 
   // In unit tests we may not have initialized the layer tree.
   if (scroll_layer_)
-    scroll_layer_->SetBounds(ToGfxSize(ContentsSize()));
+    scroll_layer_->SetBounds(ContentsSize());
 
   needs_paint_property_update_ = true;
   ClampToBoundaries();
 }
 
-FloatRect VisualViewport::VisibleRect(
+gfx::RectF VisualViewport::VisibleRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   FloatSize visible_size(size_);
 
@@ -447,8 +447,7 @@ FloatRect VisualViewport::VisibleRect(
   visible_size.Enlarge(0, browser_controls_adjustment_);
   visible_size.Scale(1 / scale_);
 
-  return FloatRect(gfx::PointAtOffsetFromOrigin(GetScrollOffset()),
-                   visible_size);
+  return gfx::RectF(ScrollPosition(), ToGfxSizeF(visible_size));
 }
 
 gfx::PointF VisualViewport::ViewportCSSPixelsToRootFrame(
@@ -625,7 +624,7 @@ void VisualViewport::CreateLayers() {
   // TODO(crbug.com/1015625): Avoid scroll_layer_.
   scroll_layer_ = cc::Layer::Create();
   scroll_layer_->SetScrollable(ToGfxSize(size_));
-  scroll_layer_->SetBounds(ToGfxSize(ContentsSize()));
+  scroll_layer_->SetBounds(ContentsSize());
   scroll_layer_->SetElementId(GetScrollElementId());
 
   InitializeScrollbars();
@@ -871,17 +870,17 @@ bool VisualViewport::UserInputScrollable(ScrollbarOrientation) const {
   return true;
 }
 
-IntSize VisualViewport::ContentsSize() const {
+gfx::Size VisualViewport::ContentsSize() const {
   LocalFrame* frame = LocalMainFrame();
   if (!frame || !frame->View())
-    return IntSize();
+    return gfx::Size();
 
-  return frame->View()->Size();
+  return ToGfxSize(frame->View()->Size());
 }
 
-IntRect VisualViewport::VisibleContentRect(
+gfx::Rect VisualViewport::VisibleContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  return EnclosingIntRect(VisibleRect(scrollbar_inclusion));
+  return ToEnclosingRect(VisibleRect(scrollbar_inclusion));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> VisualViewport::GetTimerTaskRunner()
@@ -1101,7 +1100,7 @@ PaintArtifactCompositor* VisualViewport::GetPaintArtifactCompositor() const {
 
 std::unique_ptr<TracedValue> VisualViewport::ViewportToTracedValue() const {
   auto value = std::make_unique<TracedValue>();
-  IntRect viewport = VisibleContentRect();
+  gfx::Rect viewport = VisibleContentRect();
   value->SetInteger("x", ClampTo<int>(roundf(viewport.x())));
   value->SetInteger("y", ClampTo<int>(roundf(viewport.y())));
   value->SetInteger("width", ClampTo<int>(roundf(viewport.width())));

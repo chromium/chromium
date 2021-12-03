@@ -59,10 +59,10 @@ BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box,
 
 void BoxModelObjectPainter::PaintTextClipMask(
     const PaintInfo& paint_info,
-    const IntRect& mask_rect,
+    const gfx::Rect& mask_rect,
     const PhysicalOffset& paint_offset,
     bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(ToGfxRect(mask_rect)),
+  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
                             PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (flow_box_) {
@@ -103,7 +103,7 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   GraphicsContext& context = paint_info.context;
   // Clip to the overflow area.
   // TODO(chrishtr): this should be pixel-snapped.
-  context.Clip(FloatRect(this_box.OverflowClipRect(rect.offset)));
+  context.Clip(gfx::RectF(this_box.OverflowClipRect(rect.offset)));
 
   // Adjust the paint rect to reflect a scrolled content box with borders at
   // the ends.

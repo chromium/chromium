@@ -80,12 +80,12 @@ class TextFragmentAnchorTest : public SimTest {
     return GetDocument().View()->LayoutViewport();
   }
 
-  IntRect ViewportRect() {
-    return IntRect(gfx::Point(), LayoutViewport()->VisibleContentRect().size());
+  gfx::Rect ViewportRect() {
+    return gfx::Rect(LayoutViewport()->VisibleContentRect().size());
   }
 
-  IntRect BoundingRectInFrame(Node& node) {
-    return node.GetLayoutObject()->AbsoluteBoundingBoxRect();
+  gfx::Rect BoundingRectInFrame(Node& node) {
+    return ToGfxRect(node.GetLayoutObject()->AbsoluteBoundingBoxRect());
   }
 
   void SimulateClick(int x, int y) {
@@ -1325,7 +1325,7 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   ASSERT_NE(ScrollOffset(), first_scroll_offset);
 
   Element& p = *GetDocument().getElementById("text");
-  IntRect first_bounding_rect = BoundingRectInFrame(p);
+  gfx::Rect first_bounding_rect = BoundingRectInFrame(p);
   EXPECT_TRUE(ViewportRect().Contains(first_bounding_rect));
 
   // Load an image that pushes the target text out of view

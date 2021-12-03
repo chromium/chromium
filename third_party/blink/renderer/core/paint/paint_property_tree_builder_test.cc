@@ -5647,7 +5647,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {
   EXPECT_CLIP_RECT(gfx::RectF(0, 0, 300, 150), DocContentClip(child_frame_doc));
 
   // When the main frame is printing, it should not have content clip.
-  FloatSize page_size(100, 100);
+  gfx::SizeF page_size(100, 100);
   GetFrame().StartPrinting(page_size, page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   EXPECT_EQ(nullptr, DocContentClip(main_frame_doc));
@@ -6009,7 +6009,7 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_FALSE(normal->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(normal));
 
-  FloatSize page_size(300, 400);
+  gfx::SizeF page_size(300, 400);
   GetFrame().StartPrinting(page_size, page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   fixed = GetLayoutObjectByElementId("fixed");
@@ -6082,7 +6082,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
   EXPECT_FALSE(fixed_child->IsFixedPositionObjectInPagedMedia());
   EXPECT_EQ(1u, NumFragments(fixed_child));
 
-  FloatSize page_size(300, 400);
+  gfx::SizeF page_size(300, 400);
   GetFrame().StartPrinting(page_size, page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   fixed = GetLayoutObjectByElementId("fixed");
@@ -6159,7 +6159,7 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingTableSectionInPagedMedia) {
   EXPECT_EQ(1u, NumFragments(foot->FirstRow()));
   EXPECT_EQ(1u, NumFragments(foot->FirstRow()->FirstCell()));
 
-  FloatSize page_size(300, 400);
+  gfx::SizeF page_size(300, 400);
   GetFrame().StartPrinting(page_size, page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   // In LayoutNG, these may be different objects

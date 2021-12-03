@@ -113,7 +113,7 @@ class DeferredImageDecoderTest : public testing::Test,
 
   base::TimeDelta FrameDuration() const override { return frame_duration_; }
 
-  IntSize DecodedSize() const override { return decoded_size_; }
+  gfx::Size DecodedSize() const override { return decoded_size_; }
 
   PaintImage CreatePaintImage(
       PaintImage::CompletionState state = PaintImage::CompletionState::DONE) {
@@ -153,7 +153,7 @@ class DeferredImageDecoderTest : public testing::Test,
   int repetition_count_;
   ImageFrame::Status status_;
   base::TimeDelta frame_duration_;
-  IntSize decoded_size_;
+  gfx::Size decoded_size_;
 };
 
 TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
@@ -341,7 +341,7 @@ TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
 }
 
 TEST_F(DeferredImageDecoderTest, decodedSize) {
-  decoded_size_ = IntSize(22, 33);
+  decoded_size_ = gfx::Size(22, 33);
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
   ASSERT_TRUE(image);

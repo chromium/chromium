@@ -259,7 +259,7 @@ void ScrollingCoordinator::ScrollableAreaScrollLayerDidChange(
         scrollable_area->Layer()->SubpixelAccumulation();
     PhysicalSize contents_size(scrollable_area->GetLayoutBox()->ScrollWidth(),
                                scrollable_area->GetLayoutBox()->ScrollHeight());
-    IntSize scroll_contents_size =
+    gfx::Size scroll_contents_size =
         PhysicalRect(subpixel_accumulation, contents_size).PixelSnappedSize();
 
     // The scrolling contents layer must be at least as large as its clip.
@@ -267,12 +267,12 @@ void ScrollingCoordinator::ScrollableAreaScrollLayerDidChange(
     // content depends on the page scale factor. Its scrollable content is
     // the layout viewport which is sized based on the minimum allowed page
     // scale so it actually can be smaller than its clip.
-    IntSize container_size = scrollable_area->VisibleContentRect().size();
-    scroll_contents_size = scroll_contents_size.ExpandedTo(container_size);
+    gfx::Size container_size = scrollable_area->VisibleContentRect().size();
+    scroll_contents_size.SetToMax(container_size);
 
     // This call has to go through the GraphicsLayer method to preserve
     // invalidation code there.
-    graphics_layer->SetSize(ToGfxSize(scroll_contents_size));
+    graphics_layer->SetSize(scroll_contents_size);
   }
   if (cc::ScrollbarLayerBase* scrollbar_layer =
           GetScrollbarLayer(scrollable_area, kHorizontalScrollbar)) {

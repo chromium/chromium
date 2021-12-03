@@ -67,7 +67,7 @@ class TestImageDecoder : public ImageDecoder {
     SetSize(width, height);
     frame_buffer_cache_.resize(num_frames);
     for (wtf_size_t i = 0; i < num_frames; ++i)
-      frame_buffer_cache_[i].SetOriginalFrameRect(IntRect(0, 0, width, height));
+      frame_buffer_cache_[i].SetOriginalFrameRect(gfx::Rect(width, height));
   }
 
   bool ImageIsHighBitDepth() override { return image_is_high_bit_depth_; }
@@ -157,7 +157,7 @@ TEST(ImageDecoderTest, requiredPreviousFrameIndexDisposeOverwriteBgcolor) {
 
   // Partially covering DisposeOverwriteBgcolor previous frame is required by
   // this frame.
-  frame_buffers[1].SetOriginalFrameRect(IntRect(50, 50, 50, 50));
+  frame_buffers[1].SetOriginalFrameRect(gfx::Rect(50, 50, 50, 50));
   decoder->ResetRequiredPreviousFrames();
   EXPECT_EQ(1u, frame_buffers[2].RequiredPreviousFrameIndex());
 }
@@ -181,7 +181,7 @@ TEST(ImageDecoderTest, requiredPreviousFrameIndexForFrame1) {
   EXPECT_EQ(kNotFound, frame_buffers[1].RequiredPreviousFrameIndex());
 
   // ... even if it partially covers.
-  frame_buffers[0].SetOriginalFrameRect(IntRect(50, 50, 50, 50));
+  frame_buffers[0].SetOriginalFrameRect(gfx::Rect(50, 50, 50, 50));
 
   frame_buffers[0].SetDisposalMethod(ImageFrame::kDisposeOverwritePrevious);
   decoder->ResetRequiredPreviousFrames();
@@ -197,7 +197,7 @@ TEST(ImageDecoderTest, requiredPreviousFrameIndexBlendAtopBgcolor) {
   decoder->InitFrames(3);
   Vector<ImageFrame, 1>& frame_buffers = decoder->FrameBufferCache();
 
-  frame_buffers[1].SetOriginalFrameRect(IntRect(25, 25, 50, 50));
+  frame_buffers[1].SetOriginalFrameRect(gfx::Rect(25, 25, 50, 50));
   frame_buffers[2].SetAlphaBlendSource(ImageFrame::kBlendAtopBgcolor);
 
   // A full frame with 'blending method == BlendAtopBgcolor' doesn't depend on
@@ -213,7 +213,7 @@ TEST(ImageDecoderTest, requiredPreviousFrameIndexBlendAtopBgcolor) {
 
   // A non-full frame with 'blending method == BlendAtopBgcolor' does depend on
   // a prior frame.
-  frame_buffers[2].SetOriginalFrameRect(IntRect(50, 50, 50, 50));
+  frame_buffers[2].SetOriginalFrameRect(gfx::Rect(50, 50, 50, 50));
   for (int dispose_method = ImageFrame::kDisposeNotSpecified;
        dispose_method <= ImageFrame::kDisposeOverwritePrevious;
        ++dispose_method) {
@@ -230,7 +230,7 @@ TEST(ImageDecoderTest, requiredPreviousFrameIndexKnownOpaque) {
   decoder->InitFrames(3);
   Vector<ImageFrame, 1>& frame_buffers = decoder->FrameBufferCache();
 
-  frame_buffers[1].SetOriginalFrameRect(IntRect(25, 25, 50, 50));
+  frame_buffers[1].SetOriginalFrameRect(gfx::Rect(25, 25, 50, 50));
 
   // A full frame that is known to be opaque doesn't depend on any prior frames.
   for (int dispose_method = ImageFrame::kDisposeNotSpecified;
@@ -243,7 +243,7 @@ TEST(ImageDecoderTest, requiredPreviousFrameIndexKnownOpaque) {
   }
 
   // A non-full frame that is known to be opaque does depend on a prior frame.
-  frame_buffers[2].SetOriginalFrameRect(IntRect(50, 50, 50, 50));
+  frame_buffers[2].SetOriginalFrameRect(gfx::Rect(50, 50, 50, 50));
   for (int dispose_method = ImageFrame::kDisposeNotSpecified;
        dispose_method <= ImageFrame::kDisposeOverwritePrevious;
        ++dispose_method) {

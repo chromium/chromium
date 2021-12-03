@@ -319,12 +319,12 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool ShouldScrollOnMainThread() const override;
   bool IsActive() const override;
   bool IsScrollCornerVisible() const override;
-  IntRect ScrollCornerRect() const override;
+  gfx::Rect ScrollCornerRect() const override;
   void SetScrollbarNeedsPaintInvalidation(ScrollbarOrientation) override;
   void SetScrollCornerNeedsPaintInvalidation() override;
-  IntRect ConvertFromScrollbarToContainingEmbeddedContentView(
+  gfx::Rect ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
-      const IntRect&) const override;
+      const gfx::Rect&) const override;
   gfx::Point ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
       const gfx::Point&) const override;
@@ -350,15 +350,15 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void EnqueueScrollEventIfNeeded();
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;
-  IntRect VisibleContentRect(
+  gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   PhysicalRect VisibleScrollSnapportRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
-  IntSize ContentsSize() const override;
+  gfx::Size ContentsSize() const override;
 
   // Similar to |ContentsSize| but snapped considering |paint_offset| which can
   // have subpixel accumulation.
-  IntSize PixelSnappedContentsSize(const PhysicalOffset& paint_offset) const;
+  gfx::Size PixelSnappedContentsSize(const PhysicalOffset& paint_offset) const;
 
   void ContentsResized() override;
   gfx::Point LastKnownMousePosition() const override;
@@ -432,7 +432,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   LayoutCustomScrollbarPart* ScrollCorner() const { return scroll_corner_; }
 
   void Resize(const gfx::Point& pos, const LayoutSize& old_offset);
-  IntSize OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
+  gfx::Vector2d OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
 
   bool InResizeMode() const { return in_resize_mode_; }
   void SetInResizeMode(bool in_resize_mode) {
@@ -472,7 +472,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool ScrollsOverflow() const { return scrolls_overflow_; }
 
   // Rectangle encompassing the scroll corner and resizer rect.
-  IntRect ScrollCornerAndResizerRect() const;
+  gfx::Rect ScrollCornerAndResizerRect() const;
 
   // The difference between this function and NeedsCompositedScrolling() is
   // that this function returns the composited scrolling status based on paint
@@ -491,14 +491,14 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 #endif
 
-  IntRect ResizerCornerRect(ResizerHitTestType) const;
+  gfx::Rect ResizerCornerRect(ResizerHitTestType) const;
 
   PaintLayer* Layer() const override;
 
   LayoutCustomScrollbarPart* Resizer() const { return resizer_; }
 
-  IntRect RectForHorizontalScrollbar() const;
-  IntRect RectForVerticalScrollbar() const;
+  gfx::Rect RectForHorizontalScrollbar() const;
+  gfx::Rect RectForVerticalScrollbar() const;
 
   bool ScheduleAnimation() override;
   bool ShouldPerformScrollAnchoring() const override;
@@ -593,7 +593,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void Trace(Visitor*) const override;
 
-  IntRect ScrollingBackgroundVisualRect(
+  gfx::Rect ScrollingBackgroundVisualRect(
       const PhysicalOffset& paint_offset) const;
   const DisplayItemClient& GetScrollingBackgroundDisplayItemClient() const {
     return *scrolling_background_display_item_client_;
@@ -669,7 +669,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   int VerticalScrollbarStart() const;
   int HorizontalScrollbarStart() const;
-  IntSize ScrollbarOffset(const Scrollbar&) const;
+  gfx::Vector2d ScrollbarOffset(const Scrollbar&) const;
 
   // If OverflowIndependent is specified, will only change current scrollbar
   // existence if the new style doesn't depend on overflow which requires
@@ -723,11 +723,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return *rare_data_;
   }
 
-  IntRect CornerRect() const;
+  gfx::Rect CornerRect() const;
 
   void ScrollControlWasSetNeedsPaintInvalidation() override;
 
-  IntSize PixelSnappedBorderBoxSize() const;
+  gfx::Size PixelSnappedBorderBoxSize() const;
 
   using BackgroundPaintLocation = uint8_t;
   bool ComputeNeedsCompositedScrollingInternal(
@@ -741,7 +741,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
       GraphicsLayer* graphics_layer,
       bool& previously_was_overlay,
       bool& previously_was_directly_composited,
-      IntRect& visual_rect);
+      gfx::Rect& visual_rect);
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
@@ -828,9 +828,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool vertical_scrollbar_previously_was_overlay_ = false;
   bool horizontal_scrollbar_previously_was_directly_composited_ = false;
   bool vertical_scrollbar_previously_was_directly_composited_ = false;
-  IntRect horizontal_scrollbar_visual_rect_;
-  IntRect vertical_scrollbar_visual_rect_;
-  IntRect scroll_corner_and_resizer_visual_rect_;
+  gfx::Rect horizontal_scrollbar_visual_rect_;
+  gfx::Rect vertical_scrollbar_visual_rect_;
+  gfx::Rect scroll_corner_and_resizer_visual_rect_;
 
   class ScrollingBackgroundDisplayItemClient final
       : public GarbageCollected<ScrollingBackgroundDisplayItemClient>,

@@ -273,7 +273,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool IsThrottled() const = 0;
   virtual int ScrollSize(ScrollbarOrientation) const = 0;
   virtual bool IsScrollCornerVisible() const = 0;
-  virtual IntRect ScrollCornerRect() const = 0;
+  virtual gfx::Rect ScrollCornerRect() const = 0;
   virtual bool HasTickmarks() const { return false; }
   virtual Vector<IntRect> GetTickmarks() const { return Vector<IntRect>(); }
 
@@ -292,11 +292,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Convert points and rects between the scrollbar and its containing
   // EmbeddedContentView. The client needs to implement these in order to be
   // aware of layout effects like CSS transforms.
-  virtual IntRect ConvertFromScrollbarToContainingEmbeddedContentView(
+  virtual gfx::Rect ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar& scrollbar,
-      const IntRect& scrollbar_rect) const {
-    IntRect local_rect = scrollbar_rect;
-    local_rect.MoveBy(scrollbar.Location());
+      const gfx::Rect& scrollbar_rect) const {
+    gfx::Rect local_rect = scrollbar_rect;
+    local_rect.Offset(scrollbar.Location().OffsetFromOrigin());
     return local_rect;
   }
   virtual gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
@@ -362,11 +362,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return ScrollOffset(MaximumScrollOffsetInt());
   }
 
-  virtual IntRect VisibleContentRect(
+  virtual gfx::Rect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const = 0;
   virtual int VisibleHeight() const { return VisibleContentRect().height(); }
   virtual int VisibleWidth() const { return VisibleContentRect().width(); }
-  virtual IntSize ContentsSize() const = 0;
+  virtual gfx::Size ContentsSize() const = 0;
 
   // scroll snapport is the area of the scrollport that is used as the alignment
   // container for the scroll snap areas when calculating snap positions. It's
@@ -487,7 +487,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Subtracts space occupied by this ScrollableArea's scrollbars.
   // Does nothing if overlay scrollbars are enabled.
-  IntSize ExcludeScrollbars(const IntSize&) const;
+  gfx::Size ExcludeScrollbars(const gfx::Size&) const;
 
   virtual int VerticalScrollbarWidth(
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;

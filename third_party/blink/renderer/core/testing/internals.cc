@@ -2587,8 +2587,8 @@ int Internals::pageNumber(Element* element,
     return 0;
   }
 
-  return PrintContext::PageNumberForElement(element,
-                                            FloatSize(page_width, page_height));
+  return PrintContext::PageNumberForElement(
+      element, gfx::SizeF(page_width, page_height));
 }
 
 Vector<String> Internals::IconURLs(Document* document,
@@ -2630,7 +2630,7 @@ int Internals::numberOfPages(float page_width,
   }
 
   return PrintContext::NumberOfPages(GetFrame(),
-                                     FloatSize(page_width, page_height));
+                                     gfx::SizeF(page_width, page_height));
 }
 
 String Internals::pageProperty(String property_name,

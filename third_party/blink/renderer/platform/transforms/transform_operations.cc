@@ -85,7 +85,7 @@ bool TransformOperations::operator==(const TransformOperations& o) const {
   return true;
 }
 
-void TransformOperations::ApplyRemaining(const FloatSize& border_box_size,
+void TransformOperations::ApplyRemaining(const gfx::SizeF& border_box_size,
                                          wtf_size_t start,
                                          TransformationMatrix& t) const {
   for (wtf_size_t i = start; i < operations_.size(); i++) {
@@ -137,8 +137,8 @@ TransformOperations::BlendRemainingByUsingMatrixInterpolation(
   // unbounded depth.
   TransformationMatrix from_transform;
   TransformationMatrix to_transform;
-  from.ApplyRemaining(FloatSize(), matching_prefix_length, from_transform);
-  ApplyRemaining(FloatSize(), matching_prefix_length, to_transform);
+  from.ApplyRemaining(gfx::SizeF(), matching_prefix_length, from_transform);
+  ApplyRemaining(gfx::SizeF(), matching_prefix_length, to_transform);
 
   // Fallback to discrete interpolation if either transform matrix is singular.
   if (!(from_transform.IsInvertible() && to_transform.IsInvertible())) {
@@ -216,8 +216,8 @@ TransformOperations TransformOperations::Accumulate(
   if (success && matching_prefix_length < max_path_length) {
     TransformationMatrix from_transform;
     TransformationMatrix to_transform;
-    ApplyRemaining(FloatSize(), matching_prefix_length, from_transform);
-    to.ApplyRemaining(FloatSize(), matching_prefix_length, to_transform);
+    ApplyRemaining(gfx::SizeF(), matching_prefix_length, from_transform);
+    to.ApplyRemaining(gfx::SizeF(), matching_prefix_length, to_transform);
 
     scoped_refptr<TransformOperation> from_matrix =
         Matrix3DTransformOperation::Create(from_transform);
@@ -427,8 +427,8 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
           continue;
         TransformationMatrix from_matrix;
         TransformationMatrix to_matrix;
-        from_transform->Apply(from_matrix, FloatSize());
-        to_transform->Apply(to_matrix, FloatSize());
+        from_transform->Apply(from_matrix, gfx::SizeF());
+        to_transform->Apply(to_matrix, gfx::SizeF());
         FloatBox from_box = *bounds;
         FloatBox to_box = *bounds;
         from_matrix.TransformBox(from_box);

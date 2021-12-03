@@ -74,8 +74,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
             container_layer_state = fragment_data.LocalBorderBoxProperties();
           graphics_layer->SetLayerState(
               *container_layer_state,
-              snapped_paint_offset +
-                  ToGfxVector2d(graphics_layer->OffsetFromLayoutObject()));
+              snapped_paint_offset + graphics_layer->OffsetFromLayoutObject());
         }
       };
   SetContainerLayerState(mapping->MainGraphicsLayer());
@@ -126,8 +125,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
 
         graphics_layer->SetLayerState(
             scrollbar_layer_state,
-            snapped_paint_offset +
-                ToGfxVector2d(graphics_layer->OffsetFromLayoutObject()));
+            snapped_paint_offset + graphics_layer->OffsetFromLayoutObject());
       };
 
   SetContainerLayerStateForScrollbars(mapping->LayerForHorizontalScrollbar(),
@@ -149,8 +147,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
       if (graphics_layer) {
         graphics_layer->SetLayerState(
             fragment_data.ContentsProperties(),
-            contents_paint_offset +
-                ToGfxVector2d(graphics_layer->OffsetFromLayoutObject()));
+            contents_paint_offset + graphics_layer->OffsetFromLayoutObject());
       }
     };
     SetScrollingContentsLayerState(mapping->ScrollingContentsLayer());
@@ -185,10 +182,8 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
             ? clipping_container->FirstFragment().ContentsProperties().Clip()
             : ClipPaintPropertyNode::Root());
     squashing_layer->SetLayerState(
-        state,
-        snapped_paint_offset +
-            ToGfxVector2d(
-                mapping->NonScrollingSquashingLayerOffsetFromLayoutObject()));
+        state, snapped_paint_offset +
+                   mapping->NonScrollingSquashingLayerOffsetFromLayoutObject());
   }
 
   if (auto* mask_layer = mapping->MaskLayer()) {
@@ -202,8 +197,7 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
     state.SetClip(*properties->MaskClip());
 
     mask_layer->SetLayerState(
-        state, snapped_paint_offset +
-                   ToGfxVector2d(mask_layer->OffsetFromLayoutObject()));
+        state, snapped_paint_offset + mask_layer->OffsetFromLayoutObject());
   }
 
   if (object.IsSVGRoot()) {

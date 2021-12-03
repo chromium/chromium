@@ -1021,10 +1021,10 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
     // Report the main frame's document intersection with itself.
     LayoutObject* layout_object = GetLayoutView();
-    IntRect main_frame_dimensions =
+    gfx::Rect main_frame_dimensions =
         To<LayoutBox>(layout_object)->PixelSnappedLayoutOverflowRect();
-    GetFrame().Client()->OnMainFrameIntersectionChanged(IntRect(
-        0, 0, main_frame_dimensions.width(), main_frame_dimensions.height()));
+    GetFrame().Client()->OnMainFrameIntersectionChanged(
+        IntRect(gfx::Rect(main_frame_dimensions.size())));
   }
 
   TRACE_EVENT0("blink,benchmark",
@@ -3427,8 +3427,8 @@ void LocalFrameView::DisableAutoSizeMode() {
 }
 
 void LocalFrameView::ForceLayoutForPagination(
-    const FloatSize& page_size,
-    const FloatSize& original_page_size,
+    const gfx::SizeF& page_size,
+    const gfx::SizeF& original_page_size,
     float maximum_shrink_factor) {
   // Dumping externalRepresentation(m_frame->layoutObject()).ascii() is a good
   // trick to see the state of things before and after the layout
@@ -3465,14 +3465,13 @@ void LocalFrameView::ForceLayoutForPagination(
     if (doc_logical_width > page_logical_width) {
       // ResizePageRectsKeepingRatio would truncate the expected page size,
       // while we want it rounded -- so make sure it's rounded here.
-      FloatSize expected_page_size(
+      gfx::SizeF expected_page_size(
           std::min<float>(document_rect.Width().Round(),
                           page_size.width() * maximum_shrink_factor),
           std::min<float>(document_rect.Height().Round(),
                           page_size.height() * maximum_shrink_factor));
-      FloatSize max_page_size = frame_->ResizePageRectsKeepingRatio(
-          FloatSize(original_page_size.width(), original_page_size.height()),
-          expected_page_size);
+      gfx::SizeF max_page_size = frame_->ResizePageRectsKeepingRatio(
+          original_page_size, expected_page_size);
       page_logical_width = horizontal_writing_mode ? max_page_size.width()
                                                    : max_page_size.height();
       page_logical_height = horizontal_writing_mode ? max_page_size.height()
@@ -4237,8 +4236,7 @@ void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
   } else {
     GraphicsLayer* graphics_layer =
         GetLayoutView()->Layer()->GraphicsLayerBacking();
-    graphics_layer->PaintForTesting(IntRect(cull_rect.Rect()),
-                                    PaintDebugInfoEnabled());
+    graphics_layer->PaintForTesting(cull_rect.Rect(), PaintDebugInfoEnabled());
   }
   Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);
 }

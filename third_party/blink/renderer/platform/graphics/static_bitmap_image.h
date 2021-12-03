@@ -41,7 +41,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // Methods overridden by all sub-classes
   ~StaticBitmapImage() override = default;
 
-  IntSize SizeWithConfig(SizeConfig) const final;
+  gfx::Size SizeWithConfig(SizeConfig) const final;
 
   virtual scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
       sk_sp<SkColorSpace>,
@@ -113,12 +113,12 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // Helper for sub-classes
   void DrawHelper(cc::PaintCanvas*,
                   const cc::PaintFlags&,
-                  const FloatRect&,
-                  const FloatRect&,
+                  const gfx::RectF&,
+                  const gfx::RectF&,
                   const ImageDrawOptions&,
                   const PaintImage&);
 
-  virtual IntSize SizeInternal() const = 0;
+  virtual gfx::Size SizeInternal() const = 0;
 
   // The image orientation is stored here because it is only available when the
   // static image is created and the underlying representations do not store

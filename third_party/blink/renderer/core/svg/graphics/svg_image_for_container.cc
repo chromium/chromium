@@ -19,21 +19,22 @@
 
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
-IntSize SVGImageForContainer::SizeWithConfig(SizeConfig config) const {
-  return RoundedIntSize(SizeWithConfigAsFloat(config));
+gfx::Size SVGImageForContainer::SizeWithConfig(SizeConfig config) const {
+  return gfx::ToRoundedSize(SizeWithConfigAsFloat(config));
 }
 
-FloatSize SVGImageForContainer::SizeWithConfigAsFloat(SizeConfig) const {
-  return container_size_.ScaledBy(zoom_);
+gfx::SizeF SVGImageForContainer::SizeWithConfigAsFloat(SizeConfig) const {
+  return gfx::ScaleSize(container_size_, zoom_);
 }
 
 void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
                                 const cc::PaintFlags& flags,
-                                const FloatRect& dst_rect,
-                                const FloatRect& src_rect,
+                                const gfx::RectF& dst_rect,
+                                const gfx::RectF& src_rect,
                                 const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
                                      draw_options.apply_dark_mode);
@@ -42,7 +43,7 @@ void SVGImageForContainer::Draw(cc::PaintCanvas* canvas,
 
 void SVGImageForContainer::DrawPattern(GraphicsContext& context,
                                        const cc::PaintFlags& flags,
-                                       const FloatRect& dst_rect,
+                                       const gfx::RectF& dst_rect,
                                        const ImageTilingInfo& tiling_info,
                                        const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
@@ -53,8 +54,8 @@ void SVGImageForContainer::DrawPattern(GraphicsContext& context,
 
 bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
                                        const SkMatrix& local_matrix,
-                                       const FloatRect& dst_rect,
-                                       const FloatRect& src_rect,
+                                       const gfx::RectF& dst_rect,
+                                       const gfx::RectF& src_rect,
                                        const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
                                      draw_options.apply_dark_mode);

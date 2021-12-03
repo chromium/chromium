@@ -75,13 +75,13 @@ class MockScrollableAreaForAnimatorTest
   MOCK_CONST_METHOD0(IsThrottled, bool());
   MOCK_CONST_METHOD1(ScrollSize, int(ScrollbarOrientation));
   MOCK_CONST_METHOD0(IsScrollCornerVisible, bool());
-  MOCK_CONST_METHOD0(ScrollCornerRect, IntRect());
+  MOCK_CONST_METHOD0(ScrollCornerRect, gfx::Rect());
   MOCK_METHOD2(UpdateScrollOffset,
                void(const ScrollOffset&, mojom::blink::ScrollType));
   MOCK_METHOD0(ScrollControlWasSetNeedsPaintInvalidation, void());
   MOCK_CONST_METHOD0(EnclosingScrollableArea, ScrollableArea*());
-  MOCK_CONST_METHOD1(VisibleContentRect, IntRect(IncludeScrollbarsInRect));
-  MOCK_CONST_METHOD0(ContentsSize, IntSize());
+  MOCK_CONST_METHOD1(VisibleContentRect, gfx::Rect(IncludeScrollbarsInRect));
+  MOCK_CONST_METHOD0(ContentsSize, gfx::Size());
   MOCK_CONST_METHOD0(ScrollbarsCanBeActive, bool());
   MOCK_METHOD0(RegisterForAnimation, void());
   MOCK_METHOD0(ScheduleAnimation, bool());

@@ -83,7 +83,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const override;
 
   void PaintTextClipMask(const PaintInfo&,
-                         const IntRect& mask_rect,
+                         const gfx::Rect& mask_rect,
                          const PhysicalOffset& paint_offset,
                          bool object_has_multiple_boxes) override;
   void PaintTextClipMask(const PaintInfo& paint_info,
@@ -111,7 +111,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   // shadows and border image outsets. |paint_rect| is the border box rect in
   // paint coordinates.
   void PaintBoxDecorationBackgroundWithRect(const PaintInfo&,
-                                            const IntRect& visual_rect,
+                                            const gfx::Rect& visual_rect,
                                             const PhysicalRect& paint_rect,
                                             const DisplayItemClient&);
 

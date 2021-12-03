@@ -93,7 +93,7 @@ void PaintRect(GraphicsContext& context,
     return;
   if (rect.size.IsEmpty())
     return;
-  const IntRect pixel_snapped_rect = PixelSnappedIntRect(rect);
+  const gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(rect);
   if (!pixel_snapped_rect.IsEmpty())
     context.FillRect(pixel_snapped_rect, color, auto_dark_mode);
 }
@@ -385,7 +385,7 @@ void NGHighlightPainter::Paint(Phase phase) {
           DocumentMarkerPainter::PaintStyleableMarkerUnderline(
               paint_info_.context, box_origin_, styleable_marker, style_,
               node_->GetDocument(),
-              FloatRect(MarkerRectForForeground(
+              gfx::RectF(MarkerRectForForeground(
                   fragment_item_, text, paint_start_offset, paint_end_offset)),
               LayoutUnit(font_data->GetFontMetrics().Height()),
               fragment_item_.GetNode()->GetDocument().InDarkMode());

@@ -98,14 +98,14 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   context.SetStrokeColor(color);
   context.SetStrokeStyle(kSolidStroke);
   context.SetStrokeThickness(1.0f);
-  IntRect snapped_rect = PixelSnappedIntRect(marker);
+  gfx::Rect snapped_rect = ToPixelSnappedRect(marker);
   const AtomicString& type = style.ListStyleType()->GetCounterStyleName();
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kListSymbol));
   if (type == "disc") {
-    context.FillEllipse(FloatRect(snapped_rect), auto_dark_mode);
+    context.FillEllipse(gfx::RectF(snapped_rect), auto_dark_mode);
   } else if (type == "circle") {
-    context.StrokeEllipse(FloatRect(snapped_rect), auto_dark_mode);
+    context.StrokeEllipse(gfx::RectF(snapped_rect), auto_dark_mode);
   } else if (type == "square") {
     context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == "disclosure-open" || type == "disclosure-closed") {
@@ -158,9 +158,10 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     context.DrawImage(
         layout_list_marker_.GetImage()
             ->GetImage(layout_list_marker_, layout_list_marker_.GetDocument(),
-                       layout_list_marker_.StyleRef(), FloatSize(marker.Size()))
+                       layout_list_marker_.StyleRef(),
+                       gfx::SizeF(marker.Size()))
             .get(),
-        Image::kSyncDecode, auto_dark_mode, FloatRect(marker));
+        Image::kSyncDecode, auto_dark_mode, gfx::RectF(marker));
     return;
   }
 

@@ -237,7 +237,7 @@ void NGTextPainter::PaintSelectedText(unsigned start_offset,
   // Because only a part of the text glyph can be selected, we need to draw
   // the selection twice. First, draw the glyphs outside the selection area,
   // with the original style.
-  FloatRect float_selection_rect(selection_rect);
+  gfx::RectF float_selection_rect(selection_rect);
   {
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.ClipOut(float_selection_rect);

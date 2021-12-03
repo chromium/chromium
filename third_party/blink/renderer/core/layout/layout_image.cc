@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -148,7 +149,7 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   if (!did_increment_visually_non_empty_pixel_count_) {
     // At a zoom level of 1 the image is guaranteed to have an integer size.
     View()->GetFrameView()->IncrementVisuallyNonEmptyPixelCount(
-        FlooredIntSize(ImageSizeOverriddenByIntrinsicSize(1.0f)));
+        gfx::ToFlooredSize(ImageSizeOverriddenByIntrinsicSize(1.0f)));
     did_increment_visually_non_empty_pixel_count_ = true;
   }
 
@@ -323,13 +324,13 @@ bool LayoutImage::HasOverriddenIntrinsicSize() const {
   return image_element && image_element->IsDefaultIntrinsicSize();
 }
 
-FloatSize LayoutImage::ImageSizeOverriddenByIntrinsicSize(
+gfx::SizeF LayoutImage::ImageSizeOverriddenByIntrinsicSize(
     float multiplier) const {
   NOT_DESTROYED();
   if (!HasOverriddenIntrinsicSize())
     return image_resource_->ImageSize(multiplier);
 
-  FloatSize overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
+  gfx::SizeF overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
   if (multiplier != 1) {
     overridden_intrinsic_size.Scale(multiplier);
     if (overridden_intrinsic_size.width() < 1.0f)
@@ -347,7 +348,7 @@ bool LayoutImage::OverrideIntrinsicSizingInfo(
   if (!HasOverriddenIntrinsicSize())
     return false;
 
-  FloatSize overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
+  gfx::SizeF overridden_intrinsic_size(kDefaultWidth, kDefaultHeight);
   intrinsic_sizing_info.size = overridden_intrinsic_size;
   intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   if (!IsHorizontalWritingMode())
@@ -418,7 +419,7 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
   // aspect ratio that a failed poster image load should not override.
   if (image_resource_ && image_resource_->ErrorOccurred() &&
       !IsA<LayoutVideo>(this)) {
-    intrinsic_sizing_info.aspect_ratio = FloatSize(1, 1);
+    intrinsic_sizing_info.aspect_ratio = gfx::SizeF(1, 1);
     return;
   }
 }

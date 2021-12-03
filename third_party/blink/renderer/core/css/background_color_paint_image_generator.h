@@ -31,7 +31,7 @@ class CORE_EXPORT BackgroundColorPaintImageGenerator
       BackgroundColorPaintImageGeneratorCreateFunction create_function);
 
   virtual scoped_refptr<Image> Paint(
-      const FloatSize& container_size,
+      const gfx::SizeF& container_size,
       const Node*,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,

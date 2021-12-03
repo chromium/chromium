@@ -28,7 +28,7 @@ class MockCSSPaintImageGenerator : public CSSPaintImageGenerator {
 
   MOCK_METHOD4(Paint,
                scoped_refptr<Image>(const ImageResourceObserver&,
-                                    const FloatSize& container_size,
+                                    const gfx::SizeF& container_size,
                                     const CSSStyleValueVector*,
                                     float device_scale_factor));
   MOCK_CONST_METHOD0(NativeInvalidationProperties, Vector<CSSPropertyID>&());

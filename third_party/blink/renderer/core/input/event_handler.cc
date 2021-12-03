@@ -164,7 +164,7 @@ gfx::Point DetermineHotSpot(const Image& image,
   if (image.IsNull())
     return gfx::Point();
 
-  IntRect image_rect = image.Rect();
+  gfx::Rect image_rect = image.Rect();
 
   // Hot spot must be inside cursor rectangle.
   if (hot_spot_specified) {
@@ -584,12 +584,12 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
       float scale = style_image->ImageScaleFactor();
       bool hot_spot_specified = (*cursors)[i].HotSpotSpecified();
       gfx::Point hot_spot = (*cursors)[i].HotSpot();
-      IntSize size = cached_image->GetImage()->Size();
+      gfx::Size size = cached_image->GetImage()->Size();
       if (cached_image->ErrorOccurred())
         continue;
       // Limit the size of cursors (in UI pixels) so that they cannot be
       // used to cover UI elements in chrome.
-      size.Scale(1 / scale);
+      size = gfx::ScaleToFlooredSize(size, 1 / scale);
       if (size.width() > kMaximumCursorSize ||
           size.height() > kMaximumCursorSize)
         continue;
@@ -646,11 +646,11 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
       // resolution for high DPI displays.
       scoped_refptr<Image> svg_image_holder;
       if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-        IntSize scaled_size(svg_image->Size());
-        scaled_size.Scale(device_scale_factor);
+        gfx::Size scaled_size =
+            gfx::ScaleToFlooredSize(svg_image->Size(), device_scale_factor);
         // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
         svg_image_holder = SVGImageForContainer::Create(
-            svg_image, FloatSize(scaled_size), device_scale_factor, NullURL());
+            svg_image, gfx::SizeF(scaled_size), device_scale_factor, NullURL());
         image = svg_image_holder.get();
       }
 

@@ -2367,7 +2367,7 @@ class ComputedStyle : public ComputedStyleBase,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
   void ApplyTransform(TransformationMatrix&,
-                      const FloatRect& bounding_box,
+                      const gfx::RectF& bounding_box,
                       ApplyTransformOrigin,
                       ApplyMotionPath,
                       ApplyIndependentTransformProperties) const;
@@ -2688,10 +2688,10 @@ class ComputedStyle : public ComputedStyleBase,
 
   LogicalSize LogicalAspectRatio() const {
     DCHECK_NE(AspectRatio().GetType(), EAspectRatioType::kAuto);
-    FloatSize ratio = AspectRatio().GetRatio();
+    gfx::SizeF ratio = AspectRatio().GetRatio();
     if (!IsHorizontalWritingMode())
-      ratio = ratio.TransposedSize();
-    return LogicalSize::AspectRatioFromFloatSize(ratio);
+      ratio.Transpose();
+    return LogicalSize::AspectRatioFromSizeF(ratio);
   }
 
   EBoxSizing BoxSizingForAspectRatio() const {
@@ -2948,7 +2948,7 @@ class ComputedStyle : public ComputedStyleBase,
   void OverrideTextDecorationColors(Color propagated_color);
   void ApplyMotionPathTransform(float origin_x,
                                 float origin_y,
-                                const FloatRect& bounding_box,
+                                const gfx::RectF& bounding_box,
                                 TransformationMatrix&) const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,

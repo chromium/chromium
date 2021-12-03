@@ -273,7 +273,7 @@ LayoutRect InlineTextBox::LocalSelectionRect(
   LayoutPoint starting_point = LayoutPoint(LogicalLeft(), sel_top);
   LayoutRect r;
   if (s_pos || e_pos != static_cast<int>(len_)) {
-    r = LayoutRect(EnclosingIntRect(
+    r = LayoutRect(gfx::ToEnclosingRect(
         font.SelectionRectForText(text_run, gfx::PointF(starting_point),
                                   sel_height.ToInt(), s_pos, e_pos)));
   } else {

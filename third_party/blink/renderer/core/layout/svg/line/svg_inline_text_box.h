@@ -73,10 +73,10 @@ class SVGInlineTextBox final : public InlineTextBox {
   }
 
   int OffsetForPositionInFragment(const SVGTextFragment&, float position) const;
-  FloatRect SelectionRectForTextFragment(const SVGTextFragment&,
-                                         int fragment_start_position,
-                                         int fragment_end_position,
-                                         const ComputedStyle&) const;
+  gfx::RectF SelectionRectForTextFragment(const SVGTextFragment&,
+                                          int fragment_start_position,
+                                          int fragment_end_position,
+                                          const ComputedStyle&) const;
   TextRun ConstructTextRun(const ComputedStyle&, const SVGTextFragment&) const;
 
  private:

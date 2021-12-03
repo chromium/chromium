@@ -339,11 +339,10 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   auto* layout_view = DynamicTo<LayoutView>(container);
   if (layout_view && !Base::GetDocument().Printing()) {
     if (LocalFrameView* frame_view = layout_view->GetFrameView()) {
-      IntSize size =
-          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size());
-      PhysicalSize physical_size(size);
+      PhysicalSize size(frame_view->LayoutViewport()->ExcludeScrollbars(
+          ToGfxSize(frame_view->Size())));
       initial_containing_block_fixed_size =
-          physical_size.ConvertToLogical(container->Style()->GetWritingMode());
+          size.ConvertToLogical(container->Style()->GetWritingMode());
     }
   }
   // We really only want to lay out ourselves here, so we pass |this| to

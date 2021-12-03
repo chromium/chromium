@@ -62,7 +62,7 @@ struct GraphicsLayerPaintInfo
 
   // Offset describing where this squashed Layer paints into the shared
   // GraphicsLayer backing.
-  IntSize offset_from_layout_object;
+  gfx::Vector2d offset_from_layout_object;
   bool offset_from_layout_object_set = false;
 
   GraphicsLayerPaintInfo() = default;
@@ -139,7 +139,8 @@ class CORE_EXPORT CompositedLayerMapping final
   GraphicsLayer* NonScrollingSquashingLayer() const {
     return non_scrolling_squashing_layer_;
   }
-  const IntSize& NonScrollingSquashingLayerOffsetFromLayoutObject() const {
+  const gfx::Vector2d& NonScrollingSquashingLayerOffsetFromLayoutObject()
+      const {
     return non_scrolling_squashing_layer_offset_from_layout_object_;
   }
 
@@ -174,16 +175,16 @@ class CORE_EXPORT CompositedLayerMapping final
   void UpdateElementId();
 
   // GraphicsLayerClient interface
-  IntRect ComputeInterestRect(
+  gfx::Rect ComputeInterestRect(
       const GraphicsLayer*,
-      const IntRect& previous_interest_rect) const override;
-  IntRect PaintableRegion(const GraphicsLayer*) const override;
+      const gfx::Rect& previous_interest_rect) const override;
+  gfx::Rect PaintableRegion(const GraphicsLayer*) const override;
   LayoutSize SubpixelAccumulation() const final;
   bool NeedsRepaint(const GraphicsLayer&) const override;
   void PaintContents(const GraphicsLayer*,
                      GraphicsContext&,
                      GraphicsLayerPaintingPhase,
-                     const IntRect& interest_rect) const override;
+                     const gfx::Rect& interest_rect) const override;
   bool ShouldSkipPaintingSubtree() const override;
   bool IsTrackingRasterInvalidations() const override;
   void GraphicsLayersDidChange() override;
@@ -256,7 +257,7 @@ class CORE_EXPORT CompositedLayerMapping final
 
   // Returns whether an adjustment happend.
   bool AdjustForCompositedScrolling(const GraphicsLayer*,
-                                    IntSize& offset) const;
+                                    gfx::Vector2d& offset) const;
 
  private:
   // Returns true for layers with scrollable overflow which have a background
@@ -277,11 +278,11 @@ class CORE_EXPORT CompositedLayerMapping final
            kBackgroundPaintInBorderBoxSpace;
   }
 
-  IntRect RecomputeInterestRect(const GraphicsLayer*) const;
+  gfx::Rect RecomputeInterestRect(const GraphicsLayer*) const;
   static bool InterestRectChangedEnoughToRepaint(
-      const IntRect& previous_interest_rect,
-      const IntRect& new_interest_rect,
-      const IntSize& layer_size);
+      const gfx::Rect& previous_interest_rect,
+      const gfx::Rect& new_interest_rect,
+      const gfx::Size& layer_size);
 
   static const GraphicsLayerPaintInfo* ContainingSquashedLayer(
       const LayoutObject*,
@@ -292,7 +293,7 @@ class CORE_EXPORT CompositedLayerMapping final
   // given context.
   void PaintScrollableArea(const GraphicsLayer*,
                            GraphicsContext&,
-                           const IntRect& interest_rect) const;
+                           const gfx::Rect& interest_rect) const;
   // Returns whether the given layer is part of the scrollable area, if any,
   // associated with this mapping.
   bool IsScrollableAreaLayer(const GraphicsLayer*) const;
@@ -310,11 +311,12 @@ class CORE_EXPORT CompositedLayerMapping final
       const gfx::Point& snapped_offset_from_composited_ancestor,
       HeapVector<Member<GraphicsLayerPaintInfo>>& layers,
       HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
-  void UpdateMainGraphicsLayerGeometry(const IntRect& local_compositing_bounds);
+  void UpdateMainGraphicsLayerGeometry(
+      const gfx::Rect& local_compositing_bounds);
   void UpdateMaskLayerGeometry();
   void UpdateForegroundLayerGeometry();
   void UpdateDecorationOutlineLayerGeometry(
-      const IntSize& relative_compositing_bounds_size);
+      const gfx::Size& relative_compositing_bounds_size);
   void UpdateScrollingContentsLayerGeometry(
       HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
@@ -354,7 +356,7 @@ class CORE_EXPORT CompositedLayerMapping final
   // Also sets subpixelAccumulation on the layer.
   void ComputeBoundsOfOwningLayer(
       const PaintLayer* composited_ancestor,
-      IntRect& local_compositing_bounds,
+      gfx::Rect& local_compositing_bounds,
       gfx::Point& snapped_offset_from_composited_ancestor);
 
   GraphicsLayerPaintingPhase PaintingPhaseForPrimaryLayer() const;
@@ -374,7 +376,7 @@ class CORE_EXPORT CompositedLayerMapping final
                    const GraphicsLayer&,
                    PaintLayerFlags,
                    GraphicsContext&,
-                   const IntRect& clip) const;
+                   const gfx::Rect& clip) const;
 
   // Computes the background clip rect for the given squashed layer, up to any
   // containing layer that is squashed into the same squashing layer and
@@ -424,7 +426,7 @@ class CORE_EXPORT CompositedLayerMapping final
 
   // Only used if the layer is using composited scrolling.
   Member<GraphicsLayer> scrolling_contents_layer_;
-  IntSize previous_scroll_container_size_;
+  gfx::Size previous_scroll_container_size_;
 
   // Only used if we have a mask.
   Member<GraphicsLayer> mask_layer_;
@@ -451,7 +453,7 @@ class CORE_EXPORT CompositedLayerMapping final
   // Only used when |non_scrolling_squashed_layers_| is not empty. This is
   // the backing that |non_scrolling_squashed_layers_| paint into.
   Member<GraphicsLayer> non_scrolling_squashing_layer_;
-  IntSize non_scrolling_squashing_layer_offset_from_layout_object_;
+  gfx::Vector2d non_scrolling_squashing_layer_offset_from_layout_object_;
 
   // Layers that are squashed into |non_scrolling_squashing_layer_|.
   HeapVector<Member<GraphicsLayerPaintInfo>> non_scrolling_squashed_layers_;

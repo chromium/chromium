@@ -187,10 +187,10 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   if (!local_frame_view || !root_frame_view)
     return metrics;
 
-  IntRect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
-  if (viewport.size().IsEmpty())
+  gfx::Rect viewport = root_frame_view->LayoutViewport()->VisibleContentRect();
+  if (viewport.IsEmpty())
     return metrics;
-  metrics->viewport_size = ToGfxSize(viewport.size());
+  metrics->viewport_size = viewport.size();
 
   // Use the viewport size to normalize anchor element metrics.
   float base_height = static_cast<float>(viewport.height());
@@ -235,8 +235,8 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   metrics->ratio_distance_root_bottom = ratio_distance_root_bottom;
 
   // Get the anchor element rect that intersects with the viewport.
-  IntRect target_visible(target);
-  target_visible.Intersect(IntRect(gfx::Point(), viewport.size()));
+  gfx::Rect target_visible = ToGfxRect(target);
+  target_visible.Intersect(gfx::Rect(viewport.size()));
 
   // It guarantees to be less or equal to 1.
   float ratio_visible_area = (target_visible.height() / base_height) *

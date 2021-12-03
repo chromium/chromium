@@ -30,26 +30,27 @@
 
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
 void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
                                  const cc::PaintFlags& base_flags,
-                                 const FloatRect& dest_rect,
+                                 const gfx::RectF& dest_rect,
                                  const ImageTilingInfo& tiling_info,
                                  const ImageDrawOptions& draw_options) {
-  FloatRect tile_rect(tiling_info.image_rect);
-  tile_rect.Expand(tiling_info.spacing);
+  gfx::RectF tile_rect = tiling_info.image_rect;
+  tile_rect.Outset(0, 0, tiling_info.spacing.width(),
+                   tiling_info.spacing.height());
 
   SkMatrix pattern_matrix =
       SkMatrix::Translate(tiling_info.phase.x(), tiling_info.phase.y());
-  pattern_matrix.preScale(tiling_info.scale.width(),
-                          tiling_info.scale.height());
+  pattern_matrix.preScale(tiling_info.scale.x(), tiling_info.scale.y());
   pattern_matrix.preTranslate(tile_rect.x(), tile_rect.y());
 
   sk_sp<PaintShader> tile_shader = CreateShader(
@@ -59,13 +60,14 @@ void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
   fill_flags.setShader(std::move(tile_shader));
   fill_flags.setColor(SK_ColorBLACK);
 
-  dest_context.DrawRect(dest_rect, fill_flags, AutoDarkMode(draw_options));
+  dest_context.DrawRect(gfx::RectFToSkRect(dest_rect), fill_flags,
+                        AutoDarkMode(draw_options));
 }
 
 sk_sp<PaintShader> GeneratedImage::CreateShader(
-    const FloatRect& tile_rect,
+    const gfx::RectF& tile_rect,
     const SkMatrix* pattern_matrix,
-    const FloatRect& src_rect,
+    const gfx::RectF& src_rect,
     const ImageDrawOptions& draw_options) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
@@ -74,9 +76,9 @@ sk_sp<PaintShader> GeneratedImage::CreateShader(
   DrawTile(context, src_rect, draw_options);
   sk_sp<PaintRecord> record = context.EndRecording();
 
-  return PaintShader::MakePaintRecord(std::move(record), tile_rect,
-                                      SkTileMode::kRepeat, SkTileMode::kRepeat,
-                                      pattern_matrix);
+  return PaintShader::MakePaintRecord(
+      std::move(record), gfx::RectFToSkRect(tile_rect), SkTileMode::kRepeat,
+      SkTileMode::kRepeat, pattern_matrix);
 }
 
 PaintImage GeneratedImage::PaintImageForCurrentFrame() {

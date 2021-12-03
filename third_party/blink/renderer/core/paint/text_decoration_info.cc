@@ -287,7 +287,7 @@ float TextDecorationInfo::ComputeUnderlineThickness(
   return thickness;
 }
 
-FloatRect TextDecorationInfo::Bounds() const {
+gfx::RectF TextDecorationInfo::Bounds() const {
   gfx::PointF start_point = StartPoint();
   switch (DecorationStyle()) {
     case ETextDecorationStyle::kDotted:
@@ -297,34 +297,32 @@ FloatRect TextDecorationInfo::Bounds() const {
       return BoundsForWavy();
     case ETextDecorationStyle::kDouble:
       if (DoubleOffset() > 0) {
-        return FloatRect(start_point.x(), start_point.y(), width_,
-                         DoubleOffset() + ResolvedThickness());
+        return gfx::RectF(start_point.x(), start_point.y(), width_,
+                          DoubleOffset() + ResolvedThickness());
       }
-      return FloatRect(start_point.x(), start_point.y() + DoubleOffset(),
-                       width_, -DoubleOffset() + ResolvedThickness());
+      return gfx::RectF(start_point.x(), start_point.y() + DoubleOffset(),
+                        width_, -DoubleOffset() + ResolvedThickness());
     case ETextDecorationStyle::kSolid:
-      return FloatRect(start_point.x(), start_point.y(), width_,
-                       ResolvedThickness());
+      return gfx::RectF(start_point.x(), start_point.y(), width_,
+                        ResolvedThickness());
     default:
       break;
   }
   NOTREACHED();
-  return FloatRect();
+  return gfx::RectF();
 }
 
-FloatRect TextDecorationInfo::BoundsForDottedOrDashed() const {
+gfx::RectF TextDecorationInfo::BoundsForDottedOrDashed() const {
   StrokeData stroke_data;
   stroke_data.SetThickness(roundf(ResolvedThickness()));
   stroke_data.SetStyle(TextDecorationStyleToStrokeStyle(DecorationStyle()));
-  return FloatRect(
-      line_data_.stroke_path.value().StrokeBoundingRect(stroke_data));
+  return line_data_.stroke_path.value().StrokeBoundingRect(stroke_data);
 }
 
-FloatRect TextDecorationInfo::BoundsForWavy() const {
+gfx::RectF TextDecorationInfo::BoundsForWavy() const {
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
-  auto bounding_rect =
-      FloatRect(line_data_.stroke_path->StrokeBoundingRect(stroke_data));
+  auto bounding_rect = line_data_.stroke_path->StrokeBoundingRect(stroke_data);
 
   bounding_rect.set_x(StartPoint().x());
   bounding_rect.set_width(width_);

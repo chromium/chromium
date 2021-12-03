@@ -31,9 +31,9 @@ class StyleCrossfadeImage final : public StyleImage {
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 
-  FloatSize ImageSize(float multiplier,
-                      const FloatSize& default_object_size,
-                      RespectImageOrientationEnum) const override;
+  gfx::SizeF ImageSize(float multiplier,
+                       const gfx::SizeF& default_object_size,
+                       RespectImageOrientationEnum) const override;
 
   bool HasIntrinsicSize() const override;
 
@@ -43,7 +43,7 @@ class StyleCrossfadeImage final : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size) const override;
+                                const gfx::SizeF& target_size) const override;
 
   WrappedImagePtr Data() const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;

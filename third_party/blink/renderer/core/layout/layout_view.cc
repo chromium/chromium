@@ -770,8 +770,10 @@ IntSize LayoutView::GetLayoutSize(
 
   IntSize result = frame_view_->GetLayoutSize();
   if (scrollbar_inclusion == kExcludeScrollbars &&
-      frame_view_->LayoutViewport())
-    result = frame_view_->LayoutViewport()->ExcludeScrollbars(result);
+      frame_view_->LayoutViewport()) {
+    result = IntSize(
+        frame_view_->LayoutViewport()->ExcludeScrollbars(ToGfxSize(result)));
+  }
   return result;
 }
 

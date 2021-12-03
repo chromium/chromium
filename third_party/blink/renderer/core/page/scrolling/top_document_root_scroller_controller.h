@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -64,7 +64,7 @@ class CORE_EXPORT TopDocumentRootScrollerController
 
   // Returns the size we should use for the root scroller, accounting for
   // browser controls adjustment and using the root LocalFrameView.
-  IntSize RootScrollerVisibleArea() const;
+  gfx::Size RootScrollerVisibleArea() const;
 
  private:
   // Calculates the Node that should be the global root scroller. On a simple

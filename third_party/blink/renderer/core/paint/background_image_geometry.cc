@@ -714,9 +714,9 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   PhysicalSize positioning_area_size = !image->HasIntrinsicSize()
                                            ? snapped_positioning_area_size
                                            : unsnapped_positioning_area_size;
-  PhysicalSize image_intrinsic_size = PhysicalSize::FromFloatSizeFloor(
+  PhysicalSize image_intrinsic_size = PhysicalSize::FromSizeFFloor(
       image->ImageSize(positioning_box_->StyleRef().EffectiveZoom(),
-                       FloatSize(positioning_area_size),
+                       gfx::SizeF(positioning_area_size),
                        LayoutObject::ShouldRespectImageOrientation(box_)));
   switch (type) {
     case EFillSizeType::kSizeLength: {

@@ -113,7 +113,7 @@ struct CORE_EXPORT PhysicalSize {
     return {LayoutUnit::FromFloatRound(size.width()),
             LayoutUnit::FromFloatRound(size.height())};
   }
-  static PhysicalSize FromSizeFFloor(const gfx::Size& size) {
+  static PhysicalSize FromSizeFFloor(const gfx::SizeF& size) {
     return {LayoutUnit::FromFloatFloor(size.width()),
             LayoutUnit::FromFloatFloor(size.height())};
   }

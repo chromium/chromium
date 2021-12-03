@@ -374,10 +374,10 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     // (aka the main frame viewport) for all frames, including iframes. This
     // prevents us from discarding images with size equal to the size of its
     // embedding iframe.
-    gfx::Rect viewport_int_rect = ToGfxRect(
+    gfx::Rect viewport_int_rect =
         uses_page_viewport_
             ? frame_view_->GetPage()->GetVisualViewport().VisibleContentRect()
-            : frame_view_->GetScrollableArea()->VisibleContentRect());
+            : frame_view_->GetScrollableArea()->VisibleContentRect();
     gfx::RectF viewport =
         frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
             gfx::RectF(viewport_int_rect));

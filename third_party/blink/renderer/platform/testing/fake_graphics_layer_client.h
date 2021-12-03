@@ -16,12 +16,12 @@ class FakeGraphicsLayerClient
       public GraphicsLayerClient {
  public:
   // GraphicsLayerClient implementation.
-  IntRect ComputeInterestRect(const GraphicsLayer*,
-                              const IntRect&) const override {
-    return IntRect();
+  gfx::Rect ComputeInterestRect(const GraphicsLayer*,
+                                const gfx::Rect&) const override {
+    return gfx::Rect();
   }
-  IntRect PaintableRegion(const GraphicsLayer*) const override {
-    return IntRect();
+  gfx::Rect PaintableRegion(const GraphicsLayer*) const override {
+    return gfx::Rect();
   }
   PaintArtifactCompositor* GetPaintArtifactCompositor() override {
     return nullptr;
@@ -36,7 +36,7 @@ class FakeGraphicsLayerClient
   void PaintContents(const GraphicsLayer* layer,
                      GraphicsContext& context,
                      GraphicsLayerPaintingPhase phase,
-                     const IntRect& rect) const override {
+                     const gfx::Rect& rect) const override {
     if (painter_)
       painter_(layer, context, phase, rect);
   }
@@ -50,7 +50,7 @@ class FakeGraphicsLayerClient
   using Painter = std::function<void(const GraphicsLayer*,
                                      GraphicsContext&,
                                      GraphicsLayerPaintingPhase,
-                                     const IntRect&)>;
+                                     const gfx::Rect&)>;
   void SetPainter(const Painter& painter) { painter_ = painter; }
 
   void Trace(Visitor* visitor) const override {

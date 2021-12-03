@@ -81,7 +81,7 @@ class RasterShapeIntervals {
 class RasterShape final : public Shape {
  public:
   RasterShape(std::unique_ptr<RasterShapeIntervals> intervals,
-              const IntSize& margin_rect_size)
+              const gfx::Size& margin_rect_size)
       : intervals_(std::move(intervals)), margin_rect_size_(margin_rect_size) {
     intervals_->InitializeBounds();
   }
@@ -105,7 +105,7 @@ class RasterShape final : public Shape {
 
   std::unique_ptr<RasterShapeIntervals> intervals_;
   mutable std::unique_ptr<RasterShapeIntervals> margin_intervals_;
-  IntSize margin_rect_size_;
+  gfx::Size margin_rect_size_;
 };
 
 }  // namespace blink

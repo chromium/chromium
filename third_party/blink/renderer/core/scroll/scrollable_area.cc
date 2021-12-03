@@ -871,7 +871,7 @@ int ScrollableArea::PageStep(ScrollbarOrientation orientation) const {
   // use the snapport rect to calculate the page step instead of the visible
   // rect.
   // [1] https://drafts.csswg.org/css-scroll-snap/#scroll-padding
-  IntSize snapport_size =
+  gfx::Size snapport_size =
       VisibleScrollSnapportRect(kExcludeScrollbars).PixelSnappedSize();
   int length = (orientation == kHorizontalScrollbar) ? snapport_size.width()
                                                      : snapport_size.height();
@@ -922,9 +922,9 @@ FloatQuad ScrollableArea::LocalToVisibleContentQuad(const FloatQuad& quad,
   return result;
 }
 
-IntSize ScrollableArea::ExcludeScrollbars(const IntSize& size) const {
-  return IntSize(std::max(0, size.width() - VerticalScrollbarWidth()),
-                 std::max(0, size.height() - HorizontalScrollbarHeight()));
+gfx::Size ScrollableArea::ExcludeScrollbars(const gfx::Size& size) const {
+  return gfx::Size(std::max(0, size.width() - VerticalScrollbarWidth()),
+                   std::max(0, size.height() - HorizontalScrollbarHeight()));
 }
 
 void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {

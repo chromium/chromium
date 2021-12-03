@@ -117,7 +117,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
     const ImageResourceObserver& client,
     const Document& document,
     const ComputedStyle& style,
-    const FloatSize& size) const {
+    const gfx::SizeF& size) const {
   if (size.IsEmpty())
     return nullptr;
 
@@ -686,7 +686,7 @@ void CSSGradientValue::AddStops(
 
 static float PositionFromValue(const CSSValue* value,
                                const CSSToLengthConversionData& conversion_data,
-                               const FloatSize& size,
+                               const gfx::SizeF& size,
                                bool is_horizontal) {
   float origin = 0;
   int sign = 1;
@@ -750,7 +750,7 @@ static gfx::PointF ComputeEndPoint(
     const CSSValue* horizontal,
     const CSSValue* vertical,
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size) {
+    const gfx::SizeF& size) {
   gfx::PointF result;
 
   if (horizontal)
@@ -880,7 +880,7 @@ String CSSLinearGradientValue::CustomCSSText() const {
 // Compute the endpoints so that a gradient of the given angle covers a box of
 // the given size.
 static void EndPointsFromAngle(float angle_deg,
-                               const FloatSize& size,
+                               const gfx::SizeF& size,
                                gfx::PointF& first_point,
                                gfx::PointF& second_point,
                                CSSGradientType type) {
@@ -952,7 +952,7 @@ static void EndPointsFromAngle(float angle_deg,
 
 scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const Document& document,
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
@@ -1251,10 +1251,10 @@ enum EndShapeType { kCircleEndShape, kEllipseEndShape };
 
 // Compute the radius to the closest/farthest side (depending on the compare
 // functor).
-FloatSize RadiusToSide(const gfx::PointF& point,
-                       const FloatSize& size,
-                       EndShapeType shape,
-                       bool (*compare)(float, float)) {
+gfx::SizeF RadiusToSide(const gfx::PointF& point,
+                        const gfx::SizeF& size,
+                        EndShapeType shape,
+                        bool (*compare)(float, float)) {
   float dx1 = ClampTo<float>(fabs(point.x()));
   float dy1 = ClampTo<float>(fabs(point.y()));
   float dx2 = ClampTo<float>(fabs(point.x() - size.width()));
@@ -1264,20 +1264,20 @@ FloatSize RadiusToSide(const gfx::PointF& point,
   float dy = compare(dy1, dy2) ? dy1 : dy2;
 
   if (shape == kCircleEndShape)
-    return compare(dx, dy) ? FloatSize(dx, dx) : FloatSize(dy, dy);
+    return compare(dx, dy) ? gfx::SizeF(dx, dx) : gfx::SizeF(dy, dy);
 
   DCHECK_EQ(shape, kEllipseEndShape);
-  return FloatSize(dx, dy);
+  return gfx::SizeF(dx, dy);
 }
 
 // Compute the radius of an ellipse which passes through a point at
 // |offset_from_center|, and has width/height given by aspectRatio.
-inline FloatSize EllipseRadius(const gfx::Vector2dF& offset_from_center,
-                               float aspect_ratio) {
+inline gfx::SizeF EllipseRadius(const gfx::Vector2dF& offset_from_center,
+                                float aspect_ratio) {
   // If the aspectRatio is 0 or infinite, the ellipse is completely flat.
   // TODO(sashab): Implement Degenerate Radial Gradients, see crbug.com/635727.
   if (aspect_ratio == 0 || std::isinf(aspect_ratio))
-    return FloatSize(0, 0);
+    return gfx::SizeF(0, 0);
 
   // x^2/a^2 + y^2/b^2 = 1
   // a/b = aspectRatio, b = a/aspectRatio
@@ -1285,16 +1285,16 @@ inline FloatSize EllipseRadius(const gfx::Vector2dF& offset_from_center,
   float a = sqrtf(offset_from_center.x() * offset_from_center.x() +
                   offset_from_center.y() * offset_from_center.y() *
                       aspect_ratio * aspect_ratio);
-  return FloatSize(ClampTo<float>(a), ClampTo<float>(a / aspect_ratio));
+  return gfx::SizeF(ClampTo<float>(a), ClampTo<float>(a / aspect_ratio));
 }
 
 // Compute the radius to the closest/farthest corner (depending on the compare
 // functor).
-FloatSize RadiusToCorner(const gfx::PointF& point,
-                         const FloatSize& size,
-                         EndShapeType shape,
-                         bool (*compare)(float, float)) {
-  const FloatRect rect(gfx::PointF(), size);
+gfx::SizeF RadiusToCorner(const gfx::PointF& point,
+                          const gfx::SizeF& size,
+                          EndShapeType shape,
+                          bool (*compare)(float, float)) {
+  const gfx::RectF rect(size);
   const gfx::PointF corners[] = {rect.origin(), rect.top_right(),
                                  rect.bottom_right(), rect.bottom_left()};
 
@@ -1310,14 +1310,14 @@ FloatSize RadiusToCorner(const gfx::PointF& point,
 
   if (shape == kCircleEndShape) {
     distance = ClampTo<float>(distance);
-    return FloatSize(distance, distance);
+    return gfx::SizeF(distance, distance);
   }
 
   DCHECK_EQ(shape, kEllipseEndShape);
   // If the end shape is an ellipse, the gradient-shape has the same ratio of
   // width to height that it would if closest-side or farthest-side were
   // specified, as appropriate.
-  const FloatSize side_radius =
+  const gfx::SizeF side_radius =
       RadiusToSide(point, size, kEllipseEndShape, compare);
 
   return EllipseRadius(corners[corner_index] - point,
@@ -1328,7 +1328,7 @@ FloatSize RadiusToCorner(const gfx::PointF& point,
 
 scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const Document& document,
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
@@ -1351,7 +1351,7 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
   if (first_radius_)
     first_radius = ResolveRadius(first_radius_.Get(), conversion_data);
 
-  FloatSize second_radius(0, 0);
+  gfx::SizeF second_radius(0, 0);
   if (second_radius_) {
     second_radius.set_width(
         ResolveRadius(second_radius_.Get(), conversion_data));
@@ -1518,7 +1518,7 @@ String CSSConicGradientValue::CustomCSSText() const {
 
 scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const Document& document,
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());

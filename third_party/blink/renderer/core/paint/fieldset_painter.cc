@@ -83,7 +83,7 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
       PhysicalRect legend_cutout_rect = fieldset_paint_info.legend_cutout_rect;
       legend_cutout_rect.Move(paint_offset);
-      graphics_context.ClipOut(PixelSnappedIntRect(legend_cutout_rect));
+      graphics_context.ClipOut(ToPixelSnappedRect(legend_cutout_rect));
 
       Node* node = nullptr;
       const LayoutObject* layout_object = &layout_fieldset_;

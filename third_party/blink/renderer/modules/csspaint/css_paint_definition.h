@@ -61,7 +61,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   // throws an error.
   //
   // The |container_size| is without subpixel snapping.
-  sk_sp<PaintRecord> Paint(const FloatSize& container_size,
+  sk_sp<PaintRecord> Paint(const gfx::SizeF& container_size,
                            float zoom,
                            StylePropertyMapReadOnly*,
                            const CSSStyleValueVector*,

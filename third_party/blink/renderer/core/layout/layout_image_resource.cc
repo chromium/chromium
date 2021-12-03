@@ -109,15 +109,16 @@ RespectImageOrientationEnum LayoutImageResource::ImageOrientation() const {
   return cached_image_->ForceOrientationIfNecessary(respect_orientation);
 }
 
-FloatSize LayoutImageResource::ImageSize(float multiplier) const {
+gfx::SizeF LayoutImageResource::ImageSize(float multiplier) const {
   if (!cached_image_)
-    return FloatSize();
-  FloatSize size(cached_image_->IntrinsicSize(
+    return gfx::SizeF();
+  gfx::SizeF size(cached_image_->IntrinsicSize(
       LayoutObject::ShouldRespectImageOrientation(layout_object_)));
   if (multiplier != 1 && HasIntrinsicSize()) {
     // Don't let images that have a width/height >= 1 shrink below 1 when
     // zoomed.
-    FloatSize minimum_size(size.width() > 0 ? 1 : 0, size.height() > 0 ? 1 : 0);
+    gfx::SizeF minimum_size(size.width() > 0 ? 1 : 0,
+                            size.height() > 0 ? 1 : 0);
     size.Scale(multiplier);
     if (size.width() < minimum_size.width())
       size.set_width(minimum_size.width());
@@ -130,9 +131,9 @@ FloatSize LayoutImageResource::ImageSize(float multiplier) const {
   return size;
 }
 
-FloatSize LayoutImageResource::ImageSizeWithDefaultSize(
+gfx::SizeF LayoutImageResource::ImageSizeWithDefaultSize(
     float multiplier,
-    const FloatSize&) const {
+    const gfx::SizeF&) const {
   return ImageSize(multiplier);
 }
 
@@ -161,12 +162,12 @@ void LayoutImageResource::UseBrokenImage() {
 }
 
 scoped_refptr<Image> LayoutImageResource::GetImage(
-    const IntSize& container_size) const {
-  return GetImage(FloatSize(container_size));
+    const gfx::Size& container_size) const {
+  return GetImage(gfx::SizeF(container_size));
 }
 
 scoped_refptr<Image> LayoutImageResource::GetImage(
-    const FloatSize& container_size) const {
+    const gfx::SizeF& container_size) const {
   if (!cached_image_)
     return Image::NullImage();
 

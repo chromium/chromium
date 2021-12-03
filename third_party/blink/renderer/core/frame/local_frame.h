@@ -89,6 +89,7 @@ class SingleThreadTaskRunner;
 namespace gfx {
 class Point;
 class Range;
+class SizeF;
 }  // namespace gfx
 
 namespace blink {
@@ -103,7 +104,6 @@ class Editor;
 class Element;
 class EventHandler;
 class EventHandlerRegistry;
-class FloatSize;
 class FrameConsole;
 class FrameOverlay;
 class FrameSelection;
@@ -316,8 +316,8 @@ class CORE_EXPORT LocalFrame final
   // The frame content will fit to the page size with specified shrink ratio.
   // If this frame doesn't need to fit into a page size, default values are
   // used.
-  void StartPrinting(const FloatSize& page_size = FloatSize(),
-                     const FloatSize& original_page_size = FloatSize(),
+  void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
+                     const gfx::SizeF& original_page_size = gfx::SizeF(),
                      float maximum_shrink_ratio = 0);
 
   void EndPrinting();
@@ -335,8 +335,8 @@ class CORE_EXPORT LocalFrame final
   void EnsureSaveScrollOffset(Node&);
   void RestoreScrollOffsets();
 
-  FloatSize ResizePageRectsKeepingRatio(const FloatSize& original_size,
-                                        const FloatSize& expected_size) const;
+  gfx::SizeF ResizePageRectsKeepingRatio(const gfx::SizeF& original_size,
+                                         const gfx::SizeF& expected_size) const;
 
   bool InViewSourceMode() const;
   void SetInViewSourceMode(bool = true);
@@ -748,8 +748,8 @@ class CORE_EXPORT LocalFrame final
   // |page_size|, |original_page_size|, and |maximum_shrink_ratio| are only
   // meaningful when we should use printing layout for this frame.
   void SetPrinting(bool printing,
-                   const FloatSize& page_size,
-                   const FloatSize& original_page_size,
+                   const gfx::SizeF& page_size,
+                   const gfx::SizeF& original_page_size,
                    float maximum_shrink_ratio);
 
   // FrameScheduler::Delegate overrides:

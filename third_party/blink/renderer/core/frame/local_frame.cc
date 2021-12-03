@@ -1031,8 +1031,8 @@ scoped_refptr<InspectorTaskRunner> LocalFrame::GetInspectorTaskRunner() {
   return inspector_task_runner_;
 }
 
-void LocalFrame::StartPrinting(const FloatSize& page_size,
-                               const FloatSize& original_page_size,
+void LocalFrame::StartPrinting(const gfx::SizeF& page_size,
+                               const gfx::SizeF& original_page_size,
                                float maximum_shrink_ratio) {
   DCHECK(!saved_scroll_offsets_);
   SetPrinting(true, page_size, original_page_size, maximum_shrink_ratio);
@@ -1040,12 +1040,12 @@ void LocalFrame::StartPrinting(const FloatSize& page_size,
 
 void LocalFrame::EndPrinting() {
   RestoreScrollOffsets();
-  SetPrinting(false, FloatSize(), FloatSize(), 0);
+  SetPrinting(false, gfx::SizeF(), gfx::SizeF(), 0);
 }
 
 void LocalFrame::SetPrinting(bool printing,
-                             const FloatSize& page_size,
-                             const FloatSize& original_page_size,
+                             const gfx::SizeF& page_size,
+                             const gfx::SizeF& original_page_size,
                              float maximum_shrink_ratio) {
   // In setting printing, we should not validate resources already cached for
   // the document.  See https://bugs.webkit.org/show_bug.cgi?id=43704
@@ -1170,12 +1170,12 @@ void LocalFrame::RestoreScrollOffsets() {
   saved_scroll_offsets_ = nullptr;
 }
 
-FloatSize LocalFrame::ResizePageRectsKeepingRatio(
-    const FloatSize& original_size,
-    const FloatSize& expected_size) const {
+gfx::SizeF LocalFrame::ResizePageRectsKeepingRatio(
+    const gfx::SizeF& original_size,
+    const gfx::SizeF& expected_size) const {
   auto* layout_object = ContentLayoutObject();
   if (!layout_object)
-    return FloatSize();
+    return gfx::SizeF();
 
   bool is_horizontal = layout_object->StyleRef().IsHorizontalWritingMode();
   float width = original_size.width();
@@ -1190,7 +1190,7 @@ FloatSize LocalFrame::ResizePageRectsKeepingRatio(
   float result_height = floorf(result_width * ratio);
   if (!is_horizontal)
     std::swap(result_width, result_height);
-  return FloatSize(result_width, result_height);
+  return gfx::SizeF(result_width, result_height);
 }
 
 void LocalFrame::SetPageZoomFactor(float factor) {
@@ -2048,12 +2048,10 @@ void LocalFrame::SetViewportIntersectionFromParent(
 
 IntSize LocalFrame::GetMainFrameViewportSize() const {
   LocalFrame& local_root = LocalFrameRoot();
-  return local_root.IsMainFrame()
-             ? local_root.View()
-                   ->GetScrollableArea()
-                   ->VisibleContentRect()
-                   .size()
-             : IntSize(local_root.intersection_state_.main_frame_viewport_size);
+  return IntSize(
+      local_root.IsMainFrame()
+          ? local_root.View()->GetScrollableArea()->VisibleContentRect().size()
+          : local_root.intersection_state_.main_frame_viewport_size);
 }
 
 gfx::Point LocalFrame::GetMainFrameScrollOffset() const {
@@ -2347,7 +2345,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
                              gfx::Rect(ToGfxSize(view->Size())));
-    FloatRect rect(0, 0, view->Width(), view->Height());
+    gfx::RectF rect(0, 0, view->Width(), view->Height());
     graphics_context.FillRect(
         rect, color_,
         PaintAutoDarkMode(view->GetLayoutView()->StyleRef(),

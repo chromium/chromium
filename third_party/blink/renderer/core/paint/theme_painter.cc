@@ -88,7 +88,7 @@ void CountAppearanceTextFieldPart(const Element& element) {
 // Returns true; Needs CSS painting and/or PaintBorderOnly().
 bool ThemePainter::Paint(const LayoutObject& o,
                          const PaintInfo& paint_info,
-                         const IntRect& r) {
+                         const gfx::Rect& r) {
   Document& doc = o.GetDocument();
   const ComputedStyle& style = o.StyleRef();
   ControlPart part = o.StyleRef().EffectiveAppearance();
@@ -200,7 +200,7 @@ bool ThemePainter::Paint(const LayoutObject& o,
 bool ThemePainter::PaintBorderOnly(const Node* node,
                                    const ComputedStyle& style,
                                    const PaintInfo& paint_info,
-                                   const IntRect& r) {
+                                   const gfx::Rect& r) {
   DCHECK(style.HasEffectiveAppearance());
   DCHECK(node);
   const Element& element = *To<Element>(node);
@@ -242,7 +242,7 @@ bool ThemePainter::PaintDecorations(const Node* node,
                                     const Document& document,
                                     const ComputedStyle& style,
                                     const PaintInfo& paint_info,
-                                    const IntRect& r) {
+                                    const gfx::Rect& r) {
   DCHECK(node);
   // Call the appropriate paint method based off the appearance value.
   switch (style.EffectiveAppearance()) {
@@ -277,7 +277,7 @@ bool ThemePainter::PaintDecorations(const Node* node,
 
 void ThemePainter::PaintSliderTicks(const LayoutObject& o,
                                     const PaintInfo& paint_info,
-                                    const IntRect& rect) {
+                                    const gfx::Rect& rect) {
   auto* input = DynamicTo<HTMLInputElement>(o.GetNode());
   if (!input)
     return;
@@ -298,28 +298,28 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
     return;
   bool is_horizontal = part == kSliderHorizontalPart;
 
-  IntSize thumb_size;
+  gfx::Size thumb_size;
   LayoutObject* thumb_layout_object =
       input->UserAgentShadowRoot()
           ->getElementById(shadow_element_names::kIdSliderThumb)
           ->GetLayoutObject();
   if (thumb_layout_object && thumb_layout_object->IsBox())
-    thumb_size = FlooredIntSize(To<LayoutBox>(thumb_layout_object)->Size());
+    thumb_size = ToFlooredSize(To<LayoutBox>(thumb_layout_object)->Size());
 
-  IntSize tick_size = LayoutTheme::GetTheme().SliderTickSize();
+  gfx::Size tick_size = LayoutTheme::GetTheme().SliderTickSize();
   float zoom_factor = o.StyleRef().EffectiveZoom();
-  FloatRect tick_rect;
+  gfx::RectF tick_rect;
   int tick_region_side_margin = 0;
   int tick_region_width = 0;
-  IntRect track_bounds;
+  gfx::Rect track_bounds;
   LayoutObject* track_layout_object =
       input->UserAgentShadowRoot()
           ->getElementById(shadow_element_names::kIdSliderTrack)
           ->GetLayoutObject();
   if (track_layout_object && track_layout_object->IsBox()) {
-    track_bounds = IntRect(
+    track_bounds = gfx::Rect(
         ToCeiledPoint(track_layout_object->FirstFragment().PaintOffset()),
-        FlooredIntSize(To<LayoutBox>(track_layout_object)->Size()));
+        ToFlooredSize(To<LayoutBox>(track_layout_object)->Size()));
   }
 
   if (is_horizontal) {

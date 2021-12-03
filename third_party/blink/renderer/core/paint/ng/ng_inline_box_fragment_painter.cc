@@ -240,7 +240,7 @@ PhysicalRect NGInlineBoxFragmentPainterBase::PaintRectForImageStrip(
 InlineBoxPainterBase::BorderPaintingType
 NGInlineBoxFragmentPainterBase::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
-    IntRect& adjusted_clip_rect,
+    gfx::Rect& adjusted_clip_rect,
     bool object_has_multiple_boxes) const {
   const ComputedStyle& style = inline_box_fragment_.Style();
   if (!style.HasBorderDecoration())
@@ -257,12 +257,12 @@ NGInlineBoxFragmentPainterBase::GetBorderPaintType(
   // only box for this object.  In those cases only a single call to draw is
   // required.
   if (!has_border_image || !object_has_multiple_boxes) {
-    adjusted_clip_rect = PixelSnappedIntRect(adjusted_frame_rect);
+    adjusted_clip_rect = ToPixelSnappedRect(adjusted_frame_rect);
     return kPaintBordersWithoutClip;
   }
 
   // We have a border image that spans multiple lines.
-  adjusted_clip_rect = PixelSnappedIntRect(ClipRectForNinePieceImageStrip(
+  adjusted_clip_rect = ToPixelSnappedRect(ClipRectForNinePieceImageStrip(
       style, SidesToInclude(), border_image, adjusted_frame_rect));
   return kPaintBordersWithClip;
 }

@@ -102,7 +102,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   bool frame_background_has_alpha_;
 
   // Provides the size of each component.
-  IntSize DecodedYUVSize(cc::YUVIndex) const override;
+  gfx::Size DecodedYUVSize(cc::YUVIndex) const override;
 
   // Returns the width of each row of the memory allocation.
   wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;

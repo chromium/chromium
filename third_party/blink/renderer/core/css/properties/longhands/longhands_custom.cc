@@ -7235,13 +7235,13 @@ const CSSValue* TransformOrigin::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   if (layout_object) {
-    FloatRect reference_box = ComputedStyleUtils::ReferenceBoxForTransform(
+    gfx::RectF reference_box = ComputedStyleUtils::ReferenceBoxForTransform(
         *layout_object, ComputedStyleUtils::kDontUsePixelSnappedBox);
-    FloatSize resolved_origin(
+    gfx::PointF resolved_origin(
         FloatValueForLength(style.TransformOriginX(), reference_box.width()),
         FloatValueForLength(style.TransformOriginY(), reference_box.height()));
-    list->Append(*ZoomAdjustedPixelValue(resolved_origin.width(), style));
-    list->Append(*ZoomAdjustedPixelValue(resolved_origin.height(), style));
+    list->Append(*ZoomAdjustedPixelValue(resolved_origin.x(), style));
+    list->Append(*ZoomAdjustedPixelValue(resolved_origin.y(), style));
   } else {
     list->Append(*ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
         style.TransformOriginX(), style));

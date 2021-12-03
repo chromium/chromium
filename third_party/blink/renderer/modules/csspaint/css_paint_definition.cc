@@ -26,12 +26,12 @@ namespace blink {
 
 namespace {
 
-FloatSize GetSpecifiedSize(const FloatSize& size, float zoom) {
+gfx::SizeF GetSpecifiedSize(const gfx::SizeF& size, float zoom) {
   float un_zoom_factor = 1 / zoom;
   auto un_zoom_fn = [un_zoom_factor](float a) -> float {
     return a * un_zoom_factor;
   };
-  return FloatSize(un_zoom_fn(size.width()), un_zoom_fn(size.height()));
+  return gfx::SizeF(un_zoom_fn(size.width()), un_zoom_fn(size.height()));
 }
 
 }  // namespace
@@ -75,7 +75,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
   ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
 
   sk_sp<PaintRecord> result =
-      Paint(FloatSize(input->GetSize()), input->EffectiveZoom(), style_map,
+      Paint(input->GetSize(), input->EffectiveZoom(), style_map,
             &paint_arguments, input->DeviceScaleFactor());
 
   // Return empty record if paint fails.
@@ -85,12 +85,12 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 }
 
 sk_sp<PaintRecord> CSSPaintDefinition::Paint(
-    const FloatSize& container_size,
+    const gfx::SizeF& container_size,
     float zoom,
     StylePropertyMapReadOnly* style_map,
     const CSSStyleValueVector* paint_arguments,
     float device_scale_factor) {
-  const FloatSize specified_size = GetSpecifiedSize(container_size, zoom);
+  const gfx::SizeF specified_size = GetSpecifiedSize(container_size, zoom);
   ScriptState::Scope scope(script_state_);
 
   MaybeCreatePaintInstance();
@@ -103,7 +103,7 @@ sk_sp<PaintRecord> CSSPaintDefinition::Paint(
 
   // Do subpixel snapping for the |container_size|.
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
-      RoundedIntSize(container_size), context_settings_, zoom,
+      ToRoundedSize(container_size), context_settings_, zoom,
       device_scale_factor, global_scope_);
   PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 

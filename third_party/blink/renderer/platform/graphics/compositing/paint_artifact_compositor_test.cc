@@ -276,7 +276,7 @@ TEST_P(PaintArtifactCompositorTest, OneChunkWithAnOffset) {
   const cc::Layer* child = LayerAt(0);
   EXPECT_THAT(
       child->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kWhite)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kWhite)));
   EXPECT_EQ(Translation(50, -50), child->ScreenSpaceTransform());
   EXPECT_EQ(gfx::Size(100, 100), child->bounds());
   EXPECT_FALSE(GetTransformNode(child).transform_changed);
@@ -303,9 +303,9 @@ TEST_P(PaintArtifactCompositorTest, OneTransform) {
 
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(100, 0, 100, 100), Color::kBlack));
+        RectWithColor(gfx::RectF(100, 0, 100, 100), Color::kBlack));
 
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
@@ -318,7 +318,7 @@ TEST_P(PaintArtifactCompositorTest, OneTransform) {
     EXPECT_FALSE(GetTransformNode(layer).transform_changed);
     EXPECT_THAT(
         layer->GetPicture(),
-        Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kGray)));
+        Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kGray)));
     EXPECT_EQ(gfx::Transform(), layer->ScreenSpaceTransform());
   }
 }
@@ -345,9 +345,9 @@ TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
 
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(100, 0, 100, 100), Color::kBlack));
+        RectWithColor(gfx::RectF(100, 0, 100, 100), Color::kBlack));
 
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
@@ -360,7 +360,7 @@ TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
     EXPECT_FALSE(GetTransformNode(layer).transform_changed);
     EXPECT_THAT(
         layer->GetPicture(),
-        Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kGray)));
+        Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kGray)));
     EXPECT_EQ(gfx::Transform(), layer->ScreenSpaceTransform());
   }
 }
@@ -387,7 +387,7 @@ TEST_P(PaintArtifactCompositorTest, TransformCombining) {
     EXPECT_TRUE(GetTransformNode(layer).transform_changed);
     EXPECT_THAT(
         layer->GetPicture(),
-        Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kWhite)));
+        Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kWhite)));
     gfx::RectF mapped_rect(0, 0, 300, 200);
     layer->ScreenSpaceTransform().TransformRect(&mapped_rect);
     EXPECT_EQ(gfx::RectF(-10, -10, 600, 400), mapped_rect);
@@ -397,7 +397,7 @@ TEST_P(PaintArtifactCompositorTest, TransformCombining) {
     EXPECT_TRUE(GetTransformNode(layer).transform_changed);
     EXPECT_THAT(
         layer->GetPicture(),
-        Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kBlack)));
+        Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kBlack)));
     gfx::RectF mapped_rect(0, 0, 300, 200);
     layer->ScreenSpaceTransform().TransformRect(&mapped_rect);
     EXPECT_EQ(gfx::RectF(0, 0, 600, 400), mapped_rect);
@@ -435,11 +435,11 @@ TEST_P(PaintArtifactCompositorTest, BackfaceVisibility) {
   EXPECT_THAT(
       LayerAt(0)->GetPicture(),
       Pointee(DrawsRectangles(Vector<RectWithColor>{
-          RectWithColor(FloatRect(0, 0, 300, 200), Color::kWhite),
-          RectWithColor(FloatRect(100, 100, 100, 100), Color::kBlack)})));
+          RectWithColor(gfx::RectF(0, 0, 300, 200), Color::kWhite),
+          RectWithColor(gfx::RectF(100, 100, 100, 100), Color::kBlack)})));
   EXPECT_THAT(
       LayerAt(1)->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kDarkGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kDarkGray)));
 }
 
 TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
@@ -469,7 +469,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(
         layer->GetPicture(),
-        Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kWhite)));
+        Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kWhite)));
 
     // The leaf transform node should flatten its inherited transform node
     // if and only if the intermediate rotation transform in the Blink tree
@@ -524,7 +524,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(
         layer->GetPicture(),
-        Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kWhite)));
+        Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kWhite)));
 
     // The leaf transform node should flatten its inherited transform node
     // if and only if the intermediate rotation transform in the Blink tree
@@ -590,7 +590,7 @@ TEST_P(PaintArtifactCompositorTest, SortingContextID) {
   const cc::Layer* white_layer = LayerAt(0);
   EXPECT_THAT(
       white_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kWhite)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kWhite)));
   int white_sorting_context_id =
       GetTransformNode(white_layer).sorting_context_id;
   EXPECT_EQ(0, white_sorting_context_id);
@@ -599,7 +599,7 @@ TEST_P(PaintArtifactCompositorTest, SortingContextID) {
   const cc::Layer* light_gray_layer = LayerAt(1);
   EXPECT_THAT(
       light_gray_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kLightGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kLightGray)));
   int light_gray_sorting_context_id =
       GetTransformNode(light_gray_layer).sorting_context_id;
   EXPECT_NE(0, light_gray_sorting_context_id);
@@ -609,7 +609,7 @@ TEST_P(PaintArtifactCompositorTest, SortingContextID) {
   const cc::Layer* dark_gray_layer = LayerAt(2);
   EXPECT_THAT(
       dark_gray_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kDarkGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kDarkGray)));
   int dark_gray_sorting_context_id =
       GetTransformNode(dark_gray_layer).sorting_context_id;
   EXPECT_EQ(light_gray_sorting_context_id, dark_gray_sorting_context_id);
@@ -621,7 +621,7 @@ TEST_P(PaintArtifactCompositorTest, SortingContextID) {
   const cc::Layer* black_layer = LayerAt(3);
   EXPECT_THAT(
       black_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 200), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kBlack)));
   int black_sorting_context_id =
       GetTransformNode(black_layer).sorting_context_id;
   EXPECT_NE(0, black_sorting_context_id);
@@ -643,7 +643,7 @@ TEST_P(PaintArtifactCompositorTest, OneClip) {
   EXPECT_EQ(gfx::Vector2dF(220, 100), layer->offset_to_transform_parent());
   EXPECT_THAT(
       layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 180), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 180), Color::kBlack)));
   EXPECT_EQ(Translation(220, 100), layer->ScreenSpaceTransform());
 
   const cc::ClipNode* clip_node =
@@ -668,7 +668,7 @@ TEST_P(PaintArtifactCompositorTest, OneClipWithAlias) {
   EXPECT_EQ(gfx::Vector2dF(220, 100), layer->offset_to_transform_parent());
   EXPECT_THAT(
       layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 300, 180), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 180), Color::kBlack)));
   EXPECT_EQ(Translation(220, 100), layer->ScreenSpaceTransform());
 
   const cc::ClipNode* clip_node =
@@ -706,25 +706,25 @@ TEST_P(PaintArtifactCompositorTest, NestedClips) {
   const cc::Layer* white_layer = LayerAt(0);
   EXPECT_THAT(
       white_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kWhite)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kWhite)));
   EXPECT_EQ(Translation(300, 350), white_layer->ScreenSpaceTransform());
 
   const cc::Layer* light_gray_layer = LayerAt(1);
   EXPECT_THAT(
       light_gray_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kLightGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kLightGray)));
   EXPECT_EQ(Translation(300, 350), light_gray_layer->ScreenSpaceTransform());
 
   const cc::Layer* dark_gray_layer = LayerAt(2);
   EXPECT_THAT(
       dark_gray_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kDarkGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kDarkGray)));
   EXPECT_EQ(Translation(300, 350), dark_gray_layer->ScreenSpaceTransform());
 
   const cc::Layer* black_layer = LayerAt(3);
   EXPECT_THAT(
       black_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kBlack)));
   EXPECT_EQ(Translation(300, 350), black_layer->ScreenSpaceTransform());
 
   EXPECT_EQ(white_layer->clip_tree_index(), dark_gray_layer->clip_tree_index());
@@ -772,25 +772,25 @@ TEST_P(PaintArtifactCompositorTest, NestedClipsWithAlias) {
   const cc::Layer* white_layer = LayerAt(0);
   EXPECT_THAT(
       white_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kWhite)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kWhite)));
   EXPECT_EQ(Translation(300, 350), white_layer->ScreenSpaceTransform());
 
   const cc::Layer* light_gray_layer = LayerAt(1);
   EXPECT_THAT(
       light_gray_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kLightGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kLightGray)));
   EXPECT_EQ(Translation(300, 350), light_gray_layer->ScreenSpaceTransform());
 
   const cc::Layer* dark_gray_layer = LayerAt(2);
   EXPECT_THAT(
       dark_gray_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kDarkGray)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kDarkGray)));
   EXPECT_EQ(Translation(300, 350), dark_gray_layer->ScreenSpaceTransform());
 
   const cc::Layer* black_layer = LayerAt(3);
   EXPECT_THAT(
       black_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 100, 100), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 100, 100), Color::kBlack)));
   EXPECT_EQ(Translation(300, 350), black_layer->ScreenSpaceTransform());
 
   EXPECT_EQ(white_layer->clip_tree_index(), dark_gray_layer->clip_tree_index());
@@ -827,7 +827,7 @@ TEST_P(PaintArtifactCompositorTest, DeeplyNestedClips) {
   EXPECT_EQ(gfx::Vector2dF(50, 0), drawing_layer->offset_to_transform_parent());
   EXPECT_THAT(
       drawing_layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 150, 200), Color::kWhite)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 150, 200), Color::kWhite)));
   EXPECT_EQ(Translation(50, 0), drawing_layer->ScreenSpaceTransform());
 
   // Check the clip nodes.
@@ -865,9 +865,9 @@ TEST_P(PaintArtifactCompositorTest, SiblingClipsWithAlias) {
   EXPECT_THAT(layer->GetPicture(),
               Pointee(DrawsRectangles(Vector<RectWithColor>{
                   // This is the first RectDrawing with real_clip1 applied.
-                  RectWithColor(FloatRect(0, 0, 11, 20), Color::kWhite),
+                  RectWithColor(gfx::RectF(0, 0, 11, 20), Color::kWhite),
                   // This is the second RectDrawing with real_clip2 applied.
-                  RectWithColor(FloatRect(40, 44, 40, 16), Color::kBlack)})));
+                  RectWithColor(gfx::RectF(40, 44, 40, 16), Color::kBlack)})));
   EXPECT_EQ(gfx::Transform(), layer->ScreenSpaceTransform());
   const cc::ClipNode* clip_node =
       GetPropertyTrees().clip_tree.Node(layer->clip_tree_index());
@@ -916,10 +916,11 @@ TEST_P(PaintArtifactCompositorTest, SiblingTransformsWithAlias) {
   // The two chunks are merged together.
   ASSERT_EQ(1u, LayerCount());
   const cc::Layer* layer = LayerAt(0);
-  EXPECT_THAT(layer->GetPicture(),
-              Pointee(DrawsRectangles(Vector<RectWithColor>{
-                  RectWithColor(FloatRect(0, 0, 222, 444), Color::kWhite),
-                  RectWithColor(FloatRect(0, 0, 166.5, 222), Color::kBlack)})));
+  EXPECT_THAT(
+      layer->GetPicture(),
+      Pointee(DrawsRectangles(Vector<RectWithColor>{
+          RectWithColor(gfx::RectF(0, 0, 222, 444), Color::kWhite),
+          RectWithColor(gfx::RectF(0, 0, 166.5, 222), Color::kBlack)})));
   gfx::Transform expected_transform;
   expected_transform.Translate(5, 6);
   EXPECT_EQ(expected_transform, layer->ScreenSpaceTransform());
@@ -1102,7 +1103,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
   EXPECT_EQ(gfx::Size(27, 19), layer->bounds());
   EXPECT_EQ(gfx::Vector2dF(3, 12), layer->offset_to_transform_parent());
   EXPECT_THAT(layer->GetPicture(),
-              Pointee(DrawsRectangle(FloatRect(0, 0, 57, 19), Color::kWhite)));
+              Pointee(DrawsRectangle(gfx::RectF(0, 0, 57, 19), Color::kWhite)));
 
   auto* scroll_layer = ScrollableLayerAt(0);
   // The scroll layer should be sized to the container bounds.
@@ -1174,13 +1175,13 @@ TEST_P(PaintArtifactCompositorTest, TransformUnderScrollNode) {
   EXPECT_EQ(gfx::Vector2dF(3, 5), layer0->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(27, 7), layer0->bounds());
   EXPECT_THAT(layer0->GetPicture(),
-              Pointee(DrawsRectangle(FloatRect(0, 0, 37, 7), Color::kBlack)));
+              Pointee(DrawsRectangle(gfx::RectF(0, 0, 37, 7), Color::kBlack)));
 
   // The layer under the transform without a scroll node is not clipped.
   EXPECT_EQ(gfx::Vector2dF(1, -30), layer1->offset_to_transform_parent());
   EXPECT_EQ(gfx::Size(5, 70), layer1->bounds());
   EXPECT_THAT(layer1->GetPicture(),
-              Pointee(DrawsRectangle(FloatRect(0, 0, 5, 70), Color::kWhite)));
+              Pointee(DrawsRectangle(gfx::RectF(0, 0, 5, 70), Color::kWhite)));
 
   const cc::TransformTree& transform_tree = GetPropertyTrees().transform_tree;
   const cc::TransformNode& scroll_transform_node =
@@ -1393,9 +1394,9 @@ TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1420,12 +1421,12 @@ TEST_P(PaintArtifactCompositorTest, MergeClip) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Clip is applied to this PaintChunk.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(10, 20, 50, 60), Color::kBlack));
+        RectWithColor(gfx::RectF(10, 20, 50, 60), Color::kBlack));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 300, 400), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 300, 400), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1452,12 +1453,12 @@ TEST_P(PaintArtifactCompositorTest, Merge2DTransform) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(50, 50, 100, 100), Color::kBlack));
+        RectWithColor(gfx::RectF(50, 50, 100, 100), Color::kBlack));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1487,10 +1488,10 @@ TEST_P(PaintArtifactCompositorTest, Merge2DTransformDirectAncestor) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(50, 50, 100, 100), Color::kBlack));
+        RectWithColor(gfx::RectF(50, 50, 100, 100), Color::kBlack));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1515,12 +1516,12 @@ TEST_P(PaintArtifactCompositorTest, MergeTransformOrigin) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 42, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 42, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(RectWithColor(
-        FloatRect(29.2893, 0.578644, 141.421, 141.421), Color::kBlack));
+        gfx::RectF(29.2893, 0.578644, 141.421, 141.421), Color::kBlack));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 42, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 42, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1545,13 +1546,13 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacity) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100),
+        RectWithColor(gfx::RectF(0, 0, 100, 100),
                       Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1577,13 +1578,13 @@ TEST_P(PaintArtifactCompositorTest, MergeOpacityWithAlias) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100),
+        RectWithColor(gfx::RectF(0, 0, 100, 100),
                       Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1618,13 +1619,13 @@ TEST_P(PaintArtifactCompositorTest, MergeNestedWithAlias) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // Transform is applied to this PaintChunk.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(60, 70, 50, 60),
+        RectWithColor(gfx::RectF(60, 70, 50, 60),
                       Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1657,13 +1658,13 @@ TEST_P(PaintArtifactCompositorTest, ClipPushedUp) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // The two transforms (combined translation of (40, 50)) are applied here,
     // before clipping.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(50, 70, 50, 60), Color(Color::kBlack)));
+        RectWithColor(gfx::RectF(50, 70, 50, 60), Color(Color::kBlack)));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1700,12 +1701,12 @@ TEST_P(PaintArtifactCompositorTest, EffectPushedUp) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 300, 400),
+        RectWithColor(gfx::RectF(0, 0, 300, 400),
                       Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1741,14 +1742,14 @@ TEST_P(PaintArtifactCompositorTest, EffectAndClipPushedUp) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // The clip is under |transform| but not |transform2|, so only an adjustment
     // of (20, 25) occurs.
     rects_with_color.push_back(
-        RectWithColor(FloatRect(30, 45, 50, 60),
+        RectWithColor(gfx::RectF(30, 45, 50, 60),
                       Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1776,12 +1777,12 @@ TEST_P(PaintArtifactCompositorTest, ClipAndEffectNoTransform) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(10, 20, 50, 60),
+        RectWithColor(gfx::RectF(10, 20, 50, 60),
                       Color(Color::kBlack).CombineWithAlpha(opacity).Rgb()));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1808,12 +1809,12 @@ TEST_P(PaintArtifactCompositorTest, TwoClips) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     // The interesction of the two clips is (20, 30, 10, 20).
     rects_with_color.push_back(
-        RectWithColor(FloatRect(20, 30, 10, 20), Color(Color::kBlack)));
+        RectWithColor(gfx::RectF(20, 30, 10, 20), Color(Color::kBlack)));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
 
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
@@ -1842,11 +1843,11 @@ TEST_P(PaintArtifactCompositorTest, TwoTransformsClipBetween) {
   {
     Vector<RectWithColor> rects_with_color;
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 100, 100), Color::kWhite));
+        RectWithColor(gfx::RectF(0, 0, 100, 100), Color::kWhite));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(40, 50, 10, 10), Color(Color::kBlack)));
+        RectWithColor(gfx::RectF(40, 50, 10, 10), Color(Color::kBlack)));
     rects_with_color.push_back(
-        RectWithColor(FloatRect(0, 0, 200, 300), Color::kGray));
+        RectWithColor(gfx::RectF(0, 0, 200, 300), Color::kGray));
     const cc::Layer* layer = LayerAt(0);
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
@@ -1971,8 +1972,8 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
   const cc::Layer* layer = LayerAt(0);
   EXPECT_THAT(*layer->GetPicture(),
               DrawsRectangles(Vector<RectWithColor>{
-                  RectWithColor(FloatRect(0, 0, 200, 200), Color::kGray),
-                  RectWithColor(FloatRect(50, 50, 100, 100), Color::kWhite)}));
+                  RectWithColor(gfx::RectF(0, 0, 200, 200), Color::kGray),
+                  RectWithColor(gfx::RectF(50, 50, 100, 100), Color::kWhite)}));
   EXPECT_EQ(Translation(100, 100), layer->ScreenSpaceTransform());
   EXPECT_EQ(gfx::Size(200, 200), layer->bounds());
   const cc::EffectNode* masked_group =
@@ -2514,7 +2515,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_TRUE(LayerAt(0)->DrawsContent());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
-                  {RectWithColor(FloatRect(0, 0, 10, 10), Color::kBlack)})));
+                  {RectWithColor(gfx::RectF(0, 0, 10, 10), Color::kBlack)})));
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -2525,7 +2526,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_TRUE(LayerAt(0)->DrawsContent());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
-                  {RectWithColor(FloatRect(0, 10, 10, 10), Color::kWhite)})));
+                  {RectWithColor(gfx::RectF(0, 10, 10, 10), Color::kWhite)})));
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -2536,8 +2537,8 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_TRUE(LayerAt(0)->DrawsContent());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
-                  {RectWithColor(FloatRect(0, 0, 10, 10), Color::kBlack),
-                   RectWithColor(FloatRect(0, 10, 10, 10), Color::kWhite)})));
+                  {RectWithColor(gfx::RectF(0, 0, 10, 10), Color::kBlack),
+                   RectWithColor(gfx::RectF(0, 10, 10, 10), Color::kWhite)})));
 }
 
 TEST_P(PaintArtifactCompositorTest, UpdateManagesLayerElementIds) {
@@ -3699,7 +3700,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   EXPECT_EQ(gfx::Size(200, 200), layer->bounds());
   EXPECT_THAT(
       layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 200, 200), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 200, 200), Color::kBlack)));
 
   // The layer's painting overflows the left, top, right edges of the clip.
   auto artifact2 = TestPaintArtifact()
@@ -3727,7 +3728,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   EXPECT_EQ(gfx::Size(300, 180), layer->bounds());
   EXPECT_THAT(
       layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 390, 180), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 390, 180), Color::kBlack)));
 
   // The layer's painting overflows all edges of the clip.
   auto artifact3 =
@@ -3753,7 +3754,7 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   EXPECT_EQ(gfx::Size(300, 400), layer->bounds());
   EXPECT_THAT(
       layer->GetPicture(),
-      Pointee(DrawsRectangle(FloatRect(0, 0, 390, 580), Color::kBlack)));
+      Pointee(DrawsRectangle(gfx::RectF(0, 0, 390, 580), Color::kBlack)));
 }
 
 // Test that PaintArtifactCompositor creates the correct nodes for the visual

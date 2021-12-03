@@ -121,9 +121,9 @@ PhysicalRect InlineFlowBoxPainter::PaintRectForImageStrip(
 InlineBoxPainterBase::BorderPaintingType
 InlineFlowBoxPainter::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
-    IntRect& adjusted_clip_rect,
+    gfx::Rect& adjusted_clip_rect,
     bool object_has_multiple_boxes) const {
-  adjusted_clip_rect = PixelSnappedIntRect(adjusted_frame_rect);
+  adjusted_clip_rect = ToPixelSnappedRect(adjusted_frame_rect);
   if (!inline_flow_box_.Parent() || !style_.HasBorderDecoration())
     return kDontPaintBorders;
   const NinePieceImage& border_image = style_.BorderImage();
@@ -140,7 +140,7 @@ InlineFlowBoxPainter::GetBorderPaintType(
     return kPaintBordersWithoutClip;
 
   // We have a border image that spans multiple lines.
-  adjusted_clip_rect = PixelSnappedIntRect(
+  adjusted_clip_rect = ToPixelSnappedRect(
       ClipRectForNinePieceImageStrip(style_, inline_flow_box_.SidesToInclude(),
                                      border_image, adjusted_frame_rect));
   return kPaintBordersWithClip;

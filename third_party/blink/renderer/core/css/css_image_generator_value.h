@@ -29,13 +29,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -47,18 +48,18 @@ class ImageResourceObserver;
 // These maps do not contain many objects because we do not expect any
 // particular CSSGeneratedImageValue to have clients at many different
 // sizes at any given time.
-using ImageSizeCountMap = HashCountedSet<FloatSize>;
-using GeneratedImageMap = HashMap<FloatSize, scoped_refptr<Image>>;
+using ImageSizeCountMap = HashCountedSet<gfx::SizeF>;
+using GeneratedImageMap = HashMap<gfx::SizeF, scoped_refptr<Image>>;
 
 class GeneratedImageCache {
   DISALLOW_NEW();
 
  public:
-  void AddSize(const FloatSize&);
-  void RemoveSize(const FloatSize&);
+  void AddSize(const gfx::SizeF&);
+  void RemoveSize(const gfx::SizeF&);
 
-  Image* GetImage(const FloatSize&) const;
-  void PutImage(const FloatSize&, scoped_refptr<Image>);
+  Image* GetImage(const gfx::SizeF&) const;
+  void PutImage(const gfx::SizeF&, scoped_refptr<Image>);
 
  private:
   // A count of how many times a given image size is in use.
@@ -74,7 +75,7 @@ struct SizeAndCount {
 
   // The non-zero size associated with this client. A client must only
   // ever be present at one non-zero size, with as many zero sizes as it wants.
-  FloatSize size;
+  gfx::SizeF size;
 
   // The net number of times this client has been added.
   int count;
@@ -95,7 +96,7 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size);
+                                const gfx::SizeF& target_size);
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
 
@@ -107,8 +108,8 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
  protected:
   explicit CSSImageGeneratorValue(ClassType);
 
-  Image* GetImage(const ImageResourceObserver*, const FloatSize&) const;
-  void PutImage(const FloatSize&, scoped_refptr<Image>) const;
+  Image* GetImage(const ImageResourceObserver*, const gfx::SizeF&) const;
+  void PutImage(const gfx::SizeF&, scoped_refptr<Image>) const;
   const ClientSizeCountMap& Clients() const { return clients_; }
 
   // A map from LayoutObjects (with entry count) to image sizes.

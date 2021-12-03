@@ -10,7 +10,7 @@
 namespace blink {
 
 PaintRenderingContext2D::PaintRenderingContext2D(
-    const IntSize& container_size,
+    const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
     float device_scale_factor,
@@ -120,8 +120,7 @@ void PaintRenderingContext2D::ValidateStateStackWithCanvas(
 }
 
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
-  return GetState().GetFilterForOffscreenCanvas(gfx::Size(Width(), Height()),
-                                                this);
+  return GetState().GetFilterForOffscreenCanvas(container_size_, this);
 }
 
 CanvasColorParams PaintRenderingContext2D::GetCanvas2DColorParams() const {

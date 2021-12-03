@@ -73,8 +73,8 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& dst_rect,
-            const FloatRect& src_rect,
+            const gfx::RectF& dst_rect,
+            const gfx::RectF& src_rect,
             const ImageDrawOptions&) override;
 
   bool IsValid() const final;
@@ -145,7 +145,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);
 
-  IntSize SizeInternal() const override;
+  gfx::Size SizeInternal() const override;
 
   const gpu::Mailbox mailbox_;
   const SkImageInfo sk_image_info_;

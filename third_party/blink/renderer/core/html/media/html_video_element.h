@@ -90,7 +90,7 @@ class CORE_EXPORT HTMLVideoElement final
   //
   // PaintFlags is optional. If unspecified, its blend mode defaults to kSrc.
   void PaintCurrentFrame(cc::PaintCanvas*,
-                         const IntRect&,
+                         const gfx::Rect&,
                          const cc::PaintFlags*) const;
 
   bool HasAvailableVideoFrame() const;
@@ -125,7 +125,7 @@ class CORE_EXPORT HTMLVideoElement final
   bool IsAccelerated() const override { return false; }
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override;
+  gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
                                   absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,

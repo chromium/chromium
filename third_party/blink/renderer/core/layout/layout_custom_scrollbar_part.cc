@@ -150,7 +150,7 @@ int LayoutCustomScrollbarPart::ComputeLength() const {
   NOT_DESTROYED();
   DCHECK_NE(kScrollbarBGPart, part_);
 
-  IntRect visible_content_rect =
+  gfx::Rect visible_content_rect =
       scrollbar_->GetScrollableArea()->VisibleContentRect(kIncludeScrollbars);
   if (scrollbar_->Orientation() == kHorizontalScrollbar)
     return ComputeWidth(visible_content_rect.width());

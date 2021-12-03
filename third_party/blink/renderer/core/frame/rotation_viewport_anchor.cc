@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -25,7 +26,7 @@ static const float kViewportAnchorRelativeEpsilon = 0.1f;
 static const int kViewportToNodeMaxRelativeArea = 2;
 
 Node* FindNonEmptyAnchorNode(const gfx::PointF& absolute_point,
-                             const IntRect& view_rect,
+                             const gfx::Rect& view_rect,
                              EventHandler& event_handler) {
   gfx::Point point = gfx::ToFlooredPoint(absolute_point);
   HitTestLocation location(point);
@@ -48,9 +49,10 @@ Node* FindNonEmptyAnchorNode(const gfx::PointF& absolute_point,
   const int max_node_area =
       view_rect.width() * view_rect.height() * kViewportToNodeMaxRelativeArea;
   if (node_size.width() * node_size.height() > max_node_area) {
-    IntSize point_offset = view_rect.size();
-    point_offset.Scale(kViewportAnchorRelativeEpsilon);
-    HitTestLocation alternative_location(point + ToGfxVector2d(point_offset));
+    gfx::Size point_offset = gfx::ScaleToFlooredSize(
+        view_rect.size(), kViewportAnchorRelativeEpsilon);
+    HitTestLocation alternative_location(
+        point + gfx::Vector2d(point_offset.width(), point_offset.height()));
     node = event_handler
                .HitTestResultAtLocation(
                    alternative_location,
@@ -67,7 +69,7 @@ Node* FindNonEmptyAnchorNode(const gfx::PointF& absolute_point,
   return node;
 }
 
-void MoveToEncloseRect(IntRect& outer, const FloatRect& inner) {
+void MoveToEncloseRect(gfx::Rect& outer, const gfx::RectF& inner) {
   gfx::Point minimum_position = gfx::ToCeiledPoint(
       inner.bottom_right() - gfx::Vector2dF(outer.width(), outer.height()));
   gfx::Point maximum_position = gfx::ToFlooredPoint(inner.origin());
@@ -79,7 +81,7 @@ void MoveToEncloseRect(IntRect& outer, const FloatRect& inner) {
   outer.set_origin(outer_origin);
 }
 
-void MoveIntoRect(FloatRect& inner, const IntRect& outer) {
+void MoveIntoRect(gfx::RectF& inner, const gfx::Rect& outer) {
   gfx::PointF minimum_position = gfx::PointF(outer.origin());
   gfx::PointF maximum_position = gfx::PointF(outer.bottom_right()) -
                                  gfx::Vector2dF(inner.width(), inner.height());
@@ -135,13 +137,13 @@ void RotationViewportAnchor::SetAnchor() {
   anchor_in_node_coords_ = gfx::PointF();
   normalized_visual_viewport_offset_ = gfx::Vector2dF();
 
-  IntRect inner_view_rect = root_frame_viewport->VisibleContentRect();
+  gfx::Rect inner_view_rect = root_frame_viewport->VisibleContentRect();
 
   // Preserve origins at the absolute screen origin.
   if (inner_view_rect.origin().IsOrigin() || inner_view_rect.IsEmpty())
     return;
 
-  IntRect outer_view_rect =
+  gfx::Rect outer_view_rect =
       LayoutViewport().VisibleContentRect(kIncludeScrollbars);
 
   // Normalize by the size of the outer rect
@@ -187,7 +189,7 @@ void RotationViewportAnchor::RestoreToAnchor() {
       page_scale_constraints_set_->FinalConstraints().ClampToConstraints(
           new_page_scale_factor);
 
-  FloatSize visual_viewport_size(visual_viewport_->Size());
+  gfx::SizeF visual_viewport_size(ToGfxSize(visual_viewport_->Size()));
   visual_viewport_size.Scale(1 / new_page_scale_factor);
 
   gfx::Point main_frame_origin;
@@ -213,10 +215,10 @@ ScrollableArea& RotationViewportAnchor::LayoutViewport() const {
 }
 
 void RotationViewportAnchor::ComputeOrigins(
-    const FloatSize& inner_size,
+    const gfx::SizeF& inner_size,
     gfx::Point& main_frame_origin,
     gfx::PointF& visual_viewport_origin) const {
-  IntSize outer_size = LayoutViewport().VisibleContentRect().size();
+  gfx::Size outer_size = LayoutViewport().VisibleContentRect().size();
 
   // Compute the viewport origins in CSS pixels relative to the document.
   gfx::Vector2dF abs_visual_viewport_offset =
@@ -226,8 +228,8 @@ void RotationViewportAnchor::ComputeOrigins(
   gfx::PointF inner_origin = GetInnerOrigin(inner_size);
   gfx::PointF outer_origin = inner_origin - abs_visual_viewport_offset;
 
-  IntRect outer_rect = IntRect(gfx::ToFlooredPoint(outer_origin), outer_size);
-  FloatRect inner_rect = FloatRect(inner_origin, inner_size);
+  gfx::Rect outer_rect(gfx::ToFlooredPoint(outer_origin), outer_size);
+  gfx::RectF inner_rect(inner_origin, inner_size);
 
   MoveToEncloseRect(outer_rect, inner_rect);
 
@@ -241,7 +243,7 @@ void RotationViewportAnchor::ComputeOrigins(
 }
 
 gfx::PointF RotationViewportAnchor::GetInnerOrigin(
-    const FloatSize& inner_size) const {
+    const gfx::SizeF& inner_size) const {
   if (!anchor_node_ || !anchor_node_->isConnected() ||
       !anchor_node_->GetLayoutObject())
     return visual_viewport_in_document_;

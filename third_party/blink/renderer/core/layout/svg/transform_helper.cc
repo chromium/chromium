@@ -40,19 +40,19 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
   return false;
 }
 
-FloatRect TransformHelper::ComputeReferenceBox(
+gfx::RectF TransformHelper::ComputeReferenceBox(
     const LayoutObject& layout_object) {
   const ComputedStyle& style = layout_object.StyleRef();
-  FloatRect reference_box;
+  gfx::RectF reference_box;
   if (style.TransformBox() == ETransformBox::kFillBox) {
-    reference_box = FloatRect(layout_object.ObjectBoundingBox());
+    reference_box = layout_object.ObjectBoundingBox();
   } else {
     DCHECK_EQ(style.TransformBox(), ETransformBox::kViewBox);
     SVGLengthContext length_context(
         DynamicTo<SVGElement>(layout_object.GetNode()));
     gfx::SizeF viewport_size;
     length_context.DetermineViewport(viewport_size);
-    reference_box.set_size(FloatSize(viewport_size));
+    reference_box.set_size(viewport_size);
   }
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
@@ -81,7 +81,7 @@ AffineTransform TransformHelper::ComputeTransform(
   // clipPath. See
   // https://svgwg.org/svg2-draft/coords.html#ObjectBoundingBoxUnits
   TransformationMatrix transform;
-  FloatRect reference_box = ComputeReferenceBox(layout_object);
+  gfx::RectF reference_box = ComputeReferenceBox(layout_object);
   style.ApplyTransform(transform, reference_box, apply_transform_origin,
                        ComputedStyle::kIncludeMotionPath,
                        ComputedStyle::kIncludeIndependentTransformProperties);
@@ -95,7 +95,7 @@ AffineTransform TransformHelper::ComputeTransform(
 gfx::PointF TransformHelper::ComputeTransformOrigin(
     const LayoutObject& layout_object) {
   const auto& style = layout_object.StyleRef();
-  FloatRect reference_box = ComputeReferenceBox(layout_object);
+  gfx::RectF reference_box = ComputeReferenceBox(layout_object);
   gfx::PointF origin(
       FloatValueForLength(style.TransformOriginX(), reference_box.width()) +
           reference_box.x(),

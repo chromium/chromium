@@ -2123,15 +2123,15 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
 }
 
 namespace {
-FloatSize GetRatioFromList(const CSSValueList& list) {
+gfx::SizeF GetRatioFromList(const CSSValueList& list) {
   auto* ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(0));
   if (!ratio) {
     DCHECK_EQ(list.length(), 2u);
     ratio = DynamicTo<cssvalue::CSSRatioValue>(list.Item(1));
   }
   DCHECK(ratio);
-  return FloatSize(ratio->First().GetFloatValue(),
-                   ratio->Second().GetFloatValue());
+  return gfx::SizeF(ratio->First().GetFloatValue(),
+                    ratio->Second().GetFloatValue());
 }
 
 bool ListHasAuto(const CSSValueList& list) {
@@ -2153,7 +2153,7 @@ StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)
-    return StyleAspectRatio(EAspectRatioType::kAuto, FloatSize());
+    return StyleAspectRatio(EAspectRatioType::kAuto, gfx::SizeF());
 
   // (auto, (1, 2)) or ((1, 2), auto) or ((1, 2))
   const CSSValueList& list = To<CSSValueList>(value);
@@ -2163,7 +2163,7 @@ StyleAspectRatio StyleBuilderConverter::ConvertAspectRatio(
   bool has_auto = ListHasAuto(list);
   EAspectRatioType type =
       has_auto ? EAspectRatioType::kAutoAndRatio : EAspectRatioType::kRatio;
-  FloatSize ratio = GetRatioFromList(list);
+  gfx::SizeF ratio = GetRatioFromList(list);
   return StyleAspectRatio(type, ratio);
 }
 

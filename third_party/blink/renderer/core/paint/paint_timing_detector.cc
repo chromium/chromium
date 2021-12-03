@@ -138,7 +138,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
 
-  detector->RecordImage(*object, ToGfxSize(image.Size()), *cached_image,
+  detector->RecordImage(*object, image.Size(), *cached_image,
                         current_paint_chunk_properties, &style_image,
                         image_border);
 }

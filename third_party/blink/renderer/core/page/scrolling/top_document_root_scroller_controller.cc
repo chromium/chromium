@@ -74,9 +74,9 @@ ScrollableArea* TopDocumentRootScrollerController::RootScrollerArea() const {
   return GetScrollableArea(GlobalRootScroller());
 }
 
-IntSize TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
+gfx::Size TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
   if (!TopDocument() || !TopDocument()->View())
-    return IntSize();
+    return gfx::Size();
 
   float minimum_page_scale =
       page_->GetPageScaleConstraintsSet().FinalConstraints().minimum_scale;
@@ -84,12 +84,13 @@ IntSize TopDocumentRootScrollerController::RootScrollerVisibleArea() const {
       ceilf(page_->GetVisualViewport().BrowserControlsAdjustment() /
             minimum_page_scale);
 
-  return TopDocument()
-             ->View()
-             ->LayoutViewport()
-             ->VisibleContentRect(kExcludeScrollbars)
-             .size() +
-         IntSize(0, browser_controls_adjustment);
+  gfx::Size layout_size = TopDocument()
+                              ->View()
+                              ->LayoutViewport()
+                              ->VisibleContentRect(kExcludeScrollbars)
+                              .size();
+  return gfx::Size(layout_size.width(),
+                   layout_size.height() + browser_controls_adjustment);
 }
 
 Node* TopDocumentRootScrollerController::FindGlobalRootScroller() {

@@ -26,12 +26,15 @@
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class ComputedStyle;
 class Document;
 class Element;
-class IntRect;
 class LayoutObject;
 class Node;
 struct PaintInfo;
@@ -46,107 +49,109 @@ class ThemePainter {
   // LayoutObject.  A widget's foreground, e.g., the text of a button, is always
   // rendered by the engine itself.  The boolean return value indicates whether
   // the CSS border/background should also be painted.
-  bool Paint(const LayoutObject&, const PaintInfo&, const IntRect&);
+  bool Paint(const LayoutObject&, const PaintInfo&, const gfx::Rect&);
   bool PaintBorderOnly(const Node*,
                        const ComputedStyle&,
                        const PaintInfo&,
-                       const IntRect&);
+                       const gfx::Rect&);
   bool PaintDecorations(const Node*,
                         const Document&,
                         const ComputedStyle&,
                         const PaintInfo&,
-                        const IntRect&);
+                        const gfx::Rect&);
 
   virtual bool PaintCapsLockIndicator(const LayoutObject&,
                                       const PaintInfo&,
-                                      const IntRect&) {
+                                      const gfx::Rect&) {
     return 0;
   }
-  void PaintSliderTicks(const LayoutObject&, const PaintInfo&, const IntRect&);
+  void PaintSliderTicks(const LayoutObject&,
+                        const PaintInfo&,
+                        const gfx::Rect&);
 
  protected:
   virtual bool PaintCheckbox(const Element&,
                              const Document&,
                              const ComputedStyle&,
                              const PaintInfo&,
-                             const IntRect&) {
+                             const gfx::Rect&) {
     return true;
   }
   virtual bool PaintRadio(const Element&,
                           const Document&,
                           const ComputedStyle&,
                           const PaintInfo&,
-                          const IntRect&) {
+                          const gfx::Rect&) {
     return true;
   }
   virtual bool PaintButton(const Element&,
                            const Document&,
                            const ComputedStyle&,
                            const PaintInfo&,
-                           const IntRect&) {
+                           const gfx::Rect&) {
     return true;
   }
   virtual bool PaintInnerSpinButton(const Element&,
                                     const ComputedStyle&,
                                     const PaintInfo&,
-                                    const IntRect&) {
+                                    const gfx::Rect&) {
     return true;
   }
   virtual bool PaintTextField(const Element&,
                               const ComputedStyle&,
                               const PaintInfo&,
-                              const IntRect&) {
+                              const gfx::Rect&) {
     return true;
   }
   virtual bool PaintTextArea(const Element&,
                              const ComputedStyle&,
                              const PaintInfo&,
-                             const IntRect&) {
+                             const gfx::Rect&) {
     return true;
   }
   virtual bool PaintMenuList(const Element&,
                              const Document&,
                              const ComputedStyle&,
                              const PaintInfo&,
-                             const IntRect&) {
+                             const gfx::Rect&) {
     return true;
   }
   virtual bool PaintMenuListButton(const Element& element,
                                    const Document&,
                                    const ComputedStyle&,
                                    const PaintInfo&,
-                                   const IntRect&) {
+                                   const gfx::Rect&) {
     return true;
   }
   virtual bool PaintProgressBar(const Element& element,
                                 const LayoutObject&,
                                 const PaintInfo&,
-                                const IntRect&,
+                                const gfx::Rect&,
                                 const ComputedStyle&) {
     return true;
   }
   virtual bool PaintSliderTrack(const Element& element,
                                 const LayoutObject&,
                                 const PaintInfo&,
-                                const IntRect&,
+                                const gfx::Rect&,
                                 const ComputedStyle&) {
     return true;
   }
   virtual bool PaintSliderThumb(const Element&,
                                 const ComputedStyle&,
                                 const PaintInfo&,
-                                const IntRect&) {
+                                const gfx::Rect&) {
     return true;
   }
   virtual bool PaintSearchField(const Element&,
                                 const ComputedStyle&,
                                 const PaintInfo&,
-                                const IntRect&) {
+                                const gfx::Rect&) {
     return true;
   }
   virtual bool PaintSearchFieldCancelButton(const LayoutObject&,
                                             const PaintInfo&,
-                                            const IntRect&) {
+                                            const gfx::Rect&) {
     return true;
   }
 };

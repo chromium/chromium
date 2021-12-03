@@ -51,7 +51,7 @@ void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
 
   auto outline_rects = fragment.GetLayoutObject()->OutlineRects(
       paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  IntRect rect = PixelSnappedIntRect(UnionRect(outline_rects));
+  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (rect.IsEmpty())
     return;
 

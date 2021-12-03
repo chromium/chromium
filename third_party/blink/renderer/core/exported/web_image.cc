@@ -58,16 +58,16 @@ SkBitmap WebImage::FromData(const WebData& data,
   // which has the highest bit depth.
   const wtf_size_t frame_count = decoder->FrameCount();
   wtf_size_t index = 0;  // Default to first frame if none are large enough.
-  int frame_area_at_index = 0;
+  uint64_t frame_area_at_index = 0;
   for (wtf_size_t i = 0; i < frame_count; ++i) {
-    const IntSize frame_size = decoder->FrameSizeAtIndex(i);
-    if (ToGfxSize(frame_size) == desired_size) {
+    const gfx::Size frame_size = decoder->FrameSizeAtIndex(i);
+    if (frame_size == desired_size) {
       index = i;
       break;  // Perfect match.
     }
 
-    const int frame_area = frame_size.width() * frame_size.height();
-    if (frame_area < (desired_size.width() * desired_size.height()))
+    uint64_t frame_area = frame_size.Area64();
+    if (frame_area < desired_size.Area64())
       break;  // No more frames that are large enough.
 
     if (!i || (frame_area < frame_area_at_index)) {
@@ -107,9 +107,9 @@ SkBitmap WebImage::DecodeSVG(const WebData& data,
   // size. This is likely what most (all?) users of this function will
   // expect/want. If the desired size is empty, then use the intrinsic size of
   // image.
-  FloatSize container_size(desired_size);
+  gfx::SizeF container_size(desired_size);
   if (container_size.IsEmpty())
-    container_size = svg_image->ConcreteObjectSize(FloatSize());
+    container_size = svg_image->ConcreteObjectSize(gfx::SizeF());
   scoped_refptr<Image> svg_container =
       SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL());
   if (PaintImage image = svg_container->PaintImageForCurrentFrame()) {
@@ -134,11 +134,11 @@ WebVector<SkBitmap> WebImage::FramesFromData(const WebData& data) {
   // Frames are arranged by decreasing size, then decreasing bit depth.
   // Keep the first frame at every size, has the highest bit depth.
   const wtf_size_t frame_count = decoder->FrameCount();
-  IntSize last_size;
+  gfx::Size last_size;
 
   WebVector<SkBitmap> frames;
   for (wtf_size_t i = 0; i < std::min(frame_count, kMaxFrameCount); ++i) {
-    const IntSize frame_size = decoder->FrameSizeAtIndex(i);
+    const gfx::Size frame_size = decoder->FrameSizeAtIndex(i);
     if (frame_size == last_size)
       continue;
     last_size = frame_size;
@@ -165,7 +165,7 @@ WebVector<WebImage::AnimationFrame> WebImage::AnimationFromData(
     return {};
 
   const wtf_size_t frame_count = decoder->FrameCount();
-  IntSize last_size = decoder->FrameSizeAtIndex(0);
+  gfx::Size last_size = decoder->FrameSizeAtIndex(0);
 
   WebVector<WebImage::AnimationFrame> frames;
   frames.reserve(frame_count);

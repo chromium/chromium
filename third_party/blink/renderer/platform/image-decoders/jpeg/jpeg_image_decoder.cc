@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 extern "C" {
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
@@ -276,11 +277,13 @@ static bool CheckExifHeader(jpeg_saved_marker_ptr marker,
 struct DecodedImageMetaData {
   ImageOrientation orientation;
   FloatSize resolution;
-  IntSize size;
+  gfx::Size size;
   unsigned resolution_unit { 0 };
 };
 
-static IntSize ExtractDensityCorrectedSize(const DecodedImageMetaData& metadata, const IntSize& physical_size) {
+static gfx::Size ExtractDensityCorrectedSize(
+    const DecodedImageMetaData& metadata,
+    const gfx::Size& physical_size) {
   const unsigned kDefaultResolution = 72;
   const unsigned kresolution_unitDPI = 2;
 
@@ -291,12 +294,12 @@ static IntSize ExtractDensityCorrectedSize(const DecodedImageMetaData& metadata,
   CHECK(metadata.resolution.height());
 
   // Division by zero is not possible since we check for empty resolution earlier.
-  FloatSize size_from_resolution(
+  gfx::SizeF size_from_resolution(
       physical_size.width() * kDefaultResolution / metadata.resolution.width(),
       physical_size.height() * kDefaultResolution /
           metadata.resolution.height());
 
-  if (RoundedIntSize(size_from_resolution) == metadata.size)
+  if (gfx::ToRoundedSize(size_from_resolution) == metadata.size)
     return metadata.size;
 
   return physical_size;
@@ -444,10 +447,10 @@ static void ReadImageMetaData(jpeg_decompress_struct* info, DecodedImageMetaData
   }
 }
 
-static IntSize ComputeYUVSize(const jpeg_decompress_struct* info,
-                              int component) {
-  return IntSize(info->comp_info[component].downsampled_width,
-                 info->comp_info[component].downsampled_height);
+static gfx::Size ComputeYUVSize(const jpeg_decompress_struct* info,
+                                int component) {
+  return gfx::Size(info->comp_info[component].downsampled_width,
+                   info->comp_info[component].downsampled_height);
 }
 
 static wtf_size_t ComputeYUVWidthBytes(const jpeg_decompress_struct* info,
@@ -705,7 +708,8 @@ class JPEGImageReader final {
         DecodedImageMetaData metadata;
         ReadImageMetaData(Info(), metadata);
         decoder_->SetOrientation(metadata.orientation);
-        decoder_->SetDensityCorrectedSize(ExtractDensityCorrectedSize(metadata, IntSize(info_.output_width, info_.output_height)));
+        decoder_->SetDensityCorrectedSize(ExtractDensityCorrectedSize(
+            metadata, gfx::Size(info_.output_width, info_.output_height)));
 
         // Allow color management of the decoded RGBA pixels if possible.
         if (!decoder_->IgnoresColorSpace()) {
@@ -912,7 +916,7 @@ class JPEGImageReader final {
   jpeg_decompress_struct* Info() { return &info_; }
   JSAMPARRAY Samples() const { return samples_; }
   JPEGImageDecoder* Decoder() { return decoder_; }
-  IntSize UvSize() const { return uv_size_; }
+  gfx::Size UvSize() const { return uv_size_; }
   bool HasStartedDecompression() const { return state_ > kJpegStartDecompress; }
 
  private:
@@ -982,7 +986,7 @@ class JPEGImageReader final {
   jstate state_;
 
   JSAMPARRAY samples_;
-  IntSize uv_size_;
+  gfx::Size uv_size_;
 };
 
 void error_exit(
@@ -1081,7 +1085,7 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
 }
 
 void JPEGImageDecoder::SetDecodedSize(unsigned width, unsigned height) {
-  decoded_size_ = IntSize(width, height);
+  decoded_size_ = gfx::Size(width, height);
 }
 
 cc::YUVSubsampling JPEGImageDecoder::GetYUVSubsampling() const {
@@ -1091,7 +1095,7 @@ cc::YUVSubsampling JPEGImageDecoder::GetYUVSubsampling() const {
   return YuvSubsampling(*reader_->Info());
 }
 
-IntSize JPEGImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
+gfx::Size JPEGImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(reader_);
   const jpeg_decompress_struct* info = reader_->Info();
 
@@ -1273,7 +1277,7 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
   bufferraw[2] = &bufferraw2[24];  // V channel rows (8)
   int y_height = info->output_height;
   int v = info->comp_info[0].v_samp_factor;
-  IntSize uv_size = reader->UvSize();
+  gfx::Size uv_size = reader->UvSize();
   int uv_height = uv_size.height();
   JSAMPROW output_y =
       static_cast<JSAMPROW>(image_planes->Plane(cc::YUVIndex::kY));
@@ -1351,7 +1355,7 @@ bool JPEGImageDecoder::OutputScanlines() {
     buffer.SetHasAlpha(true);
 
     // For JPEGs, the frame always fills the entire image.
-    buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
+    buffer.SetOriginalFrameRect(gfx::Rect(Size()));
   }
 
 #if defined(TURBO_JPEG_RGB_SWIZZLE)

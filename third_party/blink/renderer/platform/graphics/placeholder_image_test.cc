@@ -54,7 +54,7 @@ constexpr float kBaseFeatureHeight =
     kBaseIconPaddingY + kBaseIconHeight + kBaseIconPaddingY;
 
 void ExpectDrawGrayBox(MockPaintCanvas& canvas,
-                       const FloatRect& expected_rect) {
+                       const gfx::RectF& expected_rect) {
   EXPECT_CALL(
       canvas,
       drawRect(AllOf(Property(&SkRect::x, FloatNear(expected_rect.x(), 0.01)),
@@ -70,18 +70,18 @@ void ExpectDrawGrayBox(MockPaintCanvas& canvas,
 }
 
 void DrawImageExpectingGrayBoxOnly(PlaceholderImage& image,
-                                   const FloatRect& dest_rect) {
+                                   const gfx::RectF& dest_rect) {
   MockPaintCanvas canvas;
   ExpectDrawGrayBox(canvas, dest_rect);
   EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), ImageDrawOptions());
+             gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), ImageDrawOptions());
 }
 
 void DrawImageExpectingIconOnly(PlaceholderImage& image,
-                                const FloatRect& dest_rect,
+                                const gfx::RectF& dest_rect,
                                 float scale_factor) {
   MockPaintCanvas canvas;
   ExpectDrawGrayBox(canvas, dest_rect);
@@ -110,7 +110,7 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
+             gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
 }
 
 float GetExpectedPlaceholderTextWidth(const StringView& text,
@@ -138,7 +138,7 @@ float GetExpectedPlaceholderTextWidth(const StringView& text,
 }
 
 void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
-                                      const FloatRect& dest_rect,
+                                      const gfx::RectF& dest_rect,
                                       float scale_factor) {
   EXPECT_FALSE(Locale::DefaultLocale().IsRTL());
 
@@ -200,7 +200,7 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
   image.Draw(&canvas, PaintFlags(), dest_rect,
-             FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
+             gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
 }
 
 class TestingUnitsPlatform : public TestingPlatformSupport {
@@ -277,7 +277,7 @@ TEST_F(PlaceholderImageTest, FormatPlaceholderText) {
     expected.Ensure16Bit();
 
     EXPECT_EQ(expected,
-              PlaceholderImage::Create(nullptr, IntSize(400, 300), test.bytes)
+              PlaceholderImage::Create(nullptr, gfx::Size(400, 300), test.bytes)
                   ->GetTextForTesting());
   }
 }
@@ -290,44 +290,44 @@ TEST_F(PlaceholderImageTest, DrawNonIntersectingSrcRect) {
 
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
-  PlaceholderImage::Create(nullptr, IntSize(800, 600), 0)
-      ->Draw(&canvas, PaintFlags(), FloatRect(0.0f, 0.0f, 800.0f, 600.0f),
+  PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 0)
+      ->Draw(&canvas, PaintFlags(), gfx::RectF(0.0f, 0.0f, 800.0f, 600.0f),
              // The source rectangle is outside the 800x600 bounds of the image,
              // so nothing should be drawn.
-             FloatRect(1000.0f, 0.0f, 800.0f, 600.0f), draw_options);
+             gfx::RectF(1000.0f, 0.0f, 800.0f, 600.0f), draw_options);
 }
 
 TEST_F(PlaceholderImageTest, DrawWithoutOriginalResourceSize) {
   scoped_refptr<PlaceholderImage> image =
-      PlaceholderImage::Create(nullptr, IntSize(800, 600), 0);
+      PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 0);
 
   constexpr float kTestScaleFactors[] = {0.5f, 1.0f, 2.0f};
   for (const float scale_factor : kTestScaleFactors) {
     image->SetIconAndTextScaleFactor(scale_factor);
 
     DrawImageExpectingGrayBoxOnly(
-        *image, FloatRect(1000.0f, 2000.0f,
-                          scale_factor * kBaseIconOnlyFeatureWidth - 1.0f,
-                          scale_factor * kBaseFeatureHeight + 1.0f));
+        *image, gfx::RectF(1000.0f, 2000.0f,
+                           scale_factor * kBaseIconOnlyFeatureWidth - 1.0f,
+                           scale_factor * kBaseFeatureHeight + 1.0f));
     DrawImageExpectingGrayBoxOnly(
-        *image, FloatRect(1000.0f, 2000.0f,
-                          scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
-                          scale_factor * kBaseFeatureHeight - 1.0f));
+        *image, gfx::RectF(1000.0f, 2000.0f,
+                           scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
+                           scale_factor * kBaseFeatureHeight - 1.0f));
 
     DrawImageExpectingIconOnly(
         *image,
-        FloatRect(1000.0f, 2000.0f,
-                  scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
-                  scale_factor * kBaseFeatureHeight + 1.0f),
+        gfx::RectF(1000.0f, 2000.0f,
+                   scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
+                   scale_factor * kBaseFeatureHeight + 1.0f),
         scale_factor);
     DrawImageExpectingIconOnly(
-        *image, FloatRect(1000.0f, 2000.0f, 800.0f, 600.0f), scale_factor);
+        *image, gfx::RectF(1000.0f, 2000.0f, 800.0f, 600.0f), scale_factor);
   }
 }
 
 TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeLTR) {
   scoped_refptr<PlaceholderImage> image =
-      PlaceholderImage::Create(nullptr, IntSize(800, 600), 50 * 1024);
+      PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 50 * 1024);
 
   String expected_text = "50 KB";
   expected_text.Ensure16Bit();
@@ -338,16 +338,16 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeLTR) {
     image->SetIconAndTextScaleFactor(scale_factor);
 
     DrawImageExpectingGrayBoxOnly(
-        *image, FloatRect(1000.0f, 2000.0f,
-                          scale_factor * kBaseIconOnlyFeatureWidth - 1.0f,
-                          scale_factor * kBaseFeatureHeight + 1.0f));
+        *image, gfx::RectF(1000.0f, 2000.0f,
+                           scale_factor * kBaseIconOnlyFeatureWidth - 1.0f,
+                           scale_factor * kBaseFeatureHeight + 1.0f));
     DrawImageExpectingGrayBoxOnly(
-        *image, FloatRect(1000.0f, 2000.0f,
-                          scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
-                          scale_factor * kBaseFeatureHeight - 1.0f));
+        *image, gfx::RectF(1000.0f, 2000.0f,
+                           scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
+                           scale_factor * kBaseFeatureHeight - 1.0f));
     DrawImageExpectingGrayBoxOnly(
-        *image, FloatRect(1000.0f, 2000.0f, 800.0f,
-                          scale_factor * kBaseFeatureHeight - 1.0f));
+        *image, gfx::RectF(1000.0f, 2000.0f, 800.0f,
+                           scale_factor * kBaseFeatureHeight - 1.0f));
 
     const float expected_text_width = GetExpectedPlaceholderTextWidth(
         image->GetTextForTesting(), scale_factor);
@@ -358,29 +358,29 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeLTR) {
 
     DrawImageExpectingIconOnly(
         *image,
-        FloatRect(1000.0f, 2000.0f,
-                  scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
-                  scale_factor * kBaseFeatureHeight + 1.0f),
+        gfx::RectF(1000.0f, 2000.0f,
+                   scale_factor * kBaseIconOnlyFeatureWidth + 1.0f,
+                   scale_factor * kBaseFeatureHeight + 1.0f),
         scale_factor);
     DrawImageExpectingIconOnly(
         *image,
-        FloatRect(1000.0f, 2000.0f, expected_icon_and_text_width - 1.0f,
-                  scale_factor * kBaseFeatureHeight + 1.0f),
+        gfx::RectF(1000.0f, 2000.0f, expected_icon_and_text_width - 1.0f,
+                   scale_factor * kBaseFeatureHeight + 1.0f),
         scale_factor);
 
     DrawImageExpectingIconAndTextLTR(
         *image,
-        FloatRect(1000.0f, 2000.0f, expected_icon_and_text_width + 1.0f,
-                  scale_factor * kBaseFeatureHeight + 1.0f),
+        gfx::RectF(1000.0f, 2000.0f, expected_icon_and_text_width + 1.0f,
+                   scale_factor * kBaseFeatureHeight + 1.0f),
         scale_factor);
     DrawImageExpectingIconAndTextLTR(
-        *image, FloatRect(1000.0f, 2000.0f, 800.0f, 600.0f), scale_factor);
+        *image, gfx::RectF(1000.0f, 2000.0f, 800.0f, 600.0f), scale_factor);
   }
 }
 
 TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
   scoped_refptr<PlaceholderImage> image =
-      PlaceholderImage::Create(nullptr, IntSize(800, 600), 50 * 1024);
+      PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 50 * 1024);
 
   String expected_text = "50 KB";
   expected_text.Ensure16Bit();
@@ -392,7 +392,7 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
   static constexpr float kScaleFactor = 2.0f;
   image->SetIconAndTextScaleFactor(kScaleFactor);
 
-  const FloatRect dest_rect(1000.0f, 2000.0f, 800.0f, 600.0f);
+  const gfx::RectF dest_rect(1000.0f, 2000.0f, 800.0f, 600.0f);
 
   MockPaintCanvas canvas;
   ExpectDrawGrayBox(canvas, dest_rect);
@@ -453,28 +453,28 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
   image->Draw(&canvas, PaintFlags(), dest_rect,
-              FloatRect(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
+              gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
 }
 
 TEST_F(PlaceholderImageTest, DrawSeparateImageWithDifferentScaleFactor) {
   scoped_refptr<PlaceholderImage> image_1 =
-      PlaceholderImage::Create(nullptr, IntSize(800, 600), 50 * 1024);
+      PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 50 * 1024);
   constexpr float kScaleFactor1 = 0.5f;
   image_1->SetIconAndTextScaleFactor(kScaleFactor1);
 
   DrawImageExpectingIconAndTextLTR(
-      *image_1, FloatRect(1000.0f, 2000.0f, 800.0f, 600.0f), kScaleFactor1);
+      *image_1, gfx::RectF(1000.0f, 2000.0f, 800.0f, 600.0f), kScaleFactor1);
 
   scoped_refptr<PlaceholderImage> image_2 =
-      PlaceholderImage::Create(nullptr, IntSize(800, 600), 100 * 1024);
+      PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 100 * 1024);
   constexpr float kScaleFactor2 = 2.0f;
   image_2->SetIconAndTextScaleFactor(kScaleFactor2);
 
   DrawImageExpectingIconAndTextLTR(
-      *image_2, FloatRect(1000.0f, 2000.0f, 800.0f, 600.0f), kScaleFactor2);
+      *image_2, gfx::RectF(1000.0f, 2000.0f, 800.0f, 600.0f), kScaleFactor2);
 
   DrawImageExpectingIconAndTextLTR(
-      *image_1, FloatRect(1000.0f, 2000.0f, 1600.0f, 1200.0f), kScaleFactor1);
+      *image_1, gfx::RectF(1000.0f, 2000.0f, 1600.0f, 1200.0f), kScaleFactor1);
 }
 
 }  // namespace

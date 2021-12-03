@@ -113,24 +113,24 @@ IntSize FrameOverlay::Size() const {
       frame_->View()->Size());
 }
 
-IntRect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
-                                          const IntRect&) const {
+gfx::Rect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
+                                            const gfx::Rect&) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  return IntRect(gfx::Point(), Size());
+  return gfx::Rect(gfx::Point(), ToGfxSize(Size()));
 }
 
-IntRect FrameOverlay::PaintableRegion(
+gfx::Rect FrameOverlay::PaintableRegion(
     const GraphicsLayer* graphics_layer) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  return IntRect(gfx::Point(), Size());
+  return gfx::Rect(gfx::Point(), ToGfxSize(Size()));
 }
 
 void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,
                                  GraphicsContext& context,
                                  GraphicsLayerPaintingPhase phase,
-                                 const IntRect& interest_rect) const {
+                                 const gfx::Rect& interest_rect) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK_EQ(graphics_layer, layer_);
   DCHECK_EQ(DefaultPropertyTreeState(), layer_->GetPropertyTreeState());

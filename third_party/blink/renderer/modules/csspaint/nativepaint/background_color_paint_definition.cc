@@ -40,7 +40,7 @@ bool AllColorsOpaque(const Vector<Color>& animated_colors) {
 class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
  public:
   BackgroundColorPaintWorkletInput(
-      const FloatSize& container_size,
+      const gfx::SizeF& container_size,
       int worklet_id,
       const Vector<Color>& animated_colors,
       const Vector<double>& offsets,
@@ -178,7 +178,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
         animated_property_values) {
   const BackgroundColorPaintWorkletInput* input =
       static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
-  FloatSize container_size = input->ContainerSize();
+  gfx::SizeF container_size = input->ContainerSize();
   Vector<Color> animated_colors = input->AnimatedColors();
   Vector<double> offsets = input->Offsets();
   DCHECK_GT(animated_colors.size(), 1u);
@@ -230,7 +230,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
 
   // When render this element, we always do pixel snapping to its nearest pixel,
   // therefore we use rounded |container_size| to create the rendering context.
-  IntSize rounded_size = RoundedIntSize(container_size);
+  gfx::Size rounded_size = gfx::ToRoundedSize(container_size);
   if (!context_ || context_->Width() != rounded_size.width() ||
       context_->Height() != rounded_size.height()) {
     PaintRenderingContext2DSettings* context_settings =
@@ -243,7 +243,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::Paint(
 }
 
 scoped_refptr<Image> BackgroundColorPaintDefinition::Paint(
-    const FloatSize& container_size,
+    const gfx::SizeF& container_size,
     const Node* node,
     const Vector<Color>& animated_colors,
     const Vector<double>& offsets,
@@ -282,7 +282,7 @@ sk_sp<PaintRecord> BackgroundColorPaintDefinition::PaintForTest(
     const Vector<double>& offsets,
     const CompositorPaintWorkletJob::AnimatedPropertyValues&
         animated_property_values) {
-  FloatSize container_size(100, 100);
+  gfx::SizeF container_size(100, 100);
   absl::optional<double> progress = 0;
   CompositorPaintWorkletInput::PropertyKeys property_keys;
   scoped_refptr<BackgroundColorPaintWorkletInput> input =

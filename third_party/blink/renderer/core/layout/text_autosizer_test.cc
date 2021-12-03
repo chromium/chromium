@@ -1041,7 +1041,7 @@ TEST_F(TextAutosizerTest, ClusterHasEnoughTextToAutosizeForZoomDSF) {
 
 TEST_F(TextAutosizerTest, AfterPrint) {
   const float device_scale = 3;
-  FloatSize print_size(160, 240);
+  gfx::SizeF print_size(160, 240);
   set_device_scale_factor(device_scale);
   SetBodyInnerHTML(R"HTML(
     <style>

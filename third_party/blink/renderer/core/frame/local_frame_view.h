@@ -420,14 +420,14 @@ class CORE_EXPORT LocalFrameView final
 
   void IncrementLayoutObjectCount() { layout_object_counter_.Increment(); }
   void IncrementVisuallyNonEmptyCharacterCount(unsigned);
-  void IncrementVisuallyNonEmptyPixelCount(const IntSize&);
+  void IncrementVisuallyNonEmptyPixelCount(const gfx::Size&);
   bool IsVisuallyNonEmpty() const { return is_visually_non_empty_; }
   void SetIsVisuallyNonEmpty() { is_visually_non_empty_ = true; }
   void EnableAutoSizeMode(const IntSize& min_size, const IntSize& max_size);
   void DisableAutoSizeMode();
 
-  void ForceLayoutForPagination(const FloatSize& page_size,
-                                const FloatSize& original_page_size,
+  void ForceLayoutForPagination(const gfx::SizeF& page_size,
+                                const gfx::SizeF& original_page_size,
                                 float maximum_shrink_factor);
 
   // Updates the fragment anchor element based on URL's fragment identifier.
@@ -1203,10 +1203,10 @@ inline void LocalFrameView::IncrementVisuallyNonEmptyCharacterCount(
 }
 
 inline void LocalFrameView::IncrementVisuallyNonEmptyPixelCount(
-    const IntSize& size) {
+    const gfx::Size& size) {
   if (is_visually_non_empty_)
     return;
-  visually_non_empty_pixel_count_ += size.Area();
+  visually_non_empty_pixel_count_ += size.Area64();
   // Use a threshold value to prevent very small amounts of visible content from
   // triggering didMeaningfulLayout.
   static const unsigned kVisualPixelThreshold = 32 * 32;

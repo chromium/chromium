@@ -382,7 +382,7 @@ void HTMLVideoElement::RequestExitPictureInPicture() {
 }
 
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
-                                         const IntRect& dest_rect,
+                                         const gfx::Rect& dest_rect,
                                          const PaintFlags* flags) const {
   if (!GetWebMediaPlayer())
     return;
@@ -396,7 +396,7 @@ void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
     media_flags.setBlendMode(SkBlendMode::kSrc);
   }
 
-  GetWebMediaPlayer()->Paint(canvas, ToGfxRect(dest_rect), media_flags);
+  GetWebMediaPlayer()->Paint(canvas, dest_rect, media_flags);
 }
 
 bool HTMLVideoElement::HasAvailableVideoFrame() const {
@@ -582,8 +582,8 @@ gfx::SizeF HTMLVideoElement::ElementSize(
   return gfx::SizeF(videoWidth(), videoHeight());
 }
 
-IntSize HTMLVideoElement::BitmapSourceSize() const {
-  return IntSize(videoWidth(), videoHeight());
+gfx::Size HTMLVideoElement::BitmapSourceSize() const {
+  return gfx::Size(videoWidth(), videoHeight());
 }
 
 ScriptPromise HTMLVideoElement::CreateImageBitmap(

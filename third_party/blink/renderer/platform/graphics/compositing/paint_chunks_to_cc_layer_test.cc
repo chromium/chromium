@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 void PrintTo(const Vector<cc::PaintOpType>& ops, std::ostream* os) {
   *os << "[";
@@ -48,7 +49,7 @@ void PrintTo(const cc::PaintRecord& record, std::ostream* os) {
 
 void PrintTo(const SkRect& rect, std::ostream* os) {
   *os << (cc::PaintOp::IsUnsetRect(rect) ? "(unset)"
-                                         : blink::FloatRect(rect).ToString());
+                                         : gfx::SkRectToRectF(rect).ToString());
 }
 
 namespace blink {
@@ -1257,15 +1258,15 @@ TEST_P(PaintChunksToCcLayerTest, EmptyChunkRect) {
   EXPECT_EFFECT_BOUNDS(0, 0, 0, 0, *output, 0);
 }
 
-static sk_sp<cc::PaintFilter> MakeFilter(FloatRect bounds) {
-  PaintFilter::CropRect rect(bounds);
+static sk_sp<cc::PaintFilter> MakeFilter(gfx::RectF bounds) {
+  PaintFilter::CropRect rect(gfx::RectFToSkRect(bounds));
   return sk_make_sp<ColorFilterPaintFilter>(
       SkColorFilters::Blend(SK_ColorBLUE, SkBlendMode::kSrc), nullptr, &rect);
 }
 
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
   CompositorFilterOperations filter;
-  filter.AppendReferenceFilter(MakeFilter(FloatRect(12, 26, 93, 84)));
+  filter.AppendReferenceFilter(MakeFilter(gfx::RectF(12, 26, 93, 84)));
   filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
@@ -1296,7 +1297,7 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnEmptyChunk) {
 
 TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   CompositorFilterOperations filter;
-  filter.AppendReferenceFilter(MakeFilter(FloatRect(7, 16, 93, 84)));
+  filter.AppendReferenceFilter(MakeFilter(gfx::RectF(7, 16, 93, 84)));
   filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);

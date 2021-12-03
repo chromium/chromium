@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -35,27 +36,27 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
       orientation);
 }
 
-IntSize StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
-  IntSize size = SizeInternal();
+gfx::Size StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
+  gfx::Size size = SizeInternal();
   if (config.apply_orientation && orientation_.UsesWidthAsHeight())
-    size = size.TransposedSize();
+    size.Transpose();
   return size;
 }
 
 void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
                                    const PaintFlags& flags,
-                                   const FloatRect& dst_rect,
-                                   const FloatRect& src_rect,
+                                   const gfx::RectF& dst_rect,
+                                   const gfx::RectF& src_rect,
                                    const ImageDrawOptions& draw_options,
                                    const PaintImage& image) {
-  FloatRect adjusted_src_rect = src_rect;
-  adjusted_src_rect.Intersect(SkRect::MakeWH(image.width(), image.height()));
+  gfx::RectF adjusted_src_rect = src_rect;
+  adjusted_src_rect.Intersect(gfx::RectF(image.width(), image.height()));
 
   if (dst_rect.IsEmpty() || adjusted_src_rect.IsEmpty())
     return;  // Nothing to draw.
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, false);
-  FloatRect adjusted_dst_rect = dst_rect;
+  gfx::RectF adjusted_dst_rect = dst_rect;
   if (draw_options.respect_orientation &&
       orientation_ != ImageOrientationEnum::kDefault) {
     canvas->save();
@@ -67,16 +68,14 @@ void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
     canvas->concat(AffineTransformToSkMatrix(
         orientation_.TransformFromDefault(adjusted_dst_rect.size())));
 
-    if (orientation_.UsesWidthAsHeight()) {
-      adjusted_dst_rect =
-          FloatRect(adjusted_dst_rect.x(), adjusted_dst_rect.y(),
-                    adjusted_dst_rect.height(), adjusted_dst_rect.width());
-    }
+    if (orientation_.UsesWidthAsHeight())
+      adjusted_dst_rect.set_size(gfx::TransposeSize(adjusted_dst_rect.size()));
   }
 
   canvas->drawImageRect(
-      image, adjusted_src_rect, adjusted_dst_rect,
-      draw_options.sampling_options, &flags,
+      image, gfx::RectFToSkRect(adjusted_src_rect),
+      gfx::RectFToSkRect(adjusted_dst_rect), draw_options.sampling_options,
+      &flags,
       WebCoreClampingModeToSkiaRectConstraint(draw_options.clamping_mode));
 }
 

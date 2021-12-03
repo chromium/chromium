@@ -88,10 +88,10 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                       layout_object_.GetDocument().BaseURL())) {
     String fragment_name = url.FragmentIdentifier();
     if (layout_object_.GetDocument().FindAnchor(fragment_name))
-      paint_info.context.SetURLFragmentForRect(fragment_name, IntRect(rect));
+      paint_info.context.SetURLFragmentForRect(fragment_name, rect);
     return;
   }
-  paint_info.context.SetURLForRect(url, IntRect(rect));
+  paint_info.context.SetURLForRect(url, rect);
 }
 
 void ObjectPainter::PaintAllPhasesAtomically(const PaintInfo& paint_info) {

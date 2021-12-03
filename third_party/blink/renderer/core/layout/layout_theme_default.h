@@ -49,7 +49,7 @@ class CORE_EXPORT LayoutThemeDefault : public LayoutTheme {
   Color PlatformInactiveSelectionForegroundColor(
       mojom::blink::ColorScheme color_scheme) const override;
 
-  IntSize SliderTickSize() const override;
+  gfx::Size SliderTickSize() const override;
   int SliderTickOffsetFromTrackCenter() const override;
   void AdjustSliderThumbSize(ComputedStyle&) const override;
 

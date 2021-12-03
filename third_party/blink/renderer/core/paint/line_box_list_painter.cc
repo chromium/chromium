@@ -173,7 +173,7 @@ void LineBoxListPainter::PaintBackplate(
       layout_object.GetDocument().GetStyleEngine().ForcedBackgroundColor();
   for (const auto backplate : backplates) {
     paint_info.context.FillRect(
-        FloatRect(backplate), backplate_color,
+        gfx::RectF(backplate), backplate_color,
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   }
 }

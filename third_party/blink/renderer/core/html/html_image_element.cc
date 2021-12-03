@@ -750,10 +750,8 @@ gfx::SizeF HTMLImageElement::DefaultDestinationSize(
     return gfx::SizeF();
 
   Image* image = image_content->GetImage();
-  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
-    return ToGfxSizeF(
-        svg_image->ConcreteObjectSize(FloatSize(default_object_size)));
-  }
+  if (auto* svg_image = DynamicTo<SVGImage>(image))
+    return svg_image->ConcreteObjectSize(default_object_size);
 
   LayoutSize size(image->Size(respect_orientation));
   if (GetLayoutObject() && GetLayoutObject()->IsLayoutImage() &&

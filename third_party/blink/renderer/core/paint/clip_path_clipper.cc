@@ -94,15 +94,15 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   ClipPathPaintImageGenerator* generator =
       clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
 
-  scoped_refptr<Image> paint_worklet_image = generator->Paint(
-      zoom, FloatRect(reference_box), *clip_path_owner.GetNode());
+  scoped_refptr<Image> paint_worklet_image =
+      generator->Paint(zoom, reference_box, *clip_path_owner.GetNode());
 
   // TODO(crbug.com/1248610): Fix bounding box. It should enclose affected area
   // of the animation.
   absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
-  FloatRect src_rect(bounding_box.value());
+  gfx::RectF src_rect = bounding_box.value();
   context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode,
                     PaintAutoDarkMode(clip_path_owner.StyleRef(),
                                       DarkModeFilter::ElementRole::kBackground),

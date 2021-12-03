@@ -165,7 +165,7 @@ struct CORE_EXPORT PhysicalRect {
   int PixelSnappedHeight() const {
     return SnapSizeToPixel(size.height, offset.top);
   }
-  IntSize PixelSnappedSize() const {
+  gfx::Size PixelSnappedSize() const {
     return {PixelSnappedWidth(), PixelSnappedHeight()};
   }
 
@@ -244,7 +244,7 @@ inline IntRect EnclosingIntRect(const PhysicalRect& r) {
   return IntRect(location, IntSize(max_point - location));
 }
 inline IntRect PixelSnappedIntRect(const PhysicalRect& r) {
-  return {r.PixelSnappedOffset(), r.PixelSnappedSize()};
+  return {r.PixelSnappedOffset(), IntSize(r.PixelSnappedSize())};
 }
 inline gfx::Rect ToEnclosingRect(const PhysicalRect& r) {
   gfx::Point location = ToFlooredPoint(r.offset);
@@ -257,7 +257,7 @@ inline gfx::Rect ToEnclosingRect(const PhysicalRect& r) {
                    max_point.y() - location.y());
 }
 inline gfx::Rect ToPixelSnappedRect(const PhysicalRect& r) {
-  return {r.PixelSnappedOffset(), ToGfxSize(r.PixelSnappedSize())};
+  return {r.PixelSnappedOffset(), r.PixelSnappedSize()};
 }
 
 // TODO(wangxianzhu): For temporary conversion from LayoutRect to PhysicalRect,

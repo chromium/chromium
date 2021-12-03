@@ -1161,7 +1161,7 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollingBackgroundVisualRect) {
     </div>
   )HTML");
 
-  EXPECT_EQ(IntRect(2, 3, 101, 200),
+  EXPECT_EQ(gfx::Rect(2, 3, 101, 200),
             GetLayoutBoxByElementId("scroller")
                 ->GetScrollableArea()
                 ->ScrollingBackgroundVisualRect(PhysicalOffset()));

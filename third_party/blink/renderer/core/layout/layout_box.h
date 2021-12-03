@@ -396,7 +396,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return frame_rect_.Size();
   }
   // TODO(crbug.com/962299): This is incorrect in some cases.
-  IntSize PixelSnappedSize() const {
+  gfx::Size PixelSnappedSize() const {
     NOT_DESTROYED();
     return frame_rect_.PixelSnappedSize();
   }
@@ -475,18 +475,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
   // Location() is not the correct paint offset. It's also incorrect in flipped
   // blocks writing mode.
-  IntRect PixelSnappedBorderBoxRect() const {
+  gfx::Rect PixelSnappedBorderBoxRect() const {
     NOT_DESTROYED();
-    return IntRect(gfx::Point(),
-                   PixelSnappedBorderBoxSize(PhysicalOffset(Location())));
+    return gfx::Rect(PixelSnappedBorderBoxSize(PhysicalOffset(Location())));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
   // correct paint offset.
-  IntSize PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
+  gfx::Size PixelSnappedBorderBoxSize(const PhysicalOffset& offset) const {
     NOT_DESTROYED();
-    return PixelSnappedIntSize(Size(), offset.ToLayoutPoint());
+    return ToPixelSnappedSize(Size(), offset.ToLayoutPoint());
   }
-  IntRect BorderBoundingBox() const final {
+  gfx::Rect BorderBoundingBox() const final {
     NOT_DESTROYED();
     return PixelSnappedBorderBoxRect();
   }
@@ -599,9 +598,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return FlipForWritingMode(LayoutOverflowRect());
   }
   // TODO(crbug.com/962299): This is incorrect in some cases.
-  IntRect PixelSnappedLayoutOverflowRect() const {
+  gfx::Rect PixelSnappedLayoutOverflowRect() const {
     NOT_DESTROYED();
-    return PixelSnappedIntRect(LayoutOverflowRect());
+    return ToPixelSnappedRect(LayoutOverflowRect());
   }
   LayoutSize MaxLayoutOverflow() const {
     NOT_DESTROYED();

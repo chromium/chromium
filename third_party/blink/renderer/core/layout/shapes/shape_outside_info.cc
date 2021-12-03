@@ -190,7 +190,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
       layout_box_->StyleRef().EffectiveZoom(),
-      FloatSize(reference_box_logical_size_), respect_orientation));
+      gfx::SizeF(reference_box_logical_size_), respect_orientation));
 
   const LayoutRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
@@ -202,7 +202,7 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
-                            layout_box_->StyleRef(), FloatSize(image_size));
+                            layout_box_->StyleRef(), gfx::SizeF(image_size));
 
   return Shape::CreateRasterShape(image.get(), shape_image_threshold,
                                   image_rect, margin_rect, writing_mode, margin,

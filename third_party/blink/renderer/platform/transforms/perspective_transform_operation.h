@@ -70,7 +70,8 @@ class PLATFORM_EXPORT PerspectiveTransformOperation final
     return p_ == p->p_;
   }
 
-  void Apply(TransformationMatrix& transform, const FloatSize&) const override {
+  void Apply(TransformationMatrix& transform,
+             const gfx::SizeF&) const override {
     if (Perspective()) {
       transform.ApplyPerspective(UsedPerspective());
     }

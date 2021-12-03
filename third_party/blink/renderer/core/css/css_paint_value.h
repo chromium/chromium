@@ -33,7 +33,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size);
+                                const gfx::SizeF& target_size);
 
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
 

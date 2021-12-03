@@ -25,7 +25,7 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
   ~BackgroundColorPaintImageGeneratorImpl() override = default;
 
   // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const FloatSize& container_size,
+  scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
                              const Node*,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,

@@ -319,7 +319,7 @@ TEST_F(BitmapImageTest, correctDecodedDataSize) {
   LoadImage("anim_none.gif");
   image_->PaintImageForCurrentFrame();
   int frame_size =
-      static_cast<int>(image_->Size().Area() * sizeof(ImageFrame::PixelData));
+      static_cast<int>(image_->Size().Area64() * sizeof(ImageFrame::PixelData));
   EXPECT_EQ(frame_size, LastDecodedSizeChange());
 }
 

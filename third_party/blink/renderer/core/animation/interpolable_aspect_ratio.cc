@@ -20,7 +20,7 @@ std::unique_ptr<InterpolableAspectRatio> InterpolableAspectRatio::MaybeCreate(
 }
 
 InterpolableAspectRatio::InterpolableAspectRatio(
-    const FloatSize& aspect_ratio) {
+    const gfx::SizeF& aspect_ratio) {
   // The StyleAspectRatio::IsAuto check in MaybeCreate should return true if we
   // have a degenerate aspect ratio.
   DCHECK(aspect_ratio.height() > 0 && aspect_ratio.width() > 0);
@@ -29,8 +29,8 @@ InterpolableAspectRatio::InterpolableAspectRatio(
       log(aspect_ratio.width() / aspect_ratio.height()));
 }
 
-FloatSize InterpolableAspectRatio::GetRatio() const {
-  return FloatSize(exp(To<InterpolableNumber>(*value_).Value()), 1);
+gfx::SizeF InterpolableAspectRatio::GetRatio() const {
+  return gfx::SizeF(exp(To<InterpolableNumber>(*value_).Value()), 1);
 }
 
 void InterpolableAspectRatio::Scale(double scale) {

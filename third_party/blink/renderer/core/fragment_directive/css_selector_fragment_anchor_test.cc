@@ -43,8 +43,8 @@ class CssSelectorFragmentAnchorTest : public SimTest {
     return GetDocument().View()->LayoutViewport();
   }
 
-  IntRect ViewportRect() {
-    return IntRect(gfx::Point(), LayoutViewport()->VisibleContentRect().size());
+  gfx::Rect ViewportRect() {
+    return gfx::Rect(LayoutViewport()->VisibleContentRect().size());
   }
 
   IntRect BoundingRectInFrame(Node& node) {
@@ -62,7 +62,7 @@ class CssSelectorFragmentAnchorTest : public SimTest {
   }
 
   bool IsVisibleInViewport(Element& element) {
-    return ViewportRect().Contains(BoundingRectInFrame(element));
+    return ViewportRect().Contains(ToGfxRect(BoundingRectInFrame(element)));
   }
 };
 

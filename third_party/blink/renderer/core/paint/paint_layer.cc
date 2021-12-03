@@ -2726,7 +2726,7 @@ gfx::RectF PaintLayer::FilterReferenceBox() const {
 }
 
 gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
-  return gfx::RectF(ToGfxRect(GetLayoutObject().BorderBoundingBox()));
+  return gfx::RectF(GetLayoutObject().BorderBoundingBox());
 }
 
 gfx::RRectF PaintLayer::BackdropFilterBounds() const {

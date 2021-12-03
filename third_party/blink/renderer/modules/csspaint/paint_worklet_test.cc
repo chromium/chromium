@@ -129,7 +129,7 @@ TEST_F(PaintWorkletTest, PaintWithNullPaintArguments) {
   ImageResourceObserver* observer = GetImageResourceObserver();
   ASSERT_TRUE(observer);
 
-  const FloatSize container_size(100, 100);
+  const gfx::SizeF container_size(100, 100);
   const LayoutObject& layout_object =
       static_cast<const LayoutObject&>(*observer);
   float zoom = layout_object.StyleRef().EffectiveZoom();

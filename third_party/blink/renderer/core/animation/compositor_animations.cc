@@ -804,7 +804,7 @@ void AddKeyframeToCurve(CompositorTransformAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function,
-                        const FloatSize& box_size) {
+                        const gfx::SizeF& box_size) {
   CompositorTransformOperations ops;
   ToCompositorTransformOperations(
       To<CompositorKeyframeTransform>(value)->GetTransformOperations(), &ops,
@@ -899,9 +899,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kTranslate:
       case CSSPropertyID::kTransform: {
-        FloatSize box_size(ComputedStyleUtils::ReferenceBoxForTransform(
-                               *target_element.GetLayoutObject())
-                               .size());
+        gfx::SizeF box_size(ComputedStyleUtils::ReferenceBoxForTransform(
+                                *target_element.GetLayoutObject())
+                                .size());
         auto transform_curve =
             std::make_unique<CompositorTransformAnimationCurve>();
         AddKeyframesToCurve(*transform_curve, values, box_size);

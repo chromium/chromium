@@ -67,7 +67,7 @@ class PLATFORM_EXPORT PNGImageReader final {
     // The number of bytes that contain frame data, starting at start_offset.
     wtf_size_t byte_length;
     wtf_size_t duration;
-    IntRect frame_rect;
+    gfx::Rect frame_rect;
     ImageFrame::DisposalMethod disposal_method;
     ImageFrame::AlphaBlendSource alpha_blend;
   };

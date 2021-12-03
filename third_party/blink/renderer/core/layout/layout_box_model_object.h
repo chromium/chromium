@@ -185,7 +185,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // This will work on inlines to return the bounding box of all of the lines'
   // border boxes.
-  virtual IntRect BorderBoundingBox() const = 0;
+  virtual gfx::Rect BorderBoundingBox() const = 0;
 
   virtual PhysicalRect PhysicalVisualOverflowRect() const = 0;
 

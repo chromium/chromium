@@ -546,7 +546,7 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   EXPECT_EQ(MakeRGB(255, 0, 0), t8->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
   ASSERT_TRUE(t8->GetComputedStyle());
   EXPECT_EQ(MakeRGB(0, 0, 0), t8->GetComputedStyle()->VisitedDependentColor(
@@ -3091,7 +3091,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   EXPECT_EQ(MakeRGB(255, 0, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
   EXPECT_EQ(Color::kBlack, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
@@ -4108,7 +4108,7 @@ TEST_F(StyleEngineTest, AudioUAStyleNameSpace) {
   EXPECT_TRUE(audio->GetComputedStyle());
   EXPECT_FALSE(html_audio->GetComputedStyle());
 
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   GetDocument().GetFrame()->StartPrinting(page_size, page_size, 1);
 
   // Also for printing.

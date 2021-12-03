@@ -195,7 +195,7 @@ void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
       image_size_kib);
 }
 
-void BitmapImageMetrics::CountJpegArea(const IntSize& size) {
+void BitmapImageMetrics::CountJpegArea(const gfx::Size& size) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, image_area_histogram,
       ("Blink.ImageDecoders.Jpeg.Area", kImageAreaHistogramMin,
@@ -203,7 +203,7 @@ void BitmapImageMetrics::CountJpegArea(const IntSize& size) {
   // A base::HistogramBase::Sample may not fit |size.Area()|. Hence the use of
   // saturated_cast.
   image_area_histogram.Count(
-      base::saturated_cast<base::HistogramBase::Sample>(size.Area()));
+      base::saturated_cast<base::HistogramBase::Sample>(size.Area64()));
 }
 
 void BitmapImageMetrics::CountJpegColorSpace(JpegColorSpace color_space) {

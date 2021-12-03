@@ -10,24 +10,24 @@ namespace blink {
 
 namespace {
 
-TEST(LogicalSizeTest, AspectRatioFromFloatSize) {
+TEST(LogicalSizeTest, AspectRatioFromSizeF) {
   LogicalSize logical;
 
   // Just test there is no precision loss when multiply/dividing through the
   // aspect-ratio.
-  logical = LogicalSize::AspectRatioFromFloatSize(FloatSize(0.25f, 0.1f));
+  logical = LogicalSize::AspectRatioFromSizeF(gfx::SizeF(0.25f, 0.1f));
   EXPECT_EQ(LayoutUnit(250),
             LayoutUnit(100).MulDiv(logical.inline_size, logical.block_size));
 
-  logical = LogicalSize::AspectRatioFromFloatSize(FloatSize(0.1f, 0.25f));
+  logical = LogicalSize::AspectRatioFromSizeF(gfx::SizeF(0.1f, 0.25f));
   EXPECT_EQ(LayoutUnit(40),
             LayoutUnit(100).MulDiv(logical.inline_size, logical.block_size));
 
-  logical = LogicalSize::AspectRatioFromFloatSize(FloatSize(2.0f, 0.01f));
+  logical = LogicalSize::AspectRatioFromSizeF(gfx::SizeF(2.0f, 0.01f));
   EXPECT_EQ(LayoutUnit(20000),
             LayoutUnit(100).MulDiv(logical.inline_size, logical.block_size));
 
-  logical = LogicalSize::AspectRatioFromFloatSize(FloatSize(0.01f, 2.0f));
+  logical = LogicalSize::AspectRatioFromSizeF(gfx::SizeF(0.01f, 2.0f));
   EXPECT_EQ(LayoutUnit(0.5),
             LayoutUnit(100).MulDiv(logical.inline_size, logical.block_size));
 }

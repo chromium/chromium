@@ -23,7 +23,7 @@ class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
   ~ClipPathPaintImageGeneratorImpl() override = default;
 
   scoped_refptr<Image> Paint(float zoom,
-                             const FloatRect& reference_box,
+                             const gfx::RectF& reference_box,
                              const Node&) final;
   Animation* GetAnimationIfCompositable(const Element* element) final;
 

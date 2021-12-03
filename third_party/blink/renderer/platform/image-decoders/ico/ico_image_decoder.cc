@@ -63,11 +63,11 @@ void ICOImageDecoder::OnSetData(SegmentReader* data) {
     SetDataForPNGDecoderAtIndex(i);
 }
 
-IntSize ICOImageDecoder::Size() const {
+gfx::Size ICOImageDecoder::Size() const {
   return frame_size_.IsEmpty() ? ImageDecoder::Size() : frame_size_;
 }
 
-IntSize ICOImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
+gfx::Size ICOImageDecoder::FrameSizeAtIndex(wtf_size_t index) const {
   return (index && (index < dir_entries_.size())) ? dir_entries_[index].size_
                                                   : Size();
 }
@@ -77,7 +77,7 @@ bool ICOImageDecoder::SetSize(unsigned width, unsigned height) {
   // the icon directory.
   return frame_size_.IsEmpty()
              ? ImageDecoder::SetSize(width, height)
-             : ((IntSize(width, height) == frame_size_) || SetFailed());
+             : ((gfx::Size(width, height) == frame_size_) || SetFailed());
 }
 
 bool ICOImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
@@ -205,7 +205,7 @@ bool ICOImageDecoder::DecodeAtIndex(wtf_size_t index) {
     bmp_readers_[index]->SetBuffer(&frame_buffer_cache_[index]);
     frame_size_ = dir_entry.size_;
     bool result = bmp_readers_[index]->DecodeBMP(false);
-    frame_size_ = IntSize();
+    frame_size_ = gfx::Size();
     return result;
   }
 
@@ -305,7 +305,7 @@ ICOImageDecoder::IconDirectoryEntry ICOImageDecoder::ReadDirectoryEntry() {
   if (!height)
     height = 256;
   IconDirectoryEntry entry;
-  entry.size_ = IntSize(width, height);
+  entry.size_ = gfx::Size(width, height);
   if (file_type_ == CURSOR) {
     entry.bit_count_ = 0;
     entry.hot_spot_ = gfx::Point(ReadUint16(4), ReadUint16(6));

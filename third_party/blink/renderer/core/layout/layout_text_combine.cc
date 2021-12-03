@@ -150,7 +150,7 @@ void LayoutTextCombine::TransformToInlineCoordinates(
   }
 
   if (clip)
-    context.Clip(FloatRect(box_rect.X(), box_rect.Y(), width, cell_height));
+    context.Clip(gfx::RectF(box_rect.X(), box_rect.Y(), width, cell_height));
 }
 
 void LayoutTextCombine::UpdateIsCombined() {

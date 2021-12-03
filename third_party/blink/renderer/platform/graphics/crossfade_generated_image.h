@@ -27,9 +27,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CROSSFADE_GENERATED_IMAGE_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -39,31 +40,31 @@ class PLATFORM_EXPORT CrossfadeGeneratedImage final : public GeneratedImage {
       scoped_refptr<Image> from_image,
       scoped_refptr<Image> to_image,
       float percentage,
-      const FloatSize& size) {
+      const gfx::SizeF& size) {
     return base::AdoptRef(new CrossfadeGeneratedImage(
         std::move(from_image), std::move(to_image), percentage, size));
   }
 
   bool HasIntrinsicSize() const override { return true; }
 
-  IntSize SizeWithConfig(SizeConfig) const override {
-    return FlooredIntSize(size_);
+  gfx::Size SizeWithConfig(SizeConfig) const override {
+    return gfx::ToFlooredSize(size_);
   }
 
  protected:
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect&,
-            const FloatRect&,
+            const gfx::RectF&,
+            const gfx::RectF&,
             const ImageDrawOptions& draw_options) override;
   void DrawTile(GraphicsContext&,
-                const FloatRect&,
+                const gfx::RectF&,
                 const ImageDrawOptions&) final;
 
   CrossfadeGeneratedImage(scoped_refptr<Image> from_image,
                           scoped_refptr<Image> to_image,
                           float percentage,
-                          const FloatSize&);
+                          const gfx::SizeF&);
 
  private:
   void DrawCrossfade(cc::PaintCanvas*,

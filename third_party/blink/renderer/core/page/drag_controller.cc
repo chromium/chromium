@@ -1036,16 +1036,16 @@ static gfx::Point DragLocationForDHTMLDrag(
                     drag_origin.y() + y_offset);
 }
 
-FloatRect DragController::ClippedSelection(const LocalFrame& frame) {
+gfx::RectF DragController::ClippedSelection(const LocalFrame& frame) {
   DCHECK(frame.View());
   return DataTransfer::ClipByVisualViewport(
-      FloatRect(frame.Selection().AbsoluteUnclippedBounds()), frame);
+      gfx::RectF(frame.Selection().AbsoluteUnclippedBounds()), frame);
 }
 
 static gfx::Point DragLocationForSelectionDrag(const LocalFrame& frame) {
   frame.View()->UpdateLifecycleToLayoutClean(DocumentUpdateReason::kSelection);
-  IntRect dragging_rect =
-      EnclosingIntRect(DragController::ClippedSelection(frame));
+  gfx::Rect dragging_rect =
+      gfx::ToEnclosingRect(DragController::ClippedSelection(frame));
   int xpos = dragging_rect.right();
   xpos = dragging_rect.x() < xpos ? dragging_rect.x() : xpos;
   int ypos = dragging_rect.bottom();
@@ -1053,16 +1053,14 @@ static gfx::Point DragLocationForSelectionDrag(const LocalFrame& frame) {
   return gfx::Point(xpos, ypos);
 }
 
-static const IntSize MaxDragImageSize(float device_scale_factor) {
+static const gfx::Size MaxDragImageSize(float device_scale_factor) {
 #if defined(OS_MAC)
   // Match Safari's drag image size.
-  static const IntSize kMaxDragImageSize(400, 400);
+  static const gfx::Size kMaxDragImageSize(400, 400);
 #else
-  static const IntSize kMaxDragImageSize(200, 200);
+  static const gfx::Size kMaxDragImageSize(200, 200);
 #endif
-  IntSize max_size_in_pixels = kMaxDragImageSize;
-  max_size_in_pixels.Scale(device_scale_factor);
-  return max_size_in_pixels;
+  return gfx::ScaleToFlooredSize(kMaxDragImageSize, device_scale_factor);
 }
 
 static bool CanDragImage(const Element& element) {
@@ -1086,7 +1084,7 @@ static bool CanDragImage(const Element& element) {
 static std::unique_ptr<DragImage> DragImageForImage(
     const Element& element,
     float device_scale_factor,
-    const IntSize& image_element_size_in_pixels) {
+    const gfx::Size& image_element_size_in_pixels) {
   auto* layout_image = To<LayoutImage>(element.GetLayoutObject());
   const LayoutImageResource& image_resource = *layout_image->ImageResource();
   scoped_refptr<Image> image =
@@ -1094,15 +1092,15 @@ static std::unique_ptr<DragImage> DragImageForImage(
   RespectImageOrientationEnum respect_orientation =
       image_resource.ImageOrientation();
 
-  IntSize image_size = image->Size(respect_orientation);
-  if (image_size.Area() > kMaxOriginalImageArea)
+  gfx::Size image_size = image->Size(respect_orientation);
+  if (image_size.Area64() > kMaxOriginalImageArea)
     return nullptr;
 
   InterpolationQuality interpolation_quality = kInterpolationDefault;
   if (layout_image->StyleRef().ImageRendering() == EImageRendering::kPixelated)
     interpolation_quality = kInterpolationNone;
 
-  FloatSize image_scale =
+  gfx::Vector2dF image_scale =
       DragImage::ClampedImageScale(image_size, image_element_size_in_pixels,
                                    MaxDragImageSize(device_scale_factor));
 
@@ -1115,12 +1113,12 @@ static gfx::Point DragLocationForImage(
     const DragImage* drag_image,
     const gfx::Point& drag_origin,
     const gfx::Point& image_element_location,
-    const IntSize& image_element_size_in_pixels) {
+    const gfx::Size& image_element_size_in_pixels) {
   if (!drag_image)
     return drag_origin;
 
-  IntSize original_size = image_element_size_in_pixels;
-  IntSize new_size = drag_image->Size();
+  gfx::Size original_size = image_element_size_in_pixels;
+  gfx::Size new_size = drag_image->Size();
 
   // Properly orient the drag image and orient it differently if it's smaller
   // than the original
@@ -1172,14 +1170,14 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
       DocumentUpdateReason::kDragImage);
   DCHECK(frame.GetDocument()->IsActive());
 
-  FloatRect painting_rect = ClippedSelection(frame);
+  gfx::RectF painting_rect = ClippedSelection(frame);
   GlobalPaintFlags paint_flags =
       kGlobalPaintSelectionDragImageOnly | kGlobalPaintFlattenCompositingLayers;
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   frame.View()->PaintContentsOutsideOfLifecycle(
       builder->Context(), paint_flags,
-      CullRect(ToGfxRect(EnclosingIntRect(painting_rect))));
+      CullRect(gfx::ToEnclosingRect(painting_rect)));
 
   auto property_tree_state = frame.View()
                                  ->GetLayoutView()
@@ -1249,11 +1247,11 @@ bool DragController::StartDrag(LocalFrame* src,
     if (image_url.IsEmpty() || !element || !CanDragImage(*element))
       return false;
     if (!drag_image) {
-      const IntRect& image_rect = hit_test_result.ImageRect();
-      IntSize image_size_in_pixels = image_rect.size();
+      const gfx::Rect& image_rect = hit_test_result.ImageRect();
       // TODO(oshima): Remove this scaling and simply pass imageRect to
       // dragImageForImage once all platforms are migrated to use zoom for dsf.
-      image_size_in_pixels.Scale(src->GetPage()->DeviceScaleFactorDeprecated() *
+      gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
+          image_rect.size(), src->GetPage()->DeviceScaleFactorDeprecated() *
                                  src->GetPage()->GetVisualViewport().Scale());
 
       float screen_device_scale_factor =

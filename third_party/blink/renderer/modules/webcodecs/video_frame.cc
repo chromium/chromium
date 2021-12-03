@@ -1041,7 +1041,7 @@ gfx::SizeF VideoFrame::ElementSize(
       orientation_adjusted_size.Transpose();
     return orientation_adjusted_size;
   }
-  return gfx::SizeF(ToGfxSize(BitmapSourceSize()));
+  return gfx::SizeF(BitmapSourceSize());
 }
 
 bool VideoFrame::IsVideoFrame() const {
@@ -1063,13 +1063,13 @@ bool VideoFrame::IsAccelerated() const {
   return false;
 }
 
-IntSize VideoFrame::BitmapSourceSize() const {
+gfx::Size VideoFrame::BitmapSourceSize() const {
   auto local_frame = handle_->frame();
   if (!local_frame)
-    return IntSize();
+    return gfx::Size();
 
   // ImageBitmaps should always return the size w/o respecting orientation.
-  return IntSize(local_frame->natural_size());
+  return local_frame->natural_size();
 }
 
 ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,

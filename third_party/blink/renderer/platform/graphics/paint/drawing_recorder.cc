@@ -29,7 +29,7 @@ DrawingRecorder::DrawingRecorder(GraphicsContext& context,
   DCHECK(DisplayItem::IsDrawingType(display_item_type));
 
   context.SetInDrawingRecorder(true);
-  context.BeginRecording(FloatRect());
+  context.BeginRecording(gfx::RectF());
 
   if (context.NeedsDOMNodeId()) {
     DOMNodeId dom_node_id = display_item_client.OwnerNodeId();

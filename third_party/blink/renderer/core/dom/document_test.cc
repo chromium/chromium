@@ -424,7 +424,7 @@ TEST_F(DocumentTest, PrintRelayout) {
     </style>
     <p><div><span></span></div></p>
   )HTML");
-  FloatSize page_size(400, 400);
+  gfx::SizeF page_size(400, 400);
   float maximum_shrink_ratio = 1.6;
 
   GetDocument().GetFrame()->StartPrinting(page_size, page_size,
@@ -1073,7 +1073,7 @@ TEST_F(DocumentTest, AtPageMarginWithDeviceScaleFactor) {
   GetDocument().GetFrame()->SetPageZoomFactor(2);
   SetBodyInnerHTML("<style>@page { margin: 50px; size: 400px 10in; }</style>");
 
-  constexpr FloatSize initial_page_size(800, 600);
+  constexpr gfx::SizeF initial_page_size(800, 600);
 
   GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();

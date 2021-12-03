@@ -171,12 +171,13 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSFunctionValue* ValueForTransformOperation(
       const TransformOperation&,
       float zoom,
-      FloatSize box_size = FloatSize(0, 0));
+      gfx::SizeF box_size = gfx::SizeF(0, 0));
   // Serialize a transform list.
   static CSSValue* ValueForTransformList(const TransformOperations&,
                                          float zoom,
-                                         FloatSize box_size = FloatSize(0, 0));
-  static FloatRect ReferenceBoxForTransform(
+                                         gfx::SizeF box_size = gfx::SizeF(0,
+                                                                          0));
+  static gfx::RectF ReferenceBoxForTransform(
       const LayoutObject&,
       UsePixelSnappedBox = kUsePixelSnappedBox);
   // The LayoutObject parameter is only used for converting unreperesentable

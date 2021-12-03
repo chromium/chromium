@@ -531,7 +531,7 @@ TEST_P(ScrollAnchorTest, AnchoringDisabledForPrinting) {
   ScrollLayoutViewport(ScrollOffset(0, 150));
 
   // This will trigger printing and layout.
-  PrintContext::NumberOfPages(GetDocument().GetFrame(), FloatSize(500, 500));
+  PrintContext::NumberOfPages(GetDocument().GetFrame(), gfx::SizeF(500, 500));
 
   EXPECT_EQ(150, viewport->ScrollOffsetInt().y());
   EXPECT_EQ(nullptr, GetScrollAnchor(viewport).AnchorObject());

@@ -1573,7 +1573,7 @@ TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {
     </style>
   )HTML");
 
-  constexpr FloatSize initial_page_size(800, 600);
+  constexpr gfx::SizeF initial_page_size(800, 600);
 
   GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();

@@ -177,9 +177,9 @@ ScrollOffset RootFrameViewport::ScrollOffsetFromScrollAnimators() const {
          LayoutViewport().GetScrollAnimator().CurrentOffset();
 }
 
-IntRect RootFrameViewport::VisibleContentRect(
+gfx::Rect RootFrameViewport::VisibleContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
-  return IntRect(
+  return gfx::Rect(
       gfx::PointAtOffsetFromOrigin(ScrollOffsetInt()),
       GetVisualViewport().VisibleContentRect(scrollbar_inclusion).size());
 }
@@ -242,7 +242,7 @@ bool RootFrameViewport::IsScrollCornerVisible() const {
   return LayoutViewport().IsScrollCornerVisible();
 }
 
-IntRect RootFrameViewport::ScrollCornerRect() const {
+gfx::Rect RootFrameViewport::ScrollCornerRect() const {
   return LayoutViewport().ScrollCornerRect();
 }
 
@@ -462,7 +462,7 @@ ScrollOffset RootFrameViewport::MaximumScrollOffset() const {
          GetVisualViewport().MaximumScrollOffset();
 }
 
-IntSize RootFrameViewport::ContentsSize() const {
+gfx::Size RootFrameViewport::ContentsSize() const {
   return LayoutViewport().ContentsSize();
 }
 

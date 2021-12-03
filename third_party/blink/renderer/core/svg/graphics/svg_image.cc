@@ -76,6 +76,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -285,17 +287,17 @@ bool SVGImage::CurrentFrameHasSingleSecurityOrigin() const {
   return true;
 }
 
-IntSize SVGImage::SizeWithConfig(SizeConfig) const {
-  return RoundedIntSize(intrinsic_size_);
+gfx::Size SVGImage::SizeWithConfig(SizeConfig) const {
+  return ToRoundedSize(intrinsic_size_);
 }
 
 static float ResolveWidthForRatio(float height,
-                                  const FloatSize& intrinsic_ratio) {
+                                  const gfx::SizeF& intrinsic_ratio) {
   return height * intrinsic_ratio.width() / intrinsic_ratio.height();
 }
 
 static float ResolveHeightForRatio(float width,
-                                   const FloatSize& intrinsic_ratio) {
+                                   const gfx::SizeF& intrinsic_ratio) {
   return width * intrinsic_ratio.height() / intrinsic_ratio.width();
 }
 
@@ -312,11 +314,11 @@ bool SVGImage::GetIntrinsicSizingInfo(
   return true;
 }
 
-FloatSize SVGImage::ConcreteObjectSize(
-    const FloatSize& default_object_size) const {
+gfx::SizeF SVGImage::ConcreteObjectSize(
+    const gfx::SizeF& default_object_size) const {
   IntrinsicSizingInfo intrinsic_sizing_info;
   if (!GetIntrinsicSizingInfo(intrinsic_sizing_info))
-    return FloatSize();
+    return gfx::SizeF();
 
   // https://www.w3.org/TR/css3-images/#default-sizing
   if (intrinsic_sizing_info.has_width && intrinsic_sizing_info.has_height)
@@ -332,22 +334,23 @@ FloatSize SVGImage::ConcreteObjectSize(
 
   if (intrinsic_sizing_info.has_width) {
     if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-      return FloatSize(intrinsic_sizing_info.size.width(),
-                       default_object_size.height());
+      return gfx::SizeF(intrinsic_sizing_info.size.width(),
+                        default_object_size.height());
     }
-    return FloatSize(intrinsic_sizing_info.size.width(),
-                     ResolveHeightForRatio(intrinsic_sizing_info.size.width(),
-                                           intrinsic_sizing_info.aspect_ratio));
+    return gfx::SizeF(
+        intrinsic_sizing_info.size.width(),
+        ResolveHeightForRatio(intrinsic_sizing_info.size.width(),
+                              intrinsic_sizing_info.aspect_ratio));
   }
 
   if (intrinsic_sizing_info.has_height) {
     if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-      return FloatSize(default_object_size.width(),
-                       intrinsic_sizing_info.size.height());
+      return gfx::SizeF(default_object_size.width(),
+                        intrinsic_sizing_info.size.height());
     }
-    return FloatSize(ResolveWidthForRatio(intrinsic_sizing_info.size.height(),
-                                          intrinsic_sizing_info.aspect_ratio),
-                     intrinsic_sizing_info.size.height());
+    return gfx::SizeF(ResolveWidthForRatio(intrinsic_sizing_info.size.height(),
+                                           intrinsic_sizing_info.aspect_ratio),
+                      intrinsic_sizing_info.size.height());
   }
 
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
@@ -358,49 +361,50 @@ FloatSize SVGImage::ConcreteObjectSize(
     float solution_width = ResolveWidthForRatio(
         default_object_size.height(), intrinsic_sizing_info.aspect_ratio);
     if (solution_width <= default_object_size.width())
-      return FloatSize(solution_width, default_object_size.height());
+      return gfx::SizeF(solution_width, default_object_size.height());
 
     float solution_height = ResolveHeightForRatio(
         default_object_size.width(), intrinsic_sizing_info.aspect_ratio);
-    return FloatSize(default_object_size.width(), solution_height);
+    return gfx::SizeF(default_object_size.width(), solution_height);
   }
 
   return default_object_size;
 }
 
-SVGImage::DrawInfo::DrawInfo(const FloatSize& container_size,
+SVGImage::DrawInfo::DrawInfo(const gfx::SizeF& container_size,
                              float zoom,
                              const KURL& url,
                              bool is_dark_mode_enabled)
     : container_size_(container_size),
-      rounded_container_size_(RoundedIntSize(container_size)),
+      rounded_container_size_(gfx::ToRoundedSize(container_size)),
       zoom_(zoom),
       url_(url),
       is_dark_mode_enabled_(is_dark_mode_enabled) {}
 
-FloatSize SVGImage::DrawInfo::CalculateResidualScale() const {
-  return FloatSize(rounded_container_size_.width() / container_size_.width(),
-                   rounded_container_size_.height() / container_size_.height());
+gfx::SizeF SVGImage::DrawInfo::CalculateResidualScale() const {
+  return gfx::SizeF(
+      rounded_container_size_.width() / container_size_.width(),
+      rounded_container_size_.height() / container_size_.height());
 }
 
 void SVGImage::DrawForContainer(const DrawInfo& draw_info,
                                 cc::PaintCanvas* canvas,
                                 const PaintFlags& flags,
-                                const FloatRect& dst_rect,
-                                const FloatRect& src_rect) {
-  FloatRect unzoomed_src = src_rect;
+                                const gfx::RectF& dst_rect,
+                                const gfx::RectF& src_rect) {
+  gfx::RectF unzoomed_src = src_rect;
   unzoomed_src.Scale(1 / draw_info.Zoom());
 
   // Compensate for the container size rounding by adjusting the source rect.
-  FloatSize residual_scale = draw_info.CalculateResidualScale();
-  unzoomed_src.set_size(unzoomed_src.size().ScaledBy(residual_scale.width(),
-                                                     residual_scale.height()));
+  gfx::SizeF residual_scale = draw_info.CalculateResidualScale();
+  unzoomed_src.set_size(gfx::ScaleSize(
+      unzoomed_src.size(), residual_scale.width(), residual_scale.height()));
 
   DrawInternal(draw_info, canvas, flags, dst_rect, unzoomed_src);
 }
 
 PaintImage SVGImage::PaintImageForCurrentFrame() {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(), false);
+  const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(), false);
   auto builder = CreatePaintImageBuilder();
   PopulatePaintRecordForCurrentFrameForContainer(draw_info, builder);
   return builder.TakePaintImage();
@@ -409,15 +413,14 @@ PaintImage SVGImage::PaintImageForCurrentFrame() {
 void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                                        GraphicsContext& context,
                                        const cc::PaintFlags& base_flags,
-                                       const FloatRect& dst_rect,
+                                       const gfx::RectF& dst_rect,
                                        const ImageTilingInfo& tiling_info) {
   // Tile adjusted for scaling/stretch.
-  FloatRect tile(tiling_info.image_rect);
-  tile.Scale(tiling_info.scale.width(), tiling_info.scale.height());
+  gfx::RectF tile = tiling_info.image_rect;
+  tile.Scale(tiling_info.scale.x(), tiling_info.scale.y());
 
   // Expand the tile to account for repeat spacing.
-  FloatRect spaced_tile(tile);
-  spaced_tile.Expand(tiling_info.spacing);
+  gfx::RectF spaced_tile(tile.origin(), tile.size() + tiling_info.spacing);
 
   SkMatrix pattern_transform;
   pattern_transform.setTranslate(tiling_info.phase.x() + spaced_tile.x(),
@@ -436,8 +439,8 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   }
 
   sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(
-      builder->EndRecording(), spaced_tile, SkTileMode::kRepeat,
-      SkTileMode::kRepeat, &pattern_transform);
+      builder->EndRecording(), gfx::RectFToSkRect(spaced_tile),
+      SkTileMode::kRepeat, SkTileMode::kRepeat, &pattern_transform);
 
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
@@ -448,7 +451,7 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   // Reset filter quality.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
 
-  context.DrawRect(dst_rect, flags,
+  context.DrawRect(gfx::RectFToSkRect(dst_rect), flags,
                    PaintAutoDarkMode(DarkModeFilter::ElementRole::kSVG,
                                      draw_info.IsDarkModeEnabled()));
 
@@ -459,13 +462,14 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
     const DrawInfo& draw_info,
     PaintImageBuilder& builder) {
   PaintRecorder recorder;
-  const FloatSize size(draw_info.ContainerSize().ScaledBy(draw_info.Zoom()));
-  const IntRect dest_rect(gfx::Point(), RoundedIntSize(size));
-  cc::PaintCanvas* canvas = recorder.beginRecording(dest_rect);
-  DrawForContainer(draw_info, canvas, PaintFlags(), FloatRect(dest_rect),
-                   FloatRect(gfx::PointF(), size));
-  builder.set_paint_record(recorder.finishRecordingAsPicture(),
-                           ToGfxRect(dest_rect),
+  const gfx::SizeF size =
+      gfx::ScaleSize(draw_info.ContainerSize(), draw_info.Zoom());
+  const gfx::Rect dest_rect(gfx::ToRoundedSize(size));
+  cc::PaintCanvas* canvas =
+      recorder.beginRecording(gfx::RectToSkRect(dest_rect));
+  DrawForContainer(draw_info, canvas, PaintFlags(), gfx::RectF(dest_rect),
+                   gfx::RectF(size));
+  builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,
                            PaintImage::GetNextContentId());
 
   builder.set_completion_state(
@@ -483,7 +487,8 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   if (!record)
     return false;
 
-  const FloatRect bounds(gfx::PointF(), draw_info.ContainerSize());
+  const SkRect bounds =
+      SkRect::MakeSize(gfx::SizeFToSkSize(draw_info.ContainerSize()));
   flags.setShader(PaintShader::MakePaintRecord(
       std::move(record), bounds, SkTileMode::kClamp, SkTileMode::kClamp,
       &local_matrix));
@@ -496,10 +501,10 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
 
 bool SVGImage::ApplyShader(PaintFlags& flags,
                            const SkMatrix& local_matrix,
-                           const FloatRect& dst_rect,
-                           const FloatRect& src_rect,
+                           const gfx::RectF& dst_rect,
+                           const gfx::RectF& src_rect,
                            const ImageDrawOptions& draw_options) {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
+  const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);
   return ApplyShaderInternal(draw_info, flags, local_matrix);
 }
@@ -508,8 +513,8 @@ bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
                                        PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
   // Compensate for the container size rounding.
-  FloatSize residual_scale =
-      draw_info.CalculateResidualScale().ScaledBy(draw_info.Zoom());
+  gfx::SizeF residual_scale =
+      gfx::ScaleSize(draw_info.CalculateResidualScale(), draw_info.Zoom());
   auto adjusted_local_matrix = local_matrix;
   adjusted_local_matrix.preScale(residual_scale.width(),
                                  residual_scale.height());
@@ -518,10 +523,10 @@ bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
 
 void SVGImage::Draw(cc::PaintCanvas* canvas,
                     const PaintFlags& flags,
-                    const FloatRect& dst_rect,
-                    const FloatRect& src_rect,
+                    const gfx::RectF& dst_rect,
+                    const gfx::RectF& src_rect,
                     const ImageDrawOptions& draw_options) {
-  const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
+  const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);
   DrawInternal(draw_info, canvas, flags, dst_rect, src_rect);
 }
@@ -537,9 +542,9 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   if (LayoutSVGRoot* layout_root = LayoutRoot())
     layout_root->SetContainerSize(RoundedLayoutSize(draw_info.ContainerSize()));
   LocalFrameView* view = GetFrame()->View();
-  const IntSize rounded_container_size = draw_info.RoundedContainerSize();
-  view->Resize(rounded_container_size);
-  page_->GetVisualViewport().SetSize(rounded_container_size);
+  const gfx::Size rounded_container_size = draw_info.RoundedContainerSize();
+  view->Resize(IntSize(rounded_container_size));
+  page_->GetVisualViewport().SetSize(IntSize(rounded_container_size));
 
   // Always call processUrlFragment, even if the url is empty, because
   // there may have been a previous url/fragment that needs to be reset.
@@ -588,8 +593,8 @@ static bool DrawNeedsLayer(const PaintFlags& flags) {
 void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             cc::PaintCanvas* canvas,
                             const PaintFlags& flags,
-                            const FloatRect& dst_rect,
-                            const FloatRect& unzoomed_src_rect) {
+                            const gfx::RectF& dst_rect,
+                            const gfx::RectF& unzoomed_src_rect) {
   sk_sp<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
   if (!record)
     return;
@@ -597,15 +602,16 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
   {
     PaintCanvasAutoRestore ar(canvas, false);
     if (DrawNeedsLayer(flags)) {
-      SkRect layer_rect = dst_rect;
+      SkRect layer_rect = gfx::RectFToSkRect(dst_rect);
       canvas->saveLayer(&layer_rect, &flags);
     }
     // We can only draw the entire frame, clipped to the rect we want. So
     // compute where the top left of the image would be if we were drawing
     // without clipping, and translate accordingly.
     canvas->save();
-    canvas->clipRect(EnclosingIntRect(dst_rect));
-    canvas->concat(SkMatrix::RectToRect(unzoomed_src_rect, dst_rect));
+    canvas->clipRect(gfx::RectToSkRect(gfx::ToEnclosingRect(dst_rect)));
+    canvas->concat(SkMatrix::RectToRect(gfx::RectFToSkRect(unzoomed_src_rect),
+                                        gfx::RectFToSkRect(dst_rect)));
     canvas->drawPicture(std::move(record));
     canvas->restore();
   }
@@ -895,7 +901,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     return kSizeUnavailable;
 
   // Set the concrete object size before a container size is available.
-  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(FloatSize(
+  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(gfx::SizeF(
       LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight)));
 
   if (load_state_ == kWaitingForAsyncLoadCompletion)

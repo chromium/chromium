@@ -1018,9 +1018,8 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
 
     background_client = &layout_box.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect =
-        ToGfxRect(layout_box.GetScrollableArea()->ScrollingBackgroundVisualRect(
-            paint_offset));
+    visual_rect = layout_box.GetScrollableArea()->ScrollingBackgroundVisualRect(
+        paint_offset);
   } else {
     paint_rect.offset = paint_offset;
     paint_rect.size = box_fragment_.Size();
@@ -1036,7 +1035,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
     PaintBoxDecorationBackgroundWithRect(
         contents_paint_state ? contents_paint_state->GetPaintInfo()
                              : paint_info,
-        IntRect(visual_rect), paint_rect, *background_client);
+        visual_rect, paint_rect, *background_client);
   }
 
   if (ShouldRecordHitTestData(paint_info)) {
@@ -1077,7 +1076,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
 
 void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     const PaintInfo& paint_info,
-    const IntRect& visual_rect,
+    const gfx::Rect& visual_rect,
     const PhysicalRect& paint_rect,
     const DisplayItemClient& background_client) {
   BoxDecorationData box_decoration_data(paint_info, box_fragment_);
@@ -1100,8 +1099,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRect(
     return;
 
   DrawingRecorder recorder(paint_info.context, background_client,
-                           DisplayItem::kBoxDecorationBackground,
-                           ToGfxRect(visual_rect));
+                           DisplayItem::kBoxDecorationBackground, visual_rect);
 
   if (PhysicalFragment().IsFieldsetContainer()) {
     NGFieldsetPainter(box_fragment_)
@@ -1164,7 +1162,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
       PhysicalRect clip_rect = paint_rect;
       clip_rect.Expand(layout_box.BorderInsets());
       state_saver.Save();
-      paint_info.context.Clip(PixelSnappedIntRect(clip_rect));
+      paint_info.context.Clip(ToPixelSnappedRect(clip_rect));
     } else if (BleedAvoidanceIsClipping(
                    box_decoration_data.GetBackgroundBleedAvoidance())) {
       state_saver.Save();
@@ -1181,7 +1179,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
     }
   }
 
-  IntRect snapped_paint_rect(PixelSnappedIntRect(paint_rect));
+  gfx::Rect snapped_paint_rect = ToPixelSnappedRect(paint_rect);
   ThemePainter& theme_painter = LayoutTheme::GetTheme().Painter();
   bool theme_painted =
       box_decoration_data.HasAppearance() &&
@@ -1634,10 +1632,10 @@ void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
   const auto& backplates = BuildBackplate(line_boxes, paint_offset);
   DrawingRecorder recorder(paint_info.context, GetDisplayItemClient(),
                            DisplayItem::kForcedColorsModeBackplate,
-                           ToGfxRect(EnclosingIntRect(UnionRect(backplates))));
+                           ToEnclosingRect(UnionRect(backplates)));
   for (const auto backplate : backplates) {
     paint_info.context.FillRect(
-        FloatRect(backplate), backplate_color,
+        gfx::RectF(backplate), backplate_color,
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   }
 }
@@ -1778,10 +1776,10 @@ bool NGBoxFragmentPainter::ShouldPaint(
 }
 
 void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
-                                             const IntRect& mask_rect,
+                                             const gfx::Rect& mask_rect,
                                              const PhysicalOffset& paint_offset,
                                              bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(ToGfxRect(mask_rect)),
+  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
                             PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (!object_has_multiple_boxes) {
@@ -1827,7 +1825,7 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
   // Clip to the overflow area.
   if (info.is_clipped_with_local_scrolling &&
       !IsPaintingBackgroundInContentsSpace(paint_info)) {
-    context.Clip(FloatRect(physical.OverflowClipRect(rect.offset)));
+    context.Clip(gfx::RectF(physical.OverflowClipRect(rect.offset)));
 
     // Adjust the paint rect to reflect a scrolled content box with borders at
     // the ends.

@@ -70,7 +70,7 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<SkData> data) {
   if (!decoder || !decoder->IsSizeAvailable())
     return nullptr;
 
-  const IntSize size = decoder->Size();
+  const gfx::Size size = decoder->Size();
   const SkImageInfo info =
       SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType,
                            decoder->ColorSpaceForSkImages());
