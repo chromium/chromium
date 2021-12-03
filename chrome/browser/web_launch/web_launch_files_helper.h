@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -88,11 +87,6 @@ class WebLaunchFilesHelper
   // renderer is ready to receive them.
   void MaybeSendLaunchEntries();
 
-  void OnPermissionRequestResponse(ContentSetting content_setting);
-
-  // Called after the user has made a decision in the permission UI.
-  void OnGotPermissionDialogResult(ContentSetting content_setting);
-
   // Send the launch entries to the renderer.
   void SendLaunchEntries();
 
@@ -117,12 +111,6 @@ class WebLaunchFilesHelper
 
   // The files to launch with (may be empty).
   std::vector<base::FilePath> launch_paths_;
-
-  // Whether the permission has yet been checked.
-  bool permission_was_checked_ = false;
-
-  // Whether the permission check has already been passed for this launch.
-  bool passed_permission_check_ = false;
 
   // Which URL we first enqueued launch params in.
   GURL url_params_enqueued_in_;

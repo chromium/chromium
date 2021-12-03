@@ -170,8 +170,7 @@ std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(
     case ContentSettingsType::ADS:
       return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE);
     default:
-      return content_settings::GetPermissionDetailString(GetProfile(), type,
-                                                         site_url_);
+      return {};
   }
 }
 

@@ -207,61 +207,6 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
   return true;
 }
 
-bool AreFileHandlersAlreadyRegistered(Profile* profile,
-                                      const GURL& url,
-                                      const apps::FileHandlers& new_handlers) {
-  return AreNewFileHandlersASubsetOfOld(
-      GetFileHandlersForAllWebAppsWithOrigin(profile, url), new_handlers);
-}
-
-apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
-                                                          const GURL& url) {
-  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
-    return {};
-
-  const WebAppRegistrar& registrar = provider->registrar();
-  std::vector<AppId> app_ids =
-      registrar.FindAppsInScope(url.DeprecatedGetOriginAsURL());
-  if (app_ids.empty())
-    return {};
-
-  apps::FileHandlers aggregated_handlers;
-  for (const AppId& app_id : app_ids) {
-    const apps::FileHandlers* handlers = registrar.GetAppFileHandlers(app_id);
-    aggregated_handlers.insert(aggregated_handlers.end(), handlers->begin(),
-                               handlers->end());
-  }
-
-  return aggregated_handlers;
-}
-
-std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
-    Profile* profile,
-    const GURL& url,
-    bool* found_multiple) {
-  const apps::FileHandlers file_handlers =
-      GetFileHandlersForAllWebAppsWithOrigin(profile, url);
-  std::set<std::string> extensions_set =
-      apps::GetFileExtensionsFromFileHandlers(file_handlers);
-  std::vector<std::string> extensions_for_display;
-  extensions_for_display.reserve(extensions_set.size());
-
-  // Convert file types from formats like ".txt" to "TXT".
-  std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(extensions_for_display),
-                 [](const std::string& extension) {
-                   return base::ToUpperASCII(extension.substr(1));
-                 });
-
-  if (found_multiple)
-    *found_multiple = extensions_for_display.size() > 1;
-
-  return base::UTF8ToUTF16(base::JoinString(
-      extensions_for_display,
-      l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
-}
-
 std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
     Profile* profile,
     const AppId& app_id,
@@ -350,8 +295,6 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    const AppId& app_id,
                                    bool allowed,
                                    base::OnceClosure update_finished_callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kDesktopPWAsFileHandlingSettingsGated));
   WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 

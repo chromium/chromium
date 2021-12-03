@@ -356,10 +356,6 @@ void WebApp::SetManifestId(const absl::optional<std::string>& manifest_id) {
   manifest_id_ = manifest_id;
 }
 
-void WebApp::SetFileHandlerPermissionBlocked(bool permission_blocked) {
-  file_handler_permission_blocked_ = permission_blocked;
-}
-
 void WebApp::SetWindowControlsOverlayEnabled(bool enabled) {
   window_controls_overlay_enabled_ = enabled;
 }
@@ -463,7 +459,6 @@ bool WebApp::operator==(const WebApp& other) const {
         app.manifest_url_,
         app.manifest_id_,
         app.client_data_.system_web_app_data,
-        app.file_handler_permission_blocked_,
         app.file_handler_approval_state_,
         app.file_handler_os_integration_state_,
         app.window_controls_overlay_enabled_,
@@ -567,9 +562,6 @@ base::Value WebApp::AsDebugValue() const {
     }
     downloaded_shortcuts_menu_icons_sizes.Append(std::move(entry));
   }
-
-  root.SetBoolKey("file_handler_permission_blocked",
-                  file_handler_permission_blocked_);
 
   root.SetStringKey("file_handler_approval_state",
                     ApiApprovalStateToString(file_handler_approval_state_));

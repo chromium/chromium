@@ -93,7 +93,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, 72},
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, 73},
     {ContentSettingsType::DISPLAY_CAPTURE, 74},
-    {ContentSettingsType::FILE_HANDLING, 75},
+    // Removed FILE_HANDLING in M98.
     {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA, 76},
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, 77},
     {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, 78},

@@ -441,9 +441,6 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_FONT_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the fonts permission is in the ask state and the site can prompt the user to ask if they allow the site to use fonts installed on your device.">
       Can ask to use fonts installed on your device
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_FILE_HANDLING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the file handling permission is in the ask state and the site can prompt the user to ask if they allow the site to open types of files.">
-      Can ask to open types of files
-    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_SERIAL_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the serial permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to serial ports.">
       Can ask to connect to serial ports
     </message>

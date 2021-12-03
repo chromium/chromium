@@ -126,6 +126,10 @@ void ContentSettingsRegistry::Init() {
 
   // WARNING: The string names of the permissions passed in below are used to
   // generate preference names and should never be changed!
+  //
+  // If a permission is DELETED, please update
+  // PrefProvider::DiscardOrMigrateObsoletePreferences() and
+  // DefaultProvider::DiscardOrMigrateObsoletePreferences() accordingly.
 
   Register(ContentSettingsType::COOKIES, "cookies", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
@@ -594,17 +598,6 @@ void ContentSettingsRegistry::Init() {
                          CONTENT_SETTING_BLOCK),
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::PERSISTENT,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
-
-  Register(ContentSettingsType::FILE_HANDLING, "file-handling",
-           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
-           AllowlistedSchemes(),
-           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
-                         CONTENT_SETTING_BLOCK),
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);

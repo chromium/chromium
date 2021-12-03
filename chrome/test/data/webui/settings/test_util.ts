@@ -55,7 +55,6 @@ export function createRawSiteException(
         setting: ContentSetting.ALLOW,
         source: SiteSettingSource.PREFERENCE,
         isEmbargoed: false,
-        settingDetail: null,
         type: '',
       },
       override || {});

@@ -149,8 +149,6 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList feature_list_{
       blink::features::kFileHandlingAPI};
-  base::test::ScopedFeatureList feature_list_for_settings_{
-      features::kDesktopPWAsFileHandlingSettingsGated};
 };
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,

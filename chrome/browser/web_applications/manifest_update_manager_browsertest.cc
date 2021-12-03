@@ -1796,35 +1796,19 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   EXPECT_FALSE(web_app->share_target().has_value());
 }
 
-enum class FileHandlingGateType {
-  kUsesPermission,
-  kUsesSetting,
-};
-
 // Functional tests. More tests for detecting file handler updates are
 // available in unit tests at ManifestUpdateTaskTest.
 class ManifestUpdateManagerBrowserTestWithFileHandling
-    : public ManifestUpdateManagerBrowserTest,
-      public testing::WithParamInterface<FileHandlingGateType> {
+    : public ManifestUpdateManagerBrowserTest {
  public:
-  ManifestUpdateManagerBrowserTestWithFileHandling() {
-    feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
-    feature_list_for_settings_.InitWithFeatureState(
-        features::kDesktopPWAsFileHandlingSettingsGated,
-        GetParam() == FileHandlingGateType::kUsesSetting);
-  }
-
-  bool UsesPermissions() {
-    return !base::FeatureList::IsEnabled(
-        features::kDesktopPWAsFileHandlingSettingsGated);
-  }
+  ManifestUpdateManagerBrowserTestWithFileHandling() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedFeatureList feature_list_for_settings_;
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
 };
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFindsAddedFileHandler) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -1872,7 +1856,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ("text/plain", file_handler.accept[0].mime_type);
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckIgnoresUnchangedFileHandler) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -1906,7 +1890,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_FALSE(web_app->file_handlers().empty());
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFindsChangedFileExtension) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -1950,7 +1934,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        FileHandlingPermissionResetsOnUpdate) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -1984,23 +1968,10 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   const auto& old_file_handler = web_app->file_handlers()[0];
   auto old_extensions = old_file_handler.accept[0].file_extensions;
   EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   const GURL url = GetAppURL();
   const GURL origin = url.DeprecatedGetOriginAsURL();
 
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-    // Set permission to ALLOW.
-    map->SetContentSettingDefaultScope(origin, origin,
-                                       ContentSettingsType::FILE_HANDLING,
-                                       CONTENT_SETTING_ALLOW);
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-  } else {
+  {
     ScopedRegistryUpdate update(&GetProvider().sync_bridge());
     WebApp* app = update->UpdateApp(app_id);
     ASSERT_TRUE(app);
@@ -2020,16 +1991,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
 
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-
-    // Set permission to ALLOW.
-    map->SetContentSettingDefaultScope(origin, origin,
-                                       ContentSettingsType::FILE_HANDLING,
-                                       CONTENT_SETTING_ALLOW);
-  } else {
+  {
     ScopedRegistryUpdate update(&GetProvider().sync_bridge());
     WebApp* app = update->UpdateApp(app_id);
     ASSERT_TRUE(app);
@@ -2050,11 +2012,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
 
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-  } else {
+  {
     EXPECT_EQ(ApiApprovalState::kAllowed,
               web_app->file_handler_approval_state());
   }
@@ -2068,11 +2026,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
   EXPECT_FALSE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-  } else {
+  {
     EXPECT_EQ(ApiApprovalState::kAllowed,
               web_app->file_handler_approval_state());
   }
@@ -2088,11 +2042,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
 #endif
 
   // Block the permission, update manifest, permission should still be block.
-  if (UsesPermissions()) {
-    map->SetContentSettingDefaultScope(origin, origin,
-                                       ContentSettingsType::FILE_HANDLING,
-                                       CONTENT_SETTING_BLOCK);
-  } else {
+  {
     ScopedRegistryUpdate update(&GetProvider().sync_bridge());
     WebApp* app = update->UpdateApp(app_id);
     ASSERT_TRUE(app);
@@ -2103,17 +2053,13 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   SetTimeOverride(time_override);
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
 
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-  } else {
+  {
     EXPECT_EQ(ApiApprovalState::kDisallowed,
               web_app->file_handler_approval_state());
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        BlockedPermissionPreservedOnUpdate) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -2140,33 +2086,14 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   WebAppRegistrar& registrar = GetProvider().registrar();
   const WebApp* web_app = registrar.GetAppById(app_id);
 
-  EXPECT_FALSE(web_app->file_handler_permission_blocked());
   ASSERT_FALSE(web_app->file_handlers().empty());
   const auto& old_file_handler = web_app->file_handlers()[0];
   ASSERT_FALSE(old_file_handler.accept.empty());
   auto old_extensions = old_file_handler.accept[0].file_extensions;
   EXPECT_TRUE(base::Contains(old_extensions, ".txt"));
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   const GURL url = GetAppURL();
   const GURL origin = url.DeprecatedGetOriginAsURL();
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-    // Set permission to BLOCK.
-    map->SetContentSettingDefaultScope(origin, origin,
-                                       ContentSettingsType::FILE_HANDLING,
-                                       CONTENT_SETTING_BLOCK);
-    EXPECT_EQ(CONTENT_SETTING_BLOCK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-
-    // App should be updated to permission blocked by
-    // `WebAppInstallFinalizer::OnContentSettingChanged`.
-    EXPECT_TRUE(
-        registrar.GetAppById(app_id)->file_handler_permission_blocked());
-  } else {
+  {
     ScopedRegistryUpdate update(&GetProvider().sync_bridge());
     WebApp* app = update->UpdateApp(app_id);
     ASSERT_TRUE(app);
@@ -2181,16 +2108,11 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
 
   // Manifest update task should preserve the permission blocked state.
-  if (UsesPermissions()) {
-    EXPECT_TRUE(
-        registrar.GetAppById(app_id)->file_handler_permission_blocked());
-  } else {
-    EXPECT_EQ(ApiApprovalState::kDisallowed,
-              registrar.GetAppById(app_id)->file_handler_approval_state());
-  }
+  EXPECT_EQ(ApiApprovalState::kDisallowed,
+            registrar.GetAppById(app_id)->file_handler_approval_state());
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFindsDeletedFileHandler) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -2234,7 +2156,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(web_app->file_handlers().empty());
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFileExtensionList) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -2256,15 +2178,15 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   )";
 
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
-  InstallWebApp();
+  AppId app_id = InstallWebApp();
 
   std::u16string associations_list =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
-                                                        GetAppURL());
+      GetFileTypeAssociationsHandledByWebAppForDisplay(browser()->profile(),
+                                                       app_id);
   EXPECT_EQ(u"TXT", associations_list);
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFileExtensionsList) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -2286,15 +2208,15 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   )";
 
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
-  InstallWebApp();
+  AppId app_id = InstallWebApp();
 
   std::u16string associations_list =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
-                                                        GetAppURL());
+      GetFileTypeAssociationsHandledByWebAppForDisplay(browser()->profile(),
+                                                       app_id);
   EXPECT_EQ(u"MD, TXT", associations_list);
 }
 
-IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
                        CheckFileExtensionsListWithTwoFileHandlers) {
   constexpr char kFileHandlerManifestTemplate[] = R"(
     {
@@ -2323,19 +2245,13 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTestWithFileHandling,
   )";
 
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
-  InstallWebApp();
+  AppId app_id = InstallWebApp();
 
   std::u16string associations_list =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(browser()->profile(),
-                                                        GetAppURL());
+      GetFileTypeAssociationsHandledByWebAppForDisplay(browser()->profile(),
+                                                       app_id);
   EXPECT_EQ(u"LONGTYPE, TXT", associations_list);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ManifestUpdateManagerBrowserTestWithFileHandling,
-    ::testing::Values(FileHandlingGateType::kUsesPermission,
-                      FileHandlingGateType::kUsesSetting));
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsShortcutsMenuUpdated) {

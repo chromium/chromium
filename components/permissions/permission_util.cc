@@ -75,8 +75,6 @@ std::string PermissionUtil::GetPermissionString(
       return "WindowPlacement";
     case ContentSettingsType::FONT_ACCESS:
       return "FontAccess";
-    case ContentSettingsType::FILE_HANDLING:
-      return "FileHandling";
     case ContentSettingsType::DISPLAY_CAPTURE:
       return "DisplayCapture";
     default:
@@ -174,9 +172,6 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::DISPLAY_CAPTURE:
       *out = PermissionType::DISPLAY_CAPTURE;
       break;
-    case ContentSettingsType::FILE_HANDLING:
-      *out = PermissionType::FILE_HANDLING;
-      break;
     default:
       return false;
   }
@@ -213,7 +208,6 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::FONT_ACCESS:
     case ContentSettingsType::IDLE_DETECTION:
     case ContentSettingsType::DISPLAY_CAPTURE:
-    case ContentSettingsType::FILE_HANDLING:
       return true;
     default:
       return false;

@@ -196,8 +196,6 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
      IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
 #if !defined(OS_ANDROID)
     // Page Info Permissions that are not defined in Android.
-    {ContentSettingsType::FILE_HANDLING, IDS_SITE_SETTINGS_TYPE_FILE_HANDLING,
-     IDS_SITE_SETTINGS_TYPE_FILE_HANDLING_MID_SENTENCE},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
@@ -337,9 +335,6 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::IDLE_DETECTION:
       message_id = IDS_PAGE_INFO_STATE_TEXT_IDLE_DETECTION_ASK;
-      break;
-    case ContentSettingsType::FILE_HANDLING:
-      message_id = IDS_PAGE_INFO_STATE_TEXT_FILE_HANDLING_ASK;
       break;
     // Guard content settings:
     case ContentSettingsType::USB_GUARD:

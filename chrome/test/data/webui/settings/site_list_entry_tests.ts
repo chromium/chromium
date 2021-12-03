@@ -41,7 +41,6 @@ suite('SiteListEntry', function() {
       isEmbargoed: false,
       origin: 'http://example.com',
       setting: ContentSetting.DEFAULT,
-      settingDetail: null,
     };
     flush();
     const prefIndicator = testElement.$$('cr-policy-pref-indicator');
@@ -76,7 +75,6 @@ suite('SiteListEntry', function() {
       isEmbargoed: false,
       origin: 'http://example.com',
       setting: ContentSetting.DEFAULT,
-      settingDetail: null,
       showAndroidSmsNote: true,
     };
     flush();
@@ -85,59 +83,6 @@ suite('SiteListEntry', function() {
         loadTimeData.getString('androidSmsNote'), siteDescription.textContent);
   });
   // </if>
-
-  test('shows settingDetail', function() {
-    // Verify that `settingDetail` is respected.
-    testElement.model = {
-      category: ContentSettingsTypes.FILE_HANDLING,
-      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
-      displayName: '',
-      embeddingOrigin: '',
-      enforcement: null,
-      incognito: false,
-      isEmbargoed: false,
-      origin: 'http://example.com',
-      setting: ContentSetting.DEFAULT,
-      settingDetail: '.txt',
-    };
-    flush();
-    const siteDescription = testElement.$$('#siteDescription')!;
-    assertEquals('.txt', siteDescription.textContent);
-
-    // Verify that with no settingDetail, a computed label is used.
-    testElement.model = {
-      category: ContentSettingsTypes.GEOLOCATION,
-      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
-      displayName: '',
-      embeddingOrigin: '',
-      enforcement: null,
-      incognito: false,
-      isEmbargoed: false,
-      origin: 'http://example.com',
-      setting: ContentSetting.DEFAULT,
-      settingDetail: null,
-    };
-    flush();
-    assertEquals(
-        loadTimeData.getString('embeddedOnAnyHost'),
-        siteDescription.textContent);
-
-    // Verify that settingDetail overrides other (computed) labels.
-    testElement.model = {
-      category: ContentSettingsTypes.GEOLOCATION,
-      controlledBy: chrome.settingsPrivate.ControlledBy.OWNER,
-      displayName: '',
-      embeddingOrigin: '',
-      enforcement: null,
-      incognito: false,
-      isEmbargoed: false,
-      origin: 'http://example.com',
-      setting: ContentSetting.DEFAULT,
-      settingDetail: '.txt',
-    };
-    flush();
-    assertEquals('.txt', siteDescription.textContent);
-  });
 
   // Verify that with GEOLOCATION, the "embedded on any host" text is shown.
   // Regression test for crbug.com/1205103
@@ -152,7 +97,6 @@ suite('SiteListEntry', function() {
       isEmbargoed: false,
       origin: 'http://example.com',
       setting: ContentSetting.DEFAULT,
-      settingDetail: null,
     };
     flush();
     const siteDescription = testElement.$$('#siteDescription')!;
@@ -173,7 +117,6 @@ suite('SiteListEntry', function() {
       isEmbargoed: false,
       origin: 'example.com',
       setting: ContentSetting.DEFAULT,
-      settingDetail: null,
     };
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
     return browserProxy.whenCalled('isOriginValid').then((args) => {
@@ -205,7 +148,6 @@ suite('SiteListEntry', function() {
       isEmbargoed: false,
       origin: 'http://example.com',
       setting: ContentSetting.DEFAULT,
-      settingDetail: null,
     };
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
     return browserProxy.whenCalled('isOriginValid').then((args) => {

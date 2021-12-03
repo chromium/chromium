@@ -142,6 +142,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
       "profile.default_content_setting_values.plugins";
   const char kObsoletePluginsDataDefaultPref[] =
       "profile.default_content_setting_values.flash_data";
+  const char kObsoleteFileHandlingDefaultPref[] =
+      "profile.default_content_setting_values.file_handling";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.default_content_setting_values.geolocation";
@@ -153,6 +155,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   prefs->SetInteger(kMouselockPrefPath, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoletePluginsDefaultPref, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoletePluginsDataDefaultPref, CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoleteFileHandlingDefaultPref, CONTENT_SETTING_ALLOW);
 #endif
   prefs->SetInteger(kGeolocationPrefPath, CONTENT_SETTING_BLOCK);
 
@@ -160,13 +163,15 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   // test the constructor's behavior after setting the above.
   DefaultProvider provider(prefs, false);
 
-  // Check that fullscreen and mouselock have been deleted.
+  // Check that obsolete prefs have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kFullscreenPrefPath));
 #if !defined(OS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteFileHandlingDefaultPref));
 #endif
+  // Check that non-obsolete prefs have not been touched.
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, prefs->GetInteger(kGeolocationPrefPath));
 }

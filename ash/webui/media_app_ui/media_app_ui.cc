@@ -108,7 +108,6 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
   allowlist->RegisterAutoGrantedPermissions(
       host_origin, {
                        ContentSettingsType::COOKIES,
-                       ContentSettingsType::FILE_HANDLING,
                        ContentSettingsType::FILE_SYSTEM_READ_GUARD,
                        ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                        ContentSettingsType::IMAGES,

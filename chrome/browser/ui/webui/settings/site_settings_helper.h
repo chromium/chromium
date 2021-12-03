@@ -63,7 +63,6 @@ constexpr char kOrigin[] = "origin";
 constexpr char kOriginForFavicon[] = "originForFavicon";
 constexpr char kRecentPermissions[] = "recentPermissions";
 constexpr char kSetting[] = "setting";
-constexpr char kSettingDetail[] = "settingDetail";
 constexpr char kSites[] = "sites";
 constexpr char kPolicyIndicator[] = "indicator";
 constexpr char kSource[] = "source";
@@ -117,13 +116,6 @@ base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type);
 // and which should be displayed in chrome://settings, for any situation not
 // tied to particular a origin.
 const std::vector<ContentSettingsType>& GetVisiblePermissionCategories();
-
-// Returns a list of all content settings types that correspond to permissions
-// and which should be displayed in chrome://settings for the given |origin|.
-// This will not include categories that are not relevant for the given origin.
-std::vector<ContentSettingsType> GetVisiblePermissionCategoriesForOrigin(
-    Profile* profile,
-    const GURL& origin);
 
 // Converts a SiteSettingSource to its string identifier.
 std::string SiteSettingSourceToString(const SiteSettingSource source);

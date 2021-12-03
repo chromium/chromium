@@ -715,15 +715,8 @@ void WebAppPublisherHelper::LaunchAppWithFiles(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
-                                             base::DoNothing());
-    return;
-  }
-
-  // The app will be launched for the currently active profile.
-  LaunchAppWithParams(std::move(params));
+  LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
+                                           base::DoNothing());
 }
 
 void WebAppPublisherHelper::LaunchAppWithIntent(
@@ -1338,9 +1331,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
       std::move(intent), profile_);
-  if (is_file_handling_launch &&
-      base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
+  if (is_file_handling_launch) {
     LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
                                              std::move(callback));
     return;

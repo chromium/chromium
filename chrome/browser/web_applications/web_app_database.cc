@@ -516,9 +516,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   if (!web_app.manifest_url().is_empty())
     local_data->set_manifest_url(web_app.manifest_url().spec());
 
-  local_data->set_file_handler_permission_blocked(
-      web_app.file_handler_permission_blocked());
-
   local_data->set_file_handler_approval_state(
       ApiApprovalStateToProto(web_app.file_handler_approval_state()));
 
@@ -1007,10 +1004,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       return nullptr;
     }
     web_app->SetManifestUrl(manifest_url);
-  }
-  if (local_data.has_file_handler_permission_blocked()) {
-    web_app->SetFileHandlerPermissionBlocked(
-        local_data.file_handler_permission_blocked());
   }
 
   if (local_data.has_file_handler_approval_state()) {

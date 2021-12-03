@@ -155,9 +155,6 @@ suite('SiteDetails', function() {
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.IDLE_DETECTION,
               [createRawSiteException('https://foo.com:443')]),
-          createContentSettingTypeToValuePair(
-              ContentSettingsTypes.FILE_HANDLING,
-              [createRawSiteException('https://foo.com:443')]),
         ],
         [
           createContentSettingTypeToValuePair(

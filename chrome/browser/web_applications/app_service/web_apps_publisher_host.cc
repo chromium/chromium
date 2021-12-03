@@ -247,8 +247,7 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
   }
 
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile_);
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
+  if (!params.launch_files.empty()) {
     // File handling may create the WebContents asynchronously.
     // TODO(crbug/1261263): implement.
     NOTIMPLEMENTED_LOG_ONCE();

@@ -22,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_install_finalizer.h"
@@ -51,9 +50,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "net/http/http_status_code.h"
@@ -1737,16 +1733,6 @@ class WebAppInstallTaskTestWithFileHandlers : public WebAppInstallTaskTest {
   WebAppInstallTaskTestWithFileHandlers() {
     scoped_feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI},
                                           {});
-  }
-
-  void SetUp() override {
-    WebAppInstallTaskTest::SetUp();
-
-    HostContentSettingsMapFactory::GetForProfile(profile())
-        ->SetContentSettingCustomScope(ContentSettingsPattern::Wildcard(),
-                                       ContentSettingsPattern::Wildcard(),
-                                       ContentSettingsType::FILE_HANDLING,
-                                       ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   blink::mojom::ManifestPtr CreateManifest(const GURL& url) {

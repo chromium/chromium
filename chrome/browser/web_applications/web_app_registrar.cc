@@ -598,13 +598,8 @@ bool WebAppRegistrar::IsAppFileHandlerPermissionBlocked(
   if (!web_app)
     return false;
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    return web_app->file_handler_approval_state() ==
-           ApiApprovalState::kDisallowed;
-  }
-
-  return web_app->file_handler_permission_blocked();
+  return web_app->file_handler_approval_state() ==
+         ApiApprovalState::kDisallowed;
 }
 
 absl::optional<GURL> WebAppRegistrar::GetAppScopeInternal(

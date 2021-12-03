@@ -3,8 +3,7 @@
       <div id="permissionItem"
           class$="list-item [[permissionInfoStringClass_(site.source,
                                                          category,
-                                                         site.setting,
-                                                         site.settingDetail)]]">
+                                                         site.setting)]]">
         <div>
           <iron-icon icon="[[icon]]">
           </iron-icon>
@@ -14,13 +13,11 @@
           <div class="secondary" id="permissionSecondary"
               hidden$="[[!hasPermissionInfoString_(site.source,
                                                    category,
-                                                   site.setting,
-                                                   site.settingDetail)]]"
+                                                   site.setting)]]"
               inner-h-t-m-l="[[permissionInfoString_(
                 site.source,
                 category,
                 site.setting,
-                site.settingDetail,
                 '$i18nPolymer{siteSettingsAllowlisted}',
                 '$i18nPolymer{siteSettingsAdsBlockBlocklistedSingular}',
                 '$i18nPolymer{siteSettingsAdsBlockNotBlocklistedSingular}',

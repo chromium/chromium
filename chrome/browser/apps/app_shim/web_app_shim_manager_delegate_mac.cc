@@ -265,38 +265,32 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    if (!launch_files.empty()) {
-      WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
-      absl::optional<GURL> file_handler_url =
-          provider->os_integration_manager().GetMatchingFileHandlerURL(
-              app_id, launch_files);
-      if (!file_handler_url) {
-        CancelAppLaunch(profile, app_id);
-        return;
-      }
-
-      params.launch_files = launch_files;
-
-      const WebApp* web_app = provider->registrar().GetAppById(app_id);
-      DCHECK(web_app);
-
-      if (web_app->file_handler_approval_state() ==
-          ApiApprovalState::kRequiresPrompt) {
-        chrome::ShowWebAppFileLaunchDialog(
-            launch_files, profile, app_id,
-            base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
-                           profile));
-        return;
-      }
-
-      DCHECK_EQ(ApiApprovalState::kAllowed,
-                web_app->file_handler_approval_state());
+  if (!launch_files.empty()) {
+    WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
+    absl::optional<GURL> file_handler_url =
+        provider->os_integration_manager().GetMatchingFileHandlerURL(
+            app_id, launch_files);
+    if (!file_handler_url) {
+      CancelAppLaunch(profile, app_id);
+      return;
     }
-  } else {
-    // !features::kDesktopPWAsFileHandlingSettingsGated:
+
     params.launch_files = launch_files;
+
+    const WebApp* web_app = provider->registrar().GetAppById(app_id);
+    DCHECK(web_app);
+
+    if (web_app->file_handler_approval_state() ==
+        ApiApprovalState::kRequiresPrompt) {
+      chrome::ShowWebAppFileLaunchDialog(
+          launch_files, profile, app_id,
+          base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
+                         profile));
+      return;
+    }
+
+    DCHECK_EQ(ApiApprovalState::kAllowed,
+              web_app->file_handler_approval_state());
   }
 
   LaunchAppWithParams(profile, std::move(params));

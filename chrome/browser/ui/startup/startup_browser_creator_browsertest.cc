@@ -1764,14 +1764,8 @@ class BrowserAddedObserver : public BrowserListObserver {
   base::RunLoop run_loop_;
 };
 
-class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest,
-                                     public testing::WithParamInterface<bool> {
+class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
  protected:
-  StartupBrowserWithWebAppTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kDesktopPWAsFileHandlingSettingsGated, GetParam());
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     StartupBrowserCreatorTest::SetUpCommandLine(command_line);
     if (GetTestPreCount() == 1) {
@@ -1785,7 +1779,7 @@ class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                        PRE_PRE_LastUsedProfilesWithWebApp) {
   // Simulate a browser restart by creating the profiles in the PRE_PRE part.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1876,7 +1870,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                        PRE_LastUsedProfilesWithWebApp) {
   BrowserAddedObserver added_observer;
   content::RunAllTasksUntilIdle();
@@ -1893,7 +1887,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
   CloseBrowserAsynchronously(browser());
 }
 
-IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
+IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
                        LastUsedProfilesWithWebApp) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
@@ -1934,10 +1928,6 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserWithWebAppTest,
   tab_strip = new_browser->tab_strip_model();
   EXPECT_EQ("/title2.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         StartupBrowserWithWebAppTest,
-                         ::testing::Values(true, false));
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class StartupBrowserWithRealWebAppTest : public StartupBrowserCreatorTest {
@@ -2880,8 +2870,6 @@ class StartupBrowserWebAppProtocolAndFileHandlingTest
     : public StartupBrowserWebAppProtocolHandlingTest {
   base::test::ScopedFeatureList feature_list_{
       blink::features::kFileHandlingAPI};
-  base::test::ScopedFeatureList feature_list2_{
-      features::kDesktopPWAsFileHandlingSettingsGated};
 };
 
 // Verifies that a "file://" URL on the command line is treated as a file

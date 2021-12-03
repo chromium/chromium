@@ -55,6 +55,8 @@ const char kObsoletePluginsExceptionsPref[] =
     "profile.content_settings.exceptions.plugins";
 const char kObsoletePluginsDataExceptionsPref[] =
     "profile.content_settings.exceptions.flash_data";
+const char kObsoleteFileHandlingExceptionsPref[] =
+    "profile.content_settings.exceptions.file_handling";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -93,6 +95,7 @@ void PrefProvider::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(kObsoletePluginsDataExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePluginsExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoleteFileHandlingExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 }
@@ -276,6 +279,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteMouseLockExceptionsPref);
   prefs_->ClearPref(kObsoletePluginsExceptionsPref);
   prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
+  prefs_->ClearPref(kObsoleteFileHandlingExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 }

@@ -177,11 +177,6 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
    * description string.
    */
   private computeSiteDescription_(): string {
-    // If the SiteException specifies its own label, use that.
-    if (this.model.settingDetail) {
-      return this.model.settingDetail;
-    }
-
     let description = '';
 
     if (this.model.isEmbargoed) {

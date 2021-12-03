@@ -292,9 +292,6 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::IDLE_DETECTION:
       icon = &vector_icons::kDevicesIcon;
       break;
-    case ContentSettingsType::FILE_HANDLING:
-      icon = &vector_icons::kDescriptionIcon;
-      break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
       // not shown in the Page Info bubble.

@@ -234,12 +234,6 @@ class StartupWebAppCreator
   // Determines if the launch is a file handler launch. If so, takes
   // responsibility for the rest of the launch process.
   LaunchResult MaybeLaunchFileHandler() {
-    // This path is only used when file handling is gated on settings.
-    if (!base::FeatureList::IsEnabled(
-            features::kDesktopPWAsFileHandlingSettingsGated)) {
-      return LaunchResult::kNotHandled;
-    }
-
     std::vector<base::FilePath> launch_files =
         apps::GetLaunchFilesFromCommandLine(command_line_);
     if (launch_files.empty())

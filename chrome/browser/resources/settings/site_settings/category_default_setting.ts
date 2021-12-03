@@ -196,7 +196,6 @@ class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
       case ContentSettingsTypes.BLUETOOTH_SCANNING:
       case ContentSettingsTypes.CAMERA:
       case ContentSettingsTypes.CLIPBOARD:
-      case ContentSettingsTypes.FILE_HANDLING:
       case ContentSettingsTypes.FILE_SYSTEM_WRITE:
       case ContentSettingsTypes.FONT_ACCESS:
       case ContentSettingsTypes.GEOLOCATION:

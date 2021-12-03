@@ -142,10 +142,6 @@ class WebApp {
 
   const apps::FileHandlers& file_handlers() const { return file_handlers_; }
 
-  bool file_handler_permission_blocked() const {
-    return file_handler_permission_blocked_;
-  }
-
   ApiApprovalState file_handler_approval_state() const {
     return file_handler_approval_state_;
   }
@@ -312,7 +308,6 @@ class WebApp {
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
   void SetManifestId(const absl::optional<std::string>& manifest_id);
-  void SetFileHandlerPermissionBlocked(bool permission_blocked);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetStorageIsolated(bool is_storage_isolated);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
@@ -380,13 +375,7 @@ class WebApp {
   ClientData client_data_;
   GURL manifest_url_;
   absl::optional<std::string> manifest_id_;
-  // A flag that's meant to represent the state of the File Handler API
-  // permission (used when DesktopPWAsFileHandlingSettingsGated is *not*
-  // enabled). When the permission is blocked, file handling shouldn't be
-  // registered with the OS.
-  bool file_handler_permission_blocked_ = false;
-  // The state of the user's approval of the app's use of the File Handler API
-  // (used when DesktopPWAsFileHandlingSettingsGated is enabled).
+  // The state of the user's approval of the app's use of the File Handler API.
   ApiApprovalState file_handler_approval_state_ =
       ApiApprovalState::kRequiresPrompt;
   // Tracks whether file handling has been or should be enabled at the OS level.

@@ -404,8 +404,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   app->SetStorageIsolated(random.next_bool());
 
-  app->SetFileHandlerPermissionBlocked(false);
-
   app->SetWindowControlsOverlayEnabled(false);
 
   WebApp::SyncFallbackData sync_fallback_data;

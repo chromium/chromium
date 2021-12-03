@@ -281,11 +281,6 @@ const base::Feature kDesktopPWAsElidedExtensionsMenu{
 #endif
 };
 
-// Use settings instead of permissions to control access to the PWA File
-// Handling API.
-const base::Feature kDesktopPWAsFileHandlingSettingsGated{
-    "DesktopPWAsFileHandlingSettingsGated", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Replaces the origin text flash in web app titlebars with the name of
 // the app.
 const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{

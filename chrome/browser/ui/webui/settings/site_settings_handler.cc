@@ -824,11 +824,9 @@ void SiteSettingsHandler::HandleGetCategoryList(const base::ListValue* args) {
   std::string callback_id = args->GetList()[0].GetString();
   GURL origin(args->GetList()[1].GetString());
 
-  std::vector<ContentSettingsType> content_types =
-      site_settings::GetVisiblePermissionCategoriesForOrigin(profile_, origin);
-
   base::Value result(base::Value::Type::LIST);
-  for (ContentSettingsType content_type : content_types) {
+  for (ContentSettingsType content_type :
+       site_settings::GetVisiblePermissionCategories()) {
     result.Append(site_settings::ContentSettingsTypeToGroupName(content_type));
   }
 
@@ -1041,9 +1039,6 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     raw_site_exception.SetStringKey(site_settings::kDisplayName, display_name);
     raw_site_exception.SetStringKey(site_settings::kSetting,
                                     content_setting_string);
-    raw_site_exception.SetStringKey(site_settings::kSettingDetail,
-                                    content_settings::GetPermissionDetailString(
-                                        profile_, content_type, origin_url));
     raw_site_exception.SetStringKey(site_settings::kSource, source_string);
 
     exceptions.Append(std::move(raw_site_exception));
@@ -1068,8 +1063,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
     types.push_back(
         site_settings::ContentSettingsTypeFromGroupName(*type_string));
   } else {
-    types = site_settings::GetVisiblePermissionCategoriesForOrigin(profile_,
-                                                                   origin);
+    types = site_settings::GetVisiblePermissionCategories();
   }
 
   ContentSetting setting;

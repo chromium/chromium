@@ -10995,16 +10995,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
-    <!-- File Handling permission prompt -->
+    <!-- File Handling launch prompt -->
     <if expr="not is_android">
       <message name="IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR" desc="Text/punctuation that separates items in a lists. For example, this is used in a list of files, such as 'todo_list.txt, shopping_list.txt', and file types/extensions, such as '.txt, .csv.'" meaning="List separator for files.">
          , '''
-      </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_TITLE" desc="Title of permission request dialog that is when the user is opening a file using a PWA.">
-        Open file?
-      </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_TITLE_MULTIPLE" desc="Title of permission request dialog that is shown when the user is opening multiple files using a PWA.">
-        Open files?
       </message>
       <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION" desc="Descriptive text in permission request dialog that is shown when the user is opening a file using a PWA.">
         <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph> wants to open this file:

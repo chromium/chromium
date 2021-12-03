@@ -210,8 +210,6 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::FONT_ACCESS;
   } else if (name == "display-capture") {
     *permission_type = PermissionType::DISPLAY_CAPTURE;
-  } else if (name == "file-handling") {
-    *permission_type = PermissionType::FILE_HANDLING;
   } else {
     return Response::InvalidParams("Invalid PermissionDescriptor name: " +
                                    name);

@@ -77,7 +77,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.BLUETOOTH_SCANNING,
       ContentSettingsTypes.CAMERA,
       ContentSettingsTypes.CLIPBOARD,
-      ContentSettingsTypes.FILE_HANDLING,
       ContentSettingsTypes.FILE_SYSTEM_WRITE,
       ContentSettingsTypes.FONT_ACCESS,
       ContentSettingsTypes.GEOLOCATION,
@@ -495,7 +494,6 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
         setting: setting!,
         source: source!,
         isEmbargoed: false,
-        settingDetail: null,
         type: '',
       });
     });

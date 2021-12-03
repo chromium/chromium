@@ -20,8 +20,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-struct WebApplicationInfo;
-
 namespace webapps {
 struct InstallableData;
 }

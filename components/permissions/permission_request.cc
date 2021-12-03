@@ -186,10 +186,6 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kDiskQuota:
       message_id = IDS_REQUEST_QUOTA_PERMISSION_FRAGMENT;
       break;
-    case RequestType::kFileHandling:
-      // Handled by an override in `FileHandlingPermissionRequestImpl`.
-      NOTREACHED();
-      return std::u16string();
     case RequestType::kFontAccess:
       message_id = IDS_FONT_ACCESS_PERMISSION_FRAGMENT;
       break;

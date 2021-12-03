@@ -183,14 +183,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsInsecureContentBlock',
     },
     {
-      route: routes.SITE_SETTINGS_FILE_HANDLING,
-      id: Id.FILE_HANDLING,
-      label: 'siteSettingsFileHandling',
-      icon: 'settings:file-handling',
-      enabledLabel: 'siteSettingsFileHandlingAsk',
-      disabledLabel: 'siteSettingsFileHandlingBlock',
-    },
-    {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
@@ -378,7 +370,6 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.IDLE_DETECTION,
               Id.WINDOW_PLACEMENT,
               Id.FONT_ACCESS,
-              Id.FILE_HANDLING,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,

@@ -96,12 +96,7 @@ void WebAppLaunchManager::LaunchApplication(
       WindowOpenDisposition::NEW_WINDOW, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFileHandlingSettingsGated)) {
-    params.launch_files = launch_files;
-  } else if (!protocol_handler_launch_url) {
-    params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
-  }
+  params.launch_files = launch_files;
   params.url_handler_launch_url = url_handler_launch_url;
   params.protocol_handler_launch_url = protocol_handler_launch_url;
   params.override_url = GURL(command_line.GetSwitchValueASCII(

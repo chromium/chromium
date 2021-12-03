@@ -86,35 +86,6 @@ bool AreAppsLocallyInstalledBySync();
 bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
                                     const apps::FileHandlers& new_handlers);
 
-// Returns true if `new_handlers` are effectively the same or less broad than
-// the file handlers for PWAs installed under the same origin as `url` in
-// `profile`. In other words, if `new_handlers` would not change the text
-// returned by `GetFileHandlersForAllWebAppsWithOrigin()`, then this will return
-// true, otherwise false.
-bool AreFileHandlersAlreadyRegistered(Profile* profile,
-                                      const GURL& url,
-                                      const apps::FileHandlers& new_handlers);
-
-// Returns all file handlers associated with any apps at the origin of `url`, in
-// the `profile`. This is not limited to a particular app's scope because it's
-// used for display in permissions contexts, and permissions are origin-bound.
-apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
-                                                          const GURL& url);
-
-// Returns a display-ready string that holds all file type associations handled
-// by all installed apps that are scoped under the origin of `url`. This means
-// that if the provided URL is example.com/app/, the returned value will also
-// include file types for example.com/alternate_app/. This will return
-// capitalized file extensions with the period truncated, like "TXT, PNG".
-// `found_multiple`, when non-null, will be set to indicate whether the returned
-// string is a list (false indicates it's a single object).
-// TODO(estade): remove this when kDesktopPWAsFileHandlingSettingsGated is
-// default.
-std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
-    Profile* profile,
-    const GURL& url,
-    bool* found_multiple = nullptr);
-
 // Returns a display-ready string that holds all file type associations handled
 // by the app referenced by `app_id`. This will return capitalized file
 // extensions with the period truncated, like "TXT, PNG". `found_multiple`, when

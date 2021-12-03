@@ -44,6 +44,8 @@ const char kObsoletePluginsDefaultPref[] =
     "profile.default_content_setting_values.plugins";
 const char kObsoletePluginsDataDefaultPref[] =
     "profile.default_content_setting_values.flash_data";
+const char kObsoleteFileHandlingDefaultPref[] =
+    "profile.default_content_setting_values.file_handling";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -124,6 +126,7 @@ void DefaultProvider::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(kObsoletePluginsDataDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoletePluginsDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteFileHandlingDefaultPref, 0);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -403,6 +406,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDataDefaultPref);
+  prefs_->ClearPref(kObsoleteFileHandlingDefaultPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

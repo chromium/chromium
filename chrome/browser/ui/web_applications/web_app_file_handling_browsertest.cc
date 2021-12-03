@@ -20,18 +20,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/web_applications/file_handling_permission_request_dialog_test_api.h"
 #include "chrome/browser/ui/web_applications/test/test_server_redirect_handle.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -45,7 +42,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -134,7 +130,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
-  void InstallAnotherFileHandlingPwa(const GURL& start_url) {
+  AppId InstallAnotherFileHandlingPwa(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -148,24 +144,10 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     entry1.accept[0].file_extensions.insert(".jpeg");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
-    WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+    return WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
  protected:
-  ContentSetting GetFileHandlingPermission(const GURL& url) {
-    auto* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-    return map->GetContentSetting(url, url, ContentSettingsType::FILE_HANDLING);
-  }
-
-  void SetFileHandlingPermission(ContentSetting setting) {
-    auto* map =
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-    map->SetContentSettingDefaultScope(GetSecureAppURL(), GetSecureAppURL(),
-                                       ContentSettingsType::FILE_HANDLING,
-                                       setting);
-  }
-
   const AppId& app_id() { return app_id_; }
 
  private:
@@ -229,32 +211,9 @@ content::WebContents* LaunchApplication(
 
 }  // namespace
 
-enum class FileHandlingGateType {
-  kUsesPermission,
-  kUsesSetting,
-};
-
-class WebAppFileHandlingBrowserTest
-    : public WebAppFileHandlingTestBase,
-      public testing::WithParamInterface<FileHandlingGateType> {
+class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
  public:
-  WebAppFileHandlingBrowserTest()
-      : WebAppFileHandlingBrowserTest(/*parameterize=*/true) {}
-
-  explicit WebAppFileHandlingBrowserTest(bool parameterize)
-      : redirect_handle_(*https_server()) {
-    feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
-    if (parameterize) {
-      feature_list_for_settings_.InitWithFeatureState(
-          features::kDesktopPWAsFileHandlingSettingsGated,
-          GetParam() == FileHandlingGateType::kUsesSetting);
-    }
-  }
-
-  bool UsesPermissions() {
-    return !base::FeatureList::IsEnabled(
-        features::kDesktopPWAsFileHandlingSettingsGated);
-  }
+  WebAppFileHandlingBrowserTest() : redirect_handle_(*https_server()) {}
 
   void LaunchWithFiles(
       const std::string& app_id,
@@ -297,13 +256,13 @@ class WebAppFileHandlingBrowserTest
 
  protected:
   TestServerRedirectHandle redirect_handle_;
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedFeatureList feature_list_for_settings_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::WebContentsDestroyedWatcher> destroyed_watcher_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, ManifestFields) {
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, ManifestFields) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_app_file_handling/basic_app.html"));
@@ -318,46 +277,26 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, ManifestFields) {
   EXPECT_EQ(u"Plain Text!", web_app->file_handlers()[0].display_name);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithNoFiles) {
   InstallFileHandlingPWA();
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   // The URL used is the normal start URL.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParams) {
   InstallFileHandlingPWA();
-  if (UsesPermissions())
-    SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   base::FilePath test_file_path = NewTestFilePath("txt");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
   VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
-                       LaunchConsumerIsNotTriggeredWithPermissionDenied) {
-  // TODO(crbug/1245301): update test.
-  if (!UsesPermissions())
-    return;
-
-  InstallFileHandlingPWA();
-  SetFileHandlingPermission(CONTENT_SETTING_BLOCK);
-  base::FilePath test_file_path = NewTestFilePath("txt");
-  // The URL used is the normal start URL.
-  LaunchWithFiles(app_id(), GetSecureAppURL(), {test_file_path});
-
-  VerifyPwaDidReceiveFileLaunchParams(false);
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParamsInTab) {
   InstallFileHandlingPWA();
-  if (UsesPermissions())
-    SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   base::FilePath test_file_path = NewTestFilePath("txt");
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
@@ -365,11 +304,9 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   VerifyPwaDidReceiveFileLaunchParams(true, test_file_path);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsDispatchOnCorrectFileHandlingURL) {
   InstallFileHandlingPWA();
-  if (UsesPermissions())
-    SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
 
   // Test that file handler dispatches correct URL based on file extension.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
@@ -395,11 +332,9 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
 }
 
 // Regression test for crbug.com/1205528
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchParamsEmptyIfFileUnhandled) {
   InstallFileHandlingPWA();
-  if (UsesPermissions())
-    SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
 
   // Test that file handler dispatches to the normal start URL when the file
   // path is not a handled file type, and `launchParams` remains undefined.
@@ -408,7 +343,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
 }
 
 // Regression test for crbug.com/1126091
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
   // Install an app where the file handling action page redirects.
   auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -429,10 +364,6 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   AppId app_id =
       WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
 
-  // Note this must be called after the app is installed, as installing an app
-  // with new file handlers resets it.
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-
   base::FilePath file = NewTestFilePath("txt");
 
   {
@@ -450,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   VerifyPwaDidReceiveFileLaunchParams(true, file);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
@@ -469,10 +400,6 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   AppId app_id =
       WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
 
-  // Note this must be called after the app is installed, as installing an app
-  // with new file handlers resets it.
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-
   base::FilePath file = NewTestFilePath("txt");
   LaunchWithFiles(app_id, handler_url, {file});
   VerifyPwaDidReceiveFileLaunchParams(true, file);
@@ -488,9 +415,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   VerifyPwaDidReceiveFileLaunchParams(true, file);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnCrossOriginRedirect) {
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   // Install an app where the file handling action page redirects to a page on a
   // different origin.
   auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -511,11 +437,6 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
 
   AppId app_id =
       WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
-
-  // Note this must be called after the app is installed, as installing an app
-  // with new file handlers resets it.
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-
   base::FilePath file = NewTestFilePath("txt");
 
   {
@@ -533,9 +454,8 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnNavigate) {
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   GURL start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
   auto web_app_info = std::make_unique<WebApplicationInfo>();
@@ -555,10 +475,6 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   AppId app_id =
       WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
 
-  // Note this must be called after the app is installed, as installing an app
-  // with new file handlers resets it.
-  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-
   base::FilePath file = NewTestFilePath("txt");
   LaunchWithFiles(app_id, handler_url, {file});
   VerifyPwaDidReceiveFileLaunchParams(true, file);
@@ -574,56 +490,14 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
 
-// Tests that when two apps are installed and share an origin (but not scope),
-// `GetFileHandlersForAllWebAppsWithOrigin` will report all the file handlers
-// across both apps.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
-                       FileHandlerAggregationForUi) {
-  InstallFileHandlingPWA();
-  EXPECT_EQ(3U,
-            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
-                .size());
-
-  GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
-  InstallAnotherFileHandlingPwa(second_app_url);
-  EXPECT_EQ(2U, registrar().GetAppIds().size());
-  EXPECT_EQ(4U,
-            GetFileHandlersForAllWebAppsWithOrigin(profile(), GetSecureAppURL())
-                .size());
-  EXPECT_EQ(
-      4U,
-      GetFileHandlersForAllWebAppsWithOrigin(profile(), second_app_url).size());
-
-  std::u16string display_string_app1 =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
-                                                        GetSecureAppURL());
-  std::u16string display_string_app2 =
-      GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
-                                                        second_app_url);
-  EXPECT_EQ(display_string_app1, display_string_app2);
-  EXPECT_NE(std::u16string::npos, display_string_app1.find(u"HTML"));
-  EXPECT_NE(std::u16string::npos, display_string_app1.find(u"JPEG"));
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        SometimesResetPermission) {
   // Install the first app and simulate the user granting it the file handling
   // permission.
   InstallFileHandlingPWA();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
 
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-    map->SetContentSettingDefaultScope(origin, origin,
-                                       ContentSettingsType::FILE_HANDLING,
-                                       CONTENT_SETTING_ALLOW);
-    EXPECT_EQ(CONTENT_SETTING_ALLOW,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-  } else {
+  {
     ScopedRegistryUpdate update(&provider()->sync_bridge());
     WebApp* app = update->UpdateApp(app_id());
     ASSERT_TRUE(app);
@@ -635,134 +509,21 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   // Tangentially: make sure the outparam for
   // `GetFileTypeAssociationsHandledByWebAppsForDisplay` is properly set.
   bool plural = false;
-  GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(),
-                                                    GetSecureAppURL(), &plural);
+  GetFileTypeAssociationsHandledByWebAppForDisplay(profile(), app_id(),
+                                                   &plural);
   EXPECT_TRUE(plural);
 
-  // Install a second app, which is on the same origin and asks to handle more
-  // file types. The permission should have been set back to ASK.
+  // Installing a different app should have no impact.
   GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
   InstallAnotherFileHandlingPwa(second_app_url);
-  if (UsesPermissions()) {
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING));
-  } else {
-    // Installing a different app should have no impact when settings are used
-    // instead of permissions.
-    EXPECT_EQ(ApiApprovalState::kAllowed,
-              registrar().GetAppById(app_id())->file_handler_approval_state());
-
-    // The rest of the test is not relevant when using settings.
-    return;
-  }
-
-  // Set to ALLOW again.
-  map->SetContentSettingDefaultScope(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING,
-                                     CONTENT_SETTING_ALLOW);
-
-  // Install a third app, which is on a different origin; this should have no
-  // effect on the permission.
-  GURL third_app_url = https_server()->GetURL("otherapp.com", "/pwa/app2.html");
-  InstallAnotherFileHandlingPwa(third_app_url);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-  GURL third_app_origin = third_app_url.DeprecatedGetOriginAsURL();
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            map->GetContentSetting(third_app_origin, third_app_origin,
-                                   ContentSettingsType::FILE_HANDLING));
-  // Tangentially: make sure the outparam for
-  // `GetFileTypeAssociationsHandledByWebAppsForDisplay` is properly set.
-  GetFileTypeAssociationsHandledByWebAppsForDisplay(profile(), third_app_url,
-                                                    &plural);
-  EXPECT_FALSE(plural);
-
-  // Install a fourth app, which is on the same origin but asks for a subset of
-  // the file types of the first two. This should have no effect on the
-  // permission.
-  GURL fourth_app_url = https_server()->GetURL("app.com", "/pwa2/app2.html");
-  InstallAnotherFileHandlingPwa(fourth_app_url);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
-                       ResetPermissionOnUninstall) {
-  // Install an app and simulate the user granting it the file handling
-  // permission.
-  InstallFileHandlingPWA();
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-  map->SetContentSettingDefaultScope(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING,
-                                     CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-
-  // Install a second app, which is on the same origin and does not handle any
-  // files. This should not affect the permission.
-  GURL second_app_url = https_server()->GetURL("app.com", "/pwa2/app.html");
-  InstallPWA(second_app_url);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-
-  // Uninstall the first app. It should reset the permission since no other app
-  // is installed with file handlers.
-  UninstallWebApp(app_id());
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-
-  // Install the first app again and grant the permission.
-  InstallFileHandlingPWA();
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-  map->SetContentSettingDefaultScope(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING,
-                                     CONTENT_SETTING_ALLOW);
-
-  // Install a third app, which is on a different origin; this should have no
-  // effect on the permission.
-  GURL third_app_url = https_server()->GetURL("otherapp.com", "/pwa/app.html");
-  InstallAnotherFileHandlingPwa(third_app_url);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-
-  // Uninstall the first app. It should reset the permission since no other app
-  // is installed *on the same origin* with file handlers.
-  UninstallWebApp(app_id());
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
-
-  // Install two PWAs with file handlers on the same origin, then grant the
-  // permission. Uninstalling one should not reset the permission.
-  InstallFileHandlingPWA();
-  InstallAnotherFileHandlingPwa(
-      https_server()->GetURL("app.com", "/pwa3/app.html"));
-  map->SetContentSettingDefaultScope(origin, origin,
-                                     ContentSettingsType::FILE_HANDLING,
-                                     CONTENT_SETTING_ALLOW);
-  UninstallWebApp(app_id());
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            map->GetContentSetting(origin, origin,
-                                   ContentSettingsType::FILE_HANDLING));
+  EXPECT_EQ(ApiApprovalState::kAllowed,
+            registrar().GetAppById(app_id())->file_handler_approval_state());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // End-to-end test to ensure the file handler is registered on ChromeOS when the
 // extension system is initialized. Gives more coverage than the unit tests.
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
   InstallFileHandlingPWA();
 
   base::FilePath test_file_path = NewTestFilePath("txt");
@@ -778,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
 // Ensures correct behavior for files on "special volumes", such as file systems
 // provided by extensions. These do not have local files (i.e. backed by
 // inodes).
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        NotHandlerForNonNativeFiles) {
   InstallFileHandlingPWA();
   base::WeakPtr<file_manager::Volume> fsp_volume =
@@ -799,8 +560,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
 
 class WebAppFileHandlingDisabledTest : public WebAppFileHandlingBrowserTest {
  public:
-  WebAppFileHandlingDisabledTest()
-      : WebAppFileHandlingBrowserTest(/*parameterize=*/false) {
+  WebAppFileHandlingDisabledTest() : WebAppFileHandlingBrowserTest() {
     feature_list_.InitWithFeatures({}, {blink::features::kFileHandlingAPI});
   }
 
@@ -820,118 +580,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingDisabledTest,
   EXPECT_EQ(0u, tasks.size());
 }
 #endif
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppFileHandlingBrowserTest,
-    ::testing::Values(FileHandlingGateType::kUsesPermission,
-                      FileHandlingGateType::kUsesSetting));
-
-// TODO(estade): remove this test when kDesktopPWAsFileHandlingSettingsGated is
-// removed.
-class WebAppFileHandlingPermissionDialogTest
-    : public WebAppFileHandlingBrowserTest {
- public:
-  WebAppFileHandlingPermissionDialogTest()
-      : WebAppFileHandlingBrowserTest(/*parameterize=*/false) {
-    feature_list_.InitWithFeatures(
-        {}, {features::kDesktopPWAsFileHandlingSettingsGated});
-  }
-
-  void InstallAndLaunchWebApp() {
-    InstallFileHandlingPWA();
-    SetFileHandlingPermission(CONTENT_SETTING_ASK);
-
-    EXPECT_FALSE(FileHandlingPermissionRequestDialogTestApi::IsShowing());
-
-    test_file_path_ = NewTestFilePath("txt");
-    LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path_});
-
-    // The permission request is dequeued asynchronously. It may or may not be
-    // showing by now.
-    if (!FileHandlingPermissionRequestDialogTestApi::IsShowing())
-      permissions::PermissionRequestObserver(web_contents_).Wait();
-
-    // A dialog is showing now.
-    ASSERT_TRUE(FileHandlingPermissionRequestDialogTestApi::IsShowing());
-
-    // The launch consumer isn't triggered while the dialog is showing.
-    VerifyPwaDidReceiveFileLaunchParams(false);
-  }
-
- protected:
-  base::FilePath test_file_path_;
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowAlways) {
-  InstallAndLaunchWebApp();
-  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
-                                                      /*accept=*/true);
-  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path_);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            GetFileHandlingPermission(GetSecureAppURL()));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowOnce) {
-  InstallAndLaunchWebApp();
-  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
-                                                      /*accept=*/true);
-  VerifyPwaDidReceiveFileLaunchParams(true, test_file_path_);
-  EXPECT_EQ(CONTENT_SETTING_ASK, GetFileHandlingPermission(GetSecureAppURL()));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockAlways) {
-  InstallAndLaunchWebApp();
-  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/true,
-                                                      /*accept=*/false);
-  // Verify that the window is closed.
-  destroyed_watcher_->Wait();
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            GetFileHandlingPermission(GetSecureAppURL()));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, BlockOnce) {
-  InstallAndLaunchWebApp();
-  FileHandlingPermissionRequestDialogTestApi::Resolve(/*checked=*/false,
-                                                      /*accept=*/false);
-  // Verify that the window is closed.
-  destroyed_watcher_->Wait();
-  EXPECT_EQ(CONTENT_SETTING_ASK, GetFileHandlingPermission(GetSecureAppURL()));
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
-                       SettingsCategoryVisibility) {
-  // The file handling permission is visible in a general context.
-  const std::vector<ContentSettingsType>& all_categories =
-      site_settings::GetVisiblePermissionCategories();
-  EXPECT_FALSE(std::find(all_categories.begin(), all_categories.end(),
-                         ContentSettingsType::FILE_HANDLING) ==
-               all_categories.end());
-
-  // The file handling permission is not visible in the context of an origin
-  // that doesn't correspond to a PWA.
-  std::vector<ContentSettingsType> categories_for_arbitrary_website =
-      site_settings::GetVisiblePermissionCategoriesForOrigin(
-          profile(), GURL("https://example.com"));
-  EXPECT_TRUE(std::find(categories_for_arbitrary_website.begin(),
-                        categories_for_arbitrary_website.end(),
-                        ContentSettingsType::FILE_HANDLING) ==
-              categories_for_arbitrary_website.end());
-
-  // The file handling permission *is* visible for a PWA origin.
-  InstallFileHandlingPWA();
-  std::vector<ContentSettingsType> categories_for_pwa =
-      site_settings::GetVisiblePermissionCategoriesForOrigin(
-          profile(), GetSecureAppURL().DeprecatedGetOriginAsURL());
-  EXPECT_FALSE(std::find(categories_for_pwa.begin(), categories_for_pwa.end(),
-                         ContentSettingsType::FILE_HANDLING) ==
-               categories_for_pwa.end());
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class WebAppFileHandlingIconBrowserTest
     : public InProcessBrowserTest,
