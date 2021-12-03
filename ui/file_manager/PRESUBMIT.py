@@ -27,6 +27,11 @@ def _CommonChecks(input_api, output_api):
         import web_dev_style.presubmit_support
         results += web_dev_style.presubmit_support.CheckStyle(
             input_api, output_api)
+
+        sys.path += [input_api.os_path.join(cwd, '..', 'chromeos')]
+        import styles.presubmit_support
+        results += styles.presubmit_support._CheckSemanticColors(
+            input_api, output_api)
     finally:
         sys.path = old_sys_path
     return results

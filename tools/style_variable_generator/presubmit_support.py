@@ -37,7 +37,7 @@ def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
                 continue
             style_generator.AddJSONToModel('\n'.join(file_contents),
                                            in_file=f.LocalPath())
-        return style_generator.GetCSSVarNames()
+        return set(style_generator.GetCSSVarNames().keys())
 
     old_names = get_css_var_names_for_contents(lambda f: f.OldContents())
     new_names = get_css_var_names_for_contents(lambda f: f.NewContents())

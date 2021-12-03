@@ -66,44 +66,42 @@ class CSSStyleGenerator(BaseGenerator):
             Modes,
         }
 
-    def GetGeneratedVars(self, variable_type):
-        to_css_var_name_types = [
-            VariableType.COLOR,
-            VariableType.OPACITY,
-        ]
+    def AddGeneratedVars(self, var_names, variable_type):
+        def AddVarNames(model_names, variations):
+            for model_name in model_names:
+                for v in variations:
+                    var_name = v.replace('$css_name',
+                                         self.ToCSSVarName(model_name))
+                    if var_name in var_names:
+                        raise ValueError(name + " is defined multiple times")
+                    var_names[var_name] = model_name
 
-        if variable_type in to_css_var_name_types:
-            generated = set(
-                map(self.ToCSSVarName, self.model[variable_type].keys()))
+        submodel = self.model[variable_type]
+        if variable_type == VariableType.OPACITY:
+            AddVarNames(submodel.keys(), ['$css_name'])
+        elif variable_type == VariableType.COLOR:
+            AddVarNames(submodel.keys(), ['$css_name', '$css_name-rgb'])
         elif variable_type == VariableType.UNTYPED_CSS:
-            generated = set()
-            for category in self.model[VariableType.UNTYPED_CSS].values():
-                generated |= set(map(self.ToCSSVarName, category.keys()))
+            for category in submodel.values():
+                AddVarNames(category.keys(), ['$css_name'])
         elif variable_type == VariableType.TYPOGRAPHY:
-            generated = set()
-            typography = self.model[VariableType.TYPOGRAPHY]
-            for t in typography.typefaces.keys():
-                var_name = self.ToCSSVarName(t)
-                generated.add(var_name + '-font')
-                generated.add(var_name + '-font-family')
-                generated.add(var_name + '-font-size')
-                generated.add(var_name + '-font-weight')
-                generated.add(var_name + '-line-height')
-            generated |= set(
-                map(self.ToCSSVarName, typography.font_families.keys()))
+            AddVarNames(submodel.typefaces.keys(), [
+                '$css_name-font',
+                '$css_name-font-family',
+                '$css_name-font-size',
+                '$css_name-font-weight',
+                '$css_name-line-height',
+            ])
         else:
             raise ValueError("GetGeneratedVars() for '%s' not implemented")
 
-        return generated
-
     def GetCSSVarNames(self):
-        '''Returns generated CSS variable names (excluding color rgb versions)
+        '''Returns a map of all generated names to the model names that
+           generated them.
         '''
-        var_names = set()
+        var_names = dict()
         for vt in VariableType.ALL:
-            generated = self.GetGeneratedVars(vt)
-            assert not generated.intersection(var_names)
-            var_names |= generated
+            generated = self.AddGeneratedVars(var_names, vt)
 
         return var_names
 

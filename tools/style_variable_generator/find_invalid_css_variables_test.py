@@ -82,15 +82,10 @@ a:1:--test-toolbar'''
         result = FindInvalidCSSVariables({'test': json_string},
                                          git_runner=GitResult)
         unused = set([
-            '--test-unused',
-            '--test-font-family-unused',
-            '--test-headline-1-font',
-            '--test-headline-1-font-family',
-            '--test-headline-1-font-size',
-            '--test-headline-1-font-weight',
-            '--test-headline-1-line-height',
-            '--test-unused-css',
-            '--test-unused-opacity',
+            'unused_opacity',
+            'unused_css',
+            'headline_1',
+            'unused',
         ])
         self.assertEqual(result['unused'], unused)
         unspecified = []

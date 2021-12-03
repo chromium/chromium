@@ -12,6 +12,13 @@ def _CheckSemanticColors(input_api, output_api):
     first attempt is made to ensure lines affected have a var() occurrence which
     indicates we need to verify the variable.
     """
+    file_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=(r'.+\.css', r'.+\.htm(l){1,}$', r'.+\.js$'))
+    affected_files = input_api.AffectedFiles(include_deletes=False,
+                                             file_filter=file_filter)
+    if not affected_files:
+        return []
+
     # Ensure the tools/ path is available to import style_variable_generator.
     input_api.sys.path.append(
         input_api.os_path.join(input_api.change.RepositoryRoot(), 'tools'))
@@ -61,12 +68,9 @@ def _CheckSemanticColors(input_api, output_api):
         return invalid_matches
 
     valid_css_variables = style_generator.GetCSSVarNames()
-    file_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=(r'.+\.css', r'.+\.htm(l){1,}$', r'.+\.js$'))
 
     invalid_variables = []
-    for f in input_api.AffectedFiles(include_deletes=False,
-                                     file_filter=file_filter):
+    for f in affected_files:
         for line_num, line in f.ChangedContents():
             if any(prefix in line for prefix in css_prefixes):
                 invalid_variables.extend(

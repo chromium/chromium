@@ -5,6 +5,7 @@
 import argparse
 import sys
 import os
+import re
 
 sys.path += [os.path.dirname(os.path.dirname(__file__))]
 
@@ -16,8 +17,10 @@ from style_variable_generator.presubmit_support import RunGit
 def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
     style_generator = CSSStyleGenerator()
     css_prefixes = set()
+    referenced_vars = set()
     for f, json_string in file_to_json_strings.items():
         style_generator.AddJSONToModel(json_string, in_file=f)
+        referenced_vars |= set(re.findall(r'\$([a-z_0-9]+)', json_string))
 
         context = style_generator.in_file_to_context.get(f, {}).get('CSS')
         if (not context or 'prefix' not in context):
@@ -26,7 +29,9 @@ def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
         css_prefixes.add('--' + context['prefix'] + '-')
 
     unspecified_file_and_names = []
-    valid_names = style_generator.GetCSSVarNames()
+    css_var_names = style_generator.GetCSSVarNames()
+    valid_names = set(css_var_names.keys())
+    unused = set(css_var_names.values()).difference(referenced_vars)
 
     for css_prefix in css_prefixes:
         grep_result = git_runner([
@@ -35,11 +40,10 @@ def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
         ]).decode('utf-8').splitlines()
         found_files_and_names = [x.split(':') for x in grep_result]
         found_names = set()
-        rgb_suffix = '-rgb'
         for (filename, line, name) in found_files_and_names:
-            if name.endswith(rgb_suffix):
-                name = name[:-len(rgb_suffix)]
             found_names.add(name)
+            if name in valid_names and css_var_names[name] in unused:
+                unused.remove(css_var_names[name])
 
         unspecified = found_names.difference(valid_names)
         for (filename, line, name) in found_files_and_names:
@@ -54,7 +58,7 @@ def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
         'unspecified': unspecified_file_and_names,
         # TODO(calamity): This should also account for names referenced in json5
         # files.
-        'unused': valid_names.difference(found_names),
+        'unused': unused,
         'css_prefix': css_prefix,
     }
 
