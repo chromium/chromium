@@ -442752,7 +442752,7 @@
       },
       "the-dialog-element": {
        "abspos-dialog-layout.html": [
-        "232c9dd30fc9d3057075152b6854f61043027b07",
+        "77ed29ce56113fa733cb7e592a3e6c961590a6a8",
         [
          null,
          {}
@@ -487768,7 +487768,7 @@
       ]
      ],
      "same-site-cookies.https.html": [
-      "6075dc83ec70279f63ecb8a1bb4cc6f67cad273b",
+      "026d2f37b40ff57852ae5ae85dddd153eaed78f6",
       [
        null,
        {
@@ -489201,6 +489201,13 @@
       {}
      ]
     ],
+    "detection-Blob.https.window.js": [
+     "401a9cc72d4513ba57856dc6473c85c31e767098",
+     [
+      "shape-detection/detection-Blob.https.window.html",
+      {}
+     ]
+    ],
     "detection-HTMLCanvasElement.https.html": [
      "4773bc8a66102f22a2897c22a93054165402903f",
      [
@@ -489261,6 +489268,20 @@
      "330239fdf02d8d9d1c8a1287f68b592e17573d92",
      [
       null,
+      {}
+     ]
+    ],
+    "detection-SVGImageElement.https.window.js": [
+     "22f1629eccb1954c0385f3833b744b606749c87b",
+     [
+      "shape-detection/detection-SVGImageElement.https.window.html",
+      {}
+     ]
+    ],
+    "detection-VideoFrame.https.window.js": [
+     "dd8b67830da277a7ca5f3ba3c9eaa42b1fe984bc",
+     [
+      "shape-detection/detection-VideoFrame.https.window.html",
       {}
      ]
     ],
