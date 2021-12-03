@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -148,6 +149,8 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
     return;
   }
 
+  LogKeyLoadingResult(GetLoadedKeyMetadata());
+
   // Respond to callbacks. If a key was loaded, these callbacks will be
   // successfully answered to. If a key was not loaded, then might as well
   // respond with a failure instead of keeping them waiting even longer.
@@ -162,18 +165,21 @@ void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
 
   KeyRotationCommand::Callback rotation_finished_callback =
       base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyRotationFinished,
-                     weak_factory_.GetWeakPtr());
+                     weak_factory_.GetWeakPtr(), !nonce.empty());
 
   key_rotation_launcher_->LaunchKeyRotation(
       nonce, std::move(rotation_finished_callback));
 }
 
 void DeviceTrustKeyManagerImpl::OnKeyRotationFinished(
+    bool had_nonce,
     KeyRotationCommand::Status result_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   key_rotation_succeeded_ =
       result_status == KeyRotationCommand::Status::SUCCEEDED;
   state_ = InitializationState::kDefault;
+
+  LogKeyRotationResult(had_nonce, result_status);
 
   if (key_rotation_succeeded_) {
     LoadKey(/*create_on_fail=*/false);

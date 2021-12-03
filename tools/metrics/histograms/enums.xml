@@ -24053,6 +24053,23 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="Success"/>
 </enum>
 
+<enum name="DTKeyRotationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Timed Out"/>
+</enum>
+
+<enum name="DTKeyTrustLevel">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="TPM"/>
+  <int value="2" label="OS"/>
+</enum>
+
+<enum name="DTKeyType">
+  <int value="0" label="RSA"/>
+  <int value="1" label="EC"/>
+</enum>
+
 <enum name="DTLS_SRTPCryptoSuite">
   <summary>
     DTLS/SRTP crypto suites from the IANA registry as specified at

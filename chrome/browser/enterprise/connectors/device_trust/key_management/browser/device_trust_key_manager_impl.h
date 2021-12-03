@@ -56,7 +56,12 @@ class DeviceTrustKeyManagerImpl : public DeviceTrustKeyManager {
   // nonce can be used to represent a key creation task, which means no key
   // previously existed.
   void StartKeyRotationInner(const std::string& nonce);
-  void OnKeyRotationFinished(KeyRotationCommand::Status result_status);
+
+  // Invoked when the background key rotation tasks completes with a
+  // `result_status`. `had_nonce` represents whether the process was given a
+  // nonce parameter when started or not.
+  void OnKeyRotationFinished(bool had_nonce,
+                             KeyRotationCommand::Status result_status);
 
   // Adds `pending_request` to the list of pending client requests. Also calls
   // the idempotent initialization process. If the manager is currently is

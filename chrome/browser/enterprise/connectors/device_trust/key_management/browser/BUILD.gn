@@ -6,6 +6,7 @@ source_set("browser") {
   public = [
     "device_trust_key_manager_impl.h",
     "key_rotation_launcher.h",
+    "metrics_utils.h",
   ]
 
   sources = [
@@ -13,21 +14,22 @@ source_set("browser") {
     "key_rotation_launcher.cc",
     "key_rotation_launcher_impl.cc",
     "key_rotation_launcher_impl.h",
+    "metrics_utils.cc",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//components/enterprise",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
-    "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//components/policy/core/common",
     "//crypto",
     "//services/network/public/cpp",
     "//services/network/public/cpp:cpp_base",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 

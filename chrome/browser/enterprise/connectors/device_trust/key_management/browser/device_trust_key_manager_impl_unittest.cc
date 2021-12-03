@@ -9,8 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mock_key_persistence_delegate.h"
@@ -31,6 +33,14 @@ using test::MockKeyRotationLauncher;
 namespace {
 
 constexpr char kFakeData[] = "some fake string";
+
+constexpr char kLoadedKeyTrustLevelHistogram[] =
+    "Enterprise.DeviceTrust.Key.TrustLevel";
+constexpr char kLoadedKeyTypeHistogram[] = "Enterprise.DeviceTrust.Key.Type";
+constexpr char kKeyCreationResultHistogram[] =
+    "Enterprise.DeviceTrust.Key.CreationResult";
+constexpr char kKeyRotationResultHistogram[] =
+    "Enterprise.DeviceTrust.Key.RotationResult";
 
 enterprise_connectors::test::MockKeyPersistenceDelegate::KeyInfo
 CreateEmptyKey() {
@@ -76,10 +86,26 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  void ExpectLoadedTpmKeyMetrics() {
+    // A TPM-generated key was successfully loaded. We don't know which
+    // algorithm was used though, so just check that it was logged only once.
+    histogram_tester_.ExpectUniqueSample(kLoadedKeyTrustLevelHistogram,
+                                         DTKeyTrustLevel::kTpm, 1);
+    histogram_tester_.ExpectTotalCount(kLoadedKeyTypeHistogram, 1);
+  }
+
+  void ExpectKeyCreatedMetrics() {
+    histogram_tester_.ExpectUniqueSample(kKeyCreationResultHistogram,
+                                         DTKeyRotationResult::kSucceeded, 1);
+    histogram_tester_.ExpectTotalCount(kKeyRotationResultHistogram, 0);
+  }
+
   DeviceTrustKeyManagerImpl* key_manager() { return key_manager_.get(); }
   StrictMock<MockKeyRotationLauncher>* mock_launcher() {
     return mock_launcher_;
   }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -107,6 +133,10 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_WithPersistedKey) {
       }));
 
   run_loop.Run();
+
+  ExpectLoadedTpmKeyMetrics();
+  histogram_tester_.ExpectTotalCount(kKeyCreationResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kKeyRotationResultHistogram, 0);
 }
 
 // Tests that:
@@ -146,6 +176,9 @@ TEST_F(DeviceTrustKeyManagerImplTest,
         run_loop.Quit();
       }));
   run_loop.Run();
+
+  ExpectLoadedTpmKeyMetrics();
+  ExpectKeyCreatedMetrics();
 }
 
 // Tests that:
@@ -202,6 +235,9 @@ TEST_F(DeviceTrustKeyManagerImplTest,
       }));
 
   success_loop.Run();
+
+  ExpectLoadedTpmKeyMetrics();
+  ExpectKeyCreatedMetrics();
 }
 
 // Tests that:
@@ -234,6 +270,9 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_CreateFails_Retry) {
   std::move(failed_rotation_callback).Run(KeyRotationCommand::Status::FAILED);
   RunUntilIdle();
 
+  histogram_tester_.ExpectUniqueSample(kKeyCreationResultHistogram,
+                                       DTKeyRotationResult::kFailed, 1);
+
   KeyRotationCommand::Callback success_rotation_callback;
   base::RunLoop create_key_success_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
@@ -265,6 +304,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_CreateFails_Retry) {
 
   // The client request should be responded to.
   request_loop.Run();
+
+  ExpectLoadedTpmKeyMetrics();
+  histogram_tester_.ExpectTotalCount(kKeyRotationResultHistogram, 0);
+  histogram_tester_.ExpectBucketCount(kKeyCreationResultHistogram,
+                                      DTKeyRotationResult::kSucceeded, 1);
 }
 
 // Tests a long and specific chain of events which are, in sequence:
@@ -349,6 +393,9 @@ TEST_F(DeviceTrustKeyManagerImplTest,
 
   // All pending callbacks should get called now.
   barrier_loop.Run();
+
+  ExpectLoadedTpmKeyMetrics();
+  ExpectKeyCreatedMetrics();
 }
 
 }  // namespace enterprise_connectors

@@ -800,6 +800,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Key.TrustLevel" enum="DTKeyTrustLevel"
+    expires_after="2022-08-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded every time a Device Trust signing key is successfully loaded from
+    persistence. This captures what trust level this key has, which in turn
+    gives insights into how it was created (e.g. via a TPM or not).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.Key.Type" enum="DTKeyType"
+    expires_after="2022-08-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded every time a Device Trust signing key is successfully loaded from
+    persistence. This captures what algorithm this key was generated with.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.Key.{Variant}Result"
+    enum="DTKeyRotationResult" expires_after="2022-08-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded every time the browser attempted to {Variant} a Device Trust
+    signing key. This captures the result from this process.
+  </summary>
+  <token key="Variant">
+    <variant name="Creation" summary="create (i.e. without nonce)"/>
+    <variant name="Rotation" summary="rotate (i.e. with nonce)"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
     expires_after="2022-07-01">
   <owner>hmare@google.com</owner>
