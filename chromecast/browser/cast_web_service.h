@@ -21,6 +21,7 @@
 #include "chromecast/common/identification_settings_manager.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -68,6 +69,8 @@ class CastWebService : public mojom::CastWebService,
   LRURendererCache* overlay_renderer_cache() {
     return overlay_renderer_cache_.get();
   }
+
+  bool IsCastWebUIOrigin(const url::Origin& origin);
 
   // mojom::CastWebService implementation:
   void CreateWebView(
@@ -137,6 +140,8 @@ class CastWebService : public mojom::CastWebService,
   base::flat_map<std::string /* session_id */,
                  scoped_refptr<IdentificationSettingsManager>>
       settings_managers_;
+
+  std::vector<std::string> cast_webui_hosts_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtr<CastWebService> weak_ptr_;

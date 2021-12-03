@@ -227,6 +227,7 @@ cast_source_set("browser_base") {
     "//chromecast/browser/webui/mojom",
     "//chromecast/common",
     "//chromecast/common:activity_url_filter",
+    "//chromecast/common:cors_exempt_headers",
     "//chromecast/common:queryable_data",
     "//chromecast/common/media",
     "//chromecast/external_mojo/broker_service",

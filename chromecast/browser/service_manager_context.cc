@@ -69,6 +69,7 @@ const service_manager::Manifest& GetBrowserManifest() {
           .RequireCapability("*", "app")
           .RequireCapability("*", "multizone")
           .RequireCapability("*", "reconnect")
+          .RequireCapability("*", "renderer")
           .Build()};
   return *manifest;
 }

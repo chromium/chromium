@@ -42,6 +42,7 @@
 #include "chromecast/browser/cast_session_id_map.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/cast_web_preferences.h"
+#include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/default_navigation_throttle.h"
 #include "chromecast/browser/devtools/cast_devtools_manager_delegate.h"
 #include "chromecast/browser/general_audience_browsing_navigation_throttle.h"
@@ -949,6 +950,15 @@ bool CastContentBrowserClient::DoesSiteRequireDedicatedProcess(
 #else
   return false;
 #endif
+}
+
+bool CastContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_CHROMECAST_WEBUI)
+  return cast_browser_main_parts_->web_service()->IsCastWebUIOrigin(origin);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_CHROMECAST_WEBUI)
 }
 
 std::string CastContentBrowserClient::GetUserAgent() {

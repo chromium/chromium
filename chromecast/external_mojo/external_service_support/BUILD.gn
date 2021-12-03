@@ -54,6 +54,7 @@ source_set("process_setup") {
     "//base",
     "//base:base_static",
     "//chromecast:chromecast_buildflags",
+    "//chromecast/base:chromecast_switches",
   ]
 
   if (!is_fuchsia) {

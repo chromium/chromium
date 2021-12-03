@@ -105,6 +105,8 @@ extern const char kSysInfoFilePath[];
 // Extension switches.
 extern const char kExtensionsDir[];
 
+extern const char kDeferFeatureList[];
+
 }  // namespace switches
 
 namespace chromecast {

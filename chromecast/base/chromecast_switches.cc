@@ -219,6 +219,10 @@ const char kSysInfoFilePath[] = "sys-info-file-path";
 // Default is "/system/chrome/extensions".
 const char kExtensionsDir[] = "cast-extensions-dir";
 
+// Defer initialization of the base::FeatureList in an external service process,
+// allowing the process to include its own non-default features.
+const char kDeferFeatureList[] = "defer-feature-list";
+
 }  // namespace switches
 
 namespace chromecast {

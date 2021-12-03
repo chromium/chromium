@@ -484,6 +484,10 @@ AccessibilityServiceImpl* CastBrowserMainParts::accessibility_service() {
   return accessibility_service_.get();
 }
 
+CastWebService* CastBrowserMainParts::web_service() {
+  return web_service_.get();
+}
+
 void CastBrowserMainParts::PreCreateMainMessageLoop() {
   // GroupedHistograms needs to be initialized before any threads are created
   // to prevent race conditions between calls to Preregister and those threads

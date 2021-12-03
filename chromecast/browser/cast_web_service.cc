@@ -120,9 +120,15 @@ void CastWebService::ClearLocalStorage(ClearLocalStorageCallback callback) {
           base::Passed(std::move(callback))));
 }
 
+bool CastWebService::IsCastWebUIOrigin(const url::Origin& origin) {
+  return std::find(cast_webui_hosts_.begin(), cast_webui_hosts_.end(),
+                   origin.host()) != cast_webui_hosts_.end();
+}
+
 void CastWebService::RegisterWebUiClient(
     mojo::PendingRemote<mojom::WebUiClient> client,
     const std::vector<std::string>& hosts) {
+  cast_webui_hosts_ = hosts;
   content::WebUIControllerFactory::RegisterFactory(
       new CastWebUiControllerFactory(std::move(client), hosts));
 }

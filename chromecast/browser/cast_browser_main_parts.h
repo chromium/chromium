@@ -102,6 +102,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   external_service_support::ExternalConnector* connector();
   external_service_support::ExternalConnector* media_connector();
   AccessibilityServiceImpl* accessibility_service();
+  CastWebService* web_service();
 
   // content::BrowserMainParts implementation:
   void PreCreateMainMessageLoop() override;

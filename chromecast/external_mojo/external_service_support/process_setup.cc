@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/chromecast_buildflags.h"
 
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
@@ -44,9 +45,11 @@ void CommonProcessInitialization(int argc, const char* const* argv) {
 #endif  // BUILDFLAG(IS_CAST_DESKTOP_BUILD)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  base::FeatureList::InitializeInstance(
-      command_line->GetSwitchValueASCII(switches::kEnableFeatures),
-      command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  if (!command_line->HasSwitch(switches::kDeferFeatureList)) {
+    base::FeatureList::InitializeInstance(
+        command_line->GetSwitchValueASCII(switches::kEnableFeatures),
+        command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  }
 
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
   CrashReporterClient::Init();

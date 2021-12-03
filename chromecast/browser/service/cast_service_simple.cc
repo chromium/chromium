@@ -25,7 +25,7 @@ GURL GetStartupURL() {
   const base::CommandLine::StringVector& args = command_line->GetArgs();
 
   if (args.empty())
-    return GURL("http://www.google.com/");
+    return GURL();
 
   GURL url(args[0]);
   if (url.is_valid() && url.has_scheme())
@@ -54,6 +54,10 @@ void CastServiceSimple::FinalizeInternal() {
 
 void CastServiceSimple::StartInternal() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
+    return;
+  }
+
+  if (startup_url_.is_empty()) {
     return;
   }
 
