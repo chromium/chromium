@@ -1789,6 +1789,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kOnPrintEnterpriseConnector, enterprise_connectors::kOnPrintPref,
+          enterprise_connectors::kOnPrintScopePref, chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           key::kOnSecurityEventEnterpriseConnector,
           enterprise_connectors::kOnSecurityEventPref,
           enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));

@@ -21,6 +21,9 @@ extern const char kOnFileDownloadedPref[];
 // Pref that maps to the "OnBulkDataEntryEnterpriseConnector" policy.
 extern const char kOnBulkDataEntryPref[];
 
+// Pref that maps to the "OnPrintEnterpriseConnector" policy.
+extern const char kOnPrintPref[];
+
 // Pref that maps to the "OnSecurityEventEnterpriseConnector" policy.
 extern const char kOnSecurityEventPref[];
 
@@ -32,6 +35,7 @@ extern const char kContextAwareAccessSignalsAllowlistPref[];
 extern const char kOnFileAttachedScopePref[];
 extern const char kOnFileDownloadedScopePref[];
 extern const char kOnBulkDataEntryScopePref[];
+extern const char kOnPrintScopePref[];
 extern const char kOnSecurityEventScopePref[];
 
 // The pref name where this class stores the encrypted private key.

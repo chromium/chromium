@@ -15173,6 +15173,38 @@
       }
     ]
   },
+  "OnPrintEnterpriseConnector": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "OnPrintEnterpriseConnector": [
+            {
+              "service_provider": "Google",
+              "enable": [
+                { "url_list": ["*"], "tags": ["malware"] },
+                { "url_list": ["*.them.com", "*.others.com"], "tags": ["dlp"] }
+              ],
+              "disable": [
+                { "url_list": ["*.us.com"], "tags": ["malware"] }
+              ],
+              "block_until_verdict": 0,
+              "block_large_files": false
+            }
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.on_print": {}
+        }
+      }
+    ]
+  },
   "OnSecurityEventEnterpriseConnector": {
     "os": [
       "win",

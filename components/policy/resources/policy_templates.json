@@ -24111,7 +24111,7 @@
 
       The <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD">block_password_protected</ph> field controls whether Chrome blocks or allows files that are password protected.
 
-      The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether Chrome blocks or allows files that are too large to be analyzed (50+ MB).
+      The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether Chrome blocks or allows files that are too large to be analyzed.
 
       The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
 
@@ -24246,7 +24246,7 @@
 
       The <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD">block_password_protected</ph> field controls whether Chrome blocks or allows files that are password protected.
 
-      The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether Chrome blocks or allows files that are too large to be analyzed (50+ MB).
+      The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether Chrome blocks or allows files that are too large to be analyzed.
 
       The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
 
@@ -24382,6 +24382,126 @@
       The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
 
       The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The message field contains the text to show the user and should have at most 200 characters. The learn_more_url field contains an admin-provided URL that will be clickable by the user to get more customer-provided information about why the action was blocked. The language field is optional and contains the language of the message. An empty language field or a value of 'default' indicates a message to be used when the user's language doesn't have a message. The tag field specifies for which type of scans the message is displayed. The custom_messages list can have zero or more entries, where each entry is required to have non-empty message and tag fields.
+
+      This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
+    },
+    {
+      'name': 'OnPrintEnterpriseConnector',
+      'owners': ['file://chrome/browser/enterprise/connectors/OWNERS', 'domfc@chromium.org'],
+      'type': 'dict',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'object',
+          'properties': {
+            'service_provider': { 'type': 'string' },
+            'enable': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'url_list': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  },
+                  'tags': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  }
+                },
+              }
+            },
+            'disable': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'url_list': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  },
+                  'tags': {
+                    'type': 'array',
+                    'items': { 'type': 'string' },
+                  }
+                },
+              },
+            },
+            'block_until_verdict': {'type': 'integer', 'enum': [0, 1] },
+            'block_large_files': { 'type': 'boolean' },
+            'require_justification_tags': {
+              'type': 'array',
+              'items': { 'type': 'string' },
+            },
+            'custom_messages': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'message': { 'type': 'string' },
+                  'learn_more_url': { 'type': 'string' },
+                  'language': { 'type': 'string' },
+                  'tag': { 'type': 'string' },
+                },
+              },
+            },
+          },
+        },
+      },
+      'example_value': [{
+        'service_provider': 'Google',
+        'enable': [
+          {
+            'url_list': ['*.them.com', '*.others.com'],
+            'tags': ['dlp']
+          },
+        ],
+        'disable': [
+          {
+            'url_list': ['*.us.com'],
+            'tags': ['dlp']
+          },
+        ],
+        'block_until_verdict': 0,
+        'block_large_files': True,
+        'require_justification_tags': ['dlp'],
+        'custom_messages': [
+          {
+            'message': 'Custom message for potential sensitive data leaks.',
+            'learn_more_url': 'moreinfo.example.com',
+            'language': 'default',
+            'tag': 'dlp',
+          },
+          {
+            'message': 'Message pour une fuite de données potentielle.',
+            'learn_more_url': 'moreinfo.example.com/fr',
+            'language': 'fr-CA',
+            'tag': 'dlp',
+          },
+        ],
+      }],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+        'cloud_only': True,
+      },
+      'id': 931,
+      'future_on': ['chrome.*', 'chrome_os'],
+      'caption': '''Configuration policy for the OnPrint <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connector''',
+      'tags': [],
+      'desc': '''List of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connectors services settings to be applied to the <ph name="ON_PRINT_ENTERPRISE_CONNECTOR">OnPrint</ph> Enterprise Connector, which triggers when a page or file is printed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+      The <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD">url_list</ph>, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD">tags</ph>, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> fields are used to determine if the connector should send data for analysis when printing is triggered on a specific page and what tags to include in the analysis request. The analysis occurs if at least 1 tag is to be included in the request.
+
+      The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which analysis service provider the settings correspond to.
+
+      The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will wait to get a response from the analysis service before allowing the print preview dialog to be shown for the printed page. Any other integer value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> shows the print preview dialog immediately.
+
+      The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> blocks or allows files/pages that are too large to be analyzed.
+
+      The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
+
+      The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The administrator is able to configure messages of up to 200 characters.
 
       This policy can only be set from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.'''
     },
@@ -29857,6 +29977,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 930,
+  'highest_id_currently_used': 931,
   'highest_atomic_group_id_currently_used': 41
 }
