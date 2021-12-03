@@ -185,6 +185,12 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     }
   }
 
+  void SetRequiresContentBeforeBreaking(bool b) {
+    if (!b && !space_.HasRareData())
+      return;
+    space_.EnsureRareData()->requires_content_before_breaking = b;
+  }
+
   void SetIsInsideBalancedColumns() {
     space_.EnsureRareData()->is_inside_balanced_columns = true;
   }

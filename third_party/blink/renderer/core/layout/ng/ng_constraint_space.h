@@ -496,6 +496,13 @@ class CORE_EXPORT NGConstraintSpace final {
     return BlockFragmentationType() != kFragmentNone;
   }
 
+  // Return true if we're not allowed to break until we have placed some
+  // content. This will prevent last-resort breaks when there's no container
+  // separation, and we'll instead overflow the fragmentainer.
+  bool RequiresContentBeforeBreaking() const {
+    return HasRareData() && rare_data_->requires_content_before_breaking;
+  }
+
   // Return true if there's an ancestor multicol container with balanced
   // columns.
   bool IsInsideBalancedColumns() const {
@@ -787,6 +794,7 @@ class CORE_EXPORT NGConstraintSpace final {
           hide_table_cell_if_empty(false),
           block_direction_fragmentation_type(
               static_cast<unsigned>(kFragmentNone)),
+          requires_content_before_breaking(false),
           is_inside_balanced_columns(false),
           is_in_column_bfc(false),
           min_block_size_should_encompass_intrinsic_size(false),
@@ -806,6 +814,8 @@ class CORE_EXPORT NGConstraintSpace final {
           hide_table_cell_if_empty(other.hide_table_cell_if_empty),
           block_direction_fragmentation_type(
               other.block_direction_fragmentation_type),
+          requires_content_before_breaking(
+              other.requires_content_before_breaking),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
           is_in_column_bfc(other.is_in_column_bfc),
           min_block_size_should_encompass_intrinsic_size(
@@ -874,6 +884,8 @@ class CORE_EXPORT NGConstraintSpace final {
           hide_table_cell_if_empty != other.hide_table_cell_if_empty ||
           block_direction_fragmentation_type !=
               other.block_direction_fragmentation_type ||
+          requires_content_before_breaking !=
+              other.requires_content_before_breaking ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
           is_in_column_bfc != other.is_in_column_bfc ||
           min_break_appeal != other.min_break_appeal)
@@ -905,8 +917,8 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_offset_at_bfc || is_line_clamp_context ||
           is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
-          is_inside_balanced_columns || is_in_column_bfc ||
-          min_break_appeal != kBreakAppealLastResort)
+          requires_content_before_breaking || is_inside_balanced_columns ||
+          is_in_column_bfc || min_break_appeal != kBreakAppealLastResort)
         return false;
 
       switch (data_union_type) {
@@ -1127,6 +1139,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned hide_table_cell_if_empty : 1;
 
     unsigned block_direction_fragmentation_type : 2;
+    unsigned requires_content_before_breaking : 1;
     unsigned is_inside_balanced_columns : 1;
     unsigned is_in_column_bfc : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;

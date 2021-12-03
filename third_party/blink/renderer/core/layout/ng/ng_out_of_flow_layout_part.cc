@@ -1161,7 +1161,8 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
     SetupSpaceBuilderForFragmentation(
         *container_builder_->ConstraintSpace(), node,
         /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
-        /* is_new_fc */ true);
+        /* is_new_fc */ true,
+        /* requires_content_before_breaking */ false);
   }
 
   DCHECK(!oof_node.fixedpos_containing_block.fragment ||
@@ -1433,9 +1434,10 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
 
   // As the |block_estimate| is always in the node's writing mode, we build the
   // constraint space in the node's writing mode.
-  NGConstraintSpaceBuilder builder(style.GetWritingMode(),
-                                   style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
+  NGConstraintSpaceBuilder builder(
+      style.GetWritingMode(), style.GetWritingDirection(),
+      /* is_new_fc */ true,
+      /* requires_content_before_breaking */ false);
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(
       container_content_size_in_candidate_writing_mode);
@@ -1443,13 +1445,20 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
   if (should_use_fixed_block_size)
     builder.SetIsFixedBlockSize(true);
   if (fragmentainer_constraint_space) {
-    SetupSpaceBuilderForFragmentation(*fragmentainer_constraint_space, node,
-                                      block_offset, &builder,
-                                      /* is_new_fc */ true);
+    // Unlike in-flow elements, OOFs are never pushed to the next fragmentainer
+    // even if there's monolithic content that doesn't fit inside. See
+    // RequiresContentBeforeBreaking(), which we need to call for in-flow
+    // elements. For OOFs we can just pass true unconditionally.
+    bool requires_content_before_breaking = true;
+
+    SetupSpaceBuilderForFragmentation(
+        *fragmentainer_constraint_space, node, block_offset, &builder,
+        /* is_new_fc */ true, requires_content_before_breaking);
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
-    SetupSpaceBuilderForFragmentation(*container_builder_->ConstraintSpace(),
-                                      node, block_offset, &builder,
-                                      /* is_new_fc */ true);
+    SetupSpaceBuilderForFragmentation(
+        *container_builder_->ConstraintSpace(), node, block_offset, &builder,
+        /* is_new_fc */ true,
+        /* requires_content_before_breaking */ false);
   }
   NGConstraintSpace space = builder.ToConstraintSpace();
 

@@ -3412,10 +3412,11 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   if (opt_fragment_relative_block_offset) {
     if (opt_min_block_size_should_encompass_intrinsic_size)
       builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
-    SetupSpaceBuilderForFragmentation(ConstraintSpace(), grid_item.node,
-                                      *opt_fragment_relative_block_offset,
-                                      &builder,
-                                      /* is_new_fc */ true);
+    SetupSpaceBuilderForFragmentation(
+        ConstraintSpace(), grid_item.node, *opt_fragment_relative_block_offset,
+        &builder,
+        /* is_new_fc */ true,
+        container_builder_.RequiresContentBeforeBreaking());
   }
 
   return builder.ToConstraintSpace();

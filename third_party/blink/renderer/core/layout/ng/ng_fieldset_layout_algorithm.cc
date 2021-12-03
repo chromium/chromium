@@ -527,9 +527,10 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
   builder.SetIsFixedBlockSize(padding_box_size.block_size != kIndefiniteSize);
 
   if (ConstraintSpace().HasBlockFragmentation()) {
-    SetupSpaceBuilderForFragmentation(ConstraintSpace(), fieldset_content,
-                                      block_offset, &builder,
-                                      /* is_new_fc */ true);
+    SetupSpaceBuilderForFragmentation(
+        ConstraintSpace(), fieldset_content, block_offset, &builder,
+        /* is_new_fc */ true,
+        container_builder_.RequiresContentBeforeBreaking());
   }
   return builder.ToConstraintSpace();
 }

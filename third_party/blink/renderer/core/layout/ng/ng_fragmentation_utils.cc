@@ -219,7 +219,8 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
                                        const NGLayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
                                        NGConstraintSpaceBuilder* builder,
-                                       bool is_new_fc) {
+                                       bool is_new_fc,
+                                       bool requires_content_before_breaking) {
   DCHECK(parent_space.HasBlockFragmentation());
 
   // If the child is truly unbreakable, it won't participate in block
@@ -236,6 +237,9 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
   builder->SetFragmentainerOffsetAtBfc(parent_space.FragmentainerOffsetAtBfc() +
                                        fragmentainer_offset_delta);
   builder->SetFragmentationType(parent_space.BlockFragmentationType());
+  DCHECK(!requires_content_before_breaking ||
+         !parent_space.IsInitialColumnBalancingPass());
+  builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
 
   if (parent_space.IsInColumnBfc() && !is_new_fc)
     builder->SetIsInColumnBfc();
@@ -244,6 +248,7 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
 
 void SetupFragmentBuilderForFragmentation(
     const NGConstraintSpace& space,
+    const NGLayoutInputNode& node,
     const NGBlockBreakToken* previous_break_token,
     NGBoxFragmentBuilder* builder) {
   // When resuming layout after a break, we may not be allowed to break again
@@ -263,6 +268,36 @@ void SetupFragmentBuilderForFragmentation(
     sequence_number = previous_break_token->SequenceNumber() + 1;
     builder->SetIsFirstForNode(false);
   }
+
+  if (space.HasBlockFragmentation() && !space.IsAnonymous() &&
+      !space.IsInitialColumnBalancingPass()) {
+    bool requires_content_before_breaking =
+        space.RequiresContentBeforeBreaking();
+    // Pass an "infinite" intrinsic size to see how the block-size is
+    // constrained. If it doesn't affect the block size, it means that we can
+    // tell before layout how much more space this node needs.
+    LayoutUnit max_block_size = ComputeBlockSizeForFragment(
+        space, node.Style(), builder->BorderPadding(), LayoutUnit::Max(),
+        builder->InitialBorderBoxSize().inline_size);
+    DCHECK(space.HasKnownFragmentainerBlockSize());
+
+    DCHECK(!builder->BfcBlockOffset());
+    LayoutUnit space_left =
+        FragmentainerSpaceAtBfcStart(space) - space.ExpectedBfcBlockOffset();
+
+    LayoutUnit previously_consumed_block_size;
+    if (previous_break_token) {
+      previously_consumed_block_size =
+          previous_break_token->ConsumedBlockSize();
+    }
+
+    if (max_block_size - previously_consumed_block_size <= space_left) {
+      builder->SetIsKnownToFitInFragmentainer(true);
+      if (builder->MustStayInCurrentFragmentainer())
+        requires_content_before_breaking = true;
+    }
+    builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
+  }
   builder->SetSequenceNumber(sequence_number);
 
   builder->AdjustBorderScrollbarPaddingForFragmentation(previous_break_token);
@@ -272,20 +307,6 @@ void SetupFragmentBuilderForFragmentation(
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_start);
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_end);
   }
-}
-
-bool IsNodeFullyGrown(NGBlockNode node,
-                      const NGConstraintSpace& space,
-                      LayoutUnit current_total_block_size,
-                      const NGBoxStrut& border_padding,
-                      LayoutUnit inline_size) {
-  // Pass an "infinite" intrinsic size to see how the block-size is
-  // constrained. If it doesn't affect the block size, it means that the node
-  // cannot grow any further.
-  LayoutUnit max_block_size = ComputeBlockSizeForFragment(
-      space, node.Style(), border_padding, LayoutUnit::Max(), inline_size);
-  DCHECK_GE(max_block_size, current_total_block_size);
-  return max_block_size == current_total_block_size;
 }
 
 NGBreakStatus FinishFragmentation(NGBlockNode node,
@@ -426,18 +447,15 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       // produce more non-zero block-size fragments or not.
       //
       // If the block-size is constrained / fixed (in which case
-      // IsNodeFullyGrown() will return true now), we know that we're at the
-      // end. If block-size is unconstrained (or at least allowed to grow a bit
-      // more), we're only at the end if no in-flow content inside broke.
+      // IsKnownToFitInFragmentainer() will return true now), we know that we're
+      // at the end. If block-size is unconstrained (or at least allowed to grow
+      // a bit more), we're only at the end if no in-flow content inside broke.
 
       bool was_broken_by_child = builder->HasInflowChildBreakInside();
       if (!was_broken_by_child && space.IsNewFormattingContext())
         was_broken_by_child = builder->HasFloatBreakInside();
 
-      if (!was_broken_by_child ||
-          IsNodeFullyGrown(node, space, fragments_total_block_size,
-                           builder->BorderPadding(),
-                           builder->InitialBorderBoxSize().inline_size)) {
+      if (!was_broken_by_child || builder->IsKnownToFitInFragmentainer()) {
         if (node.HasNonVisibleBlockOverflow() &&
             builder->HasChildBreakInside()) {
           // We have reached the end of a fragmentable node that clips overflow
@@ -772,6 +790,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
          appeal_inside >= builder->EarlyBreak().BreakAppeal()))
       return true;
   } else if (refuse_break_before ||
+             (appeal_before == kBreakAppealLastResort && builder &&
+              builder->RequiresContentBeforeBreaking()) ||
              BlockSizeForFragmentation(
                  layout_result, space.GetWritingDirection()) <= space_left) {
     // The child either fits, or we are not allowed to break. So we can move

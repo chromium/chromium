@@ -73,9 +73,9 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
     DCHECK(parent_space.HasBlockFragmentation());
     DCHECK_EQ(style.GetWritingMode(), parent_space.GetWritingMode());
 
-    SetupSpaceBuilderForFragmentation(parent_space, unpositioned_float.node,
-                                      *origin_block_offset, &builder,
-                                      /* is_new_fc */ true);
+    SetupSpaceBuilderForFragmentation(
+        parent_space, unpositioned_float.node, *origin_block_offset, &builder,
+        /* is_new_fc */ true, /* requires_content_before_breaking */ false);
   } else {
     builder.SetFragmentationType(NGFragmentationType::kFragmentNone);
   }

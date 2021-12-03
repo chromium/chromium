@@ -1301,8 +1301,10 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
       ConstraintSpace().BaselineAlgorithmType());
 
   if (ConstraintSpace().HasBlockFragmentation()) {
-    SetupSpaceBuilderForFragmentation(ConstraintSpace(), spanner, block_offset,
-                                      &space_builder, /* is_new_fc */ true);
+    SetupSpaceBuilderForFragmentation(
+        ConstraintSpace(), spanner, block_offset, &space_builder,
+        /* is_new_fc */ true,
+        container_builder_.RequiresContentBeforeBreaking());
   }
 
   return space_builder.ToConstraintSpace();

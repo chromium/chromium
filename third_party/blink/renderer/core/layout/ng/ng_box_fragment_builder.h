@@ -223,6 +223,44 @@ class CORE_EXPORT NGBoxFragmentBuilder final
                                    const NGLogicalStaticPosition&,
                                    const LayoutInline* inline_container);
 
+  // Before layout we'll determine whether we can tell for sure that the node
+  // (or what's left of it to lay out, in case we've already broken) will fit in
+  // the current fragmentainer. If this is the case, we'll know that any
+  // block-end padding and border will come at the end of this fragment, and, if
+  // it's the first fragment for the node, this will make us ensure some child
+  // content before allowing breaks. See MustStayInCurrentFragmentainer().
+  void SetIsKnownToFitInFragmentainer(bool b) {
+    is_known_to_fit_in_fragmentainer_ = b;
+  }
+  bool IsKnownToFitInFragmentainer() const {
+    return is_known_to_fit_in_fragmentainer_;
+  }
+
+  // True if we need to keep some child content in the current fragmentainer
+  // before breaking (even that overflows the fragmentainer). We'll do this by
+  // refusing last-resort breaks when there's no container separation, and we'll
+  // instead overflow the fragmentainer. See MustStayInCurrentFragmentainer().
+  void SetRequiresContentBeforeBreaking(bool b) {
+    requires_content_before_breaking_ = b;
+  }
+  bool RequiresContentBeforeBreaking() const {
+    return requires_content_before_breaking_;
+  }
+
+  // If a node fits in one fragmentainer due to restricted block-size, it must
+  // stay there, even if the first piece of child content should require more
+  // space than that (which would normally push the entire node into the next
+  // fragmentainer, since there typically is no valid breakpoint before the
+  // first child - only *between* siblings). Furthermore, any first piece of
+  // child content also needs to stay in the current fragmentainer, even if this
+  // causes fragmentainer overflow. This is not mandated by any spec, but it is
+  // compatible with Gecko, and is required in order to print Google Docs.
+  //
+  // See https://github.com/w3c/csswg-drafts/issues/6056#issuecomment-951767882
+  bool MustStayInCurrentFragmentainer() const {
+    return is_known_to_fit_in_fragmentainer_ && is_first_for_node_;
+  }
+
   // Specify whether this will be the first fragment generated for the node.
   void SetIsFirstForNode(bool is_first) { is_first_for_node_ = is_first; }
 
@@ -611,6 +649,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_table_ng_part_ = false;
   bool is_initial_block_size_indefinite_ = false;
   bool is_inline_formatting_context_;
+  bool is_known_to_fit_in_fragmentainer_ = false;
+  bool requires_content_before_breaking_ = false;
   bool is_first_for_node_ = true;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;

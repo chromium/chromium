@@ -481,7 +481,8 @@ scoped_refptr<const NGLayoutResult> ComputeOutOfFlowBlockDimensions(
         // initial column balancing pass.
         SetupSpaceBuilderForFragmentation(
             space, node, /* fragmentainer_offset_delta */ LayoutUnit(),
-            &builder, /* is_new_fc */ true);
+            &builder, /* is_new_fc */ true,
+            /* requires_content_before_breaking */ false);
       }
       result = node.Layout(builder.ToConstraintSpace());
     }
