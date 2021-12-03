@@ -1,6 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
+<title>CSS Container Queries Test: counter updates</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-type">
 <link rel="match" href="counters-ref.html">
-<title>Test counters depending on container queries</title>
 <style>
   #container {
     container-type: size;
@@ -12,7 +13,7 @@
     content: counter(my-counter);
   }
 
-  @container size(min-width: 200px) {
+  @container size(min-width: 300px) {
     #counter {
       counter-reset: my-counter 100;
     }
@@ -22,3 +23,7 @@
 <div id="container">
   <div id="counter"></div>
 </div>
+<script>
+  container.offsetTop;
+  container.style.width = "400px";
+</script>
