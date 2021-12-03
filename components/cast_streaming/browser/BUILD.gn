@@ -99,6 +99,27 @@ source_set("network_context") {
   sources = [ "network_context_getter.cc" ]
 }
 
+source_set("renderer_controls") {
+  public_deps = [
+    "//base",
+    "//components/cast_streaming/public:remoting_utils",
+    "//components/cast_streaming/public/mojom",
+    "//media",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/system",
+    "//third_party/openscreen/src/cast/streaming:receiver",
+  ]
+  visibility = [ ":*" ]
+  sources = [
+    "playback_command_dispatcher.cc",
+    "playback_command_dispatcher.h",
+    "remoting_session_client.h",
+    "rpc_call_translator.cc",
+    "rpc_call_translator.h",
+  ]
+}
+
 source_set("browser") {
   public_deps = [
     ":network_context",
@@ -185,6 +206,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":core",
+    ":renderer_controls",
     "//base",
     "//base/test:test_support",
     "//components/cast/message_port:test_message_port_receiver",
