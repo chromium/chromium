@@ -60,7 +60,7 @@
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/done_button"
             android:contentDescription="@string/confirm"
-            android:src="@drawable/ic_checkmark_24dp"
+            android:src="@drawable/checkmark_24dp"
             android:layout_height="match_parent"
             android:layout_width="@dimen/toolbar_button_size"
             android:paddingHorizontal="@dimen/toolbar_button_padding"
