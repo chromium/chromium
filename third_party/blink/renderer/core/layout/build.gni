@@ -50,6 +50,8 @@ blink_core_sources_layout = [
   "generated_children.h",
   "geometry/axis.h",
   "geometry/box_sides.h",
+  "geometry/flex_offset.cc",
+  "geometry/flex_offset.h",
   "geometry/logical_offset.cc",
   "geometry/logical_offset.h",
   "geometry/logical_rect.cc",

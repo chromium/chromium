@@ -1097,12 +1097,7 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       NGFlexItem& flex_item = line_output.line_items[flex_item_idx];
       FlexItem* item = algorithm_.FlexItemAtIndex(flex_line_idx, flex_item_idx);
 
-      // flex_item.offset stores the main axis offset in X and the
-      // cross axis offset in Y. But AddChild wants offset from parent
-      // rectangle, so we have to transpose for columns. AddChild takes care of
-      // any writing mode differences though.
-      LayoutPoint location =
-          is_column_ ? flex_item.offset.TransposedPoint() : flex_item.offset;
+      LogicalOffset offset = flex_item.offset.ToLogicalOffset(is_column_);
 
       scoped_refptr<const NGLayoutResult> layout_result;
       if (DoesItemStretch(flex_item.ng_input_node)) {
@@ -1123,19 +1118,18 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                              physical_fragment);
       if (!involved_in_block_fragmentation_) {
-        container_builder_.AddResult(*layout_result,
-                                     {location.X(), location.Y()});
+        container_builder_.AddResult(*layout_result, offset);
 
         // Only propagate baselines from children on the first flex-line.
         if (&line_output == flex_line_outputs->begin()) {
-          PropagateBaselineFromChild(flex_item.Style(), fragment, location.Y(),
-                                     &fallback_baseline);
+          PropagateBaselineFromChild(flex_item.Style(), fragment,
+                                     offset.block_offset, &fallback_baseline);
         }
       } else {
         flex_item.total_remaining_block_size = fragment.BlockSize();
       }
 
-      if (PropagateFlexItemInfo(item, flex_line_idx, location,
+      if (PropagateFlexItemInfo(item, flex_line_idx, offset,
                                 physical_fragment.Size()) ==
           NGLayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges) {
         status = NGLayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges;
@@ -1201,21 +1195,16 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       break;
     }
 
-    // flex_item.offset stores the main axis offset in X and the
-    // cross axis offset in Y. But AddChild wants offset from parent
-    // rectangle, so we have to transpose for columns. AddChild takes care of
-    // any writing mode differences though.
-    LayoutPoint location =
-        is_column_ ? flex_item->offset.TransposedPoint() : flex_item->offset;
+    LogicalOffset offset = flex_item->offset.ToLogicalOffset(is_column_);
 
     if (item_break_token) {
-      location.SetY(LayoutUnit());
+      offset.block_offset = LayoutUnit();
     } else if (IsResumingLayout(BreakToken())) {
-      LayoutUnit updated_block_offset = location.Y() -
+      LayoutUnit updated_block_offset = offset.block_offset -
                                         BreakToken()->ConsumedBlockSize() +
                                         line_output.item_offset_adjustment;
       DCHECK_GE(updated_block_offset, LayoutUnit());
-      location.SetY(updated_block_offset);
+      offset.block_offset = updated_block_offset;
     }
 
     absl::optional<LayoutUnit> line_cross_size_for_stretch =
@@ -1227,7 +1216,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     NGConstraintSpace child_space = BuildSpaceForLayout(
         flex_item->ng_input_node, flex_item->main_axis_final_size,
-        line_cross_size_for_stretch, location.Y(),
+        line_cross_size_for_stretch, offset.block_offset,
         min_block_size_should_encompass_intrinsic_size);
     scoped_refptr<const NGLayoutResult> layout_result =
         flex_item->ng_input_node.Layout(child_space,
@@ -1242,7 +1231,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           last_line_idx_to_process_first_child_ == flex_line_idx;
       break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), flex_item->ng_input_node, *layout_result,
-          ConstraintSpace().FragmentainerOffsetAtBfc() + location.Y(),
+          ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset,
           has_container_separation, &container_builder_);
     }
 
@@ -1276,16 +1265,16 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // TODO(almaher): What to do in the case where the line extends past
     // the last item? Should that be included when fragmenting?
     intrinsic_block_size_ +=
-        (location.Y() + fragment.BlockSize() - intrinsic_block_size_)
+        (offset.block_offset + fragment.BlockSize() - intrinsic_block_size_)
             .ClampNegativeToZero();
 
-    container_builder_.AddResult(*layout_result, {location.X(), location.Y()});
+    container_builder_.AddResult(*layout_result, offset);
 
     // Only propagate baselines from children on the first flex-line.
     if (&line_output == flex_line_outputs->begin()) {
       // TODO(almaher): How will this work with fragmentation?
-      PropagateBaselineFromChild(flex_item->Style(), fragment, location.Y(),
-                                 &fallback_baseline);
+      PropagateBaselineFromChild(flex_item->Style(), fragment,
+                                 offset.block_offset, &fallback_baseline);
     }
     last_line_idx_to_process_first_child_ = flex_line_idx;
   }
@@ -1306,7 +1295,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
     FlexItem* flex_item,
     wtf_size_t flex_line_idx,
-    LayoutPoint location,
+    LogicalOffset offset,
     PhysicalSize fragment_size) {
   DCHECK(flex_item);
   NGLayoutResult::EStatus status = NGLayoutResult::kSuccess;
@@ -1324,10 +1313,8 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::PropagateFlexItemInfo(
         LogicalSize(container_builder_.InlineSize(), total_block_size_);
     PhysicalSize flexbox_size = ToPhysicalSize(
         logical_flexbox_size, ConstraintSpace().GetWritingMode());
-    item_rect.offset =
-        LogicalOffset(location.X(), location.Y())
-            .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),
-                               flexbox_size, item_rect.size);
+    item_rect.offset = offset.ConvertToPhysical(
+        ConstraintSpace().GetWritingDirection(), flexbox_size, item_rect.size);
     // devtools uses margin box.
     item_rect.Expand(flex_item->physical_margins_);
     DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);

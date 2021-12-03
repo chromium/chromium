@@ -205,7 +205,7 @@ bool FlexItem::UpdateAutoMarginsInCrossAxis(
   const Length& bottom_or_right =
       is_horizontal ? style_.MarginBottom() : style_.MarginRight();
   if (top_or_left.IsAuto() && bottom_or_right.IsAuto()) {
-    offset_->Move(LayoutUnit(), available_alignment_space / 2);
+    offset_->cross_axis_offset += available_alignment_space / 2;
     if (is_horizontal) {
       physical_margins_.top = available_alignment_space / 2;
       physical_margins_.bottom = available_alignment_space / 2;
@@ -231,7 +231,7 @@ bool FlexItem::UpdateAutoMarginsInCrossAxis(
 
   if (top_or_left.IsAuto()) {
     if (should_adjust_top_or_left)
-      offset_->Move(LayoutUnit(), available_alignment_space);
+      offset_->cross_axis_offset += available_alignment_space;
 
     if (is_horizontal)
       physical_margins_.top = available_alignment_space;
@@ -241,7 +241,7 @@ bool FlexItem::UpdateAutoMarginsInCrossAxis(
   }
   if (bottom_or_right.IsAuto()) {
     if (!should_adjust_top_or_left)
-      offset_->Move(LayoutUnit(), available_alignment_space);
+      offset_->cross_axis_offset += available_alignment_space;
 
     if (is_horizontal)
       physical_margins_.bottom = available_alignment_space;
@@ -572,7 +572,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
     // In an RTL column situation, this will apply the margin-right/margin-end
     // on the left. This will be fixed later in
     // LayoutFlexibleBox::FlipForRightToLeftColumn.
-    *flex_item.offset_ = LayoutPoint(
+    *flex_item.offset_ = FlexOffset(
         should_flip_main_axis
             ? container_logical_width_ - main_axis_offset - child_main_extent
             : main_axis_offset,
@@ -822,7 +822,7 @@ void FlexLayoutAlgorithm::AlignFlexLines(
     line_context.cross_axis_offset_ += line_offset;
 
     for (FlexItem& flex_item : line_context.line_items_) {
-      flex_item.offset_->SetY(flex_item.offset_->Y() + line_offset);
+      flex_item.offset_->cross_axis_offset += line_offset;
     }
     if (align_content.Distribution() == ContentDistributionType::kStretch &&
         available_cross_axis_space > 0) {
@@ -866,7 +866,7 @@ void FlexLayoutAlgorithm::AlignChildren() {
           available_space, position, flex_item.MarginBoxAscent(), max_ascent,
           StyleRef().FlexWrap() == EFlexWrap::kWrapReverse,
           StyleRef().IsDeprecatedWebkitBox());
-      flex_item.offset_->Move(LayoutUnit(), offset);
+      flex_item.offset_->cross_axis_offset += offset;
       if (position == ItemPosition::kBaseline &&
           StyleRef().FlexWrap() == EFlexWrap::kWrapReverse) {
         min_margin_after_baseline =
@@ -891,7 +891,7 @@ void FlexLayoutAlgorithm::AlignChildren() {
       if (flex_item.Alignment() == ItemPosition::kBaseline &&
           !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, this) &&
           min_margin_after_baseline) {
-        flex_item.offset_->Move(LayoutUnit(), min_margin_after_baseline);
+        flex_item.offset_->cross_axis_offset += min_margin_after_baseline;
       }
     }
   }
@@ -908,7 +908,7 @@ void FlexLayoutAlgorithm::FlipForWrapReverse(
                             line_context.cross_axis_extent_;
     LayoutUnit wrap_reverse_difference = new_offset - original_offset;
     for (FlexItem& flex_item : line_context.line_items_)
-      flex_item.offset_->Move(LayoutUnit(), wrap_reverse_difference);
+      flex_item.offset_->cross_axis_offset += wrap_reverse_difference;
   }
 }
 
@@ -1161,10 +1161,10 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
       // We passed 0 as the initial main_axis offset to ComputeLineItemsPosition
       // for ColumnReverse containers so here we have to add the
       // border_scrollbar_padding of the container.
-      flex_item.offset_->SetX(main_axis_content_size +
-                              border_scrollbar_padding_before -
-                              flex_item.offset_->X() - item_main_size -
-                              margins.block_end + margins.block_start);
+      flex_item.offset_->main_axis_offset =
+          main_axis_content_size + border_scrollbar_padding_before -
+          flex_item.offset_->main_axis_offset - item_main_size -
+          margins.block_end + margins.block_start;
     }
   }
 }

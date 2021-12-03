@@ -79,7 +79,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       Vector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
-                                                LayoutPoint location,
+                                                LogicalOffset offset,
                                                 PhysicalSize fragment_size);
   void LayoutColumnReverse(LayoutUnit main_axis_content_size);
 
