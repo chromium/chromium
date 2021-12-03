@@ -411,10 +411,10 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
       // position 0 ?
       if (!text_.length())
         continue;
-      wtf_size_t index = text_.length() - 1;
-      while (index && text_[index] == kSpaceCharacter)
+      int index = text_.length() - 1;
+      while (index >= 0 && text_[index] == kSpaceCharacter)
         --index;
-      if (index && text_[index] != kNewlineCharacter)
+      if (index >= 0 && text_[index] != kNewlineCharacter)
         continue;
     }
 
