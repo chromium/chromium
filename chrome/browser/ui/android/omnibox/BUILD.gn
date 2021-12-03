@@ -298,6 +298,7 @@ android_resources("java_resources") {
     "java/res/drawable/trending_up_black_24dp.xml",
     "java/res/layout-sw600dp/location_bar.xml",
     "java/res/layout/assistant_voice_search_consent_ui.xml",
+    "java/res/layout/assistant_voice_search_simplified_consent_ui.xml",
     "java/res/layout/location_bar.xml",
     "java/res/layout/location_bar_base.xml",
     "java/res/layout/location_status.xml",

@@ -268,6 +268,12 @@ const char kDnsOverHttpsDescription[] =
     "try to use a secure HTTPS connection to look up the addresses of websites "
     "and other web resources.";
 
+extern const char kAssistantConsentSimplifiedTextName[] =
+    "AssistantConsentSimplifiedText";
+extern const char kAssistantConsentSimplifiedTextDescription[] =
+    "Enables simplified consent copy in the Assistant voice search consent "
+    "dialog.";
+
 extern const char kAssistantConsentV2Name[] = "AssistanConsentV2";
 extern const char kAssistantConsentV2Description[] =
     "Enables different strategies for handling backing off from the consent "

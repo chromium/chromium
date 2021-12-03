@@ -5250,6 +5250,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_AVS_CONSENT_UI_CLOSED_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
       Assistant voice search consent ui closed
       </message>
+      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_TITLE" desc="Simplified title for a dialog asking the user's permission to use Assistant for voice search.">
+      Get a better voice experience
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_BODY" desc="Simplified body for a dialog asking the user's permission to use Assistant for voice search.">
+      Knowing the URLs of sites allows Google Assistant to help you complete tasks. You can turn off Assistant in Chrome settings.
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_ACCEPT" desc="Button text for the accept button for a dialog asking the user's permission to use Assistant for voice search.">
+        Yes, I’m in
+      </message>
+      <message name="IDS_AVS_CONSENT_UI_SIMPLIFIED_DENY" desc="Button text for the deny button for a dialog asking the user's permission to use Assistant for voice search.">
+        No thanks
+      </message>
 
       <!-- Assistant settings strings-->
       <message name="IDS_AVS_SETTING_CATEGORY_TITLE" desc="Title of the Assistant voice search setting category.">

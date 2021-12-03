@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -116,8 +117,15 @@ class AssistantVoiceSearchConsentUi
         mWindowAndroid = windowAndroid;
         mWindowAndroid.addActivityStateObserver(this);
 
-        mContentView = LayoutInflater.from(context).inflate(
-                R.layout.assistant_voice_search_consent_ui, /* root= */ null);
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ASSISTANT_CONSENT_SIMPLIFIED_TEXT)) {
+            mContentView = LayoutInflater.from(context).inflate(
+                    R.layout.assistant_voice_search_simplified_consent_ui, /* root= */ null);
+        } else {
+            mContentView = LayoutInflater.from(context).inflate(
+                    R.layout.assistant_voice_search_consent_ui, /* root= */ null);
+        }
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override

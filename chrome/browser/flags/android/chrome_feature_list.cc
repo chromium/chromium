@@ -168,6 +168,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAllowNewIncognitoTabIntents,
     &kAndroidLayoutChangeTabReparenting,
     &kAndroidSearchEngineChoiceNotification,
+    &kAssistantConsentSimplifiedText,
     &kAssistantConsentV2,
     &kAssistantIntentExperimentId,
     &kAssistantIntentPageUrl,
@@ -404,6 +405,9 @@ const base::Feature kFocusOmniboxInIncognitoTabIntents{
 
 const base::Feature kAndroidSearchEngineChoiceNotification{
     "AndroidSearchEngineChoiceNotification", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAssistantConsentSimplifiedText{
+    "AssistantConsentSimplifiedText", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAssistantConsentV2{"AssistantConsentV2",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

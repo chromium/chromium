@@ -50839,6 +50839,7 @@ from previous Chrome versions.
   <int value="-680589442" label="MacRTL:disabled"/>
   <int value="-679500267" label="UseXpsForPrinting:disabled"/>
   <int value="-678184617" label="TranslateSubFrames:disabled"/>
+  <int value="-677938988" label="AssistantConsentSimplifiedText:disabled"/>
   <int value="-674804217" label="SoleIntegration:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
@@ -51245,6 +51246,7 @@ from previous Chrome versions.
   <int value="-354783358" label="NTPSaveToOffline:disabled"/>
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>
+  <int value="-351830087" label="AssistantConsentSimplifiedText:enabled"/>
   <int value="-351552989" label="disable-hosted-apps-in-windows"/>
   <int value="-351127770" label="enable-offline-pages-as-bookmarks"/>
   <int value="-349437334" label="UseDdljsonApi:disabled"/>
