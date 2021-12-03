@@ -60,6 +60,12 @@ export class PrintPreviewMediaSizeSettingsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-media-size-settings': PrintPreviewMediaSizeSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewMediaSizeSettingsElement.is,
     PrintPreviewMediaSizeSettingsElement);
