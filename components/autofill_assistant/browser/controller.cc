@@ -1264,6 +1264,7 @@ void Controller::ResetState() {
   status_message_.clear();
   details_.clear();
   info_box_.reset();
+  progress_visible_ = true;
   progress_bar_error_state_ = false;
   progress_active_step_ = 0;
   step_progress_bar_configuration_ =
