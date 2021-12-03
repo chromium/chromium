@@ -54,6 +54,7 @@ AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
         std::make_unique<apps::InstanceRegistryUpdater>(
             *browser_app_instance_registry_, instance_registry_);
   }
+  instance_registry_observer_.Observe(&instance_registry_);
 }
 
 AppServiceProxyAsh::~AppServiceProxyAsh() {
@@ -104,7 +105,7 @@ void AppServiceProxyAsh::Initialize() {
     return;
   }
 
-  Observe(&AppRegistryCache());
+  AppRegistryCache::Observer::Observe(&AppRegistryCache());
 
   publisher_host_ = std::make_unique<PublisherHost>(this);
 
@@ -462,7 +463,7 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
 
 void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
-  Observe(nullptr);
+  AppRegistryCache::Observer::Observe(nullptr);
 }
 
 void AppServiceProxyAsh::RecordAppPlatformMetrics(
@@ -496,6 +497,37 @@ void AppServiceProxyAsh::PerformPostLaunchTasks(
     apps::mojom::LaunchSource launch_source) {
   if (apps_util::IsHumanLaunch(launch_source)) {
     ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);
+  }
+}
+
+void AppServiceProxyAsh::OnInstanceUpdate(const apps::InstanceUpdate& update) {
+  if (!update.IsCreation()) {
+    return;
+  }
+
+  for (auto& callback : callback_list_[update.InstanceId()]) {
+    auto launch_result = LaunchResult();
+    launch_result.instance_id = update.InstanceId();
+    std::move(callback).Run(std::move(launch_result));
+  }
+  callback_list_.erase(update.InstanceId());
+}
+
+void AppServiceProxyAsh::OnInstanceRegistryWillBeDestroyed(
+    apps::InstanceRegistry* cache) {
+  instance_registry_observer_.Reset();
+}
+
+void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
+                                    LaunchResult&& launch_result) {
+  bool exists = false;
+  InstanceRegistry().ForOneInstance(
+      launch_result.instance_id,
+      [&exists](const apps::InstanceUpdate& update) { exists = true; });
+  if (exists) {
+    std::move(callback).Run(std::move(launch_result));
+  } else {
+    callback_list_[launch_result.instance_id].push_back(std::move(callback));
   }
 }
 

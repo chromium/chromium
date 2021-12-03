@@ -87,9 +87,7 @@ void WebAppsCrosapi::LaunchAppWithParams(AppLaunchParams&& params,
   }
   controller_->Launch(
       apps::ConvertLaunchParamsToCrosapi(params, proxy_->profile()),
-      base::DoNothing());
-  // TODO(crbug.com/1244506): Link up the return callback.
-  std::move(callback).Run(LaunchResult());
+      apps::LaunchResultToMojomLaunchResultCallback(std::move(callback)));
 }
 
 void WebAppsCrosapi::Connect(

@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -81,8 +82,10 @@ void StandaloneBrowserExtensionApps::LaunchAppWithParams(
     return;
   }
 
-  // TODO(crbug.com/1244506): Add params on crosapi and implement this.
-  std::move(callback).Run(LaunchResult());
+  controller_->Launch(
+      apps::ConvertLaunchParamsToCrosapi(
+          params, ProfileManager::GetPrimaryUserProfile()),
+      apps::LaunchResultToMojomLaunchResultCallback(std::move(callback)));
 }
 
 void StandaloneBrowserExtensionApps::Connect(

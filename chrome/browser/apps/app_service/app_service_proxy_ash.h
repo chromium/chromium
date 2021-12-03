@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
@@ -56,7 +57,8 @@ struct PauseData {
 //
 // See components/services/app_service/README.md.
 class AppServiceProxyAsh : public AppServiceProxyBase,
-                           public apps::AppRegistryCache::Observer {
+                           public apps::AppRegistryCache::Observer,
+                           public apps::InstanceRegistry::Observer {
  public:
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
 
@@ -110,6 +112,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
  private:
   // For access to Initialize.
   friend class AppServiceProxyFactory;
+  FRIEND_TEST_ALL_PREFIXES(AppServiceProxyTest, LaunchCallback);
 
   using UninstallDialogs = std::set<std::unique_ptr<apps::UninstallDialog>,
                                     base::UniquePtrComparator>;
@@ -151,6 +154,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // apps::AppServiceProxyBase overrides:
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
+  void OnLaunched(LaunchCallback callback,
+                  LaunchResult&& launch_result) override;
 
   // Loads the icon for the app block dialog or the app pause dialog.
   void LoadIconForDialog(const apps::AppUpdate& update,
@@ -192,6 +197,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const std::string& app_id,
       apps::mojom::UninstallSource uninstall_source) override;
 
+  // apps::InstanceRegistry::Observer overrides.
+  void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
+  void OnInstanceRegistryWillBeDestroyed(
+      apps::InstanceRegistry* cache) override;
+
   std::unique_ptr<PublisherHost> publisher_host_;
 
   bool arc_is_registered_ = false;
@@ -221,6 +231,14 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // TODO(crbug.com/1174246): Support Lacros not keeping alive.
   std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
 
+  base::ScopedObservation<apps::InstanceRegistry,
+                          apps::InstanceRegistry::Observer>
+      instance_registry_observer_{this};
+
+  // A map to record the launch callbacks for an app instance. Note it is
+  // possible to have multiple launches to launch the same app instance for
+  // web apps, so we record a list of launch callbacks for each instance.
+  std::map<base::UnguessableToken, std::vector<LaunchCallback>> callback_list_;
   base::WeakPtrFactory<AppServiceProxyAsh> weak_ptr_factory_{this};
 };
 

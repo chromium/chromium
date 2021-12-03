@@ -516,4 +516,52 @@ TEST_F(AppServiceProxyPreferredAppsTest, AddPreferredAppBrowser) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(AppServiceProxyTest, LaunchCallback) {
+  AppServiceProxy proxy(nullptr);
+  bool called_1 = false;
+  bool called_2 = false;
+  auto instance_id_1 = base::UnguessableToken::Create();
+  LaunchResult result_1;
+  result_1.instance_id = instance_id_1;
+  auto instance_id_2 = base::UnguessableToken::Create();
+  LaunchResult result_2;
+  result_2.instance_id = instance_id_2;
+
+  // If the instance is not created yet, the callback will be stored.
+  proxy.OnLaunched(
+      base::BindOnce([](bool* called,
+                        apps::LaunchResult&& launch_result) { *called = true; },
+                     &called_1),
+      std::move(result_1));
+  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_FALSE(called_1);
+
+  proxy.OnLaunched(
+      base::BindOnce([](bool* called,
+                        apps::LaunchResult&& launch_result) { *called = true; },
+                     &called_2),
+      std::move(result_2));
+  EXPECT_EQ(proxy.callback_list_.size(), 2U);
+  EXPECT_FALSE(called_2);
+
+  // Once the instance is created, the callback will be called.
+  auto delta = std::make_unique<apps::Instance>("abc", instance_id_1, nullptr);
+  proxy.InstanceRegistry().OnInstance(std::move(delta));
+  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_TRUE(called_1);
+  EXPECT_FALSE(called_2);
+
+  // New callback with existing instance will be called immediately.
+  called_1 = false;
+  proxy.OnLaunched(
+      base::BindOnce([](bool* called,
+                        apps::LaunchResult&& launch_result) { *called = true; },
+                     &called_1),
+      std::move(result_1));
+  EXPECT_EQ(proxy.callback_list_.size(), 1U);
+  EXPECT_TRUE(called_1);
+  EXPECT_FALSE(called_2);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace apps

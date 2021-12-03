@@ -162,6 +162,8 @@ class AppServiceProxyBase : public KeyedService,
 
   // Launches an app for the given |params.app_id|. The |params| can also
   // contain other param such as launch container, window diposition, etc.
+  // Currently the return value in the callback will only be filled up for
+  // Chrome OS web apps and Chrome apps.
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback = base::DoNothing());
 
@@ -370,6 +372,9 @@ class AppServiceProxyBase : public KeyedService,
       const std::string& app_id,
       apps::mojom::UninstallSource uninstall_source);
 
+  virtual void OnLaunched(LaunchCallback callback,
+                          LaunchResult&& launch_result);
+
   base::flat_map<AppType, AppPublisher*> publishers_;
 
   // This proxy privately owns its instance of the App Service. This should not
@@ -409,6 +414,8 @@ class AppServiceProxyBase : public KeyedService,
 
   // For test access to OnApps.
   friend class AppServiceProxyPreferredAppsTest;
+
+  base::WeakPtrFactory<AppServiceProxyBase> weak_factory_{this};
 };
 
 }  // namespace apps

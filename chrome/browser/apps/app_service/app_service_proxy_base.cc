@@ -393,7 +393,10 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
         RecordAppPlatformMetrics(profile_, update, launch_source,
                                  params.container);
 
-        publisher->LaunchAppWithParams(std::move(params), std::move(callback));
+        publisher->LaunchAppWithParams(
+            std::move(params),
+            base::BindOnce(&AppServiceProxyBase::OnLaunched,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 
         PerformPostLaunchTasks(launch_source);
       });
@@ -744,6 +747,11 @@ void AppServiceProxyBase::PerformPostUninstallTasks(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {}
+
+void AppServiceProxyBase::OnLaunched(LaunchCallback callback,
+                                     LaunchResult&& launch_result) {
+  std::move(callback).Run(std::move(launch_result));
+}
 
 IntentLaunchInfo::IntentLaunchInfo() = default;
 IntentLaunchInfo::~IntentLaunchInfo() = default;
