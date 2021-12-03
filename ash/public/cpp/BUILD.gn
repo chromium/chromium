@@ -336,6 +336,7 @@ component("cpp") {
   defines = [ "ASH_PUBLIC_IMPLEMENTATION" ]
 
   assert_no_deps = [
+    "//ash/components/arc",
     "//ash/public/cpp/external_arc",
     "//components/arc",
     "//components/exo",

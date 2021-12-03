@@ -111,15 +111,11 @@ static_library("arc") {
 
   deps = [
     "//ash",
-    "//ash/components/arc/enterprise",
-    "//ash/components/arc/input_overlay/resources:resources_grit",
     "//ash/components/arc/vector_icons",
     "//ash/components/audio",
     "//ash/components/disks",
-    "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
-    "//base",
     "//chromeos/components/sensors:sensors",
     "//chromeos/cryptohome",
     "//chromeos/dbus",
@@ -129,55 +125,29 @@ static_library("arc") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/resourced",
     "//chromeos/dbus/session_manager",
-    "//chromeos/dbus/session_manager:login_manager_proto",
-    "//chromeos/dbus/upstart",
     "//chromeos/dbus/userdataauth",
     "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/login_state",
     "//chromeos/network",
-    "//chromeos/ui/base",
     "//chromeos/ui/frame",
-    "//components/account_id",
     "//components/device_event_log",
     "//components/exo",
-    "//components/google/core/common",
     "//components/guest_os",
-    "//components/keyed_service/core",
-    "//components/onc",
     "//components/prefs",
-    "//components/strings:components_strings_grit",
-
-    # TODO(crbug.com/853604): After fully migrating the intent picker to query
-    # directly from App Service, we will deprecated the match functionality
-    # in intent_filter and this dependency will be removed.
-    "//components/services/app_service/public/cpp:intents",
     "//components/session_manager/core",
-    "//components/url_formatter",
-    "//components/user_manager",
+
+    # TODO(b/208907272): Move (maybe split) components_strings to ash.
+    "//components/strings:components_strings_grit",
     "//components/user_prefs",
-    "//components/vector_icons",
     "//content/public/browser",
-    "//content/public/common",
-    "//device/bluetooth",
-    "//google_apis",
     "//media/capture:capture_lib",
-    "//services/device/public/mojom",
-    "//skia",
     "//third_party/re2",
-    "//ui/aura",
-    "//ui/base",
-    "//ui/base/clipboard",
-    "//ui/base/ime",
     "//ui/base/ime/ash",
     "//ui/chromeos/strings",
     "//ui/chromeos/styles:cros_styles_views_generator",
     "//ui/display/manager",
-    "//ui/events",
-    "//ui/events:dom_keycode_converter",
     "//ui/events/ozone",
-    "//ui/gfx",
     "//ui/wm/public",
-    "//url",
   ]
 }
 
@@ -260,10 +230,10 @@ static_library("compat_mode_test_support") {
   ]
 
   deps = [
+    ":arc",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//components/arc:arc",
     "//ui/aura",
     "//ui/display:test_support",
     "//ui/events:test_support",
@@ -364,6 +334,7 @@ static_library("arc_test_support") {
   ]
 
   deps = [
+    ":arc",
     "//ash/components/arc/enterprise",
     "//ash/constants",
     "//base",
@@ -434,6 +405,7 @@ source_set("unit_tests") {
 
   # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
+    ":arc",
     "//ash/components/arc:arc_test_support",
     "//ash/components/arc/enterprise",
     "//ash/components/arc/media_session",

@@ -4890,6 +4890,7 @@ static_library("browser") {
     deps += [
       "//ash",
       "//ash/components/account_manager",
+      "//ash/components/arc",
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
       "//ash/components/arc/enterprise",

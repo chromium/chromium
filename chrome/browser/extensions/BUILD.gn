@@ -1114,6 +1114,7 @@ static_library("extensions") {
     }
     deps += [
       "//ash",
+      "//ash/components/arc",
       "//ash/components/attestation",
       "//ash/components/disks",
       "//ash/components/enhanced_network_tts/mojom",
@@ -1154,7 +1155,6 @@ static_library("extensions") {
       "//chromeos/system",
       "//chromeos/tpm",
       "//chromeos/ui/base",
-      "//components/arc",
       "//components/constrained_window",
       "//components/crash/content/browser/error_reporting",
       "//components/drive",

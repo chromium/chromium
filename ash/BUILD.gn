@@ -2153,13 +2153,14 @@ component("ash") {
   data_deps = [ ":dbus_service_files" ]
 
   assert_no_deps = [
+    "//ash/components/arc",
+
     # Ash should not depend upon cryptohome_client or components that depend
     # on it. TODO(stevenjb): Assert on //chromeos/dbus/cryptohome_client once it
     # is extracted from //chromeos/dbus. https://crbug.com/647367.
     "//chromeos/cryptohome",
     "//chromeos/login/auth",
     "//chromeos/tpm",
-    "//components/arc",
 
     # Ash should not depend upon content at all.
     "//content/public/browser",

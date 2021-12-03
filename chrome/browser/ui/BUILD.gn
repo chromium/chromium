@@ -2881,6 +2881,7 @@ static_library("ui") {
       "//ash/assistant/model",
       "//ash/assistant/util",
       "//ash/components/account_manager",
+      "//ash/components/arc",
       "//ash/components/audio",
       "//ash/components/disks",
       "//ash/components/drivefs",

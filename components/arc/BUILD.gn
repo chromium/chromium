@@ -25,83 +25,17 @@ static_library("arc") {
     "intent_helper/open_url_delegate.h",
   ]
 
-  # TODO(b/129295708): Remove these public_deps.
-  public_deps = [
-    "//ash/components/arc:arc",
-    "//ash/components/arc:arc_base",
-    "//ash/components/arc:arc_metrics_constants",
-    "//ash/components/arc:prefs",
-  ]
-
-  # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
-    "//ash:ash",
-    "//ash/components/arc/enterprise",
-    "//ash/components/arc/input_overlay/resources:resources_grit",
-    "//ash/components/arc/vector_icons",
-    "//ash/components/audio",
-    "//ash/components/disks",
-    "//ash/constants",
-    "//ash/keyboard/ui",
+    "//ash/components/arc",
     "//ash/public/cpp",
-    "//base",
-    "//chromeos/components/sensors:sensors",
-    "//chromeos/cryptohome",
-    "//chromeos/dbus",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/permission_broker",
-    "//chromeos/dbus/power",
-    "//chromeos/dbus/power:power_manager_proto",
-    "//chromeos/dbus/resourced:resourced",
-    "//chromeos/dbus/session_manager",
-    "//chromeos/dbus/session_manager:login_manager_proto",
-    "//chromeos/dbus/upstart:upstart",
-    "//chromeos/dbus/userdataauth",
-    "//chromeos/dbus/userdataauth:userdataauth_proto",
-    "//chromeos/login/login_state",
-    "//chromeos/network",
-    "//chromeos/ui/base",
-    "//chromeos/ui/frame",
-    "//components/account_id",
     "//components/exo",
     "//components/google/core/common",
-    "//components/guest_os",
-    "//components/keyed_service/core",
-    "//components/onc",
-    "//components/prefs",
-    "//components/strings:components_strings_grit",
 
     # TODO(crbug.com/853604): After fully migrating the intent picker to query
     # directly from App Service, we will deprecated the match functionality
     # in intent_filter and this dependency will be removed.
     "//components/services/app_service/public/cpp:intents",
-    "//components/session_manager/core",
     "//components/url_formatter",
-    "//components/user_manager",
-    "//components/user_prefs:user_prefs",
-    "//components/vector_icons",
-    "//content/public/browser:browser",
-    "//content/public/common",
-    "//device/bluetooth",
-    "//google_apis",
-    "//media/capture:capture_lib",
-    "//services/device/public/mojom",
-    "//skia",
-    "//third_party/re2:re2",
-    "//ui/aura",
-    "//ui/base:base",
-    "//ui/base/clipboard",
-    "//ui/base/ime",
-    "//ui/base/ime/ash",
-    "//ui/chromeos/strings",
-    "//ui/chromeos/styles:cros_styles_views_generator",
-    "//ui/display/manager",
-    "//ui/events",
-    "//ui/events:dom_keycode_converter",
-    "//ui/events/ozone",
-    "//ui/gfx",
-    "//ui/wm/public",
-    "//url:url",
   ]
 }
 
@@ -128,6 +62,8 @@ source_set("unit_tests") {
   deps = [
     ":arc",
     ":arc_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

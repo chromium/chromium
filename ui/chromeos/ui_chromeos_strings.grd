@@ -152,7 +152,7 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <!-- Files app strings. It's shared with ARC++ (//components/arc). -->
+      <!-- Files app strings. It's shared with ARC++ (//ash/components/arc). -->
       <part file="file_manager_strings.grdp" />
 
       <!-- Default user profile images. -->

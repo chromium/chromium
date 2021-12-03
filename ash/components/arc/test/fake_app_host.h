@@ -10,8 +10,8 @@
 
 namespace arc {
 
-// For tests in //components/arc that cannot use the real AppHost implementation
-// in //chrome.
+// For tests in //ash/components/arc that cannot use the real AppHost
+// implementation in //chrome.
 class FakeAppHost : public mojom::AppHost {
  public:
   explicit FakeAppHost(
