@@ -11,6 +11,7 @@ namespace media {
 namespace hls {
 
 enum class ParseStatusCode : StatusCodeType {
+  kReachedEOF,
   kInvalidEOL,
   kMalformedTag,
   kFailedToParseDecimalInteger,

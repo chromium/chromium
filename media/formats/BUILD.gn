@@ -171,11 +171,14 @@ source_set("formats") {
 
   # TODO(https://crbug.com/1266991): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
+    "hls/items.cc",
+    "hls/items.h",
     "hls/parse_status.h",
     "hls/types.cc",
     "hls/types.h",
   ]
   deps += [ "//third_party/re2" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 static_library("test_support") {
@@ -274,7 +277,19 @@ source_set("unit_tests") {
   }
 
   # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
-  sources += [ "hls/types_unittest.cc" ]
+  sources += [
+    "hls/items_unittest.cc",
+    "hls/types_unittest.cc",
+  ]
+}
+
+# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+fuzzer_test("hls_items_fuzzer") {
+  sources = [ "hls/items_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//media",
+  ]
 }
 
 if (proprietary_codecs) {

@@ -1,0 +1,75 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_FORMATS_HLS_ITEMS_H_
+#define MEDIA_FORMATS_HLS_ITEMS_H_
+
+#include <cstddef>
+#include "base/strings/string_piece.h"
+#include "media/base/media_export.h"
+#include "media/formats/hls/parse_status.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace media {
+namespace hls {
+
+// An 'Item' is a lexical item in an HLS manifest which has been determined to
+// have some type based on its context, but has yet been fully parsed,
+// validated, or undergone variable substitution.
+
+enum class TagKind {
+  kUnknown,
+  kM3u,
+  kXVersion,
+  kInf,
+  kMaxValue = kInf,
+};
+
+// An item which has been determined to of a known or unknown tag type, but not
+// a comment.
+struct MEDIA_EXPORT TagItem {
+  // TODO(crbug.com/1275317): These constructors should be removed
+  TagItem(TagKind, size_t line_number, base::StringPiece content);
+  ~TagItem();
+  TagItem(const TagItem&);
+  TagItem(TagItem&&);
+  TagItem& operator=(const TagItem&);
+  TagItem& operator=(TagItem&&);
+
+  TagKind kind;
+  size_t line_number;
+
+  // The content of the tag. This does not include the tag prefix or line
+  // ending.
+  base::StringPiece content;
+};
+
+// A URI. This may be a URI line or a URI appearing within a tag.
+struct MEDIA_EXPORT UriItem {
+  // TODO(crbug.com/1275317): These constructors should be removed
+  UriItem(size_t line_number, base::StringPiece text);
+  ~UriItem();
+  UriItem(const UriItem&);
+  UriItem(UriItem&&);
+  UriItem& operator=(const UriItem&);
+  UriItem& operator=(UriItem&&);
+
+  size_t line_number;
+  base::StringPiece text;
+};
+
+using GetNextLineItemResult = absl::variant<TagItem, UriItem>;
+
+// Returns the next line-level item from the source text. Verifies that line
+// endings are respected, and advances `src` and `line_number` to the following
+// line. If no further items could be retrieved, returns
+// `ParseStatusCode::kReachedEOF`.
+MEDIA_EXPORT ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
+    base::StringPiece* src,
+    size_t* line_number);
+
+}  // namespace hls
+}  // namespace media
+
+#endif  // MEDIA_FORMATS_HLS_ITEMS_H_

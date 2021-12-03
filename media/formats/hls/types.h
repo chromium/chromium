@@ -14,7 +14,7 @@ namespace hls {
 namespace types {
 
 // Data-types used in HLS, as described by the spec
-using DecimalInteger = std::uint64_t;
+using DecimalInteger = uint64_t;
 using DecimalFloatingPoint = double;
 using SignedDecimalFloatingPoint = double;
 
