@@ -355,7 +355,11 @@ void PasswordReuseManagerImpl::OnLoginsChanged(
 
 void PasswordReuseManagerImpl::OnLoginsRetained(
     PasswordStoreInterface* store,
-    const std::vector<PasswordForm>& retained_passwords) {}
+    const std::vector<PasswordForm>& retained_passwords) {
+  ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnLoginsRetained,
+                              base::Unretained(reuse_detector_),
+                              retained_passwords));
+}
 
 bool PasswordReuseManagerImpl::ScheduleTask(base::OnceClosure task) {
   return background_task_runner_ &&
