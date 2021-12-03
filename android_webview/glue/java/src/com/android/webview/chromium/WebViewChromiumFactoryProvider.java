@@ -293,7 +293,18 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 resourcePackage = packageInfo.applicationInfo.metaData.getString(
                         "com.android.webview.WebViewDonorPackage", resourcePackage);
             }
-            int packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
+            int packageId;
+            try {
+                packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
+            } catch (RuntimeException e) {
+                // We failed to find the package ID, which likely means this context's AssetManager
+                // doesn't have WebView loaded in it. This may be because WebViewFactory doesn't add
+                // the package persistently to ResourcesManager and the app's AssetManager has been
+                // recreated. Try adding it again using WebViewDelegate, which does add it
+                // persistently.
+                webViewDelegate.addWebViewAssetPath(ctx);
+                packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                     && AwBrowserProcess.getApkType() != ApkType.TRICHROME
                     && packageId > SHARED_LIBRARY_MAX_ID) {
