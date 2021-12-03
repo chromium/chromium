@@ -661,19 +661,9 @@ ColorSpace ColorSpace::GetWithSDRWhiteLevel(float sdr_white_level) const {
 }
 
 sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
-  // Unspecified color spaces correspond to the null SkColorSpace.
-  if (!IsValid())
+  // Handle only valid, full-range RGB spaces.
+  if (!IsValid() || matrix_ != MatrixID::RGB || range_ != RangeID::FULL)
     return nullptr;
-
-  // Handle only full-range RGB spaces.
-  if (matrix_ != MatrixID::RGB) {
-    DLOG(ERROR) << "Not creating non-RGB SkColorSpace";
-    return nullptr;
-  }
-  if (range_ != RangeID::FULL) {
-    DLOG(ERROR) << "Not creating non-full-range SkColorSpace";
-    return nullptr;
-  }
 
   // Use the named SRGB and linear-SRGB instead of the generic constructors.
   if (primaries_ == PrimaryID::BT709) {
