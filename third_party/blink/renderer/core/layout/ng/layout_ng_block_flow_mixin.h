@@ -58,12 +58,12 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
 
   void Trace(Visitor*) const override;
 
-  using LayoutNGMixin<Base>::CurrentFragment;
-
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  void AddLayoutOverflowFromChildren() final;
+#if DCHECK_IS_ON()
+  void AddLayoutOverflowFromChildren() final { NOTREACHED(); }
+#endif
 
   void AddOutlineRects(Vector<PhysicalRect>&,
                        const PhysicalOffset& additional_offset,
@@ -79,9 +79,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   Member<NGInlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
-
- private:
-  void AddScrollingOverflowFromChildren();
 };
 
 }  // namespace blink

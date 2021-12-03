@@ -86,36 +86,6 @@ void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
 }
 
 template <typename Base>
-void LayoutNGBlockFlowMixin<Base>::AddLayoutOverflowFromChildren() {
-  if (Base::ChildLayoutBlockedByDisplayLock())
-    return;
-
-  // |ComputeOverflow()| calls this, which is called from
-  // |CopyFragmentDataToLayoutBox()| and |RecalcOverflow()|.
-  // Add overflow from the last layout cycle.
-  // TODO(chrishtr): do we need to condition on CurrentFragment()? Why?
-  if (CurrentFragment()) {
-    AddScrollingOverflowFromChildren();
-  }
-  Base::AddLayoutOverflowFromChildren();
-}
-
-template <typename Base>
-void LayoutNGBlockFlowMixin<Base>::AddScrollingOverflowFromChildren() {
-  const NGPhysicalBoxFragment* physical_fragment = CurrentFragment();
-  DCHECK(physical_fragment);
-  PhysicalRect children_overflow =
-      physical_fragment->ScrollableOverflowFromChildren(
-          NGPhysicalFragment::kNormalHeight);
-
-  // LayoutOverflow takes flipped blocks coordinates, adjust as needed.
-  const ComputedStyle& style = physical_fragment->Style();
-  LayoutRect children_flipped_overflow =
-      children_overflow.ToLayoutFlippedRect(style, physical_fragment->Size());
-  Base::AddLayoutOverflow(children_flipped_overflow);
-}
-
-template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
     Vector<PhysicalRect>& rects,
     const PhysicalOffset& additional_offset,

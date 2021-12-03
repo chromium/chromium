@@ -612,14 +612,16 @@ TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
   //       text run at (0,0) width 200: "aX"
 
   const auto& sample1 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t1"));
-  const auto& sample_fragment1 = *sample1.CurrentFragment();
+  ASSERT_EQ(sample1.PhysicalFragmentCount(), 1u);
+  const auto& sample_fragment1 = *sample1.GetPhysicalFragment(0);
   EXPECT_FALSE(sample_fragment1.HasLayoutOverflow());
   EXPECT_EQ(PhysicalSize(150, 200), sample_fragment1.Size());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),
             sample_fragment1.LayoutOverflow());
 
   const auto& sample2 = *To<LayoutBlockFlow>(GetLayoutObjectByElementId("t2"));
-  const auto& sample_fragment2 = *sample2.CurrentFragment();
+  ASSERT_EQ(sample2.PhysicalFragmentCount(), 1u);
+  const auto& sample_fragment2 = *sample2.GetPhysicalFragment(0);
   EXPECT_FALSE(sample_fragment2.HasLayoutOverflow());
   EXPECT_EQ(PhysicalSize(150, 200), sample_fragment2.Size());
   EXPECT_EQ(PhysicalRect(PhysicalOffset(), PhysicalSize(150, 200)),

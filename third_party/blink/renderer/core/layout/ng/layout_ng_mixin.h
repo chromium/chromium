@@ -43,8 +43,6 @@ class LayoutNGMixin : public Base {
 
   bool IsLayoutNGObject() const final { return true; }
 
-  const NGPhysicalBoxFragment* CurrentFragment() const final;
-
  protected:
   bool IsOfType(LayoutObject::LayoutObjectType) const override;
 

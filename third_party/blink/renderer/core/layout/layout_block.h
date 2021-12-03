@@ -152,11 +152,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   const char* GetName() const override;
 
-  virtual const NGPhysicalBoxFragment* CurrentFragment() const {
-    NOT_DESTROYED();
-    return nullptr;
-  }
-
  protected:
   // Insert a child correctly into the tree when |beforeDescendant| isn't a
   // direct child of |this|. This happens e.g. when there's an anonymous block

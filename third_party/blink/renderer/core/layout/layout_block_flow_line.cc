@@ -2503,33 +2503,8 @@ void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
   if (HasNonVisibleOverflow() && !end_padding && GetNode() &&
       IsRootEditableElement(*GetNode()) &&
       StyleRef().IsLeftToRightDirection()) {
-    if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
-      if (const NGFragmentItems* items = fragment->Items()) {
-        for (NGInlineCursor cursor(*fragment, *items); cursor;
-             cursor.MoveToNextSkippingChildren()) {
-          if (!cursor.Current().IsLineBox())
-            continue;
-          const NGFragmentItem& child = *cursor.CurrentItem();
-          LogicalRect logical_rect =
-              fragment->ConvertChildToLogical(child.RectInContainerFragment());
-          logical_rect.size.inline_size += 1;
-          AddLayoutOverflow(
-              fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());
-        }
-        return;
-      }
-      // Note: Paint fragment for this block isn't set yet.
-      for (const NGLink& child : fragment->Children()) {
-        if (!child->IsLineBox())
-          continue;
-        LogicalRect logical_rect = fragment->ConvertChildToLogical(
-            PhysicalRect(child.Offset(), child->Size()));
-        logical_rect.size.inline_size += 1;
-        AddLayoutOverflow(
-            fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());
-      }
-      return;
-    }
+    DCHECK(!IsLayoutNGObject());
+    // TODO(layout-dev): Explain why we add a pixel.
     end_padding = LayoutUnit(1);
   }
 

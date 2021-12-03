@@ -219,20 +219,6 @@ void LayoutNGMixin<Base>::RecalcVisualOverflow() {
   Base::RecalcVisualOverflow();
 }
 
-// The current fragment from the last layout cycle for this box.
-// When pre-NG layout calls functions of this block flow, fragment and/or
-// LayoutResult are required to compute the result.
-// TODO(kojii): Use the cached result for now, we may need to reconsider as the
-// cache evolves.
-template <typename Base>
-const NGPhysicalBoxFragment* LayoutNGMixin<Base>::CurrentFragment() const {
-  const NGLayoutResult* cached_layout_result = Base::GetCachedLayoutResult();
-  if (!cached_layout_result)
-    return nullptr;
-
-  return &To<NGPhysicalBoxFragment>(cached_layout_result->PhysicalFragment());
-}
-
 template <typename Base>
 bool LayoutNGMixin<Base>::IsOfType(LayoutObject::LayoutObjectType type) const {
   return type == LayoutObject::kLayoutObjectNGMixin || Base::IsOfType(type);
