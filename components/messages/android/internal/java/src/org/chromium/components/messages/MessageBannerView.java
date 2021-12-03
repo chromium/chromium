@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.Sw
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.ui.base.ViewUtils;
@@ -48,6 +49,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     private SwipeGestureListener mSwipeGestureDetector;
     private Runnable mOnTitleChanged;
     private int mCornerRadius = -1;
+    private PopupMenuShownListener mPopupMenuShownListener;
 
     public MessageBannerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -153,6 +155,10 @@ public class MessageBannerView extends BoundedLinearLayout {
         mIconView.setLayoutParams(params);
     }
 
+    void setPopupMenuShownListener(PopupMenuShownListener popupMenuShownListener) {
+        mPopupMenuShownListener = popupMenuShownListener;
+    }
+
     // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
     // response to the tap on secondary button. The code below implements this logic. Past M88 it
     // will be replaced with modal dialog driven from the feature code.
@@ -190,6 +196,9 @@ public class MessageBannerView extends BoundedLinearLayout {
             }
         };
         mSecondaryButton.setDelegate(delegate);
+        if (mPopupMenuShownListener != null) {
+            mSecondaryButton.addPopupListener(mPopupMenuShownListener);
+        }
         mSecondaryButton.showMenu();
     }
 

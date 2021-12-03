@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -133,5 +135,45 @@ public class MessageBannerViewTest {
         onView(withId(R.id.message_secondary_button)).perform(click());
         onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
         Mockito.verify(mSecondaryActionCallback).run();
+    }
+
+    /**
+     * Tests that clicking on the secondary button opens a menu with an item with
+     * SECONDARY_BUTTON_MENU_TEXT, the message auto-dismiss timer is cancelled at this time and the
+     * message banner is shown as long as the menu is open. When the menu is dismissed, the message
+     * auto-dismiss timer is (re)started with expected parameters.
+     */
+    @Test
+    @MediumTest
+    public void testSecondaryActionMenuInvokesPopupMenuEventHandlers() {
+        PopupMenuShownListener listener = Mockito.spy(PopupMenuShownListener.class);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModel propertyModel =
+                    new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                            .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                    MessageIdentifier.TEST_MESSAGE)
+                            .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
+                                    android.R.drawable.ic_menu_add)
+                            .with(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
+                                    SECONDARY_BUTTON_MENU_TEXT)
+                            .with(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
+                                    mSecondaryActionCallback)
+                            .build();
+            PropertyModelChangeProcessor.create(
+                    propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+            // Simulate the invocation of #setPopupMenuShownListener by the MessageBannerCoordinator
+            // ctor.
+            mMessageBannerView.setPopupMenuShownListener(listener);
+        });
+
+        // Click on the secondary icon to open the popup menu, verify that #onPopupMenuShown is
+        // invoked.
+        onView(withId(R.id.message_secondary_button)).perform(click());
+        Mockito.verify(listener).onPopupMenuShown();
+
+        // Click on the message banner view holding the popup menu to dismiss the menu, verify that
+        // #onPopupMenuDismissed is invoked.
+        onView(withChild(withText(SECONDARY_BUTTON_MENU_TEXT))).perform(click());
+        Mockito.verify(listener).onPopupMenuDismissed();
     }
 }
