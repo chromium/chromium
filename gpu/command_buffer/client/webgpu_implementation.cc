@@ -351,8 +351,8 @@ void WebGPUImplementation::OnGpuControlReturnData(
 
   static uint32_t return_trace_id = 0;
   TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-                         "DawnReturnCommands", TRACE_EVENT_FLAG_FLOW_IN,
-                         return_trace_id++);
+                         "DawnReturnCommands", return_trace_id++,
+                         TRACE_EVENT_FLAG_FLOW_IN);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                "WebGPUImplementation::OnGpuControlReturnData", "bytes",

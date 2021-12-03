@@ -88,8 +88,8 @@ void DawnClientSerializer::Commit() {
 
     TRACE_EVENT_WITH_FLOW0(
         TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnCommands",
-        TRACE_EVENT_FLAG_FLOW_OUT,
-        (static_cast<uint64_t>(buffer_.shm_id()) << 32) + buffer_.offset());
+        (static_cast<uint64_t>(buffer_.shm_id()) << 32) + buffer_.offset(),
+        TRACE_EVENT_FLAG_FLOW_OUT);
 
     buffer_.Shrink(put_offset_);
     helper_->DawnCommands(buffer_.shm_id(), buffer_.offset(), put_offset_);

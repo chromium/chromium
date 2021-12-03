@@ -20,8 +20,8 @@ void BeginFrameTracker::Start(const viz::BeginFrameArgs& new_args) {
   // Trace the frame time being passed between BeginFrameTrackers.
   TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
                          "BeginFrameArgs",
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          new_args.frame_time.since_origin().InMicroseconds(),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "location", location_string_);
 
   // Trace this specific begin frame tracker Start/Finish times.
