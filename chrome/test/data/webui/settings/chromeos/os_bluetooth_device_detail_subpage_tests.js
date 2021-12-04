@@ -562,7 +562,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     bluetoothConfig.completeForget(/*success=*/ true);
     await windowPopstatePromise;
 
-    // Device should be null after navigating backward.
+    // Device and device Id should be null after navigating backward.
     assertFalse(!!bluetoothDeviceDetailPage.getDeviceForTest());
+    assertFalse(!!bluetoothDeviceDetailPage.getDeviceIdForTest());
   });
 });

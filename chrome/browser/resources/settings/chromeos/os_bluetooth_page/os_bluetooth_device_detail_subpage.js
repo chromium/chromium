@@ -117,6 +117,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    */
   currentRouteChanged(route) {
     if (route !== routes.BLUETOOTH_DEVICE_DETAIL) {
+      this.deviceId_ = '';
       return;
     }
 
@@ -485,6 +486,13 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
    */
   getDeviceForTest() {
     return this.device_;
+  }
+
+  /**
+   * @return {string}
+   */
+  getDeviceIdForTest() {
+    return this.deviceId_;
   }
 
   /** @return {boolean} */
