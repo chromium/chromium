@@ -173,6 +173,10 @@ crbug.com/1238162 [ win10 intel-0x5912 release ] GpuCrash_InfoForHardwareGpu [ R
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
 
+# GpuCrash_Info* flakes on Mac Retina Debug (AMD)
+crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
+crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
