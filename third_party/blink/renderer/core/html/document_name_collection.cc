@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_embed_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 
