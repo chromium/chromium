@@ -1089,7 +1089,8 @@
   },
   "lacros-amd64-generic-chrome-fyi": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "lacros_version_metadata"
     ],
     "skylab_tests": [
       {
@@ -1180,7 +1181,8 @@
   },
   "lacros-arm-generic-chrome-fyi": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "lacros_version_metadata"
     ],
     "skylab_tests": [
       {
