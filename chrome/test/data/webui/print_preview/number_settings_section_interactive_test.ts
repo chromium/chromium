@@ -3,33 +3,36 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
+import {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
 
-window.number_settings_section_interactive_test = {};
-number_settings_section_interactive_test.suiteName =
-    'NumberSettingsSectionInteractiveTest';
-/** @enum {string} */
-number_settings_section_interactive_test.TestNames = {
-  BlurResetsEmptyInput: 'blur resets empty input',
+const number_settings_section_interactive_test = {
+  suiteName: 'NumberSettingsSectionInteractiveTest',
+  TestNames: {
+    BlurResetsEmptyInput: 'blur resets empty input',
+  },
 };
 
-suite(number_settings_section_interactive_test.suiteName, function() {
-  /** @type {?PrintPreviewNumberSettingsSectionElement} */
-  let numberSettings = null;
+Object.assign(window, {
+  number_settings_section_interactive_test:
+      number_settings_section_interactive_test
+});
 
-  /** @override */
+suite(number_settings_section_interactive_test.suiteName, function() {
+  let numberSettings: PrintPreviewNumberSettingsSectionElement;
+
   setup(function() {
     document.body.innerHTML = `
-          <print-preview-number-settings-section id="numberSettings"
+          <print-preview-number-settings-section
               min-value="1" max-value="100" default-value="50"
               current-value="10" hint-message="incorrect value entered"
               input-valid>
           </print-preview-number-settings-section>`;
-    numberSettings = /** @type {!PrintPreviewNumberSettingsSectionElement} */ (
-        document.querySelector('#numberSettings'));
+    numberSettings =
+        document.querySelector('print-preview-number-settings-section')!;
   });
 
   // Verifies that blurring the input will reset it to the default if it is

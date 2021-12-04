@@ -4,36 +4,40 @@
 
 import 'chrome://print/print_preview.js';
 
+import {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
 import {triggerInputEvent} from './print_preview_test_utils.js';
 
-window.number_settings_section_test = {};
-number_settings_section_test.suiteName = 'NumberSettingsSectionTest';
-/** @enum {string} */
-number_settings_section_test.TestNames = {
-  BlocksInvalidKeys: 'blocks invalid keys',
-  UpdatesErrorMessage: 'updates error message',
+const number_settings_section_test = {
+  suiteName: 'NumberSettingsSectionTest',
+  TestNames: {
+    BlocksInvalidKeys: 'blocks invalid keys',
+    UpdatesErrorMessage: 'updates error message',
+  },
 };
 
+Object.assign(
+    window, {number_settings_section_test: number_settings_section_test});
+
 suite(number_settings_section_test.suiteName, function() {
-  let numberSettings = null;
-  let parentElement = null;
+  let numberSettings: PrintPreviewNumberSettingsSectionElement;
+  let parentElement: HTMLElement;
 
-  /** @override */
   setup(function() {
-    PolymerTest.clearBody();
-
     document.body.innerHTML = `
-        <div id="parentElement">
-          <print-preview-number-settings-section id="numberSettings"
+        <div>
+          <print-preview-number-settings-section
               min-value="1" max-value="100" default-value="50"
               hint-message="incorrect value entered" input-valid>
           </print-preview-number-settings-section>
         </div>`;
-    parentElement = document.querySelector('#parentElement');
-    numberSettings = document.querySelector('#numberSettings');
+    parentElement = document.querySelector('div')!;
+    numberSettings =
+        document.querySelector('print-preview-number-settings-section')!;
   });
 
   // Test that key events that would result in invalid values are blocked.
@@ -42,41 +46,40 @@ suite(number_settings_section_test.suiteName, function() {
       function() {
         const input = numberSettings.$.userValue;
         /**
-         * @param {number} code Code for the keyboard event that will be fired.
-         * @param {string} key Key name for the keyboard event that will be
-         *     fired.
-         * @return {!Promise<!KeyboardEvent>} Promise that resolves when
-         *     'keydown' is received by |parentElement|.
+         * @param key Key name for the keyboard event that will be fired.
+         * @return Promise that resolves when 'keydown' is received by
+         *     |parentElement|.
          */
-        const sendKeyDownAndReturnPromise = (code, key) => {
+        function sendKeyDownAndReturnPromise(key: string):
+            Promise<KeyboardEvent> {
           const whenKeyDown = eventToPromise('keydown', parentElement);
-          keyEventOn(input.inputElement, 'keydown', code, undefined, key);
+          keyEventOn(input.inputElement, 'keydown', 0, undefined, key);
           return whenKeyDown;
-        };
+        }
 
-        return sendKeyDownAndReturnPromise(69, 'e')
-            .then(e => {
+        return sendKeyDownAndReturnPromise('e')
+            .then((e: KeyboardEvent) => {
               assertTrue(e.defaultPrevented);
-              return sendKeyDownAndReturnPromise(110, '.');
+              return sendKeyDownAndReturnPromise('.');
             })
-            .then(e => {
+            .then((e: KeyboardEvent) => {
               assertTrue(e.defaultPrevented);
-              return sendKeyDownAndReturnPromise(109, '-');
+              return sendKeyDownAndReturnPromise('-');
             })
-            .then(e => {
+            .then((e: KeyboardEvent) => {
               assertTrue(e.defaultPrevented);
-              return sendKeyDownAndReturnPromise(69, 'E');
+              return sendKeyDownAndReturnPromise('E');
             })
-            .then(e => {
+            .then((e: KeyboardEvent) => {
               assertTrue(e.defaultPrevented);
-              return sendKeyDownAndReturnPromise(187, '+');
+              return sendKeyDownAndReturnPromise('+');
             })
-            .then(e => {
+            .then((e: KeyboardEvent) => {
               assertTrue(e.defaultPrevented);
               // Try a valid key.
-              return sendKeyDownAndReturnPromise(49, '1');
+              return sendKeyDownAndReturnPromise('1');
             })
-            .then(e => {
+            .then((e: KeyboardEvent) => {
               assertFalse(e.defaultPrevented);
             });
       });

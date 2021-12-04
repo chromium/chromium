@@ -167,6 +167,13 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-other-options-settings':
+        PrintPreviewOtherOptionsSettingsElement;
+  }
+}
+
 customElements.define(
     PrintPreviewOtherOptionsSettingsElement.is,
     PrintPreviewOtherOptionsSettingsElement);

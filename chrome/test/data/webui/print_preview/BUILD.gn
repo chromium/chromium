@@ -47,9 +47,9 @@ non_preprocessed_tests = [
   "layout_settings_test.ts",
   "margins_settings_test.ts",
   "media_size_settings_test.ts",
-  "number_settings_section_interactive_test.js",
-  "number_settings_section_test.js",
-  "other_options_settings_test.js",
+  "number_settings_section_interactive_test.ts",
+  "number_settings_section_test.ts",
+  "other_options_settings_test.ts",
   "pages_per_sheet_settings_test.js",
   "pages_settings_test.js",
 
