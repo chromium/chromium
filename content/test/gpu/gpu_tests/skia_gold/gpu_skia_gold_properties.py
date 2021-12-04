@@ -23,6 +23,15 @@ class GpuSkiaGoldProperties(skia_gold_properties.SkiaGoldProperties):
     except subprocess.CalledProcessError:
       return None
 
+  @staticmethod
+  def _GetGitOriginMainHeadSha1():
+    try:
+      return subprocess.check_output(['git', 'rev-parse', 'origin/main'],
+                                     shell=_IsWin(),
+                                     cwd=path_util.GetChromiumSrcDir()).strip()
+    except subprocess.CalledProcessError:
+      return None
+
 
 def _IsWin():
   return sys.platform == 'win32'

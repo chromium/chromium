@@ -76,3 +76,7 @@ class AndroidSkiaGoldProperties(skia_gold_properties.SkiaGoldProperties):
   @staticmethod
   def _GetGitOriginMasterHeadSha1():
     return repo_utils.GetGitOriginMasterHeadSHA1(host_paths.DIR_SOURCE_ROOT)
+
+  @staticmethod
+  def _GetGitOriginMainHeadSha1():
+    return repo_utils.GetGitOriginMainHeadSHA1(host_paths.DIR_SOURCE_ROOT)

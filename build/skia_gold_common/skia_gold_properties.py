@@ -80,6 +80,10 @@ class SkiaGoldProperties(object):
   def _GetGitOriginMasterHeadSha1():
     raise NotImplementedError()
 
+  @staticmethod
+  def _GetGitOriginMainHeadSha1():
+    raise NotImplementedError()
+
   def _GetGitRevision(self):
     if not self._git_revision:
       # Automated tests should always pass the revision, so assume we're on
