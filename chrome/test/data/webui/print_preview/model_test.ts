@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexMode, GooglePromotedDestinationId, MarginsType, PrinterType, PrintPreviewModelElement, ScalingType, Size} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexMode, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, ScalingType, Size} from 'chrome://print/print_preview.js';
+// <if expr="chromeos or lacros">
+import {GooglePromotedDestinationId} from 'chrome://print/print_preview.js';
+// </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
+// <if expr="chromeos or lacros">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// </if>
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -13,30 +17,27 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
-window.model_test = {};
-const model_test = window.model_test;
-
-model_test.suiteName = 'ModelTest';
-/** @enum {string} */
-model_test.TestNames = {
-  SetStickySettings: 'set sticky settings',
-  SetPolicySettings: 'set policy settings',
-  GetPrintTicket: 'get print ticket',
-  GetCloudPrintTicket: 'get cloud print ticket',
-  ChangeDestination: 'change destination',
-  PrintToGoogleDriveCros: 'print to google drive cros',
-  CddResetToDefault: 'CDD reset_to_default property',
+const model_test = {
+  suiteName: 'ModelTest',
+  TestNames: {
+    SetStickySettings: 'set sticky settings',
+    SetPolicySettings: 'set policy settings',
+    GetPrintTicket: 'get print ticket',
+    GetCloudPrintTicket: 'get cloud print ticket',
+    ChangeDestination: 'change destination',
+    PrintToGoogleDriveCros: 'print to google drive cros',
+    CddResetToDefault: 'CDD reset_to_default property',
+  },
 };
 
-suite(model_test.suiteName, function() {
-  /** @type {!PrintPreviewModelElement} */
-  let model;
+Object.assign(window, {model_test: model_test});
 
-  /** @override */
+suite(model_test.suiteName, function() {
+  let model: PrintPreviewModelElement;
+
   setup(function() {
     document.body.innerHTML = '';
-    model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
   });
 
@@ -46,7 +47,7 @@ suite(model_test.suiteName, function() {
    */
   test(assert(model_test.TestNames.SetStickySettings), function() {
     // Default state of the model.
-    const stickySettingsDefault = {
+    const stickySettingsDefault: {[key: string]: any} = {
       version: 2,
       recentDestinations: [],
       dpi: {},
@@ -63,14 +64,14 @@ suite(model_test.suiteName, function() {
       isLandscapeEnabled: false,
       isColorEnabled: true,
       vendorOptions: {},
+      // <if expr="chromeos or lacros">
+      isPinEnabled: false,
+      pinValue: '',
+      // </if>
     };
-    if (isChromeOS || isLacros) {
-      stickySettingsDefault.isPinEnabled = false;
-      stickySettingsDefault.pinValue = '';
-    }
 
     // Non-default state
-    const stickySettingsChange = {
+    const stickySettingsChange: {[key: string]: any} = {
       version: 2,
       recentDestinations: [],
       dpi: {horizontal_dpi: 1000, vertical_dpi: 500},
@@ -90,32 +91,33 @@ suite(model_test.suiteName, function() {
         paperType: 1,
         printArea: 6,
       },
+      // <if expr="chromeos or lacros">
+      isPinEnabled: true,
+      pinValue: '0000',
+      // </if>
     };
-    if (isChromeOS || isLacros) {
-      stickySettingsChange.isPinEnabled = true;
-      stickySettingsChange.pinValue = '0000';
-    }
 
     const settingsSet = ['version'];
 
     /**
-     * @param {string} setting The name of the setting to check.
-     * @param {string} field The name of the field in the serialized state
+     * @param setting The name of the setting to check.
+     * @param field The name of the field in the serialized state
      *     corresponding to the setting.
-     * @return {!Promise} Promise that resolves when the setting has been set,
+     * @return Promise that resolves when the setting has been set,
      *     the saved string has been validated, and the setting has been
      *     reset to its default value.
      */
-    const testStickySetting = function(setting, field) {
+    const testStickySetting = function(
+        setting: string, field: string): Promise<void> {
       const promise = eventToPromise('sticky-setting-changed', model);
       model.setSetting(setting, stickySettingsChange[field]);
       settingsSet.push(field);
       return promise.then(
           /**
-           * @param {!CustomEvent} e Event containing the serialized settings
-           * @return {!Promise} Promise that resolves when setting is reset.
+           * @param e Event containing the serialized settings
+           * @return Promise that resolves when setting is reset.
            */
-          function(e) {
+          function(e: CustomEvent<string>): Promise<void> {
             const settings = JSON.parse(e.detail);
             Object.keys(stickySettingsDefault).forEach(settingName => {
               const set = settingsSet.includes(settingName);
@@ -154,10 +156,10 @@ suite(model_test.suiteName, function() {
             .then(() => testStickySetting('scalingType', 'scalingType'))
             .then(() => testStickySetting('scalingTypePdf', 'scalingTypePdf'))
             .then(() => testStickySetting('vendorItems', 'vendorOptions'));
-    if (isChromeOS || isLacros) {
-      promise = promise.then(() => testStickySetting('pin', 'isPinEnabled'))
-                    .then(() => testStickySetting('pinValue', 'pinValue'));
-    }
+    // <if expr="chromeos or lacros">
+    promise = promise.then(() => testStickySetting('pin', 'isPinEnabled'))
+                  .then(() => testStickySetting('pinValue', 'pinValue'));
+    // </if>
     return promise;
   });
 
@@ -167,7 +169,7 @@ suite(model_test.suiteName, function() {
    */
   test(assert(model_test.TestNames.SetPolicySettings), function() {
     model.setSetting('headerFooter', false);
-    assertFalse(/** @type {boolean} */ (model.settings.headerFooter.value));
+    assertFalse(model.settings.headerFooter.value as boolean);
 
     // Sets to true, but doesn't mark as controlled by a policy.
     model.setPolicySettings({headerFooter: {defaultMode: true}});
@@ -176,29 +178,28 @@ suite(model_test.suiteName, function() {
       headerFooter: false,
     }));
     model.applyStickySettings();
-    assertTrue(/** @type {boolean} */ (model.settings.headerFooter.value));
+    assertTrue(model.settings.headerFooter.value as boolean);
     model.setSetting('headerFooter', false);
-    assertFalse(/** @type {boolean} */ (model.settings.headerFooter.value));
+    assertFalse(model.settings.headerFooter.value as boolean);
 
     model.setPolicySettings({headerFooter: {allowedMode: true}});
     model.applyStickySettings();
-    assertTrue(/** @type {boolean} */ (model.settings.headerFooter.value));
+    assertTrue(model.settings.headerFooter.value as boolean);
 
     model.setSetting('headerFooter', false);
     // The value didn't change after setSetting(), because the policy takes
     // priority.
-    assertTrue(/** @type {boolean} */ (model.settings.headerFooter.value));
+    assertTrue(model.settings.headerFooter.value as boolean);
   });
 
-  /** @param {!Destination} testDestination */
-  function toggleSettings(testDestination) {
-    const settingsChange = {
+  function toggleSettings(testDestination: Destination) {
+    const settingsChange: {[key: string]: any} = {
       pages: [2],
       copies: 2,
       collate: false,
       layout: true,
       color: false,
-      mediaSize: testDestination.capabilities.printer.media_size.option[1],
+      mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
       margins: MarginsType.CUSTOM,
       customMargins: {
         marginTop: 100,
@@ -224,11 +225,11 @@ suite(model_test.suiteName, function() {
         paperType: 1,
       },
       ranges: [{from: 2, to: 2}],
+      // <if expr="chromeos or lacros">
+      pin: true,
+      pinValue: '0000',
+      // </if>
     };
-    if (isChromeOS || isLacros) {
-      settingsChange.pin = true;
-      settingsChange.pinValue = '0000';
-    }
 
     // Update settings
     Object.keys(settingsChange).forEach(setting => {
@@ -241,7 +242,6 @@ suite(model_test.suiteName, function() {
       hasCssMediaStyles: false,
       hasSelection: true,
       isModifiable: true,
-      isPdf: false,
       isScalingDisabled: false,
       fitToPageScaling: 100,
       pageCount: 3,
@@ -267,25 +267,29 @@ suite(model_test.suiteName, function() {
    * print ticket.
    */
   test(assert(model_test.TestNames.GetPrintTicket), function() {
-    const origin = isChromeOS || isLacros ? DestinationOrigin.CROS :
-                                            DestinationOrigin.LOCAL;
+    // <if expr="chromeos or lacros">
+    const origin = DestinationOrigin.CROS;
+    // </if>
+    // <if expr="not chromeos and not lacros">
+    const origin = DestinationOrigin.LOCAL;
+    // </if>
     const testDestination = new Destination(
         'FooDevice', DestinationType.LOCAL, origin, 'FooName',
         DestinationConnectionStatus.ONLINE);
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
 
-    if (isChromeOS || isLacros) {
-      // Make device managed. It's used for testing pin setting behavior.
-      loadTimeData.overrideValues({isEnterpriseManaged: true});
-    }
+    // <if expr="chromeos or lacros">
+    // Make device managed. It's used for testing pin setting behavior.
+    loadTimeData.overrideValues({isEnterpriseManaged: true});
+    // </if>
     initializeModel();
     model.destination = testDestination;
     const defaultTicket =
         model.createPrintTicket(testDestination, false, false);
 
-    const expectedDefaultTicketObject = {
-      mediaSize: testDestination.capabilities.printer.media_size.option[0],
+    const expectedDefaultTicketObject: PrintTicket = {
+      mediaSize: testDestination.capabilities!.printer!.media_size!.option[0]!,
       pageCount: 3,
       landscape: false,
       color: testDestination.getNativeColorModel(true),
@@ -311,19 +315,19 @@ suite(model_test.suiteName, function() {
       pageHeight: 792,
       showSystemDialog: false,
     };
-    if (isChromeOS || isLacros) {
-      expectedDefaultTicketObject.advancedSettings = {
-        printArea: 4,
-        paperType: 0,
-      };
-    }
+    // <if expr="chromeos or lacros">
+    expectedDefaultTicketObject.advancedSettings = {
+      printArea: 4,
+      paperType: 0,
+    };
+    // </if>
     assertEquals(JSON.stringify(expectedDefaultTicketObject), defaultTicket);
 
     // Toggle all the values and create a new print ticket.
     toggleSettings(testDestination);
     const newTicket = model.createPrintTicket(testDestination, false, false);
-    const expectedNewTicketObject = {
-      mediaSize: testDestination.capabilities.printer.media_size.option[1],
+    const expectedNewTicketObject: PrintTicket = {
+      mediaSize: testDestination.capabilities!.printer!.media_size!.option[1]!,
       pageCount: 1,
       landscape: true,
       color: testDestination.getNativeColorModel(false),
@@ -355,13 +359,13 @@ suite(model_test.suiteName, function() {
         marginLeft: 400,
       },
     };
-    if (isChromeOS || isLacros) {
-      expectedNewTicketObject.pinValue = '0000';
-      expectedNewTicketObject.advancedSettings = {
-        printArea: 6,
-        paperType: 1,
-      };
-    }
+    // <if expr="chromeos or lacros">
+    expectedNewTicketObject.pinValue = '0000';
+    expectedNewTicketObject.advancedSettings = {
+      printArea: 6,
+      paperType: 1,
+    };
+    // </if>
 
     assertEquals(JSON.stringify(expectedNewTicketObject), newTicket);
   });
@@ -387,7 +391,7 @@ suite(model_test.suiteName, function() {
       print: {
         collate: {collate: true},
         color: {
-          type: testDestination.getSelectedColorOption(true).type,
+          type: testDestination.getSelectedColorOption(true)!.type,
         },
         copies: {copies: 1},
         duplex: {type: 'NO_DUPLEX'},
@@ -416,7 +420,7 @@ suite(model_test.suiteName, function() {
       print: {
         collate: {collate: false},
         color: {
-          type: testDestination.getSelectedColorOption(false).type,
+          type: testDestination.getSelectedColorOption(false)!.type,
         },
         copies: {copies: 2},
         duplex: {type: 'SHORT_EDGE'},
@@ -445,7 +449,7 @@ suite(model_test.suiteName, function() {
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
     // Make black and white printing the default.
-    testDestination.capabilities.printer.color = {
+    testDestination.capabilities!.printer!.color = {
       option: [
         {type: 'STANDARD_COLOR'},
         {type: 'STANDARD_MONOCHROME', is_default: true}
@@ -456,7 +460,7 @@ suite(model_test.suiteName, function() {
         'BarDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'BarName',
         DestinationConnectionStatus.ONLINE);
     testDestination2.capabilities =
-        /** @type {!Cdd} */ (Object.assign({}, testDestination.capabilities));
+        Object.assign({}, testDestination.capabilities);
 
     // Initialize
     initializeModel();
@@ -472,9 +476,11 @@ suite(model_test.suiteName, function() {
     // Toggle some printer specified settings.
     model.setSetting('duplex', true);
     model.setSetting(
-        'mediaSize', testDestination.capabilities.printer.media_size.option[1]);
+        'mediaSize',
+        testDestination.capabilities!.printer!.media_size!.option[1]!);
     model.setSetting('color', true);
-    model.setSetting('dpi', testDestination.capabilities.printer.dpi.option[1]);
+    model.setSetting(
+        'dpi', testDestination.capabilities!.printer!.dpi!.option[1]!);
 
     // Confirm toggles.
     assertEquals(true, model.getSettingValue('color'));
@@ -496,8 +502,8 @@ suite(model_test.suiteName, function() {
         'Device1', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'One',
         DestinationConnectionStatus.ONLINE);
     testDestination3.capabilities =
-        /** @type {!Cdd} */ (Object.assign({}, testDestination.capabilities));
-    testDestination3.capabilities.printer.media_size = {
+        Object.assign({}, testDestination.capabilities);
+    testDestination3.capabilities!.printer!.media_size = {
       option: [
         {
           name: 'ISO_A4',
@@ -508,17 +514,17 @@ suite(model_test.suiteName, function() {
         },
       ]
     };
-    testDestination3.capabilities.printer.color = {
+    testDestination3.capabilities!.printer!.color = {
       option: [
         {type: 'STANDARD_MONOCHROME', is_default: true},
       ]
     };
-    testDestination3.capabilities.printer.duplex = {
+    testDestination3.capabilities!.printer!.duplex = {
       option: [
         {type: 'NO_DUPLEX', is_default: true},
       ]
     };
-    testDestination3.capabilities.printer.dpi = {
+    testDestination3.capabilities!.printer!.dpi = {
       option: [
         {horizontal_dpi: 400, vertical_dpi: 400, is_default: true},
         {horizontal_dpi: 800, vertical_dpi: 800},
@@ -537,6 +543,7 @@ suite(model_test.suiteName, function() {
     assertEquals(false, model.getSettingValue('duplex'));
   });
 
+  // <if expr="chromeos or lacros">
   // Tests that printToGoogleDrive is set correctly on the print ticket for Save
   // to Drive CrOS.
   test(assert(model_test.TestNames.PrintToGoogleDriveCros), function() {
@@ -549,6 +556,7 @@ suite(model_test.suiteName, function() {
     const ticket = model.createPrintTicket(driveDestination, false, false);
     assertTrue(JSON.parse(ticket).printToGoogleDrive);
   });
+  // </if>
 
   /**
    * Tests the behaviour of the CDD attribute `reset_to_default`, specifically
@@ -572,11 +580,10 @@ suite(model_test.suiteName, function() {
     /**
      * Returns the CDD description of a destination with default values
      * specified for color, dpi, duplex and media size.
-     * @param {boolean} resetToDefault Whether the settings should
+     * @param resetToDefault Whether the settings should
      * always reset to their default value or not.
-     * @returns {!Cdd} capabilities
      */
-    const getTestCapabilities = (resetToDefault) => {
+    const getTestCapabilities = (resetToDefault: boolean) => {
       return {
         version: '1.0',
         printer: {
@@ -675,11 +682,12 @@ suite(model_test.suiteName, function() {
     testDestination2.capabilities =
         getTestCapabilities(/*resetToDefault=*/ true);
     // Remove the `is_default` attribute from all the settings.
-    delete testDestination2.capabilities.printer.color.option[0].is_default;
-    delete testDestination2.capabilities.printer.duplex.option[0].is_default;
-    delete testDestination2.capabilities.printer.media_size.option[0]
+    delete testDestination2.capabilities!.printer!.color!.option[0]!.is_default;
+    delete testDestination2.capabilities!.printer!.duplex!.option[0]!
         .is_default;
-    delete testDestination2.capabilities.printer.dpi.option[0].is_default;
+    delete testDestination2.capabilities!.printer!.media_size!.option[0]!
+        .is_default;
+    delete testDestination2.capabilities!.printer!.dpi!.option[0]!.is_default;
 
     model.destination = testDestination2;
 

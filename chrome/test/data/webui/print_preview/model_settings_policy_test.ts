@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexModeRestriction, Margins, MarginsType, PinModeRestriction, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {ColorModeRestriction, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexModeRestriction, Margins, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
+// <if expr="chromeos or lacros">
+import {PinModeRestriction} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// </if>
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
 suite('ModelSettingsPolicyTest', function() {
-  /** @type {!PrintPreviewModelElement} */
-  let model;
+  let model: PrintPreviewModelElement;
 
   function setupModel() {
     document.body.innerHTML = '';
-    model = /** @type {!PrintPreviewModelElement} */ (
-        document.createElement('print-preview-model'));
+    model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
     model.documentSettings = {
@@ -27,7 +27,6 @@ suite('ModelSettingsPolicyTest', function() {
       isScalingDisabled: false,
       fitToPageScaling: 100,
       pageCount: 3,
-      isPdf: false,
       isFromArc: false,
       title: 'title',
     };
@@ -112,8 +111,8 @@ suite('ModelSettingsPolicyTest', function() {
      }].forEach(subtestParams => {
       setupModel();
       // Remove color capability.
-      const capabilities = getCddTemplate(model.destination.id).capabilities;
-      capabilities.printer.color = subtestParams.colorCap;
+      const capabilities = getCddTemplate(model.destination.id).capabilities!;
+      capabilities.printer!.color = subtestParams.colorCap;
       const policies = {
         color: {
           allowedMode: subtestParams.colorPolicy,
@@ -218,8 +217,8 @@ suite('ModelSettingsPolicyTest', function() {
      }].forEach(subtestParams => {
       setupModel();
       // Remove duplex capability.
-      const capabilities = getCddTemplate(model.destination.id).capabilities;
-      capabilities.printer.duplex = subtestParams.duplexCap;
+      const capabilities = getCddTemplate(model.destination.id).capabilities!;
+      capabilities.printer!.duplex = subtestParams.duplexCap;
       const policies = {
         duplex: {
           allowedMode: subtestParams.duplexPolicy,
@@ -250,6 +249,7 @@ suite('ModelSettingsPolicyTest', function() {
     });
   });
 
+  // <if expr="chromeos or lacros">
   test('pin managed', function() {
     [{
       // No policies, settings is modifiable.
@@ -323,8 +323,8 @@ suite('ModelSettingsPolicyTest', function() {
       // managed devices.
       loadTimeData.overrideValues({isEnterpriseManaged: true});
       // Remove pin capability.
-      const capabilities = getCddTemplate(model.destination.id).capabilities;
-      capabilities.printer.pin = subtestParams.pinCap;
+      const capabilities = getCddTemplate(model.destination.id).capabilities!;
+      capabilities.printer!.pin = subtestParams.pinCap;
       const policies = {
         pin: {
           allowedMode: subtestParams.pinPolicy,
@@ -344,4 +344,5 @@ suite('ModelSettingsPolicyTest', function() {
           subtestParams.expectedEnforced, model.settings.pin.setByPolicy);
     });
   });
+  // </if>
 });

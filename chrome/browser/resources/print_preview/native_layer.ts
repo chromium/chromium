@@ -46,6 +46,7 @@ export enum DuplexModeRestriction {
   DUPLEX = 0x6,
 }
 
+// <if expr="chromeos or lacros">
 /**
  * Enumeration of PIN printing mode restrictions used by Chromium.
  * This has to coincide with |printing::PinModeRestriction| as defined in
@@ -56,6 +57,7 @@ export enum PinModeRestriction {
   PIN = 1,
   NO_PIN = 2,
 }
+// </if>
 
 /**
  * Policies affecting print settings values and availability.
@@ -76,7 +78,9 @@ export type Policies = {
     allowedMode?: DuplexModeRestriction,
     defaultMode?: DuplexModeRestriction
   },
+  // <if expr="chromeos or lacros">
   pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction},
+  // </if>
   printPdfAsImage?: {defaultMode?: boolean},
   printPdfAsImageAvailability?: {allowedMode?: boolean},
 };

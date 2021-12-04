@@ -18,7 +18,7 @@ export {PageLayoutInfo} from './data/document_info.js';
 export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
-export {DuplexMode, DuplexType, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';
+export {DuplexMode, DuplexType, getInstance, PrintPreviewModelElement, PrintTicket, whenReady} from './data/model.js';
 // <if expr="chromeos or lacros">
 export {PrintServerStore, PrintServerStoreEventType} from './data/print_server_store.js';
 // </if>
@@ -28,8 +28,9 @@ export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity}
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
-export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestriction, DuplexModeRestriction, NativeInitialSettings, NativeLayer, NativeLayerImpl, PinModeRestriction} from './native_layer.js';
+export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestriction, DuplexModeRestriction, NativeInitialSettings, NativeLayer, NativeLayerImpl} from './native_layer.js';
 // <if expr="chromeos or lacros">
+export {PinModeRestriction} from './native_layer.js';
 export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServersConfig} from './native_layer_cros.js';
 // </if>
 export {PDFPlugin} from './pdf/pdf_scripting_api.js';

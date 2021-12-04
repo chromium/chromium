@@ -7,7 +7,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, PinModeRestriction, Policies} from '../native_layer.js';
+import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, Policies} from '../native_layer.js';
+// <if expr="chromeos or lacros">
+import {PinModeRestriction} from '../native_layer.js';
+// </if>
 import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, VendorCapability} from './cdd.js';
 import {Destination, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
 import {getPrinterTypeForDestination, PrinterType} from './destination_match.js';
@@ -55,8 +58,10 @@ export type Settings = {
   otherOptions: Setting,
   ranges: Setting,
   pagesPerSheet: Setting,
-  pin?: Setting,
-  pinValue?: Setting,
+  // <if expr="chromeos or lacros">
+  pin: Setting,
+  pinValue: Setting,
+  // </if>
 };
 
 export type SerializedSettings = {
@@ -76,8 +81,10 @@ export type SerializedSettings = {
   scalingType?: ScalingType,
   scalingTypePdf?: ScalingType,
   vendor_options?: object,
+  // <if expr="chromeos or lacros">
   isPinEnabled?: boolean,
   pinValue?: string,
+  // </if>
 };
 
 export type PolicyEntry = {
@@ -147,7 +154,7 @@ export type Ticket = {
   ticket?: string,
 };
 
-type PrintTicket = Ticket&{
+export type PrintTicket = Ticket&{
   dpiDefault: boolean,
   pageCount: number,
   pageHeight: number,
