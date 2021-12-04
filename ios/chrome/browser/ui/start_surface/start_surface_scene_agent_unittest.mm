@@ -96,7 +96,9 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
   WebStateList* web_state_list =
       scene_state_.interfaceProvider.mainInterface.browser->GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
-  EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(0)->GetVisibleURL()));
+  // NTP at index 3 should be the one saved, so the remaining WebState with an
+  // NTP should be at index 1.
+  EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
 }
 
 // Tests that only the NTP tab with navigation history is the only NTP tab that
@@ -123,4 +125,31 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
       scene_state_.interfaceProvider.mainInterface.browser->GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
   EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
+}
+
+// Tests that, starting with an active WebState with no navigation history and a
+// WebState with navigation history showing the NTP, the latter WebState becomes
+// the active WebState after a background.
+TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::vector<base::Feature> enabled_features;
+  enabled_features.push_back(kStartSurface);
+  enabled_features.push_back(kRemoveExcessNTPs);
+
+  scoped_feature_list.InitWithFeatures(enabled_features, {});
+  InsertNewWebStateWithNavigationHistory(0, WebStateOpener(),
+                                         GURL(kChromeUINewTabURL));
+  InsertNewWebState(1, WebStateOpener(), GURL(kURL));
+  InsertNewWebState(2, WebStateOpener(), GURL(kChromeUINewTabURL));
+  WebStateList* web_state_list =
+      scene_state_.interfaceProvider.mainInterface.browser->GetWebStateList();
+  web_state_list->ActivateWebStateAt(2);
+  [agent_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelForegroundActive];
+  [agent_ sceneState:scene_state_
+      transitionedToActivationLevel:SceneActivationLevelBackground];
+  ASSERT_EQ(2, web_state_list->count());
+  EXPECT_TRUE(IsURLNtp(web_state_list->GetWebStateAt(0)->GetVisibleURL()));
+  EXPECT_EQ(web_state_list->GetActiveWebState(),
+            web_state_list->GetWebStateAt(0));
 }
