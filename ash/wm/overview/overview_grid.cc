@@ -109,6 +109,8 @@ constexpr int kTabletLayoutRow = 2;
 
 constexpr int kMinimumItemsForNewLayout = 6;
 
+constexpr int kTabletModeOverviewItemTopPaddingDp = 16;
+
 // Wait a while before unpausing the occlusion tracker after a scroll has
 // completed as the user may start another scroll.
 constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
@@ -1366,7 +1368,11 @@ bool OverviewGrid::IsDesksBarViewActive() const {
 }
 
 gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
-  if (!desks_util::ShouldDesksBarBeCreated() || !IsDesksBarViewActive())
+  // There's an edge case where is in tablet mode, there're more than one desk,
+  // after entering overview mode, deleting desks to just keep one, even though
+  // there's only one desk now in tablet mode, the desks bar will stay. That's
+  // why we need to check the existence of `desks_bar_view_` here.
+  if (!desks_bar_view_ && !desks_util::ShouldDesksBarBeCreated())
     return bounds_;
 
   gfx::Rect effective_bounds = bounds_;
@@ -2017,6 +2023,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
   gfx::Rect total_bounds = GetGridEffectiveBounds();
   // Windows occupy vertically centered area with additional vertical insets.
   total_bounds.Inset(GetGridInsetsImpl(total_bounds));
+  total_bounds.Inset(0, kTabletModeOverviewItemTopPaddingDp, 0, 0);
 
   // |scroll_offset_min_| may be changed on positioning (either by closing
   // windows or display changes). Recalculate it and clamp |scroll_offset_|, so

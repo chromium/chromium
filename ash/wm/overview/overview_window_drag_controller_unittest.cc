@@ -11,6 +11,8 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -27,6 +29,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/widget/widget.h"
 
 using ash::desks_util::BelongsToActiveDesk;
@@ -157,7 +161,7 @@ class OverviewWindowDragControllerTest : public AshTestBase {
     EXPECT_TRUE(overview_controller()->InOverviewSession());
     auto* overview_item = GetOverviewItemForWindow(window);
     ASSERT_TRUE(overview_item);
-    StartDraggingItemBy(overview_item, 30, 200, /*by_touch_gestures=*/false,
+    StartDraggingItemBy(overview_item, 100, 200, /*by_touch_gestures=*/false,
                         GetEventGenerator());
     ASSERT_TRUE(drag_controller());
     EXPECT_EQ(OverviewWindowDragController::DragBehavior::kNormalDrag,
@@ -294,7 +298,8 @@ TEST_F(OverviewWindowDragControllerTest, WindowDestroyedDuringDragging) {
             drag_controller->current_drag_behavior());
 }
 
-TEST_F(OverviewWindowDragControllerTest, DragWindowInPortraitModeWithOneDesk) {
+TEST_F(OverviewWindowDragControllerTest,
+       DragAndDropWindowInPortraitModeWithOneDesk) {
   // Update the display to make it portrait mode.
   UpdateDisplay("768x1366");
   auto window = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
@@ -340,6 +345,29 @@ TEST_F(OverviewWindowDragControllerTest, DragWindowInPortraitModeWithOneDesk) {
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   EXPECT_EQ(DesksBarView::kZeroStateBarHeight,
             desks_bar_view->bounds().height());
+}
+
+// Tests that dragging window in portrait mode won't cause overview items
+// overlap with desks bar. Regression test for https://crbug.com/1275285.
+TEST_F(OverviewWindowDragControllerTest, DragWindowInPortraitMode) {
+  // Update the display to make it portrait mode.
+  UpdateDisplay("768x1366");
+
+  // Create 10 windows with size the same as the maximized window's size.
+  std::vector<std::unique_ptr<aura::Window>> windows;
+  for (int i = 0; i < 10; ++i)
+    windows.push_back(CreateAppWindow(gfx::Rect(0, 0, 768, 1269)));
+
+  StartDraggingAndValidateDesksBarShifted(windows.back().get());
+  const auto* desks_bar_view = overview_grid()->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  // Check there's no overlap between overview items and desks bar view. Since
+  // the first overview item is still being dragged, we should use the second
+  // item in the list to check if there's overlap or not.
+  EXPECT_FALSE(
+      desks_bar_view->GetBoundsInScreen().Intersects(gfx::ToEnclosedRect(
+          overview_grid()->window_list()[1].get()->target_bounds())));
 }
 
 // Tests the behavior of dragging a window in portrait tablet mode with virtual
@@ -473,6 +501,34 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest, DragAndDropInDesk) {
             desks_bar_widget()->GetWindowBoundsInScreen().y());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             drag_indicators()->current_window_dragging_state());
+}
+
+// Tests that dragging window in tablet portrait mode won't cause overview items
+// overlap with desks bar. Regression test for https://crbug.com/1275285.
+TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
+       DragWindowInPortraitMode) {
+  // Create 7 windows to make sure we can use tablet mode grid layout.
+  std::vector<std::unique_ptr<aura::Window>> windows;
+  for (int i = 0; i < 7; ++i)
+    windows.push_back(CreateAppWindow(gfx::Rect()));
+
+  StartDraggingAndValidateDesksBarShifted(windows[4].get());
+
+  // Delete desk2 in the overview mode. Note if we delete desk2 outside of the
+  // overview mode, there's no desks bar after entering overview mode. Cause we
+  // don't show desks bar for tablet mode when there's only one desk.
+  auto* desks_controller = DesksController::Get();
+  DesksController::Get()->RemoveDesk(desks_controller->desks()[1].get(),
+                                     DesksCreationRemovalSource::kButton);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Check desks bar still exists after desk2 gets removed.
+  const auto* desks_bar_view = overview_grid()->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+
+  // Check there's no overlap between overview items and desks bar view.
+  EXPECT_FALSE(desks_bar_view->GetBoundsInScreen().Intersects(
+      gfx::ToEnclosedRect(overview_grid()->window_list()[0]->target_bounds())));
 }
 
 }  // namespace ash
