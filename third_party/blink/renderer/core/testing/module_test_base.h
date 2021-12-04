@@ -17,7 +17,7 @@ namespace blink {
 
 class ModuleTestBase {
  public:
-  void SetUp();
+  void SetUp() {}
   void TearDown() {}
 
   // Get the results of a ScriptEvaluationResult from a module.
@@ -41,9 +41,6 @@ class ModuleTestBase {
       String,
       const KURL&,
       ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace blink

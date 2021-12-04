@@ -131,8 +131,7 @@ bool ModuleScript::RunScriptOnWorkerOrWorklet(
   // promises are considered synchronous failures in service workers.
   //
   // https://github.com/w3c/ServiceWorker/pull/1444
-  if (base::FeatureList::IsEnabled(features::kTopLevelAwait) &&
-      global_scope.IsServiceWorkerGlobalScope() &&
+  if (global_scope.IsServiceWorkerGlobalScope() &&
       result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess) {
     v8::Local<v8::Promise> promise = result.GetSuccessValue().As<v8::Promise>();
     DCHECK_NE(promise->State(), v8::Promise::kPending);

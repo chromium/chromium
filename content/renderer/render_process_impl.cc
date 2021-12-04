@@ -163,9 +163,6 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfNotFeature(features::kWebAssemblySimd,
                         "--no-experimental-wasm-simd");
 
-  SetV8FlagIfFeature(blink::features::kTopLevelAwait,
-                     "--harmony-top-level-await");
-
   SetV8FlagIfFeature(blink::features::kJSONModules,
                      "--harmony-import-assertions");
 

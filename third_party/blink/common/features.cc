@@ -125,10 +125,6 @@ const base::Feature kJSONModules{"JSONModules",
 const base::Feature kForceSynchronousHTMLParsing{
     "ForceSynchronousHTMLParsing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables top-level await in modules.
-const base::Feature kTopLevelAwait{"TopLevelAwait",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable EditingNG by default. This feature is for a kill switch.
 const base::Feature kEditingNG{"EditingNG", base::FEATURE_ENABLED_BY_DEFAULT};
 

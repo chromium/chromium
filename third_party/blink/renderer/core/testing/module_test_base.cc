@@ -36,10 +36,6 @@ v8::Local<v8::Module> ModuleTestBase::CompileModule(
                                exception_state);
 }
 
-void ModuleTestBase::SetUp() {
-  feature_list_.InitAndEnableFeature(features::kTopLevelAwait);
-}
-
 class SaveResultFunction final : public NewScriptFunction::Callable {
  public:
   SaveResultFunction() = default;

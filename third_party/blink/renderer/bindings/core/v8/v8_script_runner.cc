@@ -880,15 +880,9 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
     if (!try_catch.CanContinue())
       return ScriptEvaluationResult::FromModuleAborted();
 
-    v8::Local<v8::Value> v8_result;
-    if (!maybe_result.ToLocal(&v8_result)) {
-      DCHECK(try_catch.HasCaught());
-      result =
-          ScriptEvaluationResult::FromModuleException(try_catch.Exception());
-    } else {
-      DCHECK(!try_catch.HasCaught());
-      result = ScriptEvaluationResult::FromModuleSuccess(v8_result);
-    }
+    DCHECK(!try_catch.HasCaught());
+    result = ScriptEvaluationResult::FromModuleSuccess(
+        maybe_result.ToLocalChecked());
 
     // <spec step="7.2">... If Evaluate fails to complete as a result of the
     // user agent aborting the running script, then set evaluationStatus to
@@ -906,27 +900,15 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
   }
 
   if (!rethrow_errors.ShouldRethrow()) {
-    if (base::FeatureList::IsEnabled(features::kTopLevelAwait)) {
-      // <spec step="7"> If report errors is true, then upon rejection of
-      // evaluationPromise with reason, report the exception given by reason
-      // for script.</spec>
-      v8::Local<v8::Function> callback_failure =
-          ModuleEvaluationRejectionCallback::CreateFunction(script_state);
-      // Add a rejection handler to report back errors once the result
-      // promise is rejected.
-      result.GetPromise(script_state)
-          .Then(v8::Local<v8::Function>(), callback_failure);
-    } else {
-      // <spec step="8">If evaluationStatus is an abrupt completion,
-      // then:</spec>
-      if (result.GetResultType() ==
-          ScriptEvaluationResult::ResultType::kException) {
-        // <spec step="8.2">Otherwise, report the exception given by
-        // evaluationStatus.[[Value]] for script.</spec>
-        ModuleRecord::ReportException(script_state,
-                                      result.GetExceptionForModule());
-      }
-    }
+    // <spec step="7"> If report errors is true, then upon rejection of
+    // evaluationPromise with reason, report the exception given by reason
+    // for script.</spec>
+    v8::Local<v8::Function> callback_failure =
+        ModuleEvaluationRejectionCallback::CreateFunction(script_state);
+    // Add a rejection handler to report back errors once the result
+    // promise is rejected.
+    result.GetPromise(script_state)
+        .Then(v8::Local<v8::Function>(), callback_failure);
   }
 
   // <spec step="8">Clean up after running script with settings.</spec>
