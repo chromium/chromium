@@ -7,9 +7,13 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
@@ -55,9 +59,23 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // Query all updates for all devices.
   void RequestAllUpdates();
 
+  // TODO(jimmyxgong): This should override the mojo api interface.
+  // Download and prepare the install file for a specific device.
+  void StartInstall(const std::string& device_id,
+                    int release,
+                    base::OnceCallback<void()> callback);
+
   // Get the currently cached set of updates.
   // TODO(zentaro): Remove once mojo api fires observers.
   const std::vector<FirmwareUpdate>& GetCachedUpdatesForTesting();
+
+ protected:
+  friend class FirmwareUpdateManagerTest;
+  // Temporary auxiliary variables for testing.
+  // TODO(swifton): Replace with mock observers.
+  int on_device_list_response_count_for_testing_ = 0;
+  int on_update_list_response_count_for_testing_ = 0;
+  int on_install_update_response_count_for_testing_ = 0;
 
  private:
   friend class FirmwareUpdateManagerTest;
@@ -69,8 +87,14 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
-                     base::ScopedFD file_descriptor,
-                     chromeos::FirmwareInstallOptions options);
+                     chromeos::FirmwareInstallOptions options,
+                     base::OnceCallback<void()> callback,
+                     base::ScopedFD file_descriptor);
+
+  void OnCacheDirectoryCreated(const base::FilePath& root_path,
+                               const std::string& device_id,
+                               int release,
+                               base::OnceCallback<void()> callback);
 
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
@@ -80,14 +104,11 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // empty then this list is not yet complete.
   std::vector<FirmwareUpdate> updates_;
 
- protected:
-  friend class FirmwareUpdateManagerTest;
-  // Temporary auxiliary variables for testing.
-  // TODO(swifton): Replace with mock observers.
-  int on_device_list_response_count_for_testing_ = 0;
-  int on_update_list_response_count_for_testing_ = 0;
-  int on_install_update_response_count_for_testing_ = 0;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<FirmwareUpdateManager> weak_ptr_factory_{this};
 };
+
 }  // namespace ash
 
 #endif  // ASH_COMPONENTS_FWUPD_FIRMWARE_UPDATE_MANAGER_H_

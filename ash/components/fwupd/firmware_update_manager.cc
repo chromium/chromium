@@ -6,9 +6,17 @@
 
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
+#include "base/path_service.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "dbus/message.h"
 
@@ -16,7 +24,32 @@ namespace ash {
 
 namespace {
 
+const char kBaseRootPath[] = "firmware-updates";
+const char kCachePath[] = "cache";
+const char kCabFileExtension[] = ".cab";
+
 FirmwareUpdateManager* g_instance = nullptr;
+
+base::ScopedFD OpenFileAndGetFileDescriptor(base::FilePath download_path) {
+  base::File dest_file(download_path,
+                       base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!dest_file.IsValid() || !base::PathExists(download_path)) {
+    LOG(ERROR) << "Invalid destination file at path: " << download_path;
+    return base::ScopedFD();
+  }
+
+  return base::ScopedFD(dest_file.TakePlatformFile());
+}
+
+// TODO(jimmyxgong): Stub function, implement when firmware version ID is
+// available.
+std::string GetFilenameFromDevice(const std::string& device_id, int release) {
+  return device_id + std::string(kCabFileExtension);
+}
+
+bool CreateDirIfNotExists(const base::FilePath& path) {
+  return base::DirectoryExists(path) || base::CreateDirectory(path);
+}
 
 }  // namespace
 
@@ -28,7 +61,10 @@ FirmwareUpdateManager::FirmwareUpdate::operator=(FirmwareUpdate&& other) =
     default;
 FirmwareUpdateManager::FirmwareUpdate::~FirmwareUpdate() = default;
 
-FirmwareUpdateManager::FirmwareUpdateManager() {
+FirmwareUpdateManager::FirmwareUpdateManager()
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   DCHECK(chromeos::FwupdClient::Get());
   chromeos::FwupdClient::Get()->AddObserver(this);
 
@@ -62,12 +98,73 @@ void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
   chromeos::FwupdClient::Get()->RequestUpdates(device_id);
 }
 
+// TODO(jimmyxgong): Currently only looks for the local cache for the update
+// file. This needs to update to fetch the update file from a server and
+// download it to the local cache.
+void FirmwareUpdateManager::StartInstall(const std::string& device_id,
+                                         int release,
+                                         base::OnceCallback<void()> callback) {
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
+  const base::FilePath cache_path =
+      root_dir.Append(FILE_PATH_LITERAL(kBaseRootPath))
+          .Append(FILE_PATH_LITERAL(kCachePath));
+
+  base::OnceClosure dir_created_callback =
+      base::BindOnce(&FirmwareUpdateManager::OnCacheDirectoryCreated,
+                     weak_ptr_factory_.GetWeakPtr(), cache_path, device_id,
+                     release, std::move(callback));
+
+  task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& path) {
+            if (!CreateDirIfNotExists(path)) {
+              LOG(ERROR) << "Cannot create firmware update directory, "
+                         << " may be created already.";
+            }
+          },
+          cache_path),
+      std::move(dir_created_callback));
+}
+
+void FirmwareUpdateManager::OnCacheDirectoryCreated(
+    const base::FilePath& cache_path,
+    const std::string& device_id,
+    int release,
+    base::OnceCallback<void()> callback) {
+  const base::FilePath patch_path =
+      cache_path.Append(GetFilenameFromDevice(device_id, release));
+
+  // TODO(jimmyxgong): Determine if this options map can be static or will need
+  // to remain dynamic.
+  // Fwupd Install Dbus flags, flag documentation can be found in
+  // https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h#L749.
+  std::map<std::string, bool> options = {
+      {"none", false}, {"force", true}, {"allow-older", true}};
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&OpenFileAndGetFileDescriptor, patch_path),
+      base::BindOnce(&FirmwareUpdateManager::InstallUpdate,
+                     weak_ptr_factory_.GetWeakPtr(), device_id,
+                     std::move(options), std::move(callback)));
+}
+
 void FirmwareUpdateManager::InstallUpdate(
     const std::string& device_id,
-    base::ScopedFD file_descriptor,
-    chromeos::FirmwareInstallOptions options) {
+    chromeos::FirmwareInstallOptions options,
+    base::OnceCallback<void()> callback,
+    base::ScopedFD file_descriptor) {
+  if (!file_descriptor.is_valid()) {
+    LOG(ERROR) << "Invalid file descriptor.";
+    std::move(callback).Run();
+    return;
+  }
+
   chromeos::FwupdClient::Get()->InstallUpdate(
       device_id, std::move(file_descriptor), options);
+
+  std::move(callback).Run();
 }
 
 void FirmwareUpdateManager::OnDeviceListResponse(

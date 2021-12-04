@@ -10,6 +10,10 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
@@ -21,7 +25,7 @@
 
 namespace {
 
-const char kFakeDeviceIdForTesting[] = "Fake Device ID";
+const char kFakeDeviceIdForTesting[] = "Fake_Device_ID";
 const char kFakeDeviceNameForTesting[] = "Fake Device Name";
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
@@ -34,6 +38,9 @@ const char kIdKey[] = "DeviceId";
 const char kNameKey[] = "Name";
 const char kPriorityKey[] = "Urgency";
 const char kVersionKey[] = "Version";
+const char kDownloadDir[] = "firmware-updates";
+const char kCacheDir[] = "cache";
+const char kCabExtension[] = ".cab";
 
 void RunResponseCallback(dbus::ObjectProxy::ResponseOrErrorCallback callback,
                          std::unique_ptr<dbus::Response> response) {
@@ -91,9 +98,13 @@ class FirmwareUpdateManagerTest : public testing::Test {
   }
 
  protected:
-  void InstallUpdate(base::ScopedFD fd, std::map<std::string, bool> options) {
-    firmware_update_manager_->InstallUpdate(
-        kFakeDeviceIdForTesting, std::move(fd), std::map<std::string, bool>());
+  void StartInstall(const std::string& device_id, int release) {
+    base::RunLoop loop;
+    firmware_update_manager_->StartInstall(
+        device_id, release,
+        base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
+                       loop.QuitClosure()));
+    loop.Run();
   }
 
   std::unique_ptr<dbus::Response> CreateEmptyDeviceResponse() {
@@ -265,7 +276,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
   // Fake responses.
   std::deque<std::unique_ptr<dbus::Response>> dbus_responses_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -343,17 +354,30 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   EXPECT_EQ(kFakeUpdatePriorityForTesting, updates[0].priority);
 }
 
-// TODO(jimmyxgong): Rewrite this test with an observer.
-TEST_F(FirmwareUpdateManagerTest, RequestUpdateList) {
+TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
-  dbus_responses_.push_back(CreateBoolResponse(/**install_success=*/true));
+  dbus_responses_.push_back(dbus::Response::CreateEmpty());
+
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
+  const base::FilePath root_path =
+      root_dir.Append(FILE_PATH_LITERAL(kDownloadDir))
+          .Append(FILE_PATH_LITERAL(kCacheDir));
+
+  const std::string test_filename =
+      std::string(kFakeDeviceIdForTesting) + std::string(kCabExtension);
+  base::FilePath full_path = root_path.Append(test_filename);
+  // Create a temporary file to simulate a .cab available for install.
+  base::WriteFile(full_path, "", 0);
+  EXPECT_TRUE(base::PathExists(full_path));
 
   EXPECT_EQ(0, GetOnInstallResponseCallbackCallCountForTesting());
-  InstallUpdate(base::ScopedFD(0), std::map<std::string, bool>());
+  StartInstall(std::string(kFakeDeviceIdForTesting), /*release=*/0);
 
   base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(1, GetOnInstallResponseCallbackCallCountForTesting());
 }
 
