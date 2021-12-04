@@ -570,6 +570,88 @@ void LayerTreeImpl::PullPropertyTreesFrom(Layer* root_layer,
   SetPropertyTrees(property_trees);
 }
 
+void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
+  set_needs_full_tree_sync(commit_state.needs_full_tree_sync);
+
+  if (commit_state.hud_layer_id != Layer::INVALID_ID) {
+    LayerImpl* hud_impl = LayerById(commit_state.hud_layer_id);
+    set_hud_layer(static_cast<HeadsUpDisplayLayerImpl*>(hud_impl));
+  } else {
+    set_hud_layer(nullptr);
+  }
+
+  set_background_color(commit_state.background_color);
+  set_have_scroll_event_handlers(commit_state.have_scroll_event_handlers);
+  set_event_listener_properties(EventListenerClass::kTouchStartOrMove,
+                                commit_state.GetEventListenerProperties(
+                                    EventListenerClass::kTouchStartOrMove));
+  set_event_listener_properties(
+      EventListenerClass::kMouseWheel,
+      commit_state.GetEventListenerProperties(EventListenerClass::kMouseWheel));
+  set_event_listener_properties(EventListenerClass::kTouchEndOrCancel,
+                                commit_state.GetEventListenerProperties(
+                                    EventListenerClass::kTouchEndOrCancel));
+
+  SetViewportPropertyIds(commit_state.viewport_property_ids);
+
+  RegisterSelection(commit_state.selection);
+
+  PushPageScaleFromMainThread(commit_state.page_scale_factor,
+                              commit_state.min_page_scale_factor,
+                              commit_state.max_page_scale_factor);
+
+  SetBrowserControlsParams(commit_state.browser_controls_params);
+  set_overscroll_behavior(commit_state.overscroll_behavior);
+  PushBrowserControlsFromMainThread(commit_state.top_controls_shown_ratio,
+                                    commit_state.bottom_controls_shown_ratio);
+  elastic_overscroll()->PushMainToPending(commit_state.elastic_overscroll);
+  if (IsActiveTree())
+    elastic_overscroll()->PushPendingToActive();
+
+  SetDisplayColorSpaces(commit_state.display_color_spaces);
+  SetExternalPageScaleFactor(commit_state.external_page_scale_factor);
+
+  set_painted_device_scale_factor(commit_state.painted_device_scale_factor);
+  SetDeviceScaleFactor(commit_state.device_scale_factor);
+  SetDeviceViewportRect(commit_state.device_viewport_rect);
+
+  if (commit_state.new_local_surface_id_request)
+    RequestNewLocalSurfaceId();
+
+  SetLocalSurfaceIdFromParent(commit_state.local_surface_id_from_parent);
+  SetVisualPropertiesUpdateDuration(
+      commit_state.visual_properties_update_duration);
+
+  if (commit_state.pending_page_scale_animation) {
+    SetPendingPageScaleAnimation(
+        std::move(commit_state.pending_page_scale_animation));
+  }
+
+  if (commit_state.force_send_metadata_request)
+    RequestForceSendMetadata();
+
+  set_has_ever_been_drawn(false);
+
+  // TODO(ericrk): The viewport changes caused by |top_controls_shown_ratio_|
+  // changes should propagate back to the main tree. This does not currently
+  // happen, so we must force the impl tree to update its viewports if
+  // |top_controls_shown_ratio_| is greater than 0.0f and less than 1.0f
+  // (partially shown). crbug.com/875943
+  if (commit_state.top_controls_shown_ratio > 0.0f &&
+      commit_state.top_controls_shown_ratio < 1.0f) {
+    UpdateViewportContainerSizes();
+  }
+
+  set_display_transform_hint(commit_state.display_transform_hint);
+
+  if (commit_state.delegated_ink_metadata)
+    set_delegated_ink_metadata(std::move(commit_state.delegated_ink_metadata));
+
+  // Transfer page transition directives.
+  for (auto& request : commit_state.document_transition_requests)
+    AddDocumentTransitionRequest(std::move(request));
+}
+
 void LayerTreeImpl::PushPropertyTreesTo(LayerTreeImpl* target_tree) {
   TRACE_EVENT0("cc", "LayerTreeImpl::PushPropertyTreesTo");
   // Property trees may store damage status. We preserve the active tree

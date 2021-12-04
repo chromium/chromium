@@ -400,7 +400,7 @@ void LayerTreeHost::FinishCommitOnImplThread(
     sync_tree->lifecycle().AdvanceTo(
         LayerTreeLifecycle::kSyncedLayerProperties);
 
-    PushLayerTreePropertiesTo(commit_state, sync_tree);
+    sync_tree->PullLayerTreePropertiesFrom(commit_state);
     host_impl->PullLayerTreeHostPropertiesFrom(commit_state);
 
     sync_tree->PassSwapPromises(std::move(commit_state.swap_promises));
@@ -1660,90 +1660,6 @@ void LayerTreeHost::ResetNeedsFullTreeSyncForTesting() {
 void LayerTreeHost::SetPropertyTreesNeedRebuild() {
   property_trees()->needs_rebuild = true;
   SetNeedsUpdateLayers();
-}
-
-void LayerTreeHost::PushLayerTreePropertiesTo(CommitState& state,
-                                              LayerTreeImpl* tree_impl) {
-  tree_impl->set_needs_full_tree_sync(state.needs_full_tree_sync);
-
-  if (state.hud_layer_id != Layer::INVALID_ID) {
-    LayerImpl* hud_impl = tree_impl->LayerById(state.hud_layer_id);
-    tree_impl->set_hud_layer(static_cast<HeadsUpDisplayLayerImpl*>(hud_impl));
-  } else {
-    tree_impl->set_hud_layer(nullptr);
-  }
-
-  tree_impl->set_background_color(state.background_color);
-  tree_impl->set_have_scroll_event_handlers(state.have_scroll_event_handlers);
-  tree_impl->set_event_listener_properties(
-      EventListenerClass::kTouchStartOrMove,
-      state.GetEventListenerProperties(EventListenerClass::kTouchStartOrMove));
-  tree_impl->set_event_listener_properties(
-      EventListenerClass::kMouseWheel,
-      state.GetEventListenerProperties(EventListenerClass::kMouseWheel));
-  tree_impl->set_event_listener_properties(
-      EventListenerClass::kTouchEndOrCancel,
-      state.GetEventListenerProperties(EventListenerClass::kTouchEndOrCancel));
-
-  tree_impl->SetViewportPropertyIds(state.viewport_property_ids);
-
-  tree_impl->RegisterSelection(state.selection);
-
-  tree_impl->PushPageScaleFromMainThread(state.page_scale_factor,
-                                         state.min_page_scale_factor,
-                                         state.max_page_scale_factor);
-
-  tree_impl->SetBrowserControlsParams(state.browser_controls_params);
-  tree_impl->set_overscroll_behavior(state.overscroll_behavior);
-  tree_impl->PushBrowserControlsFromMainThread(
-      state.top_controls_shown_ratio, state.bottom_controls_shown_ratio);
-  tree_impl->elastic_overscroll()->PushMainToPending(state.elastic_overscroll);
-  if (tree_impl->IsActiveTree())
-    tree_impl->elastic_overscroll()->PushPendingToActive();
-
-  tree_impl->SetDisplayColorSpaces(state.display_color_spaces);
-  tree_impl->SetExternalPageScaleFactor(state.external_page_scale_factor);
-
-  tree_impl->set_painted_device_scale_factor(state.painted_device_scale_factor);
-  tree_impl->SetDeviceScaleFactor(state.device_scale_factor);
-  tree_impl->SetDeviceViewportRect(state.device_viewport_rect);
-
-  if (state.new_local_surface_id_request)
-    tree_impl->RequestNewLocalSurfaceId();
-
-  tree_impl->SetLocalSurfaceIdFromParent(state.local_surface_id_from_parent);
-  tree_impl->SetVisualPropertiesUpdateDuration(
-      state.visual_properties_update_duration);
-
-  if (state.pending_page_scale_animation) {
-    tree_impl->SetPendingPageScaleAnimation(
-        std::move(state.pending_page_scale_animation));
-  }
-
-  if (state.force_send_metadata_request)
-    tree_impl->RequestForceSendMetadata();
-
-  tree_impl->set_has_ever_been_drawn(false);
-
-  // TODO(ericrk): The viewport changes caused by |top_controls_shown_ratio_|
-  // changes should propagate back to the main tree. This does not currently
-  // happen, so we must force the impl tree to update its viewports if
-  // |top_controls_shown_ratio_| is greater than 0.0f and less than 1.0f
-  // (partially shown). crbug.com/875943
-  if (state.top_controls_shown_ratio > 0.0f &&
-      state.top_controls_shown_ratio < 1.0f) {
-    tree_impl->UpdateViewportContainerSizes();
-  }
-
-  tree_impl->set_display_transform_hint(state.display_transform_hint);
-
-  if (state.delegated_ink_metadata)
-    tree_impl->set_delegated_ink_metadata(
-        std::move(state.delegated_ink_metadata));
-
-  // Transfer page transition directives.
-  for (auto& request : state.document_transition_requests)
-    tree_impl->AddDocumentTransitionRequest(std::move(request));
 }
 
 Layer* LayerTreeHost::LayerByElementId(ElementId element_id) {
