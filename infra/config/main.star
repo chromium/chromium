@@ -18,6 +18,7 @@ lucicfg.check_version(
 lucicfg.config(
     config_dir = "generated",
     tracked_files = [
+        "builders/*/*/*",
         "cq-builders.md",
         "luci/commit-queue.cfg",
         "luci/cr-buildbucket.cfg",
