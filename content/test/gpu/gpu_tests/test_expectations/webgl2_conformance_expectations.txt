@@ -988,6 +988,8 @@ crbug.com/695742 [ android qualcomm angle-disabled ] deqp/functional/gles3/multi
 
 # Pixel 4
 crbug.com/1254008 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ RetryOnFailure ]
+crbug.com/1276611 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ RetryOnFailure ]
+crbug.com/1276611 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_triangles.html [ RetryOnFailure ]
 crbug.com/1175226 [ android android-pixel-4 angle-opengles passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1175229 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_short_5_6_5.html [ Failure ]
