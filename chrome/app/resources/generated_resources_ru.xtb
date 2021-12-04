@@ -533,7 +533,6 @@
 <translation id="1549275686094429035">ARC включен</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> запрашивает доступ к тому "<ph name="VOLUME_NAME" />". Это может привести к изменению или удалению файлов.</translation>
 <translation id="1552301827267621511">Расширение "<ph name="EXTENSION_NAME" />" установило поисковую систему "<ph name="SEARCH_PROVIDER_DOMAIN" />" в качестве основной.</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">неограниченно</translation>
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1556537182262721003">Не удалось переместить каталог расширений в профиль.</translation>
@@ -1073,7 +1072,6 @@
 <translation id="2090165459409185032">Чтобы восстановить данные аккаунта, перейдите на страницу google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Автоматическое подключение при входе</translation>
 <translation id="2090876986345970080">Настройка безопасности системы</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Удалить сторонние файлы cookie</translation>
 <translation id="2098805196501063469">Проверить</translation>
 <translation id="2099172618127234427">Вы включаете функции отладки Chrome OS. Будет настроен SSHD-демон и разрешена загрузка с USB-дисков.</translation>
@@ -1741,6 +1739,7 @@
 <translation id="2757338480560142065">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Доступ к камере запрещен</translation>
 <translation id="2764786626780673772">Сведения о VPN</translation>
+<translation id="2765100602267695013">Обратитесь к оператору мобильной связи.</translation>
 <translation id="2765217105034171413">Мелкий</translation>
 <translation id="2766006623206032690">Вс&amp;тавить из буфера и перейти</translation>
 <translation id="2766161002040448006">Отправить запрос родителям</translation>
@@ -2303,6 +2302,7 @@
 <translation id="3370260763947406229">Автоисправление</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
 <translation id="337286756654493126">Чтение данных в файлах и каталогах, открытых в приложении</translation>
+<translation id="3374294321938930390">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена в папку "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Это расширение могло быть повреждено</translation>
 <translation id="337920581046691015">Будет установлен <ph name="PRODUCT_NAME" /></translation>
 <translation id="3380365263193509176">Неизвестная ошибка</translation>
@@ -3054,7 +3054,6 @@
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Сеть вне зоны доступа</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
 <translation id="4117637339509843559">Тёмная тема</translation>
@@ -3140,7 +3139,6 @@
 <translation id="4231095370974836764">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
 <translation id="4235965441080806197">Отменить вход</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Требуется перезагрузка, чтобы обновить приложения организации</translation>
 <translation id="4242145785130247982">Использование нескольких сертификатов клиента не поддерживается.</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
@@ -4680,7 +4678,6 @@
 <translation id="5901494423252125310">Дверца принтера открыта</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5904614460720589786">Не удалось настроить <ph name="APP_NAME" /> из-за проблем с конфигурацией. Обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Чтобы завершить обновление, перезапустите устройство.</translation>
 <translation id="5906732635754427568">Данные, связанные с этим приложением, будут удалены с устройства.</translation>
 <translation id="5908474332780919512">Запускать при входе</translation>
@@ -5144,6 +5141,7 @@
 <translation id="6385994920693662133">Внимание! Включена подробная регистрация событий. Представленные ниже данные из журналов могут содержать URL и другую конфиденциальную информацию. Убедитесь, что вы готовы отправить их в Google.</translation>
 <translation id="6387674443318562538">Разделить по вертикали</translation>
 <translation id="6388429472088318283">Поиск по языкам</translation>
+<translation id="6388577073199278153">Не удалось войти в аккаунт на мобильном устройстве</translation>
 <translation id="6390020764191254941">Открыть вкладку в новом окне</translation>
 <translation id="6393156038355142111">Сгенерировать надежный пароль</translation>
 <translation id="6393550101331051049">Разрешить сайтам показывать небезопасный контент</translation>
@@ -5340,7 +5338,6 @@
 <translation id="659005207229852190">Проверка безопасности завершена.</translation>
 <translation id="6590458744723262880">Переименование папки</translation>
 <translation id="6592267180249644460">Время сохранения журнала WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Отпечаток пальца сохранен</translation>
 <translation id="6593881952206664229">Медиафайлы, защищенные авторскими правами, могут не воспроизводиться</translation>
 <translation id="6594011207075825276">Поиск последовательных устройств…</translation>
@@ -5471,6 +5468,7 @@
 <translation id="672609503628871915">Узнать, что нового</translation>
 <translation id="67269783048918309">Отправка данных о работе устройства. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Установить личность ребенка по этим данным нельзя. Они нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Эта <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> принудительно применяется владельцем. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в аккаунте ребенка. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6733620523445262364">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="6735304988756581115">Показать cookie и другие данные...</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737663862851963468">Удалить билет Kerberos</translation>
@@ -5793,7 +5791,6 @@
 <translation id="7053983685419859001">Блокировать</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7055451306017383754">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Parallels Desktop.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Окно в режиме инкогнито}one{# окно в режиме инкогнито}few{# окна в режиме инкогнито}many{# окон в режиме инкогнито}other{# окна в режиме инкогнито}}</translation>
 <translation id="7056526158851679338">&amp;Проверка устройств</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Проверка безопасности выполнена 1 минуту назад.}one{Проверка безопасности выполнена {NUM_MINS} минуту назад.}few{Проверка безопасности выполнена {NUM_MINS} минуты назад.}many{Проверка безопасности выполнена {NUM_MINS} минут назад.}other{Проверка безопасности выполнена {NUM_MINS} минуты назад.}}</translation>
@@ -6505,7 +6502,6 @@
 <translation id="7797246427375693110">Включена. Автоматически выключится в <ph name="TIME" />.</translation>
 <translation id="7797571222998226653">ВЫКЛ</translation>
 <translation id="7798844538707273832">Автоматически отключено разрешение "<ph name="PERMISSION" />"</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Обои установлены.</translation>
 <translation id="7799817062559422778">Светлая тема</translation>
 <translation id="7800159967992492578">Скрыть боковую панель поиска. Боковая панель поиска активирована.</translation>
@@ -6727,6 +6723,7 @@
 <translation id="8006630792898017994">Пробел или Tab</translation>
 <translation id="8008356846765065031">Не удалось установить соединение. Проверьте подключение к Интернету.</translation>
 <translation id="8009225694047762179">Управление паролями</translation>
+<translation id="8011372169388649948">Закладка "<ph name="BOOKMARK_TITLE" />" перемещена.</translation>
 <translation id="8012647001091218357">Не удалось связаться с вашими родителями. Повторите попытку.</translation>
 <translation id="8013993649590906847">Если у изображения нет понятного описания, Chrome попытается его найти. Для создания описаний изображения отправляются в Google.</translation>
 <translation id="8014154204619229810">Работает программа обновлений. Повторите попытку через пару минут.</translation>
@@ -7439,7 +7436,6 @@
 <translation id="8770406935328356739">Корневой каталог расширения</translation>
 <translation id="8771300903067484968">Фон стартовой страницы изменен на вариант по умолчанию.</translation>
 <translation id="8773302562181397928">Сохранить принтер "<ph name="PRINTER_NAME" />"</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Подтвердите восстановление</translation>
 <translation id="8774934320277480003">Верхнее поле</translation>
 <translation id="8775144690796719618">Недействительный URL</translation>

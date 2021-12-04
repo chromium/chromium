@@ -404,6 +404,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
 <translation id="2187317261103489799">Oppdag (standard)</translation>
 <translation id="2188375229972301266">Flere hull bunn</translation>
+<translation id="2188852899391513400">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du endrer det nå og deretter sjekker de lagrede passordene dine.</translation>
 <translation id="2202020181578195191">Angi et gyldig utløpsår</translation>
 <translation id="22081806969704220">Skuff 3</translation>
 <translation id="2212735316055980242">Innstillingene ble ikke funnet</translation>
@@ -895,6 +896,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3827112369919217609">Absolutt</translation>
 <translation id="3827475930221174051">Basert på aktivitet relatert til «<ph name="SEARCH_TERM" />»</translation>
 <translation id="3828924085048779000">Tom passordfrase er ikke tillatt.</translation>
+<translation id="3831065134033923230">Sjekk de lagrede passordene dine</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> har installert utvidelser for tilleggsfunksjoner. Utvidelsene har tilgang til noen av dataene dine.</translation>
 <translation id="3832522519263485449">Flere hull venstre</translation>
 <translation id="3835233591525155343">Enhetsbruken din</translation>
@@ -1093,6 +1095,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="443673843213245140">Bruk av proxy-tjener er deaktivert, men det er angitt en uttrykkelig proxy-tjenerkonfigurasjon.</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
 <translation id="4451135742916150903">Kan be om å få koble til HID-enheter</translation>
+<translation id="4452328064229197696">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du sjekker de lagrede passordene dine.</translation>
 <translation id="4455222631300069614">Bytt passord nå</translation>
 <translation id="4460315069258617173">Tillatt frem til du lukker faner for dette nettstedet</translation>
 <translation id="4464826014807964867">Nettsteder med informasjon fra organisasjonen din</translation>
@@ -1580,6 +1583,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6051221802930200923">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden nettstedet bruker sertifikatfesting. Nettverksfeil og -angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
 <translation id="6051898664905071243">Antall sider:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Passordet du nettopp brukte, er funnet i et databrudd. Google Passordlagring anbefaler at du endrer dette passordet nå.</translation>
 <translation id="6055888660316801977">Ark for sikker betalingslegitimasjon uten samsvarende legitimasjon</translation>
 <translation id="6058977677006700226">Vil du bruke kortene på alle enhetene dine?</translation>
 <translation id="6059925163896151826">USB-enheter</translation>

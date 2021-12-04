@@ -534,7 +534,6 @@
 <translation id="1549275686094429035">ARC иштетилди</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> колдонмосу <ph name="VOLUME_NAME" /> дегенге мүмкүнчүлүк алгысы келет. Ал файлдарыңызды өзгөртүп же жок кылышы мүмкүн.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" кеңейтүүсү эми издөө үчүн <ph name="SEARCH_PROVIDER_DOMAIN" /> колдонула тургандай кылып өзгөртүп койду</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">чексиз</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="1556537182262721003">Кеңейтүү каталогу профилге жылган жок.</translation>
@@ -1084,7 +1083,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2090165459409185032">Аккаунтуңуздун маалыматын калыбына келтирүү үчүн, төмөнкүгө өтүңүз: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Аккаунтуңузга киргенде автоматтык түрдө туташат</translation>
 <translation id="2090876986345970080">Системанын коопсуздук жөндөөсү</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Үчүнчү тараптын cookie файлдары тазалансын</translation>
 <translation id="2098805196501063469">Калган сырсөздөрдү текшерүү</translation>
 <translation id="2099172618127234427">sshd демонду орнотуп, USB дисктерден жүктөөнү иштете турган Chrome OS мүчүлүштүктөрдү оңдоо өзгөчөлүктөрүн иштетип жатасыз.</translation>
@@ -3069,7 +3067,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4110490973560452005">Жүктөп алуу аяктады: <ph name="FILE_NAME" />. Жүктөлүп алынган файлдар тилкесине өтүү үчүн Shift+F6 баскычтарын басыңыз.</translation>
 <translation id="4110686435123617899">Альбом тандаңыз <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (оффлайн)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Тармак көрүнбөй калды</translation>
 <translation id="4115378294792113321">Маджента</translation>
 <translation id="4117637339509843559">Караңгы режим</translation>
@@ -3155,7 +3152,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4231095370974836764">Google Play'ден колдонмолор менен оюндарды <ph name="DEVICE_TYPE" /> түзмөгүңүзгө орнотуп аласыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos’ту конфигурациялоо</translation>
 <translation id="4235965441080806197">Аккаунтка кирүүнү жокко чыгаруу</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Уюмдун колдонмолорун жаңыртуу үчүн өчүрүп күйгүзүңүз</translation>
 <translation id="4242145785130247982">Бир нече кардарлардын сертификаттарын пайдалануу колдоого алынбайт</translation>
 <translation id="4242533952199664413">Жөндөөлөрдү ачуу</translation>
@@ -4696,7 +4692,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5901494423252125310">Принтердин эшиги ачык</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5904614460720589786">Конфигурациялоо маселесинен улам <ph name="APP_NAME" /> жөндөлгөн жок. Администраторуңузга кайрылыңыз. Ката коду: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Жаңырганы калды! Жаңыртууну аягына чыгаруу үчүн түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="5906732635754427568">Бул колдонмого байланыштуу дайындар бул түзмөктөн өчүрүлөт.</translation>
 <translation id="5908474332780919512">Киргенде колдонмо ачылсын</translation>
@@ -5356,7 +5351,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="659005207229852190">Коопсуздук текшерилди.</translation>
 <translation id="6590458744723262880">Папканын аталышын өзгөртүү</translation>
 <translation id="6592267180249644460">WebRTC таржымалы кармалды <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Манжа изиңиз тартылды</translation>
 <translation id="6593881952206664229">Автордук укук менен чектелген медиа файл ойнотулбашы мүмкүн</translation>
 <translation id="6594011207075825276">Сериялык түзмөктөр изделүүдө…</translation>
@@ -5809,7 +5803,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7053983685419859001">Бөгөттөө</translation>
 <translation id="7055152154916055070">Багыттоо бөгөттөлгөн:</translation>
 <translation id="7055451306017383754">Колдонмо бул папканы пайдаланып жаткандыктан, бөлүшүү токтотулган жок. Parallels Desktop эмки жолу өчүрүлгөндө, бул папканы бөлүшүү токтотулат.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Жашыруун}other{# жашыруун терезе ачык}}</translation>
 <translation id="7056526158851679338">Түзмөктөрдү &amp;текшерүү</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Коопсуздук 1 мүнөт мурун текшерилди}other{Коопсуздук {NUM_MINS} мүнөт мурун текшерилди}}</translation>
@@ -6521,7 +6514,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7797246427375693110">Күйүк / Автоматтык түрдө саат <ph name="TIME" /> өчөт</translation>
 <translation id="7797571222998226653">Өчүк</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> – автоматтык түрдө бөгөттөлдү</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Тушкагаз ийгиликтүү орнотулду</translation>
 <translation id="7799817062559422778">Жарык режим</translation>
 <translation id="7800159967992492578">Издөө тилкесин өчүрүү/күйгүзүү. Издөө тилкеси иштетилди.</translation>
@@ -7455,7 +7447,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8770406935328356739">Кеңейтүүнүн өзөктүк каталогу</translation>
 <translation id="8771300903067484968">Башкы беттин фону демейки фонго коюлду.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> сактоо</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Калыбына келтирүүнү ырастоо</translation>
 <translation id="8774934320277480003">Жогорку чети</translation>
 <translation id="8775144690796719618">Жараксыз URL</translation>

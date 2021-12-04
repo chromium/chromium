@@ -280,6 +280,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2942350706960889382">Penggadang Didok</translation>
 <translation id="2942516765047364088">Kedudukan rak</translation>
 <translation id="2946119680249604491">Tambah sambungan</translation>
+<translation id="2960314608273155470">Mod Tangkap, pilihan lalai ialah <ph name="SOURCE" /> <ph name="TYPE" />. Tekan tab untuk menavigasi papan kekunci.</translation>
 <translation id="2961963223658824723">Maaf, kesilapan telah berlaku. Cuba lagi dalam beberapa saat.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Tidak dapat memuat turun fail pertuturan <ph name="LANGUAGE" /></translation>
@@ -571,6 +572,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
 <translation id="4730374152663651037">KERAP DIGUNAKAN</translation>
 <translation id="4731797938093519117">Akses ibu bapa</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4734965478015604180">Mendatar</translation>
 <translation id="4735498845456076464">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Nombor telah berubah. Untuk menggunakan kekunci fungsi, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + salah satu kekunci di baris atas.</translation>
 <translation id="4759238208242260848">Muat turun</translation>
@@ -654,6 +656,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5329548388331921293">Menyambung…</translation>
 <translation id="5330201449517439522">Ketik atau klik untuk masuk</translation>
 <translation id="5331975486040154427">Peranti USB-C (port belakang sebelah kiri)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="5352250171825660495">Tema gelap dihidupkan</translation>
 <translation id="5379115545237091094">Terlalu banyak percubaan</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ke atas <ph name="IN_PLACE_APP" />, lepaskan untuk membuat folder.</translation>
@@ -885,6 +888,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7042322267639375032">Runtuhkan area status</translation>
 <translation id="7045033600005038336">Gantikan templat?</translation>
 <translation id="7045595904618419789">Mulakan penggadang</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> terputus sambungan</translation>
 <translation id="7055381872777910864">R</translation>
 <translation id="7055910611768509537">Stilus sudah tidak digunakan lebih daripada seminggu</translation>
 <translation id="7066646422045619941">Rangkaian ini dilumpuhkan oleh pentadbir anda.</translation>
@@ -1077,6 +1081,8 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8394567579869570560">Ibu/bapa anda mengunci peranti ini</translation>
 <translation id="8412677897383510995">Tunjukkan tetapan paparan</translation>
 <translation id="8413272770729657668">Rakaman akan bermula dalam masa 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Bekas)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> tidak tersedia pada peranti ini.</translation>
 <translation id="8425213833346101688">Tukar</translation>
 <translation id="8426708595819210923">Selamat petang <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Tetapan</translation>

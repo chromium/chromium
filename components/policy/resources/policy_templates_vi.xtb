@@ -5436,6 +5436,7 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
        Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì hình ảnh của bên thứ ba sẽ không thể hiển thị lời nhắc xác thực.
 
       Thông thường, chính sách này bị Tắt để chống lừa đảo.</translation>
+<translation id="7403217961820363141">Hiện Hành trình trên Trang nhật ký duyệt web trên Chrome</translation>
 <translation id="7406039009275722824">Việc tắt <ph name="CHROME_SYNC_NAME" /> sẽ khiến tính năng Sao lưu và khôi phục trên Android hoạt động không bình thường.</translation>
 <translation id="7407441173422042771">Chính sách này kiểm soát tính năng gợi ý mạng trong <ph name="PRODUCT_NAME" />. Chính sách này còn kiểm soát tính năng tìm nạp trước DNS, kết nối trước TCP và SSL, cũng như tính năng hiển thị trước trang web.
 

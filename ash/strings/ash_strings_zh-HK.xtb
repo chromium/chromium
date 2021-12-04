@@ -571,6 +571,7 @@
 <translation id="4702647871202761252">已停用私隱保護畫面</translation>
 <translation id="4730374152663651037">常用的應用程式</translation>
 <translation id="4731797938093519117">家長存取</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 最上排的任一按鍵。</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">正在連線…</translation>
 <translation id="5330201449517439522">輕按或按一下即可繼續使用</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左側後方連接埠)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」宜家拉咗去「<ph name="IN_PLACE_APP" />」上面，放開滑鼠就可以建立資料夾。</translation>
@@ -1077,6 +1079,7 @@
 <translation id="8394567579869570560">您的家長已鎖定此裝置</translation>
 <translation id="8412677897383510995">顯示螢幕設定</translation>
 <translation id="8413272770729657668">3、2、1，開始錄影</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
 <translation id="8421270167862077762">這部裝置未安裝「<ph name="UNAVAILABLE_APPS" />」。</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚安：</translation>

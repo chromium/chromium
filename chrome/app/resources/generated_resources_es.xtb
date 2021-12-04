@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC habilitado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Puede modificar o eliminar tus archivos.</translation>
 <translation id="1552301827267621511">La extensión <ph name="EXTENSION_NAME" /> ha cambiado el proveedor de búsquedas a <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">sin límite</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1556537182262721003">No se ha podido mover el directorio de la extensión al perfil.</translation>
@@ -1071,7 +1070,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2090165459409185032">Para recuperar la información de tu cuenta, accede a la página google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Se conecta automáticamente cuando inicias sesión</translation>
 <translation id="2090876986345970080">Configuración de seguridad del sistema</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Borrar cookies de terceros</translation>
 <translation id="2098805196501063469">Comprobar el resto de las contraseñas</translation>
 <translation id="2099172618127234427">Vas a habilitar las funciones de depuración de Chrome OS, que configurarán el daemon sshd y habilitará el arranque desde unidades USB.</translation>
@@ -3052,7 +3050,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4110490973560452005">Descarga completa: <ph name="FILE_NAME" />. Pulsa Mayús+F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">La red está fuera del alcance</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Modo oscuro</translation>
@@ -3138,7 +3135,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4231095370974836764">Instala aplicaciones y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
 <translation id="4235965441080806197">Cancelar inicio de sesión</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Reiniciar para actualizar las aplicaciones de tu organización</translation>
 <translation id="4242145785130247982">No se admite el uso de varios certificados de cliente.</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
@@ -4678,7 +4674,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5901494423252125310">La cubierta de la impresora está abierta</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5904614460720589786">No se ha podido configurar <ph name="APP_NAME" /> debido a un problema de configuración. Ponte en contacto con tu administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">El dispositivo está casi actualizado. Reinícialo para completar la actualización.</translation>
 <translation id="5906732635754427568">Los datos asociados a esta aplicación se eliminarán de este dispositivo.</translation>
 <translation id="5908474332780919512">Abrir aplicación al iniciar sesión</translation>
@@ -5338,7 +5333,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="659005207229852190">Se ha completado la comprobación de seguridad.</translation>
 <translation id="6590458744723262880">Cambia el nombre de la carpeta</translation>
 <translation id="6592267180249644460">Captura de registro de ReWebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Se ha registrado tu huella digital</translation>
 <translation id="6593881952206664229">El contenido multimedia protegido por derechos de autor podría no reproducirse</translation>
 <translation id="6594011207075825276">Buscando dispositivos en serie...</translation>
@@ -5791,7 +5785,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Redirección bloqueada:</translation>
 <translation id="7055451306017383754">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. La carpeta dejará de compartirse la próxima vez que se apague Parallels Desktop.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incógnito}other{# ventanas de incógnito abiertas}}</translation>
 <translation id="7056526158851679338">&amp;Inspeccionar dispositivos</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{La comprobación de seguridad se ha realizado hace 1 minuto}other{La comprobación de seguridad se ha realizado hace {NUM_MINS} minutos}}</translation>
@@ -6503,7 +6496,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7797246427375693110">Activado. Se desactivará automáticamente a las <ph name="TIME" />.</translation>
 <translation id="7797571222998226653">Desactivado</translation>
 <translation id="7798844538707273832">bloqueado automáticamente: <ph name="PERMISSION" /></translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Fondo de pantalla establecido correctamente</translation>
 <translation id="7799817062559422778">Modo claro</translation>
 <translation id="7800159967992492578">Activar o desactivar búsqueda lateral. Búsqueda lateral activada.</translation>
@@ -7438,7 +7430,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8770406935328356739">Directorio raíz de la extensión</translation>
 <translation id="8771300903067484968">El fondo de pantalla de la página de inicio se ha restablecido al fondo de pantalla predeterminado.</translation>
 <translation id="8773302562181397928">Guardar <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Margen superior</translation>
 <translation id="8775144690796719618">La URL no es válida</translation>

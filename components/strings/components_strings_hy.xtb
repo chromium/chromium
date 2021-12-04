@@ -649,6 +649,7 @@
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Ավելացրեք ստացման հասցեն</translation>
+<translation id="3098513225387949945">Անտեսվում է, քանի որ «Անջատված» ցանկը պարունակում է «*» ձևանմուշը, որը հավասարազոր է կանոնի անջատմանը։</translation>
 <translation id="3105172416063519923">Ակտիվների ID՝</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Ստուգել ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Մեջտեղի դարակ</translation>
@@ -1561,6 +1562,7 @@
 <translation id="6008122969617370890">N-ից 1 հերթականությամբ</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Ստուգեք ձեր գաղտնաբառերը</translation>
+<translation id="6014851866995737824">Անտեսվում է, քանի որ «Միացված» կամ «Անջատված» ցանկը բացակայում է։</translation>
 <translation id="6015796118275082299">Տարի</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
 <translation id="6017850046339264347">Հարձակվողները <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքում կարող են կեղծ հավելվածներ տեղադրել կամ տվյալներ հավաքել՝ ձեզ հետևելու համար։ <ph name="BEGIN_LEARN_MORE_LINK" />Մանրամասն<ph name="END_LEARN_MORE_LINK" /></translation>

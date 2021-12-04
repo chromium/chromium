@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4730374152663651037">常用应用</translation>
 <translation id="4731797938093519117">家长访问</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左侧）</translation>
 <translation id="4734965478015604180">横向</translation>
 <translation id="4735498845456076464">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 数字键”已更改。若要使用功能键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 顶排的某个键。</translation>
 <translation id="4759238208242260848">下载内容</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">正在连接…</translation>
 <translation id="5330201449517439522">点按或点击即可输入</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
 <translation id="8412677897383510995">显示“显示设置”部分</translation>
 <translation id="8413272770729657668">录制倒计时：3、2、1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚上好！</translation>
 <translation id="8428213095426709021">设置</translation>

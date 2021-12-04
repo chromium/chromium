@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
+<translation id="3924044641767672375">É recomendável ligar ao Wi-Fi para facilitar o processo de reparação. A sua rede será guardada.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Começar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
+<translation id="4485626319513081846">Selecione esta opção se o stock do dispositivo está a ser reposto ou se o dispositivo está a ser recondicionado para distribuição a um novo cliente.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Correspondência do nome alternativo do assunto</translation>
 <translation id="4536864596629708641">Configuração de IP</translation>
@@ -416,6 +418,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6957231940976260713">Nome do serviço</translation>
 <translation id="6961170852793647506">Para começar, coloque o documento no scanner</translation>
 <translation id="6977381486153291903">Revisão de firmware</translation>
+<translation id="6992266763844448459">Selecione esta opção se a propriedade do dispositivo não for alterada. Por exemplo, o dispositivo está a ser transferido para uma pessoa diferente numa organização.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Terminar e guardar</translation>

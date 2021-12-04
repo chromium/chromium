@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC ჩართულია</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />-ს <ph name="VOLUME_NAME" />-ზე წვდომა სურს. მას თქვენი ფაილების შეცვლა ან წაშლა შეუძლია.</translation>
 <translation id="1552301827267621511">გაფართოებამ „<ph name="EXTENSION_NAME" />“ შეცვალა ძიების პროვაიდერი <ph name="SEARCH_PROVIDER_DOMAIN" />-ით</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">შეუზღუდავo</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
 <translation id="1556537182262721003">გაფართოების დირექტორიის გადატანა პროფილში ვერ მოხერხდა.</translation>
@@ -1072,7 +1071,6 @@
 <translation id="2090165459409185032">თქვენი ანგარიშის ინფორმაციის აღსადგენად, ეწვიეთ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ავტომატურად უკავშირდება, როცა სისტემაში შედიხართ</translation>
 <translation id="2090876986345970080">სისტემის უსაფრთხოების პარამეტრები</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">მესამე მხარის ქუქი-ჩანაწერების გასუფთავება</translation>
 <translation id="2098805196501063469">დარჩენილი პაროლების შემოწმება</translation>
 <translation id="2099172618127234427">თქვენ საშუალებას აძლევთ Chrome OS -ს გამართვოს თვისებები, რომელიც შეიქმნა sshd daemon და რთავს ჩატვირთვას USB დრაივიდან.</translation>
@@ -3054,7 +3052,6 @@
 <translation id="4110490973560452005">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />. ჩამოტვირთვების ზოლის არეზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას: Shift+F6.</translation>
 <translation id="4110686435123617899">აირჩიეთ ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ქსელი დიაპაზონს მიღმაა</translation>
 <translation id="4115378294792113321">მაგენტა</translation>
 <translation id="4117637339509843559">მუქი რეჟიმი</translation>
@@ -3140,7 +3137,6 @@
 <translation id="4231095370974836764">დააინსტალირეთ აპები და თამაშები Google Play-დან თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ის კონფიგურაცია</translation>
 <translation id="4235965441080806197">შესვლის გაუქმება</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">ორგანიზაციის აპების განახლებისთვის საჭიროა გადატვირთვა</translation>
 <translation id="4242145785130247982">კლიენტთა რამდენიმე სერტიფიკატის გამოყენება მხარდაუჭერელია</translation>
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
@@ -4680,7 +4676,6 @@
 <translation id="5901494423252125310">პრინტერის კარი ღიაა</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" />-ის დაყენება ვერ მოხერხდა კონფიგურაციის პრობლემის გამო. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">განახლება თითქმის მზად არის! დასასრულებლად, გადატვირთეთ თქვენი მოწყობილობა.</translation>
 <translation id="5906732635754427568">ამ აპთან დაკავშირებული მონაცემები ამ მოწყობილობიდან ამოიშლება.</translation>
 <translation id="5908474332780919512">აპის გაშვება სისტემაში შესვლისას</translation>
@@ -5340,7 +5335,6 @@
 <translation id="659005207229852190">უსაფრთხოების შემოწმება შესრულდა.</translation>
 <translation id="6590458744723262880">საქაღალდის გადარქმევა</translation>
 <translation id="6592267180249644460">WebRTC ჟურნალი გადაღებულია <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">თქვენი თითის ანაბეჭდი აღბეჭდილია</translation>
 <translation id="6593881952206664229">საავტორო უფლებებით დაცული მედიაფაილები, შესაძლოა, არ დაიკრას</translation>
 <translation id="6594011207075825276">მიმდინარეობს სერიული მოწყობილობების პოვნა…</translation>
@@ -5793,7 +5787,6 @@
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
 <translation id="7055451306017383754">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Parallels Desktop-ის მომდევნო გათიშვისას.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{ინკოგნიტო}other{# გახსნილი ინკოგნიტო ფანჯარა}}</translation>
 <translation id="7056526158851679338">მოწყობილობების შ&amp;ემოწმება</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{უსაფრთხოების შემოწმება შესრულდა 1 წუთის წინ}other{უსაფრთხოების შემოწმება შესრულდა {NUM_MINS} წუთის წინ}}</translation>
@@ -6505,7 +6498,6 @@
 <translation id="7797246427375693110">ჩართული / ავტომატურად გამოირთვება <ph name="TIME" />-ზე</translation>
 <translation id="7797571222998226653">გამორთული</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> დაბლოკილია ავტომატურად</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">ფონი წარმატებით დაყენდა</translation>
 <translation id="7799817062559422778">ღია რეჟიმი</translation>
 <translation id="7800159967992492578">გვერდითი ძიების გადართვა. გვერდითი ძიება გააქტიურებულია.</translation>
@@ -7438,7 +7430,6 @@
 <translation id="8770406935328356739">გაფართოების ძირეული დირექტორია</translation>
 <translation id="8771300903067484968">საწყისი გვერდის ფონი გადაყენებულია ნაგულისხმევ ფონზე.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />-ის შენახვა</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">დაადასტურეთ აღდგენა</translation>
 <translation id="8774934320277480003">ზედა მინდორი</translation>
 <translation id="8775144690796719618">URL არასწორია</translation>

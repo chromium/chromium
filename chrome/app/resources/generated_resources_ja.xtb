@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC は有効になっています</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> へのアクセスを求めています。ファイルが変更または削除される可能性があります。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」拡張機能により <ph name="SEARCH_PROVIDER_DOMAIN" /> を使用して検索するよう変更されました</translation>
-<translation id="1552522962296937598">スマートディスプレイの機能により、背後からののぞき見を検出して画面をロックします</translation>
 <translation id="1553538517812678578">無制限</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1556537182262721003">拡張機能ディレクトリをプロフィールに移動できませんでした。</translation>
@@ -1070,7 +1069,6 @@
 <translation id="2090165459409185032">アカウント情報を復旧するには google.com/accounts/recovery に移動します。</translation>
 <translation id="2090507354966565596">ログイン時に自動接続します</translation>
 <translation id="2090876986345970080">システム セキュリティの設定</translation>
-<translation id="2092038932007199943">誰かが背後からのぞき見している場合、通知するか一時的に画面を暗くします</translation>
 <translation id="2096715839409389970">サードパーティの Cookie を消去</translation>
 <translation id="2098805196501063469">他のパスワードを確認</translation>
 <translation id="2099172618127234427">Chrome OS デバッグ機能を有効にしています。この機能を有効にすると、sshd デーモンが設定され USB デバイスからの起動が可能になります。</translation>
@@ -3047,7 +3045,6 @@
 <translation id="4110490973560452005">ダウンロードが完了しました（<ph name="FILE_NAME" />）。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
-<translation id="4112809168763360620">スマート　プライバシー保護</translation>
 <translation id="4115002065223188701">ネットワークが圏外です</translation>
 <translation id="4115378294792113321">マゼンタ</translation>
 <translation id="4117637339509843559">ダークモード</translation>
@@ -3133,7 +3130,6 @@
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
-<translation id="4238175133949127631">一時的に画面を暗くする</translation>
 <translation id="4241182343707213132">再起動して組織のアプリを更新してください</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -4664,7 +4660,6 @@
 <translation id="5901494423252125310">プリンタの扉が開いています</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5904614460720589786">設定に問題があったため、<ph name="APP_NAME" /> をセットアップできませんでした。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
-<translation id="5906278356170001460">この機能では、検出の際に前面カメラを使用します。データは安全に処理され、その後破棄されます。Google が他の目的であなたのデータを使用することはありません。</translation>
 <translation id="5906655207909574370">デバイスを再起動して更新を完了してください。</translation>
 <translation id="5906732635754427568">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
 <translation id="5908474332780919512">ログイン時にアプリを開く</translation>
@@ -5320,7 +5315,6 @@
 <translation id="659005207229852190">安全確認が完了しました。</translation>
 <translation id="6590458744723262880">フォルダ名の変更</translation>
 <translation id="6592267180249644460">WebRTC ログの記録日時: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">ステータス領域に目のアイコンを表示する</translation>
 <translation id="6592808042417736307">指紋を登録しました</translation>
 <translation id="6593881952206664229">著作権が設定されたメディアは再生できません</translation>
 <translation id="6594011207075825276">シリアル デバイスを検出しています...</translation>
@@ -5772,7 +5766,6 @@
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7055451306017383754">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Parallels Desktop をシャットダウンするときに、フォルダの共有を停止します。</translation>
-<translation id="7056011684066172642">画面の前から離れると自動的に画面をロックします。画面の前にいるときは、画面がオフになることはありません</translation>
 <translation id="7056418393177503237">{0,plural, =1{シークレット}other{開いているシークレット ウィンドウ # 個}}</translation>
 <translation id="7056526158851679338">デバイスを検証(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{安全確認を 1 分前に実行しました}other{安全確認を {NUM_MINS} 分前に実行しました}}</translation>
@@ -6483,7 +6476,6 @@
 <translation id="7797246427375693110">オン / <ph name="TIME" /> に自動的にオフ</translation>
 <translation id="7797571222998226653">オフ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
-<translation id="7799220949286681310">スマート画面ロック</translation>
 <translation id="7799299114731150374">壁紙の設定が完了しました</translation>
 <translation id="7799817062559422778">ライトモード</translation>
 <translation id="7800159967992492578">サイド検索を切り替えます。サイド検索は有効になっています。</translation>
@@ -7417,7 +7409,6 @@
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
 <translation id="8771300903067484968">スタートページの背景をデフォルトの背景にリセットしました。</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> を保存</translation>
-<translation id="8773350724590665675">のぞき見からの保護</translation>
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>

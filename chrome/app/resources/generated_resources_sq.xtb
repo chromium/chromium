@@ -527,7 +527,6 @@
 <translation id="1549275686094429035">ARC-ja është aktivizuar</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> dëshiron të ketë qasje te <ph name="VOLUME_NAME" />. Ai mund të modifikojë ose fshijë skedarët e tu.</translation>
 <translation id="1552301827267621511">Shtesa "<ph name="EXTENSION_NAME" />" ndryshoi kërkimin për të përdorur <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Ekrani inteligjent kyçet dhe zbulon nëse dikush po shikon nga prapa</translation>
 <translation id="1553538517812678578">e pakufizuar</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1556537182262721003">Direktoria e shtesës nuk mund të zhvendoset te profili.</translation>
@@ -1063,7 +1062,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2090165459409185032">Për të rikuperuar informacionet e llogarisë tënde, shko te: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Lidhet automatikisht kur identifikohesh</translation>
 <translation id="2090876986345970080">Cilësimi i sigurisë së sistemit</translation>
-<translation id="2092038932007199943">Do të të njoftojë ose do të zbehë ekranin përkohësisht kur dikush të përgjon nga prapa</translation>
 <translation id="2096715839409389970">Pastro kukit e palëve të treta</translation>
 <translation id="2098805196501063469">Kontrollo fjalëkalimet e mbetura</translation>
 <translation id="2099172618127234427">Po aktivizon funksionet e korrigjimit të sistemit operativ Chrome që do të konfigurojnë sshd daemon dhe do të aktivizojnë fillimin nga disqet USB.</translation>
@@ -3036,7 +3034,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4110490973560452005">Shkarkimi përfundoi: <ph name="FILE_NAME" />. Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4110686435123617899">Zgjidh albumin <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (jashtë linje)</translation>
-<translation id="4112809168763360620">Mbrojtjet e privatësisë inteligjente</translation>
 <translation id="4115002065223188701">Rrjeti jashtë rrezes së mbulimit</translation>
 <translation id="4115378294792113321">E purpurt e errët</translation>
 <translation id="4117637339509843559">Modaliteti i errët</translation>
@@ -3121,7 +3118,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4231095370974836764">Instalo aplikacione dhe lojëra nga Google Play në <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfiguro Kerberos</translation>
 <translation id="4235965441080806197">Anulo identifikimin</translation>
-<translation id="4238175133949127631">Zbeh ekranin përkohësisht</translation>
 <translation id="4241182343707213132">Rinise për të përditësuar aplikacionet e organizatës</translation>
 <translation id="4242145785130247982">Nuk mbështeten shumë certifikata të klientëve</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
@@ -4645,7 +4641,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5901494423252125310">Dera e printerit është e hapur</translation>
 <translation id="5901630391730855834">E verdhë</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> nuk mund të konfigurohej për shkak të një problemi në konfigurim. Kontakto me administratorin tënd. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Kjo veçori përdor kamerën e përparme për zbulimin. Të dhënat përpunohen në mënyrë të sigurt dhe më pas hiqen. Google nuk i përdor të dhënat e tua për asnjë qëllim tjetër.</translation>
 <translation id="5906655207909574370">Pothuajse i përditësuar! Rinise pajisjen për të përfunduar përditësimin.</translation>
 <translation id="5906732635754427568">Të dhënat e lidhura me këtë aplikacion do të hiqen nga kjo pajisje.</translation>
 <translation id="5908474332780919512">Nis aplikacionin kur identifikohesh</translation>
@@ -5299,7 +5294,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="659005207229852190">Kontrolli i sigurisë përfundoi.</translation>
 <translation id="6590458744723262880">Riemërto dosjen</translation>
 <translation id="6592267180249644460">Evidenca e WebRTC regjistroi <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Më trego një ikonë syri në zonën e statusit</translation>
 <translation id="6592808042417736307">Gjurma e gishtit tënd u regjistrua</translation>
 <translation id="6593881952206664229">Mediat me të drejtat e autorit mund të mos luhen</translation>
 <translation id="6594011207075825276">Po gjen pajisjet me portë seriale...</translation>
@@ -5749,7 +5743,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7055451306017383754">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Parallels Desktop të ndalojë punën më pas.</translation>
-<translation id="7056011684066172642">Ekrani kyçet automatikisht nëse largohesh dhe nuk do të fiket nëse qëndron përpara tij</translation>
 <translation id="7056418393177503237">{0,plural, =1{E fshehtë}other{# dritare të hapura "të fshehta"}}</translation>
 <translation id="7056526158851679338">&amp;Inspekto pajisjet</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Kontrolli i sigurisë u ekzekutua 1 minutë më parë}other{Kontrolli i sigurisë u ekzekutua {NUM_MINS} minuta më parë}}</translation>
@@ -6457,7 +6450,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7797246427375693110">Aktive / Do të çaktivizohet automatikisht në <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Joaktiv</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> është bllokuar automatikisht</translation>
-<translation id="7799220949286681310">Kyçja e ekranit inteligjent</translation>
 <translation id="7799299114731150374">Imazhi i sfondit u caktua me sukses</translation>
 <translation id="7799817062559422778">Modaliteti i ndriçuar</translation>
 <translation id="7800159967992492578">Aktivizo/çaktivizo kërkimin anësor. Kërkimi anësor është aktivizuar.</translation>
@@ -7387,7 +7379,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8770406935328356739">Direktoria rrënjë e shtesës</translation>
 <translation id="8771300903067484968">Sfondi i faqes së nisjes është rivendosur në sfondin e parazgjedhur.</translation>
 <translation id="8773302562181397928">Ruaje <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Mbrojtje kundër përgjimit</translation>
 <translation id="8774379074441005279">Konfirmo restaurimin</translation>
 <translation id="8774934320277480003">Kufiri i sipërm</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>

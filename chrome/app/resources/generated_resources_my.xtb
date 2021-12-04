@@ -533,7 +533,6 @@
 <translation id="1549275686094429035">ARC ဖွင့်ထားသည်</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> သည် <ph name="VOLUME_NAME" /> သို့ ဝင်ရောက်သုံးခွင့် ရလိုသည်။ ၎င်းသည် သင့်ဖိုင်များအား ပြင်ဆင်ခြင်း သို့မဟုတ် ဖျက်ပစ်ခြင်းများ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> အသုံးပြုရန် <ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲက ရှာဖွေမှုစနစ်ကို ပြောင်းလိုက်သည်</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">အကန့်အသတ်မရှိ</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1556537182262721003">တိုးချဲ့မှုကို ပရိုဖိုင် ထဲကို တိုက်ရိုက် ရွှေ့မပေးနိုင်ပါ။</translation>
@@ -1081,7 +1080,6 @@
 <translation id="2090165459409185032">သင့် အကောင့်အချက်အလက်များ ပြန်လည်ရယူရန်၊ google.com/accounts/recovery သို့ သွားပါ</translation>
 <translation id="2090507354966565596">သင်အကောင့်ဝင်သောအခါ အလိုအလျောက် ချိတ်ဆက်သည်</translation>
 <translation id="2090876986345970080">စနစ် လုံခြုံရေး ကြိုတင်ချိန်ညှိချက်များ</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">ပြင်ပကွတ်ကီးများ ရှင်းထုတ်ရန်</translation>
 <translation id="2098805196501063469">ကျန်ရှိသော စကားဝှက်များ စစ်ဆေးရန်</translation>
 <translation id="2099172618127234427">သင်သည် Chrome OS ချို့ယွင်းချက်ရှာဖွေပြုပြင်ရေးအင်္ဂါရပ်များကို လုပ်ဆောင်နေသည်။ ၄င်းသည် sshd နောက်ခံတွင် လည်ပတ်နေသော ကွန်ပျူတာပရိုဂရမ်အား သတ်မှတ်ပြီး USB မောင်းနှင်ထည်များမှ စတင်ခြင်းကို လုပ်ဆောင်လိမ့်မည်။</translation>
@@ -3065,7 +3063,6 @@
 <translation id="4110490973560452005">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ− <ph name="FILE_NAME" />။ ဒေါင်းလုဒ်များ ဘားဧရိယာသို့ သွားရန် Shift+F6 နှိပ်ပါ။</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> အယ်လ်ဘမ်ရွေးရန်</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (အော့ဖ်လိုင်း)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ကွန်ရက် မမိတော့ပါ</translation>
 <translation id="4115378294792113321">ပန်းခရမ်းရောင်</translation>
 <translation id="4117637339509843559">အမှောင်မုဒ်</translation>
@@ -3151,7 +3148,6 @@
 <translation id="4231095370974836764">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Google Play မှ အက်ပ်နှင့် ဂိမ်းများ ထည့်သွင်းပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ကို စီစဉ်သတ်မှတ်ပါ</translation>
 <translation id="4235965441080806197">လက်မှတ်ထိုးဝင်ခြင်းကို ပယ်ဖျက်ရန်</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">အဖွဲ့အစည်း၏အက်ပ်များကို အပ်ဒိတ်လုပ်ရန် ပြန်စပါ</translation>
 <translation id="4242145785130247982">ကလိုင်းယင့် အသိအမှတ်ပြုလက်မှတ် အများအပြားကို ပံ့ပိုးမပေးပါ</translation>
 <translation id="4242533952199664413">ဆက်တင်များကို ဖွင့်ရန်</translation>
@@ -4693,7 +4689,6 @@
 <translation id="5901494423252125310">ပရင်တာတံခါး ပွင့်နေခြင်း</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5904614460720589786">စီစဉ်သတ်မှတ်မှု ပြဿနာကြောင့် <ph name="APP_NAME" /> ကို စနစ်ထည့်သွင်း၍မရပါ။ သင့်စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ်- <ph name="ERROR_CODE" />။</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">အပ်ဒိတ်ပြီးရန် အနည်းငယ်သာလိုပါသည်။ အပ်ဒိတ်လုပ်ခြင်းကို အဆုံးသတ်ရန် သင့်စက်ပစ္စည်းကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5906732635754427568">ဤအက်ပ်နှင့်ဆက်စပ်သည့် ဒေတာကို ဤစက်ပစ္စည်းထဲမှ ဖယ်ရှားပါမည်။</translation>
 <translation id="5908474332780919512">သင်လက်မှတ်ထိုးဝင်သောအခါ အက်ပ်စတင်ရန်</translation>
@@ -5350,7 +5345,6 @@
 <translation id="659005207229852190">လုံခြုံရေးစစ်ဆေးပြီးပါပြီ။</translation>
 <translation id="6590458744723262880">ဖိုင်တွဲအမည်ကို ပြောင်းခြင်း</translation>
 <translation id="6592267180249644460">WebRTC ရိုက်ထားသည့် လော့<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">သင်၏လက်ဗွေကို ထည့်လိုက်ပါပြီ</translation>
 <translation id="6593881952206664229">မူပိုင်ခွင့်ရှိသော မီဒီယာကို ဖွင့်နိုင်မည်မဟုတ်ပါ</translation>
 <translation id="6594011207075825276">အစဉ်လိုက်စက်များ ရှာနေသည်...</translation>
@@ -5803,7 +5797,6 @@
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7055152154916055070">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်−</translation>
 <translation id="7055451306017383754">အပလီကေးရှင်းက ဤဖိုင်တွဲကို အသုံးပြုနေသဖြင့် မျှဝေမှု မလုပ်၍မရပါ။ နောင်တွင် Parallels Desktop ပိတ်လိုက်သည့်အခါ ဖိုင်တွဲကို မျှဝေမှု မလုပ်တော့ပါ။</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{ရုပ်ဖျက်}other{ဖွင့်ထားသော ရုပ်ဖျက် ဝင်ဒိုး # ခု}}</translation>
 <translation id="7056526158851679338">&amp;ကိရိယာများကို စုံစမ်းရန်</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ပြီးခဲ့သည့် ၁ မိနစ်က လုံခြုံရေး စစ်ဆေးခဲ့သည်}other{ပြီးခဲ့သည့် {NUM_MINS} မိနစ်က လုံခြုံရေး စစ်ဆေးခဲ့သည်}}</translation>
@@ -6515,7 +6508,6 @@
 <translation id="7797246427375693110">ဖွင့် / <ph name="TIME" /> တွင် အလိုအလျောက် ပိတ်မည်</translation>
 <translation id="7797571222998226653">ပိတ်ထားသည်</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ကို အလိုအလျောက် ပိတ်ထားသည်</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">နောက်ခံကို အောင်မြင်စွာ သတ်မှတ်ပြီးပါပြီ</translation>
 <translation id="7799817062559422778">အလင်းမုဒ်</translation>
 <translation id="7800159967992492578">ဘေးရှာဖွေဘား ပြောင်းရန်။ ဘေးရှာဖွေဘား ဖွင့်ထားသည်။</translation>
@@ -7449,7 +7441,6 @@
 <translation id="8770406935328356739">နောက်ဆက်တွဲ ပင်မလမ်းကြောင်း</translation>
 <translation id="8771300903067484968">စတင်သည့် စာမျက်နှာနောက်ခံကို မူလနောက်ခံသို့ ပြင်ဆင်သတ်မှတ်ထားပါသည်။</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ကို သိမ်းရန်</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">ပြန်ယူခြင်းကို အတည်ပြုခြင်း</translation>
 <translation id="8774934320277480003">ထိပ်ဆုံး မာဂျင်</translation>
 <translation id="8775144690796719618">URL မမှန်ပါ</translation>

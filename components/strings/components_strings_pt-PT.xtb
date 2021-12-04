@@ -404,6 +404,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}one{# addresses}other{# endereços}}</translation>
 <translation id="2187317261103489799">Detetar (predefinição)</translation>
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
+<translation id="2188852899391513400">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que a altere agora e, em seguida, verifique as suas palavras-passe guardadas.</translation>
 <translation id="2202020181578195191">Introduza um ano de expiração válido</translation>
 <translation id="22081806969704220">Tabuleiro 3</translation>
 <translation id="2212735316055980242">Política não encontrada</translation>
@@ -898,6 +899,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3827112369919217609">Absoluto</translation>
 <translation id="3827475930221174051">Com base na atividade relacionada com "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Não é permitida uma frase de acesso vazia.</translation>
+<translation id="3831065134033923230">Verifique as palavras-passe guardadas</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensões para funções adicionais. As extensões têm acesso a alguns dos seus dados.</translation>
 <translation id="3832522519263485449">Perfuração múltipla à esquerda</translation>
 <translation id="3835233591525155343">A utilização do dispositivo</translation>
@@ -1097,6 +1099,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="443673843213245140">A utilização de um proxy está desativada, mas existe uma configuração de proxy explícita especificada.</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4451135742916150903">Pode solicitar a ligação a dispositivos HID</translation>
+<translation id="4452328064229197696">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que verifique as suas palavras-passe guardadas.</translation>
 <translation id="4455222631300069614">Altere a sua palavra-passe agora</translation>
 <translation id="4460315069258617173">Permitida até fechar os separadores deste site</translation>
 <translation id="4464826014807964867">Websites com informações sobre a sua entidade</translation>
@@ -1586,6 +1589,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6051221802930200923">Não pode visitar <ph name="SITE" /> neste momento, porque o Website utiliza a afixação de certificados. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="6051898664905071243">Número de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. O Gestor de palavras-passe da Google recomenda que altere esta palavra-passe agora.</translation>
 <translation id="6055888660316801977">Página de credenciais de pagamento seguro sem correspondência com as credenciais</translation>
 <translation id="6058977677006700226">Pretende utilizar os seus cartões em todos os seus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>

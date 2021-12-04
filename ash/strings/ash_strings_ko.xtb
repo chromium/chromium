@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">개인정보 보호 화면이 꺼져 있습니다</translation>
 <translation id="4730374152663651037">자주 사용하는 앱</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%(왼쪽)</translation>
 <translation id="4734965478015604180">가로</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + 숫자 단축키가 변경되었습니다. 기능 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 맨 윗줄의 키를 누르세요.</translation>
 <translation id="4759238208242260848">다운로드</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">연결 중...</translation>
 <translation id="5330201449517439522">탭 또는 클릭하여 입력</translation>
 <translation id="5331975486040154427">USB-C 기기(좌측 후면 포트)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%(오른쪽)</translation>
 <translation id="5352250171825660495">어두운 테마가 켜져 있습니다.</translation>
 <translation id="5379115545237091094">시도 횟수가 너무 많음</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />을(를) <ph name="IN_PLACE_APP" /> 위로 드래그해서 놓으면 폴더가 만들어집니다.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">부모님이 이 기기를 잠갔습니다.</translation>
 <translation id="8412677897383510995">디스플레이 설정 표시</translation>
 <translation id="8413272770729657668">녹화가 곧 시작됩니다. 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8426708595819210923">편안한 저녁 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="8428213095426709021">설정</translation>

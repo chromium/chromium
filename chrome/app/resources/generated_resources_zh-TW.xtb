@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1552301827267621511">「<ph name="EXTENSION_NAME" />」擴充功能已將搜尋引擎改為 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">無限制</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
@@ -1072,7 +1071,6 @@
 <translation id="2090165459409185032">如要還原您的帳戶資訊，請前往 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">登入時自動連線</translation>
 <translation id="2090876986345970080">系統安全性設定</translation>
-<translation id="2092038932007199943">有人從後方窺探時，傳送通知給你或暫時調暗螢幕</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">檢查其餘密碼</translation>
 <translation id="2099172618127234427">你即將啟用 Chrome 作業系統偵錯功能，這會一併設定 sshd 精靈，並允許從 USB 磁碟機執行啟動作業。</translation>
@@ -3055,7 +3053,6 @@
 <translation id="4110490973560452005">下載完成：<ph name="FILE_NAME" />。按下 Shift+F6 即可回到下載內容列區域。</translation>
 <translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">偵測不到網路</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4117637339509843559">深色模式</translation>
@@ -3141,7 +3138,6 @@
 <translation id="4231095370974836764">在你的 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4235965441080806197">取消登入</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">重新啟動即可更新機構的應用程式</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -4681,7 +4677,6 @@
 <translation id="5901494423252125310">印表機的蓋子處於開啟狀態</translation>
 <translation id="5901630391730855834">黃色</translation>
 <translation id="5904614460720589786">配置作業發生問題，因此無法設定「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">即將更新為最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">與這個應用程式相關聯的資料會從這個裝置上移除。</translation>
 <translation id="5908474332780919512">當你登入時啟動應用程式</translation>
@@ -5342,7 +5337,6 @@
 <translation id="659005207229852190">安全檢查作業已完成。</translation>
 <translation id="6590458744723262880">重新命名資料夾</translation>
 <translation id="6592267180249644460">WebRTC 記錄擷取時間：<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">已擷取你的指紋</translation>
 <translation id="6593881952206664229">系統可能不會播放受版權保護的媒體</translation>
 <translation id="6594011207075825276">正在尋找序列裝置…</translation>
@@ -5796,7 +5790,6 @@
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7055451306017383754">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享這個資料夾。</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{無痕式視窗}other{已開啟 # 個無痕式視窗}}</translation>
 <translation id="7056526158851679338">檢查裝置 (&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 分鐘前已執行安全檢查}other{{NUM_MINS} 分鐘前已執行安全檢查}}</translation>
@@ -6508,7 +6501,6 @@
 <translation id="7797246427375693110">開啟/將於<ph name="TIME" /> 自動關閉</translation>
 <translation id="7797571222998226653">關閉</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">已成功設定桌布</translation>
 <translation id="7799817062559422778">淺色模式</translation>
 <translation id="7800159967992492578">切換側邊搜尋面板。側邊搜尋面板已啟用。</translation>
@@ -7444,7 +7436,6 @@
 <translation id="8770406935328356739">擴充功能根目錄</translation>
 <translation id="8771300903067484968">起始網頁背景已重設為預設背景。</translation>
 <translation id="8773302562181397928">儲存 <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">確認還原</translation>
 <translation id="8774934320277480003">上邊界</translation>
 <translation id="8775144690796719618">網址無效</translation>

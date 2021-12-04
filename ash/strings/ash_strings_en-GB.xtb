@@ -571,6 +571,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4702647871202761252">Privacy screen is off</translation>
 <translation id="4730374152663651037">FREQUENTLY USED</translation>
 <translation id="4731797938093519117">Parent access</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">The <ph name="LAUNCHER_KEY_NAME" /> + number keyboard shortcut has changed. To use function keys, press the <ph name="LAUNCHER_KEY_NAME" /> key + a key on the top row.</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -654,6 +655,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5329548388331921293">Connecting…</translation>
 <translation id="5330201449517439522">Tap or click to enter</translation>
 <translation id="5331975486040154427">USB-C device (left side back port)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
@@ -1078,6 +1080,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
 <translation id="8412677897383510995">Show display settings</translation>
 <translation id="8413272770729657668">Recording starting in 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> isn't on this device.</translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8426708595819210923">Good evening <ph name="GIVEN_NAME" />,</translation>

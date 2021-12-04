@@ -533,7 +533,6 @@
 <translation id="1549275686094429035">Povoleno ARC</translation>
 <translation id="1549788673239553762">Aplikace <ph name="APP_NAME" /> chce získat přístup ke svazku <ph name="VOLUME_NAME" />. Bude moci upravit nebo smazat vaše soubory.</translation>
 <translation id="1552301827267621511">Rozšíření <ph name="EXTENSION_NAME" /> změnilo poskytovatele vyhledávání na <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Chytrý zámek obrazovky a detekce, zda vás někdo zezadu nesleduje</translation>
 <translation id="1553538517812678578">neomezené</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1556537182262721003">Adresář rozšíření nelze přesunout do profilu.</translation>
@@ -1074,7 +1073,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2090165459409185032">Chcete-li obnovit informace o svém účtu, přejděte na web google.com/accounts/recovery.</translation>
 <translation id="2090507354966565596">Po přihlášení se automaticky připojí</translation>
 <translation id="2090876986345970080">Bezpečnostní nastavení systému</translation>
-<translation id="2092038932007199943">Zobrazit oznámení nebo dočasně ztmavit obrazovku, pokud vás někdo zezadu sleduje.</translation>
 <translation id="2096715839409389970">Vymazat soubory cookie třetích stran</translation>
 <translation id="2098805196501063469">Kontrola zbývajících hesel</translation>
 <translation id="2099172618127234427">Aktivujete funkce ladění systému Chrome OS, které nastaví démona sshd a umožní spouštění z jednotek USB.</translation>
@@ -3054,7 +3052,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4110490973560452005">Stažení bylo dokončeno: <ph name="FILE_NAME" />. Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4110686435123617899">Vyberte album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4112809168763360620">Chytrá ochrana soukromí</translation>
 <translation id="4115002065223188701">Síť je mimo dosah</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="4117637339509843559">Tmavý režim</translation>
@@ -3140,7 +3137,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4231095370974836764">Instalujte do svého zařízení <ph name="DEVICE_TYPE" /> aplikace a hry z Google Play. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
 <translation id="4235965441080806197">Zrušit přihlášení</translation>
-<translation id="4238175133949127631">Dočasně ztmavit obrazovku</translation>
 <translation id="4241182343707213132">Pokud chcete aktualizovat aplikace organizace, restartujte zařízení</translation>
 <translation id="4242145785130247982">Více certifikátů klientů není podporováno</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
@@ -4680,7 +4676,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5901494423252125310">Dvířka tiskárny jsou otevřená</translation>
 <translation id="5901630391730855834">Žlutá</translation>
 <translation id="5904614460720589786">Nastavení aplikace <ph name="APP_NAME" /> se kvůli problému s konfigurací nezdařilo. Obraťte se na administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Tato funkce k detekci používá přední fotoaparát. Data se bezpečně zpracovávají a poté se zahazují. Google vaše data nepoužívá k žádným jiným účelům.</translation>
 <translation id="5906655207909574370">Aktualizace je téměř hotova! Dokončíte ji restartováním zařízení.</translation>
 <translation id="5906732635754427568">Data přidružená k této aplikaci z tohoto zařízení budou odstraněna.</translation>
 <translation id="5908474332780919512">Spustit aplikaci při přihlášení</translation>
@@ -5137,7 +5132,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6380143666419481200">Přijmout a pokračovat</translation>
 <translation id="6382958439467370461">Žádné neaktivní zkratky</translation>
 <translation id="638418309848716977">Podporované odkazy</translation>
-<translation id="6384275966486438344">Změňte nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
+<translation id="6384275966486438344">Změnit nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Skupina bez názvu – 1 karta}few{Skupina bez názvu – # karty}many{Skupina bez názvu – # karty}other{Skupina bez názvu – # karet}}</translation>
 <translation id="6385149369087767061">Připojte se k internetu a zkuste to znovu</translation>
 <translation id="6385543213911723544">Weby mohou ukládat a číst data souborů cookie</translation>
@@ -5340,7 +5335,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="659005207229852190">Bezpečnostní kontrola byla dokončena.</translation>
 <translation id="6590458744723262880">Přejmenovat složku</translation>
 <translation id="6592267180249644460">Protokol WebRTC zaznamenaný <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Zobrazit ve stavové oblasti ikonu oka</translation>
 <translation id="6592808042417736307">Otisk prstu byl sejmut</translation>
 <translation id="6593881952206664229">Mediální obsah chráněný autorskými právy se nemusí přehrávat</translation>
 <translation id="6594011207075825276">Hledání zařízení se sériovým portem…</translation>
@@ -5793,7 +5787,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7055152154916055070">Bylo zablokováno přesměrování:</translation>
 <translation id="7055451306017383754">Sdílení se nepodařilo zrušit, protože tuto složku používá nějaká aplikace. Sdílení složky bude zrušeno při příštím vypnutí systému Parallels Desktop.</translation>
-<translation id="7056011684066172642">Pokud odejdete, obrazovka se automaticky zamkne, a dokud budete před ní, nevypne se.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Anonymní}few{# otevřená anonymní okna}many{# otevřeného anonymního okna}other{# otevřených anonymních oken}}</translation>
 <translation id="7056526158851679338">&amp;Zkontrolovat zařízení</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Bezpečnostní kontrola proběhla před jednou minutou}few{Bezpečnostní kontrola proběhla před {NUM_MINS} minutami}many{Bezpečnostní kontrola proběhla před {NUM_MINS} minuty}other{Bezpečnostní kontrola proběhla před {NUM_MINS} minutami}}</translation>
@@ -5802,7 +5795,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7059858479264779982">Nastavit na automatické spouštění</translation>
 <translation id="7062222374113411376">Povolit nedávno zavřeným webům dokončit odeslání a příjem dat (doporučeno)</translation>
 <translation id="7063129466199351735">Zpracování zástupců...</translation>
-<translation id="7063311912041006059">Místo dotazu má být vložena adresa URL se symbolem <ph name="SPECIAL_SYMBOL" /></translation>
+<translation id="7063311912041006059">Adresa URL se zástupným symbolem <ph name="SPECIAL_SYMBOL" /> místo dotazu</translation>
 <translation id="706342288220489463">Povolit Asistentovi používat informace na obrazovce, aby vám mohl pomáhat</translation>
 <translation id="7064734931812204395">Probíhá konfigurace kontejneru Linuxu. Může to trvat až 30 minut.</translation>
 <translation id="7065223852455347715">Toto zařízení je uzamčeno v režimu, který brání registraci v podniku. Chcete-li zařízení zaregistrovat, je nutné nejdříve provést obnovení zařízení.</translation>
@@ -6505,7 +6498,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7797246427375693110">Zapnuto / Vypne se automaticky v <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Vypnuto</translation>
 <translation id="7798844538707273832">Automaticky zablokované oprávnění: <ph name="PERMISSION" /></translation>
-<translation id="7799220949286681310">Chytrý zámek obrazovky</translation>
 <translation id="7799299114731150374">Tapeta byla úspěšně nastavena</translation>
 <translation id="7799817062559422778">Světlý režim</translation>
 <translation id="7800159967992492578">Přepnout postranní vyhledávání. Postranní vyhledávání je aktivováno.</translation>
@@ -7439,7 +7431,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8770406935328356739">Kořenový adresář rozšíření</translation>
 <translation id="8771300903067484968">Pozadí úvodní stránky bylo resetováno na výchozí pozadí.</translation>
 <translation id="8773302562181397928">Uložit tiskárnu <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Ochrana před sledováním zezadu</translation>
 <translation id="8774379074441005279">Potvrzení obnovení</translation>
 <translation id="8774934320277480003">Horní okraj</translation>
 <translation id="8775144690796719618">Neplatná adresa URL</translation>

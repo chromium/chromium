@@ -530,7 +530,6 @@
 <translation id="1549275686094429035">ARC सक्षम पारिएको छ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ले <ph name="VOLUME_NAME" /> पहुँच गर्न चाहन्छ। यसले तपाईँका फाइलहरू परिमार्जन गर्न वा मेटाउन सक्छ।</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" एक्सटेन्सनले सर्च इन्जिन परिवर्तन गरी <ph name="SEARCH_PROVIDER_DOMAIN" /> बनाएको छ</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">असीमित</translation>
 <translation id="1555130319947370107">निलो</translation>
 <translation id="1556537182262721003">प्रोफाइलमा एक्स्टेन्शन निर्देशिका सार्न सकिएन।</translation>
@@ -1069,7 +1068,6 @@
 <translation id="2090165459409185032">तपाईँको खाता जानकारी पुनःप्राप्ति गर्न google.com/accounts/recovery मा जानुहोस्</translation>
 <translation id="2090507354966565596">तपाईंले लग इन गरेपछि स्वतः कनेक्ट हुन्छ</translation>
 <translation id="2090876986345970080">प्रणाली सुरक्षा सेटिङ</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">तेस्रो पक्षीय कुकीहरू खाली गर्नुहोस्</translation>
 <translation id="2098805196501063469">बाँकी पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="2099172618127234427">तपाईं Chrome OS डिबगिङ विशेषताहरू सक्षम गर्दै हुनुहुन्छ जुन USB ड्राइभहरूबाट sshd daemon सेटअप गर्दछ।</translation>
@@ -3053,7 +3051,6 @@
 <translation id="4110490973560452005">डाउनलोड सम्पन्न भयो: <ph name="FILE_NAME" />। डाउनलोडहरूको पट्टीमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (अफलाइन)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">नेटवर्क पहुँचको दायराभन्दा बाहिर छ</translation>
 <translation id="4115378294792113321">म्याग्नेटा</translation>
 <translation id="4117637339509843559">अँध्यारो मोड</translation>
@@ -3139,7 +3136,6 @@
 <translation id="4231095370974836764">आफ्नो <ph name="DEVICE_TYPE" /> मा Google Play बाट एप र गेमहरू इन्स्टल गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कन्फिगर गर्नुहोस्</translation>
 <translation id="4235965441080806197">साइन इन रद्द गर्नुहोस्</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">सङ्गठनका एपहरू अपडेट गर्न रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4242145785130247982">एकभन्दा बढी क्लाइन्टका प्रमाणपत्रहरू समर्थित छैनन्</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
@@ -4679,7 +4675,6 @@
 <translation id="5901494423252125310">प्रिन्टरको कभर खुला छ</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5904614460720589786">कन्फिगुरेसनसम्बन्धी कुनै समस्याका कारण <ph name="APP_NAME" /> सेटअप गर्न सकिएन। कृपया आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">लगभग अद्यावधिक भयो! अद्यावधिक गर्ने कार्य सम्पन्न गर्न आफ्नो यन्त्रलाई पुनः सुरु गर्नुहोस्।</translation>
 <translation id="5906732635754427568">यस डिभाइसबाट यस एपसँग सम्बन्धित डेटा हटाइने छ।</translation>
 <translation id="5908474332780919512">मैले साइन इन गर्दा यो एप खोलियोस्</translation>
@@ -5339,7 +5334,6 @@
 <translation id="659005207229852190">सुरक्षा जाँच पूरा भएको छ।</translation>
 <translation id="6590458744723262880">फोल्डरको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="6592267180249644460">WebRTC लगले <ph name="WEBRTC_LOG_CAPTURE_TIME" /> क्याप्चर गर्‍यो</translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">तपाईंको फिंगरप्रिन्ट हालियो</translation>
 <translation id="6593881952206664229">प्रतिलिपि अधिकार भएका मिडिया प्ले नहुन सक्छन्</translation>
 <translation id="6594011207075825276">सिरियल यन्त्रहरू लोड गरिँदै छ...</translation>
@@ -5793,7 +5787,6 @@
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7055451306017383754">कुनै एप्लिकेसनले यो फोल्डर प्रयोग गरिरहेका कारण यसलाई अनसेयर गर्न सकिएन। अर्को पटक Parallels Desktop सट डाउन हुँदा यो फोल्डर अनसेयर गरिने छ।</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{इन्कोग्निटो}other{# वटा इन्कोग्निटो विन्डो खोलिएका छन्}}</translation>
 <translation id="7056526158851679338">डिभाइसहरूको &amp;निरीक्षण गर्नुहोस्</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{१ मिनेटअघि सुरक्षा जाँच गरिएको थियो}other{{NUM_MINS} मिनेटअघि सुरक्षा जाँच गरिएको थियो}}</translation>
@@ -6505,7 +6498,6 @@
 <translation id="7797246427375693110">अन छ / <ph name="TIME" /> बजे स्वतः अफ हुने छ</translation>
 <translation id="7797571222998226653">निष्क्रिय छ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> माथि स्वतः रोक लगाइएको छ</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">वालपेपर सफलतापूर्वक सेट गरियो</translation>
 <translation id="7799817062559422778">उज्यालो मोड</translation>
 <translation id="7800159967992492578">साइड सर्च टगल गर्नुहोस्। साइड सर्च एक्टिभेट गरिएको छ।</translation>
@@ -7440,7 +7432,6 @@
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> सेभ गर्नुहोस्</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">पुनर्स्थापना गर्ने कार्य पुष्टि गर्नुहोस्</translation>
 <translation id="8774934320277480003">शीर्ष सीमान्त</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>

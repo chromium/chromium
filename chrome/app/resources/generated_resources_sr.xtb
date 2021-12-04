@@ -530,7 +530,6 @@
 <translation id="1549275686094429035">Време извршавања апликације за Chrome је омогућено</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> жели да приступа <ph name="VOLUME_NAME" />. Можда ће да мења или брише датотеке.</translation>
 <translation id="1552301827267621511">Додатак „<ph name="EXTENSION_NAME" />“ је променио претрагу тако да користи <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Закључавање паметног екрана и откривање да ли други вире иза вас</translation>
 <translation id="1553538517812678578">неограничено</translation>
 <translation id="1555130319947370107">Плава</translation>
 <translation id="1556537182262721003">Каталог додатака није било могуће преместити у профил.</translation>
@@ -687,6 +686,7 @@
 <translation id="1692115862433274081">Користи други налог</translation>
 <translation id="1692118695553449118">Синхронизација је укључена</translation>
 <translation id="1692210323591458290">Тамнољубичаста</translation>
+<translation id="1695487653372841667">Можете да контролишете који подаци се деле са Google-ом. Ово можете да промените у сваком тренутку у Подешавањима.</translation>
 <translation id="169675691788639886">За уређај је конфигурисан SSH сервер. Не пријављујте се помоћу осетљивих налога.</translation>
 <translation id="1697150536837697295">Уметност</translation>
 <translation id="1697686431566694143">Измени датотеку</translation>
@@ -1070,7 +1070,6 @@
 <translation id="2090165459409185032">Да бисте вратили информације о налогу, идите на: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Аутоматски се повезује када се пријавите</translation>
 <translation id="2090876986345970080">Безбедносно подешавање система</translation>
-<translation id="2092038932007199943">Обавештава вас или привремено затамњује екран када неко њушка иза вас</translation>
 <translation id="2096715839409389970">Обриши колачиће треће стране</translation>
 <translation id="2098805196501063469">Провери преостале лозинке</translation>
 <translation id="2099172618127234427">Омогућавате Chrome ОС функције за отклањање грешака које ће подесити sshd daemon и омогућити укључивање са USB дискова.</translation>
@@ -1739,6 +1738,7 @@
 <translation id="2757338480560142065">Проверите да ли се лозинка коју чувате подудара са лозинком за <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Камера је блокирана</translation>
 <translation id="2764786626780673772">Детаљи о VPN-у</translation>
+<translation id="2765100602267695013">Обратите се оператеру мобилних услуга</translation>
 <translation id="2765217105034171413">Мала</translation>
 <translation id="2766006623206032690">На&amp;лепи и иди</translation>
 <translation id="2766161002040448006">Замоли родитеља</translation>
@@ -2301,6 +2301,7 @@
 <translation id="3370260763947406229">Аутоматско исправљање</translation>
 <translation id="3371140690572404006">Уређај са USB прикључком типа C (десни предњи порт)</translation>
 <translation id="337286756654493126">Читање директоријума које отворите у апликацији</translation>
+<translation id="3374294321938930390">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен у фолдер <ph name="NEW_FOLDER_TITLE" />.</translation>
 <translation id="3378572629723696641">Овај додатак је можда оштећен.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> ће бити инсталиран.</translation>
 <translation id="3380365263193509176">Непозната грешка</translation>
@@ -3052,7 +3053,6 @@
 <translation id="4110490973560452005">Преузимање је довршено: <ph name="FILE_NAME" />. Притисните Shift + F6 да бисте прешли на област траке са преузимањима.</translation>
 <translation id="4110686435123617899">Изаберите албум <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
-<translation id="4112809168763360620">Паметне мере заштите приватности</translation>
 <translation id="4115002065223188701">Мрежа је ван домета</translation>
 <translation id="4115378294792113321">Циклама</translation>
 <translation id="4117637339509843559">Тамни режим</translation>
@@ -3138,7 +3138,6 @@
 <translation id="4231095370974836764">Инсталирајте апликације и игре са Google Play-а на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Конфигуришите Kerberos</translation>
 <translation id="4235965441080806197">Откажи пријављивање</translation>
-<translation id="4238175133949127631">Привремено затамни екран</translation>
 <translation id="4241182343707213132">Рестартујте да би се ажурирале апликације организације</translation>
 <translation id="4242145785130247982">Није подржано више сертификата клијента</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
@@ -4678,7 +4677,6 @@
 <translation id="5901494423252125310">Врата штампача су отворена</translation>
 <translation id="5901630391730855834">Жута</translation>
 <translation id="5904614460720589786">Подешавање апликације <ph name="APP_NAME" /> није успело због проблема са конфигурацијом. Обратите се администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Ова функција користи предњу камеру за откривање. Подаци се безбедно обрађују и одбацују после тога. Google не користи податке ни у какве друге сврхе.</translation>
 <translation id="5906655207909574370">Ажурирање је скоро готово! Поново покрените уређај да бисте довршили ажурирање.</translation>
 <translation id="5906732635754427568">Подаци повезани са овом апликацијом ће бити уклоњени са овог уређаја.</translation>
 <translation id="5908474332780919512">Покрени апликацију када се пријавим</translation>
@@ -5142,6 +5140,7 @@
 <translation id="6385994920693662133">Упозорење – Омогућено је детаљно евидентирање; евиденције у наставку могу да садрже URL-ове или друге осетљиве информације. Прегледајте их и уверите се да немате ништа против слања тих информација.</translation>
 <translation id="6387674443318562538">Подели вертикално</translation>
 <translation id="6388429472088318283">Претражите језике</translation>
+<translation id="6388577073199278153">Не можете да приступите налогу за мобилне уређаје</translation>
 <translation id="6390020764191254941">Премести картицу у нов прозор</translation>
 <translation id="6393156038355142111">Предложи јаку лозинку</translation>
 <translation id="6393550101331051049">Дозвољено им је приказивање небезбедног садржаја</translation>
@@ -5338,7 +5337,6 @@
 <translation id="659005207229852190">Безбедносна провера је довршена.</translation>
 <translation id="6590458744723262880">Промените назив директоријума</translation>
 <translation id="6592267180249644460">WebRTC евиденција је снимљена <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Прикажи ми икону ока у области статуса</translation>
 <translation id="6592808042417736307">Отисак прста је снимљен</translation>
 <translation id="6593881952206664229">Медији са ауторским правима се можда неће пуштати</translation>
 <translation id="6594011207075825276">Траже се серијски уређаји…</translation>
@@ -5469,6 +5467,7 @@
 <translation id="672609503628871915">Прикажи шта је ново</translation>
 <translation id="67269783048918309">Шаљите податке о коришћењу и дијагностичке податке. Овај уређај тренутно аутоматски шаље податке о дијагностици, уређају и коришћењу апликација Google-у. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. То <ph name="BEGIN_LINK1" />подешавање<ph name="END_LINK1" /> примењује власник. Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. <ph name="BEGIN_LINK2" />Сазнајте више<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Повезано, ниво батерије је <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6733620523445262364">Обележивач <ph name="BOOKMARK_TITLE" /> је направљен.</translation>
 <translation id="6735304988756581115">Прикажи колачиће и остале податке са сајта...</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737663862851963468">Уклоните Kerberos тикет</translation>
@@ -5791,7 +5790,6 @@
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7055152154916055070">Блокирано је преусмеравање:</translation>
 <translation id="7055451306017383754">Опозивање дељења није успело јер нека апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се Parallels Desktop следећи пут затвори.</translation>
-<translation id="7056011684066172642">Екран се закључава аутоматски ако се удаљите од њега и неће се искључити ако сте испред њега</translation>
 <translation id="7056418393177503237">{0,plural, =1{Без архивирања}one{# отворен прозор без архивирања}few{# отворена прозора без архивирања}other{# отворених прозора без архивирања}}</translation>
 <translation id="7056526158851679338">&amp;Испитај уређаје</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Безбедносна провера је покренута пре 1 минут}one{Безбедносна провера је покренута пре {NUM_MINS} минут}few{Безбедносна провера је покренута пре {NUM_MINS} минутa}other{Безбедносна провера је покренута пре {NUM_MINS} минутa}}</translation>
@@ -6503,7 +6501,6 @@
 <translation id="7797246427375693110">Укључена – искључиће се аутоматски у <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Искључено</translation>
 <translation id="7798844538707273832">Функција <ph name="PERMISSION" /> је аутоматски блокирана</translation>
-<translation id="7799220949286681310">Паметно закључавање екрана</translation>
 <translation id="7799299114731150374">Позадина је подешена</translation>
 <translation id="7799817062559422778">Светли режим</translation>
 <translation id="7800159967992492578">Укључите/искључите бочну претрагу. Бочна претрага је активирана.</translation>
@@ -6725,6 +6722,7 @@
 <translation id="8006630792898017994">Тастер за размак или Tab</translation>
 <translation id="8008356846765065031">Веза са интернетом је прекинута. Проверите интернет везу.</translation>
 <translation id="8009225694047762179">Управљај лозинкама</translation>
+<translation id="8011372169388649948">Обележивач <ph name="BOOKMARK_TITLE" /> је премештен.</translation>
 <translation id="8012647001091218357">Тренутно не можемо да контактирамо родитеље. Пробај поново.</translation>
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
 <translation id="8014154204619229810">Програм за ажурирање је тренутно активан. Сачекајте мало, па освежите и проверите поново.</translation>
@@ -7437,7 +7435,6 @@
 <translation id="8770406935328356739">Основни директоријум додатка</translation>
 <translation id="8771300903067484968">Позадина почетне странице је ресетована на подразумевану позадину.</translation>
 <translation id="8773302562181397928">Сачувајте <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Заштита од њушкања</translation>
 <translation id="8774379074441005279">Потврдите враћање</translation>
 <translation id="8774934320277480003">Горња маргина</translation>
 <translation id="8775144690796719618">Неважећи URL</translation>

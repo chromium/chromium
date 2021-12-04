@@ -534,7 +534,6 @@
 <translation id="1549275686094429035">Το ARC ενεργοποιήθηκε</translation>
 <translation id="1549788673239553762">Η εφαρμογή <ph name="APP_NAME" /> θέλει να αποκτήσει πρόσβαση σε <ph name="VOLUME_NAME" />. Ενδέχεται να τροποποιήσει ή να διαγράψει τα αρχεία σας.</translation>
 <translation id="1552301827267621511">Η επέκταση "<ph name="EXTENSION_NAME" />" άλλαξε τον πάροχο αναζήτησης που χρησιμοποιείται <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">απεριόριστο</translation>
 <translation id="1555130319947370107">Μπλε</translation>
 <translation id="1556537182262721003">Δεν ήταν δυνατή η μετακίνηση του καταλόγου επέκτασης στο προφίλ.</translation>
@@ -1084,7 +1083,6 @@
 <translation id="2090165459409185032">Για να ανακτήσετε τα στοιχεία του λογαριασμού σας, μεταβείτε στη διεύθυνση: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Συνδέεται αυτόματα κατά τη σύνδεση</translation>
 <translation id="2090876986345970080">Ρύθμιση ασφαλείας συστήματος</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Διαγραφή cookie τρίτου μέρους</translation>
 <translation id="2098805196501063469">Έλεγχος κωδικών πρόσβασης που απομένουν</translation>
 <translation id="2099172618127234427">Ενεργοποιείτε τις λειτουργίες εντοπισμού σφαλμάτων του Chrome OS οι οποίες θα ρυθμίσουν το sshd daemon και θα επιτρέψουν την εκκίνηση από μονάδες USB.</translation>
@@ -1756,6 +1754,7 @@
 <translation id="2757338480560142065">Βεβαιωθείτε ότι ο κωδικός πρόσβασης που αποθηκεύετε αντιστοιχεί στον κωδικό πρόσβασης για την υπηρεσία <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Η κάμερα έχει αποκλειστεί</translation>
 <translation id="2764786626780673772">Στοιχεία VPN</translation>
+<translation id="2765100602267695013">Επικοινωνήστε με τον πάροχο κινητής τηλεφωνίας σας.</translation>
 <translation id="2765217105034171413">Μικρό</translation>
 <translation id="2766006623206032690">Επικό&amp;λληση και μετάβαση</translation>
 <translation id="2766161002040448006">Άδεια γονέα</translation>
@@ -2318,6 +2317,7 @@
 <translation id="3370260763947406229">Αυτόματη διόρθωση</translation>
 <translation id="3371140690572404006">Συσκευή USB-C (δεξιά μπροστινή θύρα)</translation>
 <translation id="337286756654493126">Ανάγνωση φακέλων που ανοίγετε στην εφαρμογή</translation>
+<translation id="3374294321938930390">Ο σελιδοδείκτης <ph name="BOOKMARK_TITLE" /> μετακινήθηκε στον φάκελο <ph name="NEW_FOLDER_TITLE" />.</translation>
 <translation id="3378572629723696641">Αυτή η επέκταση ενδεχομένως να είναι κατεστραμμένη.</translation>
 <translation id="337920581046691015">Θα γίνει εγκατάσταση του <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3380365263193509176">Άγνωστο σφάλμα</translation>
@@ -3069,7 +3069,6 @@
 <translation id="4110490973560452005">Η λήψη ολοκληρώθηκε: <ph name="FILE_NAME" />. Πατήστε Shift+F6 για να μεταβείτε στη γραμμή λήψεων.</translation>
 <translation id="4110686435123617899">Επιλογή λευκώματος <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (εκτός σύνδεσης)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Δίκτυο εκτός εύρους</translation>
 <translation id="4115378294792113321">Ματζέντα</translation>
 <translation id="4117637339509843559">Λειτουργία χαμηλού φωτισμού</translation>
@@ -3155,7 +3154,6 @@
 <translation id="4231095370974836764">Εγκαταστήστε εφαρμογές και παιχνίδια από το Google Play στη συσκευή <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Διαμόρφωση του Kerberos</translation>
 <translation id="4235965441080806197">Ακύρωση σύνδεσης</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Κάντε επανεκκίνηση για να ενημερώσετε τις εφαρμογές του οργανισμού σας</translation>
 <translation id="4242145785130247982">Δεν υποστηρίζονται πολλά πιστοποιητικά πελάτη.</translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
@@ -4697,7 +4695,6 @@
 <translation id="5901494423252125310">Η θύρα του εκτυπωτή είναι ανοικτή</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5904614460720589786">Δεν ήταν δυνατή η ρύθμιση της εφαρμογής <ph name="APP_NAME" /> λόγω προβλήματος διαμόρφωσης. Επικοινωνήστε με τον διαχειριστή. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Η ενημέρωση σχεδόν ολοκληρώθηκε! Επανεκκινήστε τη συσκευή σας για να ολοκληρωθεί η ενημέρωση.</translation>
 <translation id="5906732635754427568">Τα δεδομένα που σχετίζονται με αυτήν την εφαρμογή θα καταργηθούν από αυτήν τη συσκευή.</translation>
 <translation id="5908474332780919512">Εκκίνηση εφαρμογής κατά τη σύνδεση</translation>
@@ -5161,6 +5158,7 @@
 <translation id="6385994920693662133">Προειδοποίηση: Έχει ενεργοποιηθεί η λεπτομερής καταγραφή. Τα παρακάτω αρχεία καταγραφής ενδέχεται να περιλαμβάνουν URL ή άλλες ευαίσθητες πληροφορίες. Ελέγξτε τα και βεβαιωθείτε ότι δεν υπάρχει πρόβλημα με την υποβολή αυτών των πληροφοριών.</translation>
 <translation id="6387674443318562538">Κάθετος διαχωρισμός</translation>
 <translation id="6388429472088318283">Αναζήτηση γλωσσών</translation>
+<translation id="6388577073199278153">Δεν έχετε πρόσβαση στον λογαριασμό σας για κινητά.</translation>
 <translation id="6390020764191254941">Μετακίνηση καρτέλας σε νέο παράθυρο</translation>
 <translation id="6393156038355142111">Πρόταση ισχυρού κωδικού πρόσβασης</translation>
 <translation id="6393550101331051049">Επιτρέπεται να εμφανίζουν μη ασφαλές περιεχόμενο</translation>
@@ -5357,7 +5355,6 @@
 <translation id="659005207229852190">Ο έλεγχος ασφαλείας ολοκληρώθηκε.</translation>
 <translation id="6590458744723262880">Μετονομασία φακέλου</translation>
 <translation id="6592267180249644460">Έγινε λήψη αρχείου καταγραφής WebRTC <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Το δακτυλικό σας αποτύπωμα καταγράφηκε.</translation>
 <translation id="6593881952206664229">Ενδέχεται να μην γίνεται αναπαραγωγή των μέσων που προστατεύονται από πνευματικά δικαιώματα</translation>
 <translation id="6594011207075825276">Εύρεση σειριακών συσκευών…</translation>
@@ -5488,6 +5485,7 @@
 <translation id="672609503628871915">Δείτε τι νέο υπάρχει</translation>
 <translation id="67269783048918309">Αποστολή δεδομένων χρήσης και διαγνωστικών. Επί του παρόντος, αυτή η συσκευή στέλνει αυτόματα διαγνωστικά δεδομένα, δεδομένα συσκευής και χρήσης εφαρμογών στην Google. Αυτά τα δεδομένα δεν θα χρησιμοποιηθούν για την ταυτοποίηση του παιδιού σας και θα βοηθήσουν με τη σταθερότητα του συστήματος και των εφαρμογών και την παροχή άλλων βελτιώσεων. Ορισμένα συγκεντρωτικά δεδομένα θα βοηθήσουν επίσης τις εφαρμογές και τους συνεργάτες της Google, όπως τους προγραμματιστές Android. Αυτή η <ph name="BEGIN_LINK1" />ρύθμιση<ph name="END_LINK1" /> επιβάλλεται από τον κάτοχο. Εάν είναι ενεργή η ρύθμιση της πρόσθετης Δραστηριότητας ιστού και εφαρμογών για το παιδί σας, αυτά τα δεδομένα μπορεί να αποθηκευτούν στον Λογαριασμό του Google. <ph name="BEGIN_LINK2" />Μάθετε περισσότερα<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Συνδεδεμένη, μπαταρία <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6733620523445262364">Ο σελιδοδείκτης <ph name="BOOKMARK_TITLE" /> δημιουργήθηκε.</translation>
 <translation id="6735304988756581115">Εμφάνιση cookie και άλλων δεδομένων ιστότοπου...</translation>
 <translation id="6736243959894955139">Διεύθυνση</translation>
 <translation id="6737663862851963468">Κατάργηση εισιτηρίου Kerberos</translation>
@@ -5810,7 +5808,6 @@
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7055451306017383754">Η κατάργηση κοινοποίησης δεν ήταν δυνατή, επειδή μια εφαρμογή χρησιμοποιεί αυτόν τον φάκελο. Η κοινοποίηση του φακέλου θα καταργηθεί κατά τον επόμενο τερματισμό λειτουργίας του Parallels Desktop.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Ανώνυμη περιήγηση}other{# ανοικτά παράθυρα για ανώνυμη περιήγηση}}</translation>
 <translation id="7056526158851679338">&amp;Επιθεώρηση συσκευών</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Ο έλεγχος ασφαλείας εκτελέστηκε πριν από 1 λεπτό.}other{Ο έλεγχος ασφαλείας εκτελέστηκε πριν από {NUM_MINS} λεπτά.}}</translation>
@@ -6522,7 +6519,6 @@
 <translation id="7797246427375693110">Ενεργό/Θα απενεργοποιείται αυτόματα στις <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Απενεργοποιημένο</translation>
 <translation id="7798844538707273832">Απέκλεισε αυτόματα την άδεια <ph name="PERMISSION" /></translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Επιτυχής ορισμός ταπετσαρίας</translation>
 <translation id="7799817062559422778">Φωτεινή λειτουργία</translation>
 <translation id="7800159967992492578">Εναλλαγή πλευρικής αναζήτησης. Η πλευρική αναζήτηση ενεργοποιήθηκε.</translation>
@@ -6745,6 +6741,7 @@
 <translation id="8006630792898017994">Πλήκτρο διαστήματος ή Tab</translation>
 <translation id="8008356846765065031">Η σύνδεση στο διαδίκτυο διακόπηκε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο.</translation>
 <translation id="8009225694047762179">Διαχείριση Κωδικός πρόσβασης</translation>
+<translation id="8011372169388649948">Ο σελιδοδείκτης <ph name="BOOKMARK_TITLE" /> μετακινήθηκε.</translation>
 <translation id="8012647001091218357">Δεν ήταν δυνατή η επικοινωνία με τους γονείς σας αυτήν τη στιγμή. Δοκιμάστε ξανά.</translation>
 <translation id="8013993649590906847">Εάν μια εικόνα δεν έχει κάποια χρήσιμη περιγραφή, το Chrome θα προσπαθήσει να σας προσφέρει μια περιγραφή. Για τη δημιουργία περιγραφών, αποστέλλονται εικόνες στην Google.</translation>
 <translation id="8014154204619229810">Το πρόγραμμα ενημέρωσης εκτελείται. Κάντε ανανέωση σε ένα λεπτό για να ελέγξετε ξανά.</translation>
@@ -7455,7 +7452,6 @@
 <translation id="8770406935328356739">Κατάλογος ρίζας επέκτασης</translation>
 <translation id="8771300903067484968">Έγινε επαναφορά του φόντου της αρχικής σελίδας στο προεπιλεγμένο φόντο.</translation>
 <translation id="8773302562181397928">Εξοικονομήστε <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Επιβεβαίωση επαναφοράς</translation>
 <translation id="8774934320277480003">Επάνω περιθώριο</translation>
 <translation id="8775144690796719618">Μη έγκυρη διεύθ. URL</translation>

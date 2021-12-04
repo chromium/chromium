@@ -570,6 +570,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4702647871202761252">Màn hình bảo vệ quyền riêng tư đang tắt</translation>
 <translation id="4730374152663651037">SỬ DỤNG THƯỜNG XUYÊN</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Trái)</translation>
 <translation id="4734965478015604180">Ngang</translation>
 <translation id="4735498845456076464">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Số đã thay đổi. Để sử dụng các phím chức năng, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + một phím ở hàng trên cùng.</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
@@ -653,6 +654,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5329548388331921293">Đang kết nối...</translation>
 <translation id="5330201449517439522">Nhấn hoặc nhấp để mở thiết bị</translation>
 <translation id="5331975486040154427">Thiết bị USB-C (cổng phía sau, bên trái)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Phải)</translation>
 <translation id="5352250171825660495">Giao diện tối đang bật</translation>
 <translation id="5379115545237091094">Quá nhiều lần thử</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> nằm trên <ph name="IN_PLACE_APP" />, thả để tạo thư mục.</translation>
@@ -1076,6 +1078,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8394567579869570560">Cha mẹ của bạn đã khóa thiết bị này</translation>
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
 <translation id="8413272770729657668">Bắt đầu ghi sau 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Hộp đựng)</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Cài đặt</translation>

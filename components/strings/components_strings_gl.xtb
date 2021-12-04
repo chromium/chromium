@@ -648,6 +648,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Engadir enderezo de recollida</translation>
+<translation id="3098513225387949945">Ignorouse porque a lista de elementos desactivados contén un padrón igual a "*", que equivale a desactivar a política.</translation>
 <translation id="3105172416063519923">Código de identificación do recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprobar a configuración do DNS seguro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bandexa central</translation>
@@ -1560,6 +1561,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6008122969617370890">Orde de N a 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Comproba os teus contrasinais</translation>
+<translation id="6014851866995737824">Ignorouse porque falta a lista de elementos activados ou a de elementos desactivados.</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6017850046339264347">Os piratas informáticos do sitio <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> poderían instalar aplicacións enganosas que se fan pasar por algo que non son ou recompilar datos que poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>

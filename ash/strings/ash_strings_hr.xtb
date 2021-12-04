@@ -280,6 +280,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2942350706960889382">Usidreno povećalo</translation>
 <translation id="2942516765047364088">Položaj police</translation>
 <translation id="2946119680249604491">Dodaj vezu</translation>
+<translation id="2960314608273155470">Način snimanja, zadano je <ph name="SOURCE" /> <ph name="TYPE" />. Pritisnite Tab da biste se kretali pomoću tipkovnice.</translation>
 <translation id="2961963223658824723">Nešto nije u redu. Pokušajte ponovno za nekoliko sekundi.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Nije uspjelo preuzimanje govornih datoteka za <ph name="LANGUAGE" /></translation>
@@ -570,6 +571,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4702647871202761252">Zaslon privatnosti je isključen</translation>
 <translation id="4730374152663651037">ČESTO KORIŠTENO</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (preostalo)</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4735498845456076464">Promijenjen je tipkovni prečac <ph name="LAUNCHER_KEY_NAME" /> + broj. Da biste upotrijebili tipke funkcija, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
@@ -653,6 +655,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="5329548388331921293">Povezivanje...</translation>
 <translation id="5330201449517439522">Dodirnite ili kliknite za ulazak</translation>
 <translation id="5331975486040154427">USB-C uređaj (stražnji lijevi priključak)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (desna)</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
 <translation id="5395308026110844773">Aplikacija <ph name="DRAGGED_APP_NAME" /> povučena je iznad aplikacije <ph name="IN_PLACE_APP" />. Pustite je da biste izradili mapu.</translation>
@@ -884,6 +887,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7042322267639375032">Sažmite područje statusa</translation>
 <translation id="7045033600005038336">Želite li zamijeniti predložak?</translation>
 <translation id="7045595904618419789">Pokreni povećalo</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> – veza je prekinuta</translation>
 <translation id="7055381872777910864">sri</translation>
 <translation id="7055910611768509537">Pisaljka nije korištena više od tjedan dana</translation>
 <translation id="7066646422045619941">Tu mrežu onemogućio je vaš administrator.</translation>
@@ -1076,6 +1080,8 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="8394567579869570560">Tvoj je roditelj zaključao ovaj uređaj</translation>
 <translation id="8412677897383510995">Prikaz postavki zaslona</translation>
 <translation id="8413272770729657668">Snimanje počinje za 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (kutijica za punjenje)</translation>
+<translation id="8421270167862077762">Aplikacija <ph name="UNAVAILABLE_APPS" /> nije instalirana na ovom uređaju.</translation>
 <translation id="8425213833346101688">Promijeni</translation>
 <translation id="8426708595819210923">Dobra večer, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Postavke</translation>

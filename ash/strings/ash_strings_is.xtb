@@ -570,6 +570,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
 <translation id="4730374152663651037">OFT NOTUÐ</translation>
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vinstri)</translation>
 <translation id="4734965478015604180">Lárétt</translation>
 <translation id="4735498845456076464">Flýtilyklinum „<ph name="LAUNCHER_KEY_NAME" /> + tölustafur“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + lykil í efstu röð til að nota aðgerðalyklana.</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
@@ -653,6 +654,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5329548388331921293">Tengist...</translation>
 <translation id="5330201449517439522">Ýttu eða smelltu til að opna</translation>
 <translation id="5331975486040154427">USB-C tæki (tengi vinstra megin að aftan)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (hægri)</translation>
 <translation id="5352250171825660495">Kveikt er á dökku þema</translation>
 <translation id="5379115545237091094">Of margar tilraunir</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ofan á <ph name="IN_PLACE_APP" />, slepptu til að búa til möppu.</translation>
@@ -1076,6 +1078,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8394567579869570560">Foreldri þitt læsti þessu tæki</translation>
 <translation id="8412677897383510995">Sýna skjástillingar</translation>
 <translation id="8413272770729657668">Upptaka hefst eftir 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (hulstur)</translation>
 <translation id="8425213833346101688">Breyta</translation>
 <translation id="8426708595819210923">Gott kvöld <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Stillingar</translation>

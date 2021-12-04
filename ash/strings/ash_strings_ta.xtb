@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">தனிப்பட்ட திரை முடக்கப்பட்டுள்ளது</translation>
 <translation id="4730374152663651037">அடிக்கடி பயன்படுத்தியவை</translation>
 <translation id="4731797938093519117">பெற்றோர் அணுகல்</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (இடதுபக்கம்)</translation>
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
 <translation id="4735498845456076464">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + எண். செயல்பாட்டு பட்டன்களைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல் வரிசையில் உள்ள ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">இணைக்கப்படுகிறது...</translation>
 <translation id="5330201449517439522">உள்நுழைய, தட்டவும் அல்லது கிளிக் செய்யவும்</translation>
 <translation id="5331975486040154427">USB-C சாதனம் (இடது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (வலதுபக்கம்)</translation>
 <translation id="5352250171825660495">டார்க் தீம் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5379115545237091094">அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ன் மேல் <ph name="DRAGGED_APP_NAME" />ஐ இழுத்துவிடுகிறீர்கள். ஃபோல்டரை உருவாக்க, விடுவிக்கவும்.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">உங்கள் பெற்றோர் இந்தச் சாதனத்தைப் பூட்டிவிட்டனர்</translation>
 <translation id="8412677897383510995">திரை அமைப்புகளைக் காட்டும்</translation>
 <translation id="8413272770729657668">ரெக்கார்டிங் தொடங்கப் போகிறது 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (கேஸ்)</translation>
 <translation id="8425213833346101688">மாற்று</translation>
 <translation id="8426708595819210923">மாலை வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>

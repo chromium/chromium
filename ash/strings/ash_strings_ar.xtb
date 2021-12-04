@@ -571,6 +571,7 @@
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
 <translation id="4730374152663651037">التطبيقات المستخدمة بشكل متكرر</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
+<translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليسرى)</translation>
 <translation id="4734965478015604180">أفقي</translation>
 <translation id="4735498845456076464">تم تغيير اختصارات لوحة المفاتيح "<ph name="LAUNCHER_KEY_NAME" /> + رقم". لاستخدام مفاتيح الوظائف، اضغط على المفتاح <ph name="LAUNCHER_KEY_NAME" /> مع الضغط على مفتاح في الصف العلوي.</translation>
 <translation id="4759238208242260848">الملفات التي تم تنزيلها</translation>
@@ -654,6 +655,7 @@
 <translation id="5329548388331921293">جارٍ الاتصال…</translation>
 <translation id="5330201449517439522">انقر للدخول</translation>
 <translation id="5331975486040154427">‏جهاز USB-C (المنفذ الخلفي الأيسر)</translation>
+<translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليمنى)</translation>
 <translation id="5352250171825660495">المظهر الداكن مُفعَّل.</translation>
 <translation id="5379115545237091094">محاولات كثيرة جدًا</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> في أعلى <ph name="IN_PLACE_APP" />، يُرجى التحرير لإنشاء مجلد.</translation>
@@ -1077,6 +1079,7 @@
 <translation id="8394567579869570560">قفّل أحد الوالدين هذا الجهاز</translation>
 <translation id="8412677897383510995">إظهار إعدادات شاشة العرض</translation>
 <translation id="8413272770729657668">يبدأ التسجيل بعد 3، 2، 1.</translation>
+<translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8426708595819210923">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="8428213095426709021">الإعدادات</translation>

@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
 <translation id="2942516765047364088">ഷെൽഫ് സ്ഥാനം</translation>
 <translation id="2946119680249604491">കണക്ഷൻ ചേർക്കുക</translation>
+<translation id="2960314608273155470">ക്യാപ്‌ചർ മോഡ്, <ph name="SOURCE" /> <ph name="TYPE" /> ഡിഫോൾട്ട് ആണ്. കീബോർഡ് നാവിഗേഷന് Tab അമർത്തുക.</translation>
 <translation id="2961963223658824723">എന്തോ കുഴപ്പം സംഭവിച്ചു. അൽപ്പസമയത്തിനുള്ളിൽ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
@@ -570,6 +571,7 @@
 <translation id="4702647871202761252">സ്വകാര്യതാ സ്‌ക്രീൻ ഓഫാണ്</translation>
 <translation id="4730374152663651037">പതിവായി ഉപയോഗിക്കുന്നത്</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ഇടത്)</translation>
 <translation id="4734965478015604180">സമാന്തരം</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + നമ്പർ' കീബോഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. ഫംഗ്ഷന്‍ കീകൾ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> + ഏറ്റവും മുകളിലെ വരിയിലുള്ള കീ അമർത്തുക.</translation>
 <translation id="4759238208242260848">ഡൌണ്‍ലോഡുകള്‍</translation>
@@ -653,6 +655,7 @@
 <translation id="5329548388331921293">കണക്‌റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="5330201449517439522">പ്രവേശിക്കാൻ ടാപ്പ് അല്ലെങ്കിൽ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5331975486040154427">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (വലത്)</translation>
 <translation id="5352250171825660495">ഡാർക്ക് തീം ഓണാണ്</translation>
 <translation id="5379115545237091094">നിരവധി ശ്രമങ്ങൾ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> എന്നതിന് മുകളിലാണ് <ph name="DRAGGED_APP_NAME" />, ഫോൾഡർ സൃഷ്‌ടിക്കാൻ റിലീസ് ചെയ്യുക.</translation>
@@ -884,6 +887,7 @@
 <translation id="7042322267639375032">സ്റ്റാറ്റസ് ഏരിയ ചുരുക്കുക</translation>
 <translation id="7045033600005038336">ടെംപ്ലേറ്റ് മാറ്റണോ?</translation>
 <translation id="7045595904618419789">മാഗ്നിഫയർ ഉപയോഗിക്കാൻ ആരംഭിക്കുക</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> വിച്ഛേദിച്ചു</translation>
 <translation id="7055381872777910864">W</translation>
 <translation id="7055910611768509537">ഒരാഴ്‌ചയിലധികമായി സ്റ്റൈലസ് ഉപയോഗിച്ചിട്ടില്ല</translation>
 <translation id="7066646422045619941">നിങ്ങളുടെ അഡ്‌മിൻ ഈ നെറ്റ്‌വർക്ക് പ്രവർത്തനരഹിതമാക്കി.</translation>
@@ -1076,6 +1080,8 @@
 <translation id="8394567579869570560">നിങ്ങളുടെ രക്ഷിതാവ് ഈ ഉപകരണം ലോക്ക് ചെയ്‌തു</translation>
 <translation id="8412677897383510995">ഡിസ്പ്ലേ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="8413272770729657668">റെക്കോർഡിംഗ് ആരംഭിക്കുന്നു 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (കെയ്‌സ്)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
 <translation id="8425213833346101688">മാറ്റുക</translation>
 <translation id="8426708595819210923">ഗുഡ് ഈവനിംഗ് <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ക്രമീകരണങ്ങള്‍</translation>

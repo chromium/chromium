@@ -404,6 +404,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="2187317261103489799">Otkrij (podrazumevano)</translation>
 <translation id="2188375229972301266">Višestruko bušenje na dnu</translation>
+<translation id="2188852899391513400">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da je odmah promenite, pa da proverite sačuvane lozinke.</translation>
 <translation id="2202020181578195191">Unesite važeću godinu isteka</translation>
 <translation id="22081806969704220">3. fioka</translation>
 <translation id="2212735316055980242">Smernice nisu pronađene</translation>
@@ -649,6 +650,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3087734570205094154">Dno</translation>
 <translation id="3095940652251934233">Izjava</translation>
 <translation id="3096100844101284527">Dodaj adresu preuzimanja</translation>
+<translation id="3098513225387949945">Zanemaruje se jer se na listi onemogućenih nalazi obrazac koji je jednak „*“, a što je ekvivalentno onemogućavanju smernica.</translation>
 <translation id="3105172416063519923">ID elementa:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />da proverite konfiguraciju bezbednog DNS-a<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Srednja fioka</translation>
@@ -897,6 +899,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3827112369919217609">Apsolut</translation>
 <translation id="3827475930221174051">Na osnovu aktivnosti u vezi sa terminom <ph name="SEARCH_TERM" /></translation>
 <translation id="3828924085048779000">Nije dozvoljeno da polje za pristupnu frazu bude prazno.</translation>
+<translation id="3831065134033923230">Proverite sačuvane lozinke</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> je instalirao dodatke za dodatne funkcije. Dodaci imaju pristup nekima od podataka.</translation>
 <translation id="3832522519263485449">Višestruko bušenje na levoj strani</translation>
 <translation id="3835233591525155343">Korišćenje uređaja</translation>
@@ -1096,6 +1099,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="443673843213245140">Korišćenje proksija je onemogućeno, ali je navedena eksplicitna konfiguracija proksija.</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451135742916150903">Može da traži da se povezuje sa HID uređajima</translation>
+<translation id="4452328064229197696">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da proverite sačuvane lozinke.</translation>
 <translation id="4455222631300069614">Odmah promenite lozinku</translation>
 <translation id="4460315069258617173">Dozvoljeno dok ne zatvorite kartice ovog sajta</translation>
 <translation id="4464826014807964867">Veb-sajtovi sa podacima iz vaše organizacije</translation>
@@ -1561,6 +1565,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6008122969617370890">Redosled od n do 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Proverite lozinke</translation>
+<translation id="6014851866995737824">Zanemaruje se jer nedostaje lista „omogući“ ili „onemogući“.</translation>
 <translation id="6015796118275082299">Godina</translation>
 <translation id="6017514345406065928">Zelena</translation>
 <translation id="6017850046339264347">Napadači koji su na <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogu da instaliraju obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili da prikupljaju podatke koji mogu da se koriste za praćenje. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1584,6 +1589,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6051221802930200923">Trenutno ne možete da posetite <ph name="SITE" /> jer veb-sajt koristi proveru sertifikata. Greške i napadi na mreži su obično privremeni, pa će ova stranica verovatno funkcionisati kasnije.</translation>
 <translation id="6051898664905071243">Broj stranica:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Google menadžer lozinki preporučuje da odmah promenite ovu lozinku.</translation>
 <translation id="6055888660316801977">Obaveštenje da nema akreditiva koji se podudaraju za bezbedno plaćanje</translation>
 <translation id="6058977677006700226">Želite li da koristite kartice na svim uređajima?</translation>
 <translation id="6059925163896151826">USB uređaji</translation>

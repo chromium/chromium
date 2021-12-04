@@ -528,7 +528,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1549275686094429035">ARC aktiviert</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> möchte auf <ph name="VOLUME_NAME" /> zugreifen. Ihre Dateien können geändert oder gelöscht werden.</translation>
 <translation id="1552301827267621511">Die Erweiterung "<ph name="EXTENSION_NAME" />" hat <ph name="SEARCH_PROVIDER_DOMAIN" /> als neuen Suchanbieter festgelegt</translation>
-<translation id="1552522962296937598">Intelligente Displaysperre und Erkennung von Spähversuchen von hinten</translation>
 <translation id="1553538517812678578">unbegrenzt</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1556537182262721003">Erweiterungsverzeichnis konnte nicht in Profil verschoben werden.</translation>
@@ -1068,7 +1067,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2090165459409185032">Besuchen Sie die folgende Seite, um Ihre Kontoinformationen wiederzuherstellen: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Stellt automatisch eine Verbindung her, wenn Sie sich anmelden.</translation>
 <translation id="2090876986345970080">Sicherheitseinstellung des Systems</translation>
-<translation id="2092038932007199943">Benachrichtigen oder Bildschirm vorübergehend dimmen, wenn jemand von hinten zu spionieren versucht</translation>
 <translation id="2096715839409389970">Cookies von Drittanbietern löschen</translation>
 <translation id="2098805196501063469">Restliche Passwörter prüfen</translation>
 <translation id="2099172618127234427">Sie aktivieren Debugging-Funktionen für Chrome OS. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB aktiviert.</translation>
@@ -3050,7 +3048,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4110490973560452005">Download abgeschlossen: <ph name="FILE_NAME" />. Drücken Sie Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4110686435123617899">Album <ph name="TITLE" /> <ph name="DESC" /> auswählen</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4112809168763360620">Intelligenter Datenschutz</translation>
 <translation id="4115002065223188701">Netzwerk außer Reichweite</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Dunkler Modus</translation>
@@ -3136,7 +3133,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4231095370974836764">Apps und Spiele von Google Play auf dem <ph name="DEVICE_TYPE" /> installieren. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
-<translation id="4238175133949127631">Bildschirm vorübergehend dimmen</translation>
 <translation id="4241182343707213132">Neu starten, um die Apps der Organisation zu aktualisieren</translation>
 <translation id="4242145785130247982">Mehrere Clientzertifikate werden nicht unterstützt</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
@@ -4674,7 +4670,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5901494423252125310">Druckerklappe offen</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wenden Sie sich an Ihren Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Bei dieser Funktion wird die Frontkamera zur Erkennung verwendet. Die Daten werden sicher verarbeitet und anschließend verworfen. Google nutzt Ihre Daten nicht für andere Zwecke.</translation>
 <translation id="5906655207909574370">Fast fertig! Starten Sie Ihr Gerät neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="5906732635754427568">Daten, die dieser App zugewiesen sind, werden von diesem Gerät entfernt.</translation>
 <translation id="5908474332780919512">App beim Anmelden starten</translation>
@@ -5334,7 +5329,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="659005207229852190">Der Sicherheitscheck wurde abgeschlossen.</translation>
 <translation id="6590458744723262880">Ordner umbenennen</translation>
 <translation id="6592267180249644460">WebRTC-Protokoll erfasst am <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Ein Augensymbol im Statusbereich anzeigen</translation>
 <translation id="6592808042417736307">Ihr Fingerabdruck wurde erfasst</translation>
 <translation id="6593881952206664229">Urheberrechtlich geschützte Medien werden möglicherweise nicht wiedergegeben</translation>
 <translation id="6594011207075825276">Serielle Geräte werden gesucht…</translation>
@@ -5787,7 +5781,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7055152154916055070">Weiterleitung blockiert:</translation>
 <translation id="7055451306017383754">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird beim nächsten Herunterfahren von Parallels Desktop aufgehoben.</translation>
-<translation id="7056011684066172642">Der Bildschirm wird automatisch gesperrt, wenn Sie sich entfernen. Es wird nicht ausgeschaltet, solange Sie sich davor befinden.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# offene Inkognitofenster}}</translation>
 <translation id="7056526158851679338">&amp;Geräte untersuchen</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Der Sicherheitscheck wurde vor 1 Minute durchgeführt}other{Der Sicherheitscheck wurde vor {NUM_MINS} Minuten durchgeführt}}</translation>
@@ -6499,7 +6492,6 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7797246427375693110">An – wird um <ph name="TIME" /> automatisch deaktiviert</translation>
 <translation id="7797571222998226653">Aus</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatisch blockiert</translation>
-<translation id="7799220949286681310">Intelligente Displaysperre</translation>
 <translation id="7799299114731150374">Der Hintergrund wurde festgelegt</translation>
 <translation id="7799817062559422778">Heller Modus</translation>
 <translation id="7800159967992492578">Suche in Seitenleiste ein-/ausschalten. Suche in Seitenleiste aktiviert.</translation>
@@ -7433,7 +7425,6 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8770406935328356739">Stammverzeichnis der Erweiterung</translation>
 <translation id="8771300903067484968">Der Hintergrund der Startseite wurde auf den standardmäßigen Hintergrund zurückgesetzt.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> speichern</translation>
-<translation id="8773350724590665675">Spionageschutz</translation>
 <translation id="8774379074441005279">Wiederherstellung bestätigen</translation>
 <translation id="8774934320277480003">Oberer Rand</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>

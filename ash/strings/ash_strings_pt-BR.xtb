@@ -571,6 +571,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4730374152663651037">USADOS FREQUENTEMENTE</translation>
 <translation id="4731797938093519117">Acesso do familiar responsável</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + tecla numérica mudou. Para usar as teclas de função, pressione <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -654,6 +655,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5329548388331921293">Conectando…</translation>
 <translation id="5330201449517439522">Toque ou clique em qualquer lugar para entrar</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira da esquerda)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado</translation>
 <translation id="5379115545237091094">Muitas tentativas</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar pasta.</translation>
@@ -1078,6 +1080,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8394567579869570560">Seu pai/mãe bloqueou o dispositivo</translation>
 <translation id="8412677897383510995">Mostrar configurações de tela</translation>
 <translation id="8413272770729657668">A gravação começa em 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estojo)</translation>
 <translation id="8421270167862077762">O app <ph name="UNAVAILABLE_APPS" /> não está no dispositivo.</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8426708595819210923">Boa noite, <ph name="GIVEN_NAME" />,</translation>

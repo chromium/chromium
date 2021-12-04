@@ -528,7 +528,6 @@
 <translation id="1549275686094429035">已启用 ARC</translation>
 <translation id="1549788673239553762">“<ph name="APP_NAME" />”想访问 <ph name="VOLUME_NAME" />。它可能会修改或删除您的文件。</translation>
 <translation id="1552301827267621511">扩展程序“<ph name="EXTENSION_NAME" />”将搜索服务提供商改成了 <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">无限制</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
@@ -1068,7 +1067,6 @@
 <translation id="2090165459409185032">要恢复您的帐号信息，请访问 google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">在您登录后自动连接</translation>
 <translation id="2090876986345970080">系统安全设置</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
 <translation id="2099172618127234427">您正在启用 Chrome 操作系统调试功能，此功能将设置 sshd 守护程序并允许从 U 盘启动设备。</translation>
@@ -3048,7 +3046,6 @@
 <translation id="4110490973560452005">下载完成：<ph name="FILE_NAME" />。按 Shift+F6 可切换到下载内容栏区域。</translation>
 <translation id="4110686435123617899">选择影集“<ph name="TITLE" />”，<ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">检测不到网络</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="4117637339509843559">深色模式</translation>
@@ -3134,7 +3131,6 @@
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4235965441080806197">取消登录</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">重启即可更新贵单位的应用</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -4674,7 +4670,6 @@
 <translation id="5901494423252125310">打印机机盖未关</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
 <translation id="5908474332780919512">在您登录时启动应用</translation>
@@ -5334,7 +5329,6 @@
 <translation id="659005207229852190">已完成安全检查。</translation>
 <translation id="6590458744723262880">重命名文件夹</translation>
 <translation id="6592267180249644460">WebRTC日志记录时间：<ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">已捕获您的指纹</translation>
 <translation id="6593881952206664229">受版权保护的媒体可能无法播放</translation>
 <translation id="6594011207075825276">正在查找串行设备…</translation>
@@ -5787,7 +5781,6 @@
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{无痕模式}other{# 个已打开的无痕式窗口}}</translation>
 <translation id="7056526158851679338">检查设备(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 分钟前运行过安全检查}other{{NUM_MINS} 分钟前运行过安全检查}}</translation>
@@ -6499,7 +6492,6 @@
 <translation id="7797246427375693110">已开启 / 将在<ph name="TIME" /> 自动关闭</translation>
 <translation id="7797571222998226653">已关闭</translation>
 <translation id="7798844538707273832">已自动禁用<ph name="PERMISSION" /></translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">已成功设置壁纸</translation>
 <translation id="7799817062559422778">浅色模式</translation>
 <translation id="7800159967992492578">开启/关闭侧边搜索。已启用侧边搜索。</translation>
@@ -7433,7 +7425,6 @@
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
 <translation id="8773302562181397928">保存<ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>

@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC-г идэвхжүүлсэн</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> нь <ph name="VOLUME_NAME" /> руу нэвтрэхийг хүсч байна. Энэ нь таны файлуудыг өөрчилж эсвэл устгаж болно.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" өргөтгөл хайлтыг <ph name="SEARCH_PROVIDER_DOMAIN" />-г ашиглах болгож өөрчилсөн байна</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">хязгааргүй</translation>
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1556537182262721003">Өргөтгөлийн директорыг профайл руу зөөж чадсангүй.</translation>
@@ -1080,7 +1079,6 @@
 <translation id="2090165459409185032">бүртгэлныхаа мэдээллийг сэргээхийн тулд: google.com/accounts/recovery руу орно уу</translation>
 <translation id="2090507354966565596">Таныг нэвтрэх үед автоматаар холбогдоно</translation>
 <translation id="2090876986345970080">Системийн аюулгүй байдлын тохиргоо</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Гуравдагч талын күүкиг устгах</translation>
 <translation id="2098805196501063469">Үлдсэн нууц үгнүүдийг шалгах</translation>
 <translation id="2099172618127234427">Та sshd daemon-г тохируулах мөн USB төхөөрөмжийг бүүт хийдэг тохиргоог идэвхжүүлэх Chrome OS-н алдаа засах тохиргоог идэвхжүүлж байна.</translation>
@@ -3066,7 +3064,6 @@
 <translation id="4110490973560452005">Татаж дууссан: <ph name="FILE_NAME" />. Татаж авсан файл хадгалах эсвэл нээх хэсэгт гүйлгэхийн тулд Shift+F6-г дарна уу.</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> цомгийг <ph name="DESC" /> сонгох</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Сүлжээний хүрээнээс гарсан</translation>
 <translation id="4115378294792113321">Гүн ягаавтар улаан өнгө</translation>
 <translation id="4117637339509843559">Бараан горим</translation>
@@ -3152,7 +3149,6 @@
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> дээрээ Google Play-с апп болон тоглоомууд суулгана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-г тохируулах</translation>
 <translation id="4235965441080806197">Нэвтрэхийг цуцлах</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Байгууллагын аппуудыг шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>
 <translation id="4242145785130247982">Олон клиентийн гэрчилгээг дэмждэггүй</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
@@ -4694,7 +4690,6 @@
 <translation id="5901494423252125310">Хэвлэгчийн таг нээлттэй байна</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5904614460720589786">Тохируулгын асуудлын улмаас <ph name="APP_NAME" />-г тохируулж чадсангүй. Админтайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Удахгүй шинэчилж дууслаа! Шинэчлэлтийг дуусгахын тулд төхөөрөмжөө дахин асаана уу.</translation>
 <translation id="5906732635754427568">Энэ апп-тай холбоотой өгөгдлийг төхөөрөмжөөс устгах болно.</translation>
 <translation id="5908474332780919512">Нэвтрэх үедээ аппыг эхлүүлэх</translation>
@@ -5354,7 +5349,6 @@
 <translation id="659005207229852190">Аюулгүй байдлын шалгалтыг хийж дуусгалаа.</translation>
 <translation id="6590458744723262880">Фолдерын нэрийг өөрчлөх</translation>
 <translation id="6592267180249644460">WebRTC бүртгэл <ph name="WEBRTC_LOG_CAPTURE_TIME" />-д хадгалагдлаа</translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Таны хурууны хээг авлаа</translation>
 <translation id="6593881952206664229">Зохиогчийн эрхтэй медиаг тоглуулахгүй байж болзошгүй</translation>
 <translation id="6594011207075825276">Цуваа төхөөрөмжүүдийг хайж байна...</translation>
@@ -5808,7 +5802,6 @@
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7055152154916055070">Дахин чиглүүлэлтийг блоклосон:</translation>
 <translation id="7055451306017383754">Энэ фолдерыг аппликэйшн ашиглаж байгаа тул хуваалцсаныг болиулж чадсангүй. Parallels дэлгэцийг дараагийн удаа унтраах үед фолдерын хуваалцсаныг болиулна.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Нууцлалтай цонх}other{Нээлттэй # Нууцлалтай цонх}}</translation>
 <translation id="7056526158851679338">&amp; Төхөөрөмжүүдийг шалгах</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Аюулгүй байдлын шалгалтыг 1 минутын өмнө хийсэн}other{Аюулгүй байдлын шалгалтыг {NUM_MINS} минутын өмнө хийсэн}}</translation>
@@ -6519,7 +6512,6 @@
 <translation id="7797246427375693110">Асаалттай / <ph name="TIME" />-д автоматаар унтарна</translation>
 <translation id="7797571222998226653">Унтраалттай</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />-г автоматаар блоклосон</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Дэлгэцийн зургийг амжилттай тохируулсан</translation>
 <translation id="7799817062559422778">Гэрэлтэй горим</translation>
 <translation id="7800159967992492578">Хажуугийн хайлтыг асаана уу/унтраана уу. Хажуугийн хайлтыг идэвхжүүлсэн.</translation>
@@ -7451,7 +7443,6 @@
 <translation id="8770406935328356739">Өргөтгөлийн үндсэн лавлалт</translation>
 <translation id="8771300903067484968">Эхлэх хуудасны арын дэвсгэрийг өгөгдмөл арын дэвсгэрээр шинэчиллээ.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" />-г хадгалах</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Сэргээхийг баталгаажуулах</translation>
 <translation id="8774934320277480003">Дээд хүрээ</translation>
 <translation id="8775144690796719618">Хүчингүй URL</translation>

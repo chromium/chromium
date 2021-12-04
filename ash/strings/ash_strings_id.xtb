@@ -570,6 +570,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4730374152663651037">SERING DIGUNAKAN</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Pintasan keyboard <ph name="LAUNCHER_KEY_NAME" /> + Angka telah diubah. Untuk menggunakan tombol fungsi, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + tombol di baris atas.</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -653,6 +654,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5329548388331921293">Menghubungkan ...</translation>
 <translation id="5330201449517439522">Ketuk atau klik untuk masuk</translation>
 <translation id="5331975486040154427">Perangkat USB-C (port belakang sebelah kiri)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="5352250171825660495">Tema gelap aktif</translation>
 <translation id="5379115545237091094">Terlalu banyak upaya gagal</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> di atas <ph name="IN_PLACE_APP" />, lalu lepaskan untuk membuat folder.</translation>
@@ -1076,6 +1078,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="8394567579869570560">Orang tuamu mengunci perangkat ini</translation>
 <translation id="8412677897383510995">Tampilkan setelan layar</translation>
 <translation id="8413272770729657668">Perekaman dimulai dalam 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Casing)</translation>
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8426708595819210923">Selamat sore <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Setelan</translation>

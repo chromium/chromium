@@ -404,6 +404,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2184405333245229118">{COUNT,plural, =1{1 indirizzo}one{# addresses}other{# indirizzi}}</translation>
 <translation id="2187317261103489799">Rileva (predefinita)</translation>
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
+<translation id="2188852899391513400">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di cambiarla subito e poi di controllare le password salvate.</translation>
 <translation id="2202020181578195191">Inserisci un anno di scadenza valido</translation>
 <translation id="22081806969704220">Vassoio 3</translation>
 <translation id="2212735316055980242">Criterio non trovato</translation>
@@ -895,6 +896,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3827112369919217609">Assoluto</translation>
 <translation id="3827475930221174051">In base alle attività correlate a "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Non è consentita una passphrase vuota.</translation>
+<translation id="3831065134033923230">Controlla le password salvate</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ha installato estensioni relative a funzioni aggiuntive. Le estensioni hanno accesso ad alcuni tuoi dati.</translation>
 <translation id="3832522519263485449">Perforatura multipla a sinistra</translation>
 <translation id="3835233591525155343">Utilizzo del tuo dispositivo</translation>
@@ -1094,6 +1096,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
+<translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
 <translation id="4455222631300069614">Cambia subito la password</translation>
 <translation id="4460315069258617173">Consentita fino alla chiusura delle schede di questo sito</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
@@ -1583,6 +1586,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6051221802930200923">Al momento non puoi visitare il sito web <ph name="SITE" /> perché utilizza il blocco dei certificati. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="6051898664905071243">Numero di pagine:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Gestore delle password di Google consiglia di cambiarla subito.</translation>
 <translation id="6055888660316801977">Riquadro inferiore per credenziali pagamento sicuro non corrispondenti</translation>
 <translation id="6058977677006700226">Utilizzare le carte su tutti i tuoi dispositivi?</translation>
 <translation id="6059925163896151826">Dispositivi USB</translation>

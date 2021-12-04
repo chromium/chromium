@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
 <translation id="4730374152663651037">ՀԱՃԱԽ ՕԳՏԱԳՈՐԾՎՈՂ</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ձախ)</translation>
 <translation id="4734965478015604180">Հորիզոնական</translation>
 <translation id="4735498845456076464">«<ph name="LAUNCHER_KEY_NAME" /> + թիվ» ստեղնային դյուրանցումը փոփոխվել է։ Գործառույթային ստեղների գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + ստեղն» դյուրանցումը վերևի շարքում։</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">Միանում է…</translation>
 <translation id="5330201449517439522">Հպեք կամ սեղմեք՝ մուտքագրելու համար</translation>
 <translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (աջ)</translation>
 <translation id="5352250171825660495">Մուգ թեման միացված է</translation>
 <translation id="5379115545237091094">Չափազանց շատ փորձեր</translation>
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">Ձեր ծնողը կողպել է սարքը</translation>
 <translation id="8412677897383510995">Ցույց տալ էկրանի կարգավորումները</translation>
 <translation id="8413272770729657668">Տեսագրումը կսկսվի 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (պատյան)</translation>
 <translation id="8425213833346101688">Փոխել</translation>
 <translation id="8426708595819210923">Բարի երեկո, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>

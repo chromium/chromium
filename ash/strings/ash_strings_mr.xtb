@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">डॉक केलेले मॅग्निफायर</translation>
 <translation id="2942516765047364088">शेल्फ स्थिती</translation>
 <translation id="2946119680249604491">कनेक्शन जोडा</translation>
+<translation id="2960314608273155470">कॅप्चर मोड, <ph name="SOURCE" /> <ph name="TYPE" /> हा डीफॉल्ट आहे. कीबोर्ड नेव्हिगेशनसाठी टॅब दाबा.</translation>
 <translation id="2961963223658824723">काहीतरी चूक झाली. काही सेकंदांनी पुन्हा प्रयत्न करा.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत</translation>
@@ -570,6 +571,7 @@
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
 <translation id="4730374152663651037">वारंवार वापरलेले</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (शिल्लक)</translation>
 <translation id="4734965478015604180">आडवा</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + नंबर कीबोर्ड शॉर्टकट बदलला आहे. फंक्शन की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + सर्वात वरच्या पंक्तीमधील की दाबा.</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -653,6 +655,7 @@
 <translation id="5329548388331921293">कनेक्ट करत आहे…</translation>
 <translation id="5330201449517439522">एंटर करण्यासाठी टॅप किंवा क्लिक करा</translation>
 <translation id="5331975486040154427">USB-C डिव्‍हाइस (डाव्या बाजूचे मागील पोर्ट)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (उजवे)</translation>
 <translation id="5352250171825660495">गडद थीम सुरू आहे</translation>
 <translation id="5379115545237091094">खूप जास्त प्रयत्न</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
@@ -884,6 +887,7 @@
 <translation id="7042322267639375032">स्थिती क्षेत्र कोलॅप्स करा</translation>
 <translation id="7045033600005038336">टेंप्लेट बदलायचे आहे का?</translation>
 <translation id="7045595904618419789">मॅग्निफायर सुरू करा</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> डिस्कनेक्ट केले आहे</translation>
 <translation id="7055381872777910864">बु</translation>
 <translation id="7055910611768509537">एका आठवड्यापेक्षा जास्त वेळापासून स्टायलस वापरले नाही</translation>
 <translation id="7066646422045619941">हे नेटवर्क तुमच्या ॲडमिनिस्ट्रेटरने अक्षम केले आहे.</translation>
@@ -1076,6 +1080,8 @@
 <translation id="8394567579869570560">तुमच्या पालकाने हे डिव्हाइस लॉक केले</translation>
 <translation id="8412677897383510995">डिस्प्ले सेटिंग्ज दाखवा</translation>
 <translation id="8413272770729657668">रेकॉर्डिंग सुरू होणार आहे ३, २, १</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (केस)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> हे ॲप या डिव्हाइसवर उपलब्ध नाही.</translation>
 <translation id="8425213833346101688">बदल करा</translation>
 <translation id="8426708595819210923">शुभ संध्याकाळ <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>

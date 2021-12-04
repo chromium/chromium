@@ -645,6 +645,7 @@
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">เพิ่มที่อยู่สำหรับรับสินค้า</translation>
+<translation id="3098513225387949945">ไม่สนใจเนื่องจากรายการ "ปิดใช้" มีรูปแบบเท่ากับ "*" ซึ่งเทียบเท่ากับการปิดใช้นโยบาย</translation>
 <translation id="3105172416063519923">รหัสสินทรัพย์:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />ตรวจสอบการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">ถาดกลาง</translation>
@@ -1551,6 +1552,7 @@
 <translation id="6008122969617370890">ลำดับ N ถึง 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">ตรวจสอบรหัสผ่านของคุณ</translation>
+<translation id="6014851866995737824">ไม่สนใจเนื่องจากไม่มีรายการ "เปิดใช้" หรือ "ปิดใช้"</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6017850046339264347">ผู้โจมตี <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> สามารถติดตั้งแอปที่หลอกลวงซึ่งปลอมเป็นเนื้อหาอย่างอื่นหรือรวบรวมข้อมูลที่อาจนำไปใช้ติดตามคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>

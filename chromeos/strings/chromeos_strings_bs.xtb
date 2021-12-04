@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Prosječno (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
+<translation id="1196959502276349371">Verzija <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1204296502688602597">Latentnost DNS-a</translation>
 <translation id="123124571410524056">Sumnja na portal</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3865414814144988605">Rezolucija</translation>
 <translation id="387301095347517405">Broj koji označava koliko je puta baterija prošla kompletan ciklus punjenja</translation>
+<translation id="3924044641767672375">Povezivanje s WiFi mrežom se preporučuje radi lakšeg procesa popravke. Mreža će se sačuvati.</translation>
 <translation id="3932043219784172185">Nije povezan nijedan uređaj</translation>
 <translation id="3941014780699102620">Rješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Započnite</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Provjera pingom mrežnog pristupnika koji nije zadan nije uspjela</translation>
+<translation id="4485626319513081846">Izaberite ovu opciju ako se obnavljaju zalihe uređaja ili ako se uređaj reparira za distribuciju novom klijentu.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Podudaranje alternativnog naziva predmeta</translation>
 <translation id="4536864596629708641">Konfiguracija IP adrese</translation>
@@ -415,6 +418,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6957231940976260713">Ime usluge</translation>
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
+<translation id="6992266763844448459">Izaberite ovu opciju ako se vlasništvo nad uređajem ne mijenja. Naprimjer, uređaj se preusmjerava na drugu osobu unutar organizacije.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7058278511608979688">Završi i sačuvaj</translation>

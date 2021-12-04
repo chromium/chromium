@@ -536,7 +536,6 @@
 <translation id="1549275686094429035">ARC ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ಅಪ್ಲಿಕೇಶನ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> ಅನ್ನು ಬಳಸಲು, <ph name="EXTENSION_NAME" /> ವಿಸ್ತರಣೆಯು ಹುಡುಕಾಟವನ್ನು ಬದಲಿಸಿದೆ</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">ಸೀಮಿತವಲ್ಲದ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1556537182262721003">ಫ್ರೋಫೈಲ್‌ಗೆ ಎಕ್ಸ್‌ಟೆನ್ಷನ್ ಡೈರೆಕ್ಟರಿಯನ್ನು ಚಲಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -1076,7 +1075,6 @@
 <translation id="2090165459409185032">ನಿಮ್ಮ ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ಮರುಪಡೆಯಲು, ಇಲ್ಲಿಗೆ ಹೋಗಿ: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ನೀವು ಲಾಗ್ ಇನ್ ಮಾಡಿದ ನಂತರ, ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕನೆಕ್ಟ್ ಆಗುತ್ತದೆ</translation>
 <translation id="2090876986345970080">ಸಿಸ್ಟಂ ಸುರಕ್ಷತಾ ಸೆಟ್ಟಿಂಗ್</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">ಮೂರನೇ ವ್ಯಕ್ತಿ ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="2098805196501063469">ಬಾಕಿ ಉಳಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2099172618127234427">sshd daemon ಅನ್ನು ಹೊಂದಿಸುವಂತಹ Chrome OS ಡೀಬಗ್ ಮಾಡುವಿಕೆ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ನೀವು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತಿರುವಿರಿ ಮತ್ತು USB ಡ್ರೈವ್‌ಗಳಿಂದ ಬೂಟ್ ಮಾಡುವುದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
@@ -3061,7 +3059,6 @@
 <translation id="4110490973560452005">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ: <ph name="FILE_NAME" />. ಡೌನ್‌ಲೋಡ್‌ ಪಟ್ಟಿಯ ಜಾಗಕ್ಕೆ ಹೋಗಲು Shift+F6 ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ಆಫ್‌ಲೈನ್)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ನೆಟ್‌ವರ್ಕ್ ವ್ಯಾಪ್ತಿಯ ಹೊರಗಿದೆ</translation>
 <translation id="4115378294792113321">ಮಜೆಂತಾ</translation>
 <translation id="4117637339509843559">ಕತ್ತಲೆ ಮೋಡ್</translation>
@@ -3147,7 +3144,6 @@
 <translation id="4231095370974836764">Google Play ನಿಂದ ಆ್ಯಪ್‌ಗಳು ಹಾಗೂ ಗೇಮ್‌ಗಳನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="4235965441080806197">ಸೈನ್‌ ಇನ್ ಮಾಡುವುದನ್ನು ರದ್ದುಮಾಡಿ</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">ಸಂಸ್ಥೆಯ ಆ್ಯಪ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4242145785130247982">ಬಹು ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
@@ -4689,7 +4685,6 @@
 <translation id="5901494423252125310">ಪ್ರಿಂಟರ್ ಡೋರ್ ತೆರೆದಿದೆ</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5904614460720589786">ಕಾನ್ಫಿಗರೇಶನ್ ಸಮಸ್ಯೆಯಿಂದಾಗಿ, <ph name="APP_NAME" /> ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">ಬಹುಪಾಲು ನವೀಕೃತವಾಗಿದೆ! ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದನ್ನು ಮುಗಿಸಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="5906732635754427568">ಈ ಅಪ್ಲಿಕೇಶನ್‌ ಜೊತೆಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="5908474332780919512">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ಆ್ಯಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -5349,7 +5344,6 @@
 <translation id="659005207229852190">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="6590458744723262880">ಫೋಲ್ಡರ್ ಅನ್ನು ಮರುಹೆಸರಿಸಿ</translation>
 <translation id="6592267180249644460">WebRTC ಲಾಗ್ ಸೆರೆಹಿಡಿಯಲಾಗಿದೆ <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6593881952206664229">ಕೃತಿಸ್ವಾಮ್ಯ ಹೊಂದಿರುವ ಮಾಧ್ಯಮ ಪ್ಲೇ ಆಗದಿರಬಹುದು</translation>
 <translation id="6594011207075825276">ಸರಣಿ ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
@@ -5803,7 +5797,6 @@
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7055152154916055070">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ:</translation>
 <translation id="7055451306017383754">ಒಂದು ಅಪ್ಲಿಕೇಶನ್, ಈ ಫೋಲ್ಡರ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಕಾರಣ, ಅದರ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಮುಂದಿನ ಸಲ Parallels Desktop ಅನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಿದಾಗ, ಈ ಫೋಲ್ಡರ್ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{ಅಜ್ಞಾತ}one{# ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ತೆರೆಯಿರಿ}other{# ಅಜ್ಞಾತ ವಿಂಡೋಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="7056526158851679338">&amp;ಸಾಧನಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}one{{NUM_MINS} ನಿಮಿಷದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}other{{NUM_MINS} ನಿಮಿಷದ ಹಿಂದೆ ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನಡೆಸಲಾಗಿದೆ}}</translation>
@@ -6514,7 +6507,6 @@
 <translation id="7797246427375693110">ಆನ್ ಆಗಿದೆ / <ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಫ್ ಆಗುತ್ತದೆ</translation>
 <translation id="7797571222998226653">ಆಫ್</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="7799220949286681310">ಸ್ಮಾರ್ಟ್ ಸ್ಕ್ರೀನ್ ಲಾಕ್</translation>
 <translation id="7799299114731150374">ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="7799817062559422778">ಬೆಳಕಿನ ಮೋಡ್</translation>
 <translation id="7800159967992492578">ಪಕ್ಕದಲ್ಲಿರುವ ಹುಡುಕಾಟವನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಪಕ್ಕದಲ್ಲಿರುವ ಹುಡುಕಾಟವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
@@ -7446,7 +7438,6 @@
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ಅನ್ನು ಉಳಿಸಿ</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8774934320277480003">ಮೇಲಿನ ಅಂಚು</translation>
 <translation id="8775144690796719618">ಅಮಾನ್ಯ URL</translation>

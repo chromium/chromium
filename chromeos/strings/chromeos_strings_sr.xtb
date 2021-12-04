@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Просечан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
+<translation id="1196959502276349371">Верзија <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Даље</translation>
 <translation id="1204296502688602597">Кашњење DNS-а</translation>
 <translation id="123124571410524056">Сумња се на портал</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
+<translation id="3924044641767672375">Повезивање на WiFi се препоручује да би процес поправке био лакши. Мрежа ће бити сачувана.</translation>
 <translation id="3932043219784172185">Нема повезаних уређаја</translation>
 <translation id="3941014780699102620">Разрешење хоста није успело</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Пинговање мрежног пролаза који није подразумеван није успело</translation>
+<translation id="4485626319513081846">Изаберите ову опцију ако се обнављају залихе уређаја или се он ремонтује за дистрибуцију новом клијенту.</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Подударање алтернативног назива субјекта</translation>
 <translation id="4536864596629708641">IP конфигурација</translation>
@@ -415,6 +418,7 @@
 <translation id="6957231940976260713">Назив услуге</translation>
 <translation id="6961170852793647506">Да бисте започели, поставите документ на скенер</translation>
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
+<translation id="6992266763844448459">Изаберите ову опцију ако се власништво над уређајем не мења. На пример, ако се уређај пребацује другој особи унутар организације.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
 <translation id="7058278511608979688">Заврши и сачувај</translation>

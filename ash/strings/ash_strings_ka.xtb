@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">კონფიდენციალურობის ეკრანი გამორთულია</translation>
 <translation id="4730374152663651037">ხშირად გამოყენებული</translation>
 <translation id="4731797938093519117">მშობლის წვდომა</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (მარცხენა)</translation>
 <translation id="4734965478015604180">ჰორიზონტალური</translation>
 <translation id="4735498845456076464">კლავიატურის მალსახმობი „<ph name="LAUNCHER_KEY_NAME" /> + ციფრი“ შეიცვალა. ფუნქციების კლავიშებით სარგებლობისთვის დააჭირეთ კლავიშს <ph name="LAUNCHER_KEY_NAME" /> + კლავიშს ზედა მწკრივში.</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">მიმდინარეობს დაკავშირება...</translation>
 <translation id="5330201449517439522">შესასვლელად შეეხეთ ან დააწკაპუნეთ</translation>
 <translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (მარჯვენა)</translation>
 <translation id="5352250171825660495">მუქი თემა ჩართულია</translation>
 <translation id="5379115545237091094">დაფიქსირდა მეტისმეტად ბევრი მცდელობა</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> არის <ph name="IN_PLACE_APP" />-ის ზემოდან, აუშვით საქაღალდის შესაქმნელად.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">თქვენმა მშობელმა ჩაკეტა ეს მოწყობილობა</translation>
 <translation id="8412677897383510995">ჩვენების პარამეტრების ჩვენება</translation>
 <translation id="8413272770729657668">ჩაწერის დაწყებამდე დარჩენილია 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (სათავსო)</translation>
 <translation id="8425213833346101688">შეცვლა</translation>
 <translation id="8426708595819210923">საღამო მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>

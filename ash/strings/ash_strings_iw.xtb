@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">מסך הפרטיות כבוי</translation>
 <translation id="4730374152663651037">בשימוש לעתים קרובות</translation>
 <translation id="4731797938093519117">גישת הורים</translation>
+<translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (שמאל)</translation>
 <translation id="4734965478015604180">אופקי</translation>
 <translation id="4735498845456076464">מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + ספרה הוחלפו. כדי לדמות את הפעולה של מקשי הפונקציה, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + מקש כלשהו בשורה העליונה של המקלדת.</translation>
 <translation id="4759238208242260848">הורדות</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">מתבצעת התחברות…</translation>
 <translation id="5330201449517439522">כדי להיכנס, צריך להקיש או ללחוץ</translation>
 <translation id="5331975486040154427">‏מכשיר עם יציאת USB-C (יציאה שמאלית-אחורית)</translation>
+<translation id="5344128444027639014">%<ph name="BATTERY_PERCENTAGE" /> (ימין)</translation>
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
 <translation id="5379115545237091094">יותר מדי ניסיונות</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
@@ -1078,6 +1080,7 @@
 <translation id="8394567579869570560">הורה נעל את המכשיר הזה</translation>
 <translation id="8412677897383510995">הצגת הגדרות התצוגה</translation>
 <translation id="8413272770729657668">ההקלטה מתחילה: 3, 2, 1</translation>
+<translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (נרתיק)</translation>
 <translation id="8425213833346101688">שינוי</translation>
 <translation id="8426708595819210923">ערב טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">הגדרות</translation>

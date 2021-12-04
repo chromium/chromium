@@ -534,7 +534,6 @@
 <translation id="1549275686094429035">ARC 사용 설정됨</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 액세스하려고 합니다. 내 파일을 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1552301827267621511">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 검색에 <ph name="SEARCH_PROVIDER_DOMAIN" /> 서비스를 사용하도록 변경했습니다.</translation>
-<translation id="1552522962296937598">스마트 디스플레이에서 사용자 뒤에서 누군가 엿보고 있는지 감지하여 화면을 잠금</translation>
 <translation id="1553538517812678578">무제한</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1556537182262721003">확장 프로그램 디렉터리를 프로필로 이동하지 못했습니다.</translation>
@@ -1083,7 +1082,6 @@
 <translation id="2090165459409185032">계정 정보를 복구하려면 google.com/accounts/recovery 페이지로 이동하세요.</translation>
 <translation id="2090507354966565596">로그인하면 자동으로 연결</translation>
 <translation id="2090876986345970080">시스템 보안 설정</translation>
-<translation id="2092038932007199943">누군가 뒤에서 엿보는 경우 사용자에게 알리거나 화면을 임시로 어둡게 함</translation>
 <translation id="2096715839409389970">타사 쿠키 삭제</translation>
 <translation id="2098805196501063469">나머지 비밀번호 확인</translation>
 <translation id="2099172618127234427">sshd 데몬을 설정하고 USB 드라이브에서 부팅하도록 사용 설정하는 Chrome OS 디버깅 기능을 사용 설정 중입니다.</translation>
@@ -3066,7 +3064,6 @@
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
-<translation id="4112809168763360620">스마트 화면 잠금 개인 정보 보호</translation>
 <translation id="4115002065223188701">네트워크 범위를 벗어남</translation>
 <translation id="4115378294792113321">자홍색</translation>
 <translation id="4117637339509843559">어두운 모드</translation>
@@ -3152,7 +3149,6 @@
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
-<translation id="4238175133949127631">임시로 화면 어둡게 하기</translation>
 <translation id="4241182343707213132">다시 시작하여 조직의 앱 업데이트</translation>
 <translation id="4242145785130247982">여러 개의 클라이언트 인증서는 지원되지 않습니다.</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -4692,7 +4688,6 @@
 <translation id="5901494423252125310">프린터 덮개 열림</translation>
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
-<translation id="5906278356170001460">이 기능은 감지를 위해 전면 카메라를 사용합니다. 데이터는 안전하게 처리되며 바로 삭제됩니다. Google에서는 데이터를 다른 목적으로 사용하지 않습니다.</translation>
 <translation id="5906655207909574370">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 기기를 다시 시작하세요.</translation>
 <translation id="5906732635754427568">이 앱과 관련된 데이터가 이 기기에서 삭제됩니다.</translation>
 <translation id="5908474332780919512">로그인 시 앱 실행</translation>
@@ -5352,7 +5347,6 @@
 <translation id="659005207229852190">안전 확인이 완료되었습니다.</translation>
 <translation id="6590458744723262880">폴더 이름 바꾸기</translation>
 <translation id="6592267180249644460">WebRTC 로그 캡처 시간: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">상태 영역에 눈 아이콘 표시</translation>
 <translation id="6592808042417736307">지문이 등록되었습니다.</translation>
 <translation id="6593881952206664229">저작권이 있는 미디어는 재생되지 않을 수 있습니다</translation>
 <translation id="6594011207075825276">직렬 기기를 찾는 중...</translation>
@@ -5805,7 +5799,6 @@
 <translation id="7053983685419859001">차단</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7055451306017383754">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Parallels Desktop이 종료되면 폴더 공유가 취소됩니다.</translation>
-<translation id="7056011684066172642">사용자가 멀어지면 자동으로 화면이 잠기고 앞에 있으면 화면이 꺼지지 않음</translation>
 <translation id="7056418393177503237">{0,plural, =1{시크릿 모드}other{열려 있는 시크릿 창 #개}}</translation>
 <translation id="7056526158851679338">기기 검사(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{안전 확인이 1분 전에 실행됨}other{안전 확인이 {NUM_MINS}분 전에 실행됨}}</translation>
@@ -6517,7 +6510,6 @@
 <translation id="7797246427375693110">사용 중 / <ph name="TIME" />에 자동으로 꺼짐</translation>
 <translation id="7797571222998226653">꺼짐</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> 권한이 자동으로 차단됨</translation>
-<translation id="7799220949286681310">스마트 화면 잠금</translation>
 <translation id="7799299114731150374">배경화면 설정이 완료되었습니다.</translation>
 <translation id="7799817062559422778">밝은 모드</translation>
 <translation id="7800159967992492578">사이드 검색을 전환합니다. 사이트 검색이 활성화되었습니다.</translation>
@@ -7452,7 +7444,6 @@
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>
 <translation id="8771300903067484968">시작 페이지 배경화면이 기본 배경화면으로 재설정되었습니다.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> 저장</translation>
-<translation id="8773350724590665675">엿보기 방지</translation>
 <translation id="8774379074441005279">복원 확인</translation>
 <translation id="8774934320277480003">상단 여백</translation>
 <translation id="8775144690796719618">URL이 올바르지 않습니다.</translation>

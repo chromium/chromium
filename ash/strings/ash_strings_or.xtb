@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="4730374152663651037">ବାରମ୍ବାର ବ୍ୟବହାର ହୋଇଛି</translation>
 <translation id="4731797938093519117">ମାତା-ପିତାଙ୍କର ଆକ୍ସେସ୍</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ବାମ)</translation>
 <translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। ଫଙ୍କସନ୍ କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + ଶୀର୍ଷ ଧାଡ଼ିରେ ଥିବା ଏକ କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="4759238208242260848">ଡାଉନଲୋଡସମୂହ</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">ସଂଯୋଗ ହେଉଛି...</translation>
 <translation id="5330201449517439522">ଲେଖିବା ପାଇଁ ଟାପ୍ କିମ୍ବା କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="5331975486040154427">USB-C ଡିଭାଇସ୍‌ (ବାମପଟ ପଛ ପୋର୍ଟ)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ଡାହାଣ)</translation>
 <translation id="5352250171825660495">ଗାଢ଼ ଥିମ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="5379115545237091094">ଅତ୍ୟଧିକ ପ୍ରଚେଷ୍ଟା</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ର ଶୀର୍ଷରେ <ph name="DRAGGED_APP_NAME" />କୁ, ଫୋଲ୍ଡର୍ ତିଆରି କରିବା ପାଇଁ ରିଲିଜ୍ କରନ୍ତୁ।</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">ଆପଣଙ୍କ ମାତା-ପିତା ଏହି ଡିଭାଇସ୍‌କୁ ଲକ୍‌ କରିଦେଇଛନ୍ତି</translation>
 <translation id="8412677897383510995">ଡିସପ୍ଲେ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="8413272770729657668">ରେକର୍ଡିଂ ଆରମ୍ଭ ହେବାକୁ ଯାଉଛି 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (କେସ)</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="8426708595819210923">ଶୁଭ ସନ୍ଧ୍ୟା <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>

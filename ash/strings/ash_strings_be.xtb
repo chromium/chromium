@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">Экран прыватнасці выключаны</translation>
 <translation id="4730374152663651037">ЧАСТА ВЫКАРЫСТОЎВАЮЦЦА</translation>
 <translation id="4731797938093519117">Бацькоўскі доступ</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (левы)</translation>
 <translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="4735498845456076464">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + лічба. Каб выканаць дзеянне функцыянальнай клавішы, націсніце <ph name="LAUNCHER_KEY_NAME" /> + адну з клавіш верхняга рада.</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">Ідзе падключэнне...</translation>
 <translation id="5330201449517439522">Дакраніцеся або націсніце, каб увайсці</translation>
 <translation id="5331975486040154427">Прылада USB-C (задні порт злева)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (правы)</translation>
 <translation id="5352250171825660495">Цёмная тэма ўключана</translation>
 <translation id="5379115545237091094">Занадта шмат спроб</translation>
 <translation id="5395308026110844773">Праграма "<ph name="DRAGGED_APP_NAME" />" зараз над праграмай "<ph name="IN_PLACE_APP" />". Каб стварыць папку, адпусціце праграму.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">Бацькі заблакіравалі гэту прыладу</translation>
 <translation id="8412677897383510995">Паказаць налады дысплэя</translation>
 <translation id="8413272770729657668">Запіс пачнецца праз 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (чахол)</translation>
 <translation id="8425213833346101688">Змяніць</translation>
 <translation id="8426708595819210923">Добры вечар, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Налады</translation>

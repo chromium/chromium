@@ -572,6 +572,7 @@
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4730374152663651037">БАЙНГА АШИГЛАГДДАГ</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Зүүн)</translation>
 <translation id="4734965478015604180">Хөндлөн</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Тоон товчлуурын шууд холбоосыг өөрчилсөн байна. Функцийн товчлууруудыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + дээд мөрд байх товчлуурыг дарна уу.</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
@@ -655,6 +656,7 @@
 <translation id="5329548388331921293">Холбогдож байна...</translation>
 <translation id="5330201449517439522">Нэвтрэхийн тулд дарах эсвэл товшино уу</translation>
 <translation id="5331975486040154427">USB-C төхөөрөмж (ард талын портны зүүн тал)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Баруун)</translation>
 <translation id="5352250171825660495">Бараан загвар асаалттай байна</translation>
 <translation id="5379115545237091094">Хэт олон удаа оролдлоо</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8394567579869570560">Таны эцэг эх энэ төхөөрөмжийг түгжсэн</translation>
 <translation id="8412677897383510995">Дэлгэцийн тохиргоог харуулах</translation>
 <translation id="8413272770729657668">Гурав тоолсны дараа бичиж эхэлнэ</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Гэр)</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> энэ төхөөрөмж дээр байхгүй байна.</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
 <translation id="8426708595819210923">Оройн мэнд <ph name="GIVEN_NAME" />,</translation>

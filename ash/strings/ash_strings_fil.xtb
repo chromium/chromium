@@ -571,6 +571,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4702647871202761252">Naka-off ang privacy screen</translation>
 <translation id="4730374152663651037">MADALAS GAMITIN</translation>
 <translation id="4731797938093519117">Pangunahing access</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kaliwa)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Nagbago ang keyboard shortcut na <ph name="LAUNCHER_KEY_NAME" /> + Numero. Para magamit ang mga function key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + isang key sa itaas na row.</translation>
 <translation id="4759238208242260848">Mga Download </translation>
@@ -654,6 +655,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5329548388331921293">Kumokonekta...</translation>
 <translation id="5330201449517439522">Mag-tap o mag-click para pumasok</translation>
 <translation id="5331975486040154427">USB-C device (port sa kaliwang bahagi sa likod)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kanan)</translation>
 <translation id="5352250171825660495">Naka-on ang Madilim na tema</translation>
 <translation id="5379115545237091094">Masyadong maraming pagtatangka</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sa ibabaw ng <ph name="IN_PLACE_APP" />, bitawan para gumawa ng folder.</translation>
@@ -1078,6 +1080,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
 <translation id="8412677897383510995">Ipakita ang mga setting ng display</translation>
 <translation id="8413272770729657668">Magsisimula ang pag-record pagkalipas ng 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Case)</translation>
 <translation id="8421270167862077762">Wala ang <ph name="UNAVAILABLE_APPS" /> sa device na ito.</translation>
 <translation id="8425213833346101688">Baguhin</translation>
 <translation id="8426708595819210923">Magandang gabi <ph name="GIVEN_NAME" />,</translation>

@@ -534,7 +534,6 @@
 <translation id="1549275686094429035">ARC Didayakan</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ingin mengakses <ph name="VOLUME_NAME" />. Apl mungkin mengubah suai atau memadamkan fail anda.</translation>
 <translation id="1552301827267621511">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar carian agar menggunakan <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Paparan pintar mengunci dan mengesan jika orang lain mengintai dari belakang</translation>
 <translation id="1553538517812678578">tidak terhad</translation>
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1556537182262721003">Tidak dapat menggerakkan direktori sambungan ke profil.</translation>
@@ -691,6 +690,7 @@
 <translation id="1692115862433274081">Gunakan akaun lain</translation>
 <translation id="1692118695553449118">Penyegerakan dihidupkan</translation>
 <translation id="1692210323591458290">Ungu gelap</translation>
+<translation id="1695487653372841667">Anda boleh mengawal data yang dikongsi dengan Google. Anda boleh menukar pilihan ini pada bila-bila masa dalam Tetapan.</translation>
 <translation id="169675691788639886">Pelayan SSH telah dikonfigurasikan pada peranti ini. Jangan log masuk menggunakan akaun sensitif.</translation>
 <translation id="1697150536837697295">Seni</translation>
 <translation id="1697686431566694143">Edit fail</translation>
@@ -1083,7 +1083,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2090165459409185032">Untuk memulihkan maklumat akaun anda, pergi ke: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Menyambung secara automatik apabila anda log masuk</translation>
 <translation id="2090876986345970080">Tetapan keselamatan sistem</translation>
-<translation id="2092038932007199943">Beritahu anda atau malapkan skrin buat sementara waktu apabila seseorang mengintip dari belakang</translation>
 <translation id="2096715839409389970">Padamkan kuki pihak ketiga</translation>
 <translation id="2098805196501063469">Semak kata laluan yang tinggal</translation>
 <translation id="2099172618127234427">Anda mendayakan ciri penyahpepijatan OS Chrome yang akan menetapkan daemon sshd dan mendayakan pengebutan dari pemacu USB.</translation>
@@ -1755,6 +1754,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2757338480560142065">Pastikan kata laluan yang anda simpan sepadan dengan kata laluan anda untuk <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Kamera disekat</translation>
 <translation id="2764786626780673772">Butiran VPN</translation>
+<translation id="2765100602267695013">Sila hubungi penyedia mudah alih anda</translation>
 <translation id="2765217105034171413">Kecil</translation>
 <translation id="2766006623206032690">Ta&amp;mpal dan pergi</translation>
 <translation id="2766161002040448006">Tanya ibu/bapa</translation>
@@ -2317,6 +2317,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3370260763947406229">Autopembetulan</translation>
 <translation id="3371140690572404006">Peranti USB-C (port depan sebelah kanan)</translation>
 <translation id="337286756654493126">Baca folder yang anda buka dalam aplikasi</translation>
+<translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' dialihkan ke dalam '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3378572629723696641">Sambungan ini mungkin telah tercemar.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> akan dipasang.</translation>
 <translation id="3380365263193509176">Ralat tidak diketahui</translation>
@@ -3068,7 +3069,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4110490973560452005">Muat turun selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk pergi ke kawasan bar muat turun.</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
-<translation id="4112809168763360620">Perlindungan privasi pintar</translation>
 <translation id="4115002065223188701">Rangkaian di luar liputan</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Mod gelap</translation>
@@ -3154,7 +3154,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4231095370974836764">Pasang apl dan permainan daripada Google Play pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurasikan Kerberos</translation>
 <translation id="4235965441080806197">Batalkan log masuk</translation>
-<translation id="4238175133949127631">Malapkan skrin buat sementara waktu</translation>
 <translation id="4241182343707213132">Mulakan semula peranti untuk mengemas kini apl organisasi</translation>
 <translation id="4242145785130247982">Sijil pelanggan berbilang tidak disokong</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
@@ -4695,7 +4694,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5901494423252125310">Pintu pencetak terbuka</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5904614460720589786">Tidak dapat menyediakan <ph name="APP_NAME" /> kerana terdapat masalah konfigurasi. Sila hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Ciri ini menggunakan kamera depan untuk pengesanan. Data diproses dengan selamat dan dibuang selepas itu. Google tidak menggunakan data anda untuk sebarang tujuan lain.</translation>
 <translation id="5906655207909574370">Hampir terkini! Mulakan semula peranti anda untuk menyelesaikan kemas kini.</translation>
 <translation id="5906732635754427568">Data yang berkaitan dengan apl ini akan dialih keluar daripada peranti ini.</translation>
 <translation id="5908474332780919512">Mulakan Apl Apabila Anda Log Masuk</translation>
@@ -5159,6 +5157,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6385994920693662133">Amaran - Pengelogan terperinci didayakan; log di bawah mungkin mengandungi URL atau maklumat sensitif lain. Sila semak dan pastikan anda selesa menyerahkan maklumat ini.</translation>
 <translation id="6387674443318562538">Pisah Menegak</translation>
 <translation id="6388429472088318283">Cari bahasa</translation>
+<translation id="6388577073199278153">Tidak dapat mengakses akaun anda</translation>
 <translation id="6390020764191254941">Alihkan Tab ke Tetingkap Baharu</translation>
 <translation id="6393156038355142111">Cadangkan kata laluan yang kukuh</translation>
 <translation id="6393550101331051049">Dibenarkan untuk memaparkan kandungan tidak selamat</translation>
@@ -5355,7 +5354,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="659005207229852190">Semakan keselamatan selesai.</translation>
 <translation id="6590458744723262880">Namakan semula folder</translation>
 <translation id="6592267180249644460">Log WebRTC dirakam <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Tunjukkan ikon mata dalam ruang status</translation>
 <translation id="6592808042417736307">Cap jari anda telah disimpan</translation>
 <translation id="6593881952206664229">Media berhak cipta mungkin tidak dimainkan</translation>
 <translation id="6594011207075825276">Mencari peranti bersiri...</translation>
@@ -5486,6 +5484,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
 <translation id="67269783048918309">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan ke akaun Googlenya. <ph name="BEGIN_LINK2" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Disambungkan, bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' dibuat.</translation>
 <translation id="6735304988756581115">Tunjukkan kuki dan data tapak yang lain...</translation>
 <translation id="6736243959894955139">Alamat</translation>
 <translation id="6737663862851963468">Alih keluar tiket Kerberos</translation>
@@ -5808,7 +5807,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7055152154916055070">Ubah hala disekat:</translation>
 <translation id="7055451306017383754">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder ini akan dinyahkongsi apabila Parallels Desktop ditutup selepas ini.</translation>
-<translation id="7056011684066172642">Skrin akan dikunci secara automatik jika anda meninggalkan peranti dan tidak akan dimatikan jika anda berada di hadapan peranti anda</translation>
 <translation id="7056418393177503237">{0,plural, =1{Inkognito}other{# tetingkap Inkognito terbuka}}</translation>
 <translation id="7056526158851679338">&amp;Periksa Peranti</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Semakan keselamatan dijalankan 1 minit yang lalu}other{Semakan keselamatan dijalankan {NUM_MINS} minit yang lalu}}</translation>
@@ -6520,7 +6518,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7797246427375693110">Hidup / Akan dimatikan secara automatik pada <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Mati</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> disekat secara automatik</translation>
-<translation id="7799220949286681310">Kunci skrin pintar</translation>
 <translation id="7799299114731150374">Kertas dinding berjaya ditetapkan</translation>
 <translation id="7799817062559422778">Mod cerah</translation>
 <translation id="7800159967992492578">Togol carian sisi. Carian sisi diaktifkan.</translation>
@@ -6743,6 +6740,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8006630792898017994">Ruang atau Tab</translation>
 <translation id="8008356846765065031">Internet terputus sambungan. Sila periksa sambungan internet anda.</translation>
 <translation id="8009225694047762179">Urus Kata Laluan</translation>
+<translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' dialihkan.</translation>
 <translation id="8012647001091218357">Kami tidak dapat menghubungi ibu bapa anda pada masa ini. Sila cuba lagi.</translation>
 <translation id="8013993649590906847">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
 <translation id="8014154204619229810">Pengemaskinian sedang dijalankan. Muatkan semula dalam satu minit untuk memeriksa lagi.</translation>
@@ -7456,7 +7454,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8770406935328356739">Direktori akar sambungan</translation>
 <translation id="8771300903067484968">Latar belakang halaman mula telah ditetapkan semula kepada latar belakang lalai.</translation>
 <translation id="8773302562181397928">Simpan <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Perlindungan pengintipan</translation>
 <translation id="8774379074441005279">Sahkan Pemulihan</translation>
 <translation id="8774934320277480003">Jidar atas</translation>
 <translation id="8775144690796719618">URL tidak sah</translation>

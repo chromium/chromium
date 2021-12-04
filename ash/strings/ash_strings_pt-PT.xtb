@@ -280,6 +280,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2942350706960889382">Lupa ancorada</translation>
 <translation id="2942516765047364088">Posição da prateleira</translation>
 <translation id="2946119680249604491">Adicionar ligação</translation>
+<translation id="2960314608273155470">Modo de captura, a predefinição é <ph name="SOURCE" /> <ph name="TYPE" />. Prima Tab para a navegação do teclado.</translation>
 <translation id="2961963223658824723">Ocorreu um erro. Tente novamente dentro de alguns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" /></translation>
@@ -570,6 +571,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4730374152663651037">UTILIZADAS FREQUENTEMENTE</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + número foi alterado. Para utilizar teclas de função, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + uma tecla na linha superior.</translation>
 <translation id="4759238208242260848">Transferências</translation>
@@ -653,6 +655,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5329548388331921293">A ligar…</translation>
 <translation id="5330201449517439522">Toque ou clique para introduzir</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" />, solte para criar uma pasta.</translation>
@@ -884,6 +887,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7042322267639375032">Reduzir área de estado</translation>
 <translation id="7045033600005038336">Pretende substituir o modelo?</translation>
 <translation id="7045595904618419789">Iniciar lupa</translation>
+<translation id="7051244143160304048">A ligação de <ph name="DEVICE_NAME" /> foi terminada</translation>
 <translation id="7055381872777910864">Q</translation>
 <translation id="7055910611768509537">A caneta stylus não é utilizada há mais de uma semana</translation>
 <translation id="7066646422045619941">Esta rede foi desativada pelo gestor.</translation>
@@ -1076,6 +1080,8 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8394567579869570560">Os teus pais bloquearam este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar definições de visualização</translation>
 <translation id="8413272770729657668">A gravação vai começar em 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (caixa)</translation>
+<translation id="8421270167862077762">A app <ph name="UNAVAILABLE_APPS" /> não se encontra neste dispositivo.</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8426708595819210923">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Definições</translation>

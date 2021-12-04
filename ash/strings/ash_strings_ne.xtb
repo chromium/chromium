@@ -571,6 +571,7 @@
 <translation id="4702647871202761252">गोपनीयताको स्क्रिन निष्क्रिय छ</translation>
 <translation id="4730374152663651037">प्रायः जसो प्रयोग गरिने एपहरू</translation>
 <translation id="4731797938093519117">अभिभावकको पहुँच</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (बायाँ)</translation>
 <translation id="4734965478015604180">तेर्सो</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number किबोर्डका सर्टकट परिवर्तन गरिएको छ। फङ्सन की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + माथिल्लो रोमा भएको कुनै की थिच्नुहोस्।</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
@@ -654,6 +655,7 @@
 <translation id="5329548388331921293">कनेक्ट गरिँदै...</translation>
 <translation id="5330201449517439522">खोल्न ट्याप वा क्लिक गर्नुहोस्</translation>
 <translation id="5331975486040154427">USB-C यन्त्र (पछाडिको पोर्टको बायाँ)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (दायाँ)</translation>
 <translation id="5352250171825660495">अँध्यारो थिम अन छ</translation>
 <translation id="5379115545237091094">अत्यधिक प्रयासहरू भए</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> का माथि <ph name="DRAGGED_APP_NAME" />, फोल्डर सिर्जना गर्न विमोचन गर्नुहोस्।</translation>
@@ -1078,6 +1080,7 @@
 <translation id="8394567579869570560">तपाईंका अभिभावकले यो डिभाइस लक गर्नुभयो</translation>
 <translation id="8412677897383510995">डिस्प्लेसम्बन्धी सेटिङ देखाउनुहोस्</translation>
 <translation id="8413272770729657668">रेकर्डिङ सुरु हुनै आँटेको छ ३, २, १</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (केस)</translation>
 <translation id="8421270167862077762">यो डिभाइसमा <ph name="UNAVAILABLE_APPS" /> उपलब्ध छैन।</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8426708595819210923">नमस्ते <ph name="GIVEN_NAME" />,</translation>

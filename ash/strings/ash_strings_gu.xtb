@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ડૉક કરેલ મૅગ્નિફાયર</translation>
 <translation id="2942516765047364088">શેલ્ફ સ્થિતી</translation>
 <translation id="2946119680249604491">કનેક્શન ઉમેરો</translation>
+<translation id="2960314608273155470">કૅપ્ચર મોડ, ડિફૉલ્ટ તરીકે <ph name="SOURCE" /> <ph name="TYPE" /> છે. કીબોર્ડ નૅવિગેશન માટે ટૅબ દબાવો.</translation>
 <translation id="2961963223658824723">કંઈક ખોટું થયું. થોડીવારમાં ફરીથી પ્રયાસ કરો.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> સ્પીચ ફાઇલો ડાઉનલોડ કરી શક્યા નથી</translation>
@@ -570,6 +571,7 @@
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4730374152663651037">વારંવાર વપરાયેલ</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
 <translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. ફંક્શન કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની પંક્તિ પરની કોઈ એક કી દબાવો.</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
@@ -653,6 +655,7 @@
 <translation id="5329548388331921293">કનેક્ટ થઈ રહ્યું છે…</translation>
 <translation id="5330201449517439522">દાખલ થવા માટે ટૅપ કરો અથવા ક્લિક કરો</translation>
 <translation id="5331975486040154427">USB-C ડિવાઇસ (ડાબી બાજુનું પાછળનું પોર્ટ)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (જમણે)</translation>
 <translation id="5352250171825660495">ઘેરી થીમ ચાલુ છે</translation>
 <translation id="5379115545237091094">ઘણા બધા પ્રયાસો</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ની સૌથી ઉપર <ph name="DRAGGED_APP_NAME" /> પર, ફોલ્ડર બનાવવા માટે રિલીઝ કરો.</translation>
@@ -884,6 +887,7 @@
 <translation id="7042322267639375032">સ્ટેટસ એરિયા ઓછો કરો</translation>
 <translation id="7045033600005038336">નમૂનો બદલીએ?</translation>
 <translation id="7045595904618419789">મૅગ્નિફાયર ચાલુ કરો</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ડિસ્કનેક્ટ કર્યુ</translation>
 <translation id="7055381872777910864">બુ</translation>
 <translation id="7055910611768509537">એક અઠવાડિયા કરતાં વધુ સમયથી સ્ટાઇલસનો વપરાશ કરવામાં આવ્યો નથી</translation>
 <translation id="7066646422045619941">આ નેટવર્ક તમારા વ્યવસ્થાપક દ્વારા અક્ષમ કરેલ છે.</translation>
@@ -1076,6 +1080,8 @@
 <translation id="8394567579869570560">તમારા માતાપિતાએ આ ડિવાઇસને લૉક કર્યું છે</translation>
 <translation id="8412677897383510995">ડિસ્પ્લે સેટિંગ બતાવો</translation>
 <translation id="8413272770729657668">રેકોર્ડિંગ શરૂ થવાનું છે 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (કેસ)</translation>
+<translation id="8421270167862077762">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS" /> ઉપલબ્ધ નથી.</translation>
 <translation id="8425213833346101688">બદલો</translation>
 <translation id="8426708595819210923">ગુડ ઇવનિંગ <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>

@@ -570,6 +570,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
 <translation id="4730374152663651037">ČASTO POUŽÍVANÉ</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vlevo)</translation>
 <translation id="4734965478015604180">Na šířku</translation>
 <translation id="4735498845456076464">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + číslo se změnila. Pokud chcete použít funkční klávesy, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + klávesu na horním řádku.</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
@@ -653,6 +654,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5329548388331921293">Připojování…</translation>
 <translation id="5330201449517439522">Pokračujte klepnutím nebo kliknutím</translation>
 <translation id="5331975486040154427">Zařízení USB Type-C (levý zadní port)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (vpravo)</translation>
 <translation id="5352250171825660495">Tmavý motiv je zapnutý</translation>
 <translation id="5379115545237091094">Příliš mnoho pokusů</translation>
 <translation id="5395308026110844773">Aplikace <ph name="DRAGGED_APP_NAME" /> je nad aplikací <ph name="IN_PLACE_APP" />. Uvolněním vytvoříte složku.</translation>
@@ -1076,6 +1078,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8394567579869570560">Rodič toto zařízení uzamkl</translation>
 <translation id="8412677897383510995">Zobrazit nastavení displeje</translation>
 <translation id="8413272770729657668">Nahrávání začne za 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (pouzdro)</translation>
 <translation id="8425213833346101688">Změnit</translation>
 <translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Nastavení</translation>

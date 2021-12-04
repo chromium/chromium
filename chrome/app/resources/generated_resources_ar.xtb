@@ -535,7 +535,6 @@
 <translation id="1549275686094429035">‏تم تفعيل "وقت تشغيل التطبيقات في Chrome"</translation>
 <translation id="1549788673239553762">يريد <ph name="APP_NAME" /> الوصول إلى <ph name="VOLUME_NAME" />. قد يعدّل أو يحذف ملفاتك.</translation>
 <translation id="1552301827267621511">غيرت الإضافة "<ph name="EXTENSION_NAME" />" البحث لاستخدام <ph name="SEARCH_PROVIDER_DOMAIN" />.</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">غير محدودة</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1556537182262721003">تعذر نقل دليل الإضافة إلى الملف الشخصي.</translation>
@@ -692,6 +691,7 @@
 <translation id="1692115862433274081">استخدام حساب آخر</translation>
 <translation id="1692118695553449118">المزامنة مفعَّلة</translation>
 <translation id="1692210323591458290">أرجواني داكن</translation>
+<translation id="1695487653372841667">‏يمكنك تحديد البيانات التي تتم مشاركتها مع Google. ويمكنك تغيير هذا الإعداد في أي وقت من خلال الإعدادات.</translation>
 <translation id="169675691788639886">‏تم ضبط خادم SSH للجهاز، لذلك ممنوع تسجيل الدخول باستخدام حسابات حساسة.</translation>
 <translation id="1697150536837697295">الفن</translation>
 <translation id="1697686431566694143">تعديل الملف</translation>
@@ -1075,7 +1075,6 @@
 <translation id="2090165459409185032">‏لاسترداد معلومات حسابك، انتقل إلى: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">الاتصال تلقائيًا عند تسجيل الدخول</translation>
 <translation id="2090876986345970080">إعداد أمان النظام</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">حذف ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="2098805196501063469">التحقُّق من كلمات المرور المتبقية</translation>
 <translation id="2099172618127234427">‏أنت تمكن ميزات تصحيح الأخطاء لنظام التشغيل Chrome التي ستثبّت البرنامج الخفي لـ sshd وتمكن التشغيل من محركات الأقراص USB.</translation>
@@ -3056,7 +3055,6 @@
 <translation id="4110490973560452005">‏اكتمل التنزيل: <ph name="FILE_NAME" />. يمكنك الضغط على Shift+F6 للانتقال إلى منطقة شريط عمليات التنزيل.</translation>
 <translation id="4110686435123617899">اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (غير متصل بالإنترنت)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">الشبكة خارج النطاق</translation>
 <translation id="4115378294792113321">أرجواني</translation>
 <translation id="4117637339509843559">الوضع المُعتِم</translation>
@@ -3142,7 +3140,6 @@
 <translation id="4231095370974836764">‏يمكنك تثبيت التطبيقات والألعاب من Google Play على جهاز <ph name="DEVICE_TYPE" /> الخاص بك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">إعادة التشغيل لتحديث تطبيقات المؤسسة</translation>
 <translation id="4242145785130247982">شهادات العميل المتعددة غير متاحة</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -4682,7 +4679,6 @@
 <translation id="5901494423252125310">باب الطابعة مفتوح</translation>
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5904614460720589786">تعذّر إعداد <ph name="APP_NAME" /> بسبب مشكلة في الضبط. يُرجى التواصل مع مشرفك. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">أوشك التحديث على الانتهاء! أعِد تشغيل الجهاز لإنهاء التحديث.</translation>
 <translation id="5906732635754427568">ستتم إزالة البيانات المقترنة بهذا التطبيق من هذا الجهاز.</translation>
 <translation id="5908474332780919512">تشغيل التطبيق تلقائيًا عند تسجيل الدخول</translation>
@@ -5342,7 +5338,6 @@
 <translation id="659005207229852190">اكتمل إعداد "تأكيد السلامة".</translation>
 <translation id="6590458744723262880">إعادة تسمية المجلد</translation>
 <translation id="6592267180249644460">‏تم التقاط سجلات WebRTC في <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">تم حِفظ بصمة الإصبع.</translation>
 <translation id="6593881952206664229">قد لا يتم تشغيل الوسائط المحمية بموجب حقوق الطبع والنشر.</translation>
 <translation id="6594011207075825276">جارٍ البحث عن أجهزة تسلسلية...</translation>
@@ -5795,7 +5790,6 @@
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
 <translation id="7055451306017383754">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا المجلد. سيتم إلغاء مشاركة المجلد عند إيقاف تشغيل نظام Parallels Desktop.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{نافذة واحدة للتصفُّح المتخفي}zero{# نافذة مفتوحة للتصفُّح المتخفي}two{# نافذتان مفتوحتان للتصفُّح المتخفي}few{# نوافذ مفتوحة للتصفُّح المتخفي}many{# نافذةً مفتوحة للتصفُّح المتخفي}other{# نافذة مفتوحة للتصفُّح المتخفي}}</translation>
 <translation id="7056526158851679338">&amp;فحص الأجهزة</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{تم تفعيل ميزة "تأكيد السلامة" قبل دقيقة واحدة.}zero{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقيقة.}two{تم تفعيل ميزة "تأكيد السلامة" قبل دقيقتَين ({NUM_MINS}).}few{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقائق.}many{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقيقة.}other{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقيقة.}}</translation>
@@ -6507,7 +6501,6 @@
 <translation id="7797246427375693110">مفعَّل / سيتم إلغاء تفعيله تلقائيًا في الساعة <ph name="TIME" /></translation>
 <translation id="7797571222998226653">غير مفعّل</translation>
 <translation id="7798844538707273832">تم حظر إذن <ph name="PERMISSION" /> تلقائيًا.</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">تم ضبط الخلفية بنجاح</translation>
 <translation id="7799817062559422778">الوضع الفاتح</translation>
 <translation id="7800159967992492578">يمكنك إخفاء أشرطة البحث الجانبية أو عرضها، عندما يكون البحث الجانبي مفعَّلاً.</translation>
@@ -7443,7 +7436,6 @@
 <translation id="8770406935328356739">الدليل الجذر للإضافة</translation>
 <translation id="8771300903067484968">تمت إعادة ضبط خلفية الصفحة الرئيسية إلى الخلفية التلقائية.</translation>
 <translation id="8773302562181397928">حفظ <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">تأكيد الاستعادة</translation>
 <translation id="8774934320277480003">الهامش العلوي</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>

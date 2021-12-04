@@ -280,6 +280,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2942350706960889382">Lupa zadokowana</translation>
 <translation id="2942516765047364088">Pozycja półki</translation>
 <translation id="2946119680249604491">Dodaj połączenie</translation>
+<translation id="2960314608273155470">Tryb przechwytywania, domyślny to <ph name="SOURCE" /> <ph name="TYPE" />. Aby poruszać się za pomocą klawiatury, naciśnij Tab.</translation>
 <translation id="2961963223658824723">Coś poszło nie tak. Spróbuj ponownie za kilka sekund.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Nie udało się pobrać plików z mową w języku: <ph name="LANGUAGE" /></translation>
@@ -570,6 +571,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4730374152663651037">CZĘSTO UŻYWANE</translation>
 <translation id="4731797938093519117">Dostęp rodzica</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lewa)</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4735498845456076464">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + cyfra został zmieniony. Aby użyć klawiszy funkcyjnych, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + klawisz w górnym rzędzie.</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
@@ -653,6 +655,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5329548388331921293">Łączę…</translation>
 <translation id="5330201449517439522">Kliknij, aby rozpocząć</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (prawa)</translation>
 <translation id="5352250171825660495">Ciemny motyw jest włączony</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
@@ -884,6 +887,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7042322267639375032">Zwiń pasek stanu</translation>
 <translation id="7045033600005038336">Zastąpić szablon?</translation>
 <translation id="7045595904618419789">Włącz lupę</translation>
+<translation id="7051244143160304048">Urządzenie <ph name="DEVICE_NAME" /> zostało odłączone</translation>
 <translation id="7055381872777910864">Ś</translation>
 <translation id="7055910611768509537">Rysik nie był używany od ponad tygodnia</translation>
 <translation id="7066646422045619941">Ta sieć została wyłączona przez administratora.</translation>
@@ -1076,6 +1080,8 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8394567579869570560">Twój rodzic zablokował urządzenie</translation>
 <translation id="8412677897383510995">Pokaż ustawienia wyświetlania</translation>
 <translation id="8413272770729657668">Nagrywanie rozpocznie się za 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (obudowa)</translation>
+<translation id="8421270167862077762">Aplikacji <ph name="UNAVAILABLE_APPS" /> nie ma na tym urządzeniu.</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8426708595819210923">Dobry wieczór <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Ustawienia</translation>

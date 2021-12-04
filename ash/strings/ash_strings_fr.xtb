@@ -570,6 +570,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4730374152663651037">SOUVENT UTILISÉES</translation>
 <translation id="4731797938093519117">Accès parental</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (gauche)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> et sur une touche de la rangée supérieure.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
@@ -653,6 +654,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5329548388331921293">Connexion…</translation>
 <translation id="5330201449517439522">Appuyez ou cliquez pour avoir accès</translation>
 <translation id="5331975486040154427">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'arrière)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droit)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sur <ph name="IN_PLACE_APP" />. Relâcher pour créer un dossier.</translation>
@@ -1076,6 +1078,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement commence dans 3 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426708595819210923">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Paramètres</translation>

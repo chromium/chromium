@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ذره‌بین متصل</translation>
 <translation id="2942516765047364088">موقعیت قفسه</translation>
 <translation id="2946119680249604491">افزودن اتصال</translation>
+<translation id="2960314608273155470">«حالت ضبط»، پیش‌فرض <ph name="SOURCE" /> <ph name="TYPE" /> است. برای پیمایش با صفحه‌کلید، کلید جهش را فشار دهید.</translation>
 <translation id="2961963223658824723">مشکلی پیش آمد. چند ثانیه دیگر دوباره امتحان کنید.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری نشد</translation>
@@ -570,6 +571,7 @@
 <translation id="4702647871202761252">صفحه حریم‌خصوصی خاموش است</translation>
 <translation id="4730374152663651037">مکرراً استفاده‌شده</translation>
 <translation id="4731797938093519117">دسترسی ولی</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (چپ)</translation>
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4735498845456076464">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + عدد» تغییر کرده است. برای استفاده از کلیدهای عملکرد، کلید <ph name="LAUNCHER_KEY_NAME" /> + یکی از کلیدهای ردیف بالا را فشار دهید.</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
@@ -653,6 +655,7 @@
 <translation id="5329548388331921293">درحال اتصال...</translation>
 <translation id="5330201449517439522">برای ورود، ضربه بزنید یا کلیک کنید</translation>
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (راست)</translation>
 <translation id="5352250171825660495">طرح زمینه تیره روشن است</translation>
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> موجود در بالای <ph name="IN_PLACE_APP" />، برای ایجاد پوشه رها کنید.</translation>
@@ -884,6 +887,7 @@
 <translation id="7042322267639375032">کوچک کردن ناحیه نشانگر وضعیت</translation>
 <translation id="7045033600005038336">الگو جایگزین شود؟</translation>
 <translation id="7045595904618419789">اجرای ذره‌بین</translation>
+<translation id="7051244143160304048">اتصال <ph name="DEVICE_NAME" /> قطع شد</translation>
 <translation id="7055381872777910864">چهارشنبه</translation>
 <translation id="7055910611768509537">بیش‌از یک هفته از «قلم» استفاده نشده است.</translation>
 <translation id="7066646422045619941">این شبکه توسط سرپرست شما غیرفعال شده است.</translation>
@@ -1076,6 +1080,8 @@
 <translation id="8394567579869570560">پدر یا مادرتان این دستگاه را قفل کرده است</translation>
 <translation id="8412677897383510995">نمایش تنظیمات نمایشگر</translation>
 <translation id="8413272770729657668">شروع ضبط با شمارش ۳، ۲، ۱</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />٪ (قاب)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> در این دستگاه وجود ندارد.</translation>
 <translation id="8425213833346101688">تغییر</translation>
 <translation id="8426708595819210923">عصر به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="8428213095426709021">تنظیمات</translation>

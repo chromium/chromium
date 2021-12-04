@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">গোপনীয়তাৰ স্ক্ৰীনখন অফ আছে</translation>
 <translation id="4730374152663651037">সঘনাই ব্যৱহাৰ হোৱা</translation>
 <translation id="4731797938093519117">অভিভাৱকৰ এক্সেছ</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (বাকী আছে)</translation>
 <translation id="4734965478015604180">আনুভূমিক</translation>
 <translation id="4735498845456076464">কীব’ৰ্ডৰ শ্বৰ্টকাট <ph name="LAUNCHER_KEY_NAME" /> + নাম্বাৰটো সলনি হৈছে। ফাংশ্বন কীসমূহ ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ওপৰৰ শাৰীৰ এটা কী টিপক।</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="5330201449517439522">Chromebook ব্যৱহাৰ কৰিবলৈ টিপক অথবা ক্লিক কৰক</translation>
 <translation id="5331975486040154427">USB-C ডিভাইচ (বাওঁফালৰ বেকপর্টত)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (সোঁফালে)</translation>
 <translation id="5352250171825660495">গাঢ় ৰঙৰ থীম অন হৈ আছে</translation>
 <translation id="5379115545237091094">অতি বেছি প্ৰয়াস</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> <ph name="IN_PLACE_APP" />ৰ ওপৰত আছে, ফ'ল্ডাৰ সৃষ্টি কৰিবলৈ এৰি দিয়ক।</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">আপোনাৰ অভিভাৱকে এই ডিভাইচটো লক কৰিছে</translation>
 <translation id="8412677897383510995">ডিছপ্লে’ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="8413272770729657668">ৰেকৰ্ডিং আৰম্ভ হ'ব ৩, ২, ১</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কে’ছ)</translation>
 <translation id="8425213833346101688">সলনি কৰক</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>

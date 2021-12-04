@@ -280,6 +280,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2942350706960889382">Ukotvená lupa</translation>
 <translation id="2942516765047364088">Pozícia poličky</translation>
 <translation id="2946119680249604491">Pridať pripojenie</translation>
+<translation id="2960314608273155470">Režim snímania, predvolené nastavenie je <ph name="SOURCE" /> <ph name="TYPE" />. Ak chcete používať navigáciu klávesnicou, stlačte kláves Tab.</translation>
 <translation id="2961963223658824723">Vyskytol sa problém. Skúste to znova o niekoľko minút.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť</translation>
@@ -570,6 +571,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="4702647871202761252">Obrazovka ochrany súkromia je vypnutá</translation>
 <translation id="4730374152663651037">ČASTO POUŽÍVANÉ</translation>
 <translation id="4731797938093519117">Rodičovský prístup</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (ľavé)</translation>
 <translation id="4734965478015604180">Na šírku</translation>
 <translation id="4735498845456076464">Klávesová skratka <ph name="LAUNCHER_KEY_NAME" /> + číslo bola zmenená. Ak chcete použiť klávesy s funkciami, stlačte kláves <ph name="LAUNCHER_KEY_NAME" /> + kláves v hornom rade.</translation>
 <translation id="4759238208242260848">Stiahnuté</translation>
@@ -653,6 +655,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5329548388331921293">Pripája sa…</translation>
 <translation id="5330201449517439522">Zadajte klepnutím alebo kliknutím</translation>
 <translation id="5331975486040154427">Zariadenie USB-C (port vľavo vzadu)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (pravé)</translation>
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
 <translation id="5379115545237091094">Príliš veľa pokusov</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na aplikáciu <ph name="IN_PLACE_APP" />, uvoľnením vytvoríte priečinok.</translation>
@@ -884,6 +887,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="7042322267639375032">Zbaliť stavovú oblasť</translation>
 <translation id="7045033600005038336">Chcete šablónu nahradiť?</translation>
 <translation id="7045595904618419789">Spustiť lupu</translation>
+<translation id="7051244143160304048">Zariadenie <ph name="DEVICE_NAME" /> je odpojené</translation>
 <translation id="7055381872777910864">St</translation>
 <translation id="7055910611768509537">Dotykové pero nebolo použité viac ako týždeň</translation>
 <translation id="7066646422045619941">Táto sieť je zakázaná správcom.</translation>
@@ -1076,6 +1080,8 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="8394567579869570560">Tvoj rodič uzamkol toto zariadenie</translation>
 <translation id="8412677897383510995">Zobraziť nastavenia obrazovky</translation>
 <translation id="8413272770729657668">Nahrávanie sa začne o 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (puzdro)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> nie je v tomto zariadení.</translation>
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Nastavenia</translation>

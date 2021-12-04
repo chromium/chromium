@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC staat aan</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wil toegang tot <ph name="VOLUME_NAME" />. Hierdoor worden je bestanden mogelijk aangepast of verwijderd.</translation>
 <translation id="1552301827267621511">De extensie '<ph name="EXTENSION_NAME" />' heeft ingesteld dat <ph name="SEARCH_PROVIDER_DOMAIN" /> wordt gebruikt voor zoekopdrachten</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">onbeperkt</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="1556537182262721003">Kan extensiedirectory niet verplaatsen naar profiel.</translation>
@@ -1072,7 +1071,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2090165459409185032">Als je je accountgegevens wilt herstellen, ga je naar: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Maakt automatisch verbinding als je inlogt</translation>
 <translation id="2090876986345970080">Instelling voor systeembeveiliging</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Cookies van derden wissen</translation>
 <translation id="2098805196501063469">Resterende wachtwoorden checken</translation>
 <translation id="2099172618127234427">Je zet foutopsporingsfuncties aan voor Chrome OS waarmee de sshd daemon wordt ingesteld en opstarten vanaf USB-stations mogelijk wordt.</translation>
@@ -3055,7 +3053,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4110490973560452005">Download voltooid: <ph name="FILE_NAME" />. Druk op Shift+F6 om naar het gedeelte met de downloadbalk te gaan.</translation>
 <translation id="4110686435123617899">Album selecteren: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Netwerk buiten bereik</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Donkere modus</translation>
@@ -3141,7 +3138,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4231095370974836764">Installeer apps en games van Google Play op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos configureren</translation>
 <translation id="4235965441080806197">Inloggen annuleren</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Start opnieuw op om de apps van je organisatie te updaten</translation>
 <translation id="4242145785130247982">Meerdere clientcertificaten worden niet ondersteund</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
@@ -4679,7 +4675,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5901494423252125310">Printerklep is open</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5904614460720589786">Kan <ph name="APP_NAME" /> niet instellen vanwege een configuratieprobleem. Neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Updaten bijna voltooid. Start je apparaat opnieuw op om de update te voltooien.</translation>
 <translation id="5906732635754427568">Gegevens die zijn gekoppeld aan deze app, worden verwijderd van dit apparaat.</translation>
 <translation id="5908474332780919512">App starten als je inlogt</translation>
@@ -5340,7 +5335,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="659005207229852190">Veiligheidscheck is afgerond.</translation>
 <translation id="6590458744723262880">Naam van map wijzigen</translation>
 <translation id="6592267180249644460">WebRTC-logboek vastgelegd op <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Je vingerafdruk is geregistreerd</translation>
 <translation id="6593881952206664229">Media met auteursrecht wordt misschien niet afgespeeld</translation>
 <translation id="6594011207075825276">Zoeken naar seriële apparaten...</translation>
@@ -5794,7 +5788,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7055451306017383754">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Parallels Desktop weer wordt uitgezet.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# geopende incognitovensters}}</translation>
 <translation id="7056526158851679338">Apparaten &amp;inspecteren</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Veiligheidscheck is 1 minuut geleden uitgevoerd}other{Veiligheidscheck is {NUM_MINS} minuten geleden uitgevoerd}}</translation>
@@ -6505,7 +6498,6 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7797246427375693110">Aan/Wordt automatisch uitgezet om <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Uit</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> automatisch geblokkeerd</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Achtergrond is ingesteld</translation>
 <translation id="7799817062559422778">Lichte modus</translation>
 <translation id="7800159967992492578">Zoekfunctie aan zijkant aan-/uitzetten. Zoekfunctie aan zijkant geactiveerd.</translation>
@@ -7441,7 +7433,6 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8770406935328356739">Hoofddirectory van extensie</translation>
 <translation id="8771300903067484968">De achtergrond van de startpagina is gereset naar de standaardachtergrond.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> opslaan</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Herstel bevestigen</translation>
 <translation id="8774934320277480003">Marge bovenkant</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>

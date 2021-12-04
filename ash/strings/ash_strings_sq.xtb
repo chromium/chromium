@@ -570,6 +570,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
 <translation id="4730374152663651037">TË PËRDORURA SHPESH</translation>
 <translation id="4731797938093519117">Qasja e prindit</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (majtas)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Numri është ndryshuar. Për të përdorur tastet e funksioneve, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + një tast në rreshtin e sipërm.</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
@@ -653,6 +654,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5329548388331921293">Po lidhet...</translation>
 <translation id="5330201449517439522">Trokit ose kliko për të hyrë</translation>
 <translation id="5331975486040154427">Pajisja USB-C (porta e pasme, majtas)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (djathtas)</translation>
 <translation id="5352250171825660495">"Tema e errët" është aktive</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> mbi <ph name="IN_PLACE_APP" />, lëshoje për të krijuar dosje.</translation>
@@ -1076,6 +1078,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="8394567579869570560">Prindi yt e kyçi këtë pajisje</translation>
 <translation id="8412677897383510995">Shfaq cilësimet e ekranit</translation>
 <translation id="8413272770729657668">Regjistrimi fillon në 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (kasa)</translation>
 <translation id="8425213833346101688">Ndrysho</translation>
 <translation id="8426708595819210923">Mirëmbrëma <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Cilësimet</translation>

@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວປິດຢູ່</translation>
 <translation id="4730374152663651037">ໃຊ້ເລື້ອຍໆ</translation>
 <translation id="4731797938093519117">ສິດເຂົ້າເຖິງຂອງພໍ່ແມ່</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ຊ້າຍ)</translation>
 <translation id="4734965478015604180">ລວງນອນ</translation>
 <translation id="4735498845456076464">ມີການປ່ຽນຄີລັດ <ph name="LAUNCHER_KEY_NAME" /> + ຕົວເລກ. ເພື່ອໃຊ້ປຸ່ມຟັງຊັນ, ໃຫ້ກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + ປຸ່ມໃດໜຶ່ງຢູ່ແຖວເທິງສຸດ.</translation>
 <translation id="4759238208242260848">ດາວ​ໂຫຼດ</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">ກຳລັງເຊື່ອມຕໍ່...</translation>
 <translation id="5330201449517439522">ແຕະ ຫຼື ຄລິກເພື່ອເຂົ້າ</translation>
 <translation id="5331975486040154427">ອຸ​ປະ​ກອນ USB-C (​ຜອດ​ດ້ານ​ຫຼັງເບື້ອງຊ້າຍ)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ຂວາ)</translation>
 <translation id="5352250171825660495">ຮູບແບບສີສັນມືດເປີດຢູ່</translation>
 <translation id="5379115545237091094">ພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ຢູ່ເທິງ <ph name="IN_PLACE_APP" />, ປ່ອຍເພື່ອສ້າງໂຟນເດີ.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">ພໍ່ແມ່ຂອງທ່ານໄດ້ລັອກອຸປະກອນນີ້ໄວ້ແລ້ວ</translation>
 <translation id="8412677897383510995">ສະແດງການຕັ້ງຄ່າຈໍສະແດງຜົນ</translation>
 <translation id="8413272770729657668">ການບັນທຶກຈະເລີ່ມຂຶ້ນໃນ 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ເຄສ)</translation>
 <translation id="8425213833346101688">ປ່ຽນ​ແປງ</translation>
 <translation id="8426708595819210923">ສະບາຍດີຕອນແລງ <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>

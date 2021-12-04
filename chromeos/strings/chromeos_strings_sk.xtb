@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Priemerné (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
+<translation id="1196959502276349371">Verzia <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Ďalej</translation>
 <translation id="1204296502688602597">Latencia DNS</translation>
 <translation id="123124571410524056">Podozrenie na portál</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3865414814144988605">Rozlíšenie</translation>
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
+<translation id="3924044641767672375">Odporúčame pripojiť sa k sieti Wi-Fi, čím sa proces opravy zjednoduší. Vaša sieť bude uložená.</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
+<translation id="4485626319513081846">Túto možnosť vyberte, ak bolo zariadenie opätovne naskladnené alebo repasované na distribúciu novému zákazníkovi.</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Zhoda alternatívneho názvu subjektu</translation>
 <translation id="4536864596629708641">Konfigurácia adresy IP</translation>
@@ -415,6 +418,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6957231940976260713">Názov služby</translation>
 <translation id="6961170852793647506">Začnite položením dokumentu na skener</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
+<translation id="6992266763844448459">Túto možnosť vyberte, ak sa vlastníctvo daného zariadenia nemení. Ak napríklad zariadenie prevediete na inú osobu v rámci organizácie.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7058278511608979688">Ukončiť a uložiť</translation>

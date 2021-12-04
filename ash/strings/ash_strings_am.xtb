@@ -571,6 +571,7 @@
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
 <translation id="4730374152663651037">በብዛት ጥቅም ላይ የዋለ</translation>
 <translation id="4731797938093519117">የወላጅ መዳረሻ</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ግራ)</translation>
 <translation id="4734965478015604180">አግድማዊ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + የቁጥር የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የተግባር ቁልፎችን ለመጠቀም በላይኛው ረድፍ ላይ የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + አንድ ቁልፍ ይጫኑ።</translation>
 <translation id="4759238208242260848">የወረዱ</translation>
@@ -654,6 +655,7 @@
 <translation id="5329548388331921293">በማገናኘት ላይ...</translation>
 <translation id="5330201449517439522">ለመግባት መታ ወይም ጠቅ ያድርጉ</translation>
 <translation id="5331975486040154427">USB-C መሣሪያ (የግራ ጎን ኋላ ወደብ)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ቀኝ)</translation>
 <translation id="5352250171825660495">ጠቆር ያለ ገጽታ በርቷል</translation>
 <translation id="5379115545237091094">በጣም ብዙ ሙከራዎች</translation>
 <translation id="5395308026110844773">በ<ph name="IN_PLACE_APP" /> ላይ <ph name="DRAGGED_APP_NAME" />፣ አቃፊ ለመፍጠር ይልቀቁት።</translation>
@@ -1078,6 +1080,7 @@
 <translation id="8394567579869570560">የእርስዎ ወላጅ ይህን መሣሪያ ቆልፈውታል</translation>
 <translation id="8412677897383510995">የማሳያ ቅንብሮችን አሳይ</translation>
 <translation id="8413272770729657668">መቅዳት በ3፣ 2፣ 1 በመጀመር ላይ</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (መያዣ)</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> በዚህ መሣሪያ ላይ የለም።</translation>
 <translation id="8425213833346101688">ለውጥ</translation>
 <translation id="8426708595819210923">ደህን አመሹ <ph name="GIVEN_NAME" />፣</translation>

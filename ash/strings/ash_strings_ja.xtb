@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4730374152663651037">よく使用するアプリ</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4734965478015604180">横</translation>
 <translation id="4735498845456076464">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+数字」が変更されました。ファンクション キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+最上列のキーを押してください。</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5330201449517439522">タップまたはクリックで Chromebook を開きます</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右）</translation>
 <translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5379115545237091094">試行回数が上限を超えました</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />を<ph name="IN_PLACE_APP" />の上にドラッグしました。指を離すとフォルダが作成されます。</translation>
@@ -1077,6 +1079,7 @@
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
 <translation id="8412677897383510995">ディスプレイの設定を表示</translation>
 <translation id="8413272770729657668">録画開始まで 3、2、1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（ケース）</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426708595819210923">こんばんは、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="8428213095426709021">設定</translation>

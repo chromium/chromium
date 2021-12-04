@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC Etkinleştirildi</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> birimine erişmek istiyor. Uygulama, dosyalarınızı değiştirebilir veya silebilir.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" uzantısı, <ph name="SEARCH_PROVIDER_DOMAIN" /> alan adını kullanacak şekilde aramayı değiştirdi.</translation>
-<translation id="1552522962296937598">Akıllı ekran, başka birinin arkadan gizlice göz attığını algıladığında kilitlenir</translation>
 <translation id="1553538517812678578">sınırsız</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1556537182262721003">Uzantı dizini profile taşınamadı.</translation>
@@ -1072,7 +1071,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2090165459409185032">Hesap bilgilerinizi kurtarmak için şu adrese gidin: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Giriş yaptığınızda otomatik olarak bağlanır</translation>
 <translation id="2090876986345970080">Sistem güvenlik ayarı</translation>
-<translation id="2092038932007199943">Birisi arkanızdan gizlice ekranınızı gözetlediğinde size bildirilir veya ekranız geçici olarak karartılır</translation>
 <translation id="2096715839409389970">Üçüncü taraf çerezlerini sil</translation>
 <translation id="2098805196501063469">Kalan şifreleri kontrol et</translation>
 <translation id="2099172618127234427">sshd yardımcı programını ayarlayacak ve USB sürücülerinden önyüklemeyi etkinleştirecek Chrome OS hata ayıklama özelliklerini etkinleştiriyorsunuz.</translation>
@@ -3052,7 +3050,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4110490973560452005">İndirme işlemi tamamlandı: <ph name="FILE_NAME" />. İndirme çubuğu alanına gitmek için Üst Karakter+F6 tuşlarına basın.</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albümünü seçin</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (çevrimdışı)</translation>
-<translation id="4112809168763360620">Akıllı gizlilik korumaları</translation>
 <translation id="4115002065223188701">Ağ, kapsama alanı dışında</translation>
 <translation id="4115378294792113321">Macenta</translation>
 <translation id="4117637339509843559">Koyu mod</translation>
@@ -3138,7 +3135,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazınıza Google Play'den uygulama ve oyunlar yükleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos'u yapılandırın</translation>
 <translation id="4235965441080806197">Oturum açmayı iptal et</translation>
-<translation id="4238175133949127631">Ekranı geçici olarak karart</translation>
 <translation id="4241182343707213132">Kuruluşun uygulamalarını güncellemek için yeniden başlatın</translation>
 <translation id="4242145785130247982">Birden fazla istemci sertifikası desteklenmiyor</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
@@ -4679,7 +4675,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5901494423252125310">Yazıcı kapağı açık</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5904614460720589786">Yapılandırma sorunu nedeniyle <ph name="APP_NAME" /> kurulumu yapılamadı. Lütfen yöneticinizle görüşün. Hata kodu: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Bu özellik, gözetlenmeyi algılamak için ön kamerayı kullanır. Veri güvenli bir şekilde işlenip daha sonra silinir. Google, verilerinizi başka hiçbir amaçla kullanmaz.</translation>
 <translation id="5906655207909574370">Az kaldı! Güncellemeyi tamamlamak için cihazınızı yeniden başlatın.</translation>
 <translation id="5906732635754427568">Bu uygulamayla ilişkili veriler bu cihazdan kaldırılacak.</translation>
 <translation id="5908474332780919512">Oturum Açtığımda Uygulamayı Başlat</translation>
@@ -5339,7 +5334,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="659005207229852190">Güvenlik kontrolü tamamlandı.</translation>
 <translation id="6590458744723262880">Klasörü yeniden adlandırın</translation>
 <translation id="6592267180249644460">WebRTC günlüğü yakalandı: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Durum alanında bana bir göz simgesi göster</translation>
 <translation id="6592808042417736307">Parmak iziniz alındı</translation>
 <translation id="6593881952206664229">Telif hakkıyla korunan medya içerikleri oynatılmayabilir</translation>
 <translation id="6594011207075825276">Seri cihazlar bulunuyor...</translation>
@@ -5792,7 +5786,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7055152154916055070">Yönlendirme engellendi:</translation>
 <translation id="7055451306017383754">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. Parallels Desktop kapatıldığında klasörün paylaşımı kaldırılacak.</translation>
-<translation id="7056011684066172642">Uzaklaştığınızda ekran otomatik olarak kilitlenir ve yanına geldiğinizde açılmaz</translation>
 <translation id="7056418393177503237">{0,plural, =1{Gizli mod}other{Açık # Gizli pencere}}</translation>
 <translation id="7056526158851679338">&amp;Cihazları Denetle</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Güvenlik kontrolü 1 dakika önce çalıştırıldı}other{Güvenlik kontrolü {NUM_MINS} dakika önce çalıştırıldı}}</translation>
@@ -6504,7 +6497,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7797246427375693110">Açık / Saat <ph name="TIME" /> olduğunda otomatik olarak kapatılacak</translation>
 <translation id="7797571222998226653">Kapalı</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> izni otomatik olarak engellendi</translation>
-<translation id="7799220949286681310">Akıllı ekran kilidi</translation>
 <translation id="7799299114731150374">Duvar kağıdı başarıyla ayarlandı</translation>
 <translation id="7799817062559422778">Açık mod</translation>
 <translation id="7800159967992492578">Yan aramayı aç/kapat. Yan arama etkinleştirildi.</translation>
@@ -7437,7 +7429,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8770406935328356739">Uzantı kök dizini</translation>
 <translation id="8771300903067484968">Başlangıç sayfası arka planı, varsayılan arka plana sıfırlandı.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> cihazını kaydet</translation>
-<translation id="8773350724590665675">Gözetlenmeye karşı korunma</translation>
 <translation id="8774379074441005279">Geri Yüklemeyi Onaylayın</translation>
 <translation id="8774934320277480003">Üst kenar boşluğu</translation>
 <translation id="8775144690796719618">Geçersiz URL</translation>

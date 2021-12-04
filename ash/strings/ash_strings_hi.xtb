@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
 <translation id="2942516765047364088">अलमारी की स्थिति</translation>
 <translation id="2946119680249604491">कनेक्शन जोड़ें</translation>
+<translation id="2960314608273155470">कैप्चर मोड में, <ph name="SOURCE" /> <ph name="TYPE" /> डिफ़ॉल्ट के तौर पर सेट है. कीबोर्ड नेविगेशन के लिए, Tab दबाएं.</translation>
 <translation id="2961963223658824723">कुछ गड़बड़ी हो गई. कुछ सेकंड में फिर से कोशिश करें.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड नहीं की जा सकीं</translation>
@@ -571,6 +572,7 @@
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
 <translation id="4730374152663651037">अक्सर उपयोग किए गए</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
+<translation id="4733161265940833579">बाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number कीबोर्ड शॉर्टकट बदल गया है. फ़ंक्शन बटन इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + सबसे ऊपर की लाइन का कोई एक बटन दबाएं.</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -654,6 +656,7 @@
 <translation id="5329548388331921293">कनेक्ट हो रहा है...</translation>
 <translation id="5330201449517439522">Chromebook में जाने लिए टैप करें या क्लिक करें</translation>
 <translation id="5331975486040154427">USB-C डिवाइस (बायां पिछला पोर्ट)</translation>
+<translation id="5344128444027639014">दाएं वायरलेस बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="5352250171825660495">गहरे रंग वाली थीम चालू है</translation>
 <translation id="5379115545237091094">कई बार कोशिश की जा चुकी है</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> पर<ph name="DRAGGED_APP_NAME" /> को खींचकर लाया जा रहा है, फ़ोल्डर बनाने के लिए इसे छोड़ें.</translation>
@@ -885,6 +888,7 @@
 <translation id="7042322267639375032">स्टेटस बताने वाली जगह को छोटा करें</translation>
 <translation id="7045033600005038336">क्या आपको टेंप्लेट का नाम बदलना है?</translation>
 <translation id="7045595904618419789">मैग्निफ़ायर को चालू करें</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> डिसकनेक्ट हो गया</translation>
 <translation id="7055381872777910864">बुध</translation>
 <translation id="7055910611768509537">स्टाइलस को इस्तेमाल किए एक हफ़्ते से ज़्यादा हो गया है</translation>
 <translation id="7066646422045619941">यह नेटवर्क आपके व्यवस्थापक द्वारा अक्षम किया गया है.</translation>
@@ -1077,6 +1081,8 @@
 <translation id="8394567579869570560">आपके अभिभावक ने यह डिवाइस लॉक कर दिया है</translation>
 <translation id="8412677897383510995">डिसप्ले की सेटिंग दिखाएं</translation>
 <translation id="8413272770729657668">रिकॉर्डिंग 3 सेकंड, 2 सेकंड, 1 सेकंड में शुरू होने वाली है</translation>
+<translation id="8416730306157376817">केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
+<translation id="8421270167862077762">इस डिवाइस पर <ph name="UNAVAILABLE_APPS" /> मौजूद नहीं है.</translation>
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8426708595819210923">गुड ईवनिंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">सेटिंग</translation>

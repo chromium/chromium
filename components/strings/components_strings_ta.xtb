@@ -649,6 +649,7 @@
 <translation id="3087734570205094154">கீழே</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">பிக்அப் முகவரியைச் சேர்</translation>
+<translation id="3098513225387949945">'*' என்ற எழுத்துக்குறி, கொள்கையை முடக்குவதற்குச் சமமானது. அந்த எழுத்துக்குறிக்கு நிகரான பேட்டர்ன் ‘முடக்க வேண்டியவை’ பட்டியலில் இடம்பெற்றுள்ளதால் தவிர்க்கப்பட்டது.</translation>
 <translation id="3105172416063519923">பண்பு ஐடி:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />உங்களின் பாதுகாப்பான DNS உள்ளமைவைச் சரிபாருங்கள்<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">நடு டிரே</translation>
@@ -1557,6 +1558,7 @@
 <translation id="6008122969617370890">பின்னோக்கிய வரிசை</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">கடவுச்சொற்களைச் சோதித்துப் பார்க்கவும்</translation>
+<translation id="6014851866995737824">"இயக்க வேண்டியவை" பட்டியலோ "முடக்க வேண்டியவை" பட்டியலோ இல்லாததால் தவிர்க்கப்பட்டது.</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
 <translation id="6017514345406065928">பச்சை</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> எனும் தளத்தில் உள்ள தீங்கிழைப்பவர்கள், ஏமாற்றக்கூடிய ஆப்ஸை (இவை வேறு ஏதோவொன்றைப் போல போலியாகத் தோற்றமளிக்கும் அல்லது உங்களை டிராக் செய்வதற்குப் பயன்படுத்தக்கூடிய தரவைச் சேகரிக்கும்) நிறுவலாம். <ph name="BEGIN_LEARN_MORE_LINK" />மேலும் அறிக<ph name="END_LEARN_MORE_LINK" /></translation>

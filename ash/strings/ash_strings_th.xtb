@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4730374152663651037">แอปที่ใช้บ่อย</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ซ้าย)</translation>
 <translation id="4734965478015604180">แนวนอน</translation>
 <translation id="4735498845456076464">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + ตัวเลข หากต้องการใช้แป้นฟังก์ชัน ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + แป้นแถวบนสุด</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">กำลังเชื่อมต่อ...</translation>
 <translation id="5330201449517439522">แตะหรือคลิกเพื่อเข้าใช้งาน</translation>
 <translation id="5331975486040154427">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ขวา)</translation>
 <translation id="5352250171825660495">ธีมมืดเปิดอยู่</translation>
 <translation id="5379115545237091094">ลองหลายครั้งเกินไป</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> อยู่เหนือ <ph name="IN_PLACE_APP" /> ปล่อยเพื่อสร้างโฟลเดอร์</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">ผู้ปกครองของคุณล็อกอุปกรณ์นี้ไว้</translation>
 <translation id="8412677897383510995">แสดงการตั้งค่าการแสดงผล</translation>
 <translation id="8413272770729657668">การบันทึกจะเริ่มใน 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8426708595819210923">สวัสดียามเย็น <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>

@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">ပုဂ္ဂိုလ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို ပိတ်ထားသည်</translation>
 <translation id="4730374152663651037">မကြာခဏ အသုံးပြုသောအက်ပ်များ</translation>
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ဘယ်)</translation>
 <translation id="4734965478015604180">အလျားလိုက်</translation>
 <translation id="4735498845456076464">‘<ph name="LAUNCHER_KEY_NAME" /> + နံပါတ်’ လက်ကွက်ဖြတ်လမ်းများကို ပြောင်းထားသည်။ လုပ်ဆောင်ချက်ကီးများ သုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ထိပ်ဆုံးအတန်းရှိ ကီးကို နှိပ်ပါ။</translation>
 <translation id="4759238208242260848">ဒေါင်းလုဒ်များ</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">ချိတ်ဆက်နေသည်...</translation>
 <translation id="5330201449517439522">ဝင်ရန် တို့ပါ (သို့) နှိပ်ပါ</translation>
 <translation id="5331975486040154427">USB-C ကိရိယာ (ကျောဘက် ဘယ် ပို့တ်)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ညာ)</translation>
 <translation id="5352250171825660495">မှောင်သည့်အပြင်အဆင် ဖွင့်ထားသည်</translation>
 <translation id="5379115545237091094">စမ်းသပ်သည့်အကြိမ်ရေ အလွန်များနေပါပြီ</translation>
 <translation id="5395308026110844773">ဖိုင်တွဲပြုလုပ်ရန် <ph name="IN_PLACE_APP" /> ပေါ်တွင် <ph name="DRAGGED_APP_NAME" /> ကို တင်သည်။</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">ဤစက်ကို သင့်မိဘက လော့ခ်ချထားသည်</translation>
 <translation id="8412677897383510995">ဖန်သားပြင်ပြသမှုဆက်တင်များကို ပြရန်</translation>
 <translation id="8413272770729657668">ရိုက်ကူးခြင်း စပါတော့မည်- ၃၊ ၂၊ ၁</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (နားကြပ်ဘူး)</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8426708595819210923">မင်္ဂလာ ညနေခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>

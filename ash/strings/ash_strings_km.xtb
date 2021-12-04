@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">អេក្រង់​ឯកជនភាព​ត្រូវបានបិទ</translation>
 <translation id="4730374152663651037">ដែល​ប្រើ​ញឹកញាប់</translation>
 <translation id="4731797938093519117">សិទ្ធិចូលប្រើប្រាស់​សម្រាប់មាតាបិតា</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ឆ្វេង)</translation>
 <translation id="4734965478015604180">ផ្ដេក​</translation>
 <translation id="4735498845456076464">បានប្ដូរ​ផ្លូវកាត់ក្ដារចុចលេខ + <ph name="LAUNCHER_KEY_NAME" />។ ដើម្បីប្រើគ្រាប់ចុចមុខងារ សូមចុចគ្រាប់ចុច <ph name="LAUNCHER_KEY_NAME" /> + គ្រាប់ចុចនៅជួរខាងលើ។</translation>
 <translation id="4759238208242260848">ទាញយក</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">កំពុង​ភ្ជាប់...</translation>
 <translation id="5330201449517439522">ប៉ះ ឬចុចដើម្បីចូល</translation>
 <translation id="5331975486040154427">ឧបករណ៍ USB-C (រន្ធក្រោយផ្នែកខាងឆ្វេង)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ស្ដាំ)</translation>
 <translation id="5352250171825660495">រចនាប័ទ្ម​ងងឹតបានបើក</translation>
 <translation id="5379115545237091094">ព្យាយាម​ច្រើនដងពេក</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> នៅលើ <ph name="IN_PLACE_APP" /> សូម​ព្រលែង ដើម្បីបង្កើត​ថត។</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">មាតា​បិតា​របស់អ្នក​បាន​ចាក់​សោ​ឧបករណ៍​នេះ</translation>
 <translation id="8412677897383510995">បង្ហាញ​ការកំណត់​ផ្ទាំងអេក្រង់</translation>
 <translation id="8413272770729657668">ការថតចាប់ផ្ដើមក្នុងរយៈពេល 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ប្រអប់កាស)</translation>
 <translation id="8425213833346101688">ប្តូរ</translation>
 <translation id="8426708595819210923">សាយណ្ហ​សួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">ការកំណត់</translation>

@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">Μεγεθυντικός φακός σε παράθυρο</translation>
 <translation id="2942516765047364088">Θέση ραφιού</translation>
 <translation id="2946119680249604491">Προσθήκη σύνδεσης</translation>
+<translation id="2960314608273155470">Λειτουργία λήψης, η προεπιλογή είναι <ph name="SOURCE" /> <ph name="TYPE" />. Πατήστε Tab για πλοήγηση με το πληκτρολόγιο.</translation>
 <translation id="2961963223658824723">Δυστυχώς, παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά σε λίγα δευτερόλεπτα.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Δεν ήταν δυνατή η λήψη αρχείων ομιλίας στα <ph name="LANGUAGE" /></translation>
@@ -570,6 +571,7 @@
 <translation id="4702647871202761252">Η οθόνη απορρήτου είναι απενεργοποιημένη.</translation>
 <translation id="4730374152663651037">ΣΥΧΝΗ ΧΡΗΣΗ</translation>
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Αριστερό)</translation>
 <translation id="4734965478015604180">Οριζόντια περιστροφή</translation>
 <translation id="4735498845456076464">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + Αριθμός άλλαξε. Για να χρησιμοποιήσετε τα πλήκτρα λειτουργιών, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + ένα πλήκτρο στην επάνω σειρά.</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
@@ -653,6 +655,7 @@
 <translation id="5329548388331921293">Σύνδεση…</translation>
 <translation id="5330201449517439522">Πατήστε ή κάντε κλικ για είσοδο</translation>
 <translation id="5331975486040154427">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Δεξί)</translation>
 <translation id="5352250171825660495">Το Σκούρο θέμα είναι ενεργοποιημένο.</translation>
 <translation id="5379115545237091094">Πάρα πολλές προσπάθειες</translation>
 <translation id="5395308026110844773">Η εφαρμογή <ph name="DRAGGED_APP_NAME" /> πάνω από την εφαρμογή <ph name="IN_PLACE_APP" />, αφήστε για να δημιουργήσετε φάκελο.</translation>
@@ -884,6 +887,7 @@
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
 <translation id="7045033600005038336">Αντικατάσταση προτύπου;</translation>
 <translation id="7045595904618419789">Έναρξη μεγέθυνσης</translation>
+<translation id="7051244143160304048">Η συσκευή <ph name="DEVICE_NAME" /> αποσυνδέθηκε.</translation>
 <translation id="7055381872777910864">Τε</translation>
 <translation id="7055910611768509537">Η γραφίδα δεν χρησιμοποιήθηκε για περισσότερο από μία εβδομάδα.</translation>
 <translation id="7066646422045619941">Το δίκτυο αυτό έχει απενεργοποιηθεί από το διαχειριστή σας.</translation>
@@ -1076,6 +1080,8 @@
 <translation id="8394567579869570560">Ο γονέας σας κλείδωσε αυτήν τη συσκευή</translation>
 <translation id="8412677897383510995">Εμφάνιση ρυθμίσεων προβολής</translation>
 <translation id="8413272770729657668">Έναρξη εγγραφής σε 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Θήκη)</translation>
+<translation id="8421270167862077762">Η εφαρμογή <ph name="UNAVAILABLE_APPS" /> δεν βρίσκεται σε αυτήν τη συσκευή.</translation>
 <translation id="8425213833346101688">Αλλαγή</translation>
 <translation id="8426708595819210923">Καλησπέρα <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>

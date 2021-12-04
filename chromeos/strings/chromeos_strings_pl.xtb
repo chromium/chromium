@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Przeciętna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
+<translation id="1196959502276349371">Wersja <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1204296502688602597">Opóźnienie DNS</translation>
 <translation id="123124571410524056">Podejrzany portal</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3865414814144988605">Rozdzielczość</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
+<translation id="3924044641767672375">Aby ułatwić proces naprawy, zalecamy połączenie się przez Wi-Fi. Oszczędzisz dane sieciowe.</translation>
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
 <translation id="3941014780699102620">Nie udało się znaleźć hosta</translation>
 <translation id="3942420633017001071">Diagnostyka</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nie udało się sprawdzić pingiem bramy sieciowej innej niż domyślna</translation>
+<translation id="4485626319513081846">Wybierz tę opcję, jeśli urządzenie zostało przywrócone do użytku lub odnowione w celu przekazania nowemu klientowi.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Dopasowanie alternatywnej nazwy podmiotu</translation>
 <translation id="4536864596629708641">Konfiguracja IP</translation>
@@ -415,6 +418,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6957231940976260713">Nazwa usługi</translation>
 <translation id="6961170852793647506">Aby rozpocząć, umieść dokument na skanerze</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
+<translation id="6992266763844448459">Wybierz tę opcję, jeśli nie zmienia się właściciel urządzenia. Na przykład wtedy, gdy urządzenie zostaje przekazane innemu członkowi organizacji.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Zakończ i zapisz</translation>

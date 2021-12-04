@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Keskitasoa (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1195447618553298278">Tuntematon virhe.</translation>
+<translation id="1196959502276349371">Versio <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1204296502688602597">DNS-viive</translation>
 <translation id="123124571410524056">Mahdollinen portaali</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
+<translation id="3924044641767672375">Korjaus sujuu helpommin, jos muodostat yhteyden Wi-Fi-verkkoon. Verkkosi tallennetaan.</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Muun kuin oletusarvoisen verkkoyhdyskäytävän ping-kutsu epäonnistui</translation>
+<translation id="4485626319513081846">Valitse tämä vaihtoehto, jos laite varastoidaan uudelleen tai kunnostetaan uutta asiakasta varten.</translation>
 <translation id="4511264077854731334">Portaali</translation>
 <translation id="4521826082652183069">Aiheen vaihtoehtoisen nimen vastaavuus</translation>
 <translation id="4536864596629708641">IP-määritykset</translation>
@@ -415,6 +418,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6957231940976260713">Palvelun nimi</translation>
 <translation id="6961170852793647506">Aloita asettamalla dokumentti skanneriin</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
+<translation id="6992266763844448459">Valitse tämä vaihtoehto, jos laitteen omistajuus ei vaihdu, esimerkiksi jos laite siirretään toiselle henkilölle organisaation sisällä.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
 <translation id="7058278511608979688">Lopeta ja tallenna</translation>

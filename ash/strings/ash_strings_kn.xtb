@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4730374152663651037">ಪದೇ ಪದೇ ಬಳಸಿರುವುದು</translation>
 <translation id="4731797938093519117">ಪೋಷಕ ಪ್ರವೇಶ ಬಟನ್‌</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ಎಡಬದಿ)</translation>
 <translation id="4734965478015604180">ಅಡ್ಡ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + ಸಂಖ್ಯೆ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. ಫಂಕ್ಷನ್-ಕೀಗಳನ್ನು ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಮೇಲಿನ ಸಾಲಿನಲ್ಲಿರುವ ಒಂದು ಕೀ ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5330201449517439522">ಪ್ರವೇಶಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5331975486040154427">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಹಿಂದಿನ ಪೋರ್ಟ್‌)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ಬಲಬದಿ)</translation>
 <translation id="5352250171825660495">ಡಾರ್ಕ್‌ ಥೀಮ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5379115545237091094">ಹಲವು ಬಾರಿ ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ <ph name="DRAGGED_APP_NAME" />, ಫೋಲ್ಡರ್ ರಚಿಸಲು ಬಿಡುಗಡೆ ಮಾಡಿ.</translation>
@@ -1077,6 +1079,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8394567579869570560">ನಿಮ್ಮ ಪೋಷಕರು ಈ ಸಾಧನವನ್ನು ಲಾಕ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="8412677897383510995">ಡಿಸ್‌ಪ್ಲೇ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8413272770729657668">ರೆಕಾರ್ಡಿಂಗ್ 3, 2, 1 ರಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತಿದೆ</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ಕೇಸ್)</translation>
 <translation id="8425213833346101688">ಬದಲಿಸಿ</translation>
 <translation id="8426708595819210923">ಶುಭ ಸಂಜೆ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>

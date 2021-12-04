@@ -533,7 +533,6 @@
 <translation id="1549275686094429035">ARC-ն միացված է</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> հավելվածը ցանկանում է օգտվել <ph name="VOLUME_NAME" />-ից: Այն կարող է փոփոխել կամ ջնջել ձեր ֆայլերը:</translation>
 <translation id="1552301827267621511">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է օգտագործվող որոնիչը։ Այժմ օգտագործվում է <ph name="SEARCH_PROVIDER_DOMAIN" />-ը։</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">անսահմանափակ</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="1556537182262721003">Չհաջողվեց պրոֆիլ տեղափոխել ընդլայնման գրացուցակը:</translation>
@@ -690,6 +689,7 @@
 <translation id="1692115862433274081">Օգտագործել այլ հաշիվ</translation>
 <translation id="1692118695553449118">Համաժամացումը միացված է</translation>
 <translation id="1692210323591458290">Մուգ մանուշակագույն</translation>
+<translation id="1695487653372841667">Դուք եք որոշում, թե ինչ տվյալներ ուղարկել Google-ին։ Այս գործառույթը ցանկացած ժամանակ կարող եք փոփոխել կարգավորումներում։</translation>
 <translation id="169675691788639886">Սարքում կարգավորված է SSH սերվեր։ Մի մտեք համակարգ այնպիսի հաշիվներով, որոնք խիստ անձնական տեղեկություններ են պարունակում։</translation>
 <translation id="1697150536837697295">Արվեստ</translation>
 <translation id="1697686431566694143">Փոփոխել ֆայլը</translation>
@@ -1073,7 +1073,6 @@
 <translation id="2090165459409185032">Հաշվի տեղեկությունները վերականգնելու համար այցելեք՝ google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Ավտոմատ միանում է, երբ դուք մուտք եք գործում</translation>
 <translation id="2090876986345970080">Համակարգի անվտանգության կարգավորում</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="2098805196501063469">Ստուգել մնացած գաղտնաբառերը</translation>
 <translation id="2099172618127234427">Դուք միացնում եք Chrome-ի օպերացիոն համակարգի վրիպազերծման գործառույթները, որոնք կկարգավորեն sshd daemon-ը և թույլ կտան սկզբնաբեռնել USB հիշասարքերից:</translation>
@@ -3054,7 +3053,6 @@
 <translation id="4110490973560452005">Ներբեռնումն ավարտվեց. <ph name="FILE_NAME" />: Սեղմեք Shift+F6՝ ներբեռնումների գոտու տարածք անցնելու համար:</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (անցանց)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Դուք ցանցի ծածկույթից դուրս եք</translation>
 <translation id="4115378294792113321">Ծիրանեգույն</translation>
 <translation id="4117637339509843559">Մուգ ռեժիմ</translation>
@@ -3140,7 +3138,6 @@
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ի կարգավորում</translation>
 <translation id="4235965441080806197">Չեղարկել մուտքը</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Վերագործարկեք՝ կազմակերպության հավելվածները թարմացնելու համար</translation>
 <translation id="4242145785130247982">Սպասառուների բազմակի վկայագրեր չեն աջակցվում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -4683,7 +4680,6 @@
 <translation id="5901494423252125310">Տպիչի դռնակը բաց է</translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5904614460720589786">Կազմաձևման խնդրի պատճառով չհաջողվեց կարգավորել <ph name="APP_NAME" /> հավելվածը։ Դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Գրեթե պատրաստ է: Վերագործարկեք սարքը` թարմացումն ավարտելու համար:</translation>
 <translation id="5906732635754427568">Այս հավելվածին առնչվող տվյալները կհեռացվեն այս սարքից:</translation>
 <translation id="5908474332780919512">Գործարկել հավելվածը մուտք գործելիս</translation>
@@ -5343,7 +5339,6 @@
 <translation id="659005207229852190">Անվտանգության ստուգումն ավարտվել է։</translation>
 <translation id="6590458744723262880">Պանակի վերանվանում</translation>
 <translation id="6592267180249644460">WebRTC-ի մատյանի պահման ժամանակը՝ <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Մատնահետքն ավելացվեց</translation>
 <translation id="6593881952206664229">Հեղինակային իրավունքով պաշտպանված մեդիա ֆայլերը կարող են չնվագարկվել</translation>
 <translation id="6594011207075825276">Սերիական սարքերի որոնում…</translation>
@@ -5796,7 +5791,6 @@
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7055152154916055070">Վերահասցեավորումն արգելափակված է՝</translation>
 <translation id="7055451306017383754">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Parallels Desktop-ը հաջորդ անգամ անջատվի։</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Ինկոգնիտո}one{# բաց ինկոգնիտո պատուհան}other{# բաց ինկոգնիտո պատուհան}}</translation>
 <translation id="7056526158851679338">&amp;Հետազոտել սարքերը</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Անվտանգության ստուգումն արվել է 1 րոպե առաջ}one{Անվտանգության ստուգումն արվել է {NUM_MINS} րոպե առաջ}other{Անվտանգության ստուգումն արվել է {NUM_MINS} րոպե առաջ}}</translation>
@@ -6507,7 +6501,6 @@
 <translation id="7797246427375693110">Միացված է / Ավտոմատ կանջատվի <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Անջատ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />՝ ավտոմատ արգելափակվել է</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Պաստառը տեղադրվեց</translation>
 <translation id="7799817062559422778">Բաց ռեժիմ</translation>
 <translation id="7800159967992492578">Ցույց տալ/թաքցնել որոնման կողագոտին։ Որոնման կողագոտին ակտիվացված է։</translation>
@@ -7440,7 +7433,6 @@
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>
 <translation id="8771300903067484968">Գլխավոր էջը վերակայվել է կանխադրված ֆոնով։</translation>
 <translation id="8773302562181397928">Պահել «<ph name="PRINTER_NAME" />» տպիչը</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Հաստատեք վերականգնումը</translation>
 <translation id="8774934320277480003">Վերին լուսանցք</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>

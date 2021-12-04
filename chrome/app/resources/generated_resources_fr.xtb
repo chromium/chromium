@@ -532,7 +532,6 @@
 <translation id="1549275686094429035">ARC activé</translation>
 <translation id="1549788673239553762">"<ph name="APP_NAME" />" souhaite accéder à "<ph name="VOLUME_NAME" />". L'application peut modifier ou supprimer vos fichiers.</translation>
 <translation id="1552301827267621511">L'extension "<ph name="EXTENSION_NAME" />" a remplacé le moteur de recherche par <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">L'écran connecté se verrouille et détecte si quelqu'un l'espionne par derrière</translation>
 <translation id="1553538517812678578">sans limite</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
@@ -1072,7 +1071,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2090165459409185032">Pour récupérer les informations de votre compte, consultez la page google.com/accounts/recovery.</translation>
 <translation id="2090507354966565596">Se connecte automatiquement lorsque vous vous connectez</translation>
 <translation id="2090876986345970080">Paramètres de sécurité du système</translation>
-<translation id="2092038932007199943">Vous avertir ou assombrir temporairement l'écran si quelqu'un l'espionne par derrière</translation>
 <translation id="2096715839409389970">Effacer les cookies tiers</translation>
 <translation id="2098805196501063469">Vérifier les mots de passe restants</translation>
 <translation id="2099172618127234427">Les fonctionnalités de débogage de Chrome OS que vous activez configurent le démon sshd et autorisent le démarrage à partir de clés USB.</translation>
@@ -3054,7 +3052,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4110490973560452005">Téléchargement terminé : <ph name="FILE_NAME" />. Appuyez sur Maj+F6 pour accéder à la zone de la barre de téléchargements.</translation>
 <translation id="4110686435123617899">Sélectionner l'album "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors connexion)</translation>
-<translation id="4112809168763360620">Protections intelligentes de la vie privée</translation>
 <translation id="4115002065223188701">Réseau hors de portée</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4117637339509843559">Mode sombre</translation>
@@ -3140,7 +3137,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4231095370974836764">Installez des applications et des jeux Google Play sur votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
-<translation id="4238175133949127631">Assombrissement temporaire de l'écran</translation>
 <translation id="4241182343707213132">Redémarrer pour mettre à jour les applis de votre organisation</translation>
 <translation id="4242145785130247982">Plusieurs certificats client ne sont pas compatibles</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -4681,7 +4677,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5901494423252125310">Capot de l'imprimante ouvert</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5904614460720589786">Impossible d'installer <ph name="APP_NAME" /> en raison d'un problème de configuration. Veuillez contacter votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Cette fonctionnalité utilise la caméra avant pour la détection. Les données sont traitées de manière sécurisée, puis supprimées. Google n'utilise vos données dans aucun autre objectif.</translation>
 <translation id="5906655207909574370">Mise à jour presque terminée. Pour la finaliser, veuillez redémarrer votre appareil.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
 <translation id="5908474332780919512">Lancer l'application lors de la connexion</translation>
@@ -5341,7 +5336,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="659005207229852190">Contrôle de sécurité terminé.</translation>
 <translation id="6590458744723262880">Renommer le dossier</translation>
 <translation id="6592267180249644460">Date et heure de création du journal WebRTC : <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Afficher une icône représentant un œil dans la zone d'état</translation>
 <translation id="6592808042417736307">Votre empreinte a bien été enregistrée</translation>
 <translation id="6593881952206664229">Les contenus multimédias protégés par des droits d'auteur peuvent ne pas être lus</translation>
 <translation id="6594011207075825276">Recherche de périphériques…</translation>
@@ -5794,7 +5788,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7055451306017383754">Impossible d'annuler le partage, car une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Parallels Desktop.</translation>
-<translation id="7056011684066172642">L'écran se verrouille automatiquement si vous vous éloignez et ne se désactive pas si vous êtes devant lui</translation>
 <translation id="7056418393177503237">{0,plural, =1{Navigation privée}one{# fenêtre de navigation privée ouverte}other{# fenêtres de navigation privée ouvertes}}</translation>
 <translation id="7056526158851679338">&amp;Inspecter les appareils</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Contrôle de sécurité effectué il y a 1 minute}one{Contrôle de sécurité effectué il y a {NUM_MINS} minute}other{Contrôle de sécurité effectué il y a {NUM_MINS} minutes}}</translation>
@@ -6506,7 +6499,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7797246427375693110">Activé/Se désactive automatiquement à <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Désactivé</translation>
 <translation id="7798844538707273832">Autorisation "<ph name="PERMISSION" />" bloquée automatiquement</translation>
-<translation id="7799220949286681310">Verrouillage de l'écran intelligent</translation>
 <translation id="7799299114731150374">Le fond d'écran a bien été défini.</translation>
 <translation id="7799817062559422778">Mode clair</translation>
 <translation id="7800159967992492578">Activer/Désactiver le panneau latéral de recherche. Panneau latéral de recherche activé.</translation>
@@ -7441,7 +7433,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8770406935328356739">Répertoire racine de l'extension</translation>
 <translation id="8771300903067484968">L'arrière-plan par défaut de la page d'accueil a été rétabli.</translation>
 <translation id="8773302562181397928">Enregistrer l'imprimante <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Protection contre l'espionnage</translation>
 <translation id="8774379074441005279">Confirmer la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide.</translation>

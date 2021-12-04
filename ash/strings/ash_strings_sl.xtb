@@ -570,6 +570,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
 <translation id="4730374152663651037">POGOSTO UPORABLJENE</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (leva)</translation>
 <translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4735498845456076464">Bližnjica na tipkovnici <ph name="LAUNCHER_KEY_NAME" /> + številka je spremenjena. Če želite uporabljati funkcijske tipke, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in tipko v vrhnji vrstici.</translation>
 <translation id="4759238208242260848">Prenosi</translation>
@@ -653,6 +654,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5329548388331921293">Vzpostavljanje povezave …</translation>
 <translation id="5330201449517439522">Dotaknite se ali kliknite za dostop.</translation>
 <translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (desna)</translation>
 <translation id="5352250171825660495">Temna tema je vklopljena</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na <ph name="IN_PLACE_APP" />, spustite, da ustvarite mapo.</translation>
@@ -1076,6 +1078,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="8394567579869570560">Tvoj starš je zaklenil to napravo</translation>
 <translation id="8412677897383510995">Prikaz nastavitev zaslona</translation>
 <translation id="8413272770729657668">Snemanje se začne čez 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (škatlica)</translation>
 <translation id="8425213833346101688">Spremeni</translation>
 <translation id="8426708595819210923">Dober večer, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Nastavitve</translation>

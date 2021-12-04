@@ -572,6 +572,7 @@
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4730374152663651037">ЧЕСТО КОРИСТЕНИ</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (лева)</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Број се промени. За да ги користите копчињата за функции, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Копче од горниот ред.</translation>
 <translation id="4759238208242260848">Преземања</translation>
@@ -655,6 +656,7 @@
 <translation id="5329548388331921293">Се поврзува…</translation>
 <translation id="5330201449517439522">Допрете или кликнете за да влезете</translation>
 <translation id="5331975486040154427">USB-Ц уред (задна порта од лева страна)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> врз <ph name="IN_PLACE_APP" />, пуштете за да се создаде папка.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8394567579869570560">Вашиот родител го заклучи уредов</translation>
 <translation id="8412677897383510995">Прикажи ги поставките за екранот</translation>
 <translation id="8413272770729657668">Снимањето започнува за 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (футрола за полнење)</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> не е на уредов.</translation>
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8426708595819210923">Добровечер <ph name="GIVEN_NAME" />,</translation>

@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
 <translation id="4730374152663651037">ঘন ঘন ব্যবহার করা হয়</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (বাঁদিক)</translation>
 <translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। ফাংশান কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> কী + কীবোর্ডের উপরের সারির যেকোনও একটি কী প্রেস করুন।</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">কানেক্ট করা হচ্ছে...</translation>
 <translation id="5330201449517439522">Chromebook-এ যেতে ট্যাপ বা ক্লিক করুন</translation>
 <translation id="5331975486040154427">USB-C ডিভাইস (বাঁ দিকের পিছনের পোর্ট)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ডানদিক)</translation>
 <translation id="5352250171825660495">ডার্ক থিম চালু আছে</translation>
 <translation id="5379115545237091094">অনেক বেশি চেষ্টা করেছেন</translation>
 <translation id="5395308026110844773">ফোল্ডার তৈরি করতে <ph name="IN_PLACE_APP" />-এর উপরে <ph name="DRAGGED_APP_NAME" /> টেনে এনে ছেড়ে দিন।</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">আপনার অভিভাবক এই ডিভাইসটি লক করে দিয়েছেন</translation>
 <translation id="8412677897383510995">ডিসপ্লে সেটিংস দেখুন</translation>
 <translation id="8413272770729657668">রেকর্ডিং শুরু করা হচ্ছে ৩, ২, ১</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">সেটিংস</translation>

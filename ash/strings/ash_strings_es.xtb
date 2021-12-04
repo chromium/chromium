@@ -571,6 +571,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4730374152663651037">UTILIZADAS CON FRECUENCIA</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (izquierdo)</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">La combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + número ha cambiado. Para usar las teclas de funciones, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -654,6 +655,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5329548388331921293">Conectando...</translation>
 <translation id="5330201449517439522">Toca o haz clic para acceder</translation>
 <translation id="5331975486040154427">Dispositivo USB tipo C (puerto trasero izquierdo)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (derecho)</translation>
 <translation id="5352250171825660495">Tema oscuro está activado</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está encima de <ph name="IN_PLACE_APP" />. Suelta para crear una carpeta.</translation>
@@ -1077,6 +1079,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8394567579869570560">Tu padre, madre o tutor han bloqueado este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar ajustes de pantalla</translation>
 <translation id="8413272770729657668">La grabación empezará en 3, 2. 1…</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (funda)</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Configuración</translation>

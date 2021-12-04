@@ -280,6 +280,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2942350706960889382">Gedokte vergrootglas</translation>
 <translation id="2942516765047364088">Rakposisie</translation>
 <translation id="2946119680249604491">Voeg verbinding by</translation>
+<translation id="2960314608273155470">Vasvangmodus; verstek is <ph name="SOURCE" /> <ph name="TYPE" />. Druk Tab vir sleutelbordnavigasie</translation>
 <translation id="2961963223658824723">Iets het verkeerd gegaan. Probeer oor 'n paar sekondes weer.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Kon nie <ph name="LANGUAGE" />-spraaklêers aflaai nie</translation>
@@ -571,6 +572,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4702647871202761252">Privaatheidskerm is af</translation>
 <translation id="4730374152663651037">GEREELD GEBRUIK</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (links)</translation>
 <translation id="4734965478015604180">Horisontaal</translation>
 <translation id="4735498845456076464">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + syfer het verander. Om funksiesleutels te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + 'n sleutel in die boonste ry druk.</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
@@ -654,6 +656,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5329548388331921293">Koppel tans …</translation>
 <translation id="5330201449517439522">Tik of klik om in te voer</translation>
 <translation id="5331975486040154427">USB C-toestel (agterste poort aan linkerkant)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (regs)</translation>
 <translation id="5352250171825660495">Donkertema is aan</translation>
 <translation id="5379115545237091094">Te veel pogings</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> bo-oor <ph name="IN_PLACE_APP" />; laat los om vouer te skep.</translation>
@@ -885,6 +888,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7042322267639375032">Vou statusarea in</translation>
 <translation id="7045033600005038336">Vervang templaat?</translation>
 <translation id="7045595904618419789">Begin vergrootglas</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> het ontkoppel</translation>
 <translation id="7055381872777910864">W</translation>
 <translation id="7055910611768509537">Stilus is meer as 'n week lank nie gebruik nie</translation>
 <translation id="7066646422045619941">Hierdie netwerk is deur jou administrateur gedeaktiveer.</translation>
@@ -1077,6 +1081,8 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8394567579869570560">Jou ouer het hierdie toestel gesluit</translation>
 <translation id="8412677897383510995">Wys vertoonskerminstellings</translation>
 <translation id="8413272770729657668">Opname begin oor 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (houer)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> is nie op hierdie toestel nie.</translation>
 <translation id="8425213833346101688">Verander</translation>
 <translation id="8426708595819210923">Goeienaand <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Instellings</translation>

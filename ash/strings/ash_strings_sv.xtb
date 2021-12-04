@@ -570,6 +570,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
 <translation id="4730374152663651037">OFTA ANVÄNDA</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (vänster)</translation>
 <translation id="4734965478015604180">Horisontell</translation>
 <translation id="4735498845456076464">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Nu används <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent i översta raden som funktionstangenter.</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
@@ -653,6 +654,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5329548388331921293">Ansluter …</translation>
 <translation id="5330201449517439522">Tryck eller klicka för att öppna</translation>
 <translation id="5331975486040154427">USB-C-enhet (bakre porten på vänster sida)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5379115545237091094">För många försök</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ovanpå <ph name="IN_PLACE_APP" />, om du släpper skapas en mapp.</translation>
@@ -1076,6 +1078,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8394567579869570560">Din förälder har låst enheten</translation>
 <translation id="8412677897383510995">Visa skärminställningar</translation>
 <translation id="8413272770729657668">Inspelningen startar om 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (fodral)</translation>
 <translation id="8425213833346101688">Ändra</translation>
 <translation id="8426708595819210923">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Inställningar</translation>

@@ -532,7 +532,6 @@
 <translation id="1549275686094429035">ເປີດການນຳໃຊ້ ARC ແລ້ວ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ຕ້ອງ​ການ​ເຂົ້າ​ຫາ <ph name="VOLUME_NAME" />. ມັນ​ອາດ​ຈະ​ດັດ​ແປງ ຫຼື​ລຶບ​ໄຟ​ລ໌​ຂອງ​ທ່ານ.</translation>
 <translation id="1552301827267621511">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນການຊອກຫາໄປໃຊ້ <ph name="SEARCH_PROVIDER_DOMAIN" /> ແລ້ວ</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">ບໍ່ຈໍາກັດ</translation>
 <translation id="1555130319947370107">ສີ​ຟ້າ</translation>
 <translation id="1556537182262721003">ບໍ່ສາມາດຍ້າຍໄດເຣັກຕໍຣີສ່ວນຂະຫຍາຍເພີ່ມເຕີມໄປເປັນໂປຣໄຟລ໌ໄດ້.</translation>
@@ -1081,7 +1080,6 @@
 <translation id="2090165459409185032">ເພື່ອ​ກູ້​ຂໍ້​ມູນ​ບັນ​ຊີ​ຂອງ​ທ່ານ​ຄືນ, ໃຫ້ໄປ​ທີ່: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">ເຊື່ອມຕໍ່ອັດຕະໂນມັດເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2090876986345970080">ການຕັ້ງ​ຄ່າຄວາມ​ປອດ​ໄພ​ລະ​ບົບ</translation>
-<translation id="2092038932007199943">ແຈ້ງເຕືອນທ່ານ ຫຼື ຫຼຸດແສງໜ້າຈໍຂອງທ່ານລົງຊົ່ວຄາວເມື່ອມີຄົນລັກເບິ່ງຈາກທາງຫຼັງ</translation>
 <translation id="2096715839409389970">ລຶບລ້າງຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="2098805196501063469">ກວດລະຫັດຜ່ານທີ່ເຫຼືອ</translation>
 <translation id="2099172618127234427">ທ່ານ​ກຳ​ລັງ​ເປີດ​ໃຊ້​ງານ​ຄຸນສົມບັດ​ການ​ແກ້​ໄຂ​ບັນ​ຫາ Chrome OS ເຊິ່ງ​ຈະ​ຕັ້ງ sshd daemon ແລaະ​ເປີດ​ໃຊ້​ງານ​ການ​ບູດnຈາກ​ອຸ​ປະ​ກອນ USB.</translation>
@@ -3066,7 +3064,6 @@
 <translation id="4110490973560452005">ການດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />. ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="4110686435123617899">ເລືອກອະລະບ້ຳ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ຢູ່ນອກເຂດສັນຍານເຄືອຂ່າຍ</translation>
 <translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
 <translation id="4117637339509843559">ໂໝດມືດ</translation>
@@ -3152,7 +3149,6 @@
 <translation id="4231095370974836764">ຕິດຕັ້ງແອັບ ແລະ ເກມຈາກ Google Play ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">ກຳນົດຄ່າ Kerberos</translation>
 <translation id="4235965441080806197">ຍົກເລີກການເຂົ້າສູ່ລະບົບ</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">ກະລຸນາຣີສະຕາດເພື່ອອັບເດດແອັບຂອງອົງການ</translation>
 <translation id="4242145785130247982">ບໍ່ຮອງຮັບຫຼາຍໃບຮັບຮອງລູກຂ່າຍ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
@@ -4692,7 +4688,6 @@
 <translation id="5901494423252125310">ຝາເຄື່ອງພິມເປີດຢູ່</translation>
 <translation id="5901630391730855834">ສີ​ເຫຼືອງ</translation>
 <translation id="5904614460720589786">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້ ເນື່ອງຈາກບັນຫາການຕັ້ງຄ່າ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">ອັບເດດໃກ້ແລ້ວໆ! ກະລຸນາປິດແລ້ວເປີດອຸປະກອນຂອງທ່ານຄືນໃໝ່ເພື່ອສິ້ນສຸດຂັ້ນຕອນການອັບເດດ.</translation>
 <translation id="5906732635754427568">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 <translation id="5908474332780919512">ເລີ່ມແອັບເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
@@ -5352,7 +5347,6 @@
 <translation id="659005207229852190">ການກວດສອບຄວາມປອດໄພສຳເລັດແລ້ວ.</translation>
 <translation id="6590458744723262880">ປ່ຽນຊື່ໂຟນເດີ</translation>
 <translation id="6592267180249644460">ແຄັບເຈີບັນທຶກ WebRTC <ph name="WEBRTC_LOG_CAPTURE_TIME" /> ແລ້ວ</translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">ບັນທຶກລາຍນິ້ວມືຂອງທ່ານແລ້ວ</translation>
 <translation id="6593881952206664229">ອາດບໍ່ສາມາດຫຼິ້ນມີເດຍທີ່ມີລິຂະສິດໄດ້</translation>
 <translation id="6594011207075825276">ກຳລັງຊອກຫາອຸປະກອນຊີຣຽວ...</translation>
@@ -5805,7 +5799,6 @@
 <translation id="7053983685419859001">ບລັອກ</translation>
 <translation id="7055152154916055070">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ:</translation>
 <translation id="7055451306017383754">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເພາະວ່າແອັບພລິເຄຊັນກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອປິດ Parallels Desktop ໃນຄັ້ງຕໍ່ໄປ.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{ບໍ່ເປີດເຜີຍຕົວຕົນ}other{# ເປີດໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
 <translation id="7056526158851679338">​ກວດ​ກາ​ອຸ​ປະ​ກອນ</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອ 1 ນາທີກ່ອນ}other{ດຳເນີນການກວດສອບຄວາມປອດໄພເມື່ອ {NUM_MINS} ນາທີກ່ອນ}}</translation>
@@ -6516,7 +6509,6 @@
 <translation id="7797246427375693110">ເປີດ / ຈະປິດອັດຕະໂນມັດເວລາ <ph name="TIME" /></translation>
 <translation id="7797571222998226653">ປິດ</translation>
 <translation id="7798844538707273832">ບລັອກ <ph name="PERMISSION" /> ອັດຕະໂນມັດແລ້ວ</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">ຕັ້ງຮູບພື້ນຫຼັງສຳເລັດແລ້ວ</translation>
 <translation id="7799817062559422778">ໂໝດແຈ້ງ</translation>
 <translation id="7800159967992492578">ສະຫຼັບການຊອກຫາດ້ານຂ້າງ. ເປີດໃຊ້ການຊອກຫາດ້ານຂ້າງແລ້ວ.</translation>
@@ -7450,7 +7442,6 @@
 <translation id="8770406935328356739">ໄດເຣັກທໍຣີພື້ນຖານຂອງສ່ວນຂະຫຍາຍ</translation>
 <translation id="8771300903067484968">ພາບພື້ນຫຼັງຂອງໜ້າເລີ່ມຕົ້ນໄດ້ຖືກຣີເຊັດເປັນພາບພື້ນຫຼັງເລີ່ມຕົ້ນແລ້ວ.</translation>
 <translation id="8773302562181397928">ບັນທຶກ <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">ຢືນຢັນກູ້ຄືນ</translation>
 <translation id="8774934320277480003">ຂອບເທິງ</translation>
 <translation id="8775144690796719618">URL ໃຊ້ບໍ່ໄດ້</translation>

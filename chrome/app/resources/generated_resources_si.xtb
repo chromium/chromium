@@ -531,7 +531,6 @@
 <translation id="1549275686094429035">ARC සබලයි</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />හට <ph name="VOLUME_NAME" /> වෙත ප්‍රවේශ වීමට අවශ්‍යය. එය ඔබේ ගොනු විකරණය කිරීමට හෝ මැකීමට හැකිය.</translation>
 <translation id="1552301827267621511">"<ph name="EXTENSION_NAME" />" දිගුව <ph name="SEARCH_PROVIDER_DOMAIN" /> භාවිතයට ඇති සෙවීම වෙනස් කළා</translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">අසීමිත</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="1556537182262721003">දිගු නාමාවලිය පැතිකඩ තුළට ගෙනයා නොහැකි විය.</translation>
@@ -1072,7 +1071,6 @@
 <translation id="2090165459409185032">ඔබේ ගිණුම් තොරතුරු ප්‍රතිසාධනය කර ගැනීමට google.com/accounts/recovery වෙත යන්න</translation>
 <translation id="2090507354966565596">ඔබ පුරන විට ස්වයංක්‍රියව සම්බන්ධ වේ</translation>
 <translation id="2090876986345970080">පද්ධති ආරක්ෂක සැකසුම</translation>
-<translation id="2092038932007199943">යමෙකු පිටුපස සිට හොරෙන් බලන විට ඔබට දැනුම් දෙන්න හෝ තාවකාලිකව ඔබගේ තිරය අඳුරු කරන්න</translation>
 <translation id="2096715839409389970">තෙවන පාර්ශ්ව කුකී හිස් කරන්න</translation>
 <translation id="2098805196501063469">ඉතිරි මුරපද පරීක්ෂා කරන්න</translation>
 <translation id="2099172618127234427">ඔබ sshd  ඩීමනයක් හා USB මගින් ආරම්භ වන සේ සැකසෙන  Chrome OS දෝශ නිරාකරණ විශේෂාංග සක්‍රීය කරයි.</translation>
@@ -3057,7 +3055,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4110490973560452005">බාගැනීම සම්පූර්ණයි: <ph name="FILE_NAME" />. බාගැනීම් තීරු ප්‍රදේශයට මාරු වීමට Shift+F6 ඔබන්න.</translation>
 <translation id="4110686435123617899">ඇල්බමය තෝරන්න <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (නොබැඳි)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">ජාලය පරාසයෙන් බැහැරය</translation>
 <translation id="4115378294792113321">මැජෙන්ටා</translation>
 <translation id="4117637339509843559">අඳුරු ප්‍රකාරය</translation>
@@ -3143,7 +3140,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4231095370974836764">Google Play වෙතින් ඔබගේ <ph name="DEVICE_TYPE" /> හි යෙදුම් සහ ක්‍රීඩා ස්ථාපනය කරන්න. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos වින්‍යාස කරන්න</translation>
 <translation id="4235965441080806197">පිරීම අවලංගු කරන්න</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">සංවිධානයේ යෙදුම් යාවත්කාලීන කිරීමට යළි අරඹන්න</translation>
 <translation id="4242145785130247982">බහුවිධ සේවාලාභී සහතිකවලට සහය නොදැක්වේ</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
@@ -4684,7 +4680,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5901494423252125310">මුද්‍රක දොර විවෘතයි</translation>
 <translation id="5901630391730855834">කහ</translation>
 <translation id="5904614460720589786">වින්‍යාස ගැටලුවක් හේතුවෙන් <ph name="APP_NAME" /> සැකසීමට නොහැකි විය. ඔබගේ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">බොහෝ දුරට යාවත්කාලීනයි! යාවත්කාලීනය අවසන් කිරීමට ඔබේ උපාංගය යළි අරඹන්න.</translation>
 <translation id="5906732635754427568">මෙම යෙදුම සමඟ සම්බන්ධ දත්ත මෙම උපාංගයෙන් ඉවත් කරනු ඇත.</translation>
 <translation id="5908474332780919512">ඔබ පිරූ විට යෙදුම ආරම්භ කරන්න</translation>
@@ -5342,7 +5337,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="659005207229852190">ආරක්‍ෂක පරීක්‍ෂාව සම්පූර්ණ කර ඇත.</translation>
 <translation id="6590458744723262880">ෆෝල්ඩරය යළි නම් කරන්න</translation>
 <translation id="6592267180249644460">WebRTC වාර්ථාව <ph name="WEBRTC_LOG_CAPTURE_TIME" /> ගන්නා ලදී</translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">ඔබේ ඇඟිලි සලකුණ ග්‍රහණ කළා</translation>
 <translation id="6593881952206664229">ප්‍රකාශන හිමිකමක් සහිත මාධ්‍ය වාදනය නොවිය හැකිය</translation>
 <translation id="6594011207075825276">අනුක්‍රමික උපාංග සොයමින්...</translation>
@@ -5795,7 +5789,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7053983685419859001">අවහිර කරන්න</translation>
 <translation id="7055152154916055070">හරවා යැවීම අවහිරයි:</translation>
 <translation id="7055451306017383754">යෙදුමක් මෙම ෆෝල්ඩරය භාවිත කරන බැවින් බෙදා ගැනීම ඉවත් කළ නොහැකි විය. ෆෝල්ඩරය Parallels Desktop වසන ඊළඟ අවස්ථාවේ බෙදා ගැනීම ඉවත් කරනු ඇත.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{අප්‍රසිද්ධ}one{විවෘත අප්‍රසිද්ධ කවුළු #}other{විවෘත අප්‍රසිද්ධ කවුළු #}}</translation>
 <translation id="7056526158851679338">&amp;උපාංග පරීක්ෂා කරන්න</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ආරක්‍ෂක පරීක්‍ෂාව 1 විනාඩියකට පෙර ධාවන විය}one{ආරක්‍ෂක පරීක්‍ෂාව විනාඩි {NUM_MINS} කට පෙර ධාවන විය}other{ආරක්‍ෂක පරීක්‍ෂාව විනාඩි {NUM_MINS} කට පෙර ධාවන විය}}</translation>
@@ -6506,7 +6499,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7797246427375693110">ක්‍රියාත්මකයි / <ph name="TIME" />ට ස්වයංක්‍රියව ක්‍රියාවිරහිත වනු ඇත</translation>
 <translation id="7797571222998226653">අක්‍රිය</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ස්වයංක්‍රියව අවහිර කර ඇත</translation>
-<translation id="7799220949286681310">සමාර්ට් තිර අගුල</translation>
 <translation id="7799299114731150374">වෝල්පේපරය සාර්ථකව සැකසිණි</translation>
 <translation id="7799817062559422778">ආලෝක ප්‍රකාරය</translation>
 <translation id="7800159967992492578">පැති සෙවීම ටොගල කරන්න. පැති සෙවීම සක්‍රිය කර ඇත.</translation>
@@ -7439,7 +7431,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8770406935328356739">දිගු මූල නාමාවලිය</translation>
 <translation id="8771300903067484968">ආරම්භක පිටු පසුබිම පෙරනිමි පසුබිම ලෙස යළි සකසා ඇත.</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> සුරකින්න</translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">ප්‍රතිසාධනය තහවුරු කරන්න</translation>
 <translation id="8774934320277480003">ඉහල මායිම</translation>
 <translation id="8775144690796719618">අවලංගු URL</translation>

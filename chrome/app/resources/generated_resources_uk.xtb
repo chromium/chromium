@@ -537,7 +537,6 @@
 <translation id="1549275686094429035">ARC ввімкнено</translation>
 <translation id="1549788673239553762">Додатку <ph name="APP_NAME" /> потрібен доступ до тому <ph name="VOLUME_NAME" />. Він може змінювати або видаляти ваші файли.</translation>
 <translation id="1552301827267621511">Розширення "<ph name="EXTENSION_NAME" />" змінило пошукову систему на <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Розумний екран блокується та виявляє, якщо хтось підглядає з-за вашої спини.</translation>
 <translation id="1553538517812678578">без обмежень</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="1556537182262721003">Не вдалося перемістити каталог розширення в профіль.</translation>
@@ -1086,7 +1085,6 @@
 <translation id="2090165459409185032">Щоб відновити дані облікового запису, перейдіть на сторінку google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Мережа автоматично підключатиметься, коли ви входитимете в обліковий запис</translation>
 <translation id="2090876986345970080">Налаштування безпеки системи</translation>
-<translation id="2092038932007199943">Сповіщати вас або тимчасово затемнювати екран, коли хтось підглядає з-за вашої спини.</translation>
 <translation id="2096715839409389970">Очистити файли cookie третіх сторін</translation>
 <translation id="2098805196501063469">Перевірити решту паролів</translation>
 <translation id="2099172618127234427">Ви ввімкнути функції налагодження ОС Chrome, які встановлять демон SSHD та ввімкнуть завантаження з носіїв USB.</translation>
@@ -3071,7 +3069,6 @@
 <translation id="4110490973560452005">Завантажено: <ph name="FILE_NAME" />. Натисніть Shift+F6, щоб перейти на панель завантажень.</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
-<translation id="4112809168763360620">Розумний захист конфіденційності</translation>
 <translation id="4115002065223188701">Мережа недосяжна</translation>
 <translation id="4115378294792113321">Пурпурний</translation>
 <translation id="4117637339509843559">Темний режим</translation>
@@ -3157,7 +3154,6 @@
 <translation id="4231095370974836764">Установлюйте додатки й ігри з Google Play на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Налаштувати Kerberos</translation>
 <translation id="4235965441080806197">Скасувати вхід</translation>
-<translation id="4238175133949127631">Тимчасово затемнити екран</translation>
 <translation id="4241182343707213132">Перезапустіть, щоб оновити додатки організації</translation>
 <translation id="4242145785130247982">Кілька сертифікатів клієнтів не підтримуються</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -4698,7 +4694,6 @@
 <translation id="5901494423252125310">Кришка принтера відкрита</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5904614460720589786">Не вдалося налаштувати додаток <ph name="APP_NAME" /> через проблему з конфігурацією. Зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">Ця функція використовує для виявлення камеру на передній панелі. Дані надійно обробляються й потім видаляються. Google не використовує ваші дані для інших цілей.</translation>
 <translation id="5906655207909574370">Майже оновлено. Перезапустіть пристрій, щоб завершити оновлення.</translation>
 <translation id="5906732635754427568">Дані, пов’язані з цим додатком, буде видалено з пристрою.</translation>
 <translation id="5908474332780919512">Запускати додаток, коли ви входите в обліковий запис</translation>
@@ -5358,7 +5353,6 @@
 <translation id="659005207229852190">Перевірку безпеки завершено.</translation>
 <translation id="6590458744723262880">Перейменувати папку</translation>
 <translation id="6592267180249644460">Журнал WebRTC створено: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Показувати значок ока на панелі стану</translation>
 <translation id="6592808042417736307">Відбиток пальця відскановано</translation>
 <translation id="6593881952206664229">Медіаконтент, захищений авторським правом, може не відтворюватися</translation>
 <translation id="6594011207075825276">Пошук пристроїв із послідовними портами…</translation>
@@ -5811,7 +5805,6 @@
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
 <translation id="7055451306017383754">Не вдалося закрити доступ, оскільки цю папку використовує додаток. Доступ до неї буде закрито після завершення роботи Parallels Desktop.</translation>
-<translation id="7056011684066172642">Екран блокується автоматично, якщо ви відходите, і не вимикатиметься, коли ви дивитеся на нього.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Вікно в режимі анонімного перегляду}one{# вікно в режимі анонімного перегляду}few{# вікна в режимі анонімного перегляду}many{# вікон у режимі анонімного перегляду}other{# вікна в режимі анонімного перегляду}}</translation>
 <translation id="7056526158851679338">&amp;Перевірити пристрої</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Перевірку безпеки виконано 1 хвилину тому}one{Перевірку безпеки виконано {NUM_MINS} хвилину тому}few{Перевірку безпеки виконано {NUM_MINS} хвилини тому}many{Перевірку безпеки виконано {NUM_MINS} хвилин тому}other{Перевірку безпеки виконано {NUM_MINS} хвилини тому}}</translation>
@@ -6523,7 +6516,6 @@
 <translation id="7797246427375693110">Увімкнено; вимкнеться автоматично о <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Вимкнено</translation>
 <translation id="7798844538707273832">Автоматично заблоковано: <ph name="PERMISSION" /></translation>
-<translation id="7799220949286681310">Розумне блокування екрана</translation>
 <translation id="7799299114731150374">Фоновий малюнок налаштовано</translation>
 <translation id="7799817062559422778">Світлий режим</translation>
 <translation id="7800159967992492578">Перемкнути бічну панель пошуку. Бічну панель пошуку активовано.</translation>
@@ -7458,7 +7450,6 @@
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>
 <translation id="8771300903067484968">Фон початкової сторінки було скинуто. Тепер це фон за умовчанням.</translation>
 <translation id="8773302562181397928">Зберегти принтер <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Захист від підглядання</translation>
 <translation id="8774379074441005279">Підтвердити відновлення</translation>
 <translation id="8774934320277480003">Верхнє поле</translation>
 <translation id="8775144690796719618">Недійсна URL-адреса</translation>

@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">સરેરાશ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
+<translation id="1196959502276349371">વર્ઝન <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1204296502688602597">DNS વિલંબતા</translation>
 <translation id="123124571410524056">શંકાસ્પદ પોર્ટલ</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3865414814144988605">રિઝોલ્યુશન</translation>
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
+<translation id="3924044641767672375">ઠીક કરવાની પ્રક્રિયા વધુ સરળ બનાવવા માટે, વાઇ-ફાઇ સાથે કનેક્ટ કરવાનો સુઝાવ આપવામાં આવે છે. તમારું નેટવર્ક સાચવવામાં આવશે.</translation>
 <translation id="3932043219784172185">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
 <translation id="3941014780699102620">હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="3942420633017001071">ડાયગ્નોસ્ટિક્સ</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="4485626319513081846">જો ડિવાઇસ રિસ્ટોક કરવામાં અથવા નવા ગ્રાહકને વિતરણ માટે નવીનીકૃત કરવામાં આવી રહ્યું હોય, તો આ વિકલ્પ પસંદ કરો.</translation>
 <translation id="4511264077854731334">પોર્ટલ</translation>
 <translation id="4521826082652183069">વિષયના નામનો વૈકલ્પિક મેળ</translation>
 <translation id="4536864596629708641">IP કન્ફિગ્યુરેશન</translation>
@@ -414,6 +417,7 @@
 <translation id="6957231940976260713">સેવાનું નામ</translation>
 <translation id="6961170852793647506">શરૂ કરવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
+<translation id="6992266763844448459">જો ડિવાઇસની માલિકી બદલાતી ન હોય, તો આ વિકલ્પ પસંદ કરો. ઉદાહરણ તરીકે, ડિવાઇસ સંસ્થામાં અન્ય વ્યક્તિને ટ્રાન્સફર કરવામાં આવી રહ્યું છે.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7058278511608979688">બંધ કરો અને સાચવો</translation>

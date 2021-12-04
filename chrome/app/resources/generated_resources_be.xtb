@@ -534,7 +534,6 @@
 <translation id="1549275686094429035">Тэхналогія ARC уключана</translation>
 <translation id="1549788673239553762">Праграма "<ph name="APP_NAME" />" запытвае доступ да <ph name="VOLUME_NAME" />. Яна можа змяніць або выдаліць вашы файлы.</translation>
 <translation id="1552301827267621511">Пашырэнне "<ph name="EXTENSION_NAME" />" зрабіла стандартнай пошукавай сістэмай наступную: <ph name="SEARCH_PROVIDER_DOMAIN" /></translation>
-<translation id="1552522962296937598">Smart display lock and detect if others peeking from behind</translation>
 <translation id="1553538517812678578">неабмежавана</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="1556537182262721003">Не ўдалося перанесці каталог пашырэнняў у профіль.</translation>
@@ -1074,7 +1073,6 @@
 <translation id="2090165459409185032">Каб аднавіць даныя ўліковага запісу, перайдзіце па спасылцы: google.com/accounts/recovery</translation>
 <translation id="2090507354966565596">Аўтаматычна падключацца пры ўваходзе</translation>
 <translation id="2090876986345970080">Налада бяспекі сістэмы</translation>
-<translation id="2092038932007199943">Notify you or temporary dim your screen when someone is snooping from behind</translation>
 <translation id="2096715839409389970">Выдаліць староннія файлы cookie</translation>
 <translation id="2098805196501063469">Праверыць астатнія паролі</translation>
 <translation id="2099172618127234427">Вы ўключаеце функцыі адладкі Chrome OS. Будзе наладжаны дэман SSHD і дазволена загрузка з USB-дыскаў.</translation>
@@ -3055,7 +3053,6 @@
 <translation id="4110490973560452005">Спампоўванне завершана: "<ph name="FILE_NAME" />". Каб перамяшчацца па панэлі спамповак, націскайце Shift+F6.</translation>
 <translation id="4110686435123617899">Выберыце альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (па-за сеткай)</translation>
-<translation id="4112809168763360620">Smart privacy protections</translation>
 <translation id="4115002065223188701">Сетка па-за зонай доступу</translation>
 <translation id="4115378294792113321">Пурпурны</translation>
 <translation id="4117637339509843559">Цёмны рэжым</translation>
@@ -3141,7 +3138,6 @@
 <translation id="4231095370974836764">Усталёўвайце праграмы і гульні з Google Play на сваёй прыладзе "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Канфігурацыя Kerberos</translation>
 <translation id="4235965441080806197">Скасаваць уваход</translation>
-<translation id="4238175133949127631">Temporary dim screen</translation>
 <translation id="4241182343707213132">Каб абнавіць праграмы арганізацыі, перазапусціце прыладу</translation>
 <translation id="4242145785130247982">Выкарыстанне некалькі кліенцкіх сертыфікатаў не падтрымліваецца</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -4679,7 +4675,6 @@
 <translation id="5901494423252125310">Дзверцы прынтара адкрыты</translation>
 <translation id="5901630391730855834">Жоўты</translation>
 <translation id="5904614460720589786">Не ўдалося наладзіць праграму <ph name="APP_NAME" /> з-за праблемы канфігурацыі. Звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
-<translation id="5906278356170001460">This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.</translation>
 <translation id="5906655207909574370">Амаль гатова! Каб завяршыць абнаўленне, перазапусціце прыладу.</translation>
 <translation id="5906732635754427568">Даныя, звязаныя з гэтай праграмай, будуць выдалены з гэтай прылады.</translation>
 <translation id="5908474332780919512">Запускаць праграму пры ўваходзе</translation>
@@ -5339,7 +5334,6 @@
 <translation id="659005207229852190">Праверка бяспекі завершана.</translation>
 <translation id="6590458744723262880">Перайменаванне папкі</translation>
 <translation id="6592267180249644460">Журнал WebRTC запісаны <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
-<translation id="659230975550262204">Show me an eye icon in the status area</translation>
 <translation id="6592808042417736307">Адбітак пальца дададзены</translation>
 <translation id="6593881952206664229">Мультымедыйныя файлы, абароненыя аўтарскім правам, могуць не прайгравацца</translation>
 <translation id="6594011207075825276">Ідзе пошук прылад паслядоўнага порта...</translation>
@@ -5792,7 +5786,6 @@
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
 <translation id="7055451306017383754">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага завяршэння працы Parallels Desktop.</translation>
-<translation id="7056011684066172642">Screen locks automatically if you walk off, and won't turn off if you're in front of it</translation>
 <translation id="7056418393177503237">{0,plural, =1{Інкогніта}one{# адкрытае акно ў рэжыме інкогніта}few{# адкрытыя акны ў рэжыме інкогніта}many{# адкрытых вокнаў у рэжыме інкогніта}other{# адкрытага акна ў рэжыме інкогніта}}</translation>
 <translation id="7056526158851679338">&amp;Праверыць прылады</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Праверка бяспекі выконвалася хвіліну таму}one{Праверка бяспекі выконвалася {NUM_MINS} хвіліну таму}few{Праверка бяспекі выконвалася {NUM_MINS} хвіліны таму}many{Праверка бяспекі выконвалася {NUM_MINS} хвілін таму}other{Праверка бяспекі выконвалася {NUM_MINS} хвіліны таму}}</translation>
@@ -6504,7 +6497,6 @@
 <translation id="7797246427375693110">Уключана (выключыцца аўтаматычна ў <ph name="TIME" />)</translation>
 <translation id="7797571222998226653">выключана</translation>
 <translation id="7798844538707273832">Аўтаматычная блакіроўка (<ph name="PERMISSION" />)</translation>
-<translation id="7799220949286681310">Smart screen lock</translation>
 <translation id="7799299114731150374">Шпалеры зададзены</translation>
 <translation id="7799817062559422778">Светлы рэжым</translation>
 <translation id="7800159967992492578">Адкрыць або закрыць бакавую панэль пошуку. Бакавая панэль пошуку актывавана.</translation>
@@ -7437,7 +7429,6 @@
 <translation id="8770406935328356739">Каранёвы каталог пашырэння</translation>
 <translation id="8771300903067484968">Фон пачатковай старонкі скінуты. Цяпер там стандартны фон.</translation>
 <translation id="8773302562181397928">Захаваць <ph name="PRINTER_NAME" /></translation>
-<translation id="8773350724590665675">Snooping protection</translation>
 <translation id="8774379074441005279">Пацвярджэнне аднаўлення</translation>
 <translation id="8774934320277480003">Верхняе поле</translation>
 <translation id="8775144690796719618">Няправільны URL-адрас</translation>

@@ -570,6 +570,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
 <translation id="4730374152663651037">ZINAZOTUMIKA SANA</translation>
 <translation id="4731797938093519117">Idhini ya mzazi</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kushoto)</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
 <translation id="4735498845456076464">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Nambari imebadilika. Ili utumie vitufe vya kukokotoa, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na kitufe kwenye safu mlalo ya juu.</translation>
 <translation id="4759238208242260848">Vipakuliwa</translation>
@@ -653,6 +654,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5329548388331921293">Inaunganisha...</translation>
 <translation id="5330201449517439522">Gusa au ubofye ili uingie</translation>
 <translation id="5331975486040154427">Kifaa cha USB-C (mlango wa upande wa kushoto nyuma)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Kulia)</translation>
 <translation id="5352250171825660495">Mandhari meusi yamewashwa</translation>
 <translation id="5379115545237091094">Umejaribu mara nyingi mno</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> iko juu ya <ph name="IN_PLACE_APP" />, achilia ili ufungue folda mpya.</translation>
@@ -1077,6 +1079,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8394567579869570560">Kifaa hiki kimefungwa na mzazi wako</translation>
 <translation id="8412677897383510995">Onyesha mipangilio ya skrini</translation>
 <translation id="8413272770729657668">Inaanza kurekodi baada ya tatu, mbili, moja</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Kifuniko)</translation>
 <translation id="8425213833346101688">Badilisha</translation>
 <translation id="8426708595819210923">Habari za jioni <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Mipangilio</translation>

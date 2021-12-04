@@ -570,6 +570,7 @@
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
 <translation id="4730374152663651037">ЧЕСТО ИЗПОЛЗВАНИ</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
+<translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (лява)</translation>
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Клавишната комбинация клавиш „<ph name="LAUNCHER_KEY_NAME" />“ + цифра се промени. За да използвате функционалните клавиши, натиснете „<ph name="LAUNCHER_KEY_NAME" />“ + клавиш от най-горния ред.</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
@@ -653,6 +654,7 @@
 <translation id="5329548388331921293">Установява се връзка...</translation>
 <translation id="5330201449517439522">Докоснете или кликнете, за да влезете</translation>
 <translation id="5331975486040154427">Устройство с USB-C (задният ляв порт)</translation>
+<translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (дясна)</translation>
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
 <translation id="5379115545237091094">Твърде много опити</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> е върху <ph name="IN_PLACE_APP" />. Освободете, за да създадете папка.</translation>
@@ -1076,6 +1078,7 @@
 <translation id="8394567579869570560">Родителят ви заключи това устройство</translation>
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8413272770729657668">Записването започва след 3, 2, 1</translation>
+<translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Настройки</translation>
