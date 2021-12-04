@@ -347,7 +347,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     public View getView() {
         if (mCustomView != null) return mCustomView;
 
-        if (mNativePage != null) return mNativePage.getView();
+        if (mNativePage != null && !mNativePage.isFrozen()) return mNativePage.getView();
 
         return mContentView;
     }
