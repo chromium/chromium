@@ -493,6 +493,9 @@ crbug.com/1213542 [ linux nvidia-0x1cb3 skia-renderer-gl ] Pixel_Video_Media_Str
 crbug.com/1275741 [ chromeos chromeos-board-kevin skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
 crbug.com/1275741 [ chromeos chromeos-board-kevin skia-renderer-gl ] Pixel_OffscreenCanvasIBRCWebGLMain [ RetryOnFailure ]
 
+# Flaky on Pixel 4 Android WebView
+crbug.com/1276605 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
