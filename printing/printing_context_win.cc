@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,10 +20,13 @@
 #include "printing/backend/print_backend.h"
 #include "printing/backend/win_helper.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/metafile.h"
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"
+#include "printing/page_setup.h"
 #include "printing/print_settings_initializer_win.h"
 #include "printing/printed_document.h"
+#include "printing/printed_page_win.h"
 #include "printing/printing_context_system_dialog_win.h"
 #include "printing/printing_features.h"
 #include "printing/printing_utils.h"
@@ -35,8 +39,38 @@ namespace printing {
 
 namespace {
 
+// Helper class to ensure that a saved device context state gets restored at end
+// of scope.
+class ScopedSavedState {
+ public:
+  ScopedSavedState(HDC context)
+      : context_(context), saved_state_(SaveDC(context)) {
+    DCHECK_NE(saved_state_, 0);
+  }
+  ~ScopedSavedState() {
+    BOOL res = RestoreDC(context_, saved_state_);
+    DCHECK_NE(res, 0);
+  }
+
+ private:
+  HDC context_;
+  int saved_state_;
+};
+
 void AssignResult(mojom::ResultCode* out, mojom::ResultCode in) {
   *out = in;
+}
+
+void SimpleModifyWorldTransform(HDC context,
+                                int offset_x,
+                                int offset_y,
+                                float shrink_factor) {
+  XFORM xform = {0};
+  xform.eDx = static_cast<float>(offset_x);
+  xform.eDy = static_cast<float>(offset_y);
+  xform.eM11 = xform.eM22 = 1.f / shrink_factor;
+  BOOL res = ModifyWorldTransform(context, &xform, MWT_LEFTMULTIPLY);
+  DCHECK_NE(res, 0);
 }
 
 }  // namespace
@@ -66,12 +100,6 @@ PrintingContextWin::PrintingContextWin(Delegate* delegate)
 
 PrintingContextWin::~PrintingContextWin() {
   ReleaseContext();
-}
-
-void PrintingContextWin::PrintDocument(const std::wstring& device_name,
-                                       const MetafileSkia& metafile) {
-  // TODO(crbug.com/1008222)
-  NOTIMPLEMENTED();
 }
 
 void PrintingContextWin::AskUserForSettings(int max_pages,
@@ -350,6 +378,44 @@ mojom::ResultCode PrintingContextWin::NewPage() {
   return mojom::ResultCode::kSuccess;
 }
 
+mojom::ResultCode PrintingContextWin::RenderPage(const PrintedPage& page,
+                                                 const PageSetup& page_setup) {
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(context_);
+  DCHECK(in_print_job_);
+
+  gfx::Rect content_area = GetCenteredPageContentRect(
+      page_setup.physical_size(), page.page_size(), page.page_content_rect());
+
+  // Save the state to make sure the context this function call does not modify
+  // the device context.
+  ScopedSavedState saved_state(context_);
+  skia::InitializeDC(context_);
+  {
+    // Save the state (again) to apply the necessary world transformation.
+    ScopedSavedState saved_state_inner(context_);
+
+    // Setup the matrix to translate and scale to the right place. Take in
+    // account the actual shrinking factor.
+    // Note that the printing output is relative to printable area of the page.
+    // That is 0,0 is offset by PHYSICALOFFSETX/Y from the page.
+    SimpleModifyWorldTransform(
+        context_, content_area.x() - page_setup.printable_area().x(),
+        content_area.y() - page_setup.printable_area().y(),
+        page.shrink_factor());
+
+    if (::StartPage(context_) <= 0)
+      return mojom::ResultCode::kFailed;
+    bool played_back = page.metafile()->SafePlayback(context_);
+    DCHECK(played_back);
+    if (::EndPage(context_) <= 0)
+      return mojom::ResultCode::kFailed;
+  }
+
+  return mojom::ResultCode::kSuccess;
+}
+
 mojom::ResultCode PrintingContextWin::PageDone() {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
@@ -359,6 +425,15 @@ mojom::ResultCode PrintingContextWin::PageDone() {
   // ::EndPage().
 
   return mojom::ResultCode::kSuccess;
+}
+
+mojom::ResultCode PrintingContextWin::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
+  // TODO(crbug.com/1008222)
+  NOTIMPLEMENTED();
+  return mojom::ResultCode::kFailed;
 }
 
 mojom::ResultCode PrintingContextWin::DocumentDone() {

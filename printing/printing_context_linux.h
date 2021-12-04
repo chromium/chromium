@@ -32,9 +32,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
   static void SetPdfPaperSizeFunction(
       gfx::Size (*get_pdf_paper_size)(PrintingContextLinux* context));
 
-  // Prints the document contained in `metafile`.
-  void PrintDocument(const MetafilePlayer& metafile);
-
   // Initializes with predefined settings.
   void InitWithSettings(std::unique_ptr<PrintSettings> settings);
 
@@ -50,6 +47,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
   mojom::ResultCode NewPage() override;
   mojom::ResultCode PageDone() override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;

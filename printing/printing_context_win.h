@@ -16,7 +16,6 @@
 
 namespace printing {
 
-class MetafileSkia;
 class PrintSettings;
 
 class COMPONENT_EXPORT(PRINTING) PrintingContextWin : public PrintingContext {
@@ -25,10 +24,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextWin : public PrintingContext {
   PrintingContextWin(const PrintingContextWin&) = delete;
   PrintingContextWin& operator=(const PrintingContextWin&) = delete;
   ~PrintingContextWin() override;
-
-  // Prints the document contained in `metafile`.
-  void PrintDocument(const std::wstring& device_name,
-                     const MetafileSkia& metafile);
 
   // PrintingContext implementation.
   void AskUserForSettings(int max_pages,
@@ -41,7 +36,12 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextWin : public PrintingContext {
       const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
   mojom::ResultCode NewPage() override;
+  mojom::ResultCode RenderPage(const PrintedPage& page,
+                               const PageSetup& page_setup) override;
   mojom::ResultCode PageDone() override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;

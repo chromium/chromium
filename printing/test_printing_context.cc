@@ -112,7 +112,23 @@ mojom::ResultCode TestPrintingContext::NewPage() {
   return mojom::ResultCode::kFailed;
 }
 
+#if defined(OS_WIN)
+mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
+                                                  const PageSetup& page_setup) {
+  NOTIMPLEMENTED();
+  return mojom::ResultCode::kFailed;
+}
+#endif  // defined(OS_WIN)
+
 mojom::ResultCode TestPrintingContext::PageDone() {
+  NOTIMPLEMENTED();
+  return mojom::ResultCode::kFailed;
+}
+
+mojom::ResultCode TestPrintingContext::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
   NOTIMPLEMENTED();
   return mojom::ResultCode::kFailed;
 }
@@ -123,7 +139,9 @@ mojom::ResultCode TestPrintingContext::DocumentDone() {
 }
 
 void TestPrintingContext::Cancel() {
-  NOTIMPLEMENTED();
+  abort_printing_ = true;
+  in_print_job_ = false;
+  DVLOG(1) << "Canceling print job";
 }
 void TestPrintingContext::ReleaseContext() {}
 

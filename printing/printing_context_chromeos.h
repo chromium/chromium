@@ -41,6 +41,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
   mojom::ResultCode NewPage() override;
   mojom::ResultCode PageDone() override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;

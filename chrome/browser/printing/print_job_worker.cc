@@ -531,7 +531,7 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   }
 
   // Actual printing.
-  if (document_->RenderPrintedPage(*page, printing_context_->context()) !=
+  if (document_->RenderPrintedPage(*page, printing_context_.get()) !=
       mojom::ResultCode::kSuccess) {
     OnFailure();
     return;

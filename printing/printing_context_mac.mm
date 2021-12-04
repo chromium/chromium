@@ -17,7 +17,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings_initializer_mac.h"
 #include "printing/printing_features.h"
@@ -562,6 +564,29 @@ mojom::ResultCode PrintingContextMac::PageDone() {
     OnError();
   context_ = nullptr;
 
+  return mojom::ResultCode::kSuccess;
+}
+
+mojom::ResultCode PrintingContextMac::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
+  const PageSetup& page_setup = settings.page_setup_device_units();
+  const CGRect paper_rect = gfx::Rect(page_setup.physical_size()).ToCGRect();
+
+  for (size_t metafile_page_number = 1; metafile_page_number <= num_pages;
+       metafile_page_number++) {
+    mojom::ResultCode result = NewPage();
+    if (result != mojom::ResultCode::kSuccess)
+      return result;
+    if (!metafile.RenderPage(metafile_page_number, context_, paper_rect,
+                             /*autorotate=*/true, /*fit_to_page=*/false)) {
+      return mojom::ResultCode::kFailed;
+    }
+    result = PageDone();
+    if (result != mojom::ResultCode::kSuccess)
+      return result;
+  }
   return mojom::ResultCode::kSuccess;
 }
 

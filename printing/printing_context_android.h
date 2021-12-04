@@ -18,8 +18,6 @@ class WindowAndroid;
 
 namespace printing {
 
-class MetafilePlayer;
-
 // Android subclass of PrintingContext. This class communicates with the
 // Java side through JNI.
 class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
@@ -52,9 +50,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
   void ShowSystemDialogDone(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
 
-  // Prints the document contained in `metafile`.
-  void PrintDocument(const MetafilePlayer& metafile);
-
   // PrintingContext implementation.
   void AskUserForSettings(int max_pages,
                           bool has_selection,
@@ -67,6 +62,9 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
   mojom::ResultCode NewPage() override;
   mojom::ResultCode PageDone() override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;

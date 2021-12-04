@@ -59,7 +59,14 @@ class TestPrintingContext : public PrintingContext {
       const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
   mojom::ResultCode NewPage() override;
+#if defined(OS_WIN)
+  mojom::ResultCode RenderPage(const PrintedPage& page,
+                               const PageSetup& page_setup) override;
+#endif
   mojom::ResultCode PageDone() override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
   mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;

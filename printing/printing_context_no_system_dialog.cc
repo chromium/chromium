@@ -118,6 +118,19 @@ mojom::ResultCode PrintingContextNoSystemDialog::PageDone() {
   return mojom::ResultCode::kSuccess;
 }
 
+mojom::ResultCode PrintingContextNoSystemDialog::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
+
+  // Intentional No-op.
+
+  return mojom::ResultCode::kSuccess;
+}
+
 mojom::ResultCode PrintingContextNoSystemDialog::DocumentDone() {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;

@@ -29,6 +29,7 @@
 #include "printing/metafile.h"
 #include "printing/page_number.h"
 #include "printing/print_settings_conversion.h"
+#include "printing/printing_context.h"
 #include "printing/units.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_elider.h"
@@ -182,6 +183,21 @@ void PrintedDocument::SetDocument(std::unique_ptr<MetafilePlayer> metafile) {
 
 const MetafilePlayer* PrintedDocument::GetMetafile() {
   return mutable_.metafile_.get();
+}
+
+mojom::ResultCode PrintedDocument::RenderPrintedDocument(
+    PrintingContext* context) {
+  mojom::ResultCode result = context->NewPage();
+  if (result != mojom::ResultCode::kSuccess)
+    return result;
+  {
+    base::AutoLock lock(lock_);
+    result = context->PrintDocument(*GetMetafile(), *immutable_.settings_,
+                                    mutable_.expected_page_count_);
+    if (result != mojom::ResultCode::kSuccess)
+      return result;
+  }
+  return context->PageDone();
 }
 
 bool PrintedDocument::IsComplete() const {

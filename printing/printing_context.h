@@ -21,7 +21,13 @@
 
 namespace printing {
 
+class MetafilePlayer;
 class PrintingContextFactoryForTest;
+
+#if defined(OS_WIN)
+class PageSetup;
+class PrintedPage;
+#endif
 
 // An abstraction of a printer context, implemented by objects that describe the
 // user selected printing context. This includes the OS-dependent UI to ask the
@@ -119,8 +125,19 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // Starts a new page.
   virtual mojom::ResultCode NewPage() = 0;
 
+#if defined(OS_WIN)
+  // Renders a page.
+  virtual mojom::ResultCode RenderPage(const PrintedPage& page,
+                                       const PageSetup& page_setup) = 0;
+#endif
+
   // Closes the printed page.
   virtual mojom::ResultCode PageDone() = 0;
+
+  // Prints the document contained in `metafile`.
+  virtual mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                          const PrintSettings& settings,
+                                          uint32_t num_pages) = 0;
 
   // Closes the printing job. After this call the object is ready to start a new
   // document.

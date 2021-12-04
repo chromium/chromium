@@ -184,7 +184,6 @@ component("printing") {
 
   if (is_android) {
     sources += [
-      "printed_document_android.cc",
       "printing_context_android.cc",
       "printing_context_android.h",
     ]
@@ -197,7 +196,6 @@ component("printing") {
 
   if (is_chromeos) {
     sources += [
-      "printed_document_chromeos.cc",
       "printing_context_no_system_dialog.cc",
       "printing_context_no_system_dialog.h",
     ]
@@ -205,7 +203,6 @@ component("printing") {
 
   if (is_linux) {
     sources += [
-      "printed_document_linux.cc",
       "printing_context_linux.cc",
       "printing_context_linux.h",
     ]
@@ -215,7 +212,6 @@ component("printing") {
     sources += [
       "print_settings_initializer_mac.cc",
       "print_settings_initializer_mac.h",
-      "printed_document_mac.cc",
       "printing_context_mac.h",
       "printing_context_mac.mm",
     ]

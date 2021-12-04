@@ -424,6 +424,22 @@ mojom::ResultCode PrintingContextChromeos::PageDone() {
   return mojom::ResultCode::kSuccess;
 }
 
+mojom::ResultCode PrintingContextChromeos::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
+#if defined(USE_CUPS)
+  std::vector<char> buffer;
+  if (!metafile.GetDataAsVector(&buffer))
+    return mojom::ResultCode::kFailed;
+
+  return StreamData(buffer);
+#else
+  NOTREACHED();
+  return mojom::ResultCode::kFailed;
+#endif  // defined(USE_CUPS)
+}
+
 mojom::ResultCode PrintingContextChromeos::DocumentDone() {
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;

@@ -159,12 +159,6 @@ void PrintingContextAndroid::ShowSystemDialogDone(
   std::move(callback_).Run(mojom::ResultCode::kCanceled);
 }
 
-void PrintingContextAndroid::PrintDocument(const MetafilePlayer& metafile) {
-  DCHECK(is_file_descriptor_valid());
-
-  metafile.SaveToFileDescriptor(fd_);
-}
-
 mojom::ResultCode PrintingContextAndroid::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
@@ -237,6 +231,16 @@ mojom::ResultCode PrintingContextAndroid::PageDone() {
   // Intentional No-op.
 
   return mojom::ResultCode::kSuccess;
+}
+
+mojom::ResultCode PrintingContextAndroid::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
+  DCHECK(is_file_descriptor_valid());
+
+  return metafile.SaveToFileDescriptor(fd_) ? mojom::ResultCode::kSuccess
+                                            : mojom::ResultCode::kFailed;
 }
 
 mojom::ResultCode PrintingContextAndroid::DocumentDone() {

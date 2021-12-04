@@ -70,11 +70,6 @@ void PrintingContextLinux::SetPdfPaperSizeFunction(
   get_pdf_paper_size_ = get_pdf_paper_size;
 }
 
-void PrintingContextLinux::PrintDocument(const MetafilePlayer& metafile) {
-  DCHECK(print_dialog_);
-  print_dialog_->PrintDocument(metafile, document_name_);
-}
-
 void PrintingContextLinux::AskUserForSettings(int max_pages,
                                               bool has_selection,
                                               bool is_scripted,
@@ -173,6 +168,17 @@ mojom::ResultCode PrintingContextLinux::PageDone() {
 
   // Intentional No-op.
 
+  return mojom::ResultCode::kSuccess;
+}
+
+mojom::ResultCode PrintingContextLinux::PrintDocument(
+    const MetafilePlayer& metafile,
+    const PrintSettings& settings,
+    uint32_t num_pages) {
+  DCHECK(print_dialog_);
+  // TODO(crbug.com/1252685)  Plumb error code back from
+  // `PrintDialogGtkInterface`.
+  print_dialog_->PrintDocument(metafile, document_name_);
   return mojom::ResultCode::kSuccess;
 }
 
