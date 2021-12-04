@@ -309,6 +309,7 @@ class GuestOsSharePathTest : public testing::Test {
     run_loop_.reset();
     scoped_user_manager_.reset();
     profile_.reset();
+    ash::disks::DiskMountManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
