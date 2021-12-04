@@ -4,7 +4,12 @@
 
 package org.chromium.content.browser.input;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.text.TextUtils;
+import android.view.inputmethod.SurroundingText;
+
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 
@@ -18,6 +23,28 @@ public class TextInputState {
     private final Range mComposition;
     private final boolean mSingleLine;
     private final boolean mReplyToRequest;
+
+    /**
+     * Class added for junit test, because junit doesn't have SurroundingText from the Android
+     * framework yet.
+     *
+     * TODO(ctzsm): Replace its usage with the framework SurrroundingText class once junit supports
+     * it.
+     */
+    /* package */ static class SurroundingTextInternal {
+        public final CharSequence mText;
+        public final int mSelectionStart;
+        public final int mSelectionEnd;
+        public final int mOffset;
+
+        public SurroundingTextInternal(
+                CharSequence text, int selectionStart, int selectionEnd, int offset) {
+            mText = text;
+            mSelectionStart = selectionStart;
+            mSelectionEnd = selectionEnd;
+            mOffset = offset;
+        }
+    }
 
     public TextInputState(CharSequence text, Range selection, Range composition, boolean singleLine,
             boolean replyToRequest) {
@@ -69,6 +96,25 @@ public class TextInputState {
         maxChars = Math.max(0, Math.min(maxChars, mSelection.start()));
         return TextUtils.substring(
                 mText, Math.max(0, mSelection.start() - maxChars), mSelection.start());
+    }
+
+    @TargetApi(Build.VERSION_CODES.S)
+    public SurroundingText getSurroundingText(int beforeLength, int afterLength) {
+        SurroundingTextInternal surroundingText =
+                getSurroundingTextInternal(beforeLength, afterLength);
+        return new SurroundingText(surroundingText.mText, surroundingText.mSelectionStart,
+                surroundingText.mSelectionEnd, surroundingText.mOffset);
+    }
+
+    @VisibleForTesting
+    /* package */ SurroundingTextInternal getSurroundingTextInternal(
+            int beforeLength, int afterLength) {
+        beforeLength = Math.max(0, Math.min(beforeLength, mSelection.start()));
+        afterLength = Math.max(0, Math.min(afterLength, mText.length() - mSelection.end()));
+        CharSequence text = TextUtils.substring(
+                mText, mSelection.start() - beforeLength, mSelection.end() + afterLength);
+        return new SurroundingTextInternal(
+                text, beforeLength, mSelection.end() - (mSelection.start() - beforeLength), -1);
     }
 
     @Override
