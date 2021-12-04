@@ -37,6 +37,7 @@ struct AutocompleteMatch {
   bool allowed_to_be_default_match;
   string type;
   bool is_search_type;
+  string aqs_type_subtypes;
   bool has_tab_match;
   string? associated_keyword;
   string keyword;

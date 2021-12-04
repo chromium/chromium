@@ -78,6 +78,17 @@ class AutocompleteController : public AutocompleteProviderListener,
                                  bool default_match_changed) {}
   };
 
+  // Converts the given match to a type (and possibly subtype) based on the AQS
+  // specification. For more details, see go/binary-clients-logging.
+  // Note: the `subtypes` parameter passed over to this function may be filled
+  // with subtypes reported by the suggest server. This call will update this
+  // set with Chrome-specific subtypes.
+  // TODO(https://crbug.com/1103056): relocate subtype updates to appropriate
+  //  sites that construct these matches.
+  static void GetMatchTypeAndExtendSubtypes(const AutocompleteMatch& match,
+                                            size_t* type,
+                                            base::flat_set<int>* subtypes);
+
   // |provider_types| is a bitmap containing AutocompleteProvider::Type values
   // that will (potentially, depending on platform, flags, etc.) be
   // instantiated. |provider_client| is passed to all those providers, and

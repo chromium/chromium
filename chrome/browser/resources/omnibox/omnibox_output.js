@@ -1077,6 +1077,11 @@ const COLUMNS = [
       ['destinationUrl', 'isSearchType', 'strippedDestinationUrl'],
       OutputUrlProperty),
   new Column(
+      ['AQS Type & Subtypes'], '', 'aqsTypeSubtypes', false,
+      'The type and subtypes reported in the Assisted Query Stats (AQS) url ' +
+          'query param.',
+      ['aqsTypeSubtypes'], OutputTextProperty),
+  new Column(
       ['Fill', 'Inline'], '', 'fillAndInline', false,
       'Fill & Inline\nThe text shown in the omnibox when the result is ' +
           'selected. / The text shown in the omnibox as a blue highlight ' +

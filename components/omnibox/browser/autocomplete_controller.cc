@@ -64,17 +64,75 @@
 
 namespace {
 
-// Converts the given match to a type (and possibly subtype) based on the AQS
-// specification. For more details, see
-// http://goto.google.com/binary-clients-logging.
-// Note: the |subtypes| parameter passed over to this function may be filled
-// with subtypes reported by the suggest server. This call will update this set
-// with Chrome-specific subtypes.
-// TODO(https://crbug.com/1103056): relocate subtype updates to appropriate
-// sites that construct these matches.
-void GetMatchTypeAndExtendSubtypes(const AutocompleteMatch& match,
-                                   size_t* type,
-                                   base::flat_set<int>* subtypes) {
+// Appends available autocompletion of the given type, subtype, and number to
+// the existing available autocompletions string, encoding according to the
+// spec.
+void AppendAvailableAutocompletion(size_t type,
+                                   const base::flat_set<int>& subtypes,
+                                   int count,
+                                   std::string* autocompletions) {
+  if (!autocompletions->empty())
+    autocompletions->append("j");
+  base::StringAppendF(autocompletions, "%" PRIuS, type);
+
+  std::ostringstream subtype_str;
+  for (auto subtype : subtypes) {
+    if (subtype_str.tellp() > 0)
+      subtype_str << 'i';
+    subtype_str << subtype;
+  }
+
+  // Subtype is optional. Append only if we have subtypes to report.
+  if (subtype_str.tellp() > 0)
+    base::StringAppendF(autocompletions, "i%s", subtype_str.str().c_str());
+
+  if (count > 1)
+    base::StringAppendF(autocompletions, "l%d", count);
+}
+
+// Whether this autocomplete match type supports custom descriptions.
+bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
+      match.type == AutocompleteMatchType::CALCULATOR) {
+    return true;
+  }
+  return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
+         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
+}
+
+// Returns if rich autocompletion had (or would have had for counterfactual
+// variations) an impact; i.e. whether the top scoring rich autocompleted
+// suggestion outscores the top scoring default suggestion.
+bool TopMatchWouldHaveBeenRichAutocompletion(const AutocompleteResult& result) {
+  // Trigger rich autocompletion logging if the highest scoring match has
+  // |rich_autocompletion_triggered| set to true indicating it is, or could have
+  // been, rich autocompleted. It's not sufficient to check the default match
+  // since counterfactual variations will not allow rich autocompleted matches
+  // to be the default match.
+  if (result.empty())
+    return false;
+
+  auto get_sort_key = [](const AutocompleteMatch& match) {
+    return std::make_tuple(match.allowed_to_be_default_match ||
+                               match.rich_autocompletion_triggered,
+                           match.relevance);
+  };
+
+  auto top_match = std::max_element(
+      result.begin(), result.end(),
+      [&](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
+        return get_sort_key(match1) < get_sort_key(match2);
+      });
+  return top_match->rich_autocompletion_triggered;
+}
+
+}  // namespace
+
+// static
+void AutocompleteController::GetMatchTypeAndExtendSubtypes(
+    const AutocompleteMatch& match,
+    size_t* type,
+    base::flat_set<int>* subtypes) {
   // This type indicates a native chrome suggestion.
   *type = 69;
 
@@ -195,70 +253,6 @@ void GetMatchTypeAndExtendSubtypes(const AutocompleteMatch& match,
     }
   }
 }
-
-// Appends available autocompletion of the given type, subtype, and number to
-// the existing available autocompletions string, encoding according to the
-// spec.
-void AppendAvailableAutocompletion(size_t type,
-                                   const base::flat_set<int>& subtypes,
-                                   int count,
-                                   std::string* autocompletions) {
-  if (!autocompletions->empty())
-    autocompletions->append("j");
-  base::StringAppendF(autocompletions, "%" PRIuS, type);
-
-  std::ostringstream subtype_str;
-  for (auto subtype : subtypes) {
-    if (subtype_str.tellp() > 0)
-      subtype_str << 'i';
-    subtype_str << subtype;
-  }
-
-  // Subtype is optional. Append only if we have subtypes to report.
-  if (subtype_str.tellp() > 0)
-    base::StringAppendF(autocompletions, "i%s", subtype_str.str().c_str());
-
-  if (count > 1)
-    base::StringAppendF(autocompletions, "l%d", count);
-}
-
-// Whether this autocomplete match type supports custom descriptions.
-bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
-      match.type == AutocompleteMatchType::CALCULATOR) {
-    return true;
-  }
-  return match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-         match.type == AutocompleteMatchType::SEARCH_SUGGEST_PROFILE;
-}
-
-// Returns if rich autocompletion had (or would have had for counterfactual
-// variations) an impact; i.e. whether the top scoring rich autocompleted
-// suggestion outscores the top scoring default suggestion.
-bool TopMatchWouldHaveBeenRichAutocompletion(const AutocompleteResult& result) {
-  // Trigger rich autocompletion logging if the highest scoring match has
-  // |rich_autocompletion_triggered| set to true indicating it is, or could have
-  // been, rich autocompleted. It's not sufficient to check the default match
-  // since counterfactual variations will not allow rich autocompleted matches
-  // to be the default match.
-  if (result.empty())
-    return false;
-
-  auto get_sort_key = [](const AutocompleteMatch& match) {
-    return std::make_tuple(match.allowed_to_be_default_match ||
-                               match.rich_autocompletion_triggered,
-                           match.relevance);
-  };
-
-  auto top_match = std::max_element(
-      result.begin(), result.end(),
-      [&](const AutocompleteMatch& match1, const AutocompleteMatch& match2) {
-        return get_sort_key(match1) < get_sort_key(match2);
-      });
-  return top_match->rich_autocompletion_triggered;
-}
-
-}  // namespace
 
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
