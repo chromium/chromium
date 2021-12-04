@@ -478,6 +478,68 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
   EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
 }
 
+// Tests to ensure that selection based state is not updated if a menu item or
+// an anscestor item has been scheduled for deletion. This guards against
+// removed but not-yet-deleted MenuItemViews using stale model data to update
+// state.
+TEST_F(MenuItemViewPaintUnitTest,
+       SelectionBasedStateNotUpdatedWhenScheduledForDeletion) {
+  MenuItemView* submenu_item =
+      menu_item_view()->AppendSubMenu(1, u"submenu_item");
+  MenuItemView* submenu_child =
+      submenu_item->AppendMenuItem(1, u"submenu_child");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  // Show both the root and nested menus.
+  SubmenuView* submenu = submenu_item->GetSubmenu();
+  MenuHost::InitParams params;
+  params.parent = widget();
+  params.bounds = submenu_item->bounds();
+  submenu->ShowAt(params);
+
+  // The selected bit and selection based state should both update for all menu
+  // items while they and their anscestors remain part of the menu.
+  EXPECT_FALSE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  submenu_item->SetSelected(true);
+  EXPECT_TRUE(submenu_item->IsSelected());
+  EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
+  submenu_item->SetSelected(false);
+  EXPECT_FALSE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+
+  EXPECT_FALSE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+  submenu_child->SetSelected(true);
+  EXPECT_TRUE(submenu_child->IsSelected());
+  EXPECT_TRUE(submenu_child->last_paint_as_selected_for_testing());
+  submenu_child->SetSelected(false);
+  EXPECT_FALSE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+
+  // Remove the child items from the root.
+  menu_item_view()->RemoveAllMenuItems();
+
+  // The selected bit should still update but selection based state, proxied by
+  // `last_paint_as_selected_`, should remain unchanged.
+  submenu_item->SetSelected(true);
+  EXPECT_TRUE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  submenu_item->SetSelected(false);
+  EXPECT_FALSE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+
+  submenu_child->SetSelected(true);
+  EXPECT_TRUE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+  submenu_child->SetSelected(false);
+  EXPECT_FALSE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+}
+
 // Sets up a custom MenuDelegate that expects functions aren't called. See
 // DontAskForFontsWhenAddingSubmenu.
 class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
