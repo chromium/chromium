@@ -4,26 +4,37 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/tether_constants.h"
 #include "components/reporting/metrics/fake_sampler.h"
-#include "content/public/test/browser_task_environment.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-#include "base/logging.h"
-
 namespace reporting {
+namespace {
 
 struct FakeNetworkData {
   std::string guid;
   std::string connection_state;
   std::string type;
   int signal_strength;
+  std::string device_path;
+  std::string ip_address;
+  std::string gateway;
   bool is_portal;
   bool is_visible;
   bool is_configured;
@@ -31,7 +42,7 @@ struct FakeNetworkData {
 
 TelemetryData NetworkTelemetrySamplerTestHelper(
     const std::vector<FakeNetworkData>& networks_data) {
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   MetricData metric_data;
   auto* latency_data = metric_data.mutable_telemetry_data()
@@ -49,11 +60,16 @@ TelemetryData NetworkTelemetrySamplerTestHelper(
                                                          "user_hash");
   chromeos::ShillServiceClient::TestInterface* service_client =
       network_handler_test_helper.service_test();
+  chromeos::ShillIPConfigClient::TestInterface* ip_config_client =
+      network_handler_test_helper.ip_config_test();
   base::RunLoop().RunUntilIdle();
   service_client->ClearServices();
 
+  network_handler_test_helper.manager_test()->AddTechnology(
+      ::chromeos::kTypeTether, true);
   for (const auto& network_data : networks_data) {
-    const std::string service_path = "service_path" + network_data.guid;
+    const std::string service_path =
+        base::StrCat({"service_path", network_data.guid});
     service_client->AddService(service_path, network_data.guid, "name",
                                network_data.type, network_data.connection_state,
                                network_data.is_visible);
@@ -63,6 +79,22 @@ TelemetryData NetworkTelemetrySamplerTestHelper(
     ash::NetworkHandler::Get()
         ->network_state_handler()
         ->SetNetworkChromePortalDetected(service_path, network_data.is_portal);
+    service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
+                                       base::Value(network_data.device_path));
+    base::DictionaryValue ip_config_properties;
+    ip_config_properties.SetKey(shill::kAddressProperty,
+                                base::Value(network_data.ip_address));
+    ip_config_properties.SetKey(shill::kGatewayProperty,
+                                base::Value(network_data.gateway));
+    const std::string kIPConfigPath =
+        base::StrCat({"test_ip_config", network_data.guid});
+    ip_config_client->AddIPConfig(kIPConfigPath, ip_config_properties);
+    service_client->SetServiceProperty(service_path, shill::kIPConfigProperty,
+                                       base::Value(kIPConfigPath));
+    if (network_data.type == shill::kTypeCellular) {
+      service_client->SetServiceProperty(service_path, shill::kIccidProperty,
+                                         base::Value("test_iccid"));
+    }
     if (network_data.is_configured) {
       service_client->SetServiceProperty(service_path, shill::kProfileProperty,
                                          base::Value(profile_path));
@@ -87,10 +119,12 @@ TelemetryData NetworkTelemetrySamplerTestHelper(
   return result;
 }
 
-TEST(NetworkTelemetrySamplerTest, WifiConnecting) {
+TEST(NetworkTelemetrySamplerTest, CellularConnecting) {
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateConfiguration, shill::kTypeWifi, 10,
-       false /* is_portal */, true /* is_visible */, true /* is_configured */}};
+      {"guid1", shill::kStateConfiguration, shill::kTypeCellular,
+       0 /* signal_strength */, "device/path", "192.168.86.25" /* ip_address */,
+       "192.168.86.1" /* gateway */, false /* is_portal */,
+       true /* is_visible */, true /* is_configured */}};
 
   TelemetryData result = NetworkTelemetrySamplerTestHelper(networks_data);
 
@@ -100,15 +134,24 @@ TEST(NetworkTelemetrySamplerTest, WifiConnecting) {
             networks_data[0].guid);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
             NetworkConnectionState::CONNECTING);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).signal_strength(),
-            networks_data[0].signal_strength);
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_signal_strength());
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
+            networks_data[0].device_path);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).ip_address(),
+            networks_data[0].ip_address);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).gateway(),
+            networks_data[0].gateway);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
+            NetworkType::CELLULAR);
 }
 
-TEST(NetworkTelemetrySamplerTest, WifiInvisibleNotConnected) {
+TEST(NetworkTelemetrySamplerTest, VpnInvisibleNotConnected) {
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateOffline, shill::kTypeWifi, 10,
-       false /* is_portal */, false /* is_visible */,
-       true /* is_configured */}};
+      {"guid1", shill::kStateOffline, shill::kTypeVPN, 0 /* signal_strength */,
+       "device/path", "192.168.86.25" /* ip_address */,
+       "192.168.86.1" /* gateway */, false /* is_portal */,
+       false /* is_visible */, true /* is_configured */}};
 
   TelemetryData result = NetworkTelemetrySamplerTestHelper(networks_data);
 
@@ -118,14 +161,24 @@ TEST(NetworkTelemetrySamplerTest, WifiInvisibleNotConnected) {
             networks_data[0].guid);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
             NetworkConnectionState::NOT_CONNECTED);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).signal_strength(),
-            networks_data[0].signal_strength);
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_signal_strength());
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
+            networks_data[0].device_path);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).ip_address(),
+            networks_data[0].ip_address);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).gateway(),
+            networks_data[0].gateway);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
+            NetworkType::VPN);
 }
 
-TEST(NetworkTelemetrySamplerTest, WifiPortal) {
+TEST(NetworkTelemetrySamplerTest, EthernetPortal) {
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateRedirectFound, shill::kTypeWifi, 10,
-       true /* is_portal */, true /* is_visible */, true /* is_configured */}};
+      {"guid1", shill::kStateRedirectFound, shill::kTypeEthernet,
+       0 /* signal_strength */, "device/path", "192.168.86.25" /* ip_address */,
+       "192.168.86.1" /* gateway */, true /* is_portal */,
+       true /* is_visible */, true /* is_configured */}};
 
   TelemetryData result = NetworkTelemetrySamplerTestHelper(networks_data);
 
@@ -135,17 +188,31 @@ TEST(NetworkTelemetrySamplerTest, WifiPortal) {
             networks_data[0].guid);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
             NetworkConnectionState::PORTAL);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).signal_strength(),
-            networks_data[0].signal_strength);
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(0).has_signal_strength());
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
+            networks_data[0].device_path);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).ip_address(),
+            networks_data[0].ip_address);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).gateway(),
+            networks_data[0].gateway);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
+            NetworkType::ETHERNET);
 }
 
 TEST(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
   const std::vector<FakeNetworkData> networks_data = {
-      {"guid1", shill::kStateReady, shill::kTypeWifi, 10, false /* is_portal */,
+      {"guid1", shill::kStateReady, shill::kTypeWifi, 10 /* signal_strength */,
+       "device/path1", "192.168.86.25" /* ip_address */,
+       "192.168.86.1" /* gateway */, false /* is_portal */,
        true /* is_visible */, false /* is_configured */},
-      {"guid2", shill::kStateReady, shill::kTypeEthernet, -10,
-       false /* is_portal */, true /* is_visible */, true /* is_configured */},
-      {"guid3", shill::kStateOnline, shill::kTypeWifi, 50,
+      {"guid2", shill::kStateOnline, shill::kTypeWifi, 50 /* signal_strength */,
+       "device/path3", "192.168.86.26" /* ip_address */,
+       "192.168.86.2" /* gateway */, false /* is_portal */,
+       true /* is_visible */, true /* is_configured */},
+      {"guid3", shill::kStateReady, ::chromeos::kTypeTether,
+       0 /* signal_strength */, "device/path2",
+       "192.168.86.27" /* ip_address */, "192.168.86.3" /* gateway */,
        false /* is_portal */, true /* is_visible */, true /* is_configured */}};
 
   TelemetryData result = NetworkTelemetrySamplerTestHelper(networks_data);
@@ -154,21 +221,37 @@ TEST(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
   ASSERT_EQ(result.networks_telemetry().network_telemetry_size(),
             networks_data.size() - 1);
 
-  // Ethernet
+  // Wifi
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).guid(),
             networks_data[1].guid);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).connection_state(),
-            NetworkConnectionState::CONNECTED);
-  EXPECT_FALSE(
-      result.networks_telemetry().network_telemetry(0).has_signal_strength());
+            NetworkConnectionState::ONLINE);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).signal_strength(),
+            networks_data[1].signal_strength);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).device_path(),
+            networks_data[1].device_path);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).ip_address(),
+            networks_data[1].ip_address);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).gateway(),
+            networks_data[1].gateway);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
+            NetworkType::WIFI);
 
-  // Wifi
+  // TETHER
   EXPECT_EQ(result.networks_telemetry().network_telemetry(1).guid(),
             networks_data[2].guid);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(1).connection_state(),
-            NetworkConnectionState::ONLINE);
-  EXPECT_EQ(result.networks_telemetry().network_telemetry(1).signal_strength(),
-            networks_data[2].signal_strength);
+            NetworkConnectionState::CONNECTED);
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(1).has_signal_strength());
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(1).device_path(),
+            networks_data[2].device_path);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(1).ip_address(),
+            networks_data[2].ip_address);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(1).gateway(),
+            networks_data[2].gateway);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(1).type(),
+            NetworkType::TETHER);
 }
-
+}  // namespace
 }  // namespace reporting

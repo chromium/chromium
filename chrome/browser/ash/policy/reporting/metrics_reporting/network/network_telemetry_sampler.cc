@@ -4,15 +4,19 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_type_pattern.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
 namespace {
 
-NetworkConnectionState GetTelemetryonnectionStateType(
+NetworkConnectionState GetNetworkConnectionState(
     const chromeos::NetworkState* network) {
   if (network->IsConnectedState() && network->IsCaptivePortal()) {
     return NetworkConnectionState::PORTAL;
@@ -27,6 +31,27 @@ NetworkConnectionState GetTelemetryonnectionStateType(
     return NetworkConnectionState::CONNECTING;
   }
   return NetworkConnectionState::NOT_CONNECTED;
+}
+
+NetworkType GetNetworkType(const ::chromeos::NetworkTypePattern& type) {
+  if (type.Equals(::chromeos::NetworkTypePattern::Cellular())) {
+    return NetworkType::CELLULAR;
+  }
+  if (type.MatchesPattern(
+          ::chromeos::NetworkTypePattern::EthernetOrEthernetEAP())) {
+    return NetworkType::ETHERNET;
+  }
+  if (type.Equals(::chromeos::NetworkTypePattern::Tether())) {
+    return NetworkType::TETHER;
+  }
+  if (type.Equals(::chromeos::NetworkTypePattern::VPN())) {
+    return NetworkType::VPN;
+  }
+  if (type.Equals(::chromeos::NetworkTypePattern::WiFi())) {
+    return NetworkType::WIFI;
+  }
+  NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
+  return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
 }
 
 void OnHttpsLatencySamplerCompleted(MetricCallback callback,
@@ -52,10 +77,24 @@ void OnHttpsLatencySamplerCompleted(MetricCallback callback,
     auto* const network_telemetry =
         telemetry_data->mutable_networks_telemetry()->add_network_telemetry();
     network_telemetry->set_guid(network->guid());
-    network_telemetry->set_connection_state(
-        GetTelemetryonnectionStateType(network));
-    if (network->type() == shill::kTypeWifi) {
+    network_telemetry->set_connection_state(GetNetworkConnectionState(network));
+    ::chromeos::NetworkTypePattern type =
+        ::chromeos::NetworkTypePattern::Primitive(network->type());
+    network_telemetry->set_type(GetNetworkType(type));
+    if (type.Equals(::chromeos::NetworkTypePattern::WiFi())) {
       network_telemetry->set_signal_strength(network->signal_strength());
+    }
+
+    if (!network->device_path().empty()) {
+      network_telemetry->set_device_path(network->device_path());
+    }
+
+    if (!network->GetIpAddress().empty()) {
+      network_telemetry->set_ip_address(network->GetIpAddress());
+    }
+
+    if (!network->GetGateway().empty()) {
+      network_telemetry->set_gateway(network->GetGateway());
     }
   }
 

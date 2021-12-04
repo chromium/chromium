@@ -60,6 +60,16 @@ enum NetworkConnectionState {
   NOT_CONNECTED = 5;
 }
 
+// Network connection type.
+enum NetworkType {
+  NETWORK_TYPE_UNSPECIFIED = 0;
+  CELLULAR = 1;
+  ETHERNET = 2;
+  TETHER = 3;
+  VPN = 4;
+  WIFI = 5;
+}
+
 // A single network telemetry data collected at a specific point of time.
 message NetworkTelemetry {
   // Unique identifier of the network.
@@ -69,6 +79,14 @@ message NetworkTelemetry {
   // Signal strength of the network provided only for wireless networks. Values
   // are normalized between 0 to 100 inclusive.
   optional int32 signal_strength = 3;
+  // For networks associated with a device, the path of the device.
+  optional string device_path = 4;
+  // The IP address this interface is bound to, if any.
+  optional string ip_address = 5;
+  // The gateway IP for this interface, if any.
+  optional string gateway = 6;
+  // Network connection type.
+  optional NetworkType type = 7;
 }
 
 // Configured networks telemetry data.

@@ -10,12 +10,14 @@
 namespace reporting {
 
 // NetworkTelemetrySampler collects the telemetry that describes the networks
-// and connections states. Currently, information is collected by
-// `DeviceStatusCollector`, but can be moved here gradually by implementing
-// `Sampler::CollectInfo`.
+// and connections states.
 class NetworkTelemetrySampler : public Sampler {
  public:
   explicit NetworkTelemetrySampler(Sampler* https_latency_sampler);
+
+  NetworkTelemetrySampler(const NetworkTelemetrySampler&) = delete;
+  NetworkTelemetrySampler& operator=(const NetworkTelemetrySampler&) = delete;
+
   ~NetworkTelemetrySampler() override;
 
   void Collect(MetricCallback callback) override;
