@@ -528,14 +528,11 @@ void FuchsiaCdm::OnProcessLicenseServerMessageStatus(
 
 void FuchsiaCdm::CloseSession(const std::string& session_id,
                               std::unique_ptr<SimpleCdmPromise> promise) {
-  // There's a small window app can call close twice before receiving the closed
-  // event, in which case we want to resolve the promise. Read
-  // AesDecryptor::CloseSession for more details.
-  //
-  // Resolve the promise before deleting CdmSession. CdmSession will call
-  // SessionClosedCB in its destructor.
-  promise->resolve();
+  // CdmSession will call SessionClosedCB in its destruct. This should be done
+  // before the promise is resolved.
   session_map_.erase(session_id);
+
+  promise->resolve();
 }
 
 void FuchsiaCdm::RemoveSession(const std::string& session_id,
