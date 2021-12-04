@@ -503,6 +503,13 @@
         {}
        ]
       ],
+      "slot-content-visibility-20-crash.html": [
+       "a128f6a59d3fe31377a6aca8c42e676d3e391694",
+       [
+        null,
+        {}
+       ]
+      ],
       "slot-content-visibility-21-crash.html": [
        "196f0b4a90aafaad985342bbb773a39f9f31a7e1",
        [
@@ -1496,6 +1503,13 @@
         {}
        ]
       ],
+      "preserve3d-inline-hit-test.html": [
+       "b00dbc839e6f5db96542584142c7f286bccea8b0",
+       [
+        null,
+        {}
+       ]
+      ],
       "preserve3d-scene-001.html": [
        "1bb1091acf2bd15776c4b4da079f057d8956482a",
        [
@@ -2466,6 +2480,13 @@
        ],
        "dialog-not-in-tree-crash.html": [
         "fe3fab8ebb008c1bff270921c0f416def529729d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "dialog-show-modal-inert-crash.html": [
+        "54c2edab6bf81bd8831497e5a8f9c375771ed22e",
         [
          null,
          {}
@@ -239208,7 +239229,7 @@
       ]
      },
      "scrollbars-auto-ref.html": [
-      "ededbbe409015074ce5effda172a8385ec7556d3",
+      "c190a02327f49fb48ef98f978e0a93e8739f48fe",
       []
      ],
      "scrollbars-no-margin-ref.html": [
@@ -239216,7 +239237,7 @@
       []
      ],
      "scrollbars-ref.html": [
-      "0715fefce17729e51c6bf77af53903f4c217b588",
+      "552d9fc6da4768424a4e0f01b7017fd321059131",
       []
      ],
      "select-element-zero-height-001-ref.html": [
@@ -248310,10 +248331,6 @@
       ],
       "grid-gap-smaller-001-ref.html": [
        "fcd6851e2f84c2ec33a76b86ba4b15a70d36f7e8",
-       []
-      ],
-      "grid-template-valid-expected.txt": [
-       "73c0b38fed195510f69a230e9e391a7a759efe0e",
        []
       ],
       "item-percentage-height-001-ref.html": [
@@ -287406,6 +287423,14 @@
         ],
         "dialog.css": [
          "a640a146231ec5503dc00c90b717fb6dec297f83",
+         []
+        ],
+        "inert-focus-in-frames-frame1.html": [
+         "c5566bc092a3c4a53202013570f314b867ce0bf9",
+         []
+        ],
+        "inert-focus-in-frames-frame2.html": [
+         "167c56945d4a35dc6ff46823ed8a382e46526f30",
          []
         ],
         "submit.jpg": [
@@ -355467,7 +355492,7 @@
        ]
       ],
       "grid-template-valid.html": [
-       "d483ead9f9cdbdb08f1e38d7911f86c2318e484f",
+       "76ac318bd3800c89e53c4bbb44cd513ffb8c898b",
        [
         null,
         {}
@@ -442494,7 +442519,7 @@
         ]
        ],
        "selectmenu-value.tentative.html": [
-        "3ab32ae166d24fe7e98f89b824239417d85b2f34",
+        "efb71ed96282d6efcb5ce7284b7eccb7856ef3ac",
         [
          null,
          {}
@@ -442849,6 +442874,13 @@
          }
         ]
        ],
+       "dialog-close-event-async.html": [
+        "0f8d40aa2c235d2b9e01bd4493ccbcb2c819f6f5",
+        [
+         null,
+         {}
+        ]
+       ],
        "dialog-close-event.html": [
         "b7903ed461c0856f76ed943153b6451aee615714",
         [
@@ -442951,6 +442983,13 @@
          {}
         ]
        ],
+       "dialog-show-modal.html": [
+        "ed643756508ce3939f0636ef5ac9d0991fc39c17",
+        [
+         null,
+         {}
+        ]
+       ],
        "dialog-showModal-remove.html": [
         "c2350c304249dcb9478e62725936275ec0fda383",
         [
@@ -442976,6 +443015,13 @@
        ],
        "inert-does-not-match-disabled-selector.html": [
         "b3b0c0a929732da1658487173bf096cc8884c9a7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "inert-focus-in-frames.html": [
+        "12fa96abc2d03bb07e262f0b406b3dd97669b02a",
         [
          null,
          {}
@@ -551430,26 +551476,6 @@
         }
        ]
       ]
-     },
-     "bidi": {
-      "log_entry_added": {
-       "subscription.py": [
-        "e9a3be536b5bcc6451169efcbe46dd4d585d803d",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
-      "session_unsubscribe": {
-       "unsubscribe.py": [
-        "1b613bcf0478b545c3aba4a2e9103e30c8083e59",
-        [
-         null,
-         {}
-        ]
-       ]
-      }
      },
      "close_window": {
       "close.py": [
