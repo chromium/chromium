@@ -903,18 +903,36 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   // Defaulting to 0 means that it is not possible to selectively convert only
   // event sources or navigation sources.
   if (String string = search_params->get("event-source-trigger-data")) {
-    if (absl::optional<uint64_t> value = parse_uint64(string))
+    if (absl::optional<uint64_t> value = parse_uint64(string)) {
       conversion->event_source_trigger_data = *value;
+    } else {
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidEventSourceTriggerData,
+          absl::nullopt, nullptr, devtools_request_id, string);
+    }
   }
 
   if (String string = search_params->get("priority")) {
-    if (absl::optional<int64_t> value = parse_int64(string))
+    if (absl::optional<int64_t> value = parse_int64(string)) {
       conversion->priority = *value;
+    } else {
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidTriggerPriority, absl::nullopt,
+          nullptr, devtools_request_id, string);
+    }
   }
 
   if (String string = search_params->get("dedup-key")) {
-    if (absl::optional<int64_t> value = parse_int64(string))
+    if (absl::optional<int64_t> value = parse_int64(string)) {
       conversion->dedup_key = mojom::blink::DedupKey::New(*value);
+    } else {
+      AuditsIssue::ReportAttributionIssue(
+          document_->domWindow(),
+          AttributionReportingIssueType::kInvalidTriggerDedupKey, absl::nullopt,
+          nullptr, devtools_request_id, string);
+    }
   }
 
   if (document_->IsPrerendering()) {

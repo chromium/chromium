@@ -1,0 +1,14 @@
+Test that an attribution redirect with invalid dedup key triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : badinteger
+            request : {
+                requestId : <string>
+            }
+            violationType : InvalidTriggerDedupKey
+        }
+    }
+}
+

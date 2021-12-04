@@ -159,6 +159,15 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kInvalidAttributionSourcePriority:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InvalidAttributionSourcePriority;
+    case AttributionReportingIssueType::kInvalidEventSourceTriggerData:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidEventSourceTriggerData;
+    case AttributionReportingIssueType::kInvalidTriggerPriority:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidTriggerPriority;
+    case AttributionReportingIssueType::kInvalidTriggerDedupKey:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidTriggerDedupKey;
   }
 }
 
