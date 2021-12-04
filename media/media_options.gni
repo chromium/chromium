@@ -49,6 +49,10 @@ declare_args() {
 
   enable_platform_mpeg_h_audio = proprietary_codecs && is_chromecast
 
+  # Enables DTS/DTSX audio handling in chromium. This includes demuxing,
+  # on-device decoding and bitstream passthrough as supported by device.
+  enable_platform_dts_audio = false
+
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs && (is_chromecast || is_fuchsia || use_fuzzing_engine)
 

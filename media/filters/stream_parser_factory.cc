@@ -65,8 +65,9 @@ struct CodecInfo {
     HISTOGRAM_FLAC,
     HISTOGRAM_AV1,
     HISTOGRAM_MPEG_H_AUDIO,
-    HISTOGRAM_MAX =
-        HISTOGRAM_MPEG_H_AUDIO  // Must be equal to largest logged entry.
+    HISTOGRAM_DTS,
+    HISTOGRAM_DTSXP2,
+    HISTOGRAM_MAX = HISTOGRAM_DTSXP2  // Must be equal to largest logged entry.
   };
 
   const char* pattern;

@@ -123,6 +123,19 @@ source_set("formats") {
     ]
   }
 
+  if (proprietary_codecs && enable_platform_dts_audio) {
+    sources += [
+      "dts/dts_stream_parser.cc",
+      "dts/dts_stream_parser.h",
+      "dts/dts_util.cc",
+      "dts/dts_util.h",
+      "mp4/dts.cc",
+      "mp4/dts.h",
+      "mp4/dtsx.cc",
+      "mp4/dtsx.h",
+    ]
+  }
+
   if (proprietary_codecs && enable_mse_mpeg2ts_stream_parser) {
     deps += [ "//ui/gfx/geometry" ]
     sources += [
@@ -255,6 +268,14 @@ source_set("unit_tests") {
     ]
 
     deps += [ "//crypto" ]
+
+    if (enable_platform_dts_audio) {
+      sources += [
+        "dts/dts_util_unittest.cc",
+        "mp4/dts_unittest.cc",
+        "mp4/dtsx_unittest.cc",
+      ]
+    }
 
     if (enable_mse_mpeg2ts_stream_parser) {
       sources += [

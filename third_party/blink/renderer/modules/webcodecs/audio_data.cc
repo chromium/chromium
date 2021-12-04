@@ -60,6 +60,8 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
     case media::SampleFormat::kSampleFormatEac3:
     case media::SampleFormat::kSampleFormatMpegHAudio:
     case media::SampleFormat::kUnknownSampleFormat:
+    case media::SampleFormat::kSampleFormatDts:
+    case media::SampleFormat::kSampleFormatDtsxP2:
       return absl::nullopt;
   }
 }

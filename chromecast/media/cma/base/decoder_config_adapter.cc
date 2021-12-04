@@ -52,6 +52,8 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     case ::media::kUnknownSampleFormat:
     case ::media::kSampleFormatAc3:
     case ::media::kSampleFormatEac3:
+    case ::media::kSampleFormatDts:
+    case ::media::kSampleFormatDtsxP2:
     case ::media::kSampleFormatMpegHAudio:
       return kUnknownSampleFormat;
     case ::media::kSampleFormatU8:

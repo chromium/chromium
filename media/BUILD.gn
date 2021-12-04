@@ -51,6 +51,7 @@ buildflag_header("media_buildflags") {
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
+    "ENABLE_PLATFORM_DTS_AUDIO=$enable_platform_dts_audio",
   ]
 }
 

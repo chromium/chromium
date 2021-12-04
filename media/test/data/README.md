@@ -1233,3 +1233,9 @@ https://people.xiph.org/~greg/opus_testvectors/
 
 [libaom test vectors]: https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
 [libaom LICENSE]: https://source.chromium.org/chromium/chromium/src/+/main:media/test/data/licenses/AOM-LICENSE
+
+
+### DTS Audio
+
+#### dts.bin
+A single DTS Coherent Acoustics audio frame

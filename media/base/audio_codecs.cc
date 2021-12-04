@@ -47,6 +47,10 @@ std::string GetCodecName(AudioCodec codec) {
       return "ac3";
     case AudioCodec::kMpegHAudio:
       return "mpeg-h-audio";
+    case AudioCodec::kDTS:
+      return "dts";
+    case AudioCodec::kDTSXP2:
+      return "dtsx-p2";
   }
 }
 
