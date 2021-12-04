@@ -868,26 +868,30 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   mojom::blink::ConversionPtr conversion = mojom::blink::Conversion::New();
   conversion->reporting_origin = SecurityOrigin::Create(url);
-  conversion->conversion_data = 0UL;
-  conversion->event_source_trigger_data = 0UL;
-  conversion->dedup_key = nullptr;
   conversion->devtools_request_id = devtools_request_id;
 
-  const char kTriggerDataParam[] = "trigger-data";
   URLSearchParams* search_params = URLSearchParams::Create(url.Query());
-  if (search_params->has(kTriggerDataParam)) {
-    bool is_valid_integer = false;
-    uint64_t data =
-        search_params->get(kTriggerDataParam).ToUInt64Strict(&is_valid_integer);
 
-    // Default invalid params to 0.
-    conversion->conversion_data = is_valid_integer ? data : 0UL;
+  auto parse_uint64 = [](const String& string) -> absl::optional<uint64_t> {
+    bool valid = false;
+    uint64_t value = string.ToUInt64Strict(&valid);
+    return valid ? absl::make_optional(value) : absl::nullopt;
+  };
 
-    if (!is_valid_integer) {
+  auto parse_int64 = [](const String& string) -> absl::optional<int64_t> {
+    bool valid = false;
+    int64_t value = string.ToInt64Strict(&valid);
+    return valid ? absl::make_optional(value) : absl::nullopt;
+  };
+
+  if (String string = search_params->get("trigger-data")) {
+    if (absl::optional<uint64_t> value = parse_uint64(string)) {
+      conversion->conversion_data = *value;
+    } else {
       AuditsIssue::ReportAttributionIssue(
           document_->domWindow(),
           AttributionReportingIssueType::kInvalidAttributionData, absl::nullopt,
-          nullptr, devtools_request_id, search_params->get(kTriggerDataParam));
+          nullptr, devtools_request_id, string);
     }
   } else {
     AuditsIssue::ReportAttributionIssue(
@@ -898,33 +902,19 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
   // Defaulting to 0 means that it is not possible to selectively convert only
   // event sources or navigation sources.
-  const char kEventSourceTriggerDataParam[] = "event-source-trigger-data";
-  if (search_params->has(kEventSourceTriggerDataParam)) {
-    bool is_valid_integer = false;
-    uint64_t data = search_params->get(kEventSourceTriggerDataParam)
-                        .ToUInt64Strict(&is_valid_integer);
-
-    // Default invalid params to 0.
-    conversion->event_source_trigger_data = is_valid_integer ? data : 0UL;
+  if (String string = search_params->get("event-source-trigger-data")) {
+    if (absl::optional<uint64_t> value = parse_uint64(string))
+      conversion->event_source_trigger_data = *value;
   }
 
-  const char kPriorityParam[] = "priority";
-  if (search_params->has(kPriorityParam)) {
-    bool is_valid_integer = false;
-    int64_t priority =
-        search_params->get(kPriorityParam).ToInt64Strict(&is_valid_integer);
-
-    // Default invalid params to 0.
-    conversion->priority = is_valid_integer ? priority : 0;
+  if (String string = search_params->get("priority")) {
+    if (absl::optional<int64_t> value = parse_int64(string))
+      conversion->priority = *value;
   }
 
-  const char kDedupKeyParam[] = "dedup-key";
-  if (search_params->has(kDedupKeyParam)) {
-    bool is_valid_integer = false;
-    int64_t dedup_key =
-        search_params->get(kDedupKeyParam).ToInt64Strict(&is_valid_integer);
-    conversion->dedup_key =
-        is_valid_integer ? mojom::blink::DedupKey::New(dedup_key) : nullptr;
+  if (String string = search_params->get("dedup-key")) {
+    if (absl::optional<int64_t> value = parse_int64(string))
+      conversion->dedup_key = mojom::blink::DedupKey::New(*value);
   }
 
   if (document_->IsPrerendering()) {
