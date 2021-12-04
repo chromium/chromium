@@ -419,12 +419,11 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   // If we are a layout root, use the previous space if available. This will
   // include any stretched sizes if applicable.
   NGConstraintSpace constraint_space =
-      is_layout_root && previous_result
+      is_layout_root && previous_result &&
+              previous_result->GetConstraintSpaceForCaching()
+                      .GetWritingMode() == Base::StyleRef().GetWritingMode()
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
-
-  DCHECK_EQ(constraint_space.GetWritingMode(),
-            Base::StyleRef().GetWritingMode());
 
   scoped_refptr<const NGLayoutResult> result =
       NGBlockNode(this).Layout(constraint_space);
