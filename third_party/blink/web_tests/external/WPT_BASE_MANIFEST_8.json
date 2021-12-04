@@ -268986,6 +268986,10 @@
       "beb0825558675758404ccb75e6ea4f6256d7d0a1",
       []
      ],
+     "event-global-set-before-handleEvent-lookup.any.worker-expected.txt": [
+      "11f7d44c3c40047a8d7a5783ffcc19c6d4d6ce17",
+      []
+     ],
      "relatedTarget.window-expected.txt": [
       "0bdf4aa478c4abf44d40c65e8a972794b2eabc53",
       []
@@ -268993,6 +268997,10 @@
      "resources": {
       "event-global-extra-frame.html": [
        "241dda8b66f8c8fe128e736bcb073479aee634a9",
+       []
+      ],
+      "event-global-is-still-set-when-coercing-beforeunload-result-frame.html": [
+       "5df4fa279363798f2f471467ed674c092c7a1749",
        []
       ],
       "prefixed-animation-event-tests.js": [
@@ -376255,8 +376263,26 @@
        {}
       ]
      ],
+     "event-global-is-still-set-when-coercing-beforeunload-result.html": [
+      "a64c8b6b8b6d5fd39ab4f1a4ad1a8bd432fab7c8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "event-global-set-before-handleEvent-lookup.any.js": [
+      "5199cc7d6ddbe858369cf633989036a51ad8d61e",
+      [
+       "dom/events/event-global-set-before-handleEvent-lookup.any.html",
+       {}
+      ],
+      [
+       "dom/events/event-global-set-before-handleEvent-lookup.any.worker.html",
+       {}
+      ]
+     ],
      "event-global.html": [
-      "5cb1b1416aa35eb75a69be57b0bc8108d0fc7c93",
+      "3e8d25ecb5dd9d8be41315e01a7f43a89d40edb2",
       [
        null,
        {}
