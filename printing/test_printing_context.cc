@@ -18,6 +18,10 @@
 #include "printing/printing_context.h"
 #include "ui/gfx/geometry/size.h"
 
+#if defined(OS_WIN)
+#include "printing/printed_page_win.h"
+#endif
+
 namespace printing {
 
 TestPrintingContextDelegate::TestPrintingContextDelegate() = default;
@@ -100,6 +104,11 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
 
 mojom::ResultCode TestPrintingContext::NewDocument(
     const std::u16string& document_name) {
+  DCHECK(!in_print_job_);
+
+  abort_printing_ = false;
+  in_print_job_ = true;
+
   if (!skip_system_calls() && new_document_blocked_by_permissions_)
     return mojom::ResultCode::kAccessDenied;
 
@@ -108,34 +117,55 @@ mojom::ResultCode TestPrintingContext::NewDocument(
 }
 
 mojom::ResultCode TestPrintingContext::NewPage() {
-  NOTIMPLEMENTED();
-  return mojom::ResultCode::kFailed;
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
+
+  // No-op.
+  return mojom::ResultCode::kSuccess;
 }
 
 #if defined(OS_WIN)
 mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
                                                   const PageSetup& page_setup) {
-  NOTIMPLEMENTED();
-  return mojom::ResultCode::kFailed;
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
+  DVLOG(1) << "Render page " << page.page_number();
+
+  // No-op.
+  return mojom::ResultCode::kSuccess;
 }
 #endif  // defined(OS_WIN)
 
 mojom::ResultCode TestPrintingContext::PageDone() {
-  NOTIMPLEMENTED();
-  return mojom::ResultCode::kFailed;
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
+
+  // No-op.
+  return mojom::ResultCode::kSuccess;
 }
 
 mojom::ResultCode TestPrintingContext::PrintDocument(
     const MetafilePlayer& metafile,
     const PrintSettings& settings,
     uint32_t num_pages) {
-  NOTIMPLEMENTED();
-  return mojom::ResultCode::kFailed;
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
+  DVLOG(1) << "Print document";
+
+  // No-op.
+  return mojom::ResultCode::kSuccess;
 }
 
 mojom::ResultCode TestPrintingContext::DocumentDone() {
-  NOTIMPLEMENTED();
-  return mojom::ResultCode::kFailed;
+  DCHECK(in_print_job_);
+  DVLOG(1) << "Document done";
+
+  ResetSettings();
+  return mojom::ResultCode::kSuccess;
 }
 
 void TestPrintingContext::Cancel() {
@@ -146,7 +176,7 @@ void TestPrintingContext::Cancel() {
 void TestPrintingContext::ReleaseContext() {}
 
 printing::NativeDrawingContext TestPrintingContext::context() const {
-  NOTIMPLEMENTED();
+  // No native context for test.
   return nullptr;
 }
 
