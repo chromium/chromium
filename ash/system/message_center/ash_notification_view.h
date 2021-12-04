@@ -18,6 +18,7 @@ class Notification;
 
 namespace views {
 class BoxLayout;
+class ImageButton;
 class LabelButton;
 class View;
 }  // namespace views
@@ -71,6 +72,7 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void CreateOrUpdateInlineSettingsViews(
       const message_center::Notification& notification) override;
+  void UpdateControlButtonsVisibility() override;
   bool IsIconViewShown() const override;
   void SetExpandButtonEnabled(bool enabled) override;
   bool IsExpandable() const override;
@@ -127,6 +129,11 @@ class ASH_EXPORT AshNotificationView
     absl::optional<base::Time> timestamp_;
   };
 
+  // Create or update the customized snooze button in action buttons row
+  // according to the given notification.
+  void CreateOrUpdateSnoozeButton(
+      const message_center::Notification& notification);
+
   // Update `message_in_expanded_view_` according to the given notification.
   void UpdateMessageViewInExpandedState(
       const message_center::Notification& notification);
@@ -160,6 +167,8 @@ class ASH_EXPORT AshNotificationView
   views::View* main_view_ = nullptr;
   views::LabelButton* turn_off_notifications_button_ = nullptr;
   views::LabelButton* inline_settings_cancel_button_ = nullptr;
+  views::View* snooze_button_spacer_ = nullptr;
+  views::ImageButton* snooze_button_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
   NotificationTitleRow* title_row_ = nullptr;

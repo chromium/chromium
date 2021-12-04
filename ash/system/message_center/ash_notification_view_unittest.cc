@@ -17,6 +17,7 @@
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -89,10 +90,13 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
 
   // Create a test notification that is used in the view.
-  std::unique_ptr<Notification> CreateTestNotification(bool has_image = false) {
+  std::unique_ptr<Notification> CreateTestNotification(
+      bool has_image = false,
+      bool show_snooze_button = false) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
+    data.should_show_snooze_button = show_snooze_button;
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT,
@@ -180,6 +184,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
   views::LabelButton* inline_settings_cancel_button() {
     return notification_view_->inline_settings_cancel_button_;
+  }
+  views::ImageButton* snooze_button() {
+    return notification_view_->snooze_button_;
   }
 
   scoped_refptr<NotificationTestDelegate> delegate() { return delegate_; }
@@ -466,6 +473,21 @@ TEST_F(AshNotificationViewTest, InlineSettingsCancel) {
 
   EXPECT_FALSE(inline_settings_row()->GetVisible());
   EXPECT_FALSE(delegate()->disable_notification_called());
+}
+
+TEST_F(AshNotificationViewTest, SnoozeButtonVisibility) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  // Snooze button should be null if notification does not use it.
+  EXPECT_EQ(snooze_button(), nullptr);
+
+  notification =
+      CreateTestNotification(/*has_image=*/false, /*show_snooze_button=*/true);
+  notification_view()->UpdateWithNotification(*notification);
+
+  // Snooze button should be visible if notification does use it.
+  EXPECT_TRUE(snooze_button()->GetVisible());
 }
 
 }  // namespace ash

@@ -160,6 +160,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "notification_screen.icon",
     "notification_screenshare.icon",
     "notification_sms_sync.icon",
+    "notification_snooze_button.icon",
     "notification_stylus_battery_warning.icon",
     "notification_timer.icon",
     "overflow_shelf_left.icon",

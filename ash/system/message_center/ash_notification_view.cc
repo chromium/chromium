@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
@@ -41,9 +42,11 @@
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/relative_time_formatter.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -67,7 +70,8 @@ constexpr int kMainRightViewVerticalSpacing = 4;
 // action buttons.
 constexpr gfx::Insets kMainRightViewChildPadding(0, 14, 0, 0);
 
-constexpr gfx::Insets kActionButtonsRowPadding(0, 22, 0, 0);
+constexpr gfx::Insets kActionButtonsRowPadding(0, 22, 0, 4);
+constexpr int kActionsRowHorizontalSpacing = 8;
 
 constexpr int kContentRowHorizontalSpacing = 16;
 constexpr int kLeftContentVerticalSpacing = 4;
@@ -410,12 +414,20 @@ AshNotificationView::AshNotificationView(
                                     : kGroupedNotificationsCollapsedSpacing)
                    .Build());
 
-  AddChildView(CreateActionsRow(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal)));
+  AddChildView(CreateActionsRow(std::make_unique<views::FlexLayout>()));
 
-  // Custom paddings for `AshNotificationView`.
-  static_cast<views::BoxLayout*>(action_buttons_row()->GetLayoutManager())
-      ->set_inside_border_insets(kActionButtonsRowPadding);
+  // Custom layout and paddings for views in `AshNotificationView`.
+  action_buttons_row()
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetDefault(views::kMarginsKey,
+                   gfx::Insets(0, 0, 0, kActionsRowHorizontalSpacing))
+      .SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetInteriorMargin(kActionButtonsRowPadding);
+  action_buttons_row()->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+
   static_cast<views::FlexLayout*>(header_row()->GetLayoutManager())
       ->SetDefault(views::kMarginsKey, gfx::Insets(0, 0, 0, kHeaderRowSpacing))
       .SetInteriorMargin(gfx::Insets());
@@ -620,7 +632,10 @@ void AshNotificationView::UpdateWithNotification(
   grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
   header_row()->SetVisible(!is_grouped_child_view_);
   UpdateMessageViewInExpandedState(notification);
+
   NotificationViewBase::UpdateWithNotification(notification);
+
+  CreateOrUpdateSnoozeButton(notification);
 }
 
 void AshNotificationView::CreateOrUpdateHeaderView(
@@ -713,6 +728,14 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
           IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT));
   inline_settings_cancel_button_ = inline_settings_row()->AddChildView(
       std::move(inline_settings_cancel_button));
+}
+
+void AshNotificationView::UpdateControlButtonsVisibility() {
+  NotificationViewBase::UpdateControlButtonsVisibility();
+
+  // Always hide snooze button in control buttons since we show this snooze
+  // button in actions button view.
+  control_buttons_view()->ShowSnoozeButton(false);
 }
 
 bool AshNotificationView::IsIconViewShown() const {
@@ -822,6 +845,56 @@ void AshNotificationView::ActionButtonPressed(size_t index,
     FadeInView(inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
                kInlineReplyFadeInAnimationDurationMs);
   }
+}
+
+void AshNotificationView::CreateOrUpdateSnoozeButton(
+    const message_center::Notification& notification) {
+  if (!notification.should_show_snooze_button()) {
+    if (action_buttons_row()->Contains(snooze_button_)) {
+      action_buttons_row()->RemoveChildViewT(snooze_button_);
+      snooze_button_ = nullptr;
+      DCHECK(action_buttons_row()->Contains(snooze_button_spacer_));
+      action_buttons_row()->RemoveChildViewT(snooze_button_spacer_);
+      snooze_button_spacer_ = nullptr;
+    }
+    return;
+  }
+
+  if (snooze_button_) {
+    DCHECK(snooze_button_spacer_);
+    // Spacer and snooze button should be at the end of action buttons row.
+    action_buttons_row()->ReorderChildView(snooze_button_spacer_, -1);
+    action_buttons_row()->ReorderChildView(snooze_button_, -1);
+    return;
+  }
+
+  action_buttons_row()->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .CopyAddressTo(&snooze_button_spacer_)
+          .SetMainAxisAlignment(MainAxisAlignment::kEnd)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                       views::MaximumFlexSizeRule::kUnbounded))
+          .Build());
+
+  // TODO(crbug/1276581): Make sure the style of this snooze button is fit
+  // with the style of other action buttons.
+  action_buttons_row()->AddChildView(
+      views::Builder<views::ImageButton>()
+          .CopyAddressTo(&snooze_button_)
+          .SetCallback(
+              base::BindRepeating(&AshNotificationView::OnSnoozeButtonPressed,
+                                  base::Unretained(this)))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP))
+          .Build());
+
+  SkColor button_color = notification.accent_color().value_or(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive));
+  views::SetImageFromVectorIcon(snooze_button_, kNotificationSnoozeButtonIcon,
+                                20, button_color);
 }
 
 void AshNotificationView::UpdateMessageViewInExpandedState(
