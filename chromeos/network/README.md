@@ -1,8 +1,13 @@
 # Chrome OS Network - Chrome Layer
 
-Chrome OS networking consists of several key components. This document describes
-the Chrome layer, implemented within `//chromeos/network`. To describe this layer,
-we highlight three primary processes:
+Chrome OS networking consists of several key components, shown in the diagram
+below:
+
+![Chrome OS Connectivity Layers](docs/cros_connectivity_layers.svg){width="1200" height="864"}
+
+This document describes the Chrome layer (light blue rectangle above). This
+layer is implemented within `//chromeos/network`. To describe this layer, we
+highlight three primary processes:
 
 *   ***Chrome.*** Contains all system UI (e.g., settings) and processes inputs
     from the user as well as enterprise policies. Chrome sits atop the
