@@ -280,6 +280,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2942350706960889382">Lupa ancorada</translation>
 <translation id="2942516765047364088">Posición do estante</translation>
 <translation id="2946119680249604491">Engadir conexión</translation>
+<translation id="2960314608273155470">Modo de captura. A configuración predeterminada é <ph name="TYPE" /> <ph name="SOURCE" />. Premer o tabulador para navegar polo teclado.</translation>
 <translation id="2961963223658824723">Produciuse un erro. Téntao de novo nuns segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Non se puideron descargar os ficheiros de voz en <ph name="LANGUAGE" /></translation>
@@ -887,6 +888,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7042322267639375032">Contraer área de estado</translation>
 <translation id="7045033600005038336">Queres substituír o modelo?</translation>
 <translation id="7045595904618419789">Iniciar lupa</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> (desconectado)</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">O lapis óptico non se usou desde hai máis dunha semana</translation>
 <translation id="7066646422045619941">Esta rede está desactivada polo administrador.</translation>
@@ -1080,6 +1082,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="8412677897383510995">Mostrar configuración da pantalla</translation>
 <translation id="8413272770729657668">A gravación comeza en 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (estoxo)</translation>
+<translation id="8421270167862077762">A aplicación <ph name="UNAVAILABLE_APPS" /> non está dispoñible neste dispositivo.</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Bo serán, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Configuración</translation>

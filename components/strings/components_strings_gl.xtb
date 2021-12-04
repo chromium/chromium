@@ -403,6 +403,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2184405333245229118">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="2187317261103489799">Detectar (predeterminado)</translation>
 <translation id="2188375229972301266">Varias perforacións na parte inferior</translation>
+<translation id="2188852899391513400">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais de Google recomenda que o cambies de inmediato e que despois comprobes os contrasinais gardados.</translation>
 <translation id="2202020181578195191">Introduce un ano de caducidade válido</translation>
 <translation id="22081806969704220">Bandexa 3</translation>
 <translation id="2212735316055980242">Política non atopada</translation>
@@ -897,6 +898,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3827112369919217609">Absoluto</translation>
 <translation id="3827475930221174051">Elementos baseados na actividade relacionada coa busca "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">A frase de acceso non pode estar baleira.</translation>
+<translation id="3831065134033923230">Comproba os contrasinais gardados</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensións para poder utilizar funcións adicionais. As extensións teñen acceso a algúns dos teus datos.</translation>
 <translation id="3832522519263485449">Varias perforacións na parte esquerda</translation>
 <translation id="3835233591525155343">Uso do dispositivo</translation>
@@ -1096,6 +1098,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451135742916150903">Pode pedirche permiso para conectarse a dispositivos de interface humana</translation>
+<translation id="4452328064229197696">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais de Google recomenda que comprobes os contrasinais gardados.</translation>
 <translation id="4455222631300069614">Cambia o contrasinal agora</translation>
 <translation id="4460315069258617173">Permiso concedido ata que peches as pestanas deste sitio</translation>
 <translation id="4464826014807964867">Sitios web con información da túa organización</translation>
@@ -1585,6 +1588,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6051221802930200923">Non podes acceder a <ph name="SITE" /> agora momento porque o sitio web usa a fixación de certificados. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="6051898664905071243">Número de páxinas:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
 <translation id="6055888660316801977">Folla da credencial de pagos seguros correspondente ás credenciais non coincidentes</translation>
 <translation id="6058977677006700226">Queres utilizar as túas tarxetas en todos os teus dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>

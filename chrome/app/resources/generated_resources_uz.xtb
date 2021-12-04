@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Ulangan qurilmalar</translation>
 <translation id="1153636665119721804">Google Kengaytirilgan himoya dasturi</translation>
 <translation id="1155816283571436363">Telefonga ulanilmoqda</translation>
+<translation id="1158080958325422608">Katta harflarda boʻlsin</translation>
 <translation id="1158238185437008462">Xotiralarni koʻrish</translation>
 <translation id="1161575384898972166">Mijoz sertifikatini eksport qilish uchun, <ph name="TOKEN_NAME" />‘ga kiring.</translation>
 <translation id="116173250649946226">Administrator tomonidan oʻzgarmas standart mavzu sozlandi.</translation>
@@ -692,6 +693,7 @@
 <translation id="1700079447639026019">Hech qachon cookie fayllarini ishlata olmaydigan saytlar</translation>
 <translation id="1703331064825191675">Parollar haqida boshqa xavotir olmaysiz</translation>
 <translation id="1703666494654169921">Saytlarga virtual reallik qurilmalari yoki maʼlumotlardan foydalanishni taqiqlash</translation>
+<translation id="1704097193565924901">Bosh harflar</translation>
 <translation id="1704230497453185209">Saytlarga tovush ijro qilishni taqiqlash</translation>
 <translation id="1704970325597567340">Xavfsizlik tekshiruvi <ph name="DATE" /> sanasida bajarilgan</translation>
 <translation id="1706586824377653884">Administratoringiz tomonidan qo‘shilgan</translation>
@@ -3568,6 +3570,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4681453295291708042">Nearby Share’ni faolsizlashtirish</translation>
 <translation id="4681930562518940301">Asl rasmni yangi varaqda ochish</translation>
 <translation id="4682551433947286597">Orqa fon rasmi kirish ekranida paydo bo‘ladi.</translation>
+<translation id="4683629100208651599">Kichik harflarda boʻlsin</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (standart)</translation>
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> kameradan foydalanmoqchi. Ruxsat berish uchun kamera maxfiylik qoidasini faolsizlantiring.</translation>
@@ -5964,6 +5967,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7257173066616499747">Wi-Fi tarmoqlari</translation>
 <translation id="725758059478686223">Chop etish xizmati</translation>
 <translation id="7257666756905341374">Nusxalash va joylash ma’lumotlariga ruxsat</translation>
+<translation id="7258192266780953209">Tranfsofrmatsiyalar</translation>
 <translation id="7258225044283673131">Ilova javob bermayapti. Ilovani “Majburiy toʻxtatish” orqali yoping.</translation>
 <translation id="7262004276116528033">Tizimga kirish xizmati <ph name="SAML_DOMAIN" /> domenida joylashgan.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Quyidagi usullar orqali muammoni hal qilishga urining:
