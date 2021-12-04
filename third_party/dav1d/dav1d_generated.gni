@@ -31,6 +31,7 @@ x86_asm_sources = [
   "libdav1d/src/x86/loopfilter_avx512.asm",
   "libdav1d/src/x86/loopfilter_sse.asm",
   "libdav1d/src/x86/looprestoration16_avx2.asm",
+  "libdav1d/src/x86/looprestoration16_avx512.asm",
   "libdav1d/src/x86/looprestoration16_sse.asm",
   "libdav1d/src/x86/looprestoration_avx2.asm",
   "libdav1d/src/x86/looprestoration_avx512.asm",
