@@ -7344,7 +7344,7 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_IntervalTooShort) {
       base::android::RadioDataActivity::kDormant);
   RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
-  RadioMonitorAndroid::GetInstance().OverrideLastRecordTimeForTesting(
+  RadioMonitorAndroid::GetInstance().OverrideLastCheckTimeForTesting(
       base::TimeTicks::Now());
 
   LoadAndCompareFile("simple_page.html");

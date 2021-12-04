@@ -58,8 +58,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
       absl::optional<base::android::RadioConnectionType> radio_type) {
     radio_type_override_for_testing_ = radio_type;
   }
-  void OverrideLastRecordTimeForTesting(base::TimeTicks last_record_time) {
-    last_record_time_ = last_record_time;
+  void OverrideLastCheckTimeForTesting(base::TimeTicks last_check_time) {
+    last_check_time_ = last_check_time;
   }
 
  private:
@@ -76,11 +76,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RadioMonitorAndroid {
   // TODO(crbug.com/1232623): Consider optimizing this function. This function
   // uses Android's platform APIs which add non-negligible overheads.
   bool ShouldRecordRadioWakeupTrigger();
+  // Contains maybe-expensive API calls.
+  bool ShouldRecordRadioWakeupTriggerInternal();
 
   // Updated when ShouldRecordRadioWakeupTrigger() is called.
   base::android::RadioDataActivity last_radio_data_activity_ =
       base::android::RadioDataActivity::kNone;
-  base::TimeTicks last_record_time_;
+  base::TimeTicks last_check_time_;
 
   // Radio state overrides for testing.
   absl::optional<base::android::RadioDataActivity>

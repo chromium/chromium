@@ -81,16 +81,27 @@ bool RadioMonitorAndroid::IsRadioUtilsSupported() {
 }
 
 bool RadioMonitorAndroid::ShouldRecordRadioWakeupTrigger() {
-  // Check recording interval first to reduce overheads of calling Android's
-  // platform APIs.
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (!last_record_time_.is_null() &&
-      now - last_record_time_ < kMinimumRecordIntervalForPossibleWakeupTrigger)
-    return false;
-
   if (!IsRadioUtilsSupported())
     return false;
 
+  base::TimeTicks now = base::TimeTicks::Now();
+  // Check recording interval first to reduce overheads of calling Android's
+  // platform APIs.
+  if (!last_check_time_.is_null() &&
+      now - last_check_time_ < kMinimumRecordIntervalForPossibleWakeupTrigger)
+    return false;
+
+  last_check_time_ = now;
+
+  bool should_record = ShouldRecordRadioWakeupTriggerInternal();
+  base::UmaHistogramTimes(
+      "Network.Radio.PossibleWakeupTrigger.RadioUtilsOverhead",
+      base::TimeTicks::Now() - now);
+
+  return should_record;
+}
+
+bool RadioMonitorAndroid::ShouldRecordRadioWakeupTriggerInternal() {
   base::android::RadioConnectionType radio_type =
       radio_type_override_for_testing_.value_or(
           base::android::RadioUtils::GetConnectionType());
@@ -110,10 +121,7 @@ bool RadioMonitorAndroid::ShouldRecordRadioWakeupTrigger() {
   bool should_record =
       *radio_activity == base::android::RadioDataActivity::kDormant &&
       last_radio_data_activity_ != base::android::RadioDataActivity::kDormant;
-
   last_radio_data_activity_ = *radio_activity;
-  last_record_time_ = now;
-
   return should_record;
 }
 
