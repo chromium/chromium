@@ -18,6 +18,7 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
@@ -1960,13 +1961,22 @@ TEST_F(PartitionAllocDeathTest, LargeAllocs) {
   // Largest alloc.
   EXPECT_DEATH(allocator.root()->Alloc(static_cast<size_t>(-1), type_name), "");
   // And the smallest allocation we expect to die.
+  // TODO(bartekn): Separate into its own test, as it wouldn't run (same below).
   EXPECT_DEATH(allocator.root()->Alloc(MaxDirectMapped() + 1, type_name), "");
 }
 
-// These tests don't work deterministically when BRP is enabled, as the Free()
-// path returns early, before PA_CHECK(slot_start != freelist_head) is reached.
-// TODO(bartekn): Fix and re-enable.
-#if !BUILDFLAG(USE_BACKUP_REF_PTR)
+// These tests don't work deterministically when BRP is enabled on certain
+// architectures. On Free(), BRP's ref-count gets overwritten by an encoded
+// freelist pointer. On little-endian 64-bit architectures, this happens to be
+// always an even number, which will triggers BRP's own CHECK (sic!). On other
+// architectures, it's likely to be an odd number >1, which will fool BRP into
+// thinking the memory isn't freed and still referenced, thus making it
+// quarantine it and return early, before PA_CHECK(slot_start != freelist_head)
+// is reached.
+// TODO(bartekn): Enable in the BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) case.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR) || \
+    (defined(PA_HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+
 // Check that our immediate double-free detection works.
 TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -1975,8 +1985,24 @@ TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree) {
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
 }
 
-// Check that our refcount-based double-free detection works.
-TEST_F(PartitionAllocDeathTest, RefcountDoubleFree) {
+// As above, but when this isn't the only slot in the span.
+TEST_F(PartitionAllocDeathTest, ImmediateDoubleFree2ndSlot) {
+  void* ptr0 = allocator.root()->Alloc(kTestAllocSize, type_name);
+  EXPECT_TRUE(ptr0);
+  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  EXPECT_TRUE(ptr);
+  allocator.root()->Free(ptr);
+  EXPECT_DEATH(allocator.root()->Free(ptr), "");
+  allocator.root()->Free(ptr0);
+}
+
+// Check that our double-free detection based on |num_allocated_slots| not going
+// below 0 works.
+//
+// Unlike in ImmediateDoubleFree test, we can't have a 2ndSlot version, as this
+// protection wouldn't work when there is another slot present in the span. It
+// will prevent |num_allocated_slots| from going below 0.
+TEST_F(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   void* ptr2 = allocator.root()->Alloc(kTestAllocSize, type_name);
@@ -1984,11 +2010,13 @@ TEST_F(PartitionAllocDeathTest, RefcountDoubleFree) {
   allocator.root()->Free(ptr);
   allocator.root()->Free(ptr2);
   // This is not an immediate double-free so our immediate detection won't
-  // fire. However, it does take the "refcount" of the to -1, which is illegal
+  // fire. However, it does take |num_allocated_slots| to -1, which is illegal
   // and should be trapped.
   EXPECT_DEATH(allocator.root()->Free(ptr), "");
 }
-#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR)
+
+#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) || \
+        // (defined(PA_HAS_64_BITS_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that guard pages are present where expected.
 TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
