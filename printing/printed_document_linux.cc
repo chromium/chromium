@@ -15,15 +15,17 @@
 
 namespace printing {
 
-bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
-  if (context->NewPage() != mojom::ResultCode::kSuccess)
-    return false;
+mojom::ResultCode PrintedDocument::RenderPrintedDocument(
+    PrintingContext* context) {
+  mojom::ResultCode result = context->NewPage();
+  if (result != mojom::ResultCode::kSuccess)
+    return result;
   {
     base::AutoLock lock(lock_);
     const MetafilePlayer* metafile = GetMetafile();
     static_cast<PrintingContextLinux*>(context)->PrintDocument(*metafile);
   }
-  return context->PageDone() == mojom::ResultCode::kSuccess;
+  return context->PageDone();
 }
 
 }  // namespace printing

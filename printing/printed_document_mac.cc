@@ -9,11 +9,13 @@
 
 #include "base/check.h"
 #include "printing/metafile.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 
 namespace printing {
 
-bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
+mojom::ResultCode PrintedDocument::RenderPrintedDocument(
+    PrintingContext* context) {
   DCHECK(context);
 
   const MetafilePlayer* metafile;
@@ -29,14 +31,19 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
   size_t num_pages = expected_page_count();
   for (size_t metafile_page_number = 1; metafile_page_number <= num_pages;
        metafile_page_number++) {
-    if (context->NewPage() != mojom::ResultCode::kSuccess)
-      return false;
-    metafile->RenderPage(metafile_page_number, context->context(), paper_rect,
-                         /*autorotate=*/true, /*fit_to_page=*/false);
-    if (context->PageDone() != mojom::ResultCode::kSuccess)
-      return false;
+    mojom::ResultCode result = context->NewPage();
+    if (result != mojom::ResultCode::kSuccess)
+      return result;
+    if (!metafile->RenderPage(metafile_page_number, context->context(),
+                              paper_rect,
+                              /*autorotate=*/true, /*fit_to_page=*/false)) {
+      return mojom::ResultCode::kFailed;
+    }
+    result = context->PageDone();
+    if (result != mojom::ResultCode::kSuccess)
+      return result;
   }
-  return true;
+  return mojom::ResultCode::kSuccess;
 }
 
 }  // namespace printing

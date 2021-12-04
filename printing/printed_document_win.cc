@@ -5,8 +5,10 @@
 #include "printing/printed_document.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "printing/metafile_skia.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_context_win.h"
@@ -15,6 +17,24 @@
 #include "skia/ext/skia_utils_win.h"
 
 namespace {
+
+// Helper class to ensure that a saved device context state gets restored at end
+// of scope.
+class ScopedSavedState {
+ public:
+  ScopedSavedState(printing::NativeDrawingContext context)
+      : context_(context), saved_state_(SaveDC(context)) {
+    DCHECK_NE(saved_state_, 0);
+  }
+  ~ScopedSavedState() {
+    BOOL res = RestoreDC(context_, saved_state_);
+    DCHECK_NE(res, 0);
+  }
+
+ private:
+  printing::NativeDrawingContext context_;
+  int saved_state_;
+};
 
 void SimpleModifyWorldTransform(HDC context,
                                 int offset_x,
@@ -28,11 +48,17 @@ void SimpleModifyWorldTransform(HDC context,
   DCHECK_NE(res, 0);
 }
 
+printing::mojom::ResultCode OnError() {
+  return logging::GetLastSystemErrorCode() == ERROR_ACCESS_DENIED
+             ? printing::mojom::ResultCode::kAccessDenied
+             : printing::mojom::ResultCode::kFailed;
+}
+
 }  // namespace
 
 namespace printing {
 
-void PrintedDocument::RenderPrintedPage(
+mojom::ResultCode PrintedDocument::RenderPrintedPage(
     const PrintedPage& page,
     printing::NativeDrawingContext context) const {
 #ifndef NDEBUG
@@ -51,13 +77,11 @@ void PrintedDocument::RenderPrintedPage(
 
   // Save the state to make sure the context this function call does not modify
   // the device context.
-  int saved_state = SaveDC(context);
-  DCHECK_NE(saved_state, 0);
+  ScopedSavedState saved_state(context);
   skia::InitializeDC(context);
   {
     // Save the state (again) to apply the necessary world transformation.
-    int saved_state_inner = SaveDC(context);
-    DCHECK_NE(saved_state_inner, 0);
+    ScopedSavedState saved_state_inner(context);
 
     // Setup the matrix to translate and scale to the right place. Take in
     // account the actual shrinking factor.
@@ -68,22 +92,23 @@ void PrintedDocument::RenderPrintedPage(
         content_area.y() - page_setup.printable_area().y(),
         page.shrink_factor());
 
-    ::StartPage(context);
+    if (::StartPage(context) <= 0)
+      return OnError();
+
     bool played_back = page.metafile()->SafePlayback(context);
     DCHECK(played_back);
-    ::EndPage(context);
-
-    BOOL res = RestoreDC(context, saved_state_inner);
-    DCHECK_NE(res, 0);
+    if (::EndPage(context) <= 0)
+      return OnError();
   }
 
-  BOOL res = RestoreDC(context, saved_state);
-  DCHECK_NE(res, 0);
+  return mojom::ResultCode::kSuccess;
 }
 
-bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
-  if (context->NewPage() != mojom::ResultCode::kSuccess)
-    return false;
+mojom::ResultCode PrintedDocument::RenderPrintedDocument(
+    PrintingContext* context) {
+  mojom::ResultCode result = context->NewPage();
+  if (result != mojom::ResultCode::kSuccess)
+    return result;
 
   std::wstring device_name =
       base::UTF16ToWide(immutable_.settings_->device_name());
@@ -93,7 +118,7 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
     static_cast<PrintingContextWin*>(context)->PrintDocument(
         device_name, *(static_cast<const MetafileSkia*>(metafile)));
   }
-  return context->PageDone() == mojom::ResultCode::kSuccess;
+  return context->PageDone();
 }
 
 }  // namespace printing

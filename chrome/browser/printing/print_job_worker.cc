@@ -23,6 +23,7 @@
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_keys.h"
+#include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -530,7 +531,11 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   }
 
   // Actual printing.
-  document_->RenderPrintedPage(*page, printing_context_->context());
+  if (document_->RenderPrintedPage(*page, printing_context_->context()) !=
+      mojom::ResultCode::kSuccess) {
+    OnFailure();
+    return;
+  }
 
   // Postprocess.
   if (printing_context_->PageDone() != mojom::ResultCode::kSuccess) {
@@ -549,8 +554,13 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
 
 void PrintJobWorker::SpoolJob() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!document_->RenderPrintedDocument(printing_context_.get()))
+  mojom::ResultCode result =
+      document_->RenderPrintedDocument(printing_context_.get());
+  if (result != mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(ERROR) << "Failure to render printed document - error "
+                       << result;
     OnFailure();
+  }
 }
 
 void PrintJobWorker::OnFailure() {

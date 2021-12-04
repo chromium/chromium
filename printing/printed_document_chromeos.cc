@@ -5,36 +5,41 @@
 #include "printing/printed_document.h"
 
 #include "base/logging.h"
+#include "printing/mojom/print.mojom.h"
 
 #if defined(USE_CUPS)
 #include "printing/metafile.h"
-#include "printing/mojom/print.mojom.h"
 #include "printing/printing_context_chromeos.h"
 #endif
 
 namespace printing {
 
-bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
+mojom::ResultCode PrintedDocument::RenderPrintedDocument(
+    PrintingContext* context) {
 #if defined(USE_CUPS)
   DCHECK(context);
 
-  if (context->NewPage() != mojom::ResultCode::kSuccess)
-    return false;
+  mojom::ResultCode result = context->NewPage();
+  if (result != mojom::ResultCode::kSuccess)
+    return result;
   {
     base::AutoLock lock(lock_);
     std::vector<char> buffer;
     const MetafilePlayer* metafile = GetMetafile();
     DCHECK(metafile);
     if (metafile->GetDataAsVector(&buffer)) {
-      static_cast<PrintingContextChromeos*>(context)->StreamData(buffer);
+      result =
+          static_cast<PrintingContextChromeos*>(context)->StreamData(buffer);
+      if (result != mojom::ResultCode::kSuccess)
+        return result;
     } else {
       LOG(WARNING) << "Failed to read data from metafile";
     }
   }
-  return context->PageDone() == mojom::ResultCode::kSuccess;
+  return context->PageDone();
 #else
   NOTREACHED();
-  return false;
+  return mojom::ResultCode::kFailed;
 #endif  // defined(USE_CUPS)
 }
 

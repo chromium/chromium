@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/native_drawing_context.h"
 #include "printing/print_settings.h"
 
@@ -78,13 +79,14 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
 // Note: locks for a short amount of time in debug only.
 #if defined(OS_WIN)
   // This is applicable when using the Windows GDI print API.
-  void RenderPrintedPage(const PrintedPage& page,
-                         printing::NativeDrawingContext context) const;
+  mojom::ResultCode RenderPrintedPage(
+      const PrintedPage& page,
+      printing::NativeDrawingContext context) const;
 #endif
 
-  // Draws the document in the context. Returns true on success and false on
-  // failure. Fails if context->NewPage() or context->PageDone() fails.
-  bool RenderPrintedDocument(PrintingContext* context);
+  // Draws the document in the context.  Fails if context->NewPage() or
+  // context->PageDone() fails.
+  mojom::ResultCode RenderPrintedDocument(PrintingContext* context);
 
   // Returns true if all the necessary pages for the settings are already
   // rendered.
