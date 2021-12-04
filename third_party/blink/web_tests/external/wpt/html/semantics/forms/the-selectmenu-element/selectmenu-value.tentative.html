@@ -52,6 +52,12 @@
   <option>three</option>
 </selectmenu>
 
+<selectmenu id="selectMenu7">
+  <option id="selectMenu7-option1">one</option>
+  <option selected value="test">two</option>
+  <option>three</option>
+</selectmenu>
+
 <script>
 
 test(() => {
@@ -151,5 +157,21 @@ test(() => {
   selectMenu.value = "three";
   assert_false(newOption.selected);
 }, "Test that HTMLOption.selected updates selectmenu.value");
+
+test(() => {
+  const selectMenu = document.getElementById("selectMenu7");
+  let selectMenuOption1 = document.getElementById("selectMenu7-option1");
+
+  assert_equals(selectMenu.value, "test");
+  assert_false(selectMenuOption1.selected);
+  selectMenuOption1.selected = true;
+  assert_equals(selectMenu.value, "one");
+  selectMenuOption1.value = "new test";
+  assert_equals(selectMenu.value, "new test");
+  selectMenuOption1.removeAttribute("value");
+  assert_equals(selectMenu.value, "one");
+  selectMenuOption1.value = "";
+  assert_equals(selectMenu.value, "");
+}, "Test that HTMLOption.value updates selectmenu.value");
 
 </script>

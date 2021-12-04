@@ -306,9 +306,9 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
           this);
 }
 
-String HTMLSelectMenuElement::value() {
-  if (Element* option = SelectedOption()) {
-    return option->innerText();
+String HTMLSelectMenuElement::value() const {
+  if (HTMLOptionElement* option = SelectedOption()) {
+    return option->value();
   }
   return "";
 }
@@ -713,19 +713,9 @@ void HTMLSelectMenuElement::OptionSelectionStateChanged(
   }
 }
 
-void HTMLSelectMenuElement::EnsureSelectedOptionIsValid() {
-  // TODO(crbug.com/1121840) Since we observe DOM tree mutation asynchronously
-  // the selected option can become invalid. For now ensure that the selected
-  // option is still valid before using it. In future, we may move to observe
-  // DOM tree mutation synchronously.
-  if (selected_option_ &&
-      !IsValidOptionPart(selected_option_, /*show_warning=*/false)) {
-    OptionPartRemoved(selected_option_);
-  }
-}
-
-HTMLOptionElement* HTMLSelectMenuElement::SelectedOption() {
-  EnsureSelectedOptionIsValid();
+HTMLOptionElement* HTMLSelectMenuElement::SelectedOption() const {
+  DCHECK(!selected_option_ ||
+         IsValidOptionPart(selected_option_, /*show_warning=*/false));
   return selected_option_;
 }
 
@@ -877,7 +867,7 @@ void HTMLSelectMenuElement::AppendToFormData(FormData& form_data) {
 }
 
 FormControlState HTMLSelectMenuElement::SaveFormControlState() const {
-  return FormControlState(const_cast<HTMLSelectMenuElement*>(this)->value());
+  return FormControlState(value());
 }
 
 void HTMLSelectMenuElement::RestoreFormControlState(
@@ -897,8 +887,7 @@ bool HTMLSelectMenuElement::ValueMissing() const {
   if (!IsRequired())
     return false;
 
-  if (auto* selected_option =
-          const_cast<HTMLSelectMenuElement*>(this)->SelectedOption()) {
+  if (auto* selected_option = SelectedOption()) {
     // If a non-placeholer label option is selected, it's not value-missing.
     // TODO(crbug.com/1121840) Sync APIs shouldn't rely on async computed
     // option_parts_
