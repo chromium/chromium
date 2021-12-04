@@ -466,6 +466,44 @@ suite('Multidevice', function() {
                   settings.MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState:
                   settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubPermissionsDialogSupported: false,
+              isPhoneHubAppsAccessGranted: false,
+              notificationAccessStatus:
+                  settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED
+            });
+
+        Polymer.dom.flush();
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubNotificationsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubAppsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubPermissionsDialogSupported: false,
+              isPhoneHubAppsAccessGranted: false,
+              notificationAccessStatus:
+                  settings.PhoneHubNotificationAccessStatus
+                      .AVAILABLE_BUT_NOT_GRANTED
+            });
+
+        Polymer.dom.flush();
+        assertTrue(!!multideviceSubpage.$$('#phoneHubItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubCombinedSetupItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
+
+        multideviceSubpage.pageContentData =
+            Object.assign({}, multideviceSubpage.pageContentData, {
+              phoneHubNotificationsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              phoneHubAppsState:
+                  settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubPermissionsDialogSupported: true,
               isPhoneHubAppsAccessGranted: false,
               notificationAccessStatus:
                   settings.PhoneHubNotificationAccessStatus.ACCESS_GRANTED
@@ -488,6 +526,7 @@ suite('Multidevice', function() {
                   settings.MultiDeviceFeatureState.ENABLED_BY_USER,
               phoneHubAppsState:
                   settings.MultiDeviceFeatureState.ENABLED_BY_USER,
+              isPhoneHubPermissionsDialogSupported: true,
               isPhoneHubAppsAccessGranted: false,
               notificationAccessStatus:
                   settings.PhoneHubNotificationAccessStatus
