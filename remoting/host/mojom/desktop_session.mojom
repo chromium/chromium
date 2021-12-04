@@ -5,6 +5,8 @@
 module remoting.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
+import "remoting/host/mojom/wrapped_primitives.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Contains clipboard event data.
 // This struct mirrors the remoting::protocol::ClipboardEvents protobuf struct.
@@ -15,6 +17,117 @@ struct ClipboardEvent {
   // The clipboard data. The original protobuf type is string but we use a
   // ByteString because that is the preferred mojom type.
   mojo_base.mojom.ByteString data;
+};
+
+// Contains the data needed to inject a keyboard key event.
+// This struct mirrors the remoting::protocol::KeyEvent protobuf struct.
+struct KeyEvent {
+  // True for key press events, and false for key release.
+  bool pressed;
+
+  // The USB key code.
+  // The upper 16-bits are the USB Page (0x07 for key events).
+  // The lower 16-bits are the USB Usage ID (which identifies the actual key).
+  uint32 usb_keycode;
+
+  // Legacy keyboard lock states. Prefer the discrete entries below.
+  // Flags defined in remoting::protocol::KeyEvent::LockStates.
+  uint32 lock_states;
+
+  // Keyboard lock states. The field should be specified only if the state can
+  // be reliably determined by the client. E.g., OS X does not have num lock, so
+  // only caps_lock should be provided by a client running on OS X.
+  Bool? caps_lock_state;
+  Bool? num_lock_state;
+};
+
+// This enum mirrors the remoting::protocol::MouseEvent::MouseButton enum.
+enum MouseButton {
+  kUndefined = 0,
+  kLeft = 1,
+  kMiddle = 2,
+  kRight = 3,
+  kBack = 4,
+  kForward = 5,
+};
+
+// Contains the data needed to inject a mouse event.
+// This struct mirrors the remoting::protocol::MouseEvent protobuf struct.
+struct MouseEvent {
+  // Mouse absolute position information. When using WebRTC-based protocol the
+  // coordinates are in DIPs. Otherwise they are in host's physical pixels. In
+  // both coordinates systems, the top-left monitor on the system always starts
+  // from (0, 0).
+  Int32? x;
+  Int32? y;
+
+  // Mouse button event.
+  MouseButton button;
+  // |button_down| is not set when |button| is kUndefined.
+  Bool? button_down;
+
+  // Mouse wheel information.
+  // These values encode the number of pixels and 'ticks' of movement that
+  // would result from the wheel event on the client system.
+  Float? wheel_delta_x;
+  Float? wheel_delta_y;
+  Float? wheel_ticks_x;
+  Float? wheel_ticks_y;
+
+  // Mouse movement information. Provided only when mouse lock is engaged.
+  Int32? delta_x;
+  Int32? delta_y;
+};
+
+// Text input event for input method different from physical keyboards,
+// including software keyboard, gesture typing, voice input, etc.
+// This struct mirrors the remoting::protocol::TextEvent protobuf struct.
+struct TextEvent {
+  // Unicode sequence for the event in UTF-8.
+  string text;
+};
+
+// Describes the attributes for a single touch point, used in TouchEvent to
+// describe a touch gesture.
+// This struct mirrors the remoting::protocol::TouchEventPoint protobuf struct.
+struct TouchEventPoint {
+  // The ID for the touch point.
+  uint32 id;
+
+  // The absolute position of the touch point. These values on-the-wire are host
+  // physical pixel coordinates: the top-left monitor on the system always
+  // starts from (0, 0).
+  gfx.mojom.PointF position;
+
+  // The size of the touch point, used to aid hit-testing.
+  // Scaled to match the size on host.
+  gfx.mojom.PointF radius;
+
+  // Angle in degrees from the y-axis of the touch point.
+  float angle;
+
+  // The pressure of the touch point.
+  // The value should be in [0.0, 1.0].
+  float pressure;
+};
+
+// This enum mirrors the remoting::protocol::TouchEvent::TouchEventType enum.
+enum TouchEventType {
+  kUndefined = 0,
+  kStart = 1,
+  kMove = 2,
+  kEnd = 3,
+  kCancel = 4,
+};
+
+// Describes a touch gesture event (start, stop, move) along with the set of
+// touch points to include in the gesture.
+struct TouchEvent {
+  // The event type.
+  TouchEventType event_type;
+
+  // Only the changed touch points are added to this field.
+  array<TouchEventPoint> touch_points;
 };
 
 // The state of the URL forwarder setup.
@@ -66,6 +179,18 @@ interface DesktopSessionRequestHandler {
 interface DesktopSessionControl {
   // Used to inject clipboard events received from the client.
   InjectClipboardEvent(ClipboardEvent event);
+
+  // Used to inject keyboard events received from the client.
+  InjectKeyEvent(KeyEvent event);
+
+  // Used to inject mouse events received from the client.
+  InjectMouseEvent(MouseEvent event);
+
+  // Used to inject text events received from the client.
+  InjectTextEvent(TextEvent event);
+
+  // Used to inject touch events received from the client.
+  InjectTouchEvent(TouchEvent event);
 
   // Used to set up the URL forwarder as the default browser.  State changes
   // will be reported via the

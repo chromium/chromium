@@ -243,14 +243,6 @@ bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
                           OnCaptureFrame)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SelectSource,
                           OnSelectSource)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectKeyEvent,
-                          OnInjectKeyEvent)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectTextEvent,
-                          OnInjectTextEvent)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectMouseEvent,
-                          OnInjectMouseEvent)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_InjectTouchEvent,
-                          OnInjectTouchEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_ExecuteActionRequest,
                           OnExecuteActionRequestEvent)
       IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SetScreenResolution,
@@ -647,15 +639,8 @@ void DesktopSessionAgent::InjectClipboardEvent(
   input_injector_->InjectClipboardEvent(event);
 }
 
-void DesktopSessionAgent::OnInjectKeyEvent(
-    const std::string& serialized_event) {
+void DesktopSessionAgent::InjectKeyEvent(const protocol::KeyEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  protocol::KeyEvent event;
-  if (!event.ParseFromString(serialized_event)) {
-    LOG(ERROR) << "Failed to parse protocol::KeyEvent.";
-    return;
-  }
 
   // InputStub implementations must verify events themselves, so we need only
   // basic verification here. This matches HostEventDispatcher.
@@ -667,15 +652,8 @@ void DesktopSessionAgent::OnInjectKeyEvent(
   remote_input_filter_->InjectKeyEvent(event);
 }
 
-void DesktopSessionAgent::OnInjectTextEvent(
-    const std::string& serialized_event) {
+void DesktopSessionAgent::InjectTextEvent(const protocol::TextEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  protocol::TextEvent event;
-  if (!event.ParseFromString(serialized_event)) {
-    LOG(ERROR) << "Failed to parse protocol::TextEvent.";
-    return;
-  }
 
   // InputStub implementations must verify events themselves, so we need only
   // basic verification here. This matches HostEventDispatcher.
@@ -687,15 +665,8 @@ void DesktopSessionAgent::OnInjectTextEvent(
   remote_input_filter_->InjectTextEvent(event);
 }
 
-void DesktopSessionAgent::OnInjectMouseEvent(
-    const std::string& serialized_event) {
+void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  protocol::MouseEvent event;
-  if (!event.ParseFromString(serialized_event)) {
-    LOG(ERROR) << "Failed to parse protocol::MouseEvent.";
-    return;
-  }
 
   if (video_capturer_)
     video_capturer_->SetComposeEnabled(event.has_delta_x() ||
@@ -706,15 +677,8 @@ void DesktopSessionAgent::OnInjectMouseEvent(
   remote_input_filter_->InjectMouseEvent(event);
 }
 
-void DesktopSessionAgent::OnInjectTouchEvent(
-    const std::string& serialized_event) {
+void DesktopSessionAgent::InjectTouchEvent(const protocol::TouchEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  protocol::TouchEvent event;
-  if (!event.ParseFromString(serialized_event)) {
-    LOG(ERROR) << "Failed to parse protocol::TouchEvent.";
-    return;
-  }
 
   remote_input_filter_->InjectTouchEvent(event);
 }

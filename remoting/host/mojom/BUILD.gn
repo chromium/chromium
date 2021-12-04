@@ -14,10 +14,12 @@ mojom("mojom") {
     "remoting_host.mojom",
     "testing.mojom",
     "webauthn_proxy.mojom",
+    "wrapped_primitives.mojom",
   ]
 
   deps = [
     "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
@@ -28,23 +30,42 @@ mojom("mojom") {
           mojom = "remoting.mojom.ClipboardEvent"
           cpp = "::remoting::protocol::ClipboardEvent"
         },
+        {
+          mojom = "remoting.mojom.KeyEvent"
+          cpp = "::remoting::protocol::KeyEvent"
+        },
+        {
+          mojom = "remoting.mojom.MouseButton"
+          cpp = "::remoting::protocol::MouseEvent::MouseButton"
+        },
+        {
+          mojom = "remoting.mojom.MouseEvent"
+          cpp = "::remoting::protocol::MouseEvent"
+        },
+        {
+          mojom = "remoting.mojom.TextEvent"
+          cpp = "::remoting::protocol::TextEvent"
+        },
+        {
+          mojom = "remoting.mojom.TouchEvent"
+          cpp = "::remoting::protocol::TouchEvent"
+        },
+        {
+          mojom = "remoting.mojom.TouchEventPoint"
+          cpp = "::remoting::protocol::TouchEventPoint"
+        },
+        {
+          mojom = "remoting.mojom.TouchEventType"
+          cpp = "::remoting::protocol::TouchEvent::TouchEventType"
+        },
       ]
       traits_headers = [ "remoting_mojom_traits.h" ]
-      traits_public_deps = [ ":mojom_traits" ]
+      traits_sources = [ "remoting_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//mojo/public/cpp/bindings",
+        "//remoting/proto",
+      ]
     },
-  ]
-}
-
-source_set("mojom_traits") {
-  sources = [
-    "remoting_mojom_traits.cc",
-    "remoting_mojom_traits.h",
-  ]
-
-  public_deps = [
-    ":mojom_shared_cpp_sources",
-    "//mojo/public/cpp/base:shared_typemap_traits",
-    "//mojo/public/cpp/bindings",
-    "//remoting/proto",
   ]
 }

@@ -418,53 +418,33 @@ void DesktopSessionProxy::InjectClipboardEvent(
 void DesktopSessionProxy::InjectKeyEvent(const protocol::KeyEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::KeyEvent.";
-    return;
+  if (desktop_session_control_) {
+    desktop_session_control_->InjectKeyEvent(event);
   }
-
-  SendToDesktop(
-      new ChromotingNetworkDesktopMsg_InjectKeyEvent(serialized_event));
 }
 
 void DesktopSessionProxy::InjectTextEvent(const protocol::TextEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::TextEvent.";
-    return;
+  if (desktop_session_control_) {
+    desktop_session_control_->InjectTextEvent(event);
   }
-
-  SendToDesktop(
-      new ChromotingNetworkDesktopMsg_InjectTextEvent(serialized_event));
 }
 
 void DesktopSessionProxy::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::MouseEvent.";
-    return;
+  if (desktop_session_control_) {
+    desktop_session_control_->InjectMouseEvent(event);
   }
-
-  SendToDesktop(
-      new ChromotingNetworkDesktopMsg_InjectMouseEvent(serialized_event));
 }
 
 void DesktopSessionProxy::InjectTouchEvent(const protocol::TouchEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::string serialized_event;
-  if (!event.SerializeToString(&serialized_event)) {
-    LOG(ERROR) << "Failed to serialize protocol::TouchEvent.";
-    return;
+  if (desktop_session_control_) {
+    desktop_session_control_->InjectTouchEvent(event);
   }
-
-  SendToDesktop(
-      new ChromotingNetworkDesktopMsg_InjectTouchEvent(serialized_event));
 }
 
 void DesktopSessionProxy::StartInputInjector(

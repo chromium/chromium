@@ -227,26 +227,6 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_CaptureFrame)
 IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_SelectSource,
                     int /* desktop_display_id */)
 
-// Carries a keyboard event from the client to the desktop session agent.
-// |serialized_event| is a serialized protocol::KeyEvent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_InjectKeyEvent,
-                    std::string /* serialized_event */)
-
-// Carries a keyboard event from the client to the desktop session agent.
-// |serialized_event| is a serialized protocol::TextEvent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_InjectTextEvent,
-                    std::string /* serialized_event */)
-
-// Carries a mouse event from the client to the desktop session agent.
-// |serialized_event| is a serialized protocol::MouseEvent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_InjectMouseEvent,
-                    std::string /* serialized_event */)
-
-// Carries a touch event from the client to the desktop session agent.
-// |serialized_event| is a serialized protocol::TouchEvent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_InjectTouchEvent,
-                    std::string /* serialized_event */)
-
 // Changes the screen resolution in the desktop session.
 IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_SetScreenResolution,
                     remoting::ScreenResolution /* resolution */)
