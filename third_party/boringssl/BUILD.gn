@@ -137,6 +137,13 @@ component("boringssl") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+
+  if (is_linux && is_component_build) {
+    version_script = "boringssl.map"
+    inputs = [ version_script ]
+    ldflags = [ "-Wl,--version-script=" +
+                rebase_path(version_script, root_build_dir) ]
+  }
 }
 
 if (build_with_chromium) {
