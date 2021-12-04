@@ -1635,7 +1635,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.PeripheralDataAccessProtection"
-    enum="BooleanEnabled" expires_after="2021-11-30">
+    enum="BooleanEnabled" expires_after="2022-11-30">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
