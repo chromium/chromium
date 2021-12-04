@@ -1358,13 +1358,15 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
           ? point + PhysicalOffset(PixelSnappedScrolledContentOffset())
           : point;
 
-  if (const NGFragmentItems* items = Items()) {
-    NGInlineCursor cursor(*this, *items);
-    if (const PositionWithAffinity position =
-            cursor.PositionForPointInInlineFormattingContext(point_in_contents,
-                                                             *this))
-      return AdjustForEditingBoundary(position);
-    return layout_object_->CreatePositionWithAffinity(0);
+  if (!layout_object_->ChildPaintBlockedByDisplayLock()) {
+    if (const NGFragmentItems* items = Items()) {
+      NGInlineCursor cursor(*this, *items);
+      if (const PositionWithAffinity position =
+              cursor.PositionForPointInInlineFormattingContext(
+                  point_in_contents, *this))
+        return AdjustForEditingBoundary(position);
+      return layout_object_->CreatePositionWithAffinity(0);
+    }
   }
 
   if (IsA<LayoutBlockFlow>(*layout_object_) &&

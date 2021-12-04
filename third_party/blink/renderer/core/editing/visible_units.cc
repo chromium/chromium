@@ -422,7 +422,12 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
   const LayoutObject* stop = layout_object->NextInPreOrderAfterChildren();
   // TODO(editing-dev): Avoid single-character parameter names.
   for (LayoutObject* o = layout_object->SlowFirstChild(); o && o != stop;
-       o = o->NextInPreOrder()) {
+       o = o->ChildPaintBlockedByDisplayLock()
+               ? o->NextInPreOrderAfterChildren()
+               : o->NextInPreOrder()) {
+    if (o->ChildPaintBlockedByDisplayLock())
+      continue;
+
     if (o->NonPseudoNode()) {
       if ((o->IsText() && To<LayoutText>(o)->HasNonCollapsedText()) ||
           (o->IsBox() && To<LayoutBox>(o)->PixelSnappedLogicalHeight()) ||
