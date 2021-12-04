@@ -5102,7 +5102,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6380143666419481200">Přijmout a pokračovat</translation>
 <translation id="6382958439467370461">Žádné neaktivní zkratky</translation>
 <translation id="638418309848716977">Podporované odkazy</translation>
-<translation id="6384275966486438344">Změňte nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
+<translation id="6384275966486438344">Změnit nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Skupina bez názvu – 1 karta}few{Skupina bez názvu – # karty}many{Skupina bez názvu – # karty}other{Skupina bez názvu – # karet}}</translation>
 <translation id="6385149369087767061">Připojte se k internetu a zkuste to znovu</translation>
 <translation id="6385543213911723544">Weby mohou ukládat a číst data souborů cookie</translation>
@@ -5749,7 +5749,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7059858479264779982">Nastavit na automatické spouštění</translation>
 <translation id="7062222374113411376">Povolit nedávno zavřeným webům dokončit odeslání a příjem dat (doporučeno)</translation>
 <translation id="7063129466199351735">Zpracování zástupců...</translation>
-<translation id="7063311912041006059">Místo dotazu má být vložena adresa URL se symbolem <ph name="SPECIAL_SYMBOL" /></translation>
+<translation id="7063311912041006059">Adresa URL se zástupným symbolem <ph name="SPECIAL_SYMBOL" /> místo dotazu</translation>
 <translation id="706342288220489463">Povolit Asistentovi používat informace na obrazovce, aby vám mohl pomáhat</translation>
 <translation id="7064734931812204395">Probíhá konfigurace kontejneru Linuxu. Může to trvat až 30 minut.</translation>
 <translation id="7065223852455347715">Toto zařízení je uzamčeno v režimu, který brání registraci v podniku. Chcete-li zařízení zaregistrovat, je nutné nejdříve provést obnovení zařízení.</translation>
