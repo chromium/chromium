@@ -545,7 +545,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   TransformationMatrix RenderableTransform(GlobalPaintFlags) const;
 
   bool Preserves3D() const {
-    return GetLayoutObject().StyleRef().Preserves3D();
+    return GetLayoutObject().IsBox() &&
+           GetLayoutObject().StyleRef().Preserves3D();
   }
   bool Has3DTransform() const {
     return rare_data_ && rare_data_->transform &&
@@ -555,8 +556,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // FIXME: reflections should force transform-style to be flat in the style:
   // https://bugs.webkit.org/show_bug.cgi?id=106959
   bool ShouldPreserve3D() const {
-    return !GetLayoutObject().HasReflection() &&
-           GetLayoutObject().StyleRef().Preserves3D();
+    return !GetLayoutObject().HasReflection() && Preserves3D();
   }
 
   // Returns |true| if any property that renders using filter operations is
