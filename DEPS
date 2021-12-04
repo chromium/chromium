@@ -192,6 +192,11 @@ vars = {
   'checkout_simplechrome': '"{cros_boards}" != ""',
   'checkout_simplechrome_with_vms': '"{cros_boards_with_qemu_images}" != ""',
 
+  # By default, do not check out versions of toolschains and sdks that are
+  # specifically only needed by Lacros.
+  'checkout_lacros_sdk': False,
+  'lacros_sdk_version': '14335.0.0',
+
   # Generate location tag metadata to include in tests result data uploaded
   # to ResultDB. This isn't needed on some configs and the tool that generates
   # the data may not run on them, so we make it possible for this to be
@@ -4492,8 +4497,6 @@ hooks = [
     ],
   },
 
-  # Download public CrOS simplechrome artifacts. The first hooks is for boards
-  # that support VM images, the second hook for all other boards.
   {
     'name': 'cros_simplechrome_artifacts_with_vm',
     'pattern': '.',
@@ -4530,6 +4533,22 @@ hooks = [
     ],
   },
   {
+    'name': 'cros_simplechrome_artifacts_with_no_vm_internal',
+    'pattern': '.',
+    'condition': 'checkout_simplechrome and checkout_src_internal',
+    'action': [
+      'src/third_party/chromite/bin/cros',
+      'chrome-sdk',
+      '--fallback-versions=10',
+      '--nogoma',
+      '--nogn-gen',
+      '--no-shell',
+      '--log-level=warning',
+      '--cache-dir=src/build/cros_cache/',
+      '--boards={cros_boards}',
+    ],
+  },
+  {
     'name': 'cros_simplechrome_artifacts_with_vm_internal',
     'pattern': '.',
     'condition': 'checkout_simplechrome_with_vms and checkout_src_internal',
@@ -4546,10 +4565,68 @@ hooks = [
       '--download-vm',
     ],
   },
+  # Download Lacros's version of the simplechrome sdks. VMs are disregarded
+  # because this version of sdk is only used for compiling Lacros.
   {
-    'name': 'cros_simplechrome_artifacts_with_no_vm_internal',
+    'name': 'cros_simplechrome_artifacts_with_vm for lacros',
     'pattern': '.',
-    'condition': 'checkout_simplechrome and checkout_src_internal',
+    'condition': 'checkout_simplechrome_with_vms and not checkout_src_internal and checkout_lacros_sdk',
+    'action': [
+      'src/third_party/chromite/bin/cros',
+      'chrome-sdk',
+      '--fallback-versions=10',
+      '--nogoma',
+      '--nogn-gen',
+      '--no-shell',
+      '--log-level=warning',
+      '--cache-dir=src/build/cros_cache/',
+      '--use-external-config',
+      '--boards={cros_boards_with_qemu_images}',
+      '--is-lacros',
+      '--version={lacros_sdk_version}',
+    ],
+  },
+  {
+    'name': 'cros_simplechrome_artifacts_with_no_vm for lacros',
+    'pattern': '.',
+    'condition': 'checkout_simplechrome and not checkout_src_internal and checkout_lacros_sdk',
+    'action': [
+      'src/third_party/chromite/bin/cros',
+      'chrome-sdk',
+      '--fallback-versions=10',
+      '--nogoma',
+      '--nogn-gen',
+      '--no-shell',
+      '--log-level=warning',
+      '--cache-dir=src/build/cros_cache/',
+      '--use-external-config',
+      '--boards={cros_boards}',
+      '--is-lacros',
+      '--version={lacros_sdk_version}',
+    ],
+  },
+  {
+    'name': 'cros_simplechrome_artifacts_with_vm_internal for lacros',
+    'pattern': '.',
+    'condition': 'checkout_simplechrome_with_vms and checkout_src_internal and checkout_lacros_sdk',
+    'action': [
+      'src/third_party/chromite/bin/cros',
+      'chrome-sdk',
+      '--fallback-versions=10',
+      '--nogoma',
+      '--nogn-gen',
+      '--no-shell',
+      '--log-level=warning',
+      '--cache-dir=src/build/cros_cache/',
+      '--boards={cros_boards_with_qemu_images}',
+      '--is-lacros',
+      '--version={lacros_sdk_version}',
+    ],
+  },
+  {
+    'name': 'cros_simplechrome_artifacts_with_no_vm_internal for lacros',
+    'pattern': '.',
+    'condition': 'checkout_simplechrome and checkout_src_internal and checkout_lacros_sdk',
     'action': [
       'src/third_party/chromite/bin/cros',
       'chrome-sdk',
@@ -4560,6 +4637,8 @@ hooks = [
       '--log-level=warning',
       '--cache-dir=src/build/cros_cache/',
       '--boards={cros_boards}',
+      '--is-lacros',
+      '--version={lacros_sdk_version}',
     ],
   },
 
