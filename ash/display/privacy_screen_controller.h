@@ -84,6 +84,12 @@ class ASH_EXPORT PrivacyScreenController
   // is changed.
   void OnStateChanged(bool notify_observers);
 
+  // Called when GPU/DRM is done setting the privacy screen panel to
+  // |requested_config|.
+  void OnSetPrivacyScreenComplete(bool from_user_pref_init,
+                                  bool requested_config,
+                                  bool success);
+
   // Called when a change to |active_user_pref_service_| is detected (i.e. when
   // OnActiveUserPrefServiceChanged() is called.
   void InitFromUserPrefs();
@@ -117,6 +123,9 @@ class ASH_EXPORT PrivacyScreenController
   // PrivacyScreenController settings controlled by this class from the WebUI
   // settings.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // This must be the last variable.
+  base::WeakPtrFactory<PrivacyScreenController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

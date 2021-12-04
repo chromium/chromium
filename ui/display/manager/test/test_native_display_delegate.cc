@@ -161,9 +161,12 @@ bool TestNativeDisplayDelegate::SetGammaCorrection(
   return true;
 }
 
-void TestNativeDisplayDelegate::SetPrivacyScreen(int64_t display_id,
-                                                 bool enabled) {
+void TestNativeDisplayDelegate::SetPrivacyScreen(
+    int64_t display_id,
+    bool enabled,
+    SetPrivacyScreenCallback callback) {
   log_->AppendAction(SetPrivacyScreenAction(display_id, enabled));
+  std::move(callback).Run(true);
 }
 
 void TestNativeDisplayDelegate::AddObserver(NativeDisplayObserver* observer) {

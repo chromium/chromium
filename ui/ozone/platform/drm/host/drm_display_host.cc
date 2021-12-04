@@ -91,8 +91,11 @@ void DrmDisplayHost::SetGammaCorrection(
                                  gamma_lut);
 }
 
-void DrmDisplayHost::SetPrivacyScreen(bool enabled) {
-  sender_->GpuSetPrivacyScreen(snapshot_->display_id(), enabled);
+void DrmDisplayHost::SetPrivacyScreen(
+    bool enabled,
+    display::SetPrivacyScreenCallback callback) {
+  sender_->GpuSetPrivacyScreen(snapshot_->display_id(), enabled,
+                               std::move(callback));
 }
 
 void DrmDisplayHost::OnGpuProcessLaunched() {}

@@ -768,7 +768,9 @@ bool DisplayConfigurator::SetGammaCorrection(
                                                       gamma_lut);
 }
 
-void DisplayConfigurator::SetPrivacyScreen(int64_t display_id, bool enabled) {
+void DisplayConfigurator::SetPrivacyScreen(int64_t display_id,
+                                           bool enabled,
+                                           ConfigurationCallback callback) {
 #if DCHECK_IS_ON()
   DisplaySnapshot* internal_display = nullptr;
   for (DisplaySnapshot* display : cached_displays_) {
@@ -783,7 +785,8 @@ void DisplayConfigurator::SetPrivacyScreen(int64_t display_id, bool enabled) {
   DCHECK(internal_display->current_mode());
 #endif
 
-  native_display_delegate_->SetPrivacyScreen(display_id, enabled);
+  native_display_delegate_->SetPrivacyScreen(display_id, enabled,
+                                             std::move(callback));
 }
 
 chromeos::DisplayPowerState DisplayConfigurator::GetRequestedPowerState()

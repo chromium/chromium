@@ -69,7 +69,7 @@ class DrmGpuDisplayManager {
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut);
-  void SetPrivacyScreen(int64_t display_id, bool enabled);
+  bool SetPrivacyScreen(int64_t display_id, bool enabled);
 
   void SetColorSpace(int64_t crtc_id, const gfx::ColorSpace& color_space);
 

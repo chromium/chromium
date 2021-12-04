@@ -273,7 +273,11 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   // Enable/disable the privacy screen on display with |display_id|.
   // For this to succeed, privacy screen must be supported by the display.
-  void SetPrivacyScreen(int64_t display_id, bool enabled);
+  // After privacy screen is set, |callback| is called with the outcome
+  // (success/failure) of the operation.
+  void SetPrivacyScreen(int64_t display_id,
+                        bool enabled,
+                        ConfigurationCallback callback);
 
   // Returns the requested power state if set or the default power state.
   chromeos::DisplayPowerState GetRequestedPowerState() const;

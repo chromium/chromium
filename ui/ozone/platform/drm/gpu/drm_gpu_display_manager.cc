@@ -323,14 +323,14 @@ void DrmGpuDisplayManager::SetGammaCorrection(
   display->SetGammaCorrection(degamma_lut, gamma_lut);
 }
 
-void DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
+bool DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
     LOG(ERROR) << "There is no display with ID " << display_id;
-    return;
+    return false;
   }
 
-  display->SetPrivacyScreen(enabled);
+  return display->SetPrivacyScreen(enabled);
 }
 
 void DrmGpuDisplayManager::SetColorSpace(int64_t crtc_id,

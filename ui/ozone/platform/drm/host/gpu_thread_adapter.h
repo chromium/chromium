@@ -60,7 +60,10 @@ class GpuThreadAdapter {
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) = 0;
-  virtual bool GpuSetPrivacyScreen(int64_t display_id, bool enabled) = 0;
+  virtual void GpuSetPrivacyScreen(
+      int64_t display_id,
+      bool enabled,
+      display::SetPrivacyScreenCallback callback) = 0;
 
   // Services needed by DrmWindowHost
   virtual bool GpuDestroyWindow(gfx::AcceleratedWidget widget) = 0;

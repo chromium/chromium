@@ -94,8 +94,17 @@ void PrivacyScreenController::SetEnabled(bool enabled,
   }
 
   if (active_user_pref_service_) {
-    active_user_pref_service_->SetBoolean(prefs::kDisplayPrivacyScreenEnabled,
-                                          enabled);
+    if (GetStateFromActiveUserPreference() == enabled) {
+      // Since it is possible for DRM to fail a privacy screen hardware toggle,
+      // following calls to SetEnabled() may try to set the user pref to a state
+      // it is already set to. This will end up as a NOP for such SetEnabled()
+      // calls. Therefore, we manually trigger a call to OnStateChanged here to
+      // allow following toggle attempts to get through to DRM.
+      OnStateChanged(/*from_user_pref_init=*/false);
+    } else {
+      active_user_pref_service_->SetBoolean(prefs::kDisplayPrivacyScreenEnabled,
+                                            enabled);
+    }
   }
 
   if (ui_surface == kToggleUISurfaceCount)
@@ -181,18 +190,30 @@ void PrivacyScreenController::OnStateChanged(bool from_user_pref_init) {
     return;
 
   const bool enable_screen = CalculateCurrentStatus();
-
   if (enable_screen == current_status_)
     return;
 
-  current_status_ = enable_screen;
+  Shell::Get()->display_configurator()->SetPrivacyScreen(
+      display_id, enable_screen,
+      base::BindOnce(&PrivacyScreenController::OnSetPrivacyScreenComplete,
+                     weak_ptr_factory_.GetWeakPtr(), from_user_pref_init,
+                     enable_screen));
+}
+
+void PrivacyScreenController::OnSetPrivacyScreenComplete(
+    bool from_user_pref_init,
+    bool requested_config,
+    bool success) {
+  if (success) {
+    current_status_ = requested_config;
+  } else {
+    LOG(ERROR) << "Turning privacy screen " << (requested_config ? "ON" : "OFF")
+               << " was unsuccessful.";
+  }
+
   const bool notify_observers = ShouldNotifyObservers(from_user_pref_init);
-
-  Shell::Get()->display_configurator()->SetPrivacyScreen(display_id,
-                                                         enable_screen);
-
   for (Observer& observer : observers_)
-    observer.OnPrivacyScreenSettingChanged(enable_screen, notify_observers);
+    observer.OnPrivacyScreenSettingChanged(current_status_, notify_observers);
 }
 
 void PrivacyScreenController::InitFromUserPrefs() {
@@ -203,7 +224,7 @@ void PrivacyScreenController::InitFromUserPrefs() {
   pref_change_registrar_->Add(
       prefs::kDisplayPrivacyScreenEnabled,
       base::BindRepeating(&PrivacyScreenController::OnStateChanged,
-                          base::Unretained(this),
+                          weak_ptr_factory_.GetWeakPtr(),
                           /*from_user_pref_init=*/false));
 
   OnStateChanged(/*from_user_pref_init=*/true);

@@ -305,17 +305,19 @@ void DrmDisplay::SetGammaCorrection(
     CommitGammaCorrection(degamma_lut, gamma_lut);
 }
 
-void DrmDisplay::SetPrivacyScreen(bool enabled) {
+bool DrmDisplay::SetPrivacyScreen(bool enabled) {
   if (!privacy_screen_property_) {
     LOG(ERROR) << "'" << kPrivacyScreen << "' property doesn't exist.";
-    return;
+    return false;
   }
 
   if (!drm_->SetProperty(connector_->connector_id,
                          privacy_screen_property_->prop_id, enabled)) {
     LOG(ERROR) << (enabled ? "Enabling" : "Disabling") << " property '"
                << kPrivacyScreen << "' failed!";
+    return false;
   }
+  return true;
 }
 
 void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {

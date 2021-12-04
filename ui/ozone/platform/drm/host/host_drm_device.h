@@ -78,7 +78,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
-  bool GpuSetPrivacyScreen(int64_t display_id, bool enabled) override;
+  void GpuSetPrivacyScreen(int64_t display_id,
+                           bool enabled,
+                           display::SetPrivacyScreenCallback callback) override;
 
   // Services needed by DrmWindowHost
   bool GpuDestroyWindow(gfx::AcceleratedWidget widget) override;
