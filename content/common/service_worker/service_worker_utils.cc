@@ -5,15 +5,9 @@
 #include "content/common/service_worker/service_worker_utils.h"
 
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "net/base/load_flags.h"
-#include "net/http/http_byte_range.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -38,17 +32,6 @@ bool PathContainsDisallowedCharacter(const GURL& url) {
 }
 
 }  // namespace
-
-// static
-bool ServiceWorkerUtils::IsMainRequestDestination(
-    network::mojom::RequestDestination destination) {
-  // When PlzDedicatedWorker is enabled, a dedicated worker script is considered
-  // to be a main resource.
-  if (destination == network::mojom::RequestDestination::kWorker)
-    return base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker);
-  return blink::IsRequestDestinationFrame(destination) ||
-         destination == network::mojom::RequestDestination::kSharedWorker;
-}
 
 // static
 bool ServiceWorkerUtils::ContainsDisallowedCharacter(
@@ -94,24 +77,6 @@ blink::mojom::FetchCacheMode ServiceWorkerUtils::GetCacheModeFromLoadFlags(
     return blink::mojom::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict;
   }
   return blink::mojom::FetchCacheMode::kDefault;
-}
-
-// static
-const char* ServiceWorkerUtils::FetchResponseSourceToSuffix(
-    network::mojom::FetchResponseSource source) {
-  // Don't change these returned strings. They are used for recording UMAs.
-  switch (source) {
-    case network::mojom::FetchResponseSource::kUnspecified:
-      return ".Unspecified";
-    case network::mojom::FetchResponseSource::kNetwork:
-      return ".Network";
-    case network::mojom::FetchResponseSource::kHttpCache:
-      return ".HttpCache";
-    case network::mojom::FetchResponseSource::kCacheStorage:
-      return ".CacheStorage";
-  }
-  NOTREACHED();
-  return ".Unknown";
 }
 
 }  // namespace content

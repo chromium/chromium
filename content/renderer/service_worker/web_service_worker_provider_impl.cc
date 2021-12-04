@@ -31,6 +31,13 @@ namespace {
 const char kLostConnectionErrorMessage[] =
     "Lost connection to the service worker system.";
 
+template <typename T>
+static std::string MojoEnumToString(T mojo_enum) {
+  std::ostringstream oss;
+  oss << mojo_enum;
+  return oss.str();
+}
+
 }  // anonymous namespace
 
 WebServiceWorkerProviderImpl::WebServiceWorkerProviderImpl(
@@ -224,8 +231,7 @@ void WebServiceWorkerProviderImpl::OnRegistered(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-      TRACE_ID_LOCAL(this), "Error",
-      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
@@ -251,8 +257,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistration(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistration",
-      TRACE_ID_LOCAL(this), "Error",
-      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
@@ -282,8 +287,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
         infos) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations",
-      TRACE_ID_LOCAL(this), "Error",
-      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);

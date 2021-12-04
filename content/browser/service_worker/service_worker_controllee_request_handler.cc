@@ -18,7 +18,6 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -30,6 +29,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -79,7 +79,8 @@ ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
       frame_tree_node_id_(frame_tree_node_id),
       service_worker_accessed_callback_(
           std::move(service_worker_accessed_callback)) {
-  DCHECK(ServiceWorkerUtils::IsMainRequestDestination(destination));
+  DCHECK(
+      blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(destination));
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerControlleeRequestHandler::"
                          "ServiceWorkerControlleeRequestHandler",

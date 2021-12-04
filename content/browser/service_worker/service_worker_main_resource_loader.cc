@@ -21,7 +21,6 @@
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -121,7 +120,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                          "ServiceWorkerMainResourceLoader::StartRequest", this,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "url", resource_request.url.spec());
-  DCHECK(ServiceWorkerUtils::IsMainRequestDestination(
+  DCHECK(blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(
       resource_request.destination));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -544,10 +543,11 @@ void ServiceWorkerMainResourceLoader::RecordTimingMetrics(bool handled) {
         completion_time_ - response_head_->load_timing.receive_headers_end);
     // Same as above, breakdown by response source.
     base::UmaHistogramMediumTimes(
-        base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
-                      "ResponseReceivedToCompleted2",
-                      ServiceWorkerUtils::FetchResponseSourceToSuffix(
-                          response_source_)}),
+        base::StrCat(
+            {"ServiceWorker.LoadTiming.MainFrame.MainResource."
+             "ResponseReceivedToCompleted2",
+             blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
+                 response_source_)}),
         completion_time_ - response_head_->load_timing.receive_headers_end);
   } else {
     // Renderer -> Browser IPC delay (network fallback case).

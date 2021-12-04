@@ -6,6 +6,7 @@
 
 #include "content/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "ui/base/page_transition_types.h"
 
 namespace mojo {
@@ -34,7 +35,8 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
       blink::ReferrerUtils::NetToMojoReferrerPolicy(input.referrer_policy));
   output->mode = input.mode;
   output->is_main_resource_load =
-      content::ServiceWorkerUtils::IsMainRequestDestination(input.destination);
+      blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(
+          input.destination);
   output->credentials_mode = input.credentials_mode;
   output->cache_mode =
       content::ServiceWorkerUtils::GetCacheModeFromLoadFlags(input.load_flags);
