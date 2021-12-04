@@ -319,7 +319,7 @@ class ShowPopupWidgetWaiter
 #endif
 };
 
-// A BrowserMessageFilter that drops a blacklisted message.
+// A BrowserMessageFilter that drops a pre-specified message.
 class DropMessageFilter : public BrowserMessageFilter {
  public:
   DropMessageFilter(uint32_t message_class, uint32_t drop_message_id);
