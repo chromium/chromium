@@ -4134,7 +4134,6 @@ ci.fyi_builder(
 # Start - Reclient migration, phase 2, block 1 shadow builders
 ci.fyi_builder(
     name = "Linux ASan LSan Builder (reclient shadow)",
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "linux|asan lsan",
         short_name = "bld",
@@ -4149,7 +4148,6 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "Linux Builder (dbg) (reclient shadow)",
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "64",
