@@ -90,6 +90,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1250,6 +1251,61 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
+class ChromeShelfControllerLacrosPrimaryTest
+    : public ChromeShelfControllerLacrosTest {
+ public:
+  ChromeShelfControllerLacrosPrimaryTest() = default;
+  ChromeShelfControllerLacrosPrimaryTest(
+      const ChromeShelfControllerLacrosPrimaryTest&) = delete;
+  ChromeShelfControllerLacrosPrimaryTest& operator=(
+      const ChromeShelfControllerLacrosPrimaryTest&) = delete;
+  ~ChromeShelfControllerLacrosPrimaryTest() override = default;
+
+  void SetUp() override {
+    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+    ChromeShelfControllerLacrosTest::SetUp();
+
+    proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile());
+    ASSERT_TRUE(proxy_);
+  }
+
+  void AddChromeAppItem(const std::string& app_id, aura::Window* window) {
+    ash::ShelfItem item;
+    item.id = ash::ShelfID(app_id);
+    item.type = ash::TYPE_APP;
+    auto delegate =
+        std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(
+            ash::ShelfID(kDummyAppId), window);
+    chrome_app_shelf_item_ = delegate.get();
+    ash::ShelfModel::Get()->Add(item, std::move(delegate));
+  }
+
+  // Verify instance for `window`. If `state` is not destroyed, verify `app_id`
+  // and `state`. Otherwise, verify there is no instance for `app_id` and
+  // `window`.
+  void VerifyInstance(const std::string& app_id,
+                      aura::Window* window,
+                      apps::InstanceState state) {
+    if (state != apps::InstanceState::kDestroyed) {
+      EXPECT_EQ(app_id, proxy_->InstanceRegistry().GetShelfId(window).app_id);
+      EXPECT_EQ(state, proxy_->InstanceRegistry().GetState(window));
+    } else {
+      EXPECT_FALSE(proxy_->InstanceRegistry().Exists(window));
+    }
+  }
+
+  StandaloneBrowserExtensionAppShelfItemController* chrome_app_shelf_item() {
+    return chrome_app_shelf_item_;
+  }
+
+  apps::AppServiceProxy* proxy() { return proxy_; }
+
+ private:
+  StandaloneBrowserExtensionAppShelfItemController* chrome_app_shelf_item_ =
+      nullptr;
+  apps::AppServiceProxy* proxy_ = nullptr;
+};
+
 // A V1 windowed application.
 class V1App : public TestBrowserWindow {
  public:
@@ -1521,6 +1577,128 @@ TEST_F(ChromeShelfControllerSyncConsentOptionalTest, PreinstalledApps) {
 TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
   InitShelfController();
   EXPECT_EQ("Chrome, Lacros", GetPinnedAppStatus());
+}
+
+// Checks that AppService instance is updated appropriately for one Chrome app
+// window.
+TEST_F(ChromeShelfControllerLacrosPrimaryTest, ChromeAppWindow) {
+  InitShelfController();
+
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  AddChromeAppItem(kDummyAppId, window.get());
+  VerifyInstance(
+      kDummyAppId, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Set window visibility as true.
+  window->Show();
+  VerifyInstance(
+      kDummyAppId, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning |
+                                       apps::InstanceState::kVisible));
+
+  // Set window as activated.
+  chrome_app_shelf_item()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      window.get(), nullptr);
+  VerifyInstance(
+      kDummyAppId, window.get(),
+      static_cast<apps::InstanceState>(
+          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+          apps::InstanceState::kVisible | apps::InstanceState::kActive));
+
+  // Set window as inactivated.
+  chrome_app_shelf_item()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      nullptr, window.get());
+  VerifyInstance(
+      kDummyAppId, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning |
+                                       apps::InstanceState::kVisible));
+
+  // Set window visibility as false.
+  window->Hide();
+  VerifyInstance(
+      kDummyAppId, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Remove window.
+  window.reset();
+  VerifyInstance(kDummyAppId, window.get(), apps::InstanceState::kDestroyed);
+}
+
+// Checks that AppService instance is updated appropriately for multiple Chrome
+// app windows.
+TEST_F(ChromeShelfControllerLacrosPrimaryTest, ChromeAppWindows) {
+  InitShelfController();
+
+  auto window1 = std::make_unique<aura::Window>(nullptr);
+  window1->Init(ui::LAYER_NOT_DRAWN);
+  auto window2 = std::make_unique<aura::Window>(nullptr);
+  window2->Init(ui::LAYER_NOT_DRAWN);
+  AddChromeAppItem(kDummyAppId, window1.get());
+  VerifyInstance(
+      kDummyAppId, window1.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Add `window2`.
+  window2->Show();
+  chrome_app_shelf_item()->StartTrackingInstance(window2.get());
+  VerifyInstance(
+      kDummyAppId, window2.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning |
+                                       apps::InstanceState::kVisible));
+
+  // Set `window2` as activated.
+  chrome_app_shelf_item()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      window2.get(), window1.get());
+  VerifyInstance(
+      kDummyAppId, window2.get(),
+      static_cast<apps::InstanceState>(
+          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+          apps::InstanceState::kVisible | apps::InstanceState::kActive));
+  VerifyInstance(
+      kDummyAppId, window1.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Set `window1` as visible and activated.
+  window2->Hide();
+  window1->Show();
+  chrome_app_shelf_item()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      window1.get(), window2.get());
+  VerifyInstance(
+      kDummyAppId, window1.get(),
+      static_cast<apps::InstanceState>(
+          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+          apps::InstanceState::kVisible | apps::InstanceState::kActive));
+  VerifyInstance(
+      kDummyAppId, window2.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Remove `window1`.
+  window1.reset();
+  VerifyInstance(kDummyAppId, window1.get(), apps::InstanceState::kDestroyed);
+  VerifyInstance(
+      kDummyAppId, window2.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+  EXPECT_TRUE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
+
+  // Remove `window2`.
+  window2.reset();
+  VerifyInstance(kDummyAppId, window2.get(), apps::InstanceState::kDestroyed);
+  EXPECT_FALSE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
