@@ -574,6 +574,8 @@ def main():
       '-DCOMPILER_RT_SANITIZERS_TO_BUILD=asan;dfsan;msan;hwasan;tsan;cfi',
       # The default value differs per platform, force it off everywhere.
       '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF',
+      # Don't use curl.
+      '-DLLVM_ENABLE_CURL=OFF',
   ]
 
   if args.gcc_toolchain:
