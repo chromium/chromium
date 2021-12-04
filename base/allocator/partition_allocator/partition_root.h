@@ -853,6 +853,11 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
   // Get |slot_span| from |slot_start| instead of |adjusted_address|, because
   // for direct map, PartitionAllocGetSlotSpanForSizeQuery() only works on the
   // first partition page of the allocation.
+  //
+  // As a matter of fact, don't use |adjusted_address| beyond this point at all.
+  // It was needed to pick the right slot, but now we're dealing with very
+  // concrete addresses. Nullify it just in case, to catch errors.
+  adjusted_address = 0;
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           reinterpret_cast<uintptr_t>(slot_start));
@@ -860,8 +865,6 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
 
-  // No longer use |adjusted_address| beyond this point. It was needed to pick
-  // the right slot, but now we're dealing with very concrete addresses.
   uintptr_t user_data_start =
       reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(slot_start));
   size_t user_data_size = slot_span->GetUsableSize(root);

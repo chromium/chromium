@@ -146,6 +146,11 @@ class BASE_EXPORT PartitionRefCount {
   }
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
+  // Note that in free slots, this is overwritten by encoded freelist
+  // pointer(s). The way the pointers are encoded on 64-bit little-endian
+  // architectures, count_ happens stay even, which works well with the
+  // double-free-detection in ReleaseFromAllocator(). Don't change the layout of
+  // this class, to preserve this functionality.
   std::atomic<int32_t> count_{1};
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
