@@ -586,7 +586,10 @@ config("compiler") {
     }
 
     cflags_c += [ "-std=${standard_prefix}11" ]
-    if (is_nacl && !is_nacl_saigo) {
+
+    # TODO(https://crbug.com/1273966): Use C++17 with is_cfi and is_linux once
+    # CFI works with -std=c++17.
+    if ((is_nacl && !is_nacl_saigo) || is_cfi || is_linux) {
       # This is for the pnacl_newlib toolchain. It's only used to build
       # a few independent ppapi test files that don't pull in any other
       # dependencies.
