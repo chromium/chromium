@@ -47,7 +47,11 @@ WaylandServerController* WaylandServerController::Get() {
   return g_instance;
 }
 
-WaylandServerController::~WaylandServerController() {}
+WaylandServerController::~WaylandServerController() {
+  // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
+  // methods.
+  display_->Shutdown();
+}
 
 WaylandServerController::WaylandServerController(
     std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,

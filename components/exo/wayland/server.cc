@@ -439,7 +439,6 @@ Server::~Server() {
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();
-  display_->Shutdown();
 }
 
 // static
