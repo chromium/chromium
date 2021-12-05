@@ -107,13 +107,10 @@ TEST_F(StorageAccessGrantPermissionContextTest, InsecureOriginsAreAllowed) {
       insecure_url, GetRequesterURL()));
 }
 
-// When the Storage Access API feature is disabled we should block the
-// permission request.
+// When the Storage Access API feature is disabled (the default) we
+// should block the permission request.
 TEST_F(StorageAccessGrantPermissionContextTest,
        PermissionBlockedWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_disable;
-  scoped_disable.InitAndDisableFeature(blink::features::kStorageAccessAPI);
-
   StorageAccessGrantPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
 
@@ -124,13 +121,17 @@ TEST_F(StorageAccessGrantPermissionContextTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, result);
 }
 
+class StorageAccessGrantPermissionContextAPIEnabledTest
+    : public StorageAccessGrantPermissionContextTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kStorageAccessAPI};
+};
+
 // When the Storage Access API feature is enabled and we have a user gesture we
 // should get a decision.
-TEST_F(StorageAccessGrantPermissionContextTest,
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
        PermissionDecidedWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitAndEnableFeature(blink::features::kStorageAccessAPI);
-
   StorageAccessGrantPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
 
@@ -160,11 +161,8 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 }
 
 // No user gesture should force a permission rejection.
-TEST_F(StorageAccessGrantPermissionContextTest,
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
        PermissionDeniedWithoutUserGesture) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitAndEnableFeature(blink::features::kStorageAccessAPI);
-
   StorageAccessGrantPermissionContext permission_context(profile());
   permissions::PermissionRequestID fake_id = CreateFakeID();
 
@@ -177,9 +175,6 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
 TEST_F(StorageAccessGrantPermissionContextTest,
        PermissionStatusBlockedWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_disable;
-  scoped_disable.InitAndDisableFeature(blink::features::kStorageAccessAPI);
-
   StorageAccessGrantPermissionContext permission_context(profile());
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -189,11 +184,8 @@ TEST_F(StorageAccessGrantPermissionContextTest,
                 .content_setting);
 }
 
-TEST_F(StorageAccessGrantPermissionContextTest,
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
        PermissionStatusAsksWhenFeatureEnabled) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitAndEnableFeature(blink::features::kStorageAccessAPI);
-
   StorageAccessGrantPermissionContext permission_context(profile());
 
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -205,11 +197,8 @@ TEST_F(StorageAccessGrantPermissionContextTest,
 
 // Validate that each requesting origin has its own implicit grant limit. If
 // the limit for one origin is exhausted it should not affect another.
-TEST_F(StorageAccessGrantPermissionContextTest,
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
        ImplicitGrantLimitPerRequestingOrigin) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitAndEnableFeature(blink::features::kStorageAccessAPI);
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 0);
 
@@ -266,10 +255,7 @@ TEST_F(StorageAccessGrantPermissionContextTest,
                                      /*DISMISSED=*/2, 1);
 }
 
-TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantDenial) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitAndEnableFeature(blink::features::kStorageAccessAPI);
-
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 0);
   histogram_tester.ExpectTotalCount(kPromptResultHistogram, 0);

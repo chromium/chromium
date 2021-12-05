@@ -22,17 +22,18 @@ class StorageAccessGrantPermissionContext
  private:
   FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
                            PermissionBlockedWhenFeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            PermissionDecidedWhenFeatureEnabled);
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            PermissionDeniedWithoutUserGesture);
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            ImplicitGrantLimitPerRequestingOrigin);
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            ExplicitGrantDenial);
   FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
                            ExplicitGrantAccept);
   friend class StorageAccessGrantPermissionContextTest;
+  friend class StorageAccessGrantPermissionContextAPIEnabledTest;
 
   StorageAccessGrantPermissionContext(
       const StorageAccessGrantPermissionContext&) = delete;
