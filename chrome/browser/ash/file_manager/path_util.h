@@ -31,7 +31,7 @@ extern const base::FilePath::CharType kSystemFontsPath[];
 // Absolute path for the folder containing archive mounts.
 extern const base::FilePath::CharType kArchiveMountPath[];
 
-// Name of the mount point used to story temporary files for sharing.
+// Name of the mount point used to store temporary files for sharing.
 extern const char kShareCacheMountPointName[];
 
 // Returns FilesApp origin chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj.
