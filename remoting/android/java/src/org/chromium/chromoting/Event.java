@@ -128,7 +128,7 @@ public class Event<ParamT> {
         private final Event<ParamT> mOwner;
 
         // This lock is used to make sure mEvent is correctly set before remove in run function.
-        // i.e. mOwner.add and assigment of mEvent need to be atomic.
+        // i.e. mOwner.add and assignment of mEvent need to be atomic.
         private final Object mLock;
         private final Object mEvent;
 

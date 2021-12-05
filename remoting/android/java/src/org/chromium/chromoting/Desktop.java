@@ -455,7 +455,7 @@ public class Desktop
         };
     }
 
-    // Posts a deplayed task to hide the ActionBar.  If an existing task has already been
+    // Posts a delayed task to hide the ActionBar.  If an existing task has already been
     // scheduled, then the previous task is removed and the new one scheduled, effectively
     // resetting the timer.
     private void startActionBarAutoHideTimer() {
