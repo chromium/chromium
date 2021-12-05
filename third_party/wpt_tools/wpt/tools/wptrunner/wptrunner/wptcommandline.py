@@ -198,8 +198,8 @@ scheme host and port.""")
                         help="Android package name to run tests against")
     android_group.add_argument("--keep-app-data-directory", action="store_true",
                         help="Don't delete the app data directory")
-    android_group.add_argument("--device-serial", action="store",
-                              help="Running Android instance to connect to, if not emulator-5554")
+    android_group.add_argument("--device-serial", action="append", default=[],
+                        help="Running Android instances to connect to, if not emulator-5554")
 
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
@@ -546,6 +546,16 @@ def check_args(kwargs):
             sys.exit(1)
         if not os.path.exists(kwargs["test_groups_file"]):
             print("--test-groups file %s not found" % kwargs["test_groups_file"])
+            sys.exit(1)
+
+    # When running on Android, the number of workers is decided by the number of
+    # emulators. Each worker will use one emulator to run the Android browser.
+    if kwargs["device_serial"]:
+        if kwargs["processes"] is None:
+            kwargs["processes"] = len(kwargs["device_serial"])
+            print("Set --processes to match with number of devices provided")
+        elif len(kwargs["device_serial"]) != kwargs["processes"]:
+            print("--processes does not match number of devices")
             sys.exit(1)
 
     if kwargs["processes"] is None:

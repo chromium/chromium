@@ -41,7 +41,8 @@ from .protocol import (ActionSequenceProtocolPart,
                        WindowProtocolPart,
                        SetPermissionProtocolPart,
                        PrintProtocolPart,
-                       DebugProtocolPart)
+                       DebugProtocolPart,
+                       merge_dicts)
 
 
 def do_delayed_imports():
@@ -702,6 +703,11 @@ class MarionetteProtocol(Protocol):
         self.marionette = None
         self.marionette_port = browser.marionette_port
         self.capabilities = capabilities
+        if hasattr(browser, "capabilities"):
+            if self.capabilities is None:
+                self.capabilities = browser.capabilities
+            else:
+                merge_dicts(self.capabilities, browser.capabilities)
         self.timeout_multiplier = timeout_multiplier
         self.runner_handle = None
         self.e10s = e10s

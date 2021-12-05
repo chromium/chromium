@@ -57,8 +57,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         "org.chromium.webview_shell.WebPlatformTestsActivity"
     capabilities["goog:chromeOptions"]["androidKeepAppDataDir"] = \
         kwargs.get("keep_app_data_directory")
-    if kwargs.get("device_serial"):
-        capabilities["goog:chromeOptions"]["androidDeviceSerial"] = kwargs["device_serial"]
 
     # Workaround: driver.quit() cannot quit SystemWebViewShell.
     executor_kwargs["pause_after_test"] = False

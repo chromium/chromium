@@ -287,8 +287,13 @@ class TestRunnerManager(threading.Thread):
 
         self.test_source = test_source_cls(test_queue)
 
+        self.manager_number = next_manager_number()
         self.browser_cls = browser_cls
-        self.browser_kwargs = browser_kwargs
+        self.browser_kwargs = browser_kwargs.copy()
+        if self.browser_kwargs.get("device_serial"):
+            # Assign Android device to runner according to manager_number
+            self.browser_kwargs["device_serial"] = (
+                self.browser_kwargs["device_serial"][self.manager_number-1])
 
         self.executor_cls = executor_cls
         self.executor_kwargs = executor_kwargs
@@ -306,7 +311,6 @@ class TestRunnerManager(threading.Thread):
         self.restart_on_unexpected = restart_on_unexpected
         self.debug_info = debug_info
 
-        self.manager_number = next_manager_number()
         assert recording is not None
         self.recording = recording
 

@@ -291,13 +291,20 @@ class FirefoxAndroid(BrowserSetup):
             kwargs["package_name"] = "org.mozilla.geckoview.test_runner"
         app = kwargs["package_name"]
 
-        if kwargs["device_serial"] is None:
-            kwargs["device_serial"] = "emulator-5554"
+        if not kwargs["device_serial"]:
+            kwargs["device_serial"] = ["emulator-5554"]
 
-        # We're running on an emulator so ensure that's set up
-        if kwargs["device_serial"].startswith("emulator-"):
-            emulator = android.install(logger, reinstall=False, no_prompt=not self.prompt)
-            android.start(logger, emulator=emulator, reinstall=False)
+        for device_serial in kwargs["device_serial"]:
+            if device_serial.startswith("emulator-"):
+                # We're running on an emulator so ensure that's set up
+                emulator = android.install(logger,
+                                           reinstall=False,
+                                           no_prompt=not self.prompt,
+                                           device_serial=device_serial)
+                android.start(logger,
+                              emulator=emulator,
+                              reinstall=False,
+                              device_serial=device_serial)
 
         if "ADB_PATH" not in os.environ:
             adb_path = os.path.join(android.get_sdk_path(None),
@@ -306,15 +313,16 @@ class FirefoxAndroid(BrowserSetup):
             os.environ["ADB_PATH"] = adb_path
         adb_path = os.environ["ADB_PATH"]
 
-        device = mozdevice.ADBDeviceFactory(adb=adb_path,
-                                            device=kwargs["device_serial"])
+        for device_serial in kwargs["device_serial"]:
+            device = mozdevice.ADBDeviceFactory(adb=adb_path,
+                                                device=device_serial)
 
-        if self.browser.apk_path:
-            device.uninstall_app(app)
-            device.install_app(self.browser.apk_path)
-        elif not device.is_app_installed(app):
-            raise WptrunError("app %s not installed on device %s" %
-                              (app, kwargs["device_serial"]))
+            if self.browser.apk_path:
+                device.uninstall_app(app)
+                device.install_app(self.browser.apk_path)
+            elif not device.is_app_installed(app):
+                raise WptrunError("app %s not installed on device %s" %
+                                  (app, device_serial))
 
 
 class Chrome(BrowserSetup):
@@ -325,7 +333,7 @@ class Chrome(BrowserSetup):
     def setup_kwargs(self, kwargs):
         browser_channel = kwargs["browser_channel"]
         if kwargs["binary"] is None:
-            binary = self.browser.find_binary(channel=browser_channel)
+            binary = self.browser.find_binary(venv_path=self.venv.path, channel=browser_channel)
             if binary:
                 kwargs["binary"] = binary
             else:

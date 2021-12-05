@@ -42,6 +42,8 @@ class H3ConnectionWithDatagram04(H3Connection):
     HTTP Datagram protocol.
     """
     H3_DATAGRAM_04 = 0xffd277
+    # https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-h3-websockets-00#section-5
+    ENABLE_CONNECT_PROTOCOL = 0x08
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -58,6 +60,7 @@ class H3ConnectionWithDatagram04(H3Connection):
         H3_DATAGRAM_04 = H3ConnectionWithDatagram04.H3_DATAGRAM_04
         settings = super()._get_local_settings()
         settings[H3_DATAGRAM_04] = 1
+        settings[H3ConnectionWithDatagram04.ENABLE_CONNECT_PROTOCOL] = 1
         return settings
 
     @property

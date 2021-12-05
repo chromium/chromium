@@ -233,3 +233,5 @@ crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan
 crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-pan-y-css_touch.html [ Failure ]
 crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Failure ]
 crbug.com/1208893 external/wpt/pointerevents/pointerevent_touch-action-table-none-test_touch.html [ Failure ]
+
+crbug.com/1208893 external/wpt/webauthn/createcredential-minpinlength.https.html [ Failure ]

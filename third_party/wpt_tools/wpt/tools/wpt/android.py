@@ -106,18 +106,18 @@ def install_android_packages(logger, sdk_path, no_prompt=False):
         raise subprocess.CalledProcessError(proc.returncode, cmd)
 
 
-def get_emulator(sdk_path):
+def get_emulator(sdk_path, device_serial=None):
     if android_device is None:
         do_delayed_imports()
     if "ANDROID_SDK_ROOT" not in os.environ:
         os.environ["ANDROID_SDK_ROOT"] = sdk_path
     substs = {"top_srcdir": wpt_root, "TARGET_CPU": "x86"}
-    emulator = android_device.AndroidEmulator("*", substs=substs)
+    emulator = android_device.AndroidEmulator("*", substs=substs, device_serial=device_serial)
     emulator.emulator_path = os.path.join(sdk_path, "emulator", "emulator")
     return emulator
 
 
-def install(logger, reinstall=False, no_prompt=False):
+def install(logger, reinstall=False, no_prompt=False, device_serial=None):
     if reinstall:
         uninstall_sdk()
 
@@ -128,18 +128,18 @@ def install(logger, reinstall=False, no_prompt=False):
     if "ANDROID_SDK_ROOT" not in os.environ:
         os.environ["ANDROID_SDK_ROOT"] = dest
 
-    emulator = get_emulator(dest)
+    emulator = get_emulator(dest, device_serial=device_serial)
     return emulator
 
 
-def start(logger, emulator=None, reinstall=False):
+def start(logger, emulator=None, reinstall=False, device_serial=None):
     if reinstall:
         install(reinstall=True)
 
     sdk_path = get_sdk_path(None)
 
     if emulator is None:
-        emulator = get_emulator(sdk_path)
+        emulator = get_emulator(sdk_path, device_serial=device_serial)
 
     if not emulator.check_avd():
         logger.critical("Android AVD not found, please run |mach bootstrap|")
