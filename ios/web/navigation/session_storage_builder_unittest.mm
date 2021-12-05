@@ -156,7 +156,7 @@ TEST_F(SessionStorageBuilderTest, ShouldSkipSerializationItems) {
       *web_state(), web_state()->GetNavigationManagerImpl(),
       web_state()->GetSessionCertificatePolicyCacheImpl());
   ASSERT_TRUE(storage);
-  int stored_item_count = storage.itemStorages.count;
+  int stored_item_count = static_cast<int>(storage.itemStorages.count);
   ASSERT_EQ(kMaxSessionSize, stored_item_count);
 
   // Verify that URLs in the storage match original URLs without skipped item.

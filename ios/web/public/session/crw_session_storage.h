@@ -10,6 +10,7 @@
 
 #include "ios/web/common/user_agent.h"
 
+@class CRWNavigationItemStorage;
 @class CRWSessionCertificatePolicyCacheStorage;
 
 namespace web {
@@ -22,7 +23,7 @@ class SerializableUserData;
 
 @property(nonatomic, assign) BOOL hasOpener;
 @property(nonatomic, assign) NSInteger lastCommittedItemIndex;
-@property(nonatomic, copy) NSArray* itemStorages;
+@property(nonatomic, copy) NSArray<CRWNavigationItemStorage*>* itemStorages;
 @property(nonatomic, strong)
     CRWSessionCertificatePolicyCacheStorage* certPolicyCacheStorage;
 @property(nonatomic, readonly) web::SerializableUserData* userData;

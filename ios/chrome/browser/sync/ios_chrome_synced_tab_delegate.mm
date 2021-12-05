@@ -93,7 +93,7 @@ int IOSChromeSyncedTabDelegate::GetCurrentEntryIndex() const {
 
 int IOSChromeSyncedTabDelegate::GetEntryCount() const {
   if (GetSessionStorageIfNeeded()) {
-    return session_storage_.itemStorages.count;
+    return static_cast<int>(session_storage_.itemStorages.count);
   }
   return web_state_->GetNavigationManager()->GetItemCount();
 }
@@ -101,7 +101,8 @@ int IOSChromeSyncedTabDelegate::GetEntryCount() const {
 GURL IOSChromeSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
   if (GetSessionStorageIfNeeded()) {
     DCHECK_GE(i, 0);
-    NSArray* item_storages = session_storage_.itemStorages;
+    NSArray<CRWNavigationItemStorage*>* item_storages =
+        session_storage_.itemStorages;
     DCHECK_LT(i, static_cast<int>(item_storages.count));
     CRWNavigationItemStorage* item = item_storages[i];
     return item.virtualURL;
@@ -141,7 +142,8 @@ void IOSChromeSyncedTabDelegate::GetSerializedNavigationAtIndex(
     int i,
     sessions::SerializedNavigationEntry* serialized_entry) const {
   if (GetSessionStorageIfNeeded()) {
-    NSArray* item_storages = session_storage_.itemStorages;
+    NSArray<CRWNavigationItemStorage*>* item_storages =
+        session_storage_.itemStorages;
     DCHECK_GE(i, 0);
     DCHECK_LT(i, static_cast<int>(item_storages.count));
     CRWNavigationItemStorage* item = item_storages[i];
@@ -241,7 +243,7 @@ bool IOSChromeSyncedTabDelegate::GetSessionStorageIfNeeded() const {
     if (!session_storage_) {
       session_storage_ = web_state_->BuildSessionStorage();
     }
-    storage_has_navigation_items = session_storage_.itemStorages.count;
+    storage_has_navigation_items = session_storage_.itemStorages.count != 0;
 #if DCHECK_IS_ON()
     if (storage_has_navigation_items) {
       DCHECK_GE(session_storage_.lastCommittedItemIndex, 0);

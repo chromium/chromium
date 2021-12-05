@@ -45,7 +45,8 @@ CRWSessionStorage* SessionStorageBuilder::BuildStorage(
         navigation_manager.GetItemCount() - 1;
   }
 
-  NSMutableArray* item_storages = [[NSMutableArray alloc] init];
+  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
+      [[NSMutableArray alloc] init];
   const size_t original_index = session_storage.lastCommittedItemIndex;
   const size_t navigation_items =
       static_cast<size_t>(navigation_manager.GetItemCount());
@@ -98,7 +99,8 @@ void SessionStorageBuilder::ExtractSessionState(
   DCHECK_EQ(&web_state, navigation_manager.GetWebState());
 
   web_state.SetHasOpener(session_storage.hasOpener);
-  NSArray* item_storages = session_storage.itemStorages;
+  NSArray<CRWNavigationItemStorage*>* item_storages =
+      session_storage.itemStorages;
 
   std::vector<std::unique_ptr<NavigationItem>> items(item_storages.count);
   for (size_t index = 0; index < item_storages.count; ++index) {
