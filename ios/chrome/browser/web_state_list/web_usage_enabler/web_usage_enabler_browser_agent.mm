@@ -63,7 +63,7 @@ void WebUsageEnablerBrowserAgent::UpdateWebUsageForAddedWebState(
     web_state->SetWebUsageEnabled(web_usage_enabled_);
     if (web_usage_enabled_ && triggers_initial_load)
       web_state->GetNavigationManager()->LoadIfNecessary();
-  } else {
+  } else if (!web_state_observations_.IsObservingSource(web_state)) {
     web_state_observations_.AddObservation(web_state);
   }
 }
