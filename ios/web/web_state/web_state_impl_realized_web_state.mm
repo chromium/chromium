@@ -21,10 +21,12 @@
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/session_storage_builder.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
@@ -83,7 +85,11 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
     SessionStorageBuilder::ExtractSessionState(*owner_, *navigation_manager_,
                                                restored_session_storage_);
 
+    // Update the BrowserState's CertificatePolicyCache with the newly
+    // restored policy cache entries.
     DCHECK(certificate_policy_cache_);
+    certificate_policy_cache_->UpdateCertificatePolicyCache(
+        web::BrowserState::GetCertificatePolicyCache(params.browser_state));
   } else {
     certificate_policy_cache_ =
         std::make_unique<SessionCertificatePolicyCacheImpl>(

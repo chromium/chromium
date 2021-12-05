@@ -25,9 +25,6 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/security/certificate_policy_cache.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
-#include "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -96,54 +93,45 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     observer.WillStartSessionRestoration();
   }
 
-  int old_count = web_state_list_->count();
+  const int old_count = web_state_list_->count();
   DCHECK_GE(old_count, 0);
 
-  web_state_list_->PerformBatchOperation(base::BindOnce(^(
-      WebStateList* web_state_list) {
-    // Don't trigger the initial load for these restored WebStates since the
-    // number of WKWebViews is unbounded and may lead to an OOM crash.
-    const bool saved_triggers_initial_load =
-        web_enabler_->TriggersInitialLoad();
-    web_enabler_->SetTriggersInitialLoad(false);
-    web::WebState::CreateParams createParams(browser_state_);
-    DeserializeWebStateList(
-        web_state_list, window,
-        base::BindRepeating(&web::WebState::CreateWithStorageSession,
-                            createParams));
-    web_enabler_->SetTriggersInitialLoad(saved_triggers_initial_load);
-  }));
+  // Don't trigger the initial load for these restored WebStates since the
+  // number of WKWebViews is unbounded and may lead to an OOM crash.
+  const bool saved_triggers_initial_load = web_enabler_->TriggersInitialLoad();
+  web_enabler_->SetTriggersInitialLoad(false);
+
+  web_state_list_->PerformBatchOperation(
+      base::BindOnce(^(WebStateList* web_state_list) {
+        web::WebState::CreateParams create_params(browser_state_);
+        DeserializeWebStateList(
+            web_state_list, window,
+            base::BindRepeating(&web::WebState::CreateWithStorageSession,
+                                create_params));
+      }));
+
+  web_enabler_->SetTriggersInitialLoad(saved_triggers_initial_load);
 
   DCHECK_GT(web_state_list_->count(), old_count);
   int restored_count = web_state_list_->count() - old_count;
   DCHECK_EQ(window.sessions.count, static_cast<NSUInteger>(restored_count));
-
-  scoped_refptr<web::CertificatePolicyCache> policy_cache =
-      web::BrowserState::GetCertificatePolicyCache(browser_state_);
 
   std::vector<web::WebState*> restored_web_states;
   restored_web_states.reserve(window.sessions.count);
 
   for (int index = old_count; index < web_state_list_->count(); ++index) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
-    web::NavigationItem* visible_item =
-        web_state->GetNavigationManager()->GetVisibleItem();
+    const GURL& visible_url = web_state->GetVisibleURL();
 
-    if (!(visible_item &&
-          visible_item->GetVirtualURL() == kChromeUINewTabURL)) {
+    if (visible_url != kChromeUINewTabURL) {
       PagePlaceholderTabHelper::FromWebState(web_state)
           ->AddPlaceholderForNextNavigation();
     }
 
-    if (visible_item && visible_item->GetVirtualURL().is_valid()) {
+    if (visible_url.is_valid()) {
       favicon::WebFaviconDriver::FromWebState(web_state)->FetchFavicon(
-          visible_item->GetVirtualURL(), /*is_same_document=*/false);
+          visible_url, /*is_same_document=*/false);
     }
-
-    // Restore the CertificatePolicyCache (note that webState is invalid after
-    // passing it via move semantic to -initWithWebState:model:).
-    web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache(
-        policy_cache);
 
     restored_web_states.push_back(web_state);
   }
@@ -151,17 +139,22 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
   // If there was only one tab and it was the new tab page, clobber it.
   bool closed_ntp_tab = false;
   if (old_count == 1) {
-    web::WebState* webState = web_state_list_->GetWebStateAt(0);
-    bool hasPendingLoad =
-        webState->GetNavigationManager()->GetPendingItem() != nullptr;
-    if (!hasPendingLoad &&
-        webState->GetLastCommittedURL() == kChromeUINewTabURL) {
-      web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+    web::WebState* web_state = web_state_list_->GetWebStateAt(0);
 
+    // An "unrealized" WebState has no pending load. Checking for realization
+    // before accessing the NavigationManager prevents accidental realization
+    // of the WebState.
+    const bool hasPendingLoad =
+        web_state->IsRealized() &&
+        web_state->GetNavigationManager()->GetPendingItem() != nullptr;
+
+    if (!hasPendingLoad &&
+        (web_state->GetLastCommittedURL() == kChromeUINewTabURL)) {
+      web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
       closed_ntp_tab = true;
-      old_count = 0;
     }
   }
+
   for (auto& observer : observers_) {
     observer.SessionRestorationFinished(restored_web_states);
   }

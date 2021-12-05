@@ -518,6 +518,9 @@ void WebStateList::NotifyIfActiveWebStateChanged(
   if (old_web_state == new_web_state)
     return;
 
+  if (new_web_state)
+    new_web_state->ForceRealized();
+
   for (auto& observer : observers_) {
     observer.WebStateActivatedAt(this, old_web_state, new_web_state,
                                  active_index_, reason);
