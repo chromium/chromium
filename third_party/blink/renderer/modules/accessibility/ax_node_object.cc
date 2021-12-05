@@ -1235,7 +1235,15 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kRubyAnnotation;
   }
 
-  if (IsA<HTMLFormElement>(*GetNode())) {
+  // TODO(Kaleidea,feature:HTMLSearchElement): Keep in sync with
+  // html_form_element.h::IsHTMLFormTag(). When the feature is shipped remove
+  // the flag.
+  if (GetNode()->HasTagName(html_names::kSearchTag) &&
+      RuntimeEnabledFeatures::HTMLSearchElementEnabled()) {
+    return ax::mojom::blink::Role::kSearch;
+  }
+
+  if (GetNode()->HasTagName(html_names::kFormTag)) {
     // Only treat <form> as role="form" when it has an accessible name, which
     // can only occur when the name is assigned by the author via aria-label,
     // aria-labelledby, or title. Otherwise, treat as a <section>.

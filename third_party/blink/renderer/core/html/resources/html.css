@@ -368,7 +368,7 @@ ol ul, ul ol, ul ul, ol ol {
 
 /* form elements */
 
-form {
+form, search {
     display: block;
     margin-top: 0__qem;
 }
