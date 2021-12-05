@@ -108,7 +108,7 @@ ProtonVersionInfo GetProtonVersionInfo(absl::optional<int> game_id,
   }
 
   // If the app id is known and doesn't match, return the version "UNKNOWN"
-  if (game_id.has_value() &&
+  if (game_id.has_value() && !parsed_game_id.empty() &&
       parsed_game_id.compare(base::StringPrintf("%d", game_id.value())) != 0) {
     LOG(WARNING) << "Expected GameID " << game_id.value() << " got "
                  << parsed_game_id;
