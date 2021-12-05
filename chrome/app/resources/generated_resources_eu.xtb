@@ -2227,7 +2227,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3288047731229977326">Garatzaile moduan abiarazten diren luzapenek ordenagailua kalte diezazukete. Ez bazara garatzailea, segurtasunez jokatzeko, luzapen horiek garatzaile moduan exekutatzeko aukera desgaitu beharko zenuke.</translation>
 <translation id="3289668031376215426">Maiuskula automatikoak</translation>
 <translation id="3289856944988573801">Eguneratzeak bilatzeko, erabili Ethernet edo Wi-Fi konexioa.</translation>
-<translation id="3290249595466894471">Gainera, orrien, deskargen, luzapenetako jardueren eta sistemaren informazioaren lagin txikiak bidaltzen ditu mehatxu berriak aurkitu ahal izateko.</translation>
+<translation id="3290249595466894471">Gainera, orrien, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txikiak bidaltzen ditu mehatxu berriak aurkitu ahal izateko.</translation>
 <translation id="3291436823898732747">Arakatze hobetua: adibidez, iradokizunak agertuko dira arakatzaileko barran idazten hasi aurretik</translation>
 <translation id="3293644607209440645">Bidali orri hau</translation>
 <translation id="32939749466444286">Ez da abiarazi Linux edukiontzia. Saiatu berriro.</translation>
@@ -4579,7 +4579,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5790651917470750848">Ataka-birbideratzea badago dagoeneko</translation>
 <translation id="5792728279623964091">Sakatu etengailua</translation>
 <translation id="5793339252089865437">Eguneratzea sare mugikorraren bitartez deskargatzen baduzu, baliteke kostu gehigarriak izatea.</translation>
-<translation id="5794034487966529952">Arakatzaileko <ph name="NUM_BROWSERS" /> leiho daude irekita <ph name="DESK_TITLE" /> lan-eremuan</translation>
+<translation id="5794034487966529952">Arakatzailearen <ph name="NUM_BROWSERS" /> leiho daude irekita <ph name="DESK_TITLE" /> lan-eremuan</translation>
 <translation id="5794414402486823030">Ireki beti sistema-ikustailearekin</translation>
 <translation id="5794700615121138172">Linux-eko karpeta partekatuak</translation>
 <translation id="5794786537412027208">Irten Chrome-ren aplikazio guztietatik</translation>

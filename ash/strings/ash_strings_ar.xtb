@@ -281,6 +281,7 @@
 <translation id="2942350706960889382">تفعيل المكبّر</translation>
 <translation id="2942516765047364088">وضع الرف</translation>
 <translation id="2946119680249604491">إضافة اتصال</translation>
+<translation id="2960314608273155470">‏وضع الالتقاط، الإعداد التلقائي هو <ph name="SOURCE" /> <ph name="TYPE" />. اضغط على مفتاح Tab للتنقّل على لوحة المفاتيح.</translation>
 <translation id="2961963223658824723">حدث خطأ. يُرجى إعادة المحاولة خلال بضع ثوانٍ.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">يتعذّر تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
@@ -887,6 +888,7 @@
 <translation id="7042322267639375032">تصغير منطقة الحالة</translation>
 <translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>
 <translation id="7045595904618419789">تفعيل المكبِّر</translation>
+<translation id="7051244143160304048">تم قطع الاتصال بجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="7055381872777910864">الأربعاء</translation>
 <translation id="7055910611768509537">لم يتم استخدام قلم الشاشة منذ أكثر من أسبوع.</translation>
 <translation id="7066646422045619941">تم إيقاف هذه الشبكة من قِبل مشرفك.</translation>
@@ -1080,6 +1082,7 @@
 <translation id="8412677897383510995">إظهار إعدادات شاشة العرض</translation>
 <translation id="8413272770729657668">يبدأ التسجيل بعد 3، 2، 1.</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> غير مثبَّت على هذا الجهاز.</translation>
 <translation id="8425213833346101688">تغيير</translation>
 <translation id="8426708595819210923">مساء الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="8428213095426709021">الإعدادات</translation>

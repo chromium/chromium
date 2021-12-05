@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">已配對的裝置</translation>
 <translation id="1153636665119721804">Google 進階保護計劃</translation>
 <translation id="1155816283571436363">正在連接您的手機</translation>
+<translation id="1158080958325422608">設為大寫</translation>
 <translation id="1158238185437008462">查看回憶</translation>
 <translation id="1161575384898972166">登入 <ph name="TOKEN_NAME" /> 即可匯出用戶端憑證。</translation>
 <translation id="116173250649946226">管理員設定的預設主題不可變更。</translation>
@@ -697,6 +698,7 @@
 <translation id="1700079447639026019">網站一律無法使用 Cookie</translation>
 <translation id="1703331064825191675">不用再擔心密碼問題</translation>
 <translation id="1703666494654169921">不允許網站使用虛擬實境﻿裝置或資料</translation>
+<translation id="1704097193565924901">大寫</translation>
 <translation id="1704230497453185209">不允許網站播放音效</translation>
 <translation id="1704970325597567340">已於 <ph name="DATE" />執行安全檢查</translation>
 <translation id="1706586824377653884">由管理員新增</translation>
@@ -3580,6 +3582,7 @@
 <translation id="4681453295291708042">停用「咫尺共享」功能</translation>
 <translation id="4681930562518940301">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="4682551433947286597">登入螢幕上顯示的桌布。</translation>
+<translation id="4683629100208651599">設為小寫</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4684471265911890182">「<ph name="APP_NAME" />」正在嘗試存取攝錄機。如要允許存取，請將攝錄機的私隱開關切換至關閉。</translation>
@@ -5976,6 +5979,7 @@
 <translation id="7257173066616499747">Wi-Fi 網絡</translation>
 <translation id="725758059478686223">列印服務</translation>
 <translation id="7257666756905341374">讀取您複製並貼上的資料</translation>
+<translation id="7258192266780953209">變形</translation>
 <translation id="7258225044283673131">應用程式沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7262004276116528033">此登入服務是由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />請嘗試執行以下解決疑難步驟：

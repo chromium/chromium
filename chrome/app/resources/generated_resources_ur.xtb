@@ -1737,6 +1737,7 @@
 <translation id="2757338480560142065">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے۔</translation>
 <translation id="2762441749940182211">کیمرا مسدود ہے</translation>
 <translation id="2764786626780673772">‏VPN کی تفصیلات</translation>
+<translation id="2765100602267695013">براہ کرم اپنے موبائل فراہم کنندہ سے رابطہ کریں</translation>
 <translation id="2765217105034171413">چھوٹا</translation>
 <translation id="2766006623206032690">پی&amp;سٹ کریں اور جائیں</translation>
 <translation id="2766161002040448006">والدین سے پوچھیں</translation>
@@ -2299,6 +2300,7 @@
 <translation id="3370260763947406229">خودکار اصلاح</translation>
 <translation id="3371140690572404006">‏USB-C آلہ (دائیں طرف کا اگلا پورٹ)</translation>
 <translation id="337286756654493126">جو فولڈرز آپ ایپلیکیشنز میں کھولتے ہیں انہیں پڑھیں</translation>
+<translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' کو '<ph name="NEW_FOLDER_TITLE" />' میں منتقل کر دیا گیا۔</translation>
 <translation id="3378572629723696641">ممکن ہے یہ ایکسٹینشن خراب ہو گیا ہو۔</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> انسٹال کر دیا جائے گا۔</translation>
 <translation id="3380365263193509176">نامعلوم خرابی</translation>
@@ -5136,6 +5138,7 @@
 <translation id="6385994920693662133">‏وارننگ - تفصیلی لاگنگ فعال ہے، ذیل کے لاگز میں URLs یا دیگر حساس معلومات شامل ہو سکتی ہیں۔ براہ کرم جائزہ لے کر یقینی بنائیں کہ آپ یہ معلومات جمع کروا کر مطمئن ہیں۔</translation>
 <translation id="6387674443318562538">عمودی تقسیم کریں</translation>
 <translation id="6388429472088318283">زبانیں تلاش کریں</translation>
+<translation id="6388577073199278153">اپنے موبائل اکاؤنٹ تک رسائی حاصل نہیں کر سکتے</translation>
 <translation id="6390020764191254941">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
 <translation id="6393156038355142111">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="6393550101331051049">غیر محفوظ مواد دکھانے کی اجازت ہے</translation>
@@ -5462,6 +5465,7 @@
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
 <translation id="67269783048918309">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">منسلک ہے، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
+<translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' تخلیق ہو گیا۔</translation>
 <translation id="6735304988756581115">کوکیز اور دیگر سائٹ ڈیٹا کو دکھائیں…</translation>
 <translation id="6736243959894955139">پتہ</translation>
 <translation id="6737663862851963468">‏Kerberos ٹکٹ ہٹائیں</translation>
@@ -6717,6 +6721,7 @@
 <translation id="8006630792898017994">اسپیس یا ٹیب</translation>
 <translation id="8008356846765065031">انٹرنیٹ منقطع ہوگیا۔ براہ کرم اپنا انٹرنیٹ کنکشن چیک کریں۔</translation>
 <translation id="8009225694047762179">پاسورڈز کا نظم کریں</translation>
+<translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' منتقل ہو گیا۔</translation>
 <translation id="8012647001091218357">اس وقت آپ کے والدین تک ہماری رسائی نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8013993649590906847">‏اگر کسی تصویر میں مفید تفصیل موجود نہیں ہے تو Chrome آپ کے لیے تفصیل فراہم کرنے کی کوشش کرے گا۔ تفصیلات تخلیق کرنے کے لیے، تصاویر Google کو بھیجی جاتی ہیں۔</translation>
 <translation id="8014154204619229810">اپ ڈیٹ کنندہ فی الحال چل رہا ہے۔ دوبارہ چیک کرنے کیلئے ایک منٹ بعد ریفریش کریں۔</translation>

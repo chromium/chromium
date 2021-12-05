@@ -50,6 +50,7 @@
 <translation id="4214277427269650960">Přihlaste se na tento webu a do Chromu. Synchronizaci můžete zapnout později.</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4249068189593983585">Tip pro Chrome. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
+<translation id="4267862249323750454">Hesla se ukládají do <ph name="BEGIN_LINK" />Správce hesel Google<ph name="END_LINK" />, abyste je mohli používat na všech zařízeních.</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
 <translation id="4633328489441962921">Chrome nemůže vyhledat dostupné aktualizace</translation>
 <translation id="4698415050768537821">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
@@ -70,6 +71,7 @@
 <translation id="6063091872902370735">Povolit přihlášení do Chromu</translation>
 <translation id="6181930887571472871">Přepnout na Chrome</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
+<translation id="6387994324662817823">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení.</translation>
 <translation id="6427126399757991875">Vaše organizace nastavuje Chrome…</translation>
 <translation id="6600954340915313787">Zkopírováno do Chromu</translation>
 <translation id="6634107063912726160">Když se odhlásíte, Chrome do vašeho účtu Google nebude synchronizovat žádná nová data. Dříve synchronizovaná data v účtu zůstanou.</translation>
