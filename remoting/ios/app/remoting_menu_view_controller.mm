@@ -192,7 +192,7 @@ std::string GetAuthorizationCodeUri() {
                              layout:
                                  (UICollectionViewLayout*)collectionViewLayout
     referenceSizeForHeaderInSection:(NSInteger)section {
-  // Only show the title if it's the account manangement section.
+  // Only show the title if it's the account management section.
   if (section != 0) {
     return CGSizeZero;
   }

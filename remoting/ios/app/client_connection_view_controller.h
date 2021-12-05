@@ -9,7 +9,7 @@
 
 @class HostInfo;
 
-// This enumerated the differnt modes this Client Connection View can be in.
+// This enumerated the different modes this Client Connection View can be in.
 typedef NS_ENUM(NSInteger, ClientConnectionViewState) {
   ClientViewConnecting,
   ClientViewPinPrompt,

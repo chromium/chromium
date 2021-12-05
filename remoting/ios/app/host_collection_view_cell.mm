@@ -145,7 +145,7 @@ static NSDictionary<NSString*, NSNumber*>* const kOfflineReasonL10nId = @{
     [[_labelView bottomAnchor]
         constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor],
 
-    // Put titleLable and statusLable symmetrically around centerY.
+    // Put titleLabel and statusLabel symmetrically around centerY.
     [[_titleLabel leadingAnchor]
         constraintEqualToAnchor:[_labelView leadingAnchor]],
     [[_titleLabel trailingAnchor]
