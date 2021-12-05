@@ -15,6 +15,8 @@
 
 namespace content {
 
+extern const char kURNUUIDprefix[];
+
 // Keeps a mapping of fenced frames URN:UUID and URL. See
 // https://github.com/shivanigithub/fenced-frame/blob/master/OpaqueSrc.md
 // TODO(crbug.com/1216088) Also support asynchronous mapping of urn:uuid to
@@ -105,6 +107,8 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   GURL AddFencedFrameURLWithInterestGroupAdComponentUrls(
       const GURL& url,
       std::vector<GURL> ad_component_urls);
+
+  static bool IsValidUrnUuidURL(const GURL& url);
 
  private:
   // Contains the URL a particular URN is mapped to, along with any extra data

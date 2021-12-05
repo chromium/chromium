@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,10 +21,20 @@ namespace content {
 namespace {
 
 GURL GenerateURN() {
-  return GURL("urn:uuid:" + base::UnguessableToken::Create().ToString());
+  return GURL(kURNUUIDprefix + base::UnguessableToken::Create().ToString());
 }
 
 }  // namespace
+
+const char kURNUUIDprefix[] = "urn:uuid:";
+
+bool FencedFrameURLMapping::IsValidUrnUuidURL(const GURL& url) {
+  if (!url.is_valid())
+    return false;
+  std::string spec = url.spec();
+  return base::StartsWith(spec, kURNUUIDprefix,
+                          base::CompareCase::INSENSITIVE_ASCII);
+}
 
 FencedFrameURLMapping::PendingAdComponentsMap::PendingAdComponentsMap(
     PendingAdComponentsMap&&) = default;
@@ -94,8 +105,7 @@ FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 absl::optional<GURL> FencedFrameURLMapping::ConvertFencedFrameURNToURL(
     const GURL& urn_uuid,
     absl::optional<PendingAdComponentsMap>& out_ad_components) const {
-  CHECK(urn_uuid.is_valid());
-  CHECK_EQ(url::kUrnScheme, urn_uuid.scheme());
+  CHECK(IsValidUrnUuidURL(urn_uuid));
 
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   if (it == urn_uuid_to_url_map_.end())

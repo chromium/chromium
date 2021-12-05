@@ -1810,6 +1810,163 @@ INSTANTIATE_TEST_SUITE_P(
         blink::features::FencedFramesImplementationType::kMPArch),
     &FencedFrameTreeBrowserTest::DescribeParams);
 
+// Parameterized on whether the feature is enabled or not.
+class UUIDFrameTreeBrowserTest : public FrameTreeBrowserTest,
+                                 public ::testing::WithParamInterface<bool> {
+ public:
+  UUIDFrameTreeBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kAllowURNsInIframes);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kAllowURNsInIframes);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    // Set up the host resolver to allow serving separate sites, so we can
+    // perform cross-process navigation.
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(https_server_.Start());
+  }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  bool NavigateIframeAndCheckURL(WebContents* web_contents,
+                                 const std::string& iframe_id,
+                                 const GURL& url,
+                                 const GURL& expected_commit_url) {
+    TestNavigationObserver nav_observer(web_contents);
+    if (!BeginNavigateIframeToURL(web_contents, iframe_id, url))
+      return false;
+    nav_observer.Wait();
+    EXPECT_EQ(expected_commit_url, nav_observer.last_navigation_url());
+    return nav_observer.last_navigation_succeeded();
+  }
+
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "AllowURNsInIframes" : "DoNotAllowURNsInIframes";
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
+                       CheckIframeNavigationWithUUID) {
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  GURL initial_frame_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  {
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('iframe');"
+                       "f.id = \"test_iframe\";"
+                       "document.body.appendChild(f);"));
+  }
+  EXPECT_EQ(1U, root->child_count());
+
+  // Initially navigate the iframe to somewhere specific.
+  EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
+                                        initial_frame_url, initial_frame_url));
+
+  GURL frame_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(frame_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  if (GetParam()) {
+    // If the feature is enabled, we should navigate to the mapped page.
+    EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
+                                          urn_uuid, frame_url));
+  } else {
+    // If the feature is disabled, navigation should fail.
+    EXPECT_FALSE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
+                                           urn_uuid, GURL()));
+  }
+
+  // Parent will still see the src as the urn_uuid and not the mapped url.
+  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, "f.src"));
+
+  // The parent will be able to access window.frames[0] as iframes are
+  // visible via frames[].
+  EXPECT_EQ(1, EvalJs(root, "window.frames.length"));
+}
+
+IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
+                       CheckIframeNavigationWithInvalidUUID) {
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  GURL initial_frame_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  {
+    EXPECT_TRUE(ExecJs(root,
+                       "var f = document.createElement('iframe');"
+                       "f.id = \"test_iframe\";"
+                       "document.body.appendChild(f);"));
+  }
+  EXPECT_EQ(1U, root->child_count());
+
+  // Initially navigate the iframe to somewhere specific.
+  EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
+                                        initial_frame_url, initial_frame_url));
+
+  GURL urn_uuid("urn:uuid:C36973B5E5D9DE59E4C4364F137B3C7A");
+
+  // We expect iframe navigations to invalid URNs to fail, regardless of if the
+  // feature is enabled.
+  EXPECT_FALSE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
+                                         urn_uuid, GURL()));
+
+  // Parent still sees the src as the urn_uuid.
+  EXPECT_EQ(urn_uuid.spec(), EvalJs(root, "f.src"));
+
+  // The parent will be able to access window.frames[0] as iframes are
+  // visible via frames[].
+  EXPECT_EQ(1, EvalJs(root, "window.frames.length"));
+}
+
+IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
+                       CheckMainFrameNavigationWithUUIDFails) {
+  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  GURL frame_url(
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  FencedFrameURLMapping& url_mapping =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  GURL urn_uuid = url_mapping.AddFencedFrameURL(frame_url);
+  EXPECT_TRUE(urn_uuid.is_valid());
+
+  // Top page navigation to a URN should fail regardless of if the feature is
+  // enabled.
+  EXPECT_FALSE(NavigateToURL(shell(), urn_uuid));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UUIDFrameTreeBrowserTest,
+                         ::testing::Values(true, false),
+                         &UUIDFrameTreeBrowserTest::DescribeParams);
+
 class CrossProcessFrameTreeBrowserTest : public ContentBrowserTest {
  public:
   CrossProcessFrameTreeBrowserTest() = default;

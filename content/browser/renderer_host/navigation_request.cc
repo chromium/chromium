@@ -1787,10 +1787,13 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
 void NavigationRequest::BeginNavigationImpl() {
   SetState(WILL_START_NAVIGATION);
 
-  // If this is a fenced frame with a urn:uuid then convert it to a url before
-  // starting the request.
-  if (frame_tree_node_->IsFencedFrameRoot() && common_params_->url.is_valid() &&
-      common_params_->url.scheme() == url::kUrnScheme) {
+  bool convert_urn_uuid_urls = frame_tree_node_->IsFencedFrameRoot() ||
+                               (!frame_tree_node_->IsMainFrame() &&
+                                blink::features::IsAllowURNsInIframeEnabled());
+  // If this is a fenced frame or iframe with a urn:uuid then convert it to a
+  // url before starting the request.
+  if (convert_urn_uuid_urls &&
+      FencedFrameURLMapping::IsValidUrnUuidURL(common_params_->url)) {
     // `inner_frame_tree` is true for navigations inside the main frame of a
     // nested fenced frame's `FrameTree`, and false otherwise. This is only the
     // case for the MPArch implementation of fenced frames.
@@ -1810,17 +1813,18 @@ void NavigationRequest::BeginNavigationImpl() {
             .ConvertFencedFrameURNToURL(common_params_->url,
                                         pending_ad_components_map);
 
-    if (!mapped_url) {
+    if (mapped_url) {
+      common_params_->url = *mapped_url;
+      commit_params_->original_url = *mapped_url;
+      pending_ad_components_map_ = std::move(pending_ad_components_map);
+    } else if (frame_tree_node_->IsFencedFrameRoot()) {
       StartNavigation();
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
           false /* skip_throttles */, absl::nullopt /* error_page_content*/,
           false /* collapse_frame */);
       return;
-    }
-    common_params_->url = *mapped_url;
-    commit_params_->original_url = *mapped_url;
-    pending_ad_components_map_ = std::move(pending_ad_components_map);
+    }  // else (for iframes) try the urn as-is to maintain existing behavior.
   }
 
 #if defined(OS_ANDROID)

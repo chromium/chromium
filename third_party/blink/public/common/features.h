@@ -409,6 +409,13 @@ BLINK_COMMON_EXPORT extern const base::Feature kFledge;
 // run-ad-auction to a more restricted EnableForSelf.
 BLINK_COMMON_EXPORT extern const base::Feature
     kAdInterestGroupAPIRestrictedPolicyByDefault;
+// Enables URN URLs like those produced by FLEDGE auctions to be displayed by
+// iframes (instead of requiring fenced frames). This is only intended to be
+// enabled as part of the FLEDGE origin trial.
+BLINK_COMMON_EXPORT extern const base::Feature kAllowURNsInIframes;
+
+// Returns true when Prerender2 feature is enabled.
+BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
 // Control switch for minimizing processing in the WebRTC APM when all audio
 // tracks are disabled.
