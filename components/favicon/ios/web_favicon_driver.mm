@@ -36,20 +36,29 @@ void WebFaviconDriver::CreateForWebState(web::WebState* web_state,
 }
 
 gfx::Image WebFaviconDriver::GetFavicon() const {
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
+  web::NavigationItem* item = nil;
+  if (web_state_->IsRealized()) {
+    item = web_state_->GetNavigationManager()->GetLastCommittedItem();
+  }
+
   return item ? item->GetFavicon().image : gfx::Image();
 }
 
 bool WebFaviconDriver::FaviconIsValid() const {
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
+  web::NavigationItem* item = nil;
+  if (web_state_->IsRealized()) {
+    item = web_state_->GetNavigationManager()->GetLastCommittedItem();
+  }
+
   return item ? item->GetFavicon().valid : false;
 }
 
 GURL WebFaviconDriver::GetActiveURL() {
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
+  web::NavigationItem* item = nil;
+  if (web_state_->IsRealized()) {
+    item = web_state_->GetNavigationManager()->GetLastCommittedItem();
+  }
+
   return item ? item->GetURL() : GURL();
 }
 
@@ -107,7 +116,7 @@ void WebFaviconDriver::OnFaviconUpdated(
   // instance, FetchFavicon() is not synchronously called when the active URL
   // changes as a result of CRWSessionController::goToEntry().
   web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetVisibleItem();
+      web_state_->GetNavigationManager()->GetLastCommittedItem();
   if (!item || item->GetURL() != page_url)
     return;
 
@@ -128,7 +137,7 @@ void WebFaviconDriver::OnFaviconDeleted(
   // instance, FetchFavicon() is not synchronously called when the active URL
   // changes as a result of CRWSessionController::goToEntry().
   web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetVisibleItem();
+      web_state_->GetNavigationManager()->GetLastCommittedItem();
   if (!item || item->GetURL() != page_url)
     return;
 
