@@ -1000,7 +1000,8 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     Layout();
   DCHECK(!needs_layout());
 
-  title_row_->PerformExpandCollapseAnimation();
+  if (title_row_)
+    title_row_->PerformExpandCollapseAnimation();
 
   // Fade in `header row()` if this is not a grouped parent view.
   if (header_row()->GetVisible() && !is_grouped_parent_view_) {
