@@ -299,13 +299,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Set our font.
-  const Font& font = UNLIKELY(svg_inline_text)
-                         ? svg_inline_text->ScaledFont()
-                         : UNLIKELY(text_combine)
-                               ? text_combine->UsesCompressedFont()
-                                     ? text_combine->CompressedFont()
-                                     : style.GetFont()
-                               : style.GetFont();
+  const Font& font =
+      UNLIKELY(text_combine && text_combine->UsesCompressedFont())
+          ? text_combine->CompressedFont()
+          : text_item.ScaledFont();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 

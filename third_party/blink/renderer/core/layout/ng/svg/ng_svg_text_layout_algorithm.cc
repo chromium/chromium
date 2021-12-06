@@ -137,9 +137,7 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
     const NGFragmentItem& item = *items[info.item_index];
     const LogicalOffset logical_offset = items[info.item_index].offset;
     LayoutUnit ascent;
-    if (const auto* font_data = To<LayoutSVGInlineText>(item.GetLayoutObject())
-                                    ->ScaledFont()
-                                    .PrimaryFont()) {
+    if (const auto* font_data = item.ScaledFont().PrimaryFont()) {
       ascent = font_data->GetFontMetrics().FixedAscent(
           item.Style().GetFontBaseline());
     }

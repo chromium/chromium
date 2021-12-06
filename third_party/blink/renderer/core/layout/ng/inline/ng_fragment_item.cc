@@ -651,8 +651,7 @@ AffineTransform NGFragmentItem::BuildSvgTransformForTextPath(
   AffineTransform transform;
   transform.Rotate(svg_data.angle);
 
-  const SimpleFontData* font_data =
-      To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
+  const SimpleFontData* font_data = ScaledFont().PrimaryFont();
 
   // https://svgwg.org/svg2-draft/text.html#TextpathLayoutRules
   // The rotation should be about the center of the baseline.
@@ -691,8 +690,7 @@ AffineTransform NGFragmentItem::BuildSvgTransformForBoundingBox() const {
     return BuildSvgTransformForTextPath(AffineTransform());
 
   transform.Rotate(svg_data.angle);
-  const SimpleFontData* font_data =
-      To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
+  const SimpleFontData* font_data = ScaledFont().PrimaryFont();
   // https://svgwg.org/svg2-draft/text.html#TextElementRotateAttribute
   // > The supplemental rotation, in degrees, about the current text position
   //
