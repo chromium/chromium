@@ -24,6 +24,7 @@ struct MinidumpParams {
                  const std::string& p_stadia_session_id,
                  const std::string& p_extra_info = "",
                  const std::string& p_exec_name = "",
+                 const std::string& p_signature = "",
                  const std::string& p_crash_product_name = "");
   MinidumpParams(const MinidumpParams& params);
   ~MinidumpParams();
@@ -43,6 +44,7 @@ struct MinidumpParams {
   std::string stadia_session_id;
   std::string extra_info;
   std::string exec_name;
+  std::string signature;
   // Crash Product name, used to identify/group crash reports in go/crash.
   std::string crash_product_name;
 };

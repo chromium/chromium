@@ -17,6 +17,7 @@ MinidumpParams::MinidumpParams(const uint64_t p_process_uptime,
                                const std::string& p_stadia_session_id,
                                const std::string& p_extra_info,
                                const std::string& p_exec_name,
+                               const std::string& p_signature,
                                const std::string& p_crash_product_name)
     : process_uptime(p_process_uptime),
       suffix(p_suffix),
@@ -29,6 +30,7 @@ MinidumpParams::MinidumpParams(const uint64_t p_process_uptime,
       stadia_session_id(p_stadia_session_id),
       extra_info(p_extra_info),
       exec_name(p_exec_name),
+      signature(p_signature),
       crash_product_name(p_crash_product_name) {}
 
 MinidumpParams::MinidumpParams() : process_uptime(0) {}

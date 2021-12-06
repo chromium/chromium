@@ -284,6 +284,9 @@ bool MinidumpUploader::DoWork() {
     if (!dump.params().stadia_session_id.empty()) {
       g.SetParameter("stadia_session_id", dump.params().stadia_session_id);
     }
+    if (!dump.params().signature.empty()) {
+      g.SetParameter("signature", dump.params().signature);
+    }
     if (!dump.params().extra_info.empty()) {
       std::vector<std::string> pairs = base::SplitString(dump.params().extra_info,
                                                          " ",
