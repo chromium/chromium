@@ -12,6 +12,7 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
@@ -22,6 +23,18 @@
 
 namespace ash {
 namespace sharesheet {
+
+namespace {
+
+class MockCopyToClipboardShareAction : public CopyToClipboardShareAction {
+ public:
+  explicit MockCopyToClipboardShareAction(Profile* profile)
+      : CopyToClipboardShareAction(profile) {}
+
+  MOCK_METHOD(void, ShowToast, (const ash::ToastData& toast_data), (override));
+};
+
+}  // namespace
 
 class CopyToClipboardShareActionTest : public ChromeAshTestBase {
  public:
@@ -153,6 +166,33 @@ TEST_F(CopyToClipboardShareActionTest,
   EXPECT_FALSE(
       copy_action->ShouldShowAction(::sharesheet::CreateDriveIntent(),
                                     /* contains_hosted_document= */ true));
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyTextShowsToast) {
+  ::testing::StrictMock<MockCopyToClipboardShareAction> copy_action(profile());
+  EXPECT_CALL(copy_action, ShowToast);
+
+  storage::FileSystemURL url = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+  copy_action.LaunchAction(
+      /*controller=*/nullptr, /*root_view=*/nullptr,
+      apps_util::CreateShareIntentFromFiles({url.ToGURL()},
+                                            {::sharesheet::kMimeTypeText}));
+}
+
+TEST_F(CopyToClipboardShareActionTest, CopyFilesShowsToast) {
+  ::testing::StrictMock<MockCopyToClipboardShareAction> copy_action(profile());
+  EXPECT_CALL(copy_action, ShowToast);
+
+  storage::FileSystemURL url1 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestPdfFile));
+  storage::FileSystemURL url2 = ::sharesheet::FileInDownloads(
+      profile(), base::FilePath(::sharesheet::kTestTextFile));
+  copy_action.LaunchAction(
+      /*controller=*/nullptr, /*root_view=*/nullptr,
+      apps_util::CreateShareIntentFromFiles(
+          {url1.ToGURL(), url2.ToGURL()},
+          {::sharesheet::kMimeTypePdf, ::sharesheet::kMimeTypeText}));
 }
 
 }  // namespace sharesheet

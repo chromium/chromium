@@ -90,7 +90,7 @@ void CopyToClipboardShareAction::LaunchAction(
                   kToastDurationMs,
                   /*dismiss_text=*/absl::nullopt,
                   /*visible_on_lock_screen=*/false);
-  ToastManager::Get()->Show(toast);
+  ShowToast(toast);
 }
 
 void CopyToClipboardShareAction::OnClosing(
@@ -117,6 +117,10 @@ bool CopyToClipboardShareAction::ShouldShowAction(
   // providers) do not currently support paste outside of the Files app.
   return !contains_uncopyable_file &&
          ShareAction::ShouldShowAction(intent, contains_hosted_document);
+}
+
+void CopyToClipboardShareAction::ShowToast(const ash::ToastData& toast_data) {
+  ToastManager::Get()->Show(toast_data);
 }
 
 }  // namespace sharesheet

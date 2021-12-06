@@ -10,6 +10,9 @@
 class Profile;
 
 namespace ash {
+
+struct ToastData;
+
 namespace sharesheet {
 
 class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
@@ -31,6 +34,9 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
                         bool contains_hosted_document) override;
 
  private:
+  // Virtual so that it can be overridden in testing.
+  virtual void ShowToast(const ash::ToastData& toast_data);
+
   Profile* profile_;
 };
 
