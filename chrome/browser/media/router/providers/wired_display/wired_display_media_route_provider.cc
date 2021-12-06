@@ -141,21 +141,6 @@ void WiredDisplayMediaRouteProvider::JoinRoute(
       RouteRequestResult::UNKNOWN_ERROR);
 }
 
-void WiredDisplayMediaRouteProvider::ConnectRouteByRouteId(
-    const std::string& media_source,
-    const std::string& route_id,
-    const std::string& presentation_id,
-    const url::Origin& origin,
-    int32_t tab_id,
-    base::TimeDelta timeout,
-    bool off_the_record,
-    ConnectRouteByRouteIdCallback callback) {
-  std::move(callback).Run(
-      absl::nullopt, nullptr,
-      std::string("Connect should be handled by the presentation manager"),
-      RouteRequestResult::UNKNOWN_ERROR);
-}
-
 void WiredDisplayMediaRouteProvider::TerminateRoute(
     const std::string& route_id,
     TerminateRouteCallback callback) {

@@ -81,26 +81,6 @@ class MockMediaRouteProvider : public mojom::MediaRouteProvider {
                     base::TimeDelta timeout,
                     bool incognito,
                     JoinRouteCallback& callback));
-  void ConnectRouteByRouteId(const std::string& source_urn,
-                             const std::string& route_id,
-                             const std::string& presentation_id,
-                             const url::Origin& origin,
-                             int tab_id,
-                             base::TimeDelta timeout,
-                             bool incognito,
-                             JoinRouteCallback callback) override {
-    ConnectRouteByRouteIdInternal(source_urn, route_id, presentation_id, origin,
-                                  tab_id, timeout, incognito, callback);
-  }
-  MOCK_METHOD8(ConnectRouteByRouteIdInternal,
-               void(const std::string& source_urn,
-                    const std::string& route_id,
-                    const std::string& presentation_id,
-                    const url::Origin& origin,
-                    int tab_id,
-                    base::TimeDelta timeout,
-                    bool incognito,
-                    JoinRouteCallback& callback));
   MOCK_METHOD1(DetachRoute, void(const std::string& route_id));
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override {
@@ -228,7 +208,6 @@ class MediaRouterMojoTest : public ::testing::Test {
   // MediaRouteProvider methods.
   void TestCreateRoute();
   void TestJoinRoute(const std::string& presentation_id);
-  void TestConnectRouteByRouteId();
   void TestTerminateRoute();
   void TestSendRouteMessage();
   void TestSendRouteBinaryMessage();

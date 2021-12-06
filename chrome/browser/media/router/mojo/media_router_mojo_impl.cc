@@ -316,34 +316,6 @@ void MediaRouterMojoImpl::JoinRoute(const MediaSource::Id& source_id,
       std::move(mr_callback));
 }
 
-void MediaRouterMojoImpl::ConnectRouteByRouteId(
-    const MediaSource::Id& source_id,
-    const MediaRoute::Id& route_id,
-    const url::Origin& origin,
-    content::WebContents* web_contents,
-    MediaRouteResponseCallback callback,
-    base::TimeDelta timeout,
-    bool off_the_record) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  absl::optional<mojom::MediaRouteProviderId> provider_id =
-      GetProviderIdForRoute(route_id);
-  if (!provider_id) {
-    std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
-        "Route not found", RouteRequestResult::ROUTE_NOT_FOUND);
-    std::move(callback).Run(nullptr, *result);
-    return;
-  }
-
-  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-  std::string presentation_id = MediaRouterBase::CreatePresentationId();
-  auto mr_callback = base::BindOnce(
-      &MediaRouterMojoImpl::RouteResponseReceived, weak_factory_.GetWeakPtr(),
-      presentation_id, *provider_id, off_the_record, std::move(callback), true);
-  media_route_providers_[*provider_id]->ConnectRouteByRouteId(
-      source_id, route_id, presentation_id, origin, tab_id, timeout,
-      off_the_record, std::move(mr_callback));
-}
-
 void MediaRouterMojoImpl::TerminateRoute(const MediaRoute::Id& route_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   absl::optional<mojom::MediaRouteProviderId> provider_id =

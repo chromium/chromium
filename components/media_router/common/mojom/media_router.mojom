@@ -315,44 +315,6 @@ interface MediaRouteProvider {
                  string? error_text,
                  RouteRequestResultCode result_code);
 
-  // Creates a new route for |media_source| that connects to the established
-  // route given by |route_id|.
-  //
-  // The presentation ID of the new route will be |presentation_id|, but it may
-  // be overridden by a provider implementation.  The presentation ID will be
-  // used by the presentation API to refer to the created route.
-  //
-  // |origin| and |tab_id| are used for validating same-origin/tab scopes; see
-  // CreateRoute for additional documentation.
-  //
-  // If |timeout| is positive, it will be used in place of the default timeout
-  // defined by Media Route Provider Manager; see CreateRoute for additional
-  // documentation.
-  //
-  // If the route request was created by an OffTheRecord profile,
-  // |off_the_record| must be true.
-  //
-  // If the operation was successful, |route| will be defined and
-  // |error_text| will be null.  If the operation failed, |route| will be null
-  // and |error_text| will be set.  If |connection| is set, it should be
-  // returned to the presentation controller for communication with the
-  // MRP/receiver.
-  //
-  // |result_code| will be set to OK if successful, or an error code if an error
-  // occurred.
-  ConnectRouteByRouteId(
-      string media_source,
-      string route_id,
-      string presentation_id,
-      url.mojom.Origin origin,
-      int32 tab_id,
-      mojo_base.mojom.TimeDelta timeout,
-      bool off_the_record) =>
-          (MediaRoute? route,
-           RoutePresentationConnection? connection,
-           string? error_text,
-           RouteRequestResultCode result_code);
-
   // Terminates the route specified by |route_id|.  If the route was terminated
   // successfully, |result_code| is set to OK and |error_text| is null.
   // Otherwise, |result_code| is an error code and |error_text| describes the

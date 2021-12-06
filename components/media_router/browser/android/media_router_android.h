@@ -48,13 +48,6 @@ class MediaRouterAndroid : public MediaRouterBase {
                  MediaRouteResponseCallback callback,
                  base::TimeDelta timeout,
                  bool incognito) override;
-  void ConnectRouteByRouteId(const MediaSource::Id& source,
-                             const MediaRoute::Id& route_id,
-                             const url::Origin& origin,
-                             content::WebContents* web_contents,
-                             MediaRouteResponseCallback callback,
-                             base::TimeDelta timeout,
-                             bool incognito) override;
   void DetachRoute(MediaRoute::Id route_id) override;
   void TerminateRoute(const MediaRoute::Id& route_id) override;
   void SendRouteMessage(const MediaRoute::Id& route_id,

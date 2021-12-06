@@ -167,21 +167,6 @@ void DialMediaRouteProvider::JoinRoute(const std::string& media_source,
   }
 }
 
-void DialMediaRouteProvider::ConnectRouteByRouteId(
-    const std::string& media_source,
-    const std::string& route_id,
-    const std::string& presentation_id,
-    const url::Origin& origin,
-    int32_t tab_id,
-    base::TimeDelta timeout,
-    bool incognito,
-    ConnectRouteByRouteIdCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(
-      absl::nullopt, nullptr, std::string("Not implemented"),
-      RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
-}
-
 void DialMediaRouteProvider::TerminateRoute(const std::string& route_id,
                                             TerminateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -48,14 +48,6 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider,
                  base::TimeDelta timeout,
                  bool incognito,
                  JoinRouteCallback callback) override;
-  void ConnectRouteByRouteId(const std::string& media_source,
-                             const std::string& route_id,
-                             const std::string& presentation_id,
-                             const url::Origin& origin,
-                             int32_t tab_id,
-                             base::TimeDelta timeout,
-                             bool incognito,
-                             ConnectRouteByRouteIdCallback callback) override;
   void TerminateRoute(const std::string& route_id,
                       TerminateRouteCallback callback) override;
   void SendRouteMessage(const std::string& media_route_id,

@@ -122,17 +122,6 @@ void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
                        web_contents, route_request_id);
 }
 
-void MediaRouterAndroid::ConnectRouteByRouteId(
-    const MediaSource::Id& source,
-    const MediaRoute::Id& route_id,
-    const url::Origin& origin,
-    content::WebContents* web_contents,
-    MediaRouteResponseCallback callback,
-    base::TimeDelta timeout,
-    bool incognito) {
-  NOTIMPLEMENTED();
-}
-
 void MediaRouterAndroid::JoinRoute(const MediaSource::Id& source_id,
                                    const std::string& presentation_id,
                                    const url::Origin& origin,

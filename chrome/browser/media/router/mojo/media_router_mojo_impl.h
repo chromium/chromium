@@ -67,13 +67,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                  MediaRouteResponseCallback callback,
                  base::TimeDelta timeout,
                  bool off_the_record) final;
-  void ConnectRouteByRouteId(const MediaSource::Id& source,
-                             const MediaRoute::Id& route_id,
-                             const url::Origin& origin,
-                             content::WebContents* web_contents,
-                             MediaRouteResponseCallback callback,
-                             base::TimeDelta timeout,
-                             bool off_the_record) final;
   void TerminateRoute(const MediaRoute::Id& route_id) final;
   void DetachRoute(MediaRoute::Id route_id) final;
   void SendRouteMessage(const MediaRoute::Id& route_id,

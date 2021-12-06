@@ -50,10 +50,10 @@ class MediaSinksObserver;
 class PresentationConnectionStateObserver;
 class RouteRequestResult;
 
-// Type of callback used in |CreateRoute()|, |JoinRoute()|, and
-// |ConnectRouteByRouteId()|. Callback is invoked when the route request either
-// succeeded or failed.  |connection| is set depending on whether the MRP
-// chooses to setup the PresentationConnections itself.
+// Type of callback used in |CreateRoute()| and |JoinRoute()|.  Callback is
+// invoked when the route request either succeeded or failed.  |connection| is
+// set depending on whether the MRP chooses to setup the PresentationConnections
+// itself.
 using MediaRouteResponseCallback =
     base::OnceCallback<void(mojom::RoutePresentationConnectionPtr connection,
                             const RouteRequestResult& result)>;
@@ -87,27 +87,6 @@ class MediaRouter : public KeyedService {
                            MediaRouteResponseCallback callback,
                            base::TimeDelta timeout,
                            bool incognito) = 0;
-
-  // Creates a route and connects it to an existing route identified by
-  // |route_id|. |route_id| must refer to a non-local route, unnassociated with
-  // a Presentation ID, because a new Presentation ID will be created.
-  // |source|: The source to route to the existing route.
-  // |route_id|: Route ID of the existing route.
-  // |origin|, |web_contents|: Origin and WebContents of the join route request.
-  // Used for validation when enforcing same-origin and/or same-tab scope.
-  // (See CreateRoute documentation).
-  // Each callback in |callbacks| is invoked with a response indicating
-  // success or failure, in the order they are listed.
-  // If |timeout| is positive, then any un-invoked |callbacks| will be invoked
-  // with a timeout error after the timeout expires.
-  // If |incognito| is true, the request was made by an incognito profile.
-  virtual void ConnectRouteByRouteId(const MediaSource::Id& source_id,
-                                     const MediaRoute::Id& route_id,
-                                     const url::Origin& origin,
-                                     content::WebContents* web_contents,
-                                     MediaRouteResponseCallback callback,
-                                     base::TimeDelta timeout,
-                                     bool incognito) = 0;
 
   // Joins an existing route identified by |presentation_id|.
   // |source|: The source to route to the existing route.

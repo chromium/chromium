@@ -77,25 +77,6 @@ class MockMediaRouter : public MediaRouterBase {
                     base::TimeDelta timeout,
                     bool incognito));
 
-  void ConnectRouteByRouteId(const MediaSource::Id& source,
-                             const MediaRoute::Id& route_id,
-                             const url::Origin& origin,
-                             content::WebContents* web_contents,
-                             MediaRouteResponseCallback callback,
-                             base::TimeDelta timeout,
-                             bool incognito) override {
-    ConnectRouteByRouteIdInternal(source, route_id, origin, web_contents,
-                                  callback, timeout, incognito);
-  }
-  MOCK_METHOD7(ConnectRouteByRouteIdInternal,
-               void(const MediaSource::Id& source,
-                    const MediaRoute::Id& route_id,
-                    const url::Origin& origin,
-                    content::WebContents* web_contents,
-                    MediaRouteResponseCallback& callback,
-                    base::TimeDelta timeout,
-                    bool incognito));
-
   MOCK_METHOD1(DetachRoute, void(MediaRoute::Id route_id));
   MOCK_METHOD1(TerminateRoute, void(const MediaRoute::Id& route_id));
   MOCK_METHOD2(SendRouteMessage,
