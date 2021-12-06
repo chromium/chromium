@@ -754,6 +754,16 @@ void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
   chrome::ShowSiteSettings(profile(), web_app->start_url());
 }
 
+apps::mojom::WindowMode WebAppPublisherHelper::GetWindowMode(
+    const std::string& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (!web_app)
+    return apps::mojom::WindowMode::kUnknown;
+
+  auto display_mode = registrar().GetAppUserDisplayMode(web_app->app_id());
+  return ConvertDisplayModeToWindowMode(display_mode);
+}
+
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
   auto display_mode = blink::mojom::DisplayMode::kUndefined;

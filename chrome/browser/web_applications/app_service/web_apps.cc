@@ -34,8 +34,6 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -325,30 +323,15 @@ void WebApps::GetMenuModel(const std::string& app_id,
                            apps::mojom::MenuType menu_type,
                            int64_t display_id,
                            GetMenuModelCallback callback) {
-  bool is_system_web_app = false;
-  bool can_use_uninstall = true;
-  apps::mojom::WindowMode display_mode;
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [&is_system_web_app, &can_use_uninstall,
-                          &display_mode](const apps::AppUpdate& update) {
-        if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
-          is_system_web_app = true;
-        }
-        if (update.InstallReason() == apps::mojom::InstallReason::kSystem ||
-            update.InstallReason() == apps::mojom::InstallReason::kPolicy) {
-          can_use_uninstall = false;
-        }
-        display_mode = update.WindowMode();
-      });
+  const auto* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    std::move(callback).Run(apps::mojom::MenuItems::New());
+    return;
+  }
 
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
-
-  if (is_system_web_app) {
-    const auto* web_app = GetWebApp(app_id);
-    DCHECK(web_app);
+  if (web_app->IsSystemApp()) {
     DCHECK(web_app->client_data().system_web_app_data.has_value());
-
     SystemAppType swa_type =
         web_app->client_data().system_web_app_data->system_app_type;
 
@@ -361,7 +344,8 @@ void WebApps::GetMenuModel(const std::string& app_id,
     }
   } else {
     apps::CreateOpenNewSubmenu(menu_type,
-                               display_mode == apps::mojom::WindowMode::kBrowser
+                               publisher_helper().GetWindowMode(app_id) ==
+                                       apps::mojom::WindowMode::kBrowser
                                    ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
                                    : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
                                &menu_items);
@@ -373,24 +357,22 @@ void WebApps::GetMenuModel(const std::string& app_id,
                          &menu_items);
   }
 
-  if (can_use_uninstall) {
+  if (web_app->CanUserUninstallWebApp()) {
     apps::AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
                          &menu_items);
   }
 
-  if (!is_system_web_app) {
+  if (!web_app->IsSystemApp()) {
     apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
                          &menu_items);
   }
 
-  GetMenuModelFromWebAppProvider(app_id, std::move(menu_items),
-                                 std::move(callback));
+  GetAppShortcutMenuModel(app_id, std::move(menu_items), std::move(callback));
 }
 
-void WebApps::GetMenuModelFromWebAppProvider(
-    const std::string& app_id,
-    apps::mojom::MenuItemsPtr menu_items,
-    GetMenuModelCallback callback) {
+void WebApps::GetAppShortcutMenuModel(const std::string& app_id,
+                                      apps::mojom::MenuItemsPtr menu_items,
+                                      GetMenuModelCallback callback) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     std::move(callback).Run(apps::mojom::MenuItems::New());
