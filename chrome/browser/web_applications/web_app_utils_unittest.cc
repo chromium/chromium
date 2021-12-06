@@ -157,6 +157,10 @@ TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
 }
 
 TEST_F(WebAppUtilsTest, GetBrowserContextForWebApps) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   Profile* regular_profile = profile();
 
   EXPECT_EQ(regular_profile, GetBrowserContextForWebApps(regular_profile));
