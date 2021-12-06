@@ -7,32 +7,29 @@ import("//media/gpu/args.gni")
 
 assert(is_chromeos_ash)
 
-static_library("video_accelerator") {
-  sources = [
-    "gpu_arc_video_decode_accelerator.cc",
-    "gpu_arc_video_decode_accelerator.h",
-    "gpu_arc_video_encode_accelerator.cc",
-    "gpu_arc_video_encode_accelerator.h",
-    "gpu_arc_video_protected_buffer_allocator.cc",
-    "gpu_arc_video_protected_buffer_allocator.h",
-    "protected_buffer_manager_proxy.cc",
-    "protected_buffer_manager_proxy.h",
-  ]
-
-  if (use_v4l2_codec || use_vaapi) {
-    sources += [
+if (use_v4l2_codec || use_vaapi) {
+  static_library("video_accelerator") {
+    sources = [
+      "gpu_arc_video_decode_accelerator.cc",
+      "gpu_arc_video_decode_accelerator.h",
       "gpu_arc_video_decoder.cc",
       "gpu_arc_video_decoder.h",
+      "gpu_arc_video_encode_accelerator.cc",
+      "gpu_arc_video_encode_accelerator.h",
+      "gpu_arc_video_protected_buffer_allocator.cc",
+      "gpu_arc_video_protected_buffer_allocator.h",
+      "protected_buffer_manager_proxy.cc",
+      "protected_buffer_manager_proxy.h",
+    ]
+
+    deps = [
+      ":common",
+      "//ash/components/arc:arc_features",
+      "//ash/components/arc/mojom:media",
+      "//gpu/ipc/common:common",
+      "//media",
     ]
   }
-
-  deps = [
-    ":common",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc/mojom:media",
-    "//gpu/ipc/common:common",
-    "//media",
-  ]
 }
 
 source_set("common") {

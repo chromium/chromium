@@ -9,11 +9,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "ash/components/arc/mojom/video_encode_accelerator.mojom.h"
@@ -23,11 +24,12 @@
 #include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 void CreateArcVideoDecodeAccelerator(
     ChromeContentGpuClient* client,
     const gpu::GpuPreferences& gpu_preferences,
@@ -71,7 +73,8 @@ void CreateProtectedBufferManager(
           client->GetProtectedBufferManager()),
       std::move(receiver));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 }  // namespace
 
@@ -80,7 +83,7 @@ void ExposeChromeGpuInterfacesToBrowser(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   binders->Add(base::BindRepeating(&CreateArcVideoDecodeAccelerator, client,
                                    gpu_preferences, gpu_workarounds),
                base::ThreadTaskRunnerHandle::Get());
@@ -92,5 +95,6 @@ void ExposeChromeGpuInterfacesToBrowser(
       base::ThreadTaskRunnerHandle::Get());
   binders->Add(base::BindRepeating(&CreateProtectedBufferManager, client),
                base::ThreadTaskRunnerHandle::Get());
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+        // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 }

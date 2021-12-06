@@ -14,6 +14,7 @@ static_library("gpu") {
     "//content/public/child",
     "//content/public/common",
     "//content/public/gpu",
+    "//media:media_buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]
 
@@ -31,10 +32,12 @@ static_library("gpu") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/components/arc/mojom:media",
-      "//ash/components/arc/video_accelerator",
       "//gpu/command_buffer/service",
       "//services/service_manager/public/cpp",
       "//ui/ozone",
     ]
+    if (use_v4l2_codec || use_vaapi) {
+      deps += [ "//ash/components/arc/video_accelerator" ]
+    }
   }
 }
