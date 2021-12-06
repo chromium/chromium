@@ -645,6 +645,7 @@
 <translation id="3087734570205094154">맨 아래</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">수령 주소 추가</translation>
+<translation id="3098513225387949945">사용 안함 목록에 정책을 사용 중지하는 것과 동일한 '*'와 동등한 패턴이 포함되어 있으므로 무시되었습니다.</translation>
 <translation id="3105172416063519923">애셋 ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />보안 DNS 구성 확인<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">중간 트레이</translation>
@@ -1552,6 +1553,7 @@
 <translation id="6008122969617370890">N-to-1 순서</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">비밀번호 확인</translation>
+<translation id="6014851866995737824">'사용' 또는 '사용 안함' 목록이 없으므로 무시되었습니다.</translation>
 <translation id="6015796118275082299">연도</translation>
 <translation id="6017514345406065928">녹색</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에 있는 공격자는 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>

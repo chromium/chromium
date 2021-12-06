@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Peranti digandingkan</translation>
 <translation id="1153636665119721804">Program Perlindungan Lanjutan Google</translation>
 <translation id="1155816283571436363">Menyambung kepada telefon anda</translation>
+<translation id="1158080958325422608">Jadikan Huruf Besar</translation>
 <translation id="1158238185437008462">Lihat kenangan</translation>
 <translation id="1161575384898972166">Sila log masuk ke <ph name="TOKEN_NAME" /> untuk mengeksport sijil klien.</translation>
 <translation id="116173250649946226">Pentadbir anda telah menetapkan tema lalai yang tidak boleh ditukar.</translation>
@@ -697,6 +698,7 @@
 <translation id="1700079447639026019">Tapak yang tidak boleh menggunakan kuki buat selama-lamanya</translation>
 <translation id="1703331064825191675">Jangan bimbang tentang kata laluan anda</translation>
 <translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
+<translation id="1704097193565924901">Menggunakan huruf besar</translation>
 <translation id="1704230497453185209">Jangan benarkan laman memainkan bunyi</translation>
 <translation id="1704970325597567340">Semakan keselamatan dijalankan pada <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Ditambahkan oleh pentadbir anda</translation>
@@ -3581,6 +3583,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4681453295291708042">Lumpuhkan Kongsi Berdekatan</translation>
 <translation id="4681930562518940301">Buka &amp;imej asal dalam tab baharu</translation>
 <translation id="4682551433947286597">Kertas dinding dipaparkan pada Skrin Log Masuk.</translation>
+<translation id="4683629100208651599">Jadikan Huruf Kecil</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (lalai)</translation>
 <translation id="4684427112815847243">Segerakkan semua</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> sedang cuba mengakses kamera. Matikan suis privasi kamera untuk membenarkan akses.</translation>
@@ -5976,6 +5979,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7257173066616499747">Rangkaian Wi-Fi</translation>
 <translation id="725758059478686223">Perkhidmatan Cetak</translation>
 <translation id="7257666756905341374">Baca data yang anda salin dan tampal</translation>
+<translation id="7258192266780953209">Perubahan</translation>
 <translation id="7258225044283673131">Aplikasi tidak memberikan respons. Pilih "Paksa tutup" untuk menutup apl.</translation>
 <translation id="7262004276116528033">Perkhidmatan log masuk ini dihoskan oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Cuba langkah penyelesaian masalah berikut:

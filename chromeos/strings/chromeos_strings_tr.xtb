@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3865414814144988605">Çözünürlük</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
+<translation id="3924044641767672375">Onarım sürecini kolaylaştırmak için kablosuz ağa bağlanmanız önerilir. Ağınız kaydedilir.</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
+<translation id="4485626319513081846">Cihaz yeni bir müşteriye dağıtılmak üzere yenileniyor veya tekrar stoklara ekleniyorsa bu seçeneği belirleyin.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Alternatif konu adı eşleşmesi</translation>
 <translation id="4536864596629708641">IP Yapılandırması</translation>
@@ -416,6 +418,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6957231940976260713">Hizmet adı</translation>
 <translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
+<translation id="6992266763844448459">Cihazın sahibi değişmiyorsa, örneğin cihaz aynı kuruluştaki başka bir kişiye devrediliyorsa bu seçeneği belirleyin.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7058278511608979688">Bitir ve kaydet</translation>

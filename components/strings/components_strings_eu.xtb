@@ -645,6 +645,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Gehitu jasotze-helbidea</translation>
+<translation id="3098513225387949945">Ez ikusi egin zaio, desgaitzeko zerrendak * karakterearen berdina den eredu bat daukalako, eta hori gidalerroa desgaitzea bezala da.</translation>
 <translation id="3105172416063519923">Aktibo IDa:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS konfigurazio segurua egiaztatzen<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Erdiko erretilua</translation>
@@ -1548,6 +1549,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6008122969617370890">N-tik 1erako ordena</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Egiaztatu pasahitzak</translation>
+<translation id="6014851866995737824">Ez ikusi egin zaio, gaitzeko edo desgaitzeko zerrenda falta delako.</translation>
 <translation id="6015796118275082299">Urtea</translation>
 <translation id="6017514345406065928">Berdea</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webguneko erasotzaileek beste zerbaiten plantak egiten dituzten aplikazio iruzurtiak instala ditzakete edo datuak bil ditzakete zure jarraipena egiteko. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>

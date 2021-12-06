@@ -280,6 +280,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2942350706960889382">Yerleştirilmiş Büyüteç</translation>
 <translation id="2942516765047364088">Raf konumu</translation>
 <translation id="2946119680249604491">Bağlantı ekle</translation>
+<translation id="2960314608273155470">Ekran Görüntüsü Alma Modu, varsayılan <ph name="SOURCE" /> <ph name="TYPE" />. Klavyeyle gezinmek için sekme tuşuna basın.</translation>
 <translation id="2961963223658824723">Bir sorun oluştu. Birkaç saniye sonra tekrar deneyin.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi</translation>
@@ -887,6 +888,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7042322267639375032">Durum alanını daralt</translation>
 <translation id="7045033600005038336">Şablon değiştirilsin mi?</translation>
 <translation id="7045595904618419789">Büyüteci başlat</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> cihazının bağlantısı kesildi</translation>
 <translation id="7055381872777910864">Ç</translation>
 <translation id="7055910611768509537">Ekran kalemi bir haftadan uzun süredir kullanılmamış</translation>
 <translation id="7066646422045619941">Bu ağ, yöneticiniz tarafından devre dışı bırakıldı.</translation>
@@ -1080,6 +1082,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8412677897383510995">Ekran ayarlarını göster</translation>
 <translation id="8413272770729657668">Kayıt başlıyor 3, 2, 1</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (Kılıf)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> bu cihazda yok.</translation>
 <translation id="8425213833346101688">Değiştir</translation>
 <translation id="8426708595819210923">İyi akşamlar <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Ayarlar</translation>

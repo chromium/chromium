@@ -401,6 +401,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adres}}</translation>
 <translation id="2187317261103489799">Algıla (varsayılan)</translation>
 <translation id="2188375229972301266">Altta çoklu zımba</translation>
+<translation id="2188852899391513400">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi, hesaplarınızın güvenliğini sağlamak için bu şifreyi hemen değiştirmenizi ve ardından kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="2202020181578195191">Geçerli bir son kullanma yılı girin</translation>
 <translation id="22081806969704220">Tepsi 3</translation>
 <translation id="2212735316055980242">Politika bulunamadı</translation>
@@ -895,6 +896,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3827112369919217609">Mutlak</translation>
 <translation id="3827475930221174051">"<ph name="SEARCH_TERM" />" ile ilgili etkinliğe dayalı öğeler</translation>
 <translation id="3828924085048779000">Boş parolaya izin verilmez.</translation>
+<translation id="3831065134033923230">Kayıtlı şifrelerinizi kontrol edin</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> diğer işlevler için uzantılar yüklemiş. Söz konusu uzantıların bazı verilerinize erişimi bulunuyor.</translation>
 <translation id="3832522519263485449">Solda çoklu delik</translation>
 <translation id="3835233591525155343">Cihaz kullanımınız</translation>
@@ -1090,6 +1092,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="443673843213245140">Proxy kullanımı devre dışı, ancak açık bir proxy yapılandırması belirtildi.</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
 <translation id="4451135742916150903">HID cihazlarına bağlanmak isteyebilir</translation>
+<translation id="4452328064229197696">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="4455222631300069614">Şifrenizi hemen değiştirin</translation>
 <translation id="4460315069258617173">Bu siteye ait sekmeleri kapatana kadar izin verilir</translation>
 <translation id="4464826014807964867">Kuruluşunuzun gönderdiği bilgilerin olduğu web siteleri</translation>
@@ -1579,6 +1582,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6051221802930200923"><ph name="SITE" /> sitesi sertifika sabitleme yöntemi kullandığından siteyi şu anda ziyaret edemezsiniz. Ağ hataları ve saldırılar genellikle geçici olduğundan bu sayfa muhtemelen daha sonra çalışacaktır.</translation>
 <translation id="6051898664905071243">Sayfa sayısı:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi bu şifreyi hemen değiştirmenizi öneriyor.</translation>
 <translation id="6055888660316801977">Eşleşmeyen güvenli ödeme kimlik bilgisi sayfası</translation>
 <translation id="6058977677006700226">Kartlarınızı tüm cihazlarınızda kullanmak istiyor musunuz?</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
