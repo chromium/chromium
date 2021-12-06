@@ -289,15 +289,14 @@ class PropertyWaiter {
   base::RepeatingTimer timer_;
 };
 
-// TODO(pbos): Rewrite this to return unique_ptr.
-views::Textfield* CreateTextfield() {
+std::unique_ptr<Textfield> CreateTextfield() {
   auto textfield = std::make_unique<Textfield>();
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks, but this focusable View needs to
   // add a name so that the screen reader knows what to announce. Consider
   // adding bogus placeholder text here.
   textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
-  return textfield.release();
+  return textfield;
 }
 
 }  // namespace
@@ -933,26 +932,27 @@ TEST_F(DesktopWidgetTestInteractive,
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
   widget->SetBounds(gfx::Rect(0, 0, 200, 200));
 
-  Textfield* textfield = CreateTextfield();
-  textfield->SetBounds(0, 0, 200, 20);
-  textfield->SetText(u"some text");
-  widget->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  textfield_ptr->SetBounds(0, 0, 200, 20);
+  textfield_ptr->SetText(u"some text");
+  widget->GetRootView()->AddChildView(std::move(textfield));
 
   widget->Show();
-  textfield->RequestFocus();
-  textfield->SelectAll(true);
-  TextfieldTestApi textfield_test_api(textfield);
+  textfield_ptr->RequestFocus();
+  textfield_ptr->SelectAll(true);
+  TextfieldTestApi textfield_test_api(textfield_ptr);
 
   RunPendingMessages();
 
   ui::test::EventGenerator generator(GetRootWindow(widget.get()));
-  generator.GestureTapAt(textfield->GetBoundsInScreen().origin() +
+  generator.GestureTapAt(textfield_ptr->GetBoundsInScreen().origin() +
                          gfx::Vector2d(10, 10));
   static_cast<TouchSelectionControllerImpl*>(
       textfield_test_api.touch_selection_controller())
       ->ShowQuickMenuImmediatelyForTesting();
 
-  EXPECT_TRUE(textfield->HasFocus());
+  EXPECT_TRUE(textfield_ptr->HasFocus());
   EXPECT_TRUE(widget->IsActive());
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
@@ -1283,12 +1283,13 @@ TEST_F(DesktopWidgetTestInteractive,
   // Create a top level desktop native widget.
   WidgetAutoclosePtr top_level(CreateTopLevelNativeWidget());
 
-  Textfield* textfield = CreateTextfield();
-  textfield->SetBounds(0, 0, 200, 20);
-  top_level->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  textfield_ptr->SetBounds(0, 0, 200, 20);
+  top_level->GetRootView()->AddChildView(std::move(textfield));
   ShowSync(top_level.get());
-  textfield->RequestFocus();
-  EXPECT_TRUE(textfield->HasFocus());
+  textfield_ptr->RequestFocus();
+  EXPECT_TRUE(textfield_ptr->HasFocus());
 
   // Create a modal dialog.
   // This instance will be destroyed when the dialog is destroyed.
@@ -1297,25 +1298,26 @@ TEST_F(DesktopWidgetTestInteractive,
   Widget* modal_dialog_widget = DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(0, 0, 100, 10));
-  Textfield* dialog_textfield = CreateTextfield();
-  dialog_textfield->SetBounds(0, 0, 50, 5);
-  modal_dialog_widget->GetRootView()->AddChildView(dialog_textfield);
+  std::unique_ptr<Textfield> dialog_textfield = CreateTextfield();
+  auto* const dialog_textfield_ptr = dialog_textfield.get();
+  dialog_textfield_ptr->SetBounds(0, 0, 50, 5);
+  modal_dialog_widget->GetRootView()->AddChildView(std::move(dialog_textfield));
   // Dialog widget doesn't need a ShowSync as it gains active status
   // synchronously.
   modal_dialog_widget->Show();
-  dialog_textfield->RequestFocus();
-  EXPECT_TRUE(dialog_textfield->HasFocus());
-  EXPECT_FALSE(textfield->HasFocus());
+  dialog_textfield_ptr->RequestFocus();
+  EXPECT_TRUE(dialog_textfield_ptr->HasFocus());
+  EXPECT_FALSE(textfield_ptr->HasFocus());
 
   DeactivateSync(top_level.get());
-  EXPECT_FALSE(dialog_textfield->HasFocus());
-  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_FALSE(dialog_textfield_ptr->HasFocus());
+  EXPECT_FALSE(textfield_ptr->HasFocus());
 
   // After deactivation and activation of top level widget, only modal dialog
   // should restore focused view.
   ActivateSync(top_level.get());
-  EXPECT_TRUE(dialog_textfield->HasFocus());
-  EXPECT_FALSE(textfield->HasFocus());
+  EXPECT_TRUE(dialog_textfield_ptr->HasFocus());
+  EXPECT_FALSE(textfield_ptr->HasFocus());
 }
 #endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
         // BUILDFLAG(ENABLE_DESKTOP_AURA)
@@ -1977,9 +1979,10 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 // Test input method focus changes affected by top window activaction.
 TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = CreateTextfield();
-  widget->GetRootView()->AddChildView(textfield);
-  textfield->RequestFocus();
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  widget->GetRootView()->AddChildView(std::move(textfield));
+  textfield_ptr->RequestFocus();
 
   ShowSync(widget.get());
 
@@ -1995,19 +1998,21 @@ TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
 // Test input method focus changes affected by focus changes within 1 window.
 TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield1 = CreateTextfield();
-  Textfield* textfield2 = CreateTextfield();
-  textfield2->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  widget->GetRootView()->AddChildView(textfield1);
-  widget->GetRootView()->AddChildView(textfield2);
+  std::unique_ptr<Textfield> textfield1 = CreateTextfield();
+  auto* const textfield1_ptr = textfield1.get();
+  std::unique_ptr<Textfield> textfield2 = CreateTextfield();
+  auto* const textfield2_ptr = textfield2.get();
+  textfield2_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  widget->GetRootView()->AddChildView(std::move(textfield1));
+  widget->GetRootView()->AddChildView(std::move(textfield2));
 
   ShowSync(widget.get());
 
-  textfield1->RequestFocus();
+  textfield1_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield2->RequestFocus();
+  textfield2_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             widget->GetInputMethod()->GetTextInputType());
 
@@ -2024,7 +2029,7 @@ TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
             widget->GetInputMethod()->GetTextInputType());
 
   DeactivateSync(widget.get());
-  textfield1->RequestFocus();
+  textfield1_ptr->RequestFocus();
   ActivateSync(widget.get());
   EXPECT_TRUE(widget->IsActive());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
@@ -2042,20 +2047,22 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   child->SetBounds(gfx::Rect(0, 0, 50, 50));
   child->Show();
 
-  Textfield* textfield_parent = CreateTextfield();
-  Textfield* textfield_child = CreateTextfield();
+  std::unique_ptr<Textfield> textfield_parent = CreateTextfield();
+  auto* const textfield_parent_ptr = textfield_parent.get();
+  std::unique_ptr<Textfield> textfield_child = CreateTextfield();
+  auto* const textfield_child_ptr = textfield_child.get();
   textfield_parent->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  parent->GetRootView()->AddChildView(textfield_parent);
-  child->GetRootView()->AddChildView(textfield_child);
+  parent->GetRootView()->AddChildView(std::move(textfield_parent));
+  child->GetRootView()->AddChildView(std::move(textfield_child));
   ShowSync(parent.get());
 
   EXPECT_EQ(parent->GetInputMethod(), child->GetInputMethod());
 
-  textfield_parent->RequestFocus();
+  textfield_parent_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             parent->GetInputMethod()->GetTextInputType());
 
-  textfield_child->RequestFocus();
+  textfield_child_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             parent->GetInputMethod()->GetTextInputType());
 
@@ -2071,7 +2078,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             parent->GetInputMethod()->GetTextInputType());
 
-  textfield_parent->RequestFocus();
+  textfield_parent_ptr->RequestFocus();
   DeactivateSync(parent.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             parent->GetInputMethod()->GetTextInputType());
@@ -2085,25 +2092,26 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
 // Test input method focus changes affected by textfield's state changes.
 TEST_F(WidgetInputMethodInteractiveTest, TextField) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = CreateTextfield();
-  widget->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  widget->GetRootView()->AddChildView(std::move(textfield));
   ShowSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
+  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->RequestFocus();
+  textfield_ptr->RequestFocus();
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,
             widget->GetInputMethod()->GetTextInputType());
 
-  textfield->SetReadOnly(true);
+  textfield_ptr->SetReadOnly(true);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
 }
@@ -2111,21 +2119,22 @@ TEST_F(WidgetInputMethodInteractiveTest, TextField) {
 // Test input method should not work for accelerator.
 TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = CreateTextfield();
-  widget->GetRootView()->AddChildView(textfield);
+  std::unique_ptr<Textfield> textfield = CreateTextfield();
+  auto* const textfield_ptr = textfield.get();
+  widget->GetRootView()->AddChildView(std::move(textfield));
   ShowSync(widget.get());
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  textfield->RequestFocus();
+  textfield_ptr->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  textfield_ptr->RequestFocus();
 
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_F, ui::EF_ALT_DOWN);
   ui::Accelerator accelerator(key_event);
   widget->GetFocusManager()->RegisterAccelerator(
-      accelerator, ui::AcceleratorManager::kNormalPriority, textfield);
+      accelerator, ui::AcceleratorManager::kNormalPriority, textfield_ptr);
 
   widget->OnKeyEvent(&key_event);
   EXPECT_TRUE(key_event.stopped_propagation());
 
-  widget->GetFocusManager()->UnregisterAccelerators(textfield);
+  widget->GetFocusManager()->UnregisterAccelerators(textfield_ptr);
 
   ui::KeyEvent key_event2(key_event);
   widget->OnKeyEvent(&key_event2);
