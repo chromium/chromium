@@ -4588,6 +4588,7 @@ source_set("unit_tests") {
     "extensions/login_screen/login/cleanup/extension_cleanup_handler_unittest.cc",
     "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
     "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
+    "extensions/login_screen/login/cleanup/print_jobs_cleanup_handler_unittest.cc",
     "extensions/login_screen/login/login_api_unittest.cc",
     "extensions/login_screen/login_screen_ui/ui_handler_unittest.cc",
     "extensions/permissions_updater_delegate_chromeos_unittest.cc",
