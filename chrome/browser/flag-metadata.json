@@ -1486,6 +1486,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-automatic-snooze",
+    "owners": [ "shaktisahu", "haileywang" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "enable-background-blur",
     "owners": [ "newcomer" ],
     "expiry_milestone": 86

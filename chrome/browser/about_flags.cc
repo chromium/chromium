@@ -3576,6 +3576,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLightweightReactionsAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(content_creation::kLightweightReactions)},
 #endif  // OS_ANDROID
+    {"enable-automatic-snooze", flag_descriptions::kEnableAutomaticSnoozeName,
+     flag_descriptions::kEnableAutomaticSnoozeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(feature_engagement::kEnableAutomaticSnooze)},
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,
      flag_descriptions::kInProductHelpDemoModeChoiceDescription, kOsAll,

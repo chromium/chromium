@@ -1151,6 +1151,10 @@ const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 const char kMemlogStackModePseudo[] = "Trace events";
 
+const char kEnableAutomaticSnoozeName[] = "Enable Automatic Snooze";
+const char kEnableAutomaticSnoozeDescription[] =
+    "Enables automatic snoozing on In-Product Help with no snooze button.";
+
 const char kEnableLensRegionSearchFlagId[] = "enable-lens-region-search";
 const char kEnableLensRegionSearchName[] =
     "Search your screen with Google Lens";

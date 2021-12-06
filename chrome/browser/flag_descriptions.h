@@ -354,6 +354,9 @@ extern const char kDnsOverHttpsDescription[];
 extern const char kDnsHttpssvcName[];
 extern const char kDnsHttpssvcDescription[];
 
+extern const char kEnableAutomaticSnoozeName[];
+extern const char kEnableAutomaticSnoozeDescription[];
+
 extern const char kEnableFirstPartySetsName[];
 extern const char kEnableFirstPartySetsDescription[];
 
