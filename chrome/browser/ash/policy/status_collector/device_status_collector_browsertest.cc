@@ -532,6 +532,17 @@ void GetEmptyCrosHealthdData(
   std::move(receiver).Run(std::move(empty_info), empty_samples);
 }
 
+bool SettingEnabled(const std::string& path) {
+  if (!ash::CrosSettings::Get()) {
+    return false;
+  }
+  bool setting;
+  if (!ash::CrosSettings::Get()->GetBoolean(path, &setting)) {
+    setting = false;
+  }
+  return setting;
+}
+
 cros_healthd::BatteryResultPtr CreateBatteryResult() {
   return cros_healthd::BatteryResult::NewBatteryInfo(
       cros_healthd::BatteryInfo::New(
@@ -794,25 +805,41 @@ void FetchFakeFullCrosHealthdData(
   switch (mode) {
     case policy::CrosHealthdCollectionMode::kFull: {
       cros_healthd::TelemetryInfo fake_info;
-      fake_info.battery_result = CreateBatteryResult();
-      fake_info.block_device_result = CreateBlockDeviceResult();
-      fake_info.system_result = CreateSystemResult();
+      if (SettingEnabled(ash::kReportDevicePowerStatus))
+        fake_info.battery_result = CreateBatteryResult();
+      if (SettingEnabled(ash::kReportDeviceStorageStatus))
+        fake_info.block_device_result = CreateBlockDeviceResult();
+      if (SettingEnabled(ash::kReportDeviceSystemInfo) ||
+          SettingEnabled(ash::kReportDeviceVpdInfo))
+        fake_info.system_result = CreateSystemResult();
+      // Always gather system V2.
       fake_info.system_result_v2 = CreateSystemResultV2();
-      fake_info.cpu_result = CreateCpuResult();
-      fake_info.timezone_result = CreateTimezoneResult();
-      fake_info.memory_result = CreateMemoryResult();
-      fake_info.backlight_result = CreateBacklightResult();
-      fake_info.fan_result = CreateFanResult();
-      fake_info.stateful_partition_result = CreateStatefulPartitionResult();
-      fake_info.bluetooth_result = CreateBluetoothResult();
-      fake_info.tpm_result = CreateTpmResult();
-      fake_info.bus_result = CreateBusResult();
+      if (SettingEnabled(ash::kReportDeviceCpuInfo))
+        fake_info.cpu_result = CreateCpuResult();
+      if (SettingEnabled(ash::kReportDeviceTimezoneInfo))
+        fake_info.timezone_result = CreateTimezoneResult();
+      if (SettingEnabled(ash::kReportDeviceMemoryInfo))
+        fake_info.memory_result = CreateMemoryResult();
+      if (SettingEnabled(ash::kReportDeviceBacklightInfo))
+        fake_info.backlight_result = CreateBacklightResult();
+      if (SettingEnabled(ash::kReportDeviceFanInfo))
+        fake_info.fan_result = CreateFanResult();
+      if (SettingEnabled(ash::kReportDeviceStorageStatus))
+        fake_info.stateful_partition_result = CreateStatefulPartitionResult();
+      if (SettingEnabled(ash::kReportDeviceBluetoothInfo))
+        fake_info.bluetooth_result = CreateBluetoothResult();
+      if (SettingEnabled(ash::kReportDeviceVersionInfo))
+        fake_info.tpm_result = CreateTpmResult();
+      if (SettingEnabled(ash::kReportDeviceNetworkConfiguration)) {
+        fake_info.bus_result = CreateBusResult();
+      }
       std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
       return;
     }
 
     case policy::CrosHealthdCollectionMode::kBattery: {
-      GetFakeCrosHealthdBatteryData(std::move(receiver));
+      if (SettingEnabled(ash::kReportDevicePowerStatus))
+        GetFakeCrosHealthdBatteryData(std::move(receiver));
       return;
     }
   }
@@ -3442,11 +3469,10 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfo) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ash::kReportDeviceVersionInfo, false);
   GetStatus();
-  ASSERT_EQ(device_status_.cpu_info_size(), 0);
+  EXPECT_EQ(device_status_.cpu_info_size(), 0);
   EXPECT_FALSE(device_status_.has_power_status());
   EXPECT_FALSE(device_status_.has_storage_status());
   EXPECT_FALSE(device_status_.has_system_status());
-  EXPECT_FALSE(device_status_.has_smbios_info());
   EXPECT_FALSE(device_status_.has_boot_info());
   EXPECT_FALSE(device_status_.has_timezone_info());
   EXPECT_FALSE(device_status_.has_memory_info());
@@ -3748,14 +3774,14 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   ASSERT_FALSE(device_status_.system_status().has_chassis_type());
   ASSERT_FALSE(device_status_.system_status().has_product_name());
 
-  // Verify the system info v2 is not populated.
+  // Verify the system info v2 is not populated excluding vendor, product name,
+  // and product version.
   ASSERT_TRUE(device_status_.has_smbios_info());
-  ASSERT_FALSE(device_status_.smbios_info().has_sys_vendor());
-  ASSERT_FALSE(device_status_.smbios_info().has_product_name());
-  ASSERT_FALSE(device_status_.smbios_info().has_product_version());
-  ASSERT_FALSE(device_status_.smbios_info().has_bios_version());
-  ASSERT_TRUE(device_status_.has_boot_info());
-  ASSERT_FALSE(device_status_.boot_info().has_boot_method());
+  EXPECT_TRUE(device_status_.smbios_info().has_sys_vendor());
+  EXPECT_TRUE(device_status_.smbios_info().has_product_name());
+  EXPECT_TRUE(device_status_.smbios_info().has_product_version());
+  EXPECT_FALSE(device_status_.smbios_info().has_bios_version());
+  EXPECT_FALSE(device_status_.has_boot_info());
 
   // When the system reporting policy is turned on and the vpd reporting policy
   // is turned off, we expect the protobuf to have all system info except the
@@ -3790,6 +3816,19 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
             kFakeDmiInfoBiosVersion);
   ASSERT_TRUE(device_status_.has_boot_info());
   EXPECT_EQ(device_status_.boot_info().boot_method(), kFakeOsInfoBootMethod);
+
+  // Even with both settings off vendor, product name, and product version
+  // should be reported.
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceSystemInfo, false);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceVpdInfo, false);
+  GetStatus();
+
+  ASSERT_TRUE(device_status_.has_smbios_info());
+  EXPECT_TRUE(device_status_.smbios_info().has_sys_vendor());
+  EXPECT_TRUE(device_status_.smbios_info().has_product_name());
+  EXPECT_TRUE(device_status_.smbios_info().has_product_version());
 }
 
 TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
@@ -4241,6 +4280,8 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, TestCrosHealthdBusInfo) {
   // Because this data collection is gated by the
   // kReportDeviceNetworkConfiguration policy, this test uses the
   // DeviceStatusCollectorNetworkInterfacesTest class.
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceNetworkConfiguration, true);
   auto options = CreateEmptyDeviceStatusCollectorOptions();
   options->cros_healthd_data_fetcher =
       base::BindRepeating(&FetchFakeFullCrosHealthdData);

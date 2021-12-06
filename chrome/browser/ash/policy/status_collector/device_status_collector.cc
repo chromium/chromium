@@ -1320,36 +1320,41 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           break;
         }
 
+        // The System Info V2 tag is always called to get vendor, product name,
+        // and product version. Because of this, make sure to wrap additional
+        // data collection behind a policy, similar to bios version and os
+        // info below.
         case cros_healthd::SystemResultV2::Tag::SYSTEM_INFO_V2: {
           const auto& system_info_v2 = system_result_v2->get_system_info_v2();
           em::SmbiosInfo* const smbios_info_out =
               response_params_.device_status->mutable_smbios_info();
-          em::BootInfo* const boot_info_out =
-              response_params_.device_status->mutable_boot_info();
-          if (report_system_info) {
-            if (!system_info_v2->dmi_info.is_null()) {
-              const auto& dmi_info = system_info_v2->dmi_info;
-              if (dmi_info->bios_version.has_value()) {
-                smbios_info_out->set_bios_version(
-                    dmi_info->bios_version.value());
-              }
-              if (dmi_info->sys_vendor.has_value()) {
-                smbios_info_out->set_sys_vendor(dmi_info->sys_vendor.value());
-              }
-              if (dmi_info->product_name.has_value()) {
-                smbios_info_out->set_product_name(
-                    dmi_info->product_name.value());
-              }
-              if (dmi_info->product_version.has_value()) {
-                smbios_info_out->set_product_version(
-                    dmi_info->product_version.value());
-              }
+          if (!system_info_v2->dmi_info.is_null()) {
+            const auto& dmi_info = system_info_v2->dmi_info;
+
+            // The vendor, product name, and product version should always be
+            // reported.
+            if (dmi_info->sys_vendor.has_value()) {
+              smbios_info_out->set_sys_vendor(dmi_info->sys_vendor.value());
             }
-            if (!system_info_v2->os_info.is_null()) {
-              const auto& os_info = system_info_v2->os_info;
-              boot_info_out->set_boot_method(
-                  static_cast<em::BootInfo::BootMethod>(os_info->boot_mode));
+            if (dmi_info->product_name.has_value()) {
+              smbios_info_out->set_product_name(dmi_info->product_name.value());
             }
+            if (dmi_info->product_version.has_value()) {
+              smbios_info_out->set_product_version(
+                  dmi_info->product_version.value());
+            }
+
+            if (report_system_info && dmi_info->bios_version.has_value()) {
+              smbios_info_out->set_bios_version(dmi_info->bios_version.value());
+            }
+            SetDeviceStatusReported();
+          }
+          if (report_system_info && !system_info_v2->os_info.is_null()) {
+            em::BootInfo* const boot_info_out =
+                response_params_.device_status->mutable_boot_info();
+            const auto& os_info = system_info_v2->os_info;
+            boot_info_out->set_boot_method(
+                static_cast<em::BootInfo::BootMethod>(os_info->boot_mode));
             SetDeviceStatusReported();
           }
           break;
@@ -2143,14 +2148,14 @@ void DeviceStatusCollector::FetchCrosHealthdData(
   SamplingProbeResultCallback completion_callback;
   switch (mode) {
     case CrosHealthdCollectionMode::kFull: {
-      if (report_vpd_info_ || report_system_info_) {
+      // Always probe System2 to get device vendor, product name, and product
+      // version
+      categories_to_probe.push_back(ProbeCategoryEnum::kSystem2);
+      if (report_vpd_info_ || report_system_info_)
         categories_to_probe.push_back(ProbeCategoryEnum::kSystem);
-        categories_to_probe.push_back(ProbeCategoryEnum::kSystem2);
-      }
-      if (report_storage_status_) {
+      if (report_storage_status_)
         categories_to_probe.push_back(
             ProbeCategoryEnum::kNonRemovableBlockDevices);
-      }
       if (report_power_status_)
         categories_to_probe.push_back(ProbeCategoryEnum::kBattery);
       if (report_cpu_info_)
@@ -2196,14 +2201,6 @@ void DeviceStatusCollector::OnProbeDataFetched(
     chromeos::cros_healthd::mojom::TelemetryInfoPtr reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(std::move(reply), sampled_data_);
-}
-
-bool DeviceStatusCollector::ShouldFetchCrosHealthdData() const {
-  return report_vpd_info_ || report_power_status_ || report_storage_status_ ||
-         report_cpu_info_ || report_timezone_info_ || report_memory_info_ ||
-         report_backlight_info_ || report_fan_info_ || report_bluetooth_info_ ||
-         report_system_info_ || report_version_info_ ||
-         report_network_configuration_;
 }
 
 void DeviceStatusCollector::ReportingUsersChanged() {
@@ -2780,11 +2777,12 @@ void DeviceStatusCollector::GetDeviceStatus(
   if (anything_reported)
     state->SetDeviceStatusReported();
 
-  if (ShouldFetchCrosHealthdData())
-    state->FetchCrosHealthdData(cros_healthd_data_fetcher_, report_system_info_,
-                                report_vpd_info_, report_storage_status_,
-                                report_version_info_,
-                                report_network_configuration_);
+  // The health daemon should always be queried to get the device vendor,
+  // product name, and product version.
+  state->FetchCrosHealthdData(cros_healthd_data_fetcher_, report_system_info_,
+                              report_vpd_info_, report_storage_status_,
+                              report_version_info_,
+                              report_network_configuration_);
 
   if (report_storage_status_) {
     state->FetchStatefulPartitionInfo(stateful_partition_info_fetcher_);
