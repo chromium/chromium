@@ -5,7 +5,10 @@
 #include "ash/system/message_center/message_center_utils.h"
 
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/animation/animation_builder.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -52,6 +55,47 @@ size_t GetNotificationCount() {
     ++count;
   }
   return count;
+}
+
+void InitLayerForAnimations(views::View* view) {
+  view->SetPaintToLayer();
+  view->layer()->SetFillsBoundsOpaquely(false);
+}
+
+void FadeInView(views::View* view,
+                int delay_in_ms,
+                int duration_in_ms,
+                gfx::Tween::Type tween_type) {
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(view, 0.0f)
+      .At(base::Milliseconds(delay_in_ms))
+      .SetDuration(base::Milliseconds(duration_in_ms))
+      .SetOpacity(view, 1.0f, tween_type);
+}
+
+void FadeOutView(views::View* view,
+                 base::OnceClosure on_animation_ended,
+                 int delay_in_ms,
+                 int duration_in_ms,
+                 gfx::Tween::Type tween_type) {
+  std::pair<base::OnceClosure, base::OnceClosure> split =
+      base::SplitOnceCallback(std::move(on_animation_ended));
+
+  view->SetVisible(true);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .At(base::Milliseconds(delay_in_ms))
+      .SetDuration(base::Milliseconds(duration_in_ms))
+      .SetVisibility(view, false)
+      .SetOpacity(view, 0.0f, tween_type);
 }
 
 }  // namespace message_center_utils

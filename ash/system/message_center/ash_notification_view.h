@@ -44,6 +44,10 @@ class ASH_EXPORT AshNotificationView
   // Update the expanded state for grouped child notification.
   void SetGroupedChildExpanded(bool expanded);
 
+  // Animate the grouped child notification when switching between expand and
+  // collapse state.
+  void AnimateGroupedChildExpandedCollapse(bool expanded);
+
   // Toggle the expand state of the notification.
   void ToggleExpand();
 

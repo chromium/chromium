@@ -6,7 +6,13 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
 
 #include "ash/ash_export.h"
+#include "base/callback_forward.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/message_center/public/cpp/notification.h"
+
+namespace views {
+class View;
+}
 
 namespace ash {
 
@@ -30,6 +36,24 @@ std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView();
 // indicator in status area since they already have a dedicated tray item, and
 // grouped notifications only need to be counted as one.
 size_t ASH_EXPORT GetNotificationCount();
+
+// Utils for animation within a notification view.
+
+// Initializes the layer for the specified `view` for animations.
+void InitLayerForAnimations(views::View* view);
+
+// Fade in animation using AnimationBuilder.
+void FadeInView(views::View* view,
+                int delay_in_ms,
+                int duration_in_ms,
+                gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+
+// Fade out animation using AnimationBuilder.
+void FadeOutView(views::View* view,
+                 base::OnceClosure on_animation_ended,
+                 int delay_in_ms,
+                 int duration_in_ms,
+                 gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
 
 }  // namespace message_center_utils
 

@@ -18,6 +18,7 @@
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -43,7 +44,6 @@
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -155,50 +155,6 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
                     .SetTextStyle(views::style::STYLE_SECONDARY));
 }
 
-// Initializes the layer for the specified `view` for animations.
-void InitLayerForAnimations(views::View* view) {
-  view->SetPaintToLayer();
-  view->layer()->SetFillsBoundsOpaquely(false);
-}
-
-// Fade in animation using AnimationBuilder.
-void FadeInView(views::View* view,
-                int delay_in_ms,
-                int duration_in_ms,
-                gfx::Tween::Type tween_type = gfx::Tween::LINEAR) {
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .Once()
-      .SetDuration(base::TimeDelta())
-      .SetOpacity(view, 0.0f)
-      .At(base::Milliseconds(delay_in_ms))
-      .SetDuration(base::Milliseconds(duration_in_ms))
-      .SetOpacity(view, 1.0f, tween_type);
-}
-
-// Fade out animation using AnimationBuilder.
-void FadeOutView(views::View* view,
-                 base::OnceClosure on_animation_ended,
-                 int delay_in_ms,
-                 int duration_in_ms,
-                 gfx::Tween::Type tween_type = gfx::Tween::LINEAR) {
-  std::pair<base::OnceClosure, base::OnceClosure> split =
-      base::SplitOnceCallback(std::move(on_animation_ended));
-
-  view->SetVisible(true);
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(std::move(split.first))
-      .OnAborted(std::move(split.second))
-      .Once()
-      .At(base::Milliseconds(delay_in_ms))
-      .SetDuration(base::Milliseconds(duration_in_ms))
-      .SetVisibility(view, false)
-      .SetOpacity(view, 0.0f, tween_type);
-}
-
 }  // namespace
 
 namespace ash {
@@ -227,11 +183,11 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
 
   ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
-  InitLayerForAnimations(title_row_divider_);
+  message_center_utils::InitLayerForAnimations(title_row_divider_);
   ConfigureLabelStyle(timestamp_in_collapsed_view_,
                       kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
-  InitLayerForAnimations(timestamp_in_collapsed_view_);
+  message_center_utils::InitLayerForAnimations(timestamp_in_collapsed_view_);
   ConfigureLabelStyle(title_view_, kTitleLabelSize,
                       /*is_color_primary=*/true);
 }
@@ -271,14 +227,15 @@ void AshNotificationView::NotificationTitleRow::UpdateVisibility(
 void AshNotificationView::NotificationTitleRow::
     PerformExpandCollapseAnimation() {
   if (title_row_divider_->GetVisible()) {
-    FadeInView(title_row_divider_, kTitleRowTimestampFadeInAnimationDelayMs,
-               kTitleRowTimestampFadeInAnimationDurationMs,
-               gfx::Tween::ACCEL_20_DECEL_100);
+    message_center_utils::FadeInView(
+        title_row_divider_, kTitleRowTimestampFadeInAnimationDelayMs,
+        kTitleRowTimestampFadeInAnimationDurationMs,
+        gfx::Tween::ACCEL_20_DECEL_100);
     DCHECK(timestamp_in_collapsed_view_->GetVisible());
-    FadeInView(timestamp_in_collapsed_view_,
-               kTitleRowTimestampFadeInAnimationDelayMs,
-               kTitleRowTimestampFadeInAnimationDurationMs,
-               gfx::Tween::ACCEL_20_DECEL_100);
+    message_center_utils::FadeInView(
+        timestamp_in_collapsed_view_, kTitleRowTimestampFadeInAnimationDelayMs,
+        kTitleRowTimestampFadeInAnimationDurationMs,
+        gfx::Tween::ACCEL_20_DECEL_100);
   }
 }
 
@@ -444,30 +401,78 @@ AshNotificationView::AshNotificationView(
   layer()->SetIsFastRoundedCorner(true);
 
   // Create layer in some views for animations.
-  InitLayerForAnimations(header_row());
-  InitLayerForAnimations(message_view_in_expanded_state_);
-  InitLayerForAnimations(actions_row());
+  message_center_utils::InitLayerForAnimations(header_row());
+  message_center_utils::InitLayerForAnimations(message_view_in_expanded_state_);
+  message_center_utils::InitLayerForAnimations(actions_row());
 
   UpdateWithNotification(notification);
 }
 
 AshNotificationView::~AshNotificationView() = default;
 
+void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
+  collapsed_summary_view_->SetVisible(!expanded);
+  main_view_->SetVisible(expanded);
+  control_buttons_view_->SetVisible(expanded);
+}
+
+void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
+  message_center_utils::InitLayerForAnimations(collapsed_summary_view_);
+  message_center_utils::InitLayerForAnimations(main_view_);
+  // Fade out `collapsed_summary_view_`, then fade in `main_view_` in expanded
+  // state and vice versa in collapsed state.
+  if (expanded) {
+    message_center_utils::FadeOutView(
+        collapsed_summary_view_,
+        base::BindRepeating(
+            [](base::WeakPtr<ash::AshNotificationView> parent,
+               views::View* collapsed_summary_view) {
+              if (parent) {
+                collapsed_summary_view->layer()->SetOpacity(1.0f);
+                collapsed_summary_view->SetVisible(false);
+              }
+            },
+            weak_factory_.GetWeakPtr(), collapsed_summary_view_),
+        0, kCollapsedSummaryViewAnimationDurationMs);
+    message_center_utils::FadeInView(main_view_,
+                                     kCollapsedSummaryViewAnimationDurationMs,
+                                     kChildMainViewFadeInAnimationDurationMs);
+    return;
+  }
+
+  message_center_utils::FadeOutView(
+      main_view_,
+      base::BindRepeating(
+          [](base::WeakPtr<ash::AshNotificationView> parent,
+             views::View* main_view) {
+            if (parent) {
+              main_view->layer()->SetOpacity(1.0f);
+              main_view->SetVisible(false);
+            }
+          },
+          weak_factory_.GetWeakPtr(), main_view_),
+      0, kChildMainViewFadeOutAnimationDurationMs);
+  message_center_utils::FadeInView(collapsed_summary_view_,
+                                   kChildMainViewFadeOutAnimationDurationMs,
+                                   kCollapsedSummaryViewAnimationDurationMs);
+}
+
 void AshNotificationView::ToggleExpand() {
   SetManuallyExpandedOrCollapsed(true);
 
   if (inline_reply()->GetVisible()) {
     // If inline reply is visible, fade it out then set expanded.
-    FadeOutView(inline_reply(),
-                base::BindOnce(
-                    [](base::WeakPtr<ash::AshNotificationView> parent,
-                       views::View* inline_reply) {
-                      if (parent) {
-                        inline_reply->layer()->SetOpacity(1.0f);
-                      }
-                    },
-                    weak_factory_.GetWeakPtr(), inline_reply()),
-                /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs);
+    message_center_utils::FadeOutView(
+        inline_reply(),
+        base::BindOnce(
+            [](base::WeakPtr<ash::AshNotificationView> parent,
+               views::View* inline_reply) {
+              if (parent) {
+                inline_reply->layer()->SetOpacity(1.0f);
+              }
+            },
+            weak_factory_.GetWeakPtr(), inline_reply()),
+        /*delay_in_ms=*/0, kInlineReplyFadeOutAnimationDurationMs);
   }
 
   SetExpanded(!IsExpanded());
@@ -563,12 +568,6 @@ void AshNotificationView::RemoveGroupNotification(
   PreferredSizeChanged();
 }
 
-void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
-  collapsed_summary_view_->SetVisible(!expanded);
-  main_view_->SetVisible(expanded);
-  control_buttons_view_->SetVisible(expanded);
-}
-
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   static_cast<views::BoxLayout*>(control_buttons_container_->GetLayoutManager())
       ->set_inside_border_insets(
@@ -592,7 +591,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     // `message_view()` is shown only in collapsed mode.
     if (!expanded) {
       ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
-      InitLayerForAnimations(message_view());
+      message_center_utils::InitLayerForAnimations(message_view());
     }
     message_view()->SetVisible(!expanded);
     message_view_in_expanded_state_->SetVisible(expanded &&
@@ -613,6 +612,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   int notification_count = 0;
   for (auto* child : grouped_notifications_container_->children()) {
     auto* notification_view = static_cast<AshNotificationView*>(child);
+    notification_view->AnimateGroupedChildExpandedCollapse(expanded);
     notification_view->SetGroupedChildExpanded(expanded);
     notification_count++;
     if (notification_count >
@@ -827,23 +827,25 @@ void AshNotificationView::ActionButtonPressed(size_t index,
   // If inline reply is visible, fade out actions button and then fade in inline
   // reply.
   if (inline_reply()->GetVisible()) {
-    InitLayerForAnimations(action_buttons_row());
-    FadeOutView(action_buttons_row(),
-                base::BindOnce(
-                    [](base::WeakPtr<ash::AshNotificationView> parent,
-                       views::View* action_buttons_row) {
-                      if (parent) {
-                        action_buttons_row->layer()->SetOpacity(1.0f);
-                        action_buttons_row->SetVisible(false);
-                      }
-                    },
-                    weak_factory_.GetWeakPtr(), action_buttons_row()),
-                /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs);
+    message_center_utils::InitLayerForAnimations(action_buttons_row());
+    message_center_utils::FadeOutView(
+        action_buttons_row(),
+        base::BindOnce(
+            [](base::WeakPtr<ash::AshNotificationView> parent,
+               views::View* action_buttons_row) {
+              if (parent) {
+                action_buttons_row->layer()->SetOpacity(1.0f);
+                action_buttons_row->SetVisible(false);
+              }
+            },
+            weak_factory_.GetWeakPtr(), action_buttons_row()),
+        /*delay_in_ms=*/0, kActionButtonsFadeOutAnimationDurationMs);
 
     // Delay for the action buttons to fade out, then fade in inline reply.
-    InitLayerForAnimations(inline_reply());
-    FadeInView(inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
-               kInlineReplyFadeInAnimationDurationMs);
+    message_center_utils::InitLayerForAnimations(inline_reply());
+    message_center_utils::FadeInView(inline_reply(),
+                                     kActionButtonsFadeOutAnimationDurationMs,
+                                     kInlineReplyFadeInAnimationDurationMs);
   }
 }
 
@@ -993,30 +995,41 @@ void AshNotificationView::UpdateAppIconView() {
 }
 
 void AshNotificationView::PerformExpandCollapseAnimation() {
+  // Ensure layout is up-to-date before animating views.
+  if (needs_layout())
+    Layout();
+  DCHECK(!needs_layout());
+
   title_row_->PerformExpandCollapseAnimation();
 
-  // Fade in `header row()`.
-  if (header_row()->GetVisible()) {
-    FadeInView(header_row(), kHeaderRowFadeInAnimationDelayMs,
-               kHeaderRowFadeInAnimationDurationMs);
+  // Fade in `header row()` if this is not a grouped parent view.
+  if (header_row()->GetVisible() && !is_grouped_parent_view_) {
+    message_center_utils::FadeInView(header_row(),
+                                     kHeaderRowFadeInAnimationDelayMs,
+                                     kHeaderRowFadeInAnimationDurationMs);
   }
 
   // Fade in `message_view()`.
   if (message_view()) {
-    FadeInView(message_view(), kMessageViewFadeInAnimationDelayMs,
-               kMessageViewFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(message_view(),
+                                     kMessageViewFadeInAnimationDelayMs,
+                                     kMessageViewFadeInAnimationDurationMs);
   }
 
   // Fade in `message_view_in_expanded_state_`.
   if (message_view_in_expanded_state_->GetVisible()) {
-    FadeInView(message_view_in_expanded_state_,
-               kMessageViewInExpandedStateFadeInAnimationDelayMs,
-               kMessageViewInExpandedStateFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(
+        message_view_in_expanded_state_,
+        kMessageViewInExpandedStateFadeInAnimationDelayMs,
+        kMessageViewInExpandedStateFadeInAnimationDurationMs);
   }
 
+  expand_button_->PerformExpandCollapseAnimation();
+
   if (actions_row()->GetVisible()) {
-    FadeInView(actions_row(), kActionsRowFadeInAnimationDelayMs,
-               kActionsRowFadeInAnimationDurationMs);
+    message_center_utils::FadeInView(actions_row(),
+                                     kActionsRowFadeInAnimationDelayMs,
+                                     kActionsRowFadeInAnimationDurationMs);
   }
 }
 

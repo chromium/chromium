@@ -69,6 +69,15 @@ constexpr int kActionButtonsFadeOutAnimationDurationMs = 100;
 constexpr int kInlineReplyFadeInAnimationDurationMs = 100;
 constexpr int kInlineReplyFadeOutAnimationDurationMs = 50;
 
+constexpr int kCollapsedSummaryViewAnimationDurationMs = 50;
+constexpr int kChildMainViewFadeInAnimationDurationMs = 100;
+constexpr int kChildMainViewFadeOutAnimationDurationMs = 50;
+constexpr int kExpandButtonFadeInLabelDelayMs = 50;
+constexpr int kExpandButtonFadeInLabelDurationMs = 50;
+constexpr int kExpandButtonFadeOutLabelDurationMs = 50;
+constexpr int kExpandButtonShowLabelBoundsChangeDurationMs = 200;
+constexpr int kExpandButtonHideLabelBoundsChangeDurationMs = 250;
+
 // Animation durations for expand/collapse of MessageCenterView.
 constexpr int kLargeImageExpandAndCollapseAnimationDuration = 300;
 constexpr int kInlineReplyAndGroupedParentExpandAnimationDuration = 250;

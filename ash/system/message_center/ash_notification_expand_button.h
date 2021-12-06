@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_EXPAND_BUTTON_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_EXPAND_BUTTON_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -41,6 +42,10 @@ class AshNotificationExpandButton : public views::Button {
   // Generate the icons used for chevron in the expanded and collapsed state.
   void UpdateIcons();
 
+  // Perform expand/collapse animation, including bounds change and fade in/out
+  // `label_`.
+  void PerformExpandCollapseAnimation();
+
   // views::Button:
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
@@ -61,6 +66,8 @@ class AshNotificationExpandButton : public views::Button {
 
   // The expand state of the button.
   bool expanded_ = false;
+
+  base::WeakPtrFactory<AshNotificationExpandButton> weak_factory_{this};
 };
 BEGIN_VIEW_BUILDER(/*no export*/, AshNotificationExpandButton, views::Button)
 END_VIEW_BUILDER
