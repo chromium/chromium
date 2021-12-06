@@ -6945,7 +6945,6 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/audioDecoder-codec-spec
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_avc [ Pass Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/12-55.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/file/recover-file-input-in-unposted-form.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-015.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-003.html [ Failure Pass ]
@@ -7097,7 +7096,6 @@ crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-prof
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-background-image-space.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-clip.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-image-filter-all.html [ Failure Pass ]
-crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-image-shape.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-object.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-svg.html [ Failure Pass ]
@@ -7121,8 +7119,11 @@ crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-d
 crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/pointer-lock.https.html [ Timeout Pass ]
 crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/web-bluetooth.https.html [ Timeout Pass ]
 
-# Sheriff 2021-10-15
+# Sheriff 2021-10-15, 2021-12-07
+crbug.com/1256763 [ Win ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
+crbug.com/1256763 [ Mac ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
+
 crbug.com/1260393 [ Mac ] virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Failure Pass ]
 
 # Sheriff 2021-10-19
