@@ -27,7 +27,7 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 const fullscreenClass = 'fullscreen-preview';
 
 export interface WallpaperFullscreen {
-  $: {container: HTMLDivElement;};
+  $: {container: HTMLDivElement; exit: HTMLElement;};
 }
 
 export class WallpaperFullscreen extends WithPersonalizationStore {
@@ -139,16 +139,19 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       cancelPreviewWallpaper(this.wallpaperProvider_);
       this.dispatch(setFullscreenEnabledAction(/*enabled=*/ false));
       document.body.classList.remove(fullscreenClass);
+    } else {
+      this.$.exit.focus();
     }
   }
 
-  private onClickExit_() {
-    cancelPreviewWallpaper(this.wallpaperProvider_);
+  private async onClickExit_() {
+    await cancelPreviewWallpaper(this.wallpaperProvider_);
     this.exitFullscreen();
   }
 
-  private onClickConfirm_() {
-    confirmPreviewWallpaper(this.wallpaperProvider_);
+  private async onClickConfirm_() {
+    // Wait for wallpaper to be confirmed before exiting full screen mode.
+    await confirmPreviewWallpaper(this.wallpaperProvider_);
     this.exitFullscreen();
   }
 

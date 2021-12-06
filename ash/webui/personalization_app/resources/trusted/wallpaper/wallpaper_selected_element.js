@@ -506,6 +506,11 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   getAriaLabel_(image) {
+    // Wait until full screen preview is finished. Otherwise will incorrectly
+    // read out attribution of last photo before getting updated attribution.
+    if (document.fullscreenElement) {
+      return '';
+    }
     if (!image) {
       return this.i18n('currentlySet') + ' ' +
           this.i18n('unknownImageAttribution');
