@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/bandwidth_management_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 
 #include <memory>
 
@@ -16,7 +16,7 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
-#import "ios/chrome/browser/ui/settings/dataplan_usage_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/grit/ios_strings.h"

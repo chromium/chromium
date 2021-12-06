@@ -47,10 +47,6 @@ source_set("settings") {
   sources = [
     "about_chrome_table_view_controller.h",
     "about_chrome_table_view_controller.mm",
-    "bandwidth_management_table_view_controller.h",
-    "bandwidth_management_table_view_controller.mm",
-    "dataplan_usage_table_view_controller.h",
-    "dataplan_usage_table_view_controller.mm",
     "import_data_table_view_controller.h",
     "import_data_table_view_controller.mm",
     "search_engine_table_view_controller.h",
@@ -161,6 +157,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings/autofill",
+    "//ios/chrome/browser/ui/settings/bandwidth",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
@@ -269,8 +266,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "about_chrome_table_view_controller_unittest.mm",
-    "bandwidth_management_table_view_controller_unittest.mm",
-    "dataplan_usage_table_view_controller_unittest.mm",
     "import_data_table_view_controller_unittest.mm",
     "search_engine_table_view_controller_unittest.mm",
     "settings_navigation_controller_unittest.mm",

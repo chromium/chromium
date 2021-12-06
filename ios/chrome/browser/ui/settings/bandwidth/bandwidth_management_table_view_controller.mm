@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/bandwidth_management_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
@@ -12,7 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
-#import "ios/chrome/browser/ui/settings/dataplan_usage_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/dataplan_usage_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -45,7 +45,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface BandwidthManagementTableViewController ()<PrefObserverDelegate> {
+@interface BandwidthManagementTableViewController () <PrefObserverDelegate> {
   ChromeBrowserState* _browserState;  // weak
 
   // Pref observer to track changes to prefs.
@@ -118,8 +118,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
-  UIView* footerView =
-      [super tableView:tableView viewForFooterInSection:section];
+  UIView* footerView = [super tableView:tableView
+                 viewForFooterInSection:section];
   if (SectionIdentifierActions ==
       [self.tableViewModel sectionIdentifierForSection:section]) {
     TableViewLinkHeaderFooterView* footer =
