@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.share.link_to_text;
 
-import android.net.Uri;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -39,10 +37,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         int FAILURE = 2;
         int MAX = 3;
     }
-    public static final String SHARED_HIGHLIGHTING_SUPPORT_URL =
-            "https://support.google.com/chrome?p=shared_highlighting";
-    public static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
-    public static final String ADDITIONAL_TEXT_FRAGMENT_SELECTOR = "&text=";
 
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String INVALID_SELECTOR = "";
@@ -103,7 +97,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mShareLinkParams = selector.isEmpty()
                 ? null
                 : new ShareParams
-                          .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
+                          .Builder(mTab.getWindowAndroid(), /*title=*/"",
+                                  LinkToTextHelper.getUrlToShare(mShareUrl, selector))
                           .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
                           .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
                           .setLinkToTextSuccessful(true)
@@ -167,38 +162,11 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        mProducer.extractTextFragmentsMatches(
-                new TextFragmentReceiver.ExtractTextFragmentsMatches_Response() {
-                    @Override
-                    public void call(String[] matches) {
-                        mSelectedText = String.join(",", matches);
-                        getExistingSelectors(mProducer, (text) -> {
-                            onSelectorReady(String.join(ADDITIONAL_TEXT_FRAGMENT_SELECTOR, text));
-                        });
-                    }
-                });
-    }
-
-    // Request text fragment selectors for existing highlights
-    public static void getExistingSelectors(
-            TextFragmentReceiver producer, Callback<String[]> callback) {
-        producer.getExistingSelectors(new TextFragmentReceiver.GetExistingSelectors_Response() {
-            @Override
-            public void call(String[] text) {
-                callback.onResult(text);
-            }
+        LinkToTextHelper.extractTextFragmentsMatches(mProducer, (matches) -> {
+            mSelectedText = String.join(",", matches);
+            LinkToTextHelper.getExistingSelectorsAllFrames(
+                    mTab, (selectors) -> { onSelectorReady(selectors); });
         });
-    }
-
-    @VisibleForTesting
-    String getUrlToShare(String selector) {
-        String url = mShareUrl;
-        if (!selector.isEmpty()) {
-            // Set the fragment which will also remove existing fragment, including text fragments.
-            Uri uri = Uri.parse(url);
-            url = uri.buildUpon().encodedFragment(TEXT_FRAGMENT_PREFIX + selector).toString();
-        }
-        return url;
     }
 
     // Discard results if tab is not on foreground anymore.
@@ -235,17 +203,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        mProducer.requestSelector(new TextFragmentReceiver.RequestSelector_Response() {
-            @Override
-            public void call(String selector) {
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-                    LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
-                            LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
-                }
-                onSelectorReady(selector);
-            }
-        });
+        LinkToTextHelper.requestSelector(mProducer, (selector) -> { onSelectorReady(selector); });
     }
 
     public boolean isAmpUrl(String url) {

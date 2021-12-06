@@ -222,9 +222,4 @@ public interface ContextMenuItemDelegate {
      * @param title The title text to be shown for this item in the reading list.
      */
     void onReadLater(GURL url, String title);
-
-    /**
-     * Removes all text fragment highlights from all frames on the page.
-     */
-    void removeHighlighting();
 }

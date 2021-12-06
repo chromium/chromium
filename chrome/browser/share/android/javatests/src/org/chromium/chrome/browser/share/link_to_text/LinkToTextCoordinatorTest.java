@@ -96,42 +96,6 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
-    public void getUrlToShareTest() {
-        String selector = "selector";
-        String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
-
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
-        Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
-    }
-
-    @Test
-    @SmallTest
-    public void getUrlToShareTest_URLWithFragment() {
-        String selector = "selector";
-        String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
-
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(mTab, mShareCallback,
-                chromeShareExtras, 1, VISIBLE_URL + "#elementid", SELECTED_TEXT);
-        Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
-    }
-
-    @Test
-    @SmallTest
-    public void getUrlToShareTest_EmptySelector() {
-        String selector = "";
-        String expectedUrlToShare = VISIBLE_URL;
-
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
-        LinkToTextCoordinator coordinator = new LinkToTextCoordinator(
-                mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL, SELECTED_TEXT);
-        Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
-    }
-
-    @Test
-    @SmallTest
     public void showShareSheetTest_LinkGeneration() {
         String selector = "selector";
         String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
@@ -151,7 +115,7 @@ public class LinkToTextCoordinatorTest {
     public void showShareSheetTest_LinkGenerationMultiHighlights() {
         String[] selectors = {"selector1", "selector2", "selector3"};
         String fragmentDirective =
-                String.join(LinkToTextCoordinator.ADDITIONAL_TEXT_FRAGMENT_SELECTOR, selectors);
+                String.join(LinkToTextHelper.ADDITIONAL_TEXT_FRAGMENT_SELECTOR, selectors);
         String expectedUrlToShare =
                 VISIBLE_URL + "#:~:text=selector1&text=selector2&text=selector3";
 
