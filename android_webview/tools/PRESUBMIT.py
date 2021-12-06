@@ -4,6 +4,8 @@
 
 """Presubmit for android_webview/tools."""
 
+USE_PYTHON3 = True
+
 
 def _GetPythonUnitTests(input_api, output_api):
   return input_api.canned_checks.GetUnitTestsRecursively(
