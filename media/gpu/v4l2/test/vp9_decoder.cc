@@ -393,6 +393,9 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, v4l2_frame_params))
     LOG(ERROR) << "VIDIOC_S_EXT_CTRLS failed.";
 
+  if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
+    LOG(ERROR) << "MEDIA_REQUEST_IOC_QUEUE failed.";
+
   // TODO(stevecho): call RefreshReferenceSlots() once decoded buffer is ready.
 
   return Vp9Decoder::kOk;

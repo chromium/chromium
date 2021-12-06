@@ -164,6 +164,11 @@ class V4L2IoctlShim {
   // MEDIA_IOC_REQUEST_ALLOC on the media device.
   bool MediaIocRequestAlloc(int* req_fd) const WARN_UNUSED_RESULT;
 
+  // Submits a request for the given OUTPUT |queue| by queueing
+  // the request with |queue|'s media_request_fd().
+  bool MediaRequestIocQueue(const std::unique_ptr<V4L2Queue>& queue) const
+      WARN_UNUSED_RESULT;
+
   // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues
   // and |uncompressed_format| for CAPTURE queues, respectively.
   bool VerifyCapabilities(uint32_t compressed_format,
@@ -181,11 +186,11 @@ class V4L2IoctlShim {
                    uint32_t fourcc) const WARN_UNUSED_RESULT;
 
   // Uses a specialized function template to execute V4L2 ioctl request
-  // for |request_code| and returns output in |argp| for specific data type T.
-  // If a specialized version is not found, then general template function
-  // will be executed to report an error.
+  // for |request_code| and returns the output of the ioctl() in |arg|
+  // if this is a pointer, otherwise |arg| is considered a file descriptor
+  // for said ioctl().
   template <typename T>
-  bool Ioctl(int request_code, T* argp) const WARN_UNUSED_RESULT;
+  bool Ioctl(int request_code, T arg) const WARN_UNUSED_RESULT;
 
   // Decode device file descriptor used for ioctl requests.
   const base::File decode_fd_;

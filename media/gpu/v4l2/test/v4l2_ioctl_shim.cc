@@ -44,7 +44,8 @@ static const std::unordered_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMON),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_S_EXT_CTRLS),
-        V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC)};
+        V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC),
+        V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_QUEUE)};
 
 // Finds corresponding defined V4L2 request code name
 // for a given V4L2 request code value.
@@ -142,7 +143,7 @@ V4L2IoctlShim::V4L2IoctlShim()
 V4L2IoctlShim::~V4L2IoctlShim() = default;
 
 template <typename T>
-bool V4L2IoctlShim::Ioctl(int request_code, T* argp) const {
+bool V4L2IoctlShim::Ioctl(int request_code, T arg) const {
   NOTREACHED() << "Please add a specialized function for the given V4L2 ioctl "
                   "request code.";
   return !kIoctlOk;
@@ -234,6 +235,18 @@ bool V4L2IoctlShim::Ioctl(int request_code, int* arg) const {
     ioctl_fd = decode_fd_.GetPlatformFile();
 
   const int ret = ioctl(ioctl_fd, request_code, arg);
+
+  LogIoctlResult(ret, request_code);
+
+  return ret == kIoctlOk;
+}
+
+template <>
+bool V4L2IoctlShim::Ioctl(int request_code, int arg) const {
+  DCHECK(request_code == static_cast<int>(MEDIA_REQUEST_IOC_QUEUE));
+
+  const int ret = ioctl(arg, request_code);
+
   LogIoctlResult(ret, request_code);
 
   return ret == kIoctlOk;
@@ -411,6 +424,15 @@ bool V4L2IoctlShim::MediaIocRequestAlloc(int* media_request_fd) const {
 
   if (ret)
     *media_request_fd = allocated_req_fd;
+
+  return ret;
+}
+
+bool V4L2IoctlShim::MediaRequestIocQueue(
+    const std::unique_ptr<V4L2Queue>& queue) const {
+  int req_fd = queue->media_request_fd();
+
+  const bool ret = Ioctl(MEDIA_REQUEST_IOC_QUEUE, req_fd);
 
   return ret;
 }
