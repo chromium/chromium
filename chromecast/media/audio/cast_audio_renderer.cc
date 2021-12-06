@@ -472,17 +472,18 @@ void CastAudioRenderer::OnNewBuffer(
   auto io_buffer = base::MakeRefCounted<net::IOBuffer>(io_buffer_size);
   if (buffer->end_of_stream()) {
     OnEndOfStream();
-  } else {
-    last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
-    memcpy(io_buffer->data() +
-               audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-           buffer->data(), buffer->data_size());
+    return;
   }
+
+  last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
+  memcpy(io_buffer->data() +
+             audio_output_service::OutputSocket::kAudioMessageHeaderSize,
+         buffer->data(), buffer->data_size());
+
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)
       .WithArgs(std::move(io_buffer), filled_bytes,
-                buffer->end_of_stream() ? INT64_MIN
-                                        : buffer->timestamp().InMicroseconds());
+                buffer->timestamp().InMicroseconds());
 }
 
 void CastAudioRenderer::OnBackendInitialized(
