@@ -579,16 +579,20 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
     ASSERT_TRUE(
         capture_indicator->IsBeingMirrored(GetWebContents(browser(), i)));
 
-  // Check that the border is only displayed on the last shared tab (known
-  // limitation https://crbug.com/996631).
   views::Widget* contents_border = GetContentsBorder(browser());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
   EXPECT_EQ(nullptr, contents_border);
 #else
-  for (int i = 0; i < tab_count; ++i) {
+  // The capturing tab, which is not itself being captured, does not have
+  // the contents-border.
+  ActivateTab(browser(), 0);
+  EXPECT_FALSE(contents_border->IsVisible());
+  // All other tabs are being captured, and therefore have a visible
+  // contents-borders whenever they themselves (the tabs) are visible.
+  for (int i = 1; i < tab_count; ++i) {
     ActivateTab(browser(), i);
-    ASSERT_EQ(i == 3, contents_border->IsVisible());
+    ASSERT_TRUE(contents_border->IsVisible());
   }
 #endif
 }
