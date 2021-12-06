@@ -780,11 +780,9 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
   touch_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
 
-  // Fuchsia's device and pointer IDs (both 32 bit) are coerced together
-  // to fit in Chrome's 32-bit device ID by taking 16 bits from each.
   ASSERT_EQ(touch_events.size(), 1u);
   EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
-  EXPECT_EQ(touch_events[0].pointer_details().id, (int32_t)((1ul << 16) | 2u));
+  EXPECT_EQ(touch_events[0].pointer_details().id, 2);
   touch_events.clear();
 
   // Server grants win to pointer 1.
@@ -797,7 +795,7 @@ TEST_F(PointerEventsHandlerTest, Protocol_PointersAreIndependent) {
 
   ASSERT_EQ(touch_events.size(), 1u);
   EXPECT_EQ(touch_events[0].type(), ET_TOUCH_PRESSED);
-  EXPECT_EQ(touch_events[0].pointer_details().id, (int32_t)((1ul << 16) | 1u));
+  EXPECT_EQ(touch_events[0].pointer_details().id, 1);
   touch_events.clear();
 }
 

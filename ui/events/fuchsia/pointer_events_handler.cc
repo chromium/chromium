@@ -150,16 +150,6 @@ EventType ComputeMouseEventType(bool any_button_down,
   return ET_MOUSE_RELEASED;
 }
 
-// PointerId field is 32 bits and is expected to be unique for each pointer.
-// We pack 16 bits from Fuchsia's device ID (hi) and pointer ID (lo) into 32
-// bits to retain uniqueness across multiple touch devices.
-int32_t PackFuchsiaDeviceIdAndPointerId(uint32_t fuchsia_device_id,
-                                        uint32_t fuchsia_pointer_id) {
-  DCHECK_LE(fuchsia_pointer_id, 0xffffu);
-  DCHECK_LE(fuchsia_device_id, 0xffffu);
-  return (fuchsia_device_id << 16) | fuchsia_pointer_id;
-}
-
 // It returns a "draft" because the coordinates are logical. FlatlandWindow
 // might apply view pixel ratio to obtain physical coordinates.
 //
@@ -174,10 +164,11 @@ TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
 
   auto timestamp = base::TimeTicks::FromZxTime(event.timestamp());
   auto event_type = GetEventTypeFromTouchEventPhase(sample.phase());
-  PointerDetails pointer_details(
-      EventPointerType::kTouch,
-      PackFuchsiaDeviceIdAndPointerId(interaction.device_id,
-                                      interaction.pointer_id));
+
+  // TODO(crbug.com/1276571): Consider packing device_id field into PointerId.
+  DCHECK_LE(interaction.pointer_id, 31U);
+  PointerDetails pointer_details(EventPointerType::kTouch,
+                                 interaction.pointer_id);
   // View parameters can change mid-interaction; apply transform on the fly.
   auto logical =
       ViewportToViewCoordinates(sample.position_in_viewport(),
