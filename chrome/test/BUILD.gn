@@ -6155,6 +6155,7 @@ test("unit_tests") {
       "../browser/ui/webui/settings/metrics_reporting_handler_unittest.cc",
       "../browser/ui/webui/settings/on_startup_handler_unittest.cc",
       "../browser/ui/webui/settings/people_handler_unittest.cc",
+      "../browser/ui/webui/settings/privacy_review_handler_unittest.cc",
       "../browser/ui/webui/settings/privacy_sandbox_handler_unittest.cc",
       "../browser/ui/webui/settings/profile_info_handler_unittest.cc",
       "../browser/ui/webui/settings/recent_site_settings_helper_unittest.cc",

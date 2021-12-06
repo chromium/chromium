@@ -1588,6 +1588,8 @@ static_library("ui") {
       "webui/settings/on_startup_handler.h",
       "webui/settings/people_handler.cc",
       "webui/settings/people_handler.h",
+      "webui/settings/privacy_review_handler.cc",
+      "webui/settings/privacy_review_handler.h",
       "webui/settings/privacy_sandbox_handler.cc",
       "webui/settings/privacy_sandbox_handler.h",
       "webui/settings/profile_info_handler.cc",
