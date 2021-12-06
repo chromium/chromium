@@ -33,6 +33,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -291,10 +292,9 @@ void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
   }
 }
 
-void PaymentHandlerWebFlowViewController::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsSameDocument())
-    UpdateHeaderView();
+void PaymentHandlerWebFlowViewController::PrimaryPageChanged(
+    content::Page& page) {
+  UpdateHeaderView();
 }
 
 void PaymentHandlerWebFlowViewController::AddNewContents(
@@ -348,6 +348,8 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
     return;
   }
 
+  DCHECK(FrameSupportsPayments(navigation_handle->GetRenderFrameHost()));
+
   if (first_navigation_complete_callback_) {
     std::move(first_navigation_complete_callback_)
         .Run(true, web_contents()->GetMainFrame()->GetProcess()->GetID(),
@@ -367,6 +369,13 @@ void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
 void PaymentHandlerWebFlowViewController::TitleWasSet(
     content::NavigationEntry* entry) {
   UpdateHeaderView();
+}
+
+bool PaymentHandlerWebFlowViewController::FrameSupportsPayments(
+    content::RenderFrameHost* rfh) const {
+  return rfh && rfh->IsActive() &&
+         rfh->IsFeatureEnabled(
+             blink::mojom::PermissionsPolicyFeature::kPayment);
 }
 
 void PaymentHandlerWebFlowViewController::AbortPayment() {
