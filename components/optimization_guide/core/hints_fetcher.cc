@@ -40,8 +40,8 @@ namespace {
 // Returns the string that can be used to record histograms for the request
 // context.
 //
-// Keep in sync with OptimizationGuide.RequestContexts histogram_suffixes in
-// histograms.xml.
+// Keep in sync with RequestContext variant list in
+// //tools/metrics/histograms/metadata/optimization/histograms.xml.
 std::string GetStringNameForRequestContext(
     proto::RequestContext request_context) {
   switch (request_context) {

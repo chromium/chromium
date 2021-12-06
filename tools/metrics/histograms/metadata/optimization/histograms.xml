@@ -23,21 +23,91 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="OptimizationTarget">
-  <variant name="AutofillAssistant"/>
-  <variant name="LanguageDetection"/>
-  <variant name="ModelValidation"/>
-  <variant name="NotificationPermissions"/>
-  <variant name="PageEntities"/>
-  <variant name="PageTopics"/>
-  <variant name="PageTopicsV2"/>
-  <variant name="PageVisibility"/>
-  <variant name="PainfulPageLoad"/>
-  <variant name="SegmentationChromeStartAndroid"/>
-  <variant name="SegmentationDummyFeature"/>
-  <variant name="SegmentationNewTab"/>
-  <variant name="SegmentationQueryTiles"/>
-  <variant name="SegmentationShare"/>
-  <variant name="SegmentationVoice"/>
+  <variant name="AutofillAssistant" summary="Autofill Assistant"/>
+  <variant name="LanguageDetection" summary="Language detection"/>
+  <variant name="ModelValidation" summary="Model validation triggered via CLI"/>
+  <variant name="NotificationPermissions" summary="Notification permissions"/>
+  <variant name="PageEntities" summary="Page entities"/>
+  <variant name="PageTopics" summary="Page topics"/>
+  <variant name="PageTopicsV2" summary="Page topics v2"/>
+  <variant name="PageVisibility" summary="Page visibility"/>
+  <variant name="PainfulPageLoad" summary="Painful page load"/>
+  <variant name="SegmentationChromeStartAndroid"
+      summary="Chrome Start Android"/>
+  <variant name="SegmentationDummyFeature" summary="Dummy feature"/>
+  <variant name="SegmentationNewTab" summary="Segmentation: New tab page user"/>
+  <variant name="SegmentationQueryTiles" summary="Query tiles"/>
+  <variant name="SegmentationShare" summary="Segmentation: Share user"/>
+  <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
+</variants>
+
+<variants name="OptimizationType">
+  <variant name="AboutThisSite"
+      summary="Provides 'About this site' data about the site being visited"/>
+  <variant name="BloomFilterValidation"
+      summary="Validates bloom filer allowlist/blocklist based hints"/>
+  <variant name="CompressPublicImages" summary="Compresses public images"/>
+  <variant name="DeferAllScript" summary="Defers execution of script"/>
+  <variant name="DelayAsyncScriptExecution"
+      summary="Delays execution of async scripts">
+    <obsolete>
+      Removed in M94.
+    </obsolete>
+  </variant>
+  <variant name="DelayCompetingLowPriorityRequests"
+      summary="Delays low priority requests behind in-flight 'important'
+               requests">
+    <obsolete>
+      Removed in M94.
+    </obsolete>
+  </variant>
+  <variant name="FastHostHints"
+      summary="Provides information about hosts that historically provide a
+               fast and responsive user experience"/>
+  <variant name="LinkPerformance"
+      summary="Provides aggregated performance information for links on the
+               page"/>
+  <variant name="LitePage"
+      summary="HTTP server preview (served from the Data Reduction Proxy)"/>
+  <variant name="LitePageRedirect"
+      summary="HTTPS server preview (served from the litepages service)">
+    <obsolete>
+      Removed in M84.
+    </obsolete>
+  </variant>
+  <variant name="LiteVideo"
+      summary="Provides information on how to throttle media requests to
+               reduce the adaptive bit rates of media streams."/>
+  <variant name="LoadingPredictor"
+      summary="Provides information about subresources predicted to be on the
+               page"/>
+  <variant name="LoginDetection"
+      summary="Provides information about hosts that are identified as
+               commonly logged-in"/>
+  <variant name="MerchantTrustSignals"
+      summary="Provides trust data related to the merchant."/>
+  <variant name="MerchantTrustSignalsV2"
+      summary="Provides trust data related to the merchant -- version 2."/>
+  <variant name="MetadataFetchValidation"
+      summary="Validates metadata fetch on navigation"/>
+  <variant name="NoScript"
+      summary="Disables the fetching and execution of JavaScript">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </variant>
+  <variant name="PerformanceHints"
+      summary="Provides aggregated performance information about the page"/>
+  <variant name="PriceTracking"
+      summary="Returns price related data for shopping websites"/>
+  <variant name="ResourceLoading"
+      summary="Applies a set of resource loading hints to load the page">
+    <obsolete>
+      Removed in M89.
+    </obsolete>
+  </variant>
+  <variant name="ShoppingPagePredictor"
+      summary="Determines if a page is shopping related or not"/>
 </variants>
 
 <variants name="PageTextDumpEvent">
@@ -45,27 +115,44 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstLayout" summary="first layout"/>
 </variants>
 
-<histogram base="true" name="OptimizationGuide.ApplyDecision"
+<variants name="RequestContext">
+  <variant name="BatchUpdate" summary="Batch update.">
+    <obsolete>
+      Obsolete as of 10/2021.
+    </obsolete>
+  </variant>
+  <variant name="BatchUpdateActiveTabs"
+      summary="Batch update of hints for active tabs"/>
+  <variant name="BatchUpdateGoogleSRP"
+      summary="Batch update of hints for result links off the Google SRP"/>
+  <variant name="BatchUpdateModels" summary="Batch update of models"/>
+  <variant name="Bookmarks" summary="Batch update of hints for bookmarks"/>
+  <variant name="PageNavigation" summary="Page navigation"/>
+</variants>
+
+<histogram name="OptimizationGuide.ApplyDecision.{OptimizationType}"
     enum="OptimizationGuideOptimizationTypeDecision" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
-    The decision made for whether the optimization type can be applied on the
-    page load.
+    The decision made for whether {OptimizationType} can be applied on the page
+    load.
   </summary>
+  <token key="OptimizationType" variants="OptimizationType"/>
 </histogram>
 
-<histogram base="true" name="OptimizationGuide.ApplyDecisionAsync"
+<histogram name="OptimizationGuide.ApplyDecisionAsync.{OptimizationType}"
     enum="OptimizationGuideOptimizationTypeDecision" expires_after="2022-04-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
-    Records the decision made for whether the optimization type can be applied
-    on a page load when all information for that page load has been sufficiently
+    Records the decision made for whether {OptimizationType} can be applied on a
+    page load when all information for that page load has been sufficiently
     gathered. This will be recorded once per callback registered, so if two
-    callbacks were registered for the same optimization type and page load, this
+    callbacks were registered for {OptimizationType} on the same page load, this
     will be recorded twice for that case.
   </summary>
+  <token key="OptimizationType" variants="OptimizationType"/>
 </histogram>
 
 <histogram name="OptimizationGuide.ClearFetchedHints.StoreAvailable"
@@ -118,17 +205,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled"
+<histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.ActiveRequestCanceled.{RequestContext}"
     units="counts" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
-    Records when an in-flight hints request was canceled before it finished.
+    Records when an in-flight hints request for {RequestContext} was canceled
+    before it finished.
   </summary>
+  <token key="RequestContext" variants="RequestContext"/>
 </histogram>
 
-<histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency"
+<histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency.{RequestContext}"
     units="ms" expires_after="2022-04-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
@@ -137,6 +227,7 @@ chromium-metrics-reviews@google.com.
     Service starts until it completes. Recorded every time hints are fetched and
     parsed successfully.
   </summary>
+  <token key="RequestContext" variants="RequestContext"/>
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount"
@@ -191,6 +282,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdate"
     enum="OptimizationGuideHintsFetcherRequestStatus" expires_after="M106">
+  <obsolete>
+    Obsolete as of 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -200,8 +294,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdate.{RequestContext}"
+    enum="OptimizationGuideHintsFetcherRequestStatus" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The status of making a request using {RequestContext} of the
+    OptmizationGuide HintsFetcher. This includes whether a network request was
+    actually sent or not.
+  </summary>
+  <token key="RequestContext" variants="RequestContext"/>
+</histogram>
+
 <histogram name="OptimizationGuide.HintsFetcher.RequestStatus.PageNavigation"
     enum="OptimizationGuideHintsFetcherRequestStatus" expires_after="M106">
+  <obsolete>
+    Obsolete as of 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -316,15 +426,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.IsPredictionModelValid" units="BooleanValid"
-    expires_after="M106">
+<histogram name="OptimizationGuide.IsPredictionModelValid.{OptimizationTarget}"
+    units="BooleanValid" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
-    Records whether the prediction model being constructed for an optimization
-    target is valid or not. Recorded when prediction models are loaded into
-    memory by the prediction manager.
+    Records whether the prediction model being constructed for
+    {OptimizationTarget} is valid or not. Recorded when prediction models are
+    loaded into memory by the prediction manager.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram name="OptimizationGuide.MetadataFetchValidation.Result"
@@ -476,15 +587,16 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram base="true" name="OptimizationGuide.OptimizationFilterStatus"
+<histogram name="OptimizationGuide.OptimizationFilterStatus.{OptimizationType}"
     enum="OptimizationGuideOptimizationFilterStatus" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
-    Status of processing OptimizationFilter configurations for server-provided
-    blacklists. Recorded when the OptimizationGuideService receives a
+    Status of processing OptimizationFilter configuration for
+    {OptimizationType}. Recorded when the OptimizationGuideService receives a
     notification to process hints.
   </summary>
+  <token key="OptimizationType" variants="OptimizationType"/>
 </histogram>
 
 <histogram name="OptimizationGuide.OptimizationHintsComponent.MajorVersion"
@@ -584,7 +696,7 @@ chromium-metrics-reviews@google.com.
   <token key="PageTextDumpEvent" variants="PageTextDumpEvent">
     <variant name="">
       <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
+        Base histogram. Use variants of this histogram instead.
       </obsolete>
     </variant>
   </token>
@@ -613,7 +725,7 @@ chromium-metrics-reviews@google.com.
   <token key="PageTextDumpEvent" variants="PageTextDumpEvent">
     <variant name="">
       <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
+        Base histogram. Use variants of this histogram instead.
       </obsolete>
     </variant>
   </token>
@@ -632,7 +744,7 @@ chromium-metrics-reviews@google.com.
   <token key="PageTextDumpEvent" variants="PageTextDumpEvent">
     <variant name="">
       <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
+        Base histogram. Use variants of this histogram instead.
       </obsolete>
     </variant>
   </token>
@@ -703,15 +815,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true"
-    name="OptimizationGuide.PredictionManager.ModelTypeChanged"
+    name="OptimizationGuide.PredictionManager.ModelTypeChanged.{OptimizationTarget}"
     units="BooleanChanged" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
-    Records whether the model type changed from model proto to model file, or
-    vice versa when the in-memory model for an optimization target has been
-    loaded.
+    Records whether the model type changed for {OptimizationTarget} from model
+    proto to model file, or vice versa when the in-memory model for an
+    optimization target has been loaded.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram
@@ -769,8 +882,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true"
-    name="OptimizationGuide.PredictionModelEvaluationLatency" units="ms"
-    expires_after="2021-10-13">
+    name="OptimizationGuide.PredictionModelEvaluationLatency.{OptimizationTarget}"
+    units="ms" expires_after="2021-10-13">
   <obsolete>
     Deprecated as of 2021/10.
   </obsolete>
@@ -782,6 +895,7 @@ chromium-metrics-reviews@google.com.
     the prediction manager. Not recorded if a cached decision is used or if the
     evaluation fails.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram name="OptimizationGuide.PredictionModelExpired"
@@ -862,7 +976,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.PredictionModelLoadedVersion"
+<histogram
+    name="OptimizationGuide.PredictionModelLoadedVersion.{OptimizationTarget}"
     units="version number" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
@@ -871,6 +986,7 @@ chromium-metrics-reviews@google.com.
     and used until updated by a fetch. Recorded only if the loaded model was
     valid.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram
@@ -884,7 +1000,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.PredictionModelUpdateVersion"
+<histogram
+    name="OptimizationGuide.PredictionModelUpdateVersion.{OptimizationTarget}"
     units="version number" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
@@ -892,10 +1009,12 @@ chromium-metrics-reviews@google.com.
     Records the version of the prediction model that was fetched as an update.
     Recorded only if a model returned was valid and is available for use.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram name="OptimizationGuide.PredictionModelValidationLatency" units="ms"
-    expires_after="M106">
+<histogram
+    name="OptimizationGuide.PredictionModelValidationLatency.{OptimizationTarget}"
+    units="ms" expires_after="M106">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -904,6 +1023,7 @@ chromium-metrics-reviews@google.com.
     target. Recorded only if the model is valid and successfully loaded into
     memory for use.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram name="OptimizationGuide.ProcessHintsResult"
@@ -1012,7 +1132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus"
+    name="OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus.{OptimizationTarget}"
     enum="OptimizationGuidePredictionManagerModelStatus"
     expires_after="2021-10-13">
   <obsolete>
@@ -1026,9 +1146,10 @@ chromium-metrics-reviews@google.com.
     should be targeted and the decision for the navigation has not already been
     made.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram base="true" name="OptimizationGuide.TargetDecision"
+<histogram name="OptimizationGuide.TargetDecision.{OptimizationTarget}"
     enum="OptimizationGuideOptimizationTargetDecision" expires_after="M106">
   <obsolete>
     Obsolete as of 07/2021.
@@ -1038,6 +1159,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The decision made for whether the page load matches the optimization target.
   </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 </histograms>
