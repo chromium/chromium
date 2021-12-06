@@ -92,7 +92,12 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   DCHECK(profile_);
   DCHECK(ShouldBuildServiceForProfile(profile));
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros doesn't support account inconsistency.
+  // TODO(crbug.com/1220066): Remove this section when Lacros stops building
+  // with DICE.
+  profile->GetPrefs()->SetBoolean(prefs::kSigninAllowed, true);
+#elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   PrefService* prefs = profile->GetPrefs();
   // Propagate settings changes from the previous launch to the signin-allowed
   // pref.
@@ -183,10 +188,17 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_account_manager_available = true;
   // Account consistency is unavailable on Managed Guest Sessions and Public
   // Sessions.
   if (profiles::IsPublicSession())
-    return AccountConsistencyMethod::kDisabled;
+    is_account_manager_available = false;
+
+  if (is_account_manager_available)
+    return AccountConsistencyMethod::kMirror;
+    // else: Fall through to ENABLE_DICE_SUPPORT section below.
+    // TODO(crbug.com/1198490): Return `AccountConsistencyMethod::kDisabled` if
+    // AccountManager is not available, when DICE has been disabled on Lacros.
 #endif
 
 #if BUILDFLAG(ENABLE_MIRROR)

@@ -158,7 +158,6 @@ class DiceTurnSyncOnHelper
                        std::unique_ptr<Delegate> delegate,
                        base::OnceClosure callback);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Convenience constructor using the default delegate and empty callback.
   DiceTurnSyncOnHelper(Profile* profile,
                        Browser* browser,
@@ -167,7 +166,6 @@ class DiceTurnSyncOnHelper
                        signin_metrics::Reason signin_reason,
                        const CoreAccountId& account_id,
                        SigninAbortedMode signin_aborted_mode);
-#endif
 
   DiceTurnSyncOnHelper(const DiceTurnSyncOnHelper&) = delete;
   DiceTurnSyncOnHelper& operator=(const DiceTurnSyncOnHelper&) = delete;

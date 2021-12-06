@@ -97,7 +97,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#endif  // BUIDLFLAG(ENABLE_DICE_SUPPORT)
+#endif  // ENABLE_DICE_SUPPORT
 
 using autofill::ParsingResult;
 using base::ASCIIToUTF16;
@@ -4052,7 +4052,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   EXPECT_TRUE(prompt_observer.IsSavePromptAvailable());
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test suite only applies to Gaia signin page, and checks that the
 // signin interception bubble and the password bubbles never conflict.
 class PasswordManagerBrowserTestWithSigninInterception
@@ -4225,7 +4225,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   FillAndSubmitGaiaPassword();
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
-#endif  // BUIDLFLAG(ENABLE_DICE_SUPPORT)
+#endif  // ENABLE_DICE_SUPPORT && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class TestPasswordManagerClient : public ChromePasswordManagerClient {
  public:

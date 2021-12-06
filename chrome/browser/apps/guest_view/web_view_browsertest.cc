@@ -4609,7 +4609,10 @@ class ChromeSignInWebViewTest : public WebViewTest {
   }
 };
 
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_MAC) || \
+    defined(OS_WIN)
 // This verifies the fix for http://crbug.com/667708.
 IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
                        ClosingChromeSignInShouldNotCrash) {

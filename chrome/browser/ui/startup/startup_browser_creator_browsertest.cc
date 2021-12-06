@@ -25,7 +25,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
@@ -96,7 +95,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -123,6 +121,7 @@
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -138,10 +137,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/webui/welcome/helpers.h"
 #endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
@@ -2935,9 +2930,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
 class StartupBrowserCreatorFirstRunTest : public InProcessBrowserTest {
  public:
   StartupBrowserCreatorFirstRunTest() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     scoped_feature_list_.InitWithFeatures({welcome::kForceEnabled}, {});
-#endif
   }
   StartupBrowserCreatorFirstRunTest(const StartupBrowserCreatorFirstRunTest&) =
       delete;
