@@ -2410,17 +2410,34 @@ body.files-ng #list-container .table-header-cell:first-child
   margin-inline-start: 16px;
 }
 
-body.files-ng .table-header-label .sort-icon {
-  --cr-icon-button-icon-size: 16px;
-  --cr-icon-button-size: 32px;
+.table-header-label .sort-icon {
   --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-hover-background-color: var(--cros-ripple-color);
+  --cr-icon-button-size: 32px;
   border-radius: 50%;
   cursor: default;
 }
 
-html:not(.pointer-active) body.files-ng .table-header-label .sort-icon,
-body.files-ng .table-header-label .sort-icon:active {
+.table-header-label .sort-icon:active {
+  /* TODO(crbug.com/1275388): use blend() instead */
+  background: linear-gradient(var(--cros-ripple-color),
+                              var(--cros-ripple-color)),
+              var(--cros-ripple-color);
+}
+
+html:not(.pointer-active) .table-header-label .sort-icon:hover,
+.table-header-label .sort-icon:active {
   cursor: pointer;
+}
+
+.table-header-label .not-sorted .sort-icon {
+  display: none;
+}
+
+html.pointer-active .table-header-label .sort-icon:not(:active):hover,
+html.col-resize .table-header-label .sort-icon:not(:active):hover {
+  --cr-icon-button-hover-background-color: none;
 }
 
 body.files-ng .table-label-container {
@@ -2434,15 +2451,6 @@ body.files-ng .table-label-container {
 body.files-ng .table-label-container > span {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-html:not(.pointer-active) body.files-ng .table-header-label .sorted
-.sort-icon:hover {
-  background-color: rgba(0, 0, 0, 4%);
-}
-
-body.files-ng .table-header-label .not-sorted .sort-icon {
-  display: none;
 }
 
 /** Size column is aligned to right. */
@@ -2483,22 +2491,34 @@ body.files-ng .table-header-splitter  {
   width: auto;
 }
 
-body.files-ng .table-header-splitter .splitter-icon {
-  --cr-icon-button-icon-size: 32px;
-  --cr-icon-button-size: 32px;
-  --cr-icon-button-margin-start: 0px;
+.table-header-splitter .splitter-icon {
   /*
    * TODO(crbug.com/1268206): the icon is not in disabled state, a new css
    * variable needs to be created and applied here.
    */
   --cr-icon-button-fill-color: var(--cros-icon-color-disabled);
+  --cr-icon-button-hover-background-color: var(--cros-ripple-color);
+  --cr-icon-button-icon-size: 32px;
+  --cr-icon-button-margin-start: 0px;
+  --cr-icon-button-size: 32px;
   cursor: default;
   height: 32px;
 }
 
-html:not(.pointer-active) body.files-ng .table-header-splitter
-.splitter-icon:hover {
+.table-header-splitter .splitter-icon:active {
+  /* TODO(crbug.com/1275388): use blend() instead */
+  background: linear-gradient(var(--cros-ripple-color),
+                              var(--cros-ripple-color)),
+              var(--cros-ripple-color);
+}
+
+html:not(.pointer-active) .table-header-splitter .splitter-icon:hover {
   cursor: col-resize;
+}
+
+html.pointer-active .table-header-splitter .splitter-icon:not(:active):hover,
+html.col-resize .table-header-splitter .splitter-icon:not(:active):hover {
+  --cr-icon-button-hover-background-color: none;
 }
 
 body.files-ng #list-container .table-row-cell .size {
