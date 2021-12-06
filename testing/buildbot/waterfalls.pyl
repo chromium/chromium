@@ -104,7 +104,7 @@
           'has_native_resultdb_integration',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
+          'gtest_tests': 'chromeos_browser_integration_tests',
           'isolated_scripts': 'chromeos_remote_device_isolated_tests',
         },
         'swarming': {
