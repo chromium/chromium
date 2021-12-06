@@ -18110,6 +18110,15 @@ should be able to be added at any place in this file.
   <description>User in the iOS tab grid began reordering tabs.</description>
 </action>
 
+<action name="MobileTabGridCancelSearchTabs">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS tab grid search mode tapped Cancel button to return from
+    search mode to normal mode.
+  </description>
+</action>
+
 <action name="MobileTabGridCloseAllIncognitoTabs">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
@@ -18272,6 +18281,14 @@ should be able to be added at any place in this file.
   <description>
     User in the iOS tab grid finished reordering tabs, and changed the tab
     order.
+  </description>
+</action>
+
+<action name="MobileTabGridSearchTabs">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS tab grid tapped the Search button to enter search mode.
   </description>
 </action>
 

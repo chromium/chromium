@@ -21,6 +21,7 @@ namespace {
 // approximately 33 pts between the plus button and the done button.
 const int kIconButtonAdditionalSpace = 20;
 const int kSelectionModeButtonSize = 17;
+const int kSearchBarTrailingSpace = 20;
 }
 
 @interface TabGridTopToolbar () <UIToolbarDelegate>
@@ -39,6 +40,12 @@ const int kSelectionModeButtonSize = 17;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
   UIBarButtonItem* _pageControlItem;
+  // Search mode
+  UISearchBar* _searchBar;
+  UIBarButtonItem* _searchBarItem;
+  UIBarButtonItem* _cancelSearchButton;
+  UIView* _searchBarView;
+
   BOOL _undoActive;
 }
 
@@ -88,9 +95,18 @@ const int kSelectionModeButtonSize = 17;
   _searchButton.action = action;
 }
 
+- (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate {
+  _searchBar.delegate = delegate;
+}
+
 - (void)setDoneButtonTarget:(id)target action:(SEL)action {
   _doneButton.target = target;
   _doneButton.action = action;
+}
+
+- (void)setCancelSearchButtonTarget:(id)target action:(SEL)action {
+  _cancelSearchButton.target = target;
+  _cancelSearchButton.action = action;
 }
 
 - (void)setNewTabButtonEnabled:(BOOL)enabled {
@@ -201,12 +217,38 @@ const int kSelectionModeButtonSize = 17;
 
 #pragma mark - Private
 
+- (void)configureSearchModeForTraitCollection:
+    (UITraitCollection*)traitCollection {
+  DCHECK_EQ(_mode, TabGridModeSearch);
+  CGFloat widthModifier = 1;
+
+  // In the landscape mode the search bar size should only span half of the
+  // width of the toolbar.
+  if (![self shouldUseCompactLayout:traitCollection])
+    widthModifier = kTabGridSearchBarNonCompactWidthRatioModifier;
+
+  float cancelWidth = [_selectAllButton.title sizeWithAttributes:nil].width;
+  float barWidth =
+      (self.bounds.size.width - kSearchBarTrailingSpace - cancelWidth) *
+      kTabGridSearchBarWidthRatio * widthModifier;
+  // Update the search bar size based on the container size.
+  _searchBar.frame = CGRectMake(0, 0, barWidth, kTabGridSearchBarHeight);
+  _searchBarView.frame = CGRectMake(0, 0, barWidth, kTabGridSearchBarHeight);
+  [self setNeedsLayout];
+  [self setItems:@[ _searchBarItem, _spaceItem, _cancelSearchButton ]
+        animated:YES];
+  [_searchBar becomeFirstResponder];
+}
+
 - (void)setItemsForTraitCollection:(UITraitCollection*)traitCollection {
+  if (_mode == TabGridModeSearch) {
+    [self configureSearchModeForTraitCollection:traitCollection];
+    return;
+  }
   UIBarButtonItem* centralItem = _pageControlItem;
   UIBarButtonItem* trailingButton = _doneButton;
   _selectionModeFixedSpace.width = 0;
-  if (traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-      traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
+  if ([self shouldUseCompactLayout:traitCollection]) {
     if (IsTabsSearchEnabled() && _mode == TabGridModeNormal)
       _leadingButton = _searchButton;
     else
@@ -345,6 +387,27 @@ const int kSelectionModeButtonSize = 17;
                              target:nil
                              action:nil];
     _searchButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _searchButton.accessibilityIdentifier = kTabGridSearchButtonIdentifier;
+
+    _searchBar = [[UISearchBar alloc] init];
+    _searchBar.placeholder =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCHBAR_PLACEHOLDER);
+    // Cancel Button for the searchbar doesn't appear in ipadOS. Disable it and
+    // create a custom cancel button.
+    _searchBar.showsCancelButton = NO;
+    _cancelSearchButton = [[UIBarButtonItem alloc] init];
+    _cancelSearchButton.style = UIBarButtonItemStyleDone;
+    _cancelSearchButton.tintColor =
+        UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _cancelSearchButton.accessibilityIdentifier =
+        kTabGridCancelButtonIdentifier;
+    _cancelSearchButton.title =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CANCEL_BUTTON);
+    _searchBarView = [[UIView alloc] initWithFrame:_searchBar.frame];
+    [_searchBarView addSubview:_searchBar];
+    [_searchBarView sizeToFit];
+    _searchBarItem =
+        [[UIBarButtonItem alloc] initWithCustomView:_searchBarView];
   }
 
   _newTabButton = [[UIBarButtonItem alloc]
@@ -370,6 +433,12 @@ const int kSelectionModeButtonSize = 17;
                            action:nil];
 
   [self setItemsForTraitCollection:self.traitCollection];
+}
+
+// Returns YES if should use compact bottom toolbar layout.
+- (BOOL)shouldUseCompactLayout:(UITraitCollection*)traitCollection {
+  return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
+         traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 @end

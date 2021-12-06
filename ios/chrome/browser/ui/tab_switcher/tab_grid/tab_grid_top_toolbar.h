@@ -44,6 +44,12 @@
 - (void)setCloseAllButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on done button.
 - (void)setDoneButtonTarget:(id)target action:(SEL)action;
+// Sets target/action for tapping event on search button.
+- (void)setSearchButtonTarget:(id)target action:(SEL)action;
+// Sets target/action for tapping event on cancel search button.
+- (void)setCancelSearchButtonTarget:(id)target action:(SEL)action;
+// Sets the delegate for the searchbar.
+- (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate;
 // Set |enabled| on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
 // Set |enabled| on the select all button.

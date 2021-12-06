@@ -1263,7 +1263,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
   [topToolbar setSelectAllButtonTarget:self
                                 action:@selector(selectAllButtonTapped:)];
-
+  if (IsTabsSearchEnabled()) {
+    [topToolbar setSearchButtonTarget:self
+                               action:@selector(searchButtonTapped:)];
+    [topToolbar
+        setCancelSearchButtonTarget:self
+                             action:@selector(cancelSearchButtonTapped:)];
+  }
   // Configure and initialize the page control.
   [topToolbar.pageControl addTarget:self
                              action:@selector(pageControlChangedValue:)
@@ -2019,6 +2025,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       NOTREACHED() << "It is invalid to call close all tabs on remote tabs.";
       break;
   }
+}
+
+- (void)searchButtonTapped:(id)sender {
+  self.tabGridMode = TabGridModeSearch;
+  base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
+}
+
+- (void)cancelSearchButtonTapped:(id)sender {
+  self.tabGridMode = TabGridModeNormal;
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
 }
 
 - (void)newTabButtonTapped:(id)sender {
