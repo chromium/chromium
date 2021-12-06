@@ -64,6 +64,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String DISPLAY_TIME_MS_PARAM = "price_tracking_display_time_ms";
     private static final String PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM =
             "price_tracking_with_optimization_guide";
+    private static final String RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM =
+            "return_empty_price_drops_until_init";
     private static final String METRICS_IDENTIFIER_PREFIX = "NavigationComplete";
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
@@ -404,7 +406,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * @param tab {@link Tab} for which {@link ShoppingPersistedTabData} is initialized.
      */
     public static void initialize(Tab tab) {
-        ShoppingPersistedTabData.from(tab, (res) -> {
+        Callback<ShoppingPersistedTabData> callback = (res) -> {
             if (res == null) {
                 // If there is no ShoppingPersistedTabData found from storage, we create
                 // an empty ShoppingPersistedTabDataa so the pricing data can be prefetched
@@ -414,7 +416,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     ShoppingPersistedTabData.from(tab);
                 }
             }
-        });
+        };
+        if (sDelayedInitFinished) {
+            ShoppingPersistedTabData.from(tab, callback);
+        } else {
+            sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
+        }
     }
 
     /**
@@ -433,7 +440,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (sDelayedInitFinished) {
             fromWithoutDelayedInit(tab, callback);
         } else {
-            sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
+            @DelayedInitMethod
+            int delayedInitMethod = getDelayedInitMethod();
+            if (delayedInitMethod == DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT) {
+                PostTask.runOrPostTask(
+                        UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            } else if (delayedInitMethod == DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT) {
+                sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
+            } else {
+                assert false : "Unknown DelayedInitMethod: " + delayedInitMethod;
+            }
         }
     }
 
@@ -577,6 +593,24 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         int FOUND = 1;
         int FOUND_WITH_PRICE_UPDATE = 2;
         int NUM_ENTRIES = 3;
+    }
+
+    @IntDef({DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT,
+            DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface DelayedInitMethod {
+        /**
+         * Responses from public API ShoppingPersistedTabData.from are delayed until {@link
+         * ShoppingPersistedTabData} is initialized. This is achieved by onDeferredStartup() being
+         * called and the Queue<ShoppingDataRequest> being flushed.
+         */
+        int DELAY_RESPONSES_UNTIL_INIT = 0;
+        /**
+         * Responses from public API ShoppingPersistedTabData.from are returned as empty until
+         * {@link ShoppingPersistedTabData} is initialized. This is achieved by onDeferredStartup()
+         * being called and the Queue<ShoppingDataRequest> being flushed.
+         */
+        int EMPTY_RESPONSES_UNTIL_INIT = 1;
     }
 
     /**
@@ -1023,6 +1057,16 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM, false);
         }
         return false;
+    }
+
+    private static @DelayedInitMethod int getDelayedInitMethod() {
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                        RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM, false)) {
+            return DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT;
+        }
+        return DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT;
     }
 
     @VisibleForTesting
