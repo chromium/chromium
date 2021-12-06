@@ -4924,6 +4924,24 @@
             ]
         }
     ],
+    "MacCAOverlayQuadsM97": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_300",
+                    "params": {
+                        "MacCAOverlayQuadMaxNum": "300"
+                    },
+                    "enable_features": [
+                        "MacCAOverlayQuads"
+                    ]
+                }
+            ]
+        }
+    ],
     "ManagedSigninPopup": [
         {
             "platforms": [
