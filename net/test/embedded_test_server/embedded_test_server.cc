@@ -222,6 +222,22 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
   return true;
 }
 
+bssl::UniquePtr<EVP_PKEY> LoadPrivateKeyFromFile(
+    const base::FilePath& key_path) {
+  std::string key_string;
+  if (!base::ReadFileToString(key_path, &key_string))
+    return nullptr;
+  std::vector<std::string> headers;
+  headers.push_back("PRIVATE KEY");
+  PEMTokenizer pem_tokenizer(key_string, headers);
+  if (!pem_tokenizer.GetNext())
+    return nullptr;
+  CBS cbs;
+  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
+           pem_tokenizer.data().size());
+  return bssl::UniquePtr<EVP_PKEY>(EVP_parse_private_key(&cbs));
+}
+
 }  // namespace
 
 EmbeddedTestServerHandle::EmbeddedTestServerHandle(
@@ -406,20 +422,7 @@ bool EmbeddedTestServer::InitializeCertAndKeyFromFile() {
   if (!x509_cert_)
     return false;
 
-  base::FilePath key_path = certs_dir.AppendASCII(cert_name);
-  std::string key_string;
-  if (!base::ReadFileToString(key_path, &key_string))
-    return false;
-  std::vector<std::string> headers;
-  headers.push_back("PRIVATE KEY");
-  PEMTokenizer pem_tokenizer(key_string, headers);
-  if (!pem_tokenizer.GetNext())
-    return false;
-
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-           pem_tokenizer.data().size());
-  private_key_.reset(EVP_parse_private_key(&cbs));
+  private_key_ = LoadPrivateKeyFromFile(certs_dir.AppendASCII(cert_name));
   return !!private_key_;
 }
 
@@ -439,27 +442,9 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   if (!root_cert)
     return false;
 
-  // TODO(mattm): root_ca_cert.pem has the key encoded as RSAPrivateKeyInfo.
-  // Change to have it encoded as PrivateKeyInfo so that EVP_parse_private_key
-  // can be used?
-  base::FilePath key_path = certs_dir.AppendASCII("root_ca_cert.pem");
-  std::string key_string;
-  if (!base::ReadFileToString(key_path, &key_string))
-    return false;
-  std::vector<std::string> headers;
-  headers.push_back("RSA PRIVATE KEY");
-  PEMTokenizer pem_tokenizer(key_string, headers);
-  if (!pem_tokenizer.GetNext())
-    return false;
-  bssl::UniquePtr<EVP_PKEY> root_private_key(EVP_PKEY_new());
+  bssl::UniquePtr<EVP_PKEY> root_private_key(
+      LoadPrivateKeyFromFile(certs_dir.AppendASCII("root_ca_cert.pem")));
   if (!root_private_key)
-    return false;
-  bssl::UniquePtr<RSA> rsa_key(RSA_private_key_from_bytes(
-      reinterpret_cast<const uint8_t*>(pem_tokenizer.data().data()),
-      pem_tokenizer.data().size()));
-  if (!rsa_key)
-    return false;
-  if (!EVP_PKEY_set1_RSA(root_private_key.get(), rsa_key.get()))
     return false;
 
   std::unique_ptr<CertBuilder> static_root = CertBuilder::FromStaticCert(
