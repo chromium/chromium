@@ -61,9 +61,9 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     wm::ActivateWindow(window.get());
 
     profile_ = std::make_unique<TestingProfile>();
-    accessibility_view_ = new TestAccessibilityView();
+    accessibility_view_ = std::make_unique<TestAccessibilityView>();
     controller_ = std::make_unique<AssistiveWindowController>(
-        delegate_.get(), profile_.get(), accessibility_view_);
+        delegate_.get(), profile_.get(), accessibility_view_.get());
     ui::IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
     // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
@@ -105,7 +105,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   const std::u16string suggestion_ = u"test";
   ui::ime::AssistiveWindowButton emoji_button_;
   AssistiveWindowProperties emoji_window_;
-  TestAccessibilityView* accessibility_view_;
+  std::unique_ptr<TestAccessibilityView> accessibility_view_;
   base::test::ScopedFeatureList feature_list_;
 
   void TearDown() override {
