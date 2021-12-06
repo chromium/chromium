@@ -480,13 +480,6 @@ void AppShimController::SetBadgeLabel(const std::string& badge_label) {
 void AppShimController::UpdateProfileMenu(
     std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items) {
   profile_menu_items_ = std::move(profile_menu_items);
-  // Erase the gfx::ImageSkias in `profile_menu_items_`, because keeping them
-  // around causes crashes for unknown reasons.
-  // TODO(https://crbug.com/1274236): Investigate this.
-  for (auto& item : profile_menu_items_) {
-    if (item)
-      item->icon = gfx::ImageSkia();
-  }
 
   NSMenuItem* cocoa_profile_menu =
       [[NSApp mainMenu] itemWithTag:IDC_PROFILE_MAIN_MENU];
