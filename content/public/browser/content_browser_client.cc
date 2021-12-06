@@ -1186,6 +1186,14 @@ void ContentBrowserClient::IsClipboardPasteContentAllowed(
   std::move(callback).Run(ClipboardPasteContentAllowed(true));
 }
 
+bool ContentBrowserClient::IsClipboardCopyAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    size_t data_size_in_bytes,
+    std::u16string& replacement_data) {
+  return true;
+}
+
 bool ContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {
   return false;
 }

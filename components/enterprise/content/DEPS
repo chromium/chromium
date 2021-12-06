@@ -6,4 +6,5 @@ include_rules = [
   "+components/url_matcher",
   "+components/user_prefs",
   "+content/public/browser",
+  "+ui/base/l10n",
 ]

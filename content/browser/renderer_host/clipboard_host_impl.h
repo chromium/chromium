@@ -216,6 +216,9 @@ class CONTENT_EXPORT ClipboardHostImpl
       IsClipboardPasteContentAllowedCallback callback,
       bool is_allowed);
 
+  using CopyAllowedCallback = base::OnceCallback<void()>;
+  void CopyIfAllowed(size_t data_size_in_bytes, CopyAllowedCallback callback);
+
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);

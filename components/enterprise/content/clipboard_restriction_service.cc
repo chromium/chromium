@@ -8,8 +8,10 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "ui/base/l10n/l10n_util.h"
 
 ClipboardRestrictionService::ClipboardRestrictionService(
     PrefService* pref_service)
@@ -27,12 +29,14 @@ ClipboardRestrictionService::ClipboardRestrictionService(
 
 ClipboardRestrictionService::~ClipboardRestrictionService() = default;
 
-bool ClipboardRestrictionService::IsUrlAllowedToCopy(const GURL& url,
-                                                     int data_size) const {
+bool ClipboardRestrictionService::IsUrlAllowedToCopy(
+    const GURL& url,
+    size_t data_size_in_bytes,
+    std::u16string* replacement_data) const {
   if (!enable_url_matcher_ || !disable_url_matcher_)
     return true;
 
-  if (data_size < min_data_size_)
+  if (data_size_in_bytes < min_data_size_)
     return true;
 
   // The copy is allowed in the following scenarios:
@@ -42,8 +46,15 @@ bool ClipboardRestrictionService::IsUrlAllowedToCopy(const GURL& url,
   //    in the disable list
   // Conversely, it is blocked iff it matches a pattern in the enable list and
   // doesn't match a pattern in the disable list.
-  return enable_url_matcher_->MatchURL(url).empty() ||
-         disable_url_matcher_->MatchURL(url).size() > 0;
+  bool is_allowed = enable_url_matcher_->MatchURL(url).empty() ||
+                    disable_url_matcher_->MatchURL(url).size() > 0;
+
+  if (!is_allowed && replacement_data) {
+    *replacement_data = l10n_util::GetStringUTF16(
+        IDS_ENTERPRISE_COPY_PREVENTION_WARNING_MESSAGE);
+  }
+
+  return is_allowed;
 }
 
 void ClipboardRestrictionService::UpdateSettings() {
@@ -71,16 +82,16 @@ void ClipboardRestrictionService::UpdateSettings() {
   enable_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   disable_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
-  // Convert the |base::Value|s to |base::ListValue|s because that's what
+  // Convert the `base::Value`s to `base::ListValue`s because that's what
   // AddFilters expects.
   const base::ListValue* enable_list = &base::Value::AsListValue(*enable);
   const base::ListValue* disable_list = &base::Value::AsListValue(*disable);
 
-  // For the following 2 calls, the second param is a bool called |allow|. In
+  // For the following 2 calls, the second param is a bool called `allow`. In
   // this context, we're not concerned about a URL being "allowed" or not, but
   // rather with this prevention feature being enabled on a given URL. Because
-  // of this, pass |true| for patterns in the |enable| list and false for
-  // patterns in the |disable| list. If the URL Matcher subsequently matches a
+  // of this, pass `true` for patterns in the `enable` list and false for
+  // patterns in the `disable` list. If the URL Matcher subsequently matches a
   // URL as "allowed", it means the prevention feature is active for that URL
   // and the copy will be blocked. While confusing, this is mostly to map to the
   // same policy format as the content analysis connector, which also has
@@ -93,6 +104,7 @@ void ClipboardRestrictionService::UpdateSettings() {
   absl::optional<int> min_data_size = settings->FindIntKey(
       enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName);
   DCHECK(min_data_size);
+  DCHECK(min_data_size >= 0);
   min_data_size_ = *min_data_size;
 }
 
@@ -117,6 +129,12 @@ ClipboardRestrictionServiceFactory::ClipboardRestrictionServiceFactory()
 
 ClipboardRestrictionServiceFactory::~ClipboardRestrictionServiceFactory() =
     default;
+
+content::BrowserContext*
+ClipboardRestrictionServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return context;
+}
 
 KeyedService* ClipboardRestrictionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

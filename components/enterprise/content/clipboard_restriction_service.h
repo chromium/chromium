@@ -29,7 +29,17 @@ class ClipboardRestrictionService : KeyedService {
 
   ~ClipboardRestrictionService() override;
 
-  bool IsUrlAllowedToCopy(const GURL& url, int data_size) const;
+  // Returns true if the user is allowed to write data to the clipboard from
+  // `url` as per the value of the CopyPreventionSettings policy, false
+  // otherwise. This check is only performed if `data_size` is larger than the
+  // `minimum_data_size` specified in the policy.
+  //
+  // If this returns false and `replacement_data` is supplied, a message will
+  // be written to `replacement_data` that is meant to be written to the
+  // clipboard instead of the intended data.
+  bool IsUrlAllowedToCopy(const GURL& url,
+                          size_t data_size_in_bytes,
+                          std::u16string* replacement_data = nullptr) const;
 
  private:
   friend class ClipboardRestrictionServiceTest;
@@ -46,7 +56,7 @@ class ClipboardRestrictionService : KeyedService {
   std::unique_ptr<url_matcher::URLMatcher> enable_url_matcher_;
   std::unique_ptr<url_matcher::URLMatcher> disable_url_matcher_;
 
-  int min_data_size_;
+  size_t min_data_size_;
 };
 
 class ClipboardRestrictionServiceFactory : BrowserContextKeyedServiceFactory {
@@ -67,6 +77,8 @@ class ClipboardRestrictionServiceFactory : BrowserContextKeyedServiceFactory {
       ClipboardRestrictionServiceFactory>;
 
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 };

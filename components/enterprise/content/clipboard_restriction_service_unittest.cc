@@ -144,3 +144,15 @@ TEST_F(ClipboardRestrictionServiceTest, ServiceCreatedAfterPrefValueSet) {
 
   EXPECT_FALSE(service()->IsUrlAllowedToCopy(GURL(kTestUrl), 50));
 }
+
+TEST_F(ClipboardRestrictionServiceTest, BlockPatternPopulatesMessage) {
+  CreateService();
+  std::vector<std::string> patterns{kTestPatternAllSubdomains};
+  std::vector<std::string> empty_patterns{};
+  SetPolicy(patterns, empty_patterns);
+  std::u16string message;
+  EXPECT_FALSE(
+      service()->IsUrlAllowedToCopy(GURL(kTestUrl), kLargeDataSize, &message));
+
+  EXPECT_FALSE(message.empty());
+}

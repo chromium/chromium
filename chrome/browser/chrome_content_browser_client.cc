@@ -186,6 +186,7 @@
 #include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/error_page_switches.h"
@@ -6075,6 +6076,18 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
 #else
   std::move(callback).Run(ClipboardPasteContentAllowed(true));
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+}
+
+bool ChromeContentBrowserClient::IsClipboardCopyAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    size_t data_size_in_bytes,
+    std::u16string& replacement_data) {
+  ClipboardRestrictionService* service =
+      ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
+          browser_context);
+  return service->IsUrlAllowedToCopy(url, data_size_in_bytes,
+                                     &replacement_data);
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)

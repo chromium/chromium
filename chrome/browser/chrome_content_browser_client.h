@@ -710,6 +710,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const std::string& data,
       IsClipboardPasteContentAllowedCallback callback) override;
 
+  bool IsClipboardCopyAllowed(content::BrowserContext* browser_context,
+                              const GURL& url,
+                              size_t data_size_in_bytes,
+                              std::u16string& replacement_data) override;
+
 #if BUILDFLAG(ENABLE_PLUGINS)
   bool ShouldAllowPluginCreation(
       const url::Origin& embedder_origin,
