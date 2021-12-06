@@ -6,8 +6,7 @@ import './tab_group_shared_vars.js';
 
 import {Color} from './tab_group_types.mojom-webui.js';
 
-/** @type Map<Color, string> */
-const colorMap = new Map([
+const colorMap = new Map<Color, string>([
   [Color.kGrey, 'grey'],
   [Color.kBlue, 'blue'],
   [Color.kRed, 'red'],
@@ -18,15 +17,10 @@ const colorMap = new Map([
   [Color.kCyan, 'cyan'],
 ]);
 
-/**
- * @param {Color} color
- * @return {string}
- * @throws {Error}
- */
-export function colorName(color) {
+export function colorName(color: Color): string {
   if (!colorMap.has(color)) {
     throw Error('Undefined color id');
   }
 
-  return colorMap.get(color);
+  return colorMap.get(color)!;
 }

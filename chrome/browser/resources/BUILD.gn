@@ -143,7 +143,6 @@ if (enable_js_type_check) {
         "quota_internals:closure_compile",
         "settings:closure_compile",
         "sync_file_system_internals:closure_compile",
-        "tab_search:closure_compile",
         "usb_internals:closure_compile",
       ]
     }

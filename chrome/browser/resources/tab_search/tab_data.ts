@@ -7,30 +7,18 @@ import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-
 
 import {RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
 
-/** @enum {number} */
-export const TabItemType = {
-  OPEN_TAB: 1,
-  RECENTLY_CLOSED_TAB: 2,
-  RECENTLY_CLOSED_TAB_GROUP: 3,
-};
+export enum TabItemType {
+  OPEN_TAB = 1,
+  RECENTLY_CLOSED_TAB = 2,
+  RECENTLY_CLOSED_TAB_GROUP = 3,
+}
 
 export class ItemData {
-  constructor() {
-    /** @type {boolean} */
-    this.inActiveWindow;
-
-    /** @type {!TabItemType} */
-    this.type;
-
-    /** @type {string} */
-    this.a11yTypeText;
-
-    /** @type {?TabGroup|?RecentlyClosedTabGroup} */
-    this.tabGroup;
-
-    /** @type {!Object} */
-    this.highlightRanges = {};
-  }
+  inActiveWindow: boolean;
+  type: TabItemType;
+  a11yTypeText: string;
+  tabGroup?: TabGroup|RecentlyClosedTabGroup;
+  highlightRanges: {[key: string]: Array<{start: number, length: number}>} = {};
 }
 
 /**
@@ -39,25 +27,18 @@ export class ItemData {
  * type checking.
  */
 export class TabData extends ItemData {
-  /**
-   * @param {!Tab|!RecentlyClosedTab} tab
-   * @param {!TabItemType} type
-   */
-  constructor(tab, type) {
+  tab: Tab|RecentlyClosedTab;
+  hostname: string
+
+  constructor(tab: Tab|RecentlyClosedTab, type: TabItemType) {
     super();
-    /** @type {!Tab|!RecentlyClosedTab} */
     this.tab = tab;
-
     this.type = type;
-
-    /** @type {string} */
-    this.hostname;
   }
 }
 
 export class TabGroupData extends ItemData {
-  /** @param {!TabGroup|!RecentlyClosedTabGroup} tabGroup */
-  constructor(tabGroup) {
+  constructor(tabGroup: TabGroup|RecentlyClosedTabGroup) {
     super();
     this.tabGroup = tabGroup;
     this.type = TabItemType.RECENTLY_CLOSED_TAB_GROUP;
@@ -67,32 +48,19 @@ export class TabGroupData extends ItemData {
 /**
  * Converts a token to a string by combining the high and low values as strings
  * with a hashtag as the separator.
- * @param {!Token} token
- * @return {string}
  */
-export function tokenToString(token) {
+export function tokenToString(token: Token): string {
   return `${token.high.toString()}#${token.low.toString()}`;
 }
 
-/**
- * @param {!Token} a
- * @param {!Token} b
- * @returns {boolean}
- */
-export function tokenEquals(a, b) {
+export function tokenEquals(a: Token, b: Token): boolean {
   return a.high === b.high && a.low === b.low;
 }
 
-/**
- * @param {!ItemData} itemData
- * @return {string}
- * @throws {Error}
- */
-export function ariaLabel(itemData) {
+export function ariaLabel(itemData: ItemData): string {
   if (itemData instanceof TabGroupData &&
       itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
-    const tabGroup =
-        /** @type {!RecentlyClosedTabGroup} */ (itemData.tabGroup);
+    const tabGroup = itemData.tabGroup as RecentlyClosedTabGroup;
     const tabCountText = loadTimeData.getStringF(
         tabGroup.tabCount == 1 ? 'oneTab' : 'tabCount', tabGroup.tabCount);
     return `${tabGroup.title} ${tabCountText} ${
@@ -100,7 +68,7 @@ export function ariaLabel(itemData) {
   }
 
   if (itemData instanceof TabData) {
-    const tabData = /** @type {TabData} */ (itemData);
+    const tabData = itemData;
     const groupTitleOrEmpty = tabData.tabGroup ? tabData.tabGroup.title : '';
     return `${tabData.tab.title} ${groupTitleOrEmpty} ${tabData.hostname} ${
         tabData.tab.lastActiveElapsedText} ${tabData.a11yTypeText}`;

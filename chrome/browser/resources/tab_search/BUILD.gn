@@ -4,13 +4,14 @@
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+
+assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
 
 preprocess_folder = "preprocessed"
 
@@ -82,14 +83,14 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "bimap.js",
-    "fuzzy_search.js",
-    "tab_data.js",
-    "tab_group_color_helper.js",
-    "tab_search.js",
-    "tab_search_api_proxy.js",
-    "tab_search_utils.js",
-    "title_item.js",
+    "bimap.ts",
+    "fuzzy_search.ts",
+    "tab_data.ts",
+    "tab_group_color_helper.ts",
+    "tab_search.ts",
+    "tab_search_api_proxy.ts",
+    "tab_search_utils.ts",
+    "title_item.ts",
   ]
 }
 
@@ -107,7 +108,7 @@ preprocess_if_expr("preprocess_web_components") {
   in_files = [
     "app.js",
     "infinite_list.js",
-    "tab_group_shared_vars.js",
+    "tab_group_shared_vars.ts",
     "tab_search_item.js",
     "tab_search_group_item.js",
     "tab_search_search_field.js",
@@ -117,6 +118,11 @@ preprocess_if_expr("preprocess_web_components") {
 copy("copy_fuse") {
   sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
   outputs = [ "$target_gen_dir/$preprocess_folder/fuse.js" ]
+}
+
+copy("copy_fuse_dts") {
+  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
 preprocess_if_expr("preprocess_mojo_tab_groups") {
@@ -150,134 +156,11 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
-                root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom",
-                root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
-                root_build_dir),
-      ]
-  deps = [
-    ":app",
-    ":bimap",
-    ":fuzzy_search",
-    ":infinite_list",
-    ":tab_data",
-    ":tab_search",
-    ":tab_search_api_proxy",
-    ":tab_search_group_item",
-    ":tab_search_item",
-    ":tab_search_search_field",
-    ":title_item",
-  ]
-}
-
-js_library("app") {
-  deps = [
-    ":fuzzy_search",
-    ":infinite_list",
-    ":tab_data",
-    ":tab_search_api_proxy",
-    ":tab_search_group_item",
-    ":tab_search_item",
-    ":tab_search_search_field",
-    ":title_item",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("bimap") {
-  deps = []
-}
-
-js_library("fuzzy_search") {
-  deps = [
-    ":tab_data",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("infinite_list") {
-  deps = [
-    ":bimap",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("tab_data") {
-  deps = []
-}
-
-js_library("tab_group_color_helper") {
-  deps = [ "//components/tab_groups/public/mojom:mojo_bindings_webui_js" ]
-}
-
-js_library("tab_search") {
-  deps = [ ":app" ]
-}
-
-js_library("tab_search_api_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("tab_search_item") {
-  deps = [
-    ":tab_data",
-    ":tab_group_color_helper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tab_search_group_item") {
-  deps = [
-    ":tab_group_color_helper",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tab_search_search_field") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior",
-  ]
-}
-
-js_library("title_item") {
-  deps = []
-}
-
 html_to_js("web_components") {
   js_files = [
     "app.js",
     "infinite_list.js",
-    "tab_group_shared_vars.js",
+    "tab_group_shared_vars.ts",
     "tab_search_item.js",
     "tab_search_group_item.js",
     "tab_search_search_field.js",
@@ -290,31 +173,34 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "app.js",
-    "bimap.js",
+    "bimap.ts",
     "fuse.js",
-    "fuzzy_search.js",
+    "fuzzy_search.ts",
     "infinite_list.js",
-    "tab_data.js",
-    "tab_group_color_helper.js",
-    "tab_group_shared_vars.js",
+    "tab_data.ts",
+    "tab_group_color_helper.ts",
+    "tab_group_shared_vars.ts",
     "tab_group_types.mojom-webui.js",
-    "tab_search_api_proxy.js",
+    "tab_search_api_proxy.ts",
     "tab_search_group_item.js",
     "tab_search_item.js",
-    "tab_search.js",
+    "tab_search.ts",
     "tab_search.mojom-webui.js",
     "tab_search_search_field.js",
-    "tab_search_utils.js",
+    "tab_search_utils.ts",
     "tabs.mojom-webui.js",
-    "title_item.js",
+    "title_item.ts",
   ]
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
     ":copy_fuse",
+    ":copy_fuse_dts",
     ":preprocess",
     ":preprocess_mojo",
     ":preprocess_mojo_tab_groups",

@@ -10,67 +10,34 @@
 // TODO(romanarora): Investigate leveraging an existing data structures third
 // party library or moving this class to a shareable location.
 
-/**
- * @template K, V
- */
-export class BiMap {
-  /**
-   * @param {!Object=} map
-   */
-  constructor(map) {
-    /**
-     * @private {!Map<K, V>}
-     */
-    this.map_ = new Map();
+export class BiMap<K, V> {
+  private map_: Map<K, V>;
+  private inverseMap_: Map<V, K>;
 
-    /**
-     * @private {!Map<V, K>}
-     */
-    this.inverseMap_ = new Map();
-
-    for (const key in map) {
-      const value = map[key];
-      this.map_.set(key, value);
-      this.inverseMap_.set(value, key);
-    }
+  constructor() {
+    this.map_ = new Map<K, V>();
+    this.inverseMap_ = new Map<V, K>();
   }
 
-  /**
-   * @param {K} key
-   * @return {V}
-   */
-  get(key) {
+  get(key: K): V|undefined {
     return this.map_.get(key);
   }
 
-  /**
-   * @param {V} key
-   * @return {K}
-   */
-  invGet(key) {
+  invGet(key: V): K|undefined {
     return this.inverseMap_.get(key);
   }
 
-  /**
-   * @param {K} key
-   * @param {V} value
-   */
-  set(key, value) {
+  set(key: K, value: V) {
     this.map_.set(key, value);
     this.inverseMap_.set(value, key);
   }
 
-  /**
-   * @param {V} key
-   * @param {K} value
-   */
-  invSet(key, value) {
+  invSet(key: V, value: K) {
     this.inverseMap_.set(key, value);
     this.map_.set(value, key);
   }
 
-  /** @return {number} */
-  size() {
+  size(): number {
     return this.map_.size;
   }
 }

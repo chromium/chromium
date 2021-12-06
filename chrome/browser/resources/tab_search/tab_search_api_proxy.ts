@@ -2,83 +2,57 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, SwitchToTabInfo} from './tab_search.mojom-webui.js';
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
  * See tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-export const RecentlyClosedItemOpenAction = {
-  WITHOUT_SEARCH: 0,
-  WITH_SEARCH: 1,
-};
+export enum RecentlyClosedItemOpenAction {
+  WITHOUT_SEARCH = 0,
+  WITH_SEARCH = 1,
+}
 
 /**
  * These values are persisted to logs and should not be renumbered or re-used.
  * See tools/metrics/histograms/enums.xml.
- * @enum {number}
  */
-export const TabSwitchAction = {
-  WITHOUT_SEARCH : 0,
-  WITH_SEARCH : 1,
-};
-
-/** @interface */
-export class TabSearchApiProxy {
-  /**
-   * @param {number} tabId
-   * @param {boolean} withSearch
-   * @param {number} closedTabIndex
-   */
-  closeTab(tabId, withSearch, closedTabIndex) {}
-
-  /** @return {Promise<{profileData: ProfileData}>} */
-  getProfileData() {}
-
-  /**
-   * @param {number} id
-   * @param {boolean} withSearch
-   * @param {boolean} isTab
-   * @param {number} index
-   */
-  openRecentlyClosedEntry(id, withSearch, isTab, index) {}
-
-  /**
-   * @param {!SwitchToTabInfo} info
-   * @param {boolean} withSearch
-   * @param {number} switchedTabIndex
-   */
-  switchToTab(info, withSearch, switchedTabIndex) {}
-
-  /** @return {!PageCallbackRouter} */
-  getCallbackRouter() {}
-
-  /** @param {boolean} expanded */
-  saveRecentlyClosedExpandedPref(expanded) {}
-
-  showUI() {}
+export enum TabSwitchAction {
+  WITHOUT_SEARCH = 0,
+  WITH_SEARCH = 1,
 }
 
-/** @implements {TabSearchApiProxy} */
-export class TabSearchApiProxyImpl {
+export interface TabSearchApiProxy {
+  closeTab(tabId: number, withSearch: boolean, closedTabIndex: number): void;
+
+  getProfileData(): Promise<{profileData: ProfileData}>;
+
+  openRecentlyClosedEntry(
+      id: number, withSearch: boolean, isTab: boolean, index: number): void;
+
+  switchToTab(
+      info: SwitchToTabInfo, withSearch: boolean,
+      switchedTabIndex: number): void;
+
+  getCallbackRouter(): PageCallbackRouter;
+
+  saveRecentlyClosedExpandedPref(expanded: boolean): void;
+
+  showUI(): void;
+}
+
+export class TabSearchApiProxyImpl implements TabSearchApiProxy {
+  callbackRouter: PageCallbackRouter = new PageCallbackRouter();
+  handler: PageHandlerRemote = new PageHandlerRemote();
+
   constructor() {
-    /** @type {!PageCallbackRouter} */
-    this.callbackRouter = new PageCallbackRouter();
-
-    /** @type {!PageHandlerRemote} */
-    this.handler = new PageHandlerRemote();
-
     const factory = PageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  /** @override */
-  closeTab(tabId, withSearch, closedTabIndex) {
+  closeTab(tabId: number, withSearch: boolean, closedTabIndex: number) {
     chrome.metricsPrivate.recordSmallCount(
         withSearch ? 'Tabs.TabSearch.WebUI.IndexOfCloseTabInFilteredList' :
                      'Tabs.TabSearch.WebUI.IndexOfCloseTabInUnfilteredList',
@@ -86,13 +60,12 @@ export class TabSearchApiProxyImpl {
     this.handler.closeTab(tabId);
   }
 
-  /** @override */
   getProfileData() {
     return this.handler.getProfileData();
   }
 
-  /** @override */
-  openRecentlyClosedEntry(id, withSearch, isTab, index) {
+  openRecentlyClosedEntry(
+      id: number, withSearch: boolean, isTab: boolean, index: number) {
     chrome.metricsPrivate.recordEnumerationValue(
         isTab ? 'Tabs.TabSearch.WebUI.RecentlyClosedTabOpenAction' :
                 'Tabs.TabSearch.WebUI.RecentlyClosedGroupOpenAction',
@@ -107,12 +80,12 @@ export class TabSearchApiProxyImpl {
     this.handler.openRecentlyClosedEntry(id);
   }
 
-  /** @override */
-  switchToTab(info, withSearch, switchedTabIndex) {
+  switchToTab(
+      info: SwitchToTabInfo, withSearch: boolean, switchedTabIndex: number) {
     chrome.metricsPrivate.recordEnumerationValue(
         'Tabs.TabSearch.WebUI.TabSwitchAction',
-        withSearch ? TabSwitchAction.WITH_SEARCH
-                   : TabSwitchAction.WITHOUT_SEARCH,
+        withSearch ? TabSwitchAction.WITH_SEARCH :
+                     TabSwitchAction.WITHOUT_SEARCH,
         Object.keys(TabSwitchAction).length);
     chrome.metricsPrivate.recordSmallCount(
         withSearch ? 'Tabs.TabSearch.WebUI.IndexOfSwitchTabInFilteredList' :
@@ -122,20 +95,25 @@ export class TabSearchApiProxyImpl {
     this.handler.switchToTab(info);
   }
 
-  /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
   }
 
-  /** @override */
-  saveRecentlyClosedExpandedPref(expanded) {
+  saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
   }
 
-  /** @override */
   showUI() {
     this.handler.showUI();
   }
+
+  static getInstance(): TabSearchApiProxy {
+    return instance || (instance = new TabSearchApiProxyImpl());
+  }
+
+  static setInstance(obj: TabSearchApiProxy) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(TabSearchApiProxyImpl);
+let instance: TabSearchApiProxy|null = null;

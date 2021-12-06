@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote, ProfileData, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter, PageRemote, ProfileData} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 

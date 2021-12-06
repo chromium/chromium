@@ -6,16 +6,18 @@ import {quoteString} from 'chrome://resources/js/util.m.js';
 import {get as deepGet} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import Fuse from './fuse.js';
-import {TabData} from './tab_data.js';
+import {ItemData} from './tab_data.js';
+
+export type FuzzySearchOptions =
+    Fuse.IFuseOptions<ItemData>&{useFuzzySearch: boolean};
 
 /**
- * @param {string} input
- * @param {!Array<!TabData>} records
- * @param {!Object} options
- * @return {!Array<!TabData>} A new array of entries satisfying the input. If no
- *     search input is present, returns a shallow copy of the records.
+ * @return A new array of entries satisfying the input. If no search input is
+ *     present, returns a shallow copy of the records.
  */
-export function fuzzySearch(input, records, options) {
+export function fuzzySearch(
+    input: string, records: ItemData[],
+    options: FuzzySearchOptions): ItemData[] {
   if (input.length === 0) {
     return [...records];
   }
@@ -31,20 +33,21 @@ export function fuzzySearch(input, records, options) {
   const searchStartTime = Date.now();
   let result;
   if (options.useFuzzySearch) {
-    const keyNames = options.keys.reduce((acc, {name}) => {
-      acc.push(name);
-      return acc;
-    }, []);
-    result = new Fuse(records, options).search(input).map(result => {
+    const keyNames =
+        (options.keys as Fuse.FuseOptionKeyObject[]).reduce((acc, {name}) => {
+          acc.push(name as string);
+          return acc;
+        }, [] as string[]);
+    result = new Fuse<ItemData>(records, options).search(input).map(result => {
       const item = cloneTabDataObj(result.item);
       item.highlightRanges = keyNames.reduce((acc, key) => {
-        const match = result.matches.find(e => e.key === key);
+        const match = result.matches!.find(e => e.key === key);
         if (match) {
           acc[key] = convertToRanges(match.indices);
         }
 
         return acc;
-      }, {});
+      }, {} as {[key: string]: Array<{start: number, length: number}>});
 
       return item;
     });
@@ -60,26 +63,21 @@ export function fuzzySearch(input, records, options) {
   return result;
 }
 
-/**
- * @param {!TabData} tabData
- * @return {!TabData}
- */
-function cloneTabDataObj(tabData) {
+function cloneTabDataObj(tabData: ItemData): ItemData {
   const clone = Object.assign({}, tabData);
   clone.highlightRanges = {};
   Object.setPrototypeOf(clone, Object.getPrototypeOf(tabData));
 
-  return /** @type {!TabData} */ (clone);
+  return clone;
 }
 
 /**
  * Convert fuse.js matches [start1, end1], [start2, end2] ... to
  * ranges {start:start1, length:length1}, {start:start2, length:length2} ...
  * to be used by search_highlight_utils.js
- * @param {!Array<!Array<number>>} matches
- * @return {!Array<!{start: number, length: number}>}
  */
-function convertToRanges(matches) {
+function convertToRanges(matches: ReadonlyArray<Fuse.RangeTuple>):
+    Array<{start: number, length: number}> {
   return matches.map(
       ([start, end]) => ({start: start, length: end - start + 1}));
 }
@@ -93,12 +91,10 @@ function convertToRanges(matches) {
  * first) and sorted by score within the same priority. See `scoringFunction`
  * for how to calculate score and `prioritizeMatchResult` for how to calculate
  * priority.
- * @param {string} searchText
- * @param {!Array<!TabData>} records
- * @param {!Object} options
- * @return {!Array<!TabData>}
  */
-function exactSearch(searchText, records, options) {
+function exactSearch(
+    searchText: string, records: ItemData[],
+    options: Fuse.IFuseOptions<ItemData>): ItemData[] {
   if (searchText.length === 0) {
     return records;
   }
@@ -110,10 +106,11 @@ function exactSearch(searchText, records, options) {
 
   // Controls how heavily weighted the search field weights are relative to each
   // other in the scoring function.
-  const searchFieldWeights = options.keys.reduce((acc, {name, weight}) => {
-    acc[name] = weight;
-    return acc;
-  }, {});
+  const searchFieldWeights = (options.keys as Fuse.FuseOptionKeyObject[])
+                                 .reduce((acc, {name, weight}) => {
+                                   acc[name as string] = weight;
+                                   return acc;
+                                 }, {} as {[key: string]: number});
 
   // Perform an exact match search with range discovery.
   const exactMatches = [];
@@ -122,8 +119,7 @@ function exactSearch(searchText, records, options) {
     const matchedRecord = cloneTabDataObj(tabDataRecord);
     // Searches for fields or nested fields in the record.
     for (const fieldPath in searchFieldWeights) {
-      const text =
-          /** @type {string} */ (deepGet(tabDataRecord, fieldPath));
+      const text = deepGet(tabDataRecord, fieldPath);
       if (text) {
         const ranges = getRanges(text, searchText);
         if (ranges.length !== 0) {
@@ -153,12 +149,9 @@ function exactSearch(searchText, records, options) {
 /**
  * Determines whether the given tab has a search field with identified matches
  * at the beginning of the string.
- * @param {!TabData} tab
- * @param {string} searchText
- * @param {!Array<string>} keys
- * @return {boolean}
  */
-function hasMatchStringStart(tab, searchText, keys) {
+function hasMatchStringStart(
+    tab: ItemData, searchText: string, keys: string[]): boolean {
   return keys.some((key) => {
     const value = deepGet(tab, key);
     return value !== undefined && value.startsWith(searchText);
@@ -168,12 +161,8 @@ function hasMatchStringStart(tab, searchText, keys) {
 /**
  * Determines whether the given tab has a match for the given regexp in its
  * search fields.
- * @param {!TabData} tab
- * @param {RegExp} regexp
- * @param {!Array<string>} keys
- * @return {boolean}
  */
-function hasRegexMatch(tab, regexp, keys) {
+function hasRegexMatch(tab: ItemData, regexp: RegExp, keys: string[]): boolean {
   return keys.some((key) => {
     const value = deepGet(tab, key);
     return value !== undefined && value.search(regexp) !== -1;
@@ -184,18 +173,16 @@ function hasRegexMatch(tab, regexp, keys) {
  * Returns an array of matches that indicate where in the target string the
  * searchText appears. If there are no identified matches an empty array is
  * returned.
- * @param {string} target
- * @param {string} searchText
- * @return {!Array<!{start: number, length: number}>}
  */
-function getRanges(target, searchText) {
+function getRanges(target: string, searchText: string):
+    Array<{start: number, length: number}> {
   const escapedText = quoteString(searchText);
   const ranges = [];
   let match = null;
   for (const re = new RegExp(escapedText, 'gi'); match = re.exec(target);) {
     ranges.push({
-      start : match.index,
-      length : searchText.length,
+      start: match.index,
+      length: searchText.length,
     });
   }
   return ranges;
@@ -206,19 +193,18 @@ function getRanges(target, searchText) {
  * Matches near the beginning of the string will have a higher score than
  * matches near the end of the string. Multiple matches will have a higher score
  * than single matches.
- * @param {!TabData} tabData
- * @param {number} distance
- * @param {!Object} searchFieldWeights
  */
-function scoringFunction(tabData, distance, searchFieldWeights) {
+function scoringFunction(
+    tabData: ItemData, distance: number,
+    searchFieldWeights: {[key: string]: number}) {
   let score = 0;
   // For every match, map the match index in [0, distance] to a scalar value in
   // [1, 0].
   for (const key in searchFieldWeights) {
     if (tabData.highlightRanges[key]) {
-      for (const {start} of tabData.highlightRanges[key]) {
+      for (const {start} of tabData.highlightRanges[key]!) {
         score += Math.max((distance - start) / distance, 0) *
-            searchFieldWeights[key];
+            searchFieldWeights[key]!;
       }
     }
   }
@@ -234,12 +220,9 @@ function scoringFunction(tabData, distance, searchFieldWeights) {
  *    word in the string.
  * 3. All remaining items with a search key matching the searchText elsewhere in
  *    the string.
- * @param {string} searchText
- * @param {!Array<string>} keys
- * @param {!Array<!TabData>} result
- * @return {!Array<!TabData>}
  */
-function prioritizeMatchResult(searchText, keys, result) {
+function prioritizeMatchResult(
+    searchText: string, keys: string[], result: ItemData[]): ItemData[] {
   const itemsMatchingStringStart = [];
   const itemsMatchingWordStart = [];
   const others = [];

@@ -15,9 +15,10 @@ ts_library("library") {
 
   in_files = [
     "mojo/public/mojom/base/big_buffer.mojom-webui.js",
+    "mojo/public/mojom/base/file_path.mojom-webui.js",
     "mojo/public/mojom/base/string16.mojom-webui.js",
     "mojo/public/mojom/base/time.mojom-webui.js",
-    "mojo/public/mojom/base/file_path.mojom-webui.js",
+    "mojo/public/mojom/base/token.mojom-webui.js",
     "skia/public/mojom/skcolor.mojom-webui.js",
     "ui/base/mojom/window_open_disposition.mojom-webui.js",
     "url/mojom/url.mojom-webui.js",

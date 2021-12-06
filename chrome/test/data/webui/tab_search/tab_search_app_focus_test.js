@@ -29,7 +29,7 @@ suite('TabSearchAppFocusTest', () => {
   async function setupTest(sampleData, loadTimeOverriddenData) {
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileData(sampleData);
-    TabSearchApiProxyImpl.instance_ = testProxy;
+    TabSearchApiProxyImpl.setInstance(testProxy);
 
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 

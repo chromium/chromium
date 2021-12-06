@@ -7,13 +7,7 @@ import {assertEquals} from '../../chai_assert.js';
 
 suite('BiMapTest', () => {
   test('Base', async () => {
-    let biMap = new BiMap({
-      a: 1,
-      b: 2,
-    });
-    assertEquals(2, biMap.size());
-
-    biMap = new BiMap();
+    const biMap = new BiMap();
     biMap.set('a', 1);
     biMap.set('b', 2);
     assertEquals(2, biMap.size());

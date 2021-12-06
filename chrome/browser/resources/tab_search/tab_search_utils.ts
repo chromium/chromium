@@ -4,13 +4,13 @@
 
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 
-/**
- * @param {!HTMLElement} container
- * @param {string} text
- * @param {!Array<!{start:number, length:number}>|undefined} ranges
- * @private
- */
-export function highlightText(container, text, ranges) {
+type Range = {
+  start: number,
+  length: number
+};
+
+export function highlightText(
+    container: HTMLElement, text: string, ranges: Range[]|undefined) {
   container.textContent = '';
   const node = document.createTextNode(text);
   container.appendChild(node);

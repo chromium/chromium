@@ -48,7 +48,7 @@ suite('TabSearchAppTest', () => {
 
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileData(/** @type {ProfileData} */ (sampleData));
-    TabSearchApiProxyImpl.instance_ = testProxy;
+    TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabSearchApp = /** @type {!TabSearchAppElement} */
         (document.createElement('tab-search-app'));
