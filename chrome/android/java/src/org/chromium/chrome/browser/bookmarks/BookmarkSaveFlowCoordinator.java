@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,7 +99,11 @@ public class BookmarkSaveFlowCoordinator {
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
         mMediator.show(bookmarkId, meta, fromExplicitTrackUi);
 
-        setupAutodismiss();
+        AccessibilityManager am =
+                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (!am.isTouchExplorationEnabled()) {
+            setupAutodismiss();
+        }
     }
 
     private void close() {

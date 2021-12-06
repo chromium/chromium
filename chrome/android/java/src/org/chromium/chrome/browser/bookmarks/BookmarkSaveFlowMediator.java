@@ -177,7 +177,11 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
 
     @Override
     public void bookmarkModelChanged() {
-        if (mBookmarkId == null) return;
+        // Possibility that the bookmark is deleted while in accessibility mode.
+        if (mBookmarkId == null || mBookmarkModel.getBookmarkById(mBookmarkId) == null) {
+            mCloseRunnable.run();
+            return;
+        }
         bindBookmarkProperties(mBookmarkId, mPowerBookmarkMeta, mFromExplicitTrackUi);
     }
 }
