@@ -294,6 +294,8 @@ crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-wit
 
 # Skipping new tests
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
@@ -329,7 +331,8 @@ crbug.com/angleproject/4931 [ win nvidia angle-vulkan passthrough ] conformance/
 
 # Win / Intel / Vulkan / Passthrough command decoder
 # Technically flaky, but flake rate is too high for RetryOnFailure.
-crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 # Bug where RelaxedPrecision applied to normalize() produces 0
 crbug.com/angleproject/6228 [ win intel angle-vulkan passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 
@@ -388,7 +391,8 @@ crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/build/
 crbug.com/1136414 [ fuchsia fuchsia-board-qemu-x64 ] conformance/ogles/GL/mat/mat_009_to_016.html [ Failure ]
 
 # Anti-aliasing disabled on Fuchsia
-[ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 # Sherlock failures
 crbug.com/1268138 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] conformance/context/context-attribute-preserve-drawing-buffer.html [ Failure ]
@@ -620,7 +624,8 @@ crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/te
 crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
 # finder:enable
 # Introduced by upstreaming Apple's direct-to-metal backend
-crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/rendering/multisample-corruption.html [ Failure ]
 # No active browser window, but no crash stack.
 crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
@@ -780,7 +785,8 @@ crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conf
 ############
 
 # ChromeOS: affecting all devices.
-crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/957807 [ chromeos ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/957807 [ chromeos ] conformance/rendering/line-rendering-quality.html [ Failure ]
 crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Failure ]

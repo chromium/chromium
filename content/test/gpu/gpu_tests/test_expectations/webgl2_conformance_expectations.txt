@@ -206,6 +206,10 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1136231 [ win passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
+crbug.com/1276153 conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/angleproject/4394 conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
+crbug.com/1206763 [ win intel ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
+
 # The validating command decoder suppressions here will not be fixed.
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-bptc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-texture-compression-rgtc.html [ Failure ]
@@ -447,7 +451,8 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] deqp/functiona
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
 
 # Metal M1
-crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/multisample-corruption.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
@@ -1086,7 +1091,8 @@ crbug.com/1231760 [ chromeos chromeos-board-amd64-generic no-passthrough ] deqp/
 crbug.com/1231760 [ chromeos chromeos-board-amd64-generic no-passthrough ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
 crbug.com/1231762 [ chromeos chromeos-board-amd64-generic no-passthrough ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
 crbug.com/1231762 [ chromeos chromeos-board-amd64-generic no-passthrough ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
-crbug.com/1232102 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+# TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
+# crbug.com/1232102 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232112 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1232118 [ chromeos chromeos-board-amd64-generic ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
