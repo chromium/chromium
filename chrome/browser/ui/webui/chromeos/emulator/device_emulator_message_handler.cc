@@ -309,11 +309,11 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
   CHECK(device_value.is_dict());
   const base::DictionaryValue& device_dict =
       base::Value::AsDictionaryValue(device_value);
-  CHECK(device_dict.GetBoolean("isInput", &audio_node.is_input));
+  audio_node.is_input = device_dict.FindBoolKey("isInput").value();
   CHECK(device_dict.GetString("deviceName", &audio_node.device_name));
   CHECK(device_dict.GetString("type", &audio_node.type));
   CHECK(device_dict.GetString("name", &audio_node.name));
-  CHECK(device_dict.GetBoolean("active", &audio_node.active));
+  audio_node.active = device_dict.FindBoolKey("active").value();
 
   std::string tmp_id;
   CHECK(device_dict.GetString("id", &tmp_id));
@@ -583,8 +583,8 @@ std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
   CHECK(class_value);
   props.device_class = *class_value;
 
-  CHECK(device_dict.GetBoolean("isTrusted", &props.is_trusted));
-  CHECK(device_dict.GetBoolean("incoming", &props.incoming));
+  props.is_trusted = device_dict.FindBoolKey("isTrusted").value();
+  props.incoming = device_dict.FindBoolKey("incoming").value();
 
   // Create the device and store it in the FakeBluetoothDeviceClient's observed
   // list of devices.

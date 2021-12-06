@@ -21,6 +21,7 @@
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
@@ -35,6 +36,8 @@ class BrowserContext;
 }
 
 namespace {
+
+using ::testing::Optional;
 
 enum SyncAllConfig { SYNC_ALL_OS_TYPES, CHOOSE_WHAT_TO_SYNC };
 
@@ -61,10 +64,8 @@ DictionaryValue CreateOsSyncPrefs(SyncAllConfig sync_all,
 void CheckBool(const DictionaryValue* dictionary,
                const std::string& key,
                bool expected_value) {
-  bool actual_value;
-  EXPECT_TRUE(dictionary->GetBoolean(key, &actual_value))
-      << "No value found for " << key;
-  EXPECT_EQ(expected_value, actual_value) << "Mismatch found for " << key;
+  EXPECT_THAT(dictionary->FindBoolPath(key), Optional(expected_value))
+      << "Key: " << key;
 }
 
 // Checks to make sure that the values stored in |dictionary| match the values
