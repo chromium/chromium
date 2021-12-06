@@ -260,6 +260,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
+        ActivityManager activityManager =
+                (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        String launchActivityName = ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME;
+        if (activityManager != null) {
+            MultiInstanceState.maybeCreate(activityManager::getAppTasks,
+                    (activityName)
+                            -> TextUtils.equals(activityName, ChromeTabbedActivity.class.getName())
+                            || TextUtils.equals(activityName, launchActivityName));
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
