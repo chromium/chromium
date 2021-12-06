@@ -219,6 +219,7 @@ void CameraRollView::Update() {
 
   switch (current_ui_state) {
     case phonehub::CameraRollManager::CameraRollUiState::SHOULD_HIDE:
+    case phonehub::CameraRollManager::CameraRollUiState::NO_STORAGE_PERMISSION:
       SetVisible(false);
       break;
     case phonehub::CameraRollManager::CameraRollUiState::CAN_OPT_IN:

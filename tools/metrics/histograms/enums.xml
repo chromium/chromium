@@ -68137,6 +68137,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Phone Collected, WebOTP Used, OTC Used"/>
 </enum>
 
+<enum name="PhoneHubCameraRollBooleanStorageAccessPermission">
+  <int value="0" label="No storage access permission on Android device"/>
+  <int value="1" label="Android device has storage access permission"/>
+</enum>
+
 <enum name="PhoneHubCameraRollContentClicked">
   <int value="11" label="Single Click to context menu media 1"/>
   <int value="21" label="Single Click to context menu media 2"/>

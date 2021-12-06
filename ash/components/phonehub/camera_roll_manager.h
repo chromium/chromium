@@ -31,6 +31,10 @@ class CameraRollManager {
     // Feature is either not supported, or supported and enabled, but haven't
     // received any items yet
     SHOULD_HIDE,
+    // Feature is enabled on phone, but can not be used because storage access
+    // permissions have been rejected on the Android device. In this state the
+    // UI is hidden but the settings toggle is shown in a grayed out state.
+    NO_STORAGE_PERMISSION,
     // Feature is supported by the phone but the settings hasn't been enabled on
     // system settings and not have been dismissed by user
     CAN_OPT_IN,

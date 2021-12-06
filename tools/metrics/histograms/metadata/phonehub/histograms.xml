@@ -45,6 +45,18 @@ chromium-metrics-reviews@google.com.
   <summary>The steady state feature status of PhoneHub on user login.</summary>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.AndroidHasStoragePermission"
+    enum="PhoneHubCameraRollBooleanStorageAccessPermission"
+    expires_after="2022-10-31">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records if the Android component has storage access permission. If not,
+    Camera Roll is hidden and the settings toggle is grayed out. Emitted when a
+    change of access state is reported by the Android device.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CameraRoll.Content.Clicked{MediaType}"
     enum="PhoneHubCameraRollContentClicked" expires_after="2022-10-31">
   <owner>jonmann@chromium.org</owner>

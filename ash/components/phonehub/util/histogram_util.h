@@ -47,6 +47,10 @@ void LogTetherConnectionResult(TetherConnectionResult result);
 // Logs a given |result| for a request message.
 void LogMessageResult(proto::MessageType message, PhoneHubMessageResult result);
 
+// Logs if the Android component has storage access permission. If not, Camera
+// Roll is hidden.
+void LogCameraRollAndroidHasStorageAccessPermission(bool has_permission);
+
 }  // namespace util
 }  // namespace phonehub
 }  // namespace ash

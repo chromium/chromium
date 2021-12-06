@@ -14,6 +14,7 @@
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/components/phonehub/util/histogram_util.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -31,12 +32,6 @@ namespace {
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace multidevice_setup = ::chromeos::multidevice_setup;
 namespace secure_channel = ::chromeos::secure_channel;
-
-bool IsCameraRollSupportedOnAndroidDevice(
-    const proto::CameraRollAccessState& access_state) {
-  return access_state.feature_enabled() &&
-         access_state.storage_permission_granted();
-}
 
 constexpr int kMaxCameraRollItemCount = 4;
 
@@ -139,7 +134,8 @@ void CameraRollManagerImpl::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {
   UpdateCameraRollAccessStateAndNotifyIfNeeded(
       phone_status_snapshot.properties().camera_roll_access_state());
-  if (!is_camera_roll_accessible_ || !IsCameraRollSettingEnabled()) {
+  if (!is_android_feature_enabled_ || !is_android_storage_granted_ ||
+      !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
     resetViewRefreshingFlagIfNeeded();
@@ -153,7 +149,8 @@ void CameraRollManagerImpl::OnPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
   UpdateCameraRollAccessStateAndNotifyIfNeeded(
       phone_status_update.properties().camera_roll_access_state());
-  if (!is_camera_roll_accessible_ || !IsCameraRollSettingEnabled()) {
+  if (!is_android_feature_enabled_ || !is_android_storage_granted_ ||
+      !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
     resetViewRefreshingFlagIfNeeded();
@@ -239,9 +236,16 @@ void CameraRollManagerImpl::OnFeatureStatesChanged(
 
 void CameraRollManagerImpl::UpdateCameraRollAccessStateAndNotifyIfNeeded(
     const proto::CameraRollAccessState& access_state) {
-  bool updated_state = IsCameraRollSupportedOnAndroidDevice(access_state);
-  if (is_camera_roll_accessible_ != updated_state) {
-    is_camera_roll_accessible_ = updated_state;
+  bool updated_feature_enabled = access_state.feature_enabled();
+  bool updated_storage_granted = access_state.storage_permission_granted();
+
+  if (is_android_feature_enabled_ != updated_feature_enabled ||
+      is_android_storage_granted_ != updated_storage_granted) {
+    is_android_feature_enabled_ = updated_feature_enabled;
+    is_android_storage_granted_ = updated_storage_granted;
+
+    util::LogCameraRollAndroidHasStorageAccessPermission(
+        is_android_storage_granted_);
     ComputeAndUpdateUiState();
   }
 }
@@ -253,8 +257,12 @@ void CameraRollManagerImpl::OnCameraRollOnboardingUiDismissed() {
 }
 
 void CameraRollManagerImpl::ComputeAndUpdateUiState() {
-  if (!is_camera_roll_accessible_) {
+  if (!is_android_feature_enabled_) {
     ui_state_ = CameraRollUiState::SHOULD_HIDE;
+    NotifyCameraRollViewUiStateUpdated();
+    return;
+  } else if (!is_android_storage_granted_) {
+    ui_state_ = CameraRollUiState::NO_STORAGE_PERMISSION;
     NotifyCameraRollViewUiStateUpdated();
     return;
   }

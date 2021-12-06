@@ -440,7 +440,7 @@ TEST_F(CameraRollManagerImplTest,
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
             camera_roll_manager()->ui_state());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -484,9 +484,9 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusUpdateReceived(update);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::NO_STORAGE_PERMISSION,
             camera_roll_manager()->ui_state());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -522,7 +522,7 @@ TEST_F(CameraRollManagerImplTest,
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
   EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
             camera_roll_manager()->ui_state());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
@@ -565,9 +565,9 @@ TEST_F(CameraRollManagerImplTest,
   fake_message_receiver_.NotifyPhoneStatusSnapshotReceived(snapshot);
 
   EXPECT_EQ(0UL, GetSentFetchCameraRollItemsRequestCount());
-  EXPECT_EQ(CameraRollManager::CameraRollUiState::SHOULD_HIDE,
+  EXPECT_EQ(CameraRollManager::CameraRollUiState::NO_STORAGE_PERMISSION,
             camera_roll_manager()->ui_state());
-  EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
+  EXPECT_EQ(3, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
 }
 

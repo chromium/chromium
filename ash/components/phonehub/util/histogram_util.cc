@@ -87,6 +87,11 @@ void LogMessageResult(proto::MessageType message_type,
     base::UmaHistogramEnumeration(histogram_name, result);
 }
 
+void LogCameraRollAndroidHasStorageAccessPermission(bool has_permission) {
+  base::UmaHistogramBoolean("PhoneHub.CameraRoll.AndroidHasStoragePermission",
+                            has_permission);
+}
+
 }  // namespace util
 }  // namespace phonehub
 }  // namespace ash
