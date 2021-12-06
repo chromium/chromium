@@ -8,7 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -737,6 +737,41 @@ void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
       CloneClientSecurityState(), request_.url, status, is_warning);
 }
 
+absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
+    int net_error,
+    absl::optional<CorsErrorStatus> status) {
+  if (net_error == net::OK) {
+    DCHECK(!status) << *status;
+    return absl::nullopt;
+  }
+
+  // `kInvalidResponse` is never returned by the preflight controller, so we use
+  // it to record the case where there was a net error and no CORS error.
+  auto histogram_error = mojom::CorsError::kInvalidResponse;
+  if (status) {
+    DCHECK(status->cors_error != mojom::CorsError::kInvalidResponse);
+    histogram_error = status->cors_error;
+  }
+
+  if (should_ignore_preflight_errors_) {
+    // Even if we ignore the error, record the warning in metrics and DevTools.
+    base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
+                                  histogram_error);
+    if (status && devtools_observer_) {
+      ReportCorsErrorToDevTools(*status, /*is_warning=*/true);
+    }
+
+    return absl::nullopt;
+  }
+
+  base::UmaHistogramEnumeration(kPreflightErrorHistogramName, histogram_error);
+  if (status) {
+    return URLLoaderCompletionStatus(*std::move(status));
+  }
+
+  return URLLoaderCompletionStatus(net_error);
+}
+
 void CorsURLLoader::OnPreflightRequestComplete(
     int net_error,
     absl::optional<CorsErrorStatus> status,
@@ -744,17 +779,11 @@ void CorsURLLoader::OnPreflightRequestComplete(
   has_authorization_covered_by_wildcard_ =
       has_authorization_covered_by_wildcard;
 
-  if (net_error == net::OK) {
-    DCHECK(!status) << *status;
-  } else if (!should_ignore_preflight_errors_) {
-    HandleComplete(status.has_value() ? URLLoaderCompletionStatus(*status)
-                                      : URLLoaderCompletionStatus(net_error));
+  absl::optional<URLLoaderCompletionStatus> completion_status =
+      ConvertPreflightResult(net_error, std::move(status));
+  if (completion_status) {
+    HandleComplete(*std::move(completion_status));
     return;
-  }
-
-  // Even if we ignore the error, report it as a warning to DevTools.
-  if (devtools_observer_ && status) {
-    ReportCorsErrorToDevTools(*status, /*is_warning=*/true);
   }
 
   StartNetworkRequest();

@@ -33,6 +33,12 @@ class NetworkService;
 
 namespace cors {
 
+// Name of a histogram that records preflight errors (CorsError values).
+extern const char kPreflightErrorHistogramName[];
+
+// Name of a histogram that records suppressed preflight errors, aka warnings.
+extern const char kPreflightWarningHistogramName[];
+
 // A class to manage CORS-preflight, making a CORS-preflight request, checking
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {

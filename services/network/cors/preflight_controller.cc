@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -244,8 +245,6 @@ absl::optional<CorsErrorStatus> CheckPreflightAccess(
     return absl::nullopt;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Net.Cors.PreflightCheckError",
-                            error_status->cors_error);
   return error_status;
 }
 
@@ -320,6 +319,9 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
           original_request.request_initiator, client_security_state.Clone(),
           original_request.url, *status, /*is_warning=*/true);
     }
+
+    base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
+                                  status->cors_error);
   }
 
   absl::optional<mojom::CorsError> error;
@@ -351,6 +353,9 @@ absl::optional<CorsErrorStatus> CheckPreflightResult(
 }
 
 }  // namespace
+
+const char kPreflightErrorHistogramName[] = "Net.Cors.PreflightCheckError2";
+const char kPreflightWarningHistogramName[] = "Net.Cors.PreflightCheckWarning";
 
 class PreflightController::PreflightLoader final {
  public:

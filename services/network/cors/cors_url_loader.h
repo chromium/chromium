@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -118,6 +119,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
  private:
   void StartRequest();
+
+  // Helper for `OnPreflightRequestComplete()`.
+  absl::optional<URLLoaderCompletionStatus> ConvertPreflightResult(
+      int net_error,
+      absl::optional<CorsErrorStatus> status);
+
   void OnPreflightRequestComplete(int net_error,
                                   absl::optional<CorsErrorStatus> status,
                                   bool has_authorization_covered_by_wildcard);
@@ -260,7 +267,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // sent the preflight, so we ignore them all.
   //
   // INVARIANT: if this is true, then
-  // `should_ignore_private_network_access_errors_` is also true.
+  // `ShouldIgnorePrivateNetworkAccessErrors()` is also true.
   //
   // TODO(https://crbug.com/1268378): Remove this along with
   // `should_ignore_private_network_access_errors_`.
