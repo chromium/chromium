@@ -47,7 +47,7 @@ void AppearanceHandler::HandleUseDefaultTheme(const base::ListValue* args) {
 // of lacros-chrome is complete.
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppearanceHandler::HandleUseSystemTheme(const base::ListValue* args) {
-  if (profile_->IsSupervised())
+  if (profile_->IsChild())
     NOTREACHED();
   else
     ThemeServiceFactory::GetForProfile(profile_)->UseSystemTheme();

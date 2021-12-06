@@ -241,7 +241,7 @@ base::Value HistoryEntryToValue(
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserService* supervised_user_service = nullptr;
-  if (profile->IsSupervised()) {
+  if (profile->IsChild()) {
     supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(profile);
   }

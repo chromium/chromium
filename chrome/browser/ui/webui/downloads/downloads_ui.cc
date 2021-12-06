@@ -154,7 +154,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean("allowDeletingHistory",
                      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory) &&
-                         !profile->IsSupervised());
+                         !profile->IsChild());
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
 

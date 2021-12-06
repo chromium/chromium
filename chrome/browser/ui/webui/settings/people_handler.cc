@@ -847,7 +847,7 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
     return sync_status;
   }
 
-  sync_status->SetBoolean("supervisedUser", profile_->IsSupervised());
+  sync_status->SetBoolean("supervisedUser", profile_->IsChild());
   sync_status->SetBoolean("childUser", profile_->IsChild());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);

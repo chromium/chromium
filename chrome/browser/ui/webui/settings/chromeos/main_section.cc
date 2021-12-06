@@ -162,7 +162,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isKioskModeActive",
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
-  html_source->AddBoolean("isSupervised", profile()->IsSupervised());
+  html_source->AddBoolean("isSupervised", profile()->IsChild());
 
   html_source->AddBoolean(
       "appManagementIntentSettingsEnabled",
