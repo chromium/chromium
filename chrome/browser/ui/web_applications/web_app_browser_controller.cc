@@ -36,11 +36,10 @@
 #include "content/public/common/content_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 
 namespace {
@@ -228,19 +227,14 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   if (web_theme_color)
     return web_theme_color;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ash::ColorProvider::Get()->IsDarkModeEnabled() flips semantics depending on
-  // the status of ash::Features::IsDarkLightModeEnabled(), so we have to check
-  // both.
-  if (ash::features::IsDarkLightModeEnabled()) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     absl::optional<SkColor> dark_mode_color =
         registrar().GetAppDarkModeThemeColor(app_id());
 
-    if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
+    if (dark_mode_color) {
       return dark_mode_color;
     }
   }
-#endif
 
   return registrar().GetAppThemeColor(app_id());
 }
@@ -249,15 +243,14 @@ absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   if (auto color = AppBrowserController::GetBackgroundColor())
     return color;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsDarkLightModeEnabled()) {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     absl::optional<SkColor> dark_mode_color =
         registrar().GetAppDarkModeBackgroundColor(app_id());
-    if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
+    if (dark_mode_color) {
       return dark_mode_color;
     }
   }
-#endif
+
   return registrar().GetAppBackgroundColor(app_id());
 }
 

@@ -2008,6 +2008,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/web_applications/pwa_mixed_content_browsertest.cc",
       "../browser/ui/web_applications/web_app_badging_browsertest.cc",
       "../browser/ui/web_applications/web_app_browsertest.cc",
+      "../browser/ui/web_applications/web_app_dark_mode_browsertest.cc",
       "../browser/ui/web_applications/web_app_engagement_browsertest.cc",
       "../browser/ui/web_applications/web_app_file_handling_browsertest.cc",
       "../browser/ui/web_applications/web_app_launch_handler_browsertest.cc",
