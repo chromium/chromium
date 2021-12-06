@@ -9,11 +9,12 @@
   #inclusive-ancestor-across-root,
   #inclusive-ancestor-skip-slotting,
   #inclusive-ancestor-slotted,
-  #inclusive-ancestor-host {
-  #inclusive-ancestor-part {
-  #inclusive-ancestor-slotted-before {
-  #inclusive-ancestor-host-before {
-  #inclusive-ancestor-part-before {
+  #inclusive-ancestor-host,
+  #inclusive-ancestor-part,
+  #inclusive-ancestor-slotted-before,
+  #inclusive-ancestor-host-before,
+  #inclusive-ancestor-part-before,
+  #inclusive-ancestor-inner-part {
     width: 400px;
     container-type: inline-size;
   }
@@ -177,6 +178,37 @@
   </div>
 </div>
 
+<div id="inclusive-ancestor-inner-part">
+  <style>
+    @container size(width = 400px) {
+      #inclusive-ancestor-part > div::part(inner-part) { color: green; }
+    }
+  </style>
+  <div>
+    <template shadowroot="open">
+      <style>
+        div {
+          width: 200px;
+          container-type: inline-size;
+        }
+      </style>
+      <div exportparts="inner-part">
+        <template shadowroot="open">
+          <style>
+            div {
+              width: 200px;
+              container-type: inline-size;
+            }
+          </style>
+          <div>
+            <span id="t9" part="inner-part"></span>
+          </div>
+        </template>
+      </div>
+    </template>
+  </div>
+</div>
+
 <script>
   const green = "rgb(0, 128, 0)";
 
@@ -216,7 +248,14 @@
   }, "Match container in outer tree for :host::before");
 
   test(() => {
-    const t8 = document.querySelector("#inclusive-ancestor-part > div").shadowRoot.querySelector("#t8");
+    const t8 = document.querySelector("#inclusive-ancestor-part-before > div").shadowRoot.querySelector("#t8");
     assert_equals(getComputedStyle(t8).color, green);
   }, "Match container for ::before in ::part selector's originating element tree");
+
+  test(() => {
+    const outerhost = document.querySelector("#inclusive-ancestor-inner-part > div");
+    const innerhost = outerhost.shadowRoot.querySelector("div");
+    const t9 = innerhost.shadowRoot.querySelector("#t9");
+    assert_equals(getComputedStyle(t9).color, green);
+  }, "Match container for ::part selector's originating element tree for exportparts");
 </script>
