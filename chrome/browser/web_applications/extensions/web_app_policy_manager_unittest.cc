@@ -274,8 +274,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         nullptr, nullptr);
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
-            [this](const ExternalInstallOptions& install_options)
-                -> ExternallyManagedAppManager::InstallResult {
+            [this](const ExternalInstallOptions& install_options) {
               const GURL& install_url = install_options.install_url;
               if (!app_registrar().GetAppById(GenerateAppId(
                       /*manifest_id=*/absl::nullopt, install_url))) {
@@ -290,7 +289,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
                     GenerateAppId(/*manifest_id=*/absl::nullopt, install_url),
                     install_source);
               }
-              return {.code = install_result_code_};
+              return ExternallyManagedAppManager::InstallResult(
+                  install_result_code_);
             }));
     externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(

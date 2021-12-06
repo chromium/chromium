@@ -212,9 +212,9 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
         &controller().registrar(), nullptr, nullptr, nullptr, nullptr);
     fake_externally_managed_app_manager_->SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
-            [this](const web_app::ExternalInstallOptions& install_options)
-                -> web_app::ExternallyManagedAppManager::InstallResult {
-              return {.code = install_result_code_};
+            [this](const web_app::ExternalInstallOptions& install_options) {
+              return web_app::ExternallyManagedAppManager::InstallResult(
+                  install_result_code_);
             }));
 
     setup_controller_ = base::WrapUnique(new AndroidSmsAppSetupControllerImpl(

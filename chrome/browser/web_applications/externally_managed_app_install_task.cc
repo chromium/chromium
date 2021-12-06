@@ -143,8 +143,8 @@ void ExternallyManagedAppInstallTask::OnUrlLoaded(
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(retry_on_failure), /*app_id=*/absl::nullopt,
-                     ExternallyManagedAppManager::InstallResult{.code = code}));
+      base::BindOnce(std::move(retry_on_failure),
+                     ExternallyManagedAppManager::InstallResult(code)));
 }
 
 void ExternallyManagedAppInstallTask::InstallFromInfo(
@@ -196,8 +196,8 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
     LOG(ERROR) << "Failed to uninstall placeholder for: "
                << install_options_.install_url;
     std::move(result_callback)
-        .Run(/*app_id=*/absl::nullopt,
-             {.code = InstallResultCode::kFailedPlaceholderUninstall});
+        .Run(ExternallyManagedAppManager::InstallResult(
+            InstallResultCode::kFailedPlaceholderUninstall));
     return;
   }
   ContinueWebAppInstall(web_contents, std::move(result_callback));
@@ -228,9 +228,9 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     // No need to install a placeholder app again.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), app_id,
-                       ExternallyManagedAppManager::InstallResult{
-                           .code = InstallResultCode::kSuccessNewInstall}));
+        base::BindOnce(std::move(callback),
+                       ExternallyManagedAppManager::InstallResult(
+                           InstallResultCode::kSuccessNewInstall, app_id)));
     return;
   }
 
@@ -264,7 +264,8 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
     const AppId& app_id,
     InstallResultCode code) {
   if (!IsNewInstall(code)) {
-    std::move(result_callback).Run(/*app_id=*/absl::nullopt, {.code = code});
+    std::move(result_callback)
+        .Run(ExternallyManagedAppManager::InstallResult(code));
     return;
   }
 
@@ -282,11 +283,10 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
                ? InstallResultCode::kSuccessOfflineOnlyInstall
                : InstallResultCode::kSuccessOfflineFallbackInstall;
   }
-  base::ScopedClosureRunner scoped_closure(base::BindOnce(
-      std::move(result_callback), app_id,
-      ExternallyManagedAppManager::InstallResult{
-          .code = code,
-          .did_uninstall_and_replace = uninstall_and_replace_triggered}));
+  base::ScopedClosureRunner scoped_closure(
+      base::BindOnce(std::move(result_callback),
+                     ExternallyManagedAppManager::InstallResult(
+                         code, app_id, uninstall_and_replace_triggered)));
 
   if (!is_placeholder) {
     registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
@@ -337,13 +337,12 @@ void ExternallyManagedAppInstallTask::OnOsHooksCreated(
 
 void ExternallyManagedAppInstallTask::TryAppInfoFactoryOnFailure(
     ResultCallback result_callback,
-    absl::optional<AppId> app_id,
     ExternallyManagedAppManager::InstallResult result) {
   if (!IsSuccess(result.code) && install_options().app_info_factory) {
     InstallFromInfo(std::move(result_callback));
     return;
   }
-  std::move(result_callback).Run(std::move(app_id), std::move(result));
+  std::move(result_callback).Run(std::move(result));
 }
 
 }  // namespace web_app

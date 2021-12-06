@@ -570,7 +570,8 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
       base::BindLambdaForTesting(
           [](const ExternalInstallOptions&)
               -> ExternallyManagedAppManager::InstallResult {
-            return {.code = InstallResultCode::kWebAppDisabled};
+            return ExternallyManagedAppManager::InstallResult(
+                InstallResultCode::kWebAppDisabled);
           }));
 
   {
@@ -673,8 +674,10 @@ TEST_F(SystemWebAppManagerTest,
           [](const ExternalInstallOptions& opts)
               -> ExternallyManagedAppManager::InstallResult {
             if (opts.install_url == AppUrl1())
-              return {.code = InstallResultCode::kSuccessAlreadyInstalled};
-            return {.code = InstallResultCode::kSuccessNewInstall};
+              return ExternallyManagedAppManager::InstallResult(
+                  InstallResultCode::kSuccessAlreadyInstalled);
+            return ExternallyManagedAppManager::InstallResult(
+                InstallResultCode::kSuccessNewInstall);
           }));
 
   StartAndWaitForAppsToSynchronize();
@@ -711,8 +714,10 @@ TEST_F(SystemWebAppManagerTest,
             [](const ExternalInstallOptions& opts)
                 -> ExternallyManagedAppManager::InstallResult {
               if (opts.install_url == AppUrl1())
-                return {.code = InstallResultCode::kWriteDataFailed};
-              return {.code = InstallResultCode::kSuccessNewInstall};
+                return ExternallyManagedAppManager::InstallResult(
+                    InstallResultCode::kWriteDataFailed);
+              return ExternallyManagedAppManager::InstallResult(
+                  InstallResultCode::kSuccessNewInstall);
             }));
 
     StartAndWaitForAppsToSynchronize();
@@ -729,8 +734,10 @@ TEST_F(SystemWebAppManagerTest,
             [](const ExternalInstallOptions& opts)
                 -> ExternallyManagedAppManager::InstallResult {
               if (opts.install_url == AppUrl1())
-                return {.code = InstallResultCode::kSuccessNewInstall};
-              return {.code = InstallResultCode::kSuccessAlreadyInstalled};
+                return ExternallyManagedAppManager::InstallResult(
+                    InstallResultCode::kSuccessNewInstall);
+              return ExternallyManagedAppManager::InstallResult(
+                  InstallResultCode::kSuccessAlreadyInstalled);
             }));
     StartAndWaitForAppsToSynchronize();
 

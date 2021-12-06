@@ -82,8 +82,7 @@ class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
 
   void CreateWebContentsIfNecessary();
 
-  void OnInstalled(absl::optional<AppId> app_id,
-                   ExternallyManagedAppManager::InstallResult result);
+  void OnInstalled(ExternallyManagedAppManager::InstallResult result);
 
   void MaybeEnqueueServiceWorkerRegistration(
       const ExternalInstallOptions& install_options);

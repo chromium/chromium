@@ -311,7 +311,8 @@ class FakeExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
               install_url, result.did_install_placeholder);
         }
       }
-      std::move(callback).Run(app_id, {.code = result.code});
+      std::move(callback).Run(
+          ExternallyManagedAppManager::InstallResult(result.code, app_id));
     }
 
     void Install(content::WebContents* web_contents,

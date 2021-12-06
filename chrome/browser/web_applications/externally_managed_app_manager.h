@@ -53,9 +53,18 @@ enum class RegistrationResultCode { kSuccess, kAlreadyRegistered, kTimeout };
 class ExternallyManagedAppManager {
  public:
   struct InstallResult {
-    InstallResultCode code;
-    bool did_uninstall_and_replace = false;
+    InstallResult();
+    explicit InstallResult(InstallResultCode code,
+                           absl::optional<AppId> app_id = absl::nullopt,
+                           bool did_uninstall_and_replace = false);
+    InstallResult(const InstallResult&);
+    ~InstallResult();
+
     bool operator==(const InstallResult& other) const;
+
+    InstallResultCode code;
+    absl::optional<AppId> app_id;
+    bool did_uninstall_and_replace = false;
   };
 
   using OnceInstallCallback =

@@ -40,7 +40,6 @@ enum class InstallResultCode;
 class ExternallyManagedAppInstallTask {
  public:
   using ResultCallback = base::OnceCallback<void(
-      absl::optional<AppId> app_id,
       ExternallyManagedAppManager::InstallResult result)>;
 
   // Constructs a task that will install a Web App for |profile|.
@@ -99,7 +98,6 @@ class ExternallyManagedAppInstallTask {
                          InstallResultCode code);
   void TryAppInfoFactoryOnFailure(
       ResultCallback result_callback,
-      absl::optional<AppId> app_id,
       ExternallyManagedAppManager::InstallResult result);
   void OnOsHooksCreated(const AppId& app_id,
                         base::ScopedClosureRunner scoped_closure,

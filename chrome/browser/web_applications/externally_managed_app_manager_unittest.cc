@@ -56,7 +56,8 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
                     install_options.install_source);
                 ++deduped_install_count_;
               }
-              return {.code = InstallResultCode::kSuccessNewInstall};
+              return ExternallyManagedAppManager::InstallResult(
+                  InstallResultCode::kSuccessNewInstall);
             }));
     externally_managed_app_manager().SetHandleUninstallRequestCallback(
         base::BindLambdaForTesting(
