@@ -82,11 +82,20 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
     result_container_views_.push_back(new_container);
   };
 
-  // kBestMatch is always the first list view shown.
+  // kAnswerCard is always the first list view shown.
+  auto* answer_card_container =
+      scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
+          /*main_view=*/nullptr, view_delegate, dialog_controller_,
+          SearchResultView::SearchResultViewType::kAnswerCard, absl::nullopt));
+  answer_card_container->SetListType(
+      SearchResultListView::SearchResultListType::kAnswerCard);
+  add_result_container(answer_card_container);
+
+  // kBestMatch is always the second list view shown.
   auto* best_match_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           /*main_view=*/nullptr, view_delegate, dialog_controller_,
-          absl::nullopt));
+          SearchResultView::SearchResultViewType::kDefault, absl::nullopt));
   best_match_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
   add_result_container(best_match_container);
@@ -94,13 +103,16 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   // SearchResultListViews are aware of their relative position in the
   // Productivity launcher search view. SearchResultListViews with mutable
   // positions are passed their productivity_launcher_search_view_position to
-  // update their own category type. kBestMatch has already been constructed.
+  // update their own category type. kAnswerCard and kBestMatch have already
+  // been constructed.
   const size_t category_count =
-      SearchResultListView::GetAllListTypesForCategoricalSearch().size() - 1;
+      SearchResultListView::GetAllListTypesForCategoricalSearch().size() -
+      result_container_views_.size();
   for (size_t i = 0; i < category_count; ++i) {
     auto* result_container =
         scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-            /*main_view=*/nullptr, view_delegate, dialog_controller_, i));
+            /*main_view=*/nullptr, view_delegate, dialog_controller_,
+            SearchResultView::SearchResultViewType::kDefault, i));
     add_result_container(result_container);
   }
 

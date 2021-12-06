@@ -38,39 +38,44 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
     // kUnified list view contains all search results with the display type
     // SearchResultDisplayType::kList. No category labels are shown. This should
     // be used when productivity launcher is disabled.
-    kUnified = 0,
+    kUnified,
+    // kAnswerCard list view contains a single result that has an extremely high
+    // chance of being exactly what the user is looking for.
+    kAnswerCard,
     // kBestMatch list view contains the results that are the best match for the
     // current query. This category should be used when productivity launcher is
     // enabled. All search results will show up under this category until search
     // metadata is updated with the other category labels.
-    kBestMatch = 1,
+    kBestMatch,
     // kApps list view contains existing non-game ARC and PWA apps that are
     // installed and are relevant to but not the best match for the current
     // query.
-    kApps = 2,
+    kApps,
     // kAppShortcuts list view contains shortcuts to actions for existing apps.
-    kAppShortcuts = 3,
+    kAppShortcuts,
     // kWeb list view contains links to relevant websites.
-    kWeb = 4,
+    kWeb,
     // kFiles list view contains relevant local and Google Drive files.
-    kFiles = 5,
+    kFiles,
     // kSettings list view contains relevant system settings.
-    kSettings = 6,
+    kSettings,
     // kHelp list view contains help articles from Showoff and Keyboard
     // Shortcuts.
-    kHelp = 7,
+    kHelp,
     // kPlayStore contains suggested apps from the playstore that are not
     // currently installed.
-    kPlayStore = 8,
+    kPlayStore,
     // kSearchAndAssistant contain suggestions from Search and Google Assistant.
-    kSearchAndAssistant = 9,
+    kSearchAndAssistant,
     kMaxValue = kSearchAndAssistant,
   };
 
-  SearchResultListView(AppListMainView* main_view,
-                       AppListViewDelegate* view_delegate,
-                       SearchResultPageDialogController* dialog_controller,
-                       absl::optional<size_t> productivity_launcher_index);
+  SearchResultListView(
+      AppListMainView* main_view,
+      AppListViewDelegate* view_delegate,
+      SearchResultPageDialogController* dialog_controller,
+      SearchResultView::SearchResultViewType search_result_view_type,
+      absl::optional<size_t> productivity_launcher_index);
 
   SearchResultListView(const SearchResultListView&) = delete;
   SearchResultListView& operator=(const SearchResultListView&) = delete;
@@ -165,6 +170,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // 'productivity_launcher_search_view_'. A disabled view does not query the
   // search model.
   bool enabled_ = true;
+
+  const SearchResultView::SearchResultViewType search_result_view_type_;
 };
 
 }  // namespace ash

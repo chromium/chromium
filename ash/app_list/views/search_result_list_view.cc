@@ -28,6 +28,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
@@ -54,6 +55,7 @@ constexpr base::TimeDelta kImpressionThreshold = base::Seconds(3);
 // TODO(crbug.com/1199206): Move this into SharedAppListConfig once the UI for
 // categories is more developed.
 constexpr size_t kMaxResultsWithCategoricalSearch = 3;
+constexpr int kAnswerCardMaxResults = 1;
 
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
@@ -73,7 +75,7 @@ size_t GetMaxSearchResultListItems() {
   return SharedAppListConfig::instance().max_search_result_list_items();
 }
 
-// Maps |sh::AppListSearchResultCategory.to SearchResultListType.
+// Maps 'AppListSearchResultCategory' to 'SearchResultListType'.
 SearchResultListView::SearchResultListType CategoryToListType(
     ash::AppListSearchResultCategory category) {
   switch (category) {
@@ -105,12 +107,14 @@ SearchResultListView::SearchResultListView(
     AppListMainView* main_view,
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
+    SearchResultView::SearchResultViewType search_result_view_type,
     absl::optional<size_t> productivity_launcher_index)
     : SearchResultContainerView(view_delegate),
       main_view_(main_view),
       view_delegate_(view_delegate),
       results_container_(new views::View),
-      productivity_launcher_index_(productivity_launcher_index) {
+      productivity_launcher_index_(productivity_launcher_index),
+      search_result_view_type_(search_result_view_type) {
   auto* layout = results_container_->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
@@ -132,10 +136,7 @@ SearchResultListView::SearchResultListView(
 
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(new SearchResultView(
-        this, view_delegate_, dialog_controller,
-        features::IsProductivityLauncherEnabled()
-            ? SearchResultView::SearchResultViewType::kDefault
-            : SearchResultView::SearchResultViewType::kClassic));
+        this, view_delegate_, dialog_controller, search_result_view_type));
     search_result_views_.back()->set_index_in_container(i);
     results_container_->AddChildView(search_result_views_.back());
     AddObservedResultView(search_result_views_.back());
@@ -149,7 +150,9 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
   list_type_ = list_type;
   switch (list_type_.value()) {
     case SearchResultListType::kUnified:
-      // Classic SearchResultListView does not have category labels.
+    case SearchResultListType::kAnswerCard:
+      // kUnified and kAnswerCard SearchResultListView do not have labels.
+      title_label_->SetText(u"");
       break;
     case SearchResultListType::kBestMatch:
       title_label_->SetText(l10n_util::GetStringUTF16(
@@ -191,7 +194,9 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
 
   switch (list_type_.value()) {
     case SearchResultListType::kUnified:
-      // Classic SearchResultListView does not have category labels.
+    case SearchResultListType::kAnswerCard:
+      // Classic SearchResultListView and Productivity Launcher Answer Card do
+      // not have category labels.
       title_label_->SetVisible(false);
       break;
     case SearchResultListType::kBestMatch:
@@ -206,6 +211,31 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
       title_label_->SetVisible(true);
       break;
   }
+
+#if DCHECK_IS_ON()
+  switch (list_type_.value()) {
+    case SearchResultListType::kAnswerCard:
+      DCHECK(search_result_view_type_ ==
+             SearchResultView::SearchResultViewType::kAnswerCard);
+      break;
+    case SearchResultListType::kUnified:
+      DCHECK(search_result_view_type_ ==
+             SearchResultView::SearchResultViewType::kClassic);
+      break;
+    case SearchResultListType::kBestMatch:
+    case SearchResultListType::kApps:
+    case SearchResultListType::kAppShortcuts:
+    case SearchResultListType::kWeb:
+    case SearchResultListType::kFiles:
+    case SearchResultListType::kSettings:
+    case SearchResultListType::kHelp:
+    case SearchResultListType::kPlayStore:
+    case SearchResultListType::kSearchAndAssistant:
+      DCHECK(search_result_view_type_ ==
+             SearchResultView::SearchResultViewType::kDefault);
+      break;
+  }
+#endif
 }
 
 void SearchResultListView::ListItemsRemoved(size_t start, size_t count) {
@@ -223,6 +253,7 @@ SearchResultView* SearchResultListView::GetResultViewAt(size_t index) {
 std::vector<SearchResultListView::SearchResultListType>
 SearchResultListView::GetAllListTypesForCategoricalSearch() {
   static const std::vector<SearchResultListType> categorical_search_types = {
+      SearchResultListType::kAnswerCard,
       SearchResultListType::kBestMatch,
       SearchResultListType::kApps,
       SearchResultListType::kAppShortcuts,
@@ -428,7 +459,9 @@ SearchResult::Category SearchResultListView::GetSearchCategory() {
   switch (list_type_.value()) {
     case SearchResultListType::kUnified:
     case SearchResultListType::kBestMatch:
-      // Categories are undefined for |kUnified| and |KBestMatch| list types.
+    case SearchResultListType::kAnswerCard:
+      // Categories are undefined for |kUnified|, |KBestMatch|, and
+      // |kAnswerCard| list types.
       NOTREACHED();
       return SearchResult::Category::kUnknown;
     case SearchResultListType::kApps:
@@ -456,11 +489,19 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
     case SearchResultListType::kUnified:
       // Use classic search results for the kUnified list view.
       return GetUnifiedSearchResults();
+    case SearchResultListType::kAnswerCard:
+      return SearchModel::FilterSearchResultsByFunction(
+          results(), base::BindRepeating([](const SearchResult& result) {
+            return result.display_type() ==
+                   SearchResultDisplayType::kAnswerCard;
+          }),
+          kAnswerCardMaxResults);
     case SearchResultListType::kBestMatch:
       // Filter results based on whether they have the best_match label.
       return SearchModel::FilterSearchResultsByFunction(
           results(), base::BindRepeating([](const SearchResult& result) {
-            return result.best_match();
+            return result.best_match() &&
+                   result.display_type() == SearchResultDisplayType::kList;
           }),
           GetMaxSearchResultListItems());
     case SearchResultListType::kApps:
@@ -477,7 +518,9 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
       auto filter_function = base::BindRepeating(
           [](const SearchResult::Category& search_category,
              const SearchResult& result) -> bool {
-            return result.category() == search_category && !result.best_match();
+            return result.category() == search_category &&
+                   !result.best_match() &&
+                   result.display_type() == SearchResultDisplayType::kList;
           },
           search_category);
       return SearchModel::FilterSearchResultsByFunction(

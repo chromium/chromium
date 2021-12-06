@@ -111,6 +111,7 @@ namespace ash {
 namespace {
 
 constexpr int kAppListBezelMargin = 50;
+constexpr int kBestMatchContainerIndex = 1;
 
 AppListModel* GetAppListModel() {
   return AppListModelProvider::Get()->model();
@@ -403,12 +404,12 @@ class AppListBubbleAndTabletTest
     if (should_show_bubble_launcher()) {
       return GetAppListTestHelper()
           ->GetProductivityLauncherSearchView()
-          ->result_container_views_for_test()[0];
+          ->result_container_views_for_test()[kBestMatchContainerIndex];
     }
     if (productivity_launcher_param()) {
       return GetFullscreenSearchPage()
           ->productivity_launcher_search_view_for_test()
-          ->result_container_views_for_test()[0];
+          ->result_container_views_for_test()[kBestMatchContainerIndex];
     }
     return GetFullscreenSearchPage()->GetSearchResultListViewForTest();
   }

@@ -51,7 +51,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     kClassic,
     // Inline Answer views are used to directly answer questions posed by the
     // search query.
-    kInlineAnswer,
+    kAnswerCard,
   };
 
   // Internal class name.
@@ -70,7 +70,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // Sets/gets SearchResult displayed by this view.
   void OnResultChanged() override;
 
-  void SetSearchResultViewType(SearchResultViewType type) { view_type_ = type; }
+  void SetSearchResultViewType(SearchResultViewType type);
+  SearchResultViewType view_type() { return view_type_; }
+
+  views::LayoutOrientation GetLayoutOrientationForTest();
 
  private:
   friend class test::SearchResultListViewTest;

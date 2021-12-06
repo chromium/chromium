@@ -1155,6 +1155,16 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
     search_results->Add(std::move(search_result));
   }
 
+  static void AddAnswerCardResult(const std::string& id,
+                                  const std::u16string& title) {
+    SearchModel::SearchResults* search_results = GetSearchModel()->results();
+    auto search_result = std::make_unique<TestSearchResult>();
+    search_result->set_result_id(id);
+    search_result->set_display_type(SearchResultDisplayType::kAnswerCard);
+    search_result->set_title(title);
+    search_results->Add(std::move(search_result));
+  }
+
   base::test::ScopedFeatureList scoped_features_;
 };
 
@@ -1166,7 +1176,7 @@ TEST_F(SearchBoxViewAppListBubbleTest, Autocomplete) {
   PressAndReleaseKey(ui::VKEY_E);
 
   // Simulate "hello" being returned as a search result.
-  AddSearchResult("id", u"hello");
+  AddAnswerCardResult("id", u"hello");
   base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
 
   // The text autocompletes to "hello" and selects "llo".

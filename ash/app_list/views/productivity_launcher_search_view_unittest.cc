@@ -77,6 +77,22 @@ class ProductivityLauncherSearchViewTest
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetUpAnswerCardResult(SearchModel::SearchResults* results,
+                             int init_id,
+                             int new_result_count) {
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kAnswerCard);
+    result->set_title(base::UTF8ToUTF16(base::StringPrintf("Answer Card")));
+    result->set_display_score(1000);
+    result->set_details(u"Answer Card Details");
+    result->set_best_match(false);
+    results->Add(std::move(result));
+
+    // Adding results will schedule Update().
+    base::RunLoop().RunUntilIdle();
+  }
+
   SearchResultListView::SearchResultListType GetListType(
       SearchResultContainerView* result_container_view) {
     return static_cast<SearchResultListView*>(result_container_view)
@@ -108,6 +124,17 @@ class ProductivityLauncherSearchViewTest
     return GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible();
   }
 
+  std::vector<size_t> GetVisibleResultContainers() {
+    std::vector<SearchResultContainerView*> result_containers =
+        GetProductivityLauncherSearchView()->result_container_views_for_test();
+    std::vector<size_t> visible_result_containers = {};
+    for (size_t i = 0; i < result_containers.size(); i++) {
+      if (result_containers[i]->GetVisible())
+        visible_result_containers.push_back(i);
+    }
+    return visible_result_containers;
+  }
+
   SearchBoxView* GetSearchBoxView() {
     if (tablet_mode_)
       return GetAppListTestHelper()->GetSearchBoxView();
@@ -118,6 +145,7 @@ class ProductivityLauncherSearchViewTest
   const bool tablet_mode_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
 INSTANTIATE_TEST_SUITE_P(Tablet,
                          ProductivityLauncherSearchViewTest,
                          testing::Bool());
@@ -168,7 +196,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
   for (int i = 0; i < kDefaultSearchItems - 1; ++i) {
     PressAndReleaseKey(ui::VKEY_DOWN);
     ASSERT_TRUE(controller->selected_result()) << i;
-    EXPECT_EQ(controller->selected_location_details()->container_index, 1) << i;
+    EXPECT_EQ(controller->selected_location_details()->container_index, 2) << i;
     EXPECT_EQ(controller->selected_location_details()->result_index, i + 1);
   }
 
@@ -176,7 +204,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
   for (int i = 0; i < kDefaultSearchItems; ++i) {
     PressAndReleaseKey(ui::VKEY_DOWN);
     ASSERT_TRUE(controller->selected_result()) << i;
-    EXPECT_EQ(controller->selected_location_details()->container_index, 2) << i;
+    EXPECT_EQ(controller->selected_location_details()->container_index, 3) << i;
     EXPECT_EQ(controller->selected_location_details()->result_index, i);
   }
 
@@ -192,7 +220,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
   EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
 
   ASSERT_TRUE(controller->selected_result());
-  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 0);
 
   // Up key should cycle focus to the close button, and then the last search
@@ -205,9 +233,52 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
   EXPECT_TRUE(GetSearchBoxView()->search_box()->HasFocus());
 
   ASSERT_TRUE(controller->selected_result());
-  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 3);
   EXPECT_EQ(controller->selected_location_details()->result_index,
             kDefaultSearchItems - 1);
+}
+
+TEST_P(ProductivityLauncherSearchViewTest, AnswerCardSelection) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+
+  EXPECT_FALSE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+
+  // Create categorized results and order categories as {kApps}.
+  std::vector<ash::AppListSearchResultCategory>* ordered_categories =
+      test_helper->GetOrderedResultCategories();
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+  ordered_categories->push_back(ash::AppListSearchResultCategory::kApps);
+  SetUpSearchResults(results, 1, kDefaultSearchItems, 1, false,
+                     SearchResult::Category::kApps);
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+  // Verify result container ordering.
+  std::vector<SearchResultContainerView*> result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
+
+  SetUpAnswerCardResult(results, 1, 1);
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+
+  EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{0, 2}));
+
+  EXPECT_TRUE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
+  ResultSelectionController* controller =
+      GetProductivityLauncherSearchView()
+          ->result_selection_controller_for_test();
+  // Press VKEY_DOWN and check if the next is selected.
+  EXPECT_EQ(controller->selected_location_details()->container_index, 0);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 0);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
 }
 
 // Tests that result selection controller can change between  within and between
@@ -227,28 +298,23 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelection) {
   AppListModelProvider::Get()->search_model()->DeleteAllResults();
   ordered_categories->push_back(AppListSearchResultCategory::kApps);
   ordered_categories->push_back(AppListSearchResultCategory::kWeb);
-  SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
+  SetUpSearchResults(results, 2, kDefaultSearchItems, 100, false,
                      SearchResult::Category::kApps);
-  SetUpSearchResults(results, 1 + kDefaultSearchItems, kDefaultSearchItems, 1,
+  SetUpSearchResults(results, 2 + kDefaultSearchItems, kDefaultSearchItems, 1,
                      false, SearchResult::Category::kWeb);
   GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+
+  std::vector<SearchResultContainerView*> result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
+
+  EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{2, 3}));
 
   // Press VKEY_DOWN and check if the first result view is selected.
   EXPECT_TRUE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
   ResultSelectionController* controller =
       GetProductivityLauncherSearchView()
           ->result_selection_controller_for_test();
-  // Tests that VKEY_DOWN selects the next result in container 1.
-  PressAndReleaseKey(ui::VKEY_DOWN);
-
-  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
-  EXPECT_EQ(controller->selected_location_details()->result_index, 1);
-  PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
-  EXPECT_EQ(controller->selected_location_details()->result_index, 2);
-  // Tests that VKEY_DOWN while selecting the last result of the current
-  // container causes the selection controller to select the next container.
-  PressAndReleaseKey(ui::VKEY_DOWN);
+  // Tests that VKEY_DOWN selects the next result.
   EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 0);
   PressAndReleaseKey(ui::VKEY_DOWN);
@@ -257,12 +323,23 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelection) {
   PressAndReleaseKey(ui::VKEY_DOWN);
   EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 2);
+  // Tests that VKEY_DOWN while selecting the last result of the current
+  // container causes the selection controller to select the next container.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 3);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 0);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 3);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 1);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 3);
+  EXPECT_EQ(controller->selected_location_details()->result_index, 2);
   // Tests that VKEY_UP while selecting the first result of the current
   // container causes the selection controller to select the previous container.
   PressAndReleaseKey(ui::VKEY_UP);
   PressAndReleaseKey(ui::VKEY_UP);
   PressAndReleaseKey(ui::VKEY_UP);
-  EXPECT_EQ(controller->selected_location_details()->container_index, 1);
+  EXPECT_EQ(controller->selected_location_details()->container_index, 2);
   EXPECT_EQ(controller->selected_location_details()->result_index, 2);
 }
 
@@ -344,19 +421,23 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
   GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
 
   // Verify result container visibility.
-  EXPECT_FALSE(result_containers[0]->GetVisible());
-  EXPECT_TRUE(result_containers[1]->GetVisible());
-  EXPECT_TRUE(result_containers[2]->GetVisible());
-  EXPECT_FALSE(result_containers[3]->GetVisible());
+
+  EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{2, 3}));
 
   // Verify title labels are correctly updated.
-  EXPECT_EQ(GetListLabel(result_containers[1]), u"Apps");
-  EXPECT_EQ(GetListLabel(result_containers[2]), u"Websites");
+  EXPECT_EQ(GetListLabel(result_containers[0]), u"");
+  EXPECT_EQ(GetListLabel(result_containers[1]), u"Best Match");
+  EXPECT_EQ(GetListLabel(result_containers[2]), u"Apps");
+  EXPECT_EQ(GetListLabel(result_containers[3]), u"Websites");
 
   // Verify result container ordering.
+  EXPECT_EQ(GetListType(result_containers[0]),
+            SearchResultListView::SearchResultListType::kAnswerCard);
   EXPECT_EQ(GetListType(result_containers[1]),
-            SearchResultListView::SearchResultListType::kApps);
+            SearchResultListView::SearchResultListType::kBestMatch);
   EXPECT_EQ(GetListType(result_containers[2]),
+            SearchResultListView::SearchResultListType::kApps);
+  EXPECT_EQ(GetListType(result_containers[3]),
             SearchResultListView::SearchResultListType::kWeb);
 
   // Create categorized results and order categories as {kWeb, kApps}.
@@ -370,24 +451,39 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
   GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
 
   // Verify result container visibility.
-  EXPECT_FALSE(result_containers[0]->GetVisible());
-  EXPECT_TRUE(result_containers[1]->GetVisible());
-  EXPECT_TRUE(result_containers[2]->GetVisible());
-  EXPECT_FALSE(result_containers[3]->GetVisible());
+  EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{2, 3}));
 
   // Verify title labels are correctly updated.
 
-  EXPECT_EQ(GetListLabel(result_containers[1]), u"Websites");
-  EXPECT_EQ(GetListLabel(result_containers[2]), u"Apps");
+  EXPECT_EQ(GetListLabel(result_containers[0]), u"");
+  EXPECT_EQ(GetListLabel(result_containers[1]), u"Best Match");
+  EXPECT_EQ(GetListLabel(result_containers[2]), u"Websites");
+  EXPECT_EQ(GetListLabel(result_containers[3]), u"Apps");
 
   // Verify result container ordering.
   result_containers =
       GetProductivityLauncherSearchView()->result_container_views_for_test();
 
+  EXPECT_EQ(GetListType(result_containers[0]),
+            SearchResultListView::SearchResultListType::kAnswerCard);
   EXPECT_EQ(GetListType(result_containers[1]),
-            SearchResultListView::SearchResultListType::kWeb);
+            SearchResultListView::SearchResultListType::kBestMatch);
   EXPECT_EQ(GetListType(result_containers[2]),
+            SearchResultListView::SearchResultListType::kWeb);
+  EXPECT_EQ(GetListType(result_containers[3]),
             SearchResultListView::SearchResultListType::kApps);
+
+  SetUpAnswerCardResult(results, 1, 1);
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+
+  EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{0, 2, 3}));
+
+  AppListModelProvider::Get()->search_model()->DeleteAllResults();
+
+  // Adding results will schedule Update().
+  base::RunLoop().RunUntilIdle();
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+  EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{}));
 }
 
 TEST_P(ProductivityLauncherSearchViewTest, SearchResultA11y) {
@@ -408,7 +504,7 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultA11y) {
   std::vector<SearchResultContainerView*> result_containers =
       GetProductivityLauncherSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
-  EXPECT_TRUE(result_containers[0]->GetVisible());
+  EXPECT_TRUE(result_containers[1]->GetVisible());
 
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
 
@@ -493,7 +589,7 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
   std::vector<SearchResultContainerView*> result_containers =
       GetProductivityLauncherSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
-  EXPECT_TRUE(result_containers[0]->GetVisible());
+  EXPECT_TRUE(result_containers[1]->GetVisible());
 
   // Update the app list and search model, and verify the results page gets
   // hidden.
@@ -515,10 +611,10 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
   result_containers =
       GetProductivityLauncherSearchView()->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
-  EXPECT_TRUE(result_containers[0]->GetVisible());
-  EXPECT_EQ(1, result_containers[0]->num_results());
+  EXPECT_TRUE(result_containers[1]->GetVisible());
+  EXPECT_EQ(1, result_containers[1]->num_results());
   EXPECT_EQ(u"Result 2",
-            result_containers[0]->GetResultViewAt(0)->result()->title());
+            result_containers[1]->GetResultViewAt(0)->result()->title());
 
   Shell::Get()->app_list_controller()->ClearActiveModel();
 }
