@@ -33,6 +33,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/clipboard_metrics.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -188,7 +189,6 @@ class ClipboardInternal {
   }
 
   // Reads png from the ClipboardData.
-  // TODO(crbug.com/1272798): Don't encode the same bitmap multiple times.
   void ReadPng(Clipboard::ReadPngCallback callback) const {
     if (!HasFormat(ClipboardInternalFormat::kPng)) {
       std::move(callback).Run(std::vector<uint8_t>());
@@ -212,13 +212,23 @@ class ClipboardInternal {
         << "We should not be showing that PNG format is on the "
            "clipboard if neither a PNG or bitmap is available.";
 
+    // Creates a new entry if one doesn't exist.
+    auto& callbacks_for_image =
+        callbacks_awaiting_image_encoding_[sequence_number()];
+    callbacks_for_image.push_back(std::move(callback));
+
+    // Encoding of this bitmap to a PNG is already in progress. No need to
+    // kick off another encoding operation here. We'll respond to the callback
+    // once the in-progress image encoding completes.
+    if (callbacks_for_image.size() > 1)
+      return;
+
     png_encoding_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&ClipboardData::EncodeBitmapData,
                        std::move(maybe_bitmap.value())),
         base::BindOnce(&ClipboardInternal::DidEncodePng,
-                       weak_factory_.GetWeakPtr(), sequence_number(),
-                       std::move(callback)));
+                       weak_factory_.GetWeakPtr(), sequence_number()));
   }
 
   // Reads data of type |type| from the ClipboardData.
@@ -284,6 +294,8 @@ class ClipboardInternal {
                                                      data->size());
   }
 
+  int NumImagesEncodedForTesting() { return num_images_encoded_for_testing_; }
+
  private:
   // True if the ClipboardData has format |format|.
   bool HasFormat(ClipboardInternalFormat format) const {
@@ -292,14 +304,22 @@ class ClipboardInternal {
   }
 
   void DidEncodePng(ClipboardSequenceNumberToken token,
-                    Clipboard::ReadPngCallback callback,
                     std::vector<uint8_t> png_data) {
+    num_images_encoded_for_testing_++;
+
     if (token == sequence_number()) {
       // Cache the encoded PNG.
       data_->SetPngDataAfterEncoding(png_data);
     }
 
-    std::move(callback).Run(std::move(png_data));
+    auto callbacks = std::move(callbacks_awaiting_image_encoding_.at(token));
+    callbacks_awaiting_image_encoding_.erase(token);
+
+    DCHECK(!callbacks.empty());
+
+    for (auto& callback : callbacks) {
+      std::move(callback).Run(png_data);
+    }
   }
 
   // Current ClipboardData.
@@ -307,6 +327,15 @@ class ClipboardInternal {
 
   // Sequence number uniquely identifying clipboard state.
   ClipboardSequenceNumberToken sequence_number_;
+
+  // Repeated image read requests shouldn't invoke multiple encoding operations.
+  // These callbacks will all be answered once the corresponding image finishes
+  // encoding.
+  mutable std::map<ClipboardSequenceNumberToken,
+                   std::vector<Clipboard::ReadPngCallback>>
+      callbacks_awaiting_image_encoding_;
+  // Keeps track of how many encoding operations actually complete.
+  int num_images_encoded_for_testing_ = 0;
 
   // Runner used to asynchronously encode bitmaps into PNGs if the clipboard
   // only contains a bitmap.
@@ -455,6 +484,11 @@ const ClipboardSequenceNumberToken& ClipboardNonBacked::GetSequenceNumber(
     ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   return clipboard_internal_->sequence_number();
+}
+
+int ClipboardNonBacked::NumImagesEncodedForTesting() const {
+  DCHECK(CalledOnValidThread());
+  return clipboard_internal_->NumImagesEncodedForTesting();  // IN-TEST
 }
 
 bool ClipboardNonBacked::IsFormatAvailable(
