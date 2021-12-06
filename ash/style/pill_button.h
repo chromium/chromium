@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_PILL_BUTTON_H_
 #define ASH_STYLE_PILL_BUTTON_H_
 
+#include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -13,7 +14,7 @@ namespace ash {
 // A label button with a rounded rectangle background. It can have an icon
 // inside as well, and its text and background colors will be different based on
 // the type of the button.
-class PillButton : public views::LabelButton {
+class ASH_EXPORT PillButton : public views::LabelButton {
  public:
   METADATA_HEADER(PillButton);
 

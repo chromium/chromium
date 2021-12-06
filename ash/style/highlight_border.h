@@ -5,12 +5,13 @@
 #ifndef ASH_STYLE_HIGHLIGHT_BORDER_H_
 #define ASH_STYLE_HIGHLIGHT_BORDER_H_
 
+#include "ash/ash_export.h"
 #include "ui/views/border.h"
 
 namespace ash {
 
 // A rounded rectangle border that has inner (highlight) and outer color.
-class HighlightBorder : public views::Border {
+class ASH_EXPORT HighlightBorder : public views::Border {
  public:
   enum class Type {
     // A higher contrast highlight border than the `kHighlightBorder2` used

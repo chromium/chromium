@@ -12,11 +12,13 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/legacy_remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -645,10 +647,18 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
       case SearchResultActionType::kRemove: {
         RecordZeroStateSearchResultUserActionHistogram(
             ZeroStateSearchResultUserActionType::kRemoveResult);
-        auto dialog = std::make_unique<RemoveQueryConfirmationDialog>(
-            result()->title(),
-            base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
-                           weak_ptr_factory_.GetWeakPtr()));
+        std::unique_ptr<views::WidgetDelegate> dialog;
+        if (features::IsProductivityLauncherEnabled()) {
+          dialog = std::make_unique<RemoveQueryConfirmationDialog>(
+              result()->title(),
+              base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
+                             weak_ptr_factory_.GetWeakPtr()));
+        } else {
+          dialog = std::make_unique<LegacyRemoveQueryConfirmationDialog>(
+              result()->title(),
+              base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
+                             weak_ptr_factory_.GetWeakPtr()));
+        }
         dialog_controller_->Show(std::move(dialog));
         break;
       }

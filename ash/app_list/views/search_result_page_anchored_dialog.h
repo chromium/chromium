@@ -18,7 +18,7 @@ class Rect;
 }
 
 namespace views {
-class DialogDelegateView;
+class WidgetDelegate;
 }
 
 namespace ash {
@@ -36,10 +36,9 @@ class SearchResultPageAnchoredDialog : public views::WidgetObserver,
   // |callback| - A closure called when the dialog widget gets closed. The
   //     callback will not be called when the SearchResultPageAnchoredDialog
   //     gets destroyed,
-  SearchResultPageAnchoredDialog(
-      std::unique_ptr<views::DialogDelegateView> dialog,
-      views::View* host_view,
-      base::OnceClosure callback);
+  SearchResultPageAnchoredDialog(std::unique_ptr<views::WidgetDelegate> dialog,
+                                 views::View* host_view,
+                                 base::OnceClosure callback);
   SearchResultPageAnchoredDialog(const SearchResultPageAnchoredDialog& other) =
       delete;
   SearchResultPageAnchoredDialog& operator=(

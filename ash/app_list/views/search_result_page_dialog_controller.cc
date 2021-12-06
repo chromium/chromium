@@ -19,7 +19,7 @@ SearchResultPageDialogController::SearchResultPageDialogController(
 SearchResultPageDialogController::~SearchResultPageDialogController() = default;
 
 void SearchResultPageDialogController::Show(
-    std::unique_ptr<views::DialogDelegateView> dialog) {
+    std::unique_ptr<views::WidgetDelegate> dialog) {
   if (!enabled_)
     return;
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 namespace views {
-class DialogDelegateView;
+class WidgetDelegate;
 class View;
 }  // namespace views
 
@@ -29,7 +29,7 @@ class SearchResultPageDialogController {
 
   // Shows a search results page dialog with contents `dialog_contents`.
   // No-op if not enabled.
-  void Show(std::unique_ptr<views::DialogDelegateView> dialog_contents);
+  void Show(std::unique_ptr<views::WidgetDelegate> dialog_contents);
 
   // Sets whether search result page dialogs are enabled. Disabling dialoga will
   // close any currently opened dialogs.
