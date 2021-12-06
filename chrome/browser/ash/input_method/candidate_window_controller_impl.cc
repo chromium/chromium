@@ -38,12 +38,11 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
   gfx::NativeView parent = nullptr;
 
   aura::Window* active_window = ash::window_util::GetActiveWindow();
-  // Use VirtualKeyboardContainer so that it works even with a system modal
-  // dialog.
+  // Use MenuContainer so that it works even with a system modal dialog.
   parent = ash::Shell::GetContainer(
       active_window ? active_window->GetRootWindow()
                     : ash::Shell::GetRootWindowForNewWindows(),
-      ash::kShellWindowId_VirtualKeyboardContainer);
+      ash::kShellWindowId_MenuContainer);
   candidate_window_view_ = new ui::ime::CandidateWindowView(parent);
   candidate_window_view_->AddObserver(this);
   candidate_window_view_->SetCursorBounds(cursor_bounds_, composition_head_);
