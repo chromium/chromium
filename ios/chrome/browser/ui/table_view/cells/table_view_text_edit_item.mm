@@ -23,6 +23,8 @@ namespace {
 const CGFloat kLabelAndFieldGap = 5;
 // Height/width of the edit icon.
 const CGFloat kEditIconLength = 18;
+// Height/width of the error icon.
+const CGFloat kErrorIconLength = 20;
 
 }  // namespace
 
@@ -299,6 +301,9 @@ const CGFloat kEditIconLength = 18;
 #pragma mark Public
 
 - (void)setIcon:(TableViewTextEditItemIconType)iconType {
+  self.textFieldTrailingConstraint.constant = -kLabelAndFieldGap;
+  self.textLabelTrailingConstraint.constant = -kLabelAndFieldGap;
+
   switch (iconType) {
     case TableViewTextEditItemIconTypeNone:
       self.iconView.hidden = YES;
@@ -312,13 +317,15 @@ const CGFloat kEditIconLength = 18;
       self.iconView.hidden = NO;
       [self.iconView setImage:[self editImage]];
       self.iconView.tintColor = [UIColor colorNamed:kGrey400Color];
-      [self setIconTypeNoneConstraints];
+
+      _editIconHeightConstraint.constant = kEditIconLength;
       break;
     case TableViewTextEditItemIconTypeError:
       self.iconView.hidden = NO;
       [self.iconView setImage:[self errorImage]];
       self.iconView.tintColor = [UIColor colorNamed:kRedColor];
-      [self setIconTypeNoneConstraints];
+
+      _editIconHeightConstraint.constant = kErrorIconLength;
       break;
     default:
       NOTREACHED();
@@ -417,14 +424,6 @@ const CGFloat kEditIconLength = 18;
     _textField.textAlignment =
         UseRTLLayout() ? NSTextAlignmentLeft : NSTextAlignmentRight;
   }
-}
-
-// Sets constraints when the icon needs to be hidden.
-- (void)setIconTypeNoneConstraints {
-  self.textFieldTrailingConstraint.constant = -kLabelAndFieldGap;
-  self.textLabelTrailingConstraint.constant = -kLabelAndFieldGap;
-
-  _editIconHeightConstraint.constant = kEditIconLength;
 }
 
 // Returns the edit icon image.
