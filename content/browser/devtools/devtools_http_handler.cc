@@ -55,7 +55,7 @@
 #endif
 
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
-#include "content/browser/devtools/grit/devtools_resources.h"  // nogncheck
+extern const int kCcompressedProtocolJSON;
 #endif
 
 namespace content {
@@ -661,7 +661,7 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
   NOTREACHED();
 #else
   scoped_refptr<base::RefCountedMemory> bytes =
-      GetContentClient()->GetDataResourceBytes(COMPRESSED_PROTOCOL_JSON);
+      GetContentClient()->GetDataResourceBytes(kCcompressedProtocolJSON);
   std::string json_protocol(reinterpret_cast<const char*>(bytes->front()),
                             bytes->size());
 

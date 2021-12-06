@@ -11,6 +11,15 @@ import("//tools/grit/grit_rule.gni")
 
 # Android does not support DevTools front-end.
 if (!is_android) {
+  source_set("devtools_resources_extern") {
+    sources = [ "devtools_resources.cc" ]
+
+    # This is to remove unnecessary dependency from compiles of targets depends
+    # on this target to grit action.
+    public = []
+
+    deps = [ ":devtools_resources" ]
+  }
   grit("devtools_resources") {
     source = "$root_gen_dir/$devtools_grd_location"
 

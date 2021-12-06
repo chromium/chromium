@@ -2396,7 +2396,7 @@ source_set("browser") {
   }
 
   if (!is_android) {
-    deps += [ "//content/browser/devtools:devtools_resources" ]
+    deps += [ "//content/browser/devtools:devtools_resources_extern" ]
   }
 
   if (enable_basic_printing) {

@@ -11,11 +11,14 @@
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/devtools/grit/devtools_resources_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/base/webui/resource_path.h"
+
+extern const webui::ResourcePath kDevtoolsResources[];
+extern const size_t kDevtoolsResourcesSize;
 
 namespace content {
 
