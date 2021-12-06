@@ -2175,7 +2175,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // Chrome if back button is tapped again.
                 if (currentTab.isIncognito()) {
                     if (!currentTab.isClosing()) {
-                        getCurrentTabModel().closeTab(currentTab);
+                        mTabModelSelector.getModel(true).closeTab(currentTab);
                     }
                     mTabModelSelector.selectModel(/*incognito=*/false);
                 }
