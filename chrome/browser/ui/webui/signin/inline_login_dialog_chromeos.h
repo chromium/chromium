@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_INLINE_LOGIN_DIALOG_CHROMEOS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback_helpers.h"
@@ -60,6 +61,8 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
   void OnDialogClosed(const std::string& json_retval) override;
 
  private:
+  class ModalDialogManagerCleanup;
+
   // `Show` method can be called directly only by `AccountManagerUIImpl` class.
   // To show the dialog, use `AccountManagerFacade`.
   friend class ash::AccountManagerUIImpl;
@@ -78,6 +81,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
       const std::string& email,
       base::OnceClosure close_dialog_closure = base::DoNothing());
 
+  std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;
   InlineLoginHandlerModalDelegate delegate_;
   const GURL url_;
   base::OnceClosure close_dialog_closure_;
