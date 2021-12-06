@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -81,6 +82,18 @@ class CommittedBookmarkEntityNameObserver : public FakeServer::Observer {
  private:
   const raw_ptr<FakeServer> fake_server_;
   std::set<std::string> committed_names_;
+};
+
+class SyncEngineStoppedChecker : public SingleClientStatusChangeChecker {
+ public:
+  explicit SyncEngineStoppedChecker(syncer::SyncServiceImpl* service)
+      : SingleClientStatusChangeChecker(service) {}
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for sync to stop";
+    return !service()->IsEngineInitialized();
+  }
 };
 
 // These tests use a gray-box testing approach to verify that the data committed
@@ -341,6 +354,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
   // because that cryptographer has never seen the server-side Nigori.
   EXPECT_TRUE(
       WaitForEncryptedServerBookmarks(expected, /*passphrase=*/"hunter2"));
+}
+
+// Tests that on receiving CLIENT_DATA_OBSOLETE passphrase is silently restored,
+// e.g. user input is not needed.
+IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
+                       ShouldRestorePassphraseOnClientDataObsoleteResponse) {
+  // Set up sync with custom passphrase.
+  ASSERT_TRUE(SetupSync());
+  const KeyParamsForTesting kKeyParams =
+      ScryptPassphraseKeyParamsForTesting("hunter2");
+  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(kKeyParams),
+                        GetFakeServer());
+  ASSERT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/true));
+  ASSERT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
+  ASSERT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+
+  // Mimic going through CLIENT_DATA_OBSOLETE state.
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE);
+  // Trigger sync by making one more change.
+  ASSERT_TRUE(AddURL(/*profile=*/0, /*title=*/"title1",
+                     GURL("https://www.google.com")));
+  ASSERT_TRUE(SyncEngineStoppedChecker(GetSyncService()).Wait());
+  GetFakeServer()->TriggerError(sync_pb::SyncEnums::SUCCESS);
+  ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
+
+  // Make sure the client is still able to decrypt the data.
+  EXPECT_TRUE(WaitForPassphraseRequiredState(/*desired_state=*/false));
+  const std::string kEncryptedBookmarkTitle = "title2";
+  InjectEncryptedServerBookmark(kEncryptedBookmarkTitle,
+                                GURL("https://www.google.com"), kKeyParams);
+  EXPECT_TRUE(WaitForClientBookmarkWithTitle(kEncryptedBookmarkTitle));
 }
 
 }  // namespace
