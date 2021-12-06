@@ -49,7 +49,7 @@ void FakeHostResolver::ResolveHost(
   response_client_->OnComplete(fake_dns_result_->result_,
                                fake_dns_result_->resolve_error_info_,
                                fake_dns_result_->resolved_addresses_);
-  fake_dns_result_.release();
+  fake_dns_result_.reset();
 }
 
 void FakeHostResolver::MdnsListen(
