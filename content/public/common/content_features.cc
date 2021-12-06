@@ -1004,7 +1004,8 @@ const base::Feature kWebAuthConditionalUI{"WebAuthenticationConditionalUI",
 
 // Controls whether Web Bluetooth should use the new permissions backend. The
 // new permissions backend uses ChooserContextBase, which is used by other
-// device APIs, such as WebUSB.
+// device APIs, such as WebUSB. When enabled, WebBluetoothWatchAdvertisements
+// and WebBluetoothGetDevices blink features are also enabled.
 const base::Feature kWebBluetoothNewPermissionsBackend{
     "WebBluetoothNewPermissionsBackend", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -303,6 +303,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableVideoPlaybackQuality, features::kVideoPlaybackQuality},
     {wf::EnableVideoWakeLockOptimisationHiddenMuted,
      media::kWakeLockOptimisationHiddenMuted},
+    {wf::EnableWebBluetoothGetDevices,
+     features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
+    {wf::EnableWebBluetoothWatchAdvertisements,
+     features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
     {wf::EnableWebID, features::kFedCm},
 #if defined(OS_ANDROID)
     {wf::EnableWebNfc, features::kWebNfc, kSetOnlyIfOverridden},

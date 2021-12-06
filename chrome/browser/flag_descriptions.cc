@@ -2690,7 +2690,8 @@ const char kWebBluetoothNewPermissionsBackendName[] =
     "Use the new permissions backend for Web Bluetooth";
 const char kWebBluetoothNewPermissionsBackendDescription[] =
     "Enables the new permissions backend for Web Bluetooth. This will enable "
-    "persistent storage of device permissions.";
+    "persistent storage of device permissions and Web Bluetooth features such "
+    "as BluetoothDevice.watchAdvertisements() and Bluetooth.getDevices()";
 
 const char kWebBundlesName[] = "Web Bundles";
 const char kWebBundlesDescription[] =
