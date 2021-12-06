@@ -76,7 +76,7 @@ bool ValidateUrl(const GURL& url) {
 
   const GURL settings_url(chrome::kChromeUISettingsURL);
   bool url_points_to_an_approved_settings_page = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // In ChromeOS, allow any settings page to be specified on the command line.
   url_points_to_an_approved_settings_page =
       url.DeprecatedGetOriginAsURL() == settings_url.DeprecatedGetOriginAsURL();
@@ -94,7 +94,7 @@ bool ValidateUrl(const GURL& url) {
       url_points_to_an_approved_settings_page ||
       url == reset_settings_url_with_cct_hash;
 #endif  // defined(OS_WIN)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   return policy->IsWebSafeScheme(url.scheme()) ||

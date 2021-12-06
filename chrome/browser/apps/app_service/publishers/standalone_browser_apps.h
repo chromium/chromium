@@ -87,6 +87,7 @@ class StandaloneBrowserApps : public apps::PublisherBase,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void OpenNativeSettings(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
 
   // crosapi::BrowserManagerObserver

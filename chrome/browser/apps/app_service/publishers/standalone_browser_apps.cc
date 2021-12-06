@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -181,6 +182,14 @@ void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
                                          int64_t display_id,
                                          GetMenuModelCallback callback) {
   std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile_));
+}
+
+void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
+  auto* browser_manager = crosapi::BrowserManager::Get();
+  // `browser_manager` may be null in tests.
+  if (!browser_manager)
+    return;
+  browser_manager->OpenUrl(GURL(chrome::kChromeUIContentSettingsURL));
 }
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {
