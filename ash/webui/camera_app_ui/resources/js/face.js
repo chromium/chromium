@@ -79,7 +79,6 @@ export class FaceOverlay {
     this.ctx_.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
 
     // TODO(b/178344897): Handle zoomed preview.
-    // TODO(b/178344897): Handle cropped preview.
     // TODO(b/178344897): Handle screen orientation dynamically.
 
     this.ctx_.strokeStyle = RECT_COLOR;
@@ -91,10 +90,36 @@ export class FaceOverlay {
       y2 /= this.activeArraySize_.height;
       [x1, y1] = rotate(x1, y1, this.orientation_);
       [x2, y2] = rotate(x2, y2, this.orientation_);
-      x1 *= this.canvas_.width;
-      y1 *= this.canvas_.height;
-      x2 *= this.canvas_.width;
-      y2 *= this.canvas_.height;
+      const canvasAspectRatio = this.canvas_.width / this.canvas_.height;
+      const sensorAspectRatio =
+          this.activeArraySize_.width / this.activeArraySize_.height;
+      if (canvasAspectRatio > sensorAspectRatio) {
+        // Canvas has wider aspect than the sensor, e.g. when we're showing a
+        // 16:9 stream captured from a 4:3 sensor. Based on our hardware
+        // requirement, we assume the stream is cropped into letterbox from the
+        // active array.
+        const normalizedCanvasHeight = sensorAspectRatio / canvasAspectRatio;
+        const clipped = (1 - normalizedCanvasHeight) / 2;
+        x1 *= this.canvas_.width;
+        y1 = (Math.max(y1 - clipped, 0) / normalizedCanvasHeight) *
+            this.canvas_.height;
+        x2 *= this.canvas_.width;
+        y2 = (Math.max(y2 - clipped, 0) / normalizedCanvasHeight) *
+            this.canvas_.height;
+      } else if (canvasAspectRatio < sensorAspectRatio) {
+        // Canvas has taller aspect than the sensor, e.g. when we're showing a
+        // 4:3 stream captured from a 16:9 sensor. Based on our hardware
+        // requirement, we assume the stream is cropped into pillarbox from the
+        // active array.
+        const normalizedCanvasWidth = canvasAspectRatio / sensorAspectRatio;
+        const clipped = (1 - normalizedCanvasWidth) / 2;
+        x1 = (Math.max(x1 - clipped, 0) * normalizedCanvasWidth) *
+            this.canvas_.width;
+        y1 *= this.canvas_.height;
+        x2 = (Math.max(x2 - clipped, 0) * normalizedCanvasWidth) *
+            this.canvas_.width;
+        y2 *= this.canvas_.height;
+      }
       this.ctx_.strokeRect(x1, y1, x2 - x1, y2 - y1);
     }
   }
