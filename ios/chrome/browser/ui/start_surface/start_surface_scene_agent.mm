@@ -71,8 +71,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
       browser->GetWebStateList()->GetActiveWebState();
   int activeWebStateIndex = webStateList->GetIndexOfWebState(activeWebState);
   NSMutableArray<NSNumber*>* emptyNtpIndices = [[NSMutableArray alloc] init];
-  NSMutableArray<NSNumber*>* ntpWithNavHistoryIndices =
-      [[NSMutableArray alloc] init];
+  web::WebState* lastNtpWebStatesWithNavHistory = nullptr;
   BOOL keepOneNTP = YES;
   BOOL activeWebStateIsEmptyNTP = NO;
   for (int i = 0; i < webStateList->count(); i++) {
@@ -93,7 +92,7 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
         [emptyNtpIndices insertObject:@(i) atIndex:0];
       } else {
         keepOneNTP = NO;
-        [ntpWithNavHistoryIndices addObject:@(i)];
+        lastNtpWebStatesWithNavHistory = webState;
       }
     }
   }
@@ -124,8 +123,10 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
   // above already saves the current active WebState right before empty NTPs are
   // removed.
   if (activeWebStateIsEmptyNTP && !keepOneNTP) {
-    int ntpToSwitchTo = [[ntpWithNavHistoryIndices lastObject] intValue];
-    webStateList->ActivateWebStateAt(ntpToSwitchTo);
+    DCHECK(lastNtpWebStatesWithNavHistory);
+    int newActiveIndex =
+        webStateList->GetIndexOfWebState(lastNtpWebStatesWithNavHistory);
+    webStateList->ActivateWebStateAt(newActiveIndex);
   }
 }
 
