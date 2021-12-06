@@ -236,10 +236,10 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
     // TODO(dnicoara): See if we can apply these properties async using
     // DRM_MODE_ATOMIC_ASYNC_UPDATE flag when committing.
     AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[idx].properties.degamma_lut);
+                       crtc_state_[*idx].properties.degamma_lut);
     AddPropertyIfValid(atomic_request, crtc,
-                       crtc_state_[idx].properties.gamma_lut);
-    AddPropertyIfValid(atomic_request, crtc, crtc_state_[idx].properties.ctm);
+                       crtc_state_[*idx].properties.gamma_lut);
+    AddPropertyIfValid(atomic_request, crtc, crtc_state_[*idx].properties.ctm);
 #endif
 
     AddPropertyIfValid(atomic_request, crtc,
