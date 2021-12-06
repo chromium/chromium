@@ -131,11 +131,11 @@ HRESULT DXGIDeviceManager::CheckDeviceRemovedAndGetDevice(
       if (new_device) {
         *new_device = nullptr;
       }
+      return hr;
     }
-    return hr;
   }
   if (new_device) {
-    *new_device = device;
+    *new_device = std::move(device);
   }
   return hr;
 }
