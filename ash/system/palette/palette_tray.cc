@@ -175,7 +175,7 @@ class TitleView : public views::View {
             base::BindRepeating(
                 &SystemTrayClient::ShowPaletteHelp,
                 base::Unretained(Shell::Get()->system_tray_model()->client()))),
-        IconButton::Type::kSmall, kSystemMenuHelpIcon,
+        IconButton::Type::kSmall, &kSystemMenuHelpIcon,
         IDS_ASH_STATUS_TRAY_HELP));
     settings_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(
@@ -184,7 +184,7 @@ class TitleView : public views::View {
             base::BindRepeating(
                 &SystemTrayClient::ShowPaletteSettings,
                 base::Unretained(Shell::Get()->system_tray_model()->client()))),
-        IconButton::Type::kSmall, kSystemMenuSettingsIcon,
+        IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
         IDS_ASH_PALETTE_SETTINGS));
   }
 

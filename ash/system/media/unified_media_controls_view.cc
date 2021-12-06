@@ -117,7 +117,7 @@ UnifiedMediaControlsView::MediaActionButton::MediaActionButton(
               controller,
               this),
           IconButton::Type::kSmall,
-          GetVectorIconForMediaAction(action),
+          &GetVectorIconForMediaAction(action),
           accessible_name_id),
       action_(action) {
   set_tag(static_cast<int>(action));

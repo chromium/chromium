@@ -206,7 +206,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   power_button_ = new IconButton(
       base::BindRepeating(&UnifiedSystemTrayController::HandlePowerAction,
                           base::Unretained(controller)),
-      IconButton::Type::kSmall, kUnifiedMenuPowerIcon,
+      IconButton::Type::kSmall, &kUnifiedMenuPowerIcon,
       reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN);
   power_button_->SetID(VIEW_ID_POWER_BUTTON);
   container_->AddChildView(power_button_);
@@ -215,7 +215,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
     lock_button_ = new IconButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleLockAction,
                             base::Unretained(controller)),
-        IconButton::Type::kSmall, kUnifiedMenuLockIcon,
+        IconButton::Type::kSmall, &kUnifiedMenuLockIcon,
         IDS_ASH_STATUS_TRAY_LOCK);
     container_->AddChildView(lock_button_);
   }
@@ -224,7 +224,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
     settings_button_ = new IconButton(
         base::BindRepeating(&UnifiedSystemTrayController::HandleSettingsAction,
                             base::Unretained(controller)),
-        IconButton::Type::kSmall, kUnifiedMenuSettingsIcon,
+        IconButton::Type::kSmall, &kUnifiedMenuSettingsIcon,
         IDS_ASH_STATUS_TRAY_SETTINGS);
     container_->AddChildView(settings_button_);
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());

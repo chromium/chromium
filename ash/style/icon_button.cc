@@ -59,7 +59,7 @@ bool IsFloatingIconButton(IconButton::Type type) {
 
 IconButton::IconButton(PressedCallback callback,
                        IconButton::Type type,
-                       const gfx::VectorIcon& icon,
+                       const gfx::VectorIcon* icon,
                        int accessible_name_id)
     : IconButton(std::move(callback),
                  type,
@@ -70,13 +70,12 @@ IconButton::IconButton(PressedCallback callback,
 
 IconButton::IconButton(PressedCallback callback,
                        IconButton::Type type,
-                       const gfx::VectorIcon& icon,
-                       int accessible_name_id,
+                       const gfx::VectorIcon* icon,
                        bool is_togglable,
                        bool has_border)
     : views::ImageButton(std::move(callback)),
       type_(type),
-      icon_(&icon),
+      icon_(icon),
       is_togglable_(is_togglable) {
   int button_size = GetButtonSizeOnType(type);
   if (has_border) {
@@ -87,7 +86,6 @@ IconButton::IconButton(PressedCallback callback,
 
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
-  SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
@@ -102,6 +100,16 @@ IconButton::IconButton(PressedCallback callback,
   } else {
     views::InstallCircleHighlightPathGenerator(this);
   }
+}
+
+IconButton::IconButton(PressedCallback callback,
+                       IconButton::Type type,
+                       const gfx::VectorIcon* icon,
+                       int accessible_name_id,
+                       bool is_togglable,
+                       bool has_border)
+    : IconButton(std::move(callback), type, icon, is_togglable, has_border) {
+  SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
 }
 
 IconButton::~IconButton() = default;
@@ -124,11 +132,25 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
     const gfx::Rect rect(GetContentsBounds());
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        toggled_
-            ? AshColorProvider::ControlsLayerType::kControlBackgroundColorActive
-            : AshColorProvider::ControlsLayerType::
-                  kControlBackgroundColorInactive));
+
+    const auto* color_provider = AshColorProvider::Get();
+    SkColor color = color_provider->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+    bool should_show_button_toggled_on =
+        toggled_ &&
+        (GetEnabled() ||
+         button_behavior_ ==
+             DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
+    if (should_show_button_toggled_on) {
+      color = color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+    }
+
+    // If the button is disabled, apply opacity filter to the color.
+    if (!GetEnabled())
+      color = AshColorProvider::GetDisabledColor(color);
+
+    flags.setColor(color);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
                        flags);

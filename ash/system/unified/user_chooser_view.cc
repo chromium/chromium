@@ -128,7 +128,7 @@ views::View* CreateUserAvatarView(int user_index) {
     // In guest mode, the user avatar is just a disabled button pod.
     auto* image_view = new IconButton(
         views::Button::PressedCallback(), IconButton::Type::kSmall,
-        kSystemMenuGuestIcon, IDS_ASH_STATUS_TRAY_GUEST_LABEL);
+        &kSystemMenuGuestIcon, IDS_ASH_STATUS_TRAY_GUEST_LABEL);
     image_view->SetEnabled(false);
     return image_view;
   }
@@ -237,7 +237,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
         base::BindRepeating(
             &UserChooserDetailedViewController::TransitionToMainView,
             base::Unretained(controller)),
-        IconButton::Type::kSmall, views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
+        IconButton::Type::kSmall, &views::kIcCloseIcon, IDS_APP_ACCNAME_CLOSE));
   }
 
   SetTooltipText(GetUserItemAccessibleString(user_index));

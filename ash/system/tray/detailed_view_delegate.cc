@@ -68,7 +68,7 @@ class BackButton : public IconButton {
   BackButton(views::Button::PressedCallback callback)
       : IconButton(std::move(callback),
                    IconButton::Type::kSmallFloating,
-                   kUnifiedMenuExpandIcon,
+                   &kUnifiedMenuExpandIcon,
                    IDS_ASH_STATUS_TRAY_PREVIOUS_MENU) {}
   BackButton(const BackButton&) = delete;
   BackButton& operator=(const BackButton&) = delete;
@@ -184,7 +184,7 @@ views::Button* DetailedViewDelegate::CreateInfoButton(
     views::Button::PressedCallback callback,
     int info_accessible_name_id) {
   return new IconButton(std::move(callback), IconButton::Type::kSmall,
-                        kUnifiedMenuInfoIcon, info_accessible_name_id);
+                        &kUnifiedMenuInfoIcon, info_accessible_name_id);
 }
 
 views::Button* DetailedViewDelegate::CreateSettingsButton(
@@ -192,7 +192,7 @@ views::Button* DetailedViewDelegate::CreateSettingsButton(
     int setting_accessible_name_id) {
   auto* button =
       new IconButton(std::move(callback), IconButton::Type::kSmall,
-                     kUnifiedMenuSettingsIcon, setting_accessible_name_id);
+                     &kUnifiedMenuSettingsIcon, setting_accessible_name_id);
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);
   return button;
@@ -202,7 +202,7 @@ views::Button* DetailedViewDelegate::CreateHelpButton(
     views::Button::PressedCallback callback) {
   auto* button =
       new IconButton(std::move(callback), IconButton::Type::kSmall,
-                     vector_icons::kHelpOutlineIcon, IDS_ASH_STATUS_TRAY_HELP);
+                     &vector_icons::kHelpOutlineIcon, IDS_ASH_STATUS_TRAY_HELP);
   // Help opens a web page, so treat it like Web UI settings.
   if (!TrayPopupUtils::CanOpenWebUISettings())
     button->SetEnabled(false);

@@ -33,19 +33,40 @@ class IconButton : public views::ImageButton {
     kLargeFloating
   };
 
+  // Used to determine how the button will behave when disabled.
+  enum class DisabledButtonBehavior {
+    // The button will display toggle button as off.
+    kNone = 0,
+
+    // The button will display on/off status of toggle.
+    kCanDisplayDisabledToggleValue = 1,
+  };
+
   IconButton(PressedCallback callback,
              Type type,
-             const gfx::VectorIcon& icon,
+             const gfx::VectorIcon* icon,
              int accessible_name_id);
   IconButton(PressedCallback callback,
              Type type,
-             const gfx::VectorIcon& icon,
+             const gfx::VectorIcon* icon,
+             bool is_togglable,
+             bool has_border);
+  IconButton(PressedCallback callback,
+             Type type,
+             const gfx::VectorIcon* icon,
              int accessible_name_id,
              bool is_togglable,
              bool has_border);
+
   IconButton(const IconButton&) = delete;
   IconButton& operator=(const IconButton&) = delete;
   ~IconButton() override;
+
+  bool toggled() const { return toggled_; }
+
+  void set_button_behavior(DisabledButtonBehavior button_behavior) {
+    button_behavior_ = button_behavior;
+  }
 
   // Sets the vector icon of the button, it might change on different `toggled_`
   // states.
@@ -63,6 +84,9 @@ class IconButton : public views::ImageButton {
   void UpdateVectorIcon();
 
  private:
+  // For unit tests.
+  friend class BluetoothFeaturePodControllerTest;
+
   const Type type_;
   const gfx::VectorIcon* icon_ = nullptr;
 
@@ -71,6 +95,8 @@ class IconButton : public views::ImageButton {
 
   // True if the button is currently toggled.
   bool toggled_ = false;
+
+  DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 };
 
 }  // namespace ash

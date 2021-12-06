@@ -276,12 +276,12 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   down_button_ = new IconButton(
       base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
                           base::Unretained(this), /*is_scrolling_up=*/false),
-      IconButton::Type::kSmallFloating, vector_icons::kCaretDownIcon,
+      IconButton::Type::kSmallFloating, &vector_icons::kCaretDownIcon,
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION);
   up_button_ = new IconButton(
       base::BindRepeating(&CalendarView::ScrollOneMonthWithAnimation,
                           base::Unretained(this), /*is_scrolling_up=*/true),
-      IconButton::Type::kSmallFloating, vector_icons::kCaretUpIcon,
+      IconButton::Type::kSmallFloating, &vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION);
 
   tri_view->AddView(TriView::Container::END, down_button_);

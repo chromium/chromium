@@ -155,7 +155,7 @@ class ImeTitleView : public views::BoxLayoutView {
               base::UserMetricsAction("StatusArea_IME_Detailed"));
           Shell::Get()->system_tray_model()->client()->ShowIMESettings();
         }),
-        IconButton::Type::kSmall, kSystemMenuSettingsIcon,
+        IconButton::Type::kSmall, &kSystemMenuSettingsIcon,
         IDS_ASH_STATUS_TRAY_IME_SETTINGS));
     settings_button_->SetEnabled(TrayPopupUtils::CanOpenWebUISettings());
   }

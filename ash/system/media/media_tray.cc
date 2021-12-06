@@ -176,7 +176,7 @@ MediaTray::PinButton::PinButton()
           base::BindRepeating(&PinButton::ButtonPressed,
                               base::Unretained(this)),
           IconButton::Type::kSmall,
-          MediaTray::IsPinnedToShelf() ? kPinnedIcon : kUnpinnedIcon,
+          MediaTray::IsPinnedToShelf() ? &kPinnedIcon : &kUnpinnedIcon,
           MediaTray::IsPinnedToShelf()
               ? IDS_ASH_GLOBAL_MEDIA_CONTROLS_PINNED_BUTTON_TOOLTIP_TEXT
               : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT) {}

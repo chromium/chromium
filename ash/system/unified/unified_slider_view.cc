@@ -84,7 +84,7 @@ UnifiedSliderButton::UnifiedSliderButton(PressedCallback callback,
                                          int accessible_name_id)
     : IconButton(std::move(callback),
                  IconButton::Type::kSmall,
-                 icon,
+                 &icon,
                  accessible_name_id,
                  /*is_togglable=*/true,
                  /*has_border=*/true) {}
