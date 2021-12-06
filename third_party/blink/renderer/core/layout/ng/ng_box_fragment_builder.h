@@ -324,7 +324,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       return true;
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
-    return last_inline_break_token_;
+    if (last_inline_break_token_)
+      return true;
+    // Grid layout doesn't insert break before tokens, and instead set this bit
+    // to indicate there is content after the current break.
+    return has_subsequent_children_;
   }
 
   // Return true if we need to break before or inside any in-flow child that
@@ -401,6 +405,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // left to discover.
   void SetHasSeenAllChildren() { has_seen_all_children_ = true; }
   bool HasSeenAllChildren() { return has_seen_all_children_; }
+
+  void SetHasSubsequentChildren() { has_subsequent_children_ = true; }
 
   void SetIsAtBlockEnd() { is_at_block_end_ = true; }
   bool IsAtBlockEnd() const { return is_at_block_end_; }
@@ -658,6 +664,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool has_forced_break_ = false;
   bool is_new_fc_ = false;
   bool has_seen_all_children_ = false;
+  bool has_subsequent_children_ = false;
   bool is_math_fraction_ = false;
   bool is_math_operator_ = false;
   bool is_at_block_end_ = false;

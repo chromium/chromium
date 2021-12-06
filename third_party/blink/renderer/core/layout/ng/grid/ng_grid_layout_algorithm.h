@@ -243,6 +243,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  private:
   friend class NGGridLayoutAlgorithmTest;
 
+  scoped_refptr<const NGLayoutResult> LayoutInternal();
+
   LayoutUnit Baseline(const NGGridGeometry& grid_geometry,
                       const GridItemData& grid_item,
                       const GridTrackSizingDirection track_direction) const;

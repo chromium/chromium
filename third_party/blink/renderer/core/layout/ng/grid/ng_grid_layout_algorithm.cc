@@ -319,6 +319,15 @@ void CacheGridTrackSpanProperties(
 }  // namespace
 
 scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
+  const auto result = LayoutInternal();
+  if (result->Status() == NGLayoutResult::kDisableFragmentation) {
+    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    return RelayoutWithoutFragmentation<NGGridLayoutAlgorithm>();
+  }
+  return result;
+}
+
+scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
   const auto& container_style = Style();
 
@@ -373,7 +382,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   }
 
   const auto& constraint_space = ConstraintSpace();
-  if (constraint_space.HasKnownFragmentainerBlockSize()) {
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
     Vector<GridItemOffsets> offsets;
@@ -454,9 +463,12 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    FinishFragmentation(node, constraint_space, border_padding.block_end,
-                        FragmentainerSpaceAtBfcStart(constraint_space),
-                        &container_builder_);
+    auto status = FinishFragmentation(
+        node, constraint_space, border_padding.block_end,
+        FragmentainerSpaceAtBfcStart(constraint_space), &container_builder_);
+    if (status == NGBreakStatus::kDisableFragmentation)
+      return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
+    DCHECK_EQ(status, NGBreakStatus::kContinue);
   } else {
 #if DCHECK_IS_ON()
     // If we're not participating in a fragmentation context, no block
@@ -3409,7 +3421,8 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
   builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
 
-  if (opt_fragment_relative_block_offset) {
+  if (ConstraintSpace().HasBlockFragmentation() &&
+      opt_fragment_relative_block_offset) {
     if (opt_min_block_size_should_encompass_intrinsic_size)
       builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
     SetupSpaceBuilderForFragmentation(
@@ -3697,6 +3710,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   LayoutUnit max_row_expansion;
   wtf_size_t expansion_row_set_index;
   wtf_size_t breakpoint_row_set_index;
+  bool has_subsequent_children;
 
   const LayoutUnit fragmentainer_space =
       FragmentainerSpaceAtBfcStart(ConstraintSpace());
@@ -3713,6 +3727,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     max_row_expansion = LayoutUnit();
     expansion_row_set_index = kNotFound;
     breakpoint_row_set_index = kNotFound;
+    has_subsequent_children = false;
 
     auto child_break_token_it = child_break_tokens.begin();
     auto* offsets_it = offsets->begin();
@@ -3753,8 +3768,11 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // a child with a negative margin will be placed in the fragmentainer
       // with its row, but placed above the block-start edge of the
       // fragmentainer.
-      if (grid_area.offset.block_offset >= fragmentainer_space)
+      if (fragmentainer_space != kIndefiniteSize &&
+          grid_area.offset.block_offset >= fragmentainer_space) {
+        has_subsequent_children = true;
         continue;
+      }
       if (grid_area.offset.block_offset < LayoutUnit() && !break_token)
         continue;
 
@@ -3806,6 +3824,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // fragment.
       if (min_block_size_should_encompass_intrinsic_size &&
           grid_area.offset.block_offset < LayoutUnit() &&
+          fragmentainer_space != kIndefiniteSize &&
           grid_area.BlockEndOffset() <= fragmentainer_space) {
         if (expansion_row_set_index == kNotFound)
           expansion_row_set_index = item_row_set_index;
@@ -3871,6 +3890,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   auto ShiftBreakpointIntoNextFragmentainer = [&]() -> bool {
     if (breakpoint_row_set_index == kNotFound)
       return false;
+    DCHECK_NE(fragmentainer_space, kIndefiniteSize);
 
     const LayoutUnit fragment_relative_row_offset =
         grid_geometry->row_geometry.sets[breakpoint_row_set_index].offset +
@@ -3904,6 +3924,9 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   // We only need to do this once.
   if (ShiftBreakpointIntoNextFragmentainer())
     PlaceItems();
+
+  if (has_subsequent_children)
+    container_builder_.SetHasSubsequentChildren();
 
   // Add all the results into the builder.
   for (auto& result_and_offset : result_and_offsets) {
