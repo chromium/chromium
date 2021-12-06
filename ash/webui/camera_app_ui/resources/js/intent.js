@@ -54,9 +54,8 @@ export class Intent {
     /**
      * Capture mode of intent.
      * @const {!Mode}
-     * @private
      */
-    this.mode_ = mode;
+    this.mode = mode;
 
     /**
      * Whether the intent should return with the captured result.
@@ -143,11 +142,8 @@ export class Intent {
    */
   logResult(result) {
     metrics.sendIntentEvent({
-      mode: this.mode_,
+      intent: this,
       result,
-      shouldHandleResult: this.shouldHandleResult,
-      shouldDownScale: this.shouldDownScale,
-      isSecure: this.isSecure,
     });
   }
 

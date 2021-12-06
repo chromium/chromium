@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../../../chrome_util.js';
+import {assertInstanceof, assertNotReached} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import * as error from '../../../error.js';
@@ -110,7 +110,9 @@ export class ModeBase {
    * @protected
    * @abstract
    */
-  async start_() {}
+  async start_() {
+    assertNotReached();
+  }
 
   /**
    * Stops the ongoing capture operation under this mode.
@@ -185,5 +187,7 @@ export class ModeFactory {
    * @return {!ModeBase}
    * @abstract
    */
-  produce() {}
+  produce() {
+    assertNotReached();
+  }
 }

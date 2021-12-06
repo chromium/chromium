@@ -258,7 +258,7 @@ export function getStyleValueInPx(style, prop) {
  */
 export class DelayInterval {
   /**
-   * @param {function()} callback
+   * @param {function(): void} callback
    * @param {number} delayMs Delay milliseconds at start.
    * @param {number} intervalMs Interval in milliseconds.
    * @public

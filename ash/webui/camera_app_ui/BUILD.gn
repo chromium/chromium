@@ -9,7 +9,6 @@ import("//ash/webui/camera_app_ui/resources/sounds/sounds.gni")
 import("//ash/webui/camera_app_ui/resources/views/views.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Camera App is ash-chrome only")
@@ -103,11 +102,6 @@ source_set("unit_tests") {
   ]
 }
 
-group("closure_compile") {
-  testonly = true
-  deps = [ "resources/js:closure_compile" ]
-}
-
 mojom("mojo_bindings") {
   sources = [ "camera_app_helper.mojom" ]
 
@@ -129,6 +123,7 @@ generate_grd("build_grd") {
   deps = [
     ":build_generated_grdp",
     ":build_mojo_grdp",
+    "resources/js:build_ts",
   ]
 
   grd_prefix = cca_grd_prefix
@@ -137,6 +132,8 @@ generate_grd("build_grd") {
     mojo_grdp_file,
     generated_grdp_file,
   ]
+
+  manifest_files = [ "$target_gen_dir/resources/js/tsconfig.manifest" ]
   input_files_base_dir = rebase_path("resources", "//")
   input_files = []
 
@@ -159,9 +156,6 @@ generate_grd("build_grd") {
   }
 
   # JS Files.
-  foreach(js, compile_js_files) {
-    input_files += [ "js/$js" ]
-  }
   foreach(js, no_compile_js_files) {
     input_files += [ "js/$js" ]
   }
@@ -192,25 +186,18 @@ generate_grd("build_mojo_grdp") {
   ]
 
   grd_prefix = "ash_camera_app_js_mojo"
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui", root_build_dir)
+  input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
 
-  # TODO(pihsun): Move all imports of mojom types into the mojo/ folder, and
-  # re-export needed types, so we don't need to have long import paths
-  # scattered in multiple files.
-  # Since closure compiler don't support re-exported types
-  # (https://github.com/google/closure-compiler/issues/2257), this clean-up is
-  # blocked by migration to TypeScript.
   input_files = [
-    "ash/components/arc/mojom/camera_intent.mojom-webui.js",
-    "ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js",
-    "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom-webui.js",
-    "media/capture/mojom/image_capture.mojom-webui.js",
-    "media/capture/video/chromeos/mojom/camera3.mojom-webui.js",
-    "media/capture/video/chromeos/mojom/camera_app.mojom-webui.js",
-    "media/capture/video/chromeos/mojom/camera_common.mojom-webui.js",
-    "media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js",
-    "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js",
+    "mojom-webui/ash/components/arc/mojom/camera_intent.mojom-webui.js",
+    "mojom-webui/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js",
+    "mojom-webui/chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom-webui.js",
+    "mojom-webui/media/capture/mojom/image_capture.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera3.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js",
+    "mojom-webui/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js",
   ]
 
   out_grd = mojo_grdp_file

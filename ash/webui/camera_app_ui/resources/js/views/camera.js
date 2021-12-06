@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  ScreenState,
-} from '/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
-
 import * as animate from '../animation.js';
 import {
   assert,
@@ -31,6 +27,7 @@ import * as localStorage from '../models/local_storage.js';
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
+import {ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import * as newFeatureToast from '../new_feature_toast.js';
 // eslint-disable-next-line no-unused-vars

@@ -185,7 +185,7 @@ export class CropDocument extends Review {
      * @const {!SVGPolygonElement}
      * @private
      */
-    this.cropArea_ = dom.getFrom(this.image_, '.crop-area', SVGPolygonElement);
+    this.cropArea_ = dom.getFrom(this.image, '.crop-area', SVGPolygonElement);
 
     /**
      * Index of |ROTATION| as current photo rotation.
@@ -214,7 +214,7 @@ export class CropDocument extends Review {
           pt: new Point(0, 0),
           pointerId: null,
         });
-        this.image_.appendChild(tpl);
+        this.image.appendChild(tpl);
       }
       return ret;
     })();
@@ -334,14 +334,14 @@ export class CropDocument extends Review {
 
     // Stop dragging.
     for (const eventName of ['pointerup', 'pointerleave', 'pointercancel']) {
-      this.image_.addEventListener(eventName, (e) => {
+      this.image.addEventListener(eventName, (e) => {
         e.preventDefault();
         this.clearDragging_(assertInstanceof(e, PointerEvent).pointerId);
       });
     }
 
     // Move drag corner.
-    this.image_.addEventListener('pointermove', (e) => {
+    this.image.addEventListener('pointermove', (e) => {
       e.preventDefault();
 
       const pointerId = assertInstanceof(e, PointerEvent).pointerId;
@@ -371,7 +371,7 @@ export class CropDocument extends Review {
     });
 
     // Prevent contextmenu popup triggered by long touch.
-    this.image_.addEventListener('contextmenu', (e) => {
+    this.image.addEventListener('contextmenu', (e) => {
       if (e['pointerType'] === 'touch') {
         e.preventDefault();
       }
@@ -582,7 +582,7 @@ export class CropDocument extends Review {
   updateImage_() {
     const {width: frameW, height: frameH} = this.frameSize_;
     const {width: rawImageW, height: rawImageH} = this.imageOriginalSize_;
-    const style = this.image_.attributeStyleMap;
+    const style = this.image.attributeStyleMap;
 
     let rotatedW = rawImageW;
     let rotatedH = rawImageH;
@@ -634,9 +634,9 @@ export class CropDocument extends Review {
    */
   async setReviewPhoto(blob) {
     const image = new Image();
-    await this.loadImage_(image, blob);
+    await this.loadImage(image, blob);
     this.imageOriginalSize_ = new Size(image.width, image.height);
-    const style = this.image_.attributeStyleMap;
+    const style = this.image.attributeStyleMap;
     if (style.has('background-image')) {
       const oldUrl = style.get('background-image')
                          .toString()

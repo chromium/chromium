@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  Effect,  // eslint-disable-line no-unused-vars
-} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
-
 import {bitmapToJpegBlob} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {DeviceOperator} from './device_operator.js';
+// eslint-disable-next-line no-unused-vars
+import {Effect} from './type.js';
 import {closeEndpoint} from './util.js';
 
 /**

@@ -3,67 +3,57 @@
 // found in the LICENSE file.
 
 import {assert} from './chrome_util.js';
+import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as state from './state.js';
 import {
-  Facing,  // eslint-disable-line no-unused-vars
+  Facing,
   Mode,
-  PerfEvent,        // eslint-disable-line no-unused-vars
-  PerfInformation,  // eslint-disable-line no-unused-vars
-  Resolution,       // eslint-disable-line no-unused-vars
+  PerfEvent,
+  PerfInformation,
+  Resolution,
 } from './type.js';
-// eslint-disable-next-line no-unused-vars
 import {GAHelperInterface} from './untrusted_helper_interfaces.js';
 import * as util from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
  * The tracker ID of the GA metrics.
- * @type {string}
  */
 const GA_ID = 'UA-134822711-1';
 
-/**
- * @type {?Map<number, !Object>}
- */
-let baseDimen = null;
+let baseDimen: Map<number, string|number>|null = null;
 
-/**
- * @type {!WaitableEvent}
- */
 const ready = new WaitableEvent();
 
-/**
- * @type {!Promise<!GAHelperInterface>}
- */
-const gaHelper = (async () => {
-  return /** @type {!GAHelperInterface} */ (
-      await util.createUntrustedJSModule('/js/untrusted_ga_helper.js'));
-})();
+const gaHelper = util.createUntrustedJSModule('/js/untrusted_ga_helper.js') as
+    Promise<GAHelperInterface>;
 
 /**
  * Send the event to GA backend.
- * @param {!UniversalAnalytics.FieldsObject} event The event to send.
- * @param {?Map<number, !Object>=} dimen Optional object contains dimension
- *     information.
+ * @param event The event to send.
+ * @param dimen Optional object contains dimension information.
  */
-async function sendEvent(event, dimen = null) {
+async function sendEvent(
+    event: UniversalAnalytics.FieldsObject, dimen?: Map<number, unknown>) {
   const assignDimension = (e, d) => {
-    d.forEach((value, key) => e[`dimension${key}`] = value);
+    for (const [key, value] of d.entries()) {
+      e[`dimension${key}`] = value;
+    }
   };
 
   assert(baseDimen !== null);
   assignDimension(event, baseDimen);
-  if (dimen !== null) {
+  if (dimen !== undefined) {
     assignDimension(event, dimen);
   }
 
   await ready.wait();
 
-  // This value reflects the logging constent option in OS settings.
+  // This value reflects the logging consent option in OS settings.
   const canSendMetrics =
       await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
   if (canSendMetrics) {
@@ -74,9 +64,9 @@ async function sendEvent(event, dimen = null) {
 /**
  * Set if the metrics is enabled. Note that the metrics will only be sent if it
  * is enabled AND the logging consent option is enabled in OS settings.
- * @param {boolean} enabled True if the metrics is enabled.
+ * @param enabled True if the metrics is enabled.
  */
-export async function setMetricsEnabled(enabled) {
+export async function setMetricsEnabled(enabled: boolean): Promise<void> {
   await ready.wait();
   await (await gaHelper).setMetricsEnabled(GA_ID, enabled);
 }
@@ -86,12 +76,12 @@ const SCHEMA_VERSION = 2;
 /**
  * Initializes metrics with parameters.
  */
-export async function initMetrics() {
+export async function initMetrics(): Promise<void> {
   const board = loadTimeData.getBoard();
   const boardName = /^(x86-)?(\w*)/.exec(board)[0];
   const match = navigator.appVersion.match(/CrOS\s+\S+\s+([\d.]+)/);
   const osVer = match ? match[1] : '';
-  baseDimen = new Map([
+  baseDimen = new Map<number, string|number>([
     [1, boardName],
     [2, osVer],
     [31, SCHEMA_VERSION],
@@ -110,25 +100,24 @@ export async function initMetrics() {
 
 /**
  * Types of different ways to launch CCA.
- * @enum {string}
  */
-export const LaunchType = {
-  DEFAULT: 'default',
-  ASSISTANT: 'assistant',
-};
+export enum LaunchType {
+  DEFAULT = 'default',
+  ASSISTANT = 'assistant',
+}
 
 /**
  * Parameters for logging launch event. |launchType| stands for how CCA is
  * launched.
- * @typedef {{launchType: !LaunchType}}
  */
-export let LaunchEventParam;
+export interface LaunchEventParam {
+  launchType: LaunchType;
+}
 
 /**
  * Sends launch type event.
- * @param {!LaunchEventParam} param
  */
-export function sendLaunchEvent({launchType}) {
+export function sendLaunchEvent({launchType}: LaunchEventParam): void {
   sendEvent(
       {
         eventCategory: 'launch',
@@ -142,144 +131,90 @@ export function sendLaunchEvent({launchType}) {
 
 /**
  * Types of intent result dimension.
- * @enum {string}
  */
-export const IntentResultType = {
-  NOT_INTENT: '',
-  CANCELED: 'canceled',
-  CONFIRMED: 'confirmed',
-};
+export enum IntentResultType {
+  NOT_INTENT = '',
+  CANCELED = 'canceled',
+  CONFIRMED = 'confirmed',
+}
 
 /**
  * Types of document scanning result dimension.
- * @enum {string}
  */
-export const DocResultType = {
-  NOT_DOCUMENT: '',
-  CANCELED: 'canceled',
-  SAVE_AS_PHOTO: 'save-as-photo',
-  SAVE_AS_PDF: 'save-as-pdf',
-  SHARE: 'share',
-};
+export enum DocResultType {
+  NOT_DOCUMENT = '',
+  CANCELED = 'canceled',
+  SAVE_AS_PHOTO = 'save-as-photo',
+  SAVE_AS_PDF = 'save-as-pdf',
+  SHARE = 'share',
+}
 
 /**
  * Types of user interaction with fix document page.
- * @enum {number}
  */
-export const DocFixType = {
-  NONE: 0,
-  NO_FIX: 1,
-  FIX_ROTATION: 2,
-  FIX_POSITION: 3,
-  FIX_BOTH: 4,
-};
+export enum DocFixType {
+  NONE = 0,
+  NO_FIX = 1,
+  FIX_ROTATION = 2,
+  FIX_POSITION = 3,
+  FIX_BOTH = 4,
+}
 
 /**
  * Types of gif recording result dimension.
- * @enum {number}
  */
-export const GifResultType = {
-  NOT_GIF_RESULT: 0,
-  RETAKE: 1,
-  SHARE: 2,
-  SAVE: 3,
-};
+export enum GifResultType {
+  NOT_GIF_RESULT = 0,
+  RETAKE = 1,
+  SHARE = 2,
+  SAVE = 3,
+}
 
 /**
  * Types of recording in video mode.
- * @enum {number}
  */
-export const RecordType = {
-  NOT_RECORDING: 0,
-  NORMAL_VIDEO: 1,
-  GIF: 2,
-};
+export enum RecordType {
+  NOT_RECORDING = 0,
+  NORMAL_VIDEO = 1,
+  GIF = 2,
+}
 
 /**
  * Types of different ways to trigger shutter button.
- * @enum {string}
  */
-export const ShutterType = {
-  UNKNOWN: 'unknown',
-  MOUSE: 'mouse',
-  KEYBOARD: 'keyboard',
-  TOUCH: 'touch',
-  VOLUME_KEY: 'volume-key',
-  ASSISTANT: 'assistant',
-};
+export enum ShutterType {
+  UNKNOWN = 'unknown',
+  MOUSE = 'mouse',
+  KEYBOARD = 'keyboard',
+  TOUCH = 'touch',
+  VOLUME_KEY = 'volume-key',
+  ASSISTANT = 'assistant',
+}
 
 /**
  * Parameters of capture metrics event.
- * @record
  */
-export class CaptureEventParam {
-  /**
-   * @public
-   */
-  constructor() {
-    /**
-     * @type {!Facing} Camera facing of the capture.
-     */
-    this.facing;
-
-    /**
-     * @type {(number|undefined)} Length of duration for captured motion result
-     *     in milliseconds.
-     */
-    this.duration;
-
-    /**
-     * @type {!Resolution} Capture resolution.
-     */
-    this.resolution;
-
-    /**
-     * @type {!IntentResultType|undefined}
-     */
-    this.intentResult;
-
-    /**
-     * @type {!ShutterType}
-     */
-    this.shutterType;
-
-    /**
-     * Whether the event is for video snapshot.
-     * @type {boolean|undefined}
-     */
-    this.isVideoSnapshot;
-
-    /**
-     * Whether the video have ever paused and resumed in the recording.
-     * @type {boolean|undefined}
-     */
-    this.everPaused;
-
-    /**
-     * @type {!DocResultType|undefined}
-     */
-    this.docResult;
-
-    /**
-     * @type {!DocFixType|undefined}
-     */
-    this.docFixType;
-
-    /**
-     * @type {!GifResultType|undefined}
-     */
-    this.gifResult;
-
-    /**
-     * @type {!RecordType|undefined}
-     */
-    this.recordType;
-  }
+export interface CaptureEventParam {
+  /** Camera facing of the capture. */
+  facing: Facing;
+  /** Length of duration for captured motion result in milliseconds. */
+  duration?: number;
+  /** Capture resolution. */
+  resolution: Resolution;
+  intentResult?: IntentResultType;
+  shutterType: ShutterType;
+  /** Whether the event is for video snapshot. */
+  isVideoSnapshot?: boolean;
+  /** Whether the video have ever paused and resumed in the recording. */
+  everPaused?: boolean;
+  docResult?: DocResultType;
+  docFixType?: DocFixType;
+  gifResult?: GifResultType;
+  recordType?: RecordType;
 }
 
 /**
  * Sends capture type event.
- * @param {!CaptureEventParam} param
  */
 export function sendCaptureEvent({
   facing,
@@ -293,22 +228,18 @@ export function sendCaptureEvent({
   docFixType,
   recordType = RecordType.NOT_RECORDING,
   gifResult = GifResultType.NOT_GIF_RESULT,
-}) {
-  /**
-   * @param {!Array<!state.StateUnion>} states
-   * @param {!state.StateUnion=} cond
-   * @param {boolean=} strict
-   * @return {string}
-   */
-  const condState = (states, cond = undefined, strict = undefined) => {
-    // Return the first existing state among the given states only if there is
-    // no gate condition or the condition is met.
-    const prerequisite = !cond || state.get(cond);
-    if (strict && !prerequisite) {
-      return '';
-    }
-    return prerequisite && states.find((s) => state.get(s)) || 'n/a';
-  };
+}: CaptureEventParam): void {
+  const condState =
+      (states: state.StateUnion[], cond?: state.StateUnion, strict?: boolean):
+          string => {
+            // Return the first existing state among the given states only if
+            // there is no gate condition or the condition is met.
+            const prerequisite = !cond || state.get(cond);
+            if (strict && !prerequisite) {
+              return '';
+            }
+            return prerequisite && states.find((s) => state.get(s)) || 'n/a';
+          };
 
   const State = state.State;
   sendEvent(
@@ -318,7 +249,7 @@ export function sendCaptureEvent({
         eventLabel: facing,
         eventValue: duration,
       },
-      new Map([
+      new Map<number, unknown>([
         // Skips 3rd dimension for obsolete 'sound' state.
         [4, condState([State.MIRROR])],
         [
@@ -340,6 +271,7 @@ export function sendCaptureEvent({
         [28, recordType],
         [29, gifResult],
         [30, duration],
+        // This is included in baseDimen.
         // [31, SCHEMA_VERSION]
         [32, docFixType ?? ''],
       ]));
@@ -348,35 +280,21 @@ export function sendCaptureEvent({
 
 /**
  * Parameters for logging perf event.
- * @record
  */
-export class PerfEventParam {
-  /**
-   * @public
-   */
-  constructor() {
-    /**
-     * @type {!PerfEvent} Target event type.
-     */
-    this.event;
-
-    /**
-     * @type {number} Duration of the event in ms.
-     */
-    this.duration;
-
-    /**
-     * @type {!PerfInformation|undefined} Optional information for the event.
-     */
-    this.perfInfo;
-  }
+interface PerfEventParam {
+  /** Target event type. */
+  event: PerfEvent;
+  /** Duration of the event in ms. */
+  duration: number;
+  /** Optional information for the event. */
+  perfInfo?: PerfInformation;
 }
 
 /**
  * Sends perf type event.
- * @param {!PerfEventParam} param
  */
-export function sendPerfEvent({event, duration, perfInfo = {}}) {
+export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
+    void {
   const resolution = perfInfo['resolution'] || '';
   const facing = perfInfo['facing'] || '';
   sendEvent(
@@ -396,24 +314,17 @@ export function sendPerfEvent({event, duration, perfInfo = {}}) {
 
 /**
  * See Intent class in intent.js for the descriptions of each field.
- * TODO(b/131133953): Pass an Intent directly once the type-only import feature
- * is implemented in Closure Compiler.
- * @typedef {{
- *   mode: !Mode,
- *   result: !IntentResultType,
- *   shouldHandleResult: boolean,
- *   shouldDownScale: boolean,
- *   isSecure: boolean,
- * }}
  */
-export let IntentEventParam;
+export interface IntentEventParam {
+  intent: Intent;
+  result: IntentResultType;
+}
 
 /**
  * Sends intent type event.
- * @param {!IntentEventParam} param
  */
-export function sendIntentEvent(
-    {mode, result, shouldHandleResult, shouldDownScale, isSecure}) {
+export function sendIntentEvent({intent, result}: IntentEventParam): void {
+  const {mode, shouldHandleResult, shouldDownScale, isSecure} = intent;
   const getBoolValue = (b) => b ? '1' : '0';
   sendEvent(
       {
@@ -429,25 +340,22 @@ export function sendIntentEvent(
       ]));
 }
 
-/**
- * @typedef {{
- *   type: string,
- *   level: string,
- *   errorName: string,
- *   fileName: string,
- *   funcName: string,
- *   lineNo: string,
- *   colNo: string,
- * }}
- */
-export let ErrorEventParam;
+export interface ErrorEventParam {
+  type: string;
+  level: string;
+  errorName: string;
+  fileName: string;
+  funcName: string;
+  lineNo: string;
+  colNo: string;
+}
 
 /**
  * Sends error type event.
- * @param {!ErrorEventParam} param
  */
 export function sendErrorEvent(
-    {type, level, errorName, fileName, funcName, lineNo, colNo}) {
+    {type, level, errorName, fileName, funcName, lineNo, colNo}:
+        ErrorEventParam): void {
   sendEvent(
       {
         eventCategory: 'error',
@@ -466,7 +374,7 @@ export function sendErrorEvent(
 /**
  * Sends the barcode enabled event.
  */
-export function sendBarcodeEnabledEvent() {
+export function sendBarcodeEnabledEvent(): void {
   sendEvent({
     eventCategory: 'barcode',
     eventAction: 'enable',
@@ -475,25 +383,21 @@ export function sendBarcodeEnabledEvent() {
 
 /**
  * Types of the decoded barcode content.
- * @enum {string}
  */
-export const BarcodeContentType = {
-  TEXT: 'text',
-  URL: 'url',
-};
+export enum BarcodeContentType {
+  TEXT = 'text',
+  URL = 'url',
+}
 
-/**
- * @typedef {{
- *   contentType: !BarcodeContentType,
- * }}
- */
-export let BarcodeDetectedEventParam;
+interface BarcodeDetectedEventParam {
+  contentType: BarcodeContentType;
+}
 
 /**
  * Sends the barcode detected event.
- * @param {!BarcodeDetectedEventParam} param
  */
-export function sendBarcodeDetectedEvent({contentType}) {
+export function sendBarcodeDetectedEvent(
+    {contentType}: BarcodeDetectedEventParam): void {
   sendEvent({
     eventCategory: 'barcode',
     eventAction: 'detect',
@@ -503,9 +407,9 @@ export function sendBarcodeDetectedEvent({contentType}) {
 
 /**
  * Sends the open ptz panel event.
- * @param {{pan: boolean, tilt: boolean, zoom: boolean}} capabilities
  */
-export function sendOpenPTZPanelEvent(capabilities) {
+export function sendOpenPTZPanelEvent(
+    capabilities: {pan: boolean, tilt: boolean, zoom: boolean}): void {
   sendEvent(
       {
         eventCategory: 'ptz',

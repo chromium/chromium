@@ -25,6 +25,15 @@ import * as util from '../../util.js';
 const BASE_LENGTH = 100;
 
 /**
+ * @typedef {{
+ *   position?: !Point,
+ *   angle?: number,
+ *   length?: number
+ * }}
+ */
+let PlaceParams;  // eslint-disable-line no-unused-vars
+
+/**
  * Controller for placing line-like element.
  */
 class Line {
@@ -40,10 +49,9 @@ class Line {
   }
 
   /**
-   * @param {{position: (!Point|undefined), angle: (number|undefined), length:
-   * (number|undefined)}} params 'position' is the x, y coordinates of start
-   * endpoint in px.  'angle' is the rotate angle in rad.  'length' is the
-   * length of the line.
+   * @param {PlaceParams} params
+   *     'position' is the x, y coordinates of start endpoint in px.  'angle' is
+   *     the rotate angle in rad.  'length' is the length of the line.
    */
   place({position, angle, length}) {
     const transforms = [];

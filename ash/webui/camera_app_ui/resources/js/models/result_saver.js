@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {Resolution} from '../type.js';
 
@@ -20,7 +21,9 @@ export class ResultSaver {
    * @param {string} name Name of the photo to be saved.
    * @return {!Promise}
    */
-  async savePhoto(blob, name) {}
+  async savePhoto(blob, name) {
+    assertNotReached();
+  }
 
   /**
    * Saves gif capture result.
@@ -28,7 +31,9 @@ export class ResultSaver {
    * @param {string} name Name of the gif to be saved.
    * @return {!Promise}
    */
-  async saveGif(blob, name) {}
+  async saveGif(blob, name) {
+    assertNotReached();
+  }
 
   /**
    * Returns a video saver to save captured result video.
@@ -37,7 +42,9 @@ export class ResultSaver {
    *     orientation.
    * @return {!Promise<!VideoSaver>}
    */
-  async startSaveVideo(videoRotation) {}
+  async startSaveVideo(videoRotation) {
+    assertNotReached();
+  }
 
   /**
    * Saves captured video result.
@@ -45,5 +52,7 @@ export class ResultSaver {
    *     saved.
    * @return {!Promise}
    */
-  async finishSaveVideo(video) {}
+  async finishSaveVideo(video) {
+    assertNotReached();
+  }
 }

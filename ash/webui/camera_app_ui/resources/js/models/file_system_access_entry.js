@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../async_job_queue.js';
-import {assert} from '../chrome_util.js';
+import {assert, assertNotReached} from '../chrome_util.js';
 
 import {AsyncWriter} from './async_writer.js';
 
@@ -114,7 +114,9 @@ export class DirectoryAccessEntry {
    * @return {string}
    * @abstract
    */
-  get name() {}
+  get name() {
+    return assertNotReached();
+  }
 
   /* eslint-enable getter-return */
 
@@ -123,14 +125,18 @@ export class DirectoryAccessEntry {
    * @return {!Promise<!Array<!FileAccessEntry>>}
    * @abstract
    */
-  async getFiles() {}
+  async getFiles() {
+    assertNotReached();
+  }
 
   /**
    * Gets directories in this directory.
    * @return {!Promise<!Array<!DirectoryAccessEntry>>}
    * @abstract
    */
-  async getDirectories() {}
+  async getDirectories() {
+    assertNotReached();
+  }
 
   /**
    * Gets the file given by its |name|.
@@ -138,7 +144,9 @@ export class DirectoryAccessEntry {
    * @return {!Promise<?FileAccessEntry>} The entry of the found file.
    * @abstract
    */
-  async getFile(name) {}
+  async getFile(name) {
+    assertNotReached();
+  }
 
   /**
    * Checks if file or directory with the target name exists.
@@ -146,7 +154,9 @@ export class DirectoryAccessEntry {
    * @return {!Promise<boolean>}
    * @abstract
    */
-  async isExist(name) {}
+  async isExist(name) {
+    assertNotReached();
+  }
 
   /**
    * Create the file given by its |name|. If there is already a file with same
@@ -156,7 +166,9 @@ export class DirectoryAccessEntry {
    * @return {!Promise<!FileAccessEntry>} The entry of the created file.
    * @abstract
    */
-  async createFile(name) {}
+  async createFile(name) {
+    assertNotReached();
+  }
 
   /**
    * Gets the directory given by its |name|. If the directory is not found,
@@ -167,14 +179,18 @@ export class DirectoryAccessEntry {
    * @return {!Promise<?DirectoryAccessEntry>} The entry of the found/created
    *     directory.
    */
-  async getDirectory({name, createIfNotExist}) {}
+  async getDirectory({name, createIfNotExist}) {
+    assertNotReached();
+  }
 
   /**
    * Removes file by given |name| from the directory.
    * @param {string} name The name of the file.
    * @return {!Promise}
    */
-  async removeEntry(name) {}
+  async removeEntry(name) {
+    assertNotReached();
+  }
 }
 
 /**

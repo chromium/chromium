@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '../chrome_util.js';
+
 /**
  * The interface for a video processor. All methods are marked as async since
  * it will be used with Comlink and Web Workers.
@@ -14,19 +16,25 @@ export class VideoProcessor {
    * @return {!Promise}
    * @abstract
    */
-  async write(blob) {}
+  async write(blob) {
+    assertNotReached();
+  }
 
   /**
    * Closes the processor. No more write operations are allowed.
    * @return {!Promise} Resolved when all the data are processed and flushed.
    * @abstract
    */
-  async close() {}
+  async close() {
+    assertNotReached();
+  }
 
   /**
    * Cancels the remaining tasks. No more write operations are allowed.
    * @return {!Promise}
    * @abstract
    */
-  async cancel() {}
+  async cancel() {
+    assertNotReached();
+  }
 }

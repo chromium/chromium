@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  StreamType,
-} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
-import {
-  CameraMetadataTag,
-} from
-    '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
-
+import {assertNotReached} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {I18nString} from '../../../i18n_string.js';
@@ -17,6 +10,10 @@ import {Filenamer} from '../../../models/file_namer.js';
 import * as filesystem from '../../../models/file_system.js';
 import {DeviceOperator, parseMetadata} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
+import {
+  CameraMetadataTag,
+  StreamType,
+} from '../../../mojo/type.js';
 import {
   closeEndpoint,
   MojoEndpoint,  // eslint-disable-line no-unused-vars
@@ -38,7 +35,7 @@ import {ModeBase, ModeFactory} from './mode_base.js';
  * @typedef {{
  *     resolution: !Resolution,
  *     blob: !Blob,
- *     isVideoSnapshot: (boolean|undefined),
+ *     isVideoSnapshot?: boolean,
  * }}
  */
 export let PhotoResult;
@@ -56,7 +53,9 @@ export class PhotoHandler {
    * @return {!Promise}
    * @abstract
    */
-  handleResultPhoto(photo, name) {}
+  handleResultPhoto(photo, name) {
+    assertNotReached();
+  }
 
   /**
    * Plays UI effect when taking photo.
@@ -67,7 +66,9 @@ export class PhotoHandler {
    * @return {!Promise}
    * @abstract
    */
-  waitPreviewReady() {}
+  waitPreviewReady() {
+    assertNotReached();
+  }
 }
 
 /**

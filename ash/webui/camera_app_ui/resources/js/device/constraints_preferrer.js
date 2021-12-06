@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../chrome_util.js';
+import {assert, assertNotReached} from '../chrome_util.js';
 import * as dom from '../dom.js';
 import * as localStorage from '../models/local_storage.js';
 import * as state from '../state.js';
@@ -117,7 +117,9 @@ export class ConstraintsPreferrer {
    * @param {!Array<!Camera3DeviceInfo>} devices
    * @abstract
    */
-  updateDevicesInfo(devices) {}
+  updateDevicesInfo(devices) {
+    assertNotReached();
+  }
 
   /**
    * Updates values according to currently working video device and capture
@@ -128,7 +130,9 @@ export class ConstraintsPreferrer {
    * @param {!Resolution} resolution Resolution to be updated to.
    * @abstract
    */
-  updateValues(deviceId, stream, facing, resolution) {}
+  updateValues(deviceId, stream, facing, resolution) {
+    assertNotReached();
+  }
 
   /**
    * Gets all available candidates for capturing under this controller and its
@@ -140,7 +144,9 @@ export class ConstraintsPreferrer {
    * @return {!Array<!CaptureCandidate>} Capture resolution and its preview
    *     constraints-candidates.
    */
-  getSortedCandidates(deviceId) {}
+  getSortedCandidates(deviceId) {
+    assertNotReached();
+  }
 
   /**
    * Gets capture resolution supported by video device with given device id.
@@ -159,7 +165,9 @@ export class ConstraintsPreferrer {
    * @param {string} deviceId Device id of the video device to be changed.
    * @param {!Resolution} resolution Preferred capture resolution.
    */
-  changePreferredResolution(deviceId, resolution) {}
+  changePreferredResolution(deviceId, resolution) {
+    assertNotReached();
+  }
 
   /**
    * Sets listener for changes of preferred resolution used in taking photo on

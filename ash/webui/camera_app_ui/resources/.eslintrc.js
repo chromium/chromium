@@ -422,5 +422,24 @@ module.exports = {
     'plugins': ['@typescript-eslint'],
     'parser': `${typescriptEslintDir}/parser`,
     'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+    'rules': {
+      // TODO(pihsun): We should use eslint-plugin-jsdoc for jsdoc in
+      // TypeScript, since the Google TypeScript style guide states that
+      // redundant type or trivial arguments for params and returns can be
+      // omitted in jsdoc for TypeScript, but eslint builtin valid-jsdoc rule
+      // doesn't have fine-grained control to disable those checks (and is also
+      // deprecated).
+      // (TypeScript doesn't yet support getting types from jsdoc,
+      // https://github.com/microsoft/TypeScript/issues/42048)
+      'valid-jsdoc': 'off',
+      // TODO(pihsun): Currently there are many existing js files that have
+      // jsdoc which only contains type information and nothing else, which is
+      // all removed while converting to ts. Disabling the requirement for
+      // jsdoc for now. Note that the style guide suggest to document all
+      // properties and methods whose purpose is not immediately obvious from
+      // their name, which means that we should be able to skip jsdoc for some
+      // of the constructors and trivial structs.
+      'require-jsdoc': 'off',
+    },
   }],
 };

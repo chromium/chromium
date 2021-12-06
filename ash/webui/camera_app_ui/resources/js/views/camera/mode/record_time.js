@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '../../../chrome_util.js';
 import * as dom from '../../../dom.js';
 import {I18nString} from '../../../i18n_string.js';
 import * as loadTimeData from '../../../models/load_time_data.js';
@@ -73,7 +74,9 @@ class RecordTimeBase {
    * @protected
    * @abstract
    */
-  getTimeInterval_() {}
+  getTimeInterval_() {
+    assertNotReached();
+  }
 
   /**
    * @param {number} ticks Aggregated time ticks during the record time.
@@ -82,7 +85,9 @@ class RecordTimeBase {
    * @protected
    * @abstract
    */
-  getTimeMessage_(ticks) {}
+  getTimeMessage_(ticks) {
+    assertNotReached();
+  }
 
   /**
    * Updates UI by the elapsed recording time.

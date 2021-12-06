@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(pihsun): The jsdoc for assert and assertNotReached is in a state that
+// is recognizable by TypeScript but not by ESLint, disable ESLint checks for
+// now before we migrate this file fully to TypeScript.
+/* eslint-disable valid-jsdoc */
+
 /**
  * Verify |condition| is truthy and return |condition| if so.
  * @template T
@@ -9,8 +14,7 @@
  *     may be used to test whether a value is defined or not, and we don't want
  *     to force a cast to Boolean.
  * @param {string=} optMessage A message to show on failure.
- * @return {T} A non-null |condition|.
- * @closurePrimitive {asserts.truthy}
+ * @return {asserts condition} A non-null |condition|.
  */
 export function assert(condition, optMessage) {
   if (!condition) {
@@ -20,7 +24,6 @@ export function assert(condition, optMessage) {
     }
     throw new Error(message);
   }
-  return condition;
 }
 
 /**
@@ -43,7 +46,7 @@ export function assert(condition, optMessage) {
  * unexpected input.
  *
  * @param {string=} optMessage A message to show when this is hit.
- * @closurePrimitive {asserts.fail}
+ * @return {never}
  */
 export function assertNotReached(optMessage) {
   assert(false, optMessage || 'Unreachable code hit');

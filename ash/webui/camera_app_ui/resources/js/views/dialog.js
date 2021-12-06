@@ -53,7 +53,7 @@ export class Dialog extends View {
   /**
    * @override
    */
-  entering({message, cancellable = false} = {}) {
+  entering({message = undefined, cancellable = false} = {}) {
     if (message !== undefined) {
       this.messageHolder_.textContent = assertString(message);
     }

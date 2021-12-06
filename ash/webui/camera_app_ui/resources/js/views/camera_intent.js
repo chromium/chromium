@@ -74,6 +74,9 @@ export class CameraIntent extends Camera {
       finishSaveVideo: async (video) => {
         this.videoResultFile_ = await video.endWrite();
       },
+      saveGif: () => {
+        assertNotReached();
+      },
     });
     super(
         resultSaver, infoUpdater, photoPreferrer, videoPreferrer, mode,

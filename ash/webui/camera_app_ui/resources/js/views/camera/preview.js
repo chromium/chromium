@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from '../../chrome_util.js';
 import {
-  StreamType,
-} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
+  StreamConstraints,  // eslint-disable-line no-unused-vars
+  toMediaStreamConstraints,
+} from '../../device/stream_constraints.js';
+import * as dom from '../../dom.js';
+import {reportError} from '../../error.js';
+import {FaceOverlay} from '../../face.js';
+import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import {
   AndroidControlAeAntibandingMode,
   AndroidControlAeMode,
@@ -15,18 +21,8 @@ import {
   AndroidControlAwbState,
   AndroidStatisticsFaceDetectMode,
   CameraMetadataTag,
-} from
-    '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
-
-import {assert, assertInstanceof} from '../../chrome_util.js';
-import {
-  StreamConstraints,  // eslint-disable-line no-unused-vars
-  toMediaStreamConstraints,
-} from '../../device/stream_constraints.js';
-import * as dom from '../../dom.js';
-import {reportError} from '../../error.js';
-import {FaceOverlay} from '../../face.js';
-import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
+  StreamType,
+} from '../../mojo/type.js';
 import {
   closeEndpoint,
   MojoEndpoint,  // eslint-disable-line no-unused-vars

@@ -6,6 +6,7 @@
 import ast
 import argparse
 import functools
+import json
 import logging
 import os
 import re
@@ -56,19 +57,49 @@ def build_preload_images_js(outdir):
         subprocess.check_call(cmd)
 
 
+def gen_files_are_hard_links(gen_dir):
+    cca_root = os.getcwd()
+
+    util_js = os.path.join(cca_root, 'js/util.js')
+    util_js_in_gen = os.path.join(gen_dir, 'js/util.js')
+    return os.stat(util_js).st_ino == os.stat(util_js_in_gen).st_ino
+
+
 def deploy(args):
+    root_dir = get_chromium_root()
     cca_root = os.getcwd()
     target_dir = os.path.join(get_chromium_root(), f'out_{args.board}/Release')
 
-    build_preload_images_js(
-        os.path.join(target_dir, 'gen/ash/webui/camera_app_ui/resources/js'))
+    src_relative_dir = os.path.relpath(cca_root, root_dir)
+    gen_dir = os.path.join(target_dir, 'gen', src_relative_dir)
+
+    # Since CCA copy source to gen directory and place it together with other
+    # generated files for TypeScript compilation, and GN use hard links when
+    # possible to copy files from source to gen directory, we do a check here
+    # that the file in gen directory is indeed hard linked to the source file
+    # (which should be the case when the two directory are in the same file
+    # system), so we don't need to emulate what GN does here and skip copying
+    # the files, and just call tsc on the gen directory.
+    # TODO(pihsun): Support this case if there's some common scenario that
+    # would cause this.
+    assert gen_files_are_hard_links(gen_dir), (
+        'The generated files are not hard linked.')
+
+    build_preload_images_js(os.path.join(gen_dir, 'js'))
+
+    run_node([
+        'typescript/bin/tsc',
+        '--project',
+        os.path.join(gen_dir, 'js/tsconfig.json'),
+        # For better debugging experience on DUT.
+        '--inlineSourceMap',
+        '--inlineSources',
+    ])
 
     build_pak_cmd = [
         'tools/grit/grit.py',
         '-i',
-        os.path.join(
-            target_dir,
-            'gen/ash/webui/camera_app_ui/' + 'ash_camera_app_resources.grd'),
+        os.path.join(gen_dir, '../ash_camera_app_resources.grd'),
         'build',
         '-o',
         os.path.join(target_dir, 'gen/ash'),
@@ -151,7 +182,60 @@ def lint(args):
         print('ESLint check failed, return code =', e.returncode)
 
 
+# List of files of entrypoints to TypeScript compilation.
+#
+# Since TypeScript can recognize ES6 module imports to find files to be
+# compiled, this list includes files that are not directly imported with ES6
+# module import, for example:
+# * files running in web worker
+# * files loaded in iframe by util.createUntrustedJSModule
+# * TypeScript type definitions (.d.ts)
+# * files directly referenced by <script> tag in HTML
+TS_ENTRY_FILES = [
+    "js/externs/types.d.ts",
+    "js/init.js",
+    "js/main.js",
+    "js/models/barcode_worker.js",
+    "js/models/ffmpeg/video_processor.js",
+    "js/test_bridge.js",
+    "js/untrusted_ga_helper.js",
+    "js/untrusted_script_loader.js",
+    "js/untrusted_video_processor_helper.js",
+]
+
+
+def get_tsc_paths(board):
+    root_dir = get_chromium_root()
+    target_gen_dir = os.path.join(root_dir, f'out_{board}/Release/gen')
+
+    cca_root = os.getcwd()
+    src_relative_dir = os.path.relpath(cca_root, root_dir)
+
+    webui_dir = os.path.join(target_gen_dir, src_relative_dir,
+                             'js/mojom-webui/*')
+    resources_dir = os.path.join(target_gen_dir,
+                                 'ui/webui/resources/preprocessed/*')
+
+    return {
+        '/mojom-webui/*': [os.path.relpath(webui_dir)],
+        '//resources/*': [os.path.relpath(resources_dir)],
+        'chrome://resources/*': [os.path.relpath(resources_dir)],
+    }
+
+
 def tsc(args):
+    cca_root = os.getcwd()
+
+    with open(os.path.join(cca_root, 'tsconfig_base.json')) as f:
+        tsconfig = json.load(f)
+
+    tsconfig['files'] = TS_ENTRY_FILES
+    tsconfig['compilerOptions']['noEmit'] = True
+    tsconfig['compilerOptions']['paths'] = get_tsc_paths(args.board)
+
+    with open(os.path.join(cca_root, 'tsconfig.json'), 'w') as f:
+        json.dump(tsconfig, f)
+
     try:
         run_node(['typescript/bin/tsc'])
     except subprocess.CalledProcessError as e:
@@ -192,8 +276,10 @@ def parse_args(args):
 
     tsc_parser = subparsers.add_parser('tsc',
                                        help='check code with tsc',
-                                       description='Check types with tsc.')
+                                       description='''Check types with tsc.
+            Please build Chrome at least once before running the command.''')
     tsc_parser.set_defaults(func=tsc)
+    tsc_parser.add_argument('board')
 
     parser.set_defaults(func=lambda _args: parser.print_help())
 

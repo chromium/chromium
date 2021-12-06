@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {assert, assertInstanceof} from '../../../chrome_util.js';
+import {
+  assert,
+  assertInstanceof,
+  assertNotReached,
+} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {
@@ -170,7 +174,9 @@ export class VideoHandler {
    * @return {!Promise<!VideoSaver>}
    * @abstract
    */
-  createVideoSaver() {}
+  createVideoSaver() {
+    assertNotReached();
+  }
 
   /**
    * Handles the result video.
@@ -178,7 +184,9 @@ export class VideoHandler {
    * @return {!Promise}
    * @abstract
    */
-  handleResultVideo(video) {}
+  handleResultVideo(video) {
+    assertNotReached();
+  }
 
   /**
    * Handles the result gif video.
@@ -186,7 +194,9 @@ export class VideoHandler {
    * @return {!Promise}
    * @abstract
    */
-  handleResultGif(result) {}
+  handleResultGif(result) {
+    assertNotReached();
+  }
 
   /**
    * Handles the result video snapshot.
@@ -195,19 +205,25 @@ export class VideoHandler {
    * @return {!Promise}
    * @abstract
    */
-  handleResultPhoto(photo, name) {}
+  handleResultPhoto(photo, name) {
+    assertNotReached();
+  }
 
   /**
    * Plays UI effect when doing video snapshot.
    */
-  playShutterEffect() {}
+  playShutterEffect() {
+    assertNotReached();
+  }
 
   /**
    * Gets preview video element.
    * @return {!HTMLVideoElement}
    * @abstract
    */
-  getPreviewVideo() {}
+  getPreviewVideo() {
+    assertNotReached();
+  }
 }
 
 /**

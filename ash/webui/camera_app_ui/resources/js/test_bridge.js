@@ -62,10 +62,10 @@ const sharedWorkerScope = /** @type {!SharedWorkerGlobalScope} */ (self);
 
 /**
  * Triggers when the Shared Worker is connected.
- * @param {!Event} event
+ * @param {!MessageEvent} event
  */
 sharedWorkerScope.onconnect = (event) => {
-  const port = /** @type {!MessageEvent} */ (event).ports[0];
+  const port = event.ports[0];
   Comlink.expose(
       {
         bindWindow,

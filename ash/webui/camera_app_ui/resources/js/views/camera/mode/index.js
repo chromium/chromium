@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 import {
-  CaptureIntent,
-} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
-
-import {
   assert,
   assertInstanceof,
+  assertNotReached,
 } from '../../../chrome_util.js';
 import {
   CaptureCandidate,           // eslint-disable-line no-unused-vars
@@ -21,6 +18,7 @@ import {StreamConstraints} from '../../../device/stream_constraints.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceOperator} from '../../../mojo/device_operator.js';
+import {CaptureIntent} from '../../../mojo/type.js';
 import * as state from '../../../state.js';
 import {
   Facing,  // eslint-disable-line no-unused-vars
@@ -82,7 +80,9 @@ class ModeConfig {
    *     is supported by video device with specified device id.
    * @abstract
    */
-  async isSupported(deviceId) {}
+  async isSupported(deviceId) {
+    assertNotReached();
+  }
 
   /**
    * @param {!Resolution} captureResolution
@@ -90,7 +90,9 @@ class ModeConfig {
    * @return {boolean}
    * @abstract
    */
-  isSupportPTZ(captureResolution, previewResolution) {}
+  isSupportPTZ(captureResolution, previewResolution) {
+    assertNotReached();
+  }
 
   /**
    * Makes video capture device prepared for capturing in this mode.
@@ -100,7 +102,9 @@ class ModeConfig {
    * @return {!Promise}
    * @abstract
    */
-  async prepareDevice(constraints, captureResolution) {}
+  async prepareDevice(constraints, captureResolution) {
+    assertNotReached();
+  }
 
   /**
    * Get general stream constraints of this mode for fake cameras.
@@ -108,7 +112,9 @@ class ModeConfig {
    * @return {!Array<!StreamConstraints>}
    * @abstract
    */
-  getConstraintsForFakeCamera(deviceId) {}
+  getConstraintsForFakeCamera(deviceId) {
+    assertNotReached();
+  }
 
   /* eslint-disable getter-return */
 
@@ -117,21 +123,27 @@ class ModeConfig {
    * @return {!ModeFactory}
    * @abstract
    */
-  getCaptureFactory() {}
+  getCaptureFactory() {
+    assertNotReached();
+  }
 
   /**
    * HALv3 constraints preferrer for this mode.
    * @return {!ConstraintsPreferrer}
    * @abstract
    */
-  get constraintsPreferrer() {}
+  get constraintsPreferrer() {
+    return assertNotReached();
+  }
 
   /**
    * Mode to be fallbacked to when fail to configure this mode.
    * @return {!Mode}
    * @abstract
    */
-  get fallbackMode() {}
+  get fallbackMode() {
+    return assertNotReached();
+  }
 
   /* eslint-enable getter-return */
 }

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertInstanceof} from './chrome_util.js';
 import {
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,
   WindowStateType,
-} from '/ash/webui/camera_app_ui/camera_app_helper.mojom-webui.js';
-
-import {assertInstanceof} from './chrome_util.js';
+} from './mojo/type.js';
 import {wrapEndpoint} from './mojo/util.js';
 
 /**

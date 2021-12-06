@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {Point} from '../../../geometry.js';
@@ -60,8 +61,11 @@ export function getDefaultScanCorners(size) {
 export class ScanHandler {
   /**
    * Plays UI effect when taking photo.
+   * @abstract
    */
-  playShutterEffect() {}
+  playShutterEffect() {
+    assertNotReached();
+  }
 
   /**
    * @param {!ImageBlob} originImage Original photo to be cropped document from.
@@ -71,8 +75,11 @@ export class ScanHandler {
    * @return {!Promise<?{docBlob: !Blob, mimeType: !MimeType}>} Returns the
    *     processed document blob and which mime type user choose to save. Null
    *     for cancel document.
+   * @abstract
    */
-  async reviewDocument(originImage, refCorners) {}
+  async reviewDocument(originImage, refCorners) {
+    assertNotReached();
+  }
 
   /**
    * Handles the result document.
@@ -81,13 +88,17 @@ export class ScanHandler {
    * @return {!Promise}
    * @abstract
    */
-  handleResultDocument(result, name) {}
+  handleResultDocument(result, name) {
+    assertNotReached();
+  }
 
   /**
    * @return {!Promise}
    * @abstract
    */
-  waitPreviewReady() {}
+  waitPreviewReady() {
+    assertNotReached();
+  }
 }
 
 /**

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertInstanceof} from '../chrome_util.js';
 import * as dom from '../dom.js';
 import {ViewName} from '../type.js';  // eslint-disable-line no-unused-vars
 import {WaitableEvent} from '../waitable_event.js';
@@ -12,8 +13,8 @@ import {WaitableEvent} from '../waitable_event.js';
  * message for message of the dialog view, cancellable for whether the dialog
  * view is cancellable.
  * @typedef {{
- *   message: (string|undefined),
- *   cancellable: (boolean|undefined),
+ *   message?: string,
+ *   cancellable?: boolean,
  * }}
  */
 let DialogEnterOptions;
@@ -68,13 +69,14 @@ let EnterOptions;
  * Base controller of a view for views' navigation sessions (nav.js).
  */
 export class View {
+  /* eslint-disable-next-line valid-jsdoc */
   /**
    * @param {!ViewName} name Unique name of view which should be same as its DOM
    *     element id.
    * @param {{
-   *   dismissByEsc: (boolean|undefined),
-   *   dismissByBackgroundClick: (boolean|undefined),
-   *   defaultFocusSelector: (string|undefined),
+   *   dismissByEsc?: boolean,
+   *   dismissByBackgroundClick?: boolean,
+   *   defaultFocusSelector?: string,
    * }=} params
    * |dismissByEsc| enables dismissible by Esc-key.
    * |dismissByBackgroundClick| enables dismissible by background-click.
@@ -157,7 +159,10 @@ export class View {
    * Focuses the default element on the view if applicable.
    */
   focus() {
-    this.root.querySelector(this.defaultFocusSelector_)?.focus();
+    const el = this.root.querySelector(this.defaultFocusSelector_);
+    if (el !== null) {
+      assertInstanceof(el, HTMLElement).focus();
+    }
   }
 
   /**

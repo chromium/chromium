@@ -229,8 +229,9 @@ export let ImageBlob;
 
 /**
  * @typedef {{
- *   hasError: (boolean|undefined),
- *   resolution: (!Resolution|undefined),
+ *   hasError?: boolean,
+ *   resolution?: !Resolution,
+ *   facing?: !Facing,
  * }}
  */
 export let PerfInformation;
@@ -239,7 +240,7 @@ export let PerfInformation;
  * @typedef {{
  *   event: !PerfEvent,
  *   duration: number,
- *   perfInfo: (!PerfInformation|undefined),
+ *   perfInfo?: !PerfInformation,
  * }}
  */
 export let PerfEntry;
