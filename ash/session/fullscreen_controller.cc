@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/session/fullscreen_alert_bubble.h"
+#include "ash/session/fullscreen_notification_bubble.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -59,19 +59,19 @@ void FullscreenController::MaybeExitFullscreen() {
   active_window_state->OnWMEvent(&event);
 }
 
-void FullscreenController::MaybeShowAlert() {
+void FullscreenController::MaybeShowNotification() {
   if (!features::IsFullscreenAlertBubbleEnabled())
     return;
 
-  auto* session_controler = Shell::Get()->session_controller();
+  auto* session_controller = Shell::Get()->session_controller();
 
   // Check if a user session is active to exclude OOBE process.
-  if (session_controler->GetSessionState() !=
+  if (session_controller->GetSessionState() !=
       session_manager::SessionState::ACTIVE) {
     return;
   }
 
-  auto* prefs = session_controler->GetPrimaryUserPrefService();
+  auto* prefs = session_controller->GetPrimaryUserPrefService();
 
   if (!prefs->GetBoolean(prefs::kFullscreenAlertEnabled))
     return;
@@ -90,9 +90,9 @@ void FullscreenController::MaybeShowAlert() {
     return;
 
   if (!bubble_)
-    bubble_ = std::make_unique<FullscreenAlertBubble>();
+    bubble_ = std::make_unique<FullscreenNotificationBubble>();
 
-  bubble_->Show();
+  bubble_->ShowForWindowState(active_window_state);
 }
 
 // static
@@ -132,7 +132,7 @@ void FullscreenController::ScreenBrightnessChanged(
     device_in_dark_ = true;
   } else {
     if (device_in_dark_)
-      MaybeShowAlert();
+      MaybeShowNotification();
     device_in_dark_ = false;
   }
 }
@@ -141,9 +141,9 @@ void FullscreenController::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
     base::TimeTicks timestamp) {
   // Show alert when the lid is opened. This also covers the case when the user
-  // turn off "Sleep when cover is closed".
+  // turns off "Sleep when cover is closed".
   if (state == chromeos::PowerManagerClient::LidState::OPEN)
-    MaybeShowAlert();
+    MaybeShowNotification();
 }
 
 }  // namespace ash

@@ -15,7 +15,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class SessionControllerImpl;
-class FullscreenAlertBubble;
+class FullscreenNotificationBubble;
 
 class FullscreenController : public chromeos::PowerManagerClient::Observer {
  public:
@@ -26,8 +26,6 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   ~FullscreenController() override;
 
   static void MaybeExitFullscreen();
-
-  void MaybeShowAlert();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -41,9 +39,11 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks timestamp) override;
 
+  void MaybeShowNotification();
+
   const SessionControllerImpl* const session_controller_;
 
-  std::unique_ptr<FullscreenAlertBubble> bubble_;
+  std::unique_ptr<FullscreenNotificationBubble> bubble_;
 
   // Whether the screen brightness is low enough to make display dark.
   bool device_in_dark_ = false;

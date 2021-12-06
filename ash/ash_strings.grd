@@ -2769,17 +2769,6 @@ This file contains the strings for ash.
         Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.
       </message>
 
-      <!-- Alert bubble that when the device returns from sleep or display off without a lock screen and an active window is in fullscreen mode -->
-      <message name="IDS_FULLSCREEN_ALERT" desc="Text on an alert bubble to tell users that the active window is in fullscreen mode and recommend to exit fullscreen before entering password.">
-        Your current app is full screen. If the app asks for your password exit full screen first.
-      </message>
-      <message name="IDS_EXIT_FULLSCREEN_BUTTON" desc="Text on the exit fullscreen button.">
-        Exit fullscreen
-      </message>
-      <message name="IDS_DISMISS_BUTTON" desc="Text on the dismiss button.">
-        Dismiss
-      </message>
-
       <!-- Tray scale strings -->
       <message name="IDS_ASH_STATUS_TRAY_SCALE" desc="The label used in scale setting detailed page of ash tray popup.">
         Display scale settings
