@@ -263,8 +263,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         std::make_unique<IncompatibleApplicationsHandler>());
 #endif  // OS_WIN && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  bool enable_landing_page_redesign =
-      base::FeatureList::IsEnabled(features::kSettingsLandingPageRedesign);
+  // TODO(crbug.com/1271661): Update the UI and stop passing this boolean.
+  bool enable_landing_page_redesign = true;
   html_source->AddString(
       "enableLandingPageRedesignAttribute",
       enable_landing_page_redesign ? "enable-landing-page-redesign" : "");

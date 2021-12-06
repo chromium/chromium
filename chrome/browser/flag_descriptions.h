@@ -3095,9 +3095,6 @@ extern const char kWebUIBrandingUpdateDescription[];
 extern const char kWebuiFeedbackName[];
 extern const char kWebuiFeedbackDescription[];
 
-extern const char kSettingsLandingPageRedesignName[];
-extern const char kSettingsLandingPageRedesignDescription[];
-
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 

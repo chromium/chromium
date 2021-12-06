@@ -58,10 +58,6 @@ extern const char kMinimumTabWidthFeatureParameterName[];
 
 extern const base::Feature kScrollableTabStripButtons;
 
-#if !defined(ANDROID)
-extern const base::Feature kSettingsLandingPageRedesign;
-#endif
-
 // TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
 // ui_features.cc. This is currently temporarily in reading_list_switches.h.
 extern const base::Feature kSidePanel;

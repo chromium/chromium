@@ -6940,11 +6940,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kOmniboxTriggerForPrerender2)},
 
 #if !defined(OS_ANDROID)
-    {"settings-landing-page-redesign",
-     flag_descriptions::kSettingsLandingPageRedesignName,
-     flag_descriptions::kSettingsLandingPageRedesignDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSettingsLandingPageRedesign)},
-
     {"webui-branding-update", flag_descriptions::kWebUIBrandingUpdateName,
      flag_descriptions::kWebUIBrandingUpdateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebUIBrandingUpdate)},
