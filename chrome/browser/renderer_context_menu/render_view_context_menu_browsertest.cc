@@ -473,9 +473,9 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   EXPECT_TRUE(menu3->IsCommandIdVisible(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
 
-// Verifies "Save link as" is not enabled for links blacklisted via policy.
+// Verifies "Save link as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
-                       SaveLinkAsEntryIsDisabledForBlacklistedUrls) {
+                       SaveLinkAsEntryIsDisabledForBlockedUrls) {
   base::Value value(base::Value::Type::LIST);
   value.Append(base::Value("google.com"));
   browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlBlocklist,
