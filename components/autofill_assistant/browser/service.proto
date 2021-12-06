@@ -41,7 +41,8 @@ message ClientContextProto {
   optional string locale = 5;
 
   // country should be a country code as defined by ISO 3166-1-alpha-2.
-  // The intent is to communicate the client's location to the server.
+  // The intent is to communicate the client's location to the server. Location
+  // is extracted from Chrome Variations Service latest country.
   optional string country = 6;
 
   // Experiment ids string provided by the 'caller'.

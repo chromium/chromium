@@ -23,6 +23,7 @@
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,6 +41,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -532,12 +534,12 @@ std::string ClientAndroid::GetLocale() const {
 }
 
 std::string ClientAndroid::GetCountryCode() const {
-  JNIEnv* env = AttachCurrentThread();
-  auto code = Java_AutofillAssistantClient_getCountryCode(env, java_object_);
-  // Use fallback "ZZ". It is an unused country code.
-  if (!code)
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  // Use fallback "ZZ" if no country is available.
+  if (!variations_service || variations_service->GetLatestCountry().empty())
     return "ZZ";
-  return base::android::ConvertJavaStringToUTF8(env, code);
+  return base::ToUpperASCII(variations_service->GetLatestCountry());
 }
 
 DeviceContext ClientAndroid::GetDeviceContext() const {

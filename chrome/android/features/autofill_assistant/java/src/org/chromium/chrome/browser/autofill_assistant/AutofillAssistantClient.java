@@ -7,14 +7,11 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.accounts.Account;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
-import android.telephony.TelephonyManager;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -357,27 +354,6 @@ public class AutofillAssistantClient {
             AutofillAssistantClientJni.get().onPaymentsClientToken(
                     mNativeClientAndroid, AutofillAssistantClient.this, clientToken);
         });
-    }
-
-    /**
-     * Returns the country that the device is currently located in. This currently only works
-     * for devices with active SIM cards. For a more general solution, we should probably use
-     * the LocationManager together with the Geocoder.
-     */
-    @CalledByNative
-    @Nullable
-    private String getCountryCode() {
-        TelephonyManager telephonyManager =
-                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.TELEPHONY_SERVICE);
-
-        // According to API, location for CDMA networks is unreliable
-        if (telephonyManager != null
-                && telephonyManager.getPhoneType() != TelephonyManager.PHONE_TYPE_CDMA) {
-            return telephonyManager.getNetworkCountryIso();
-        }
-
-        return null;
     }
 
     /** Returns the android version of the device. */
