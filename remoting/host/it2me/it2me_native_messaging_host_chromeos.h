@@ -23,8 +23,8 @@ namespace remoting {
 // of the browser process.
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForChromeOS(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runnner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
     policy::PolicyService* policy_service);
 
 }  // namespace remoting

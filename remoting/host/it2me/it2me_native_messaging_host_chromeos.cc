@@ -19,13 +19,13 @@ namespace remoting {
 
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForChromeOS(
-    scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_runnner,
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_runner,
     policy::PolicyService* policy_service) {
   std::unique_ptr<It2MeHostFactory> host_factory(new It2MeHostFactory());
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::CreateForChromeOS(
-          io_runnner, ui_runnner,
+          io_runner, ui_runner,
           base::ThreadPool::CreateSingleThreadTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   std::unique_ptr<PolicyWatcher> policy_watcher =
