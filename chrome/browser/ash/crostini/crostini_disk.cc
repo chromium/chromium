@@ -247,6 +247,7 @@ class Observer : public chromeos::ConciergeClient::DiskImageObserver {
       case vm_tools::concierge::DiskImageStatus::DISK_STATUS_RESIZED:
         EmitResizeResultMetric(signal.status());
         std::move(callback_).Run(true);
+        delete this;
         break;
       default:
         LOG(ERROR) << "Failed or unrecognised status when resizing: "
@@ -309,6 +310,7 @@ void OnResize(
     std::move(callback).Run(true);
   } else if (response->status() ==
              vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS) {
+    // The newly created Observer is self-deleting.
     GetConciergeClient()->AddDiskImageObserver(
         new Observer(response->command_uuid(), std::move(callback)));
   } else {
