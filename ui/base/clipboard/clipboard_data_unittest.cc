@@ -8,7 +8,9 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
@@ -18,9 +20,7 @@ namespace ui {
 // same bitmap.
 TEST(ClipboardDataTest, BitmapTest) {
   ClipboardData data1;
-  SkBitmap test_bitmap;
-  test_bitmap.allocN32Pixels(3, 2);
-  test_bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   data1.SetBitmapData(test_bitmap);
 
   ClipboardData data2;
@@ -44,15 +44,40 @@ TEST(ClipboardDataTest, DataSrcTest) {
   EXPECT_EQ(data1, data2);
 }
 
-// Tests that encoding/decoding bitmaps as PNG bytes works as intended.
-TEST(ClipboardDataTest, BitmapAsBytesTest) {
+TEST(ClipboardDataTest, Equivalence) {
   ClipboardData data1;
-  SkBitmap test_bitmap;
-  test_bitmap.allocN32Pixels(3, 2);
-  test_bitmap.eraseARGB(255, 0, 255, 0);
-  EXPECT_FALSE(gfx::BitmapsAreEqual(data1.bitmap(), test_bitmap));
-  data1.SetBitmapData(test_bitmap);
-  EXPECT_TRUE(gfx::BitmapsAreEqual(data1.bitmap(), test_bitmap));
+  SkBitmap test_bitmap1 = gfx::test::CreateBitmap(3, 2);
+  data1.SetBitmapData(test_bitmap1);
+
+  ClipboardData data2(data1);
+
+  // Clipboards are equivalent if they have matching bitmaps.
+  EXPECT_EQ(data1, data2);
+  EXPECT_TRUE(data1.GetBitmapIfPngNotEncoded().has_value());
+  EXPECT_TRUE(data2.GetBitmapIfPngNotEncoded().has_value());
+
+  // The PNGs have not yet been encoded.
+  EXPECT_EQ(data1.maybe_png(), absl::nullopt);
+  EXPECT_EQ(data2.maybe_png(), absl::nullopt);
+
+  // Encode the PNG of one of the clipboards.
+  auto png1 =
+      ClipboardData::EncodeBitmapData(data1.GetBitmapIfPngNotEncoded().value());
+  data1.SetPngDataAfterEncoding(png1);
+
+  // Comparing the clipboards when only one has an encoded PNG checks the cached
+  // bitmap. They should still be equal.
+  EXPECT_EQ(data1, data2);
+
+  // Put an already-encoded image on a clipboard.
+  ClipboardData data3;
+  data3.SetPngData(png1);
+
+  // Comparing a clipboard when one has only an encoded PNG and the other has
+  // only a bitmap fails, EVEN IF the bitmap would encode into the same PNG.
+  EXPECT_NE(data2, data3);
+  // Comparing clipboards with the same encoded PNG succeeds as expected.
+  EXPECT_EQ(data1, data3);
 }
 
 }  // namespace ui

@@ -26,6 +26,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
@@ -105,8 +106,14 @@ class ClipboardHistoryTest : public AshTestBase {
 
     int expected_bitmaps_index = 0;
     for (const auto& item : items) {
+      // The PNG should not have yet been encoded.
+      const auto& maybe_png = item.data().maybe_png();
+      EXPECT_FALSE(maybe_png.has_value());
+
+      auto maybe_bitmap = item.data().GetBitmapIfPngNotEncoded();
+      EXPECT_TRUE(maybe_bitmap.has_value());
       EXPECT_TRUE(gfx::BitmapsAreEqual(
-          expected_bitmaps[expected_bitmaps_index++], item.data().bitmap()));
+          expected_bitmaps[expected_bitmaps_index++], maybe_bitmap.value()));
     }
   }
 

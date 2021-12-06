@@ -11,15 +11,20 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -31,6 +36,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -182,11 +188,37 @@ class ClipboardInternal {
   }
 
   // Reads png from the ClipboardData.
-  std::vector<uint8_t> ReadPng() const {
-    if (!HasFormat(ClipboardInternalFormat::kPng))
-      return std::vector<uint8_t>();
+  // TODO(crbug.com/1272798): Don't encode the same bitmap multiple times.
+  void ReadPng(Clipboard::ReadPngCallback callback) const {
+    if (!HasFormat(ClipboardInternalFormat::kPng)) {
+      std::move(callback).Run(std::vector<uint8_t>());
+      return;
+    }
 
-    return GetData()->png();
+    const ClipboardData* data = GetData();
+
+    // Check whether the clipboard contains an encoded PNG.
+    auto maybe_png = data->maybe_png();
+    if (maybe_png.has_value()) {
+      std::move(callback).Run(std::move(maybe_png.value()));
+      return;
+    }
+
+    // Check whether the clipboard contains an image which has not yet been
+    // encoded to a PNG. If so, encode it on a background thread and return the
+    // result asynchronously.
+    auto maybe_bitmap = data->GetBitmapIfPngNotEncoded();
+    DCHECK(maybe_bitmap.has_value())
+        << "We should not be showing that PNG format is on the "
+           "clipboard if neither a PNG or bitmap is available.";
+
+    png_encoding_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ClipboardData::EncodeBitmapData,
+                       std::move(maybe_bitmap.value())),
+        base::BindOnce(&ClipboardInternal::DidEncodePng,
+                       weak_factory_.GetWeakPtr(), sequence_number(),
+                       std::move(callback)));
   }
 
   // Reads data of type |type| from the ClipboardData.
@@ -259,11 +291,30 @@ class ClipboardInternal {
     return data ? data->format() & static_cast<int>(format) : false;
   }
 
+  void DidEncodePng(ClipboardSequenceNumberToken token,
+                    Clipboard::ReadPngCallback callback,
+                    std::vector<uint8_t> png_data) {
+    if (token == sequence_number()) {
+      // Cache the encoded PNG.
+      data_->SetPngDataAfterEncoding(png_data);
+    }
+
+    std::move(callback).Run(std::move(png_data));
+  }
+
   // Current ClipboardData.
   std::unique_ptr<ClipboardData> data_;
 
   // Sequence number uniquely identifying clipboard state.
   ClipboardSequenceNumberToken sequence_number_;
+
+  // Runner used to asynchronously encode bitmaps into PNGs if the clipboard
+  // only contains a bitmap.
+  scoped_refptr<base::SequencedTaskRunner> png_encoding_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE});
+
+  base::WeakPtrFactory<ClipboardInternal> weak_factory_{this};
 };
 
 // Helper class to build a ClipboardData object and write it to clipboard.
@@ -584,7 +635,7 @@ void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
   }
 
   RecordRead(ClipboardFormatMetric::kPng);
-  std::move(callback).Run(clipboard_internal_->ReadPng());
+  clipboard_internal_->ReadPng(std::move(callback));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();

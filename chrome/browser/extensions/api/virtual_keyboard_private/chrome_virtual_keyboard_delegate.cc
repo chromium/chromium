@@ -157,6 +157,17 @@ std::string GetKeyboardLayout() {
              : "qwerty";
 }
 
+// Returns a nullptr if a router could not be found or if the the router does
+// not have an event listener for the given `event_name`.
+extensions::EventRouter* GetRouterForEventName(content::BrowserContext* context,
+                                               const std::string& event_name) {
+  extensions::EventRouter* router = extensions::EventRouter::Get(context);
+  if (!router || !router->HasEventListener(event_name)) {
+    return nullptr;
+  }
+  return router;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -354,8 +365,8 @@ void ChromeVirtualKeyboardDelegate::GetClipboardHistory(
     ash::ClipboardImageModelFactory::Get()->RenderCurrentPendingRequests();
   }
 
-  std::move(get_history_callback)
-      .Run(clipboard_history_controller->GetHistoryValues(item_ids_filter));
+  clipboard_history_controller->GetHistoryValues(
+      item_ids_filter, std::move(get_history_callback));
 }
 
 bool ChromeVirtualKeyboardDelegate::PasteClipboardItem(
@@ -422,11 +433,10 @@ bool ChromeVirtualKeyboardDelegate::IsSettingsEnabled() {
 }
 
 void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemListAddedOrRemoved() {
-  EventRouter* router = EventRouter::Get(browser_context_);
-  if (!router || !router->HasEventListener(
-                     keyboard_api::OnClipboardHistoryChanged::kEventName)) {
+  EventRouter* router = GetRouterForEventName(
+      browser_context_, keyboard_api::OnClipboardHistoryChanged::kEventName);
+  if (!router)
     return;
-  }
 
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
@@ -446,11 +456,10 @@ void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemListAddedOrRemoved() {
 
 void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated(
     const std::vector<base::UnguessableToken>& menu_item_ids) {
-  EventRouter* router = EventRouter::Get(browser_context_);
-  if (!router || !router->HasEventListener(
-                     keyboard_api::OnClipboardItemUpdated::kEventName)) {
+  EventRouter* router = GetRouterForEventName(
+      browser_context_, keyboard_api::OnClipboardItemUpdated::kEventName);
+  if (!router)
     return;
-  }
 
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
@@ -462,8 +471,19 @@ void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated(
     item_ids_filter.insert(id.ToString());
   }
   // Make call to get the updated clipboard items.
-  base::Value updated_items =
-      clipboard_history_controller->GetHistoryValues(item_ids_filter);
+  clipboard_history_controller->GetHistoryValues(
+      item_ids_filter,
+      base::BindOnce(
+          &ChromeVirtualKeyboardDelegate::OnGetHistoryValuesAfterItemsUpdated,
+          weak_this_));
+}
+
+void ChromeVirtualKeyboardDelegate::OnGetHistoryValuesAfterItemsUpdated(
+    base::Value updated_items) {
+  EventRouter* router = GetRouterForEventName(
+      browser_context_, keyboard_api::OnClipboardItemUpdated::kEventName);
+  if (!router)
+    return;
 
   // Broadcast an api event for each updated item.
   for (auto& item : updated_items.GetList()) {
@@ -586,10 +606,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
 
 void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
     std::unique_ptr<base::DictionaryValue> settings) {
-  EventRouter* router = EventRouter::Get(browser_context_);
-
-  if (!router || !router->HasEventListener(
-                     keyboard_api::OnKeyboardConfigChanged::kEventName))
+  EventRouter* router = GetRouterForEventName(
+      browser_context_, keyboard_api::OnKeyboardConfigChanged::kEventName);
+  if (!router)
     return;
 
   auto event_args = std::make_unique<base::ListValue>();

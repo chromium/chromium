@@ -75,6 +75,8 @@ class ChromeVirtualKeyboardDelegate
   void OnClipboardHistoryItemsUpdated(
       const std::vector<base::UnguessableToken>& menu_item_ids) override;
 
+  void OnGetHistoryValuesAfterItemsUpdated(base::Value updated_items);
+
   void OnHasInputDevices(OnKeyboardSettingsCallback on_settings_callback,
                          bool has_audio_input_devices);
   void DispatchConfigChangeEvent(

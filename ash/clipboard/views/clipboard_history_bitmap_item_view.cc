@@ -239,9 +239,19 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
                                 weak_ptr_factory_.GetWeakPtr()));
       case ui::ClipboardInternalFormat::kPng: {
         auto image_view = std::make_unique<views::ImageView>();
-        gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-            clipboard_history_item->data().png().data(),
-            clipboard_history_item->data().png().size());
+        gfx::Image image;
+        const auto& maybe_png = clipboard_history_item->data().maybe_png();
+        if (maybe_png.has_value()) {
+          image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
+                                                   maybe_png.value().size());
+        } else {
+          // If we have not yet encoded the bitmap to a PNG, just create the
+          // gfx::Image using the available bitmap. No information is lost here.
+          auto maybe_bitmap =
+              clipboard_history_item->data().GetBitmapIfPngNotEncoded();
+          DCHECK(maybe_bitmap.has_value());
+          image = gfx::Image::CreateFrom1xBitmap(maybe_bitmap.value());
+        }
         ui::ImageModel image_model = ui::ImageModel::FromImage(image);
         image_view->SetImage(image_model);
         return image_view;

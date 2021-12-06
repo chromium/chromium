@@ -5,6 +5,7 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
@@ -19,14 +20,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -74,6 +80,19 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
 
   void OnShutdown() override {}
 };
+
+void ExpectHistoryValueMatchesBitmap(const base::Value& value,
+                                     const SkBitmap& expected_bitmap) {
+  auto* format = value.FindKey("displayFormat");
+  EXPECT_TRUE(format);
+  EXPECT_EQ(format->GetString(), "png");
+
+  auto* image_data = value.FindKey("imageData");
+  EXPECT_TRUE(image_data);
+  auto png = ui::ClipboardData::EncodeBitmapData(expected_bitmap);
+  std::string png_data_url = webui::GetPngDataUrl(png.data(), png.size());
+  EXPECT_EQ(png_data_url, image_data->GetString());
+}
 
 }  // namespace
 
@@ -310,6 +329,98 @@ TEST_F(ClipboardHistoryControllerTest,
   FlushMessageLoop();
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
+TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
+  // Write a bitmap to ClipboardHistory.
+  SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteImage(test_bitmap);
+  }
+  FlushMessageLoop();
+
+  // The bitmap should be encoded to a PNG once this task completes.
+  base::test::TestFuture<base::Value> future;
+  GetClipboardHistoryController()->GetHistoryValuesForTest(
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  // Manually pry into the contents of the result to confirm that the
+  // newly-encoded PNG is included.
+  base::Value result = future.Take();
+  EXPECT_TRUE(result.is_list());
+  EXPECT_EQ(1u, result.GetList().size());
+
+  ExpectHistoryValueMatchesBitmap(result.GetList()[0], test_bitmap);
+}
+
+TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
+  // Write a bunch of bitmaps to ClipboardHistory.
+  std::vector<const SkBitmap> test_bitmaps;
+  test_bitmaps.emplace_back(gfx::test::CreateBitmap(2, 1));
+  test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
+  test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
+  for (const auto& test_bitmap : test_bitmaps) {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteImage(test_bitmap);
+    FlushMessageLoop();
+  }
+
+  // The bitmaps should be encoded to PNGs once this task completes.
+  base::test::TestFuture<base::Value> future;
+  GetClipboardHistoryController()->GetHistoryValuesForTest(
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  // Manually pry into the contents of the result to confirm that the
+  // newly-encoded PNGs are included.
+  base::Value result = future.Take();
+  EXPECT_TRUE(result.is_list());
+  auto num_results = result.GetList().size();
+  EXPECT_EQ(num_results, test_bitmaps.size());
+
+  // History values should be sorted by recency.
+  for (uint i = 0; i < num_results; ++i) {
+    ExpectHistoryValueMatchesBitmap(result.GetList()[i],
+                                    test_bitmaps[num_results - 1 - i]);
+  }
+}
+
+TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
+  // Write a bitmap to ClipboardHistory.
+  std::vector<const SkBitmap> test_bitmaps;
+  test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
+  test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteImage(test_bitmaps[0]);
+  }
+  FlushMessageLoop();
+
+  // Write another bitmap to the clipboard while encoding the first bitmap.
+  GetClipboardHistoryController()
+      ->set_new_bitmap_to_write_while_encoding_for_test(test_bitmaps[1]);
+
+  base::test::TestFuture<base::Value> future;
+  GetClipboardHistoryController()->GetHistoryValuesForTest(
+      future.GetCallback());
+
+  // Both bitmaps should be encoded to a PNG once this task completes.
+  EXPECT_TRUE(future.Wait());
+
+  // Manually pry into the contents of the result to confirm that the
+  // newly-encoded PNGs are included.
+  base::Value result = future.Take();
+  EXPECT_TRUE(result.is_list());
+  auto num_results = result.GetList().size();
+  EXPECT_EQ(num_results, test_bitmaps.size());
+
+  // History values should be sorted by recency.
+  for (uint i = 0; i < num_results; ++i) {
+    ExpectHistoryValueMatchesBitmap(result.GetList()[i],
+                                    test_bitmaps[num_results - 1 - i]);
+  }
 }
 
 }  // namespace ash

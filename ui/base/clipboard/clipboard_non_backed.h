@@ -51,6 +51,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   friend class Clipboard;
   friend class ClipboardNonBackedTest;
   FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, TextURIList);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardNonBackedTest, ImageEncoding);
   ClipboardNonBacked();
   ~ClipboardNonBacked() override;
 

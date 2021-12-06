@@ -9,7 +9,9 @@
 #include <set>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "base/values.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/ui_base_types.h"
 
@@ -29,6 +31,8 @@ class ScopedClipboardHistoryPause;
 // clipboard history menu.
 class ASH_PUBLIC_EXPORT ClipboardHistoryController {
  public:
+  using GetHistoryValuesCallback = base::OnceCallback<void(base::Value)>;
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the clipboard history menu is shown.
@@ -75,8 +79,8 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Returns the history which tracks what is being copied to the clipboard.
   // Only the items listed in |item_id_filter| are returned. If |item_id_filter|
   // is empty, then all items in the history are returned.
-  virtual base::Value GetHistoryValues(
-      const std::set<std::string>& item_id_filter) const = 0;
+  virtual void GetHistoryValues(const std::set<std::string>& item_id_filter,
+                                GetHistoryValuesCallback callback) const = 0;
 
   // Returns a list of item ids for items contained in the clipboard history.
   virtual std::vector<std::string> GetHistoryItemIds() const = 0;
