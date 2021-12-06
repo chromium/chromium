@@ -25,8 +25,10 @@
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 
 namespace content {
@@ -208,11 +210,18 @@ void AttributionManagerImpl::RemoveObserver(Observer* observer) {
 }
 
 void AttributionManagerImpl::HandleSource(StorableSource source) {
+  // Process attributions in the order in which they were received, processing
+  // the new one after any background attributions are flushed.
+  GetContentClient()->browser()->FlushBackgroundAttributions(
+      base::BindOnce(&AttributionManagerImpl::HandleSourceInternal,
+                     weak_factory_.GetWeakPtr(), std::move(source)));
+}
+
+void AttributionManagerImpl::HandleSourceInternal(StorableSource source) {
   // Only retrieve deactivated sources if an observer is there to hear it.
   // Technically, an observer could be registered between the time the async
   // call is made and the time the response is received, but this is unlikely.
   int deactivated_source_return_limit = observers_.empty() ? 0 : 50;
-
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
       .WithArgs(std::move(source), deactivated_source_return_limit)
       .Then(base::BindOnce(
@@ -232,6 +241,12 @@ void AttributionManagerImpl::HandleSource(StorableSource source) {
 }
 
 void AttributionManagerImpl::HandleTrigger(StorableTrigger trigger) {
+  GetContentClient()->browser()->FlushBackgroundAttributions(
+      base::BindOnce(&AttributionManagerImpl::HandleTriggerInternal,
+                     weak_factory_.GetWeakPtr(), std::move(trigger)));
+}
+
+void AttributionManagerImpl::HandleTriggerInternal(StorableTrigger trigger) {
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
       .WithArgs(std::move(trigger))
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,

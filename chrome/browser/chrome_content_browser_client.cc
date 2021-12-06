@@ -382,6 +382,7 @@
 #include "chrome/browser/android/service_tab_launcher.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/attribution_reporting/background_attribution_flusher.h"
 #include "chrome/browser/chrome_browser_main_android.h"
 #include "chrome/browser/download/android/available_offline_content_provider.h"
 #include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
@@ -6318,3 +6319,18 @@ void ChromeContentBrowserClient::OnKeepaliveTimerFired(
   }
 }
 #endif
+
+void ChromeContentBrowserClient::FlushBackgroundAttributions(
+    base::OnceClosure callback) {
+  DCHECK(!callback.is_null());
+#if !defined(OS_ANDROID)
+  std::move(callback).Run();
+#else
+  if (!background_attribution_flusher_) {
+    background_attribution_flusher_ =
+        std::make_unique<BackgroundAttributionFlusher>();
+  }
+  background_attribution_flusher_->FlushPreNativeAttributions(
+      std::move(callback));
+#endif
+}

@@ -168,6 +168,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void NotifySourceDeactivated(
       const AttributionStorage::DeactivatedSource& source);
 
+  void HandleSourceInternal(StorableSource source);
+  void HandleTriggerInternal(StorableTrigger trigger);
+
   // Friend to expose the AttributionStorage for certain tests.
   friend std::vector<AttributionReport> GetAttributionsToReportForTesting(
       AttributionManagerImpl* manager,

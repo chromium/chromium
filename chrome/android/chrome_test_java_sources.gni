@@ -60,6 +60,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/app/tab_activity_glue/TabletPhoneLayoutChangeTest.java",
   "javatests/src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
   "javatests/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentIntegrationTest.java",
+  "javatests/src/org/chromium/chrome/browser/attribution_reporting/AttributionProviderIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillPopupTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillPopupWithKeyboardTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",

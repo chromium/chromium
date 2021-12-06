@@ -2146,6 +2146,16 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Called on every WebContents creation.
   virtual void OnWebContentsCreated(WebContents* web_contents);
+
+  // Background attributions are attributions coming from other applications
+  // that are not processed immediately, typically because the browser has not
+  // yet been started. This method is called before processing any new
+  // attributions or conversions coming from a renderer, to notify the embedder
+  // that it should flush any attributions that have not been processed yet. The
+  // provided |callback| should be run when all background attributions have
+  // been flushed, or immediately if background attributions are not supported
+  // by the embedder.
+  virtual void FlushBackgroundAttributions(base::OnceClosure callback);
 };
 
 }  // namespace content

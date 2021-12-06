@@ -1278,4 +1278,9 @@ bool ContentBrowserClient::IsFindInPageDisabledForOrigin(
 
 void ContentBrowserClient::OnWebContentsCreated(WebContents* web_contents) {}
 
+void ContentBrowserClient::FlushBackgroundAttributions(
+    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace content
