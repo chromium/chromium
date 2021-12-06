@@ -1261,6 +1261,7 @@ MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
     new FakeFileSystemFileHandle('picked_file1.jpg'),
     new FakeFileSystemFileHandle('picked_file2.jpg'),
   ];
+  /** @type {!OpenFilePickerOptions|!DraftFilePickerOptions|undefined} */
   let lastPickerOptions;
   window.showOpenFilePicker = (pickerOptions) => {
     lastPickerOptions = pickerOptions;
@@ -1269,8 +1270,9 @@ MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
   const directory = await launchWithFiles(
       [await createTestImageFile(10, 10, 'original_file.jpg')]);
 
-  let testResponse = await sendTestMessage(
-      {simple: 'openFilesWithFilePicker', simpleArgs: ['VIDEO', 'IMAGE']});
+  const simpleArgs = {acceptTypeKeys: ['VIDEO', 'IMAGE']};
+  let testResponse =
+      await sendTestMessage({simple: 'openFilesWithFilePicker', simpleArgs});
   assertEquals(
       testResponse.testQueryResult, 'openFilesWithFilePicker resolved');
 
@@ -1290,6 +1292,15 @@ MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
 
   assertEquals(clientFiles[0].name, 'picked_file1.jpg');
   assertEquals(clientFiles[1].name, 'picked_file2.jpg');
+
+  // Test to handle invalid tokens (b/209342852). These should leave the
+  // `startIn` option unspecified.
+  simpleArgs.explicitToken = -1;
+  testResponse =
+      await sendTestMessage({simple: 'openFilesWithFilePicker', simpleArgs});
+  assertEquals(
+      testResponse.testQueryResult, 'openFilesWithFilePicker resolved');
+  assertEquals(lastPickerOptions.startIn, undefined);
 };
 
 MediaAppUIBrowserTest.RelatedFiles = async () => {

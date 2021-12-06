@@ -229,11 +229,12 @@ export class ReceivedFileList {
    */
   async openFilesWithFilePicker(acceptTypeKeys, startInFolder) {
     // AbstractFile doesn't guarantee tokens. Use one from a ReceivedFile if
-    // there is one.
+    // there is one, after ensuring it is valid.
     const fileRep = /** @type {{token: (number|undefined)}} */ (startInFolder);
+    const startInToken = startInFolder ? (fileRep.token || 0) : 0;
     /** @type {!OpenFilesWithPickerMessage} */
     const msg = {
-      startInToken: startInFolder ? (fileRep.token || 0) : 0,
+      startInToken: startInToken > 0 ? startInToken : 0,
       accept: acceptTypeKeys,
     };
     await parentMessagePipe.sendMessage(Message.OPEN_FILES_WITH_PICKER, msg);
