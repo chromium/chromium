@@ -115,6 +115,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   friend class PrintContextTest;
 
   void OutputLinkedDestinations(GraphicsContext&, const gfx::Rect& page_rect);
+  bool IsFrameValid() const;
 
   Member<LocalFrame> frame_;
   Vector<gfx::Rect> page_rects_;
@@ -123,7 +124,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   void ComputePageRectsWithPageSizeInternal(
       const gfx::SizeF& page_size_in_pixels);
   void CollectLinkedDestinations(Node*);
-  bool IsFrameValid() const;
 
   // Used to prevent misuses of BeginPrintMode() and EndPrintMode() (e.g., call
   // EndPrintMode() without BeginPrintMode()).

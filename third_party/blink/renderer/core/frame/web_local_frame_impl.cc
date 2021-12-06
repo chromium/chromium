@@ -485,7 +485,19 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   void BeginPrintMode(float width, float height) override {}
 
-  void EndPrintMode() override { plugin_->PrintEnd(); }
+  void EndPrintMode() override {
+    plugin_->PrintEnd();
+    // TODO(junov): The following should not be necessary because
+    // the document's printing state does not need to be set when printing
+    // via a plugin. The problem is that WebLocalFrameImpl::DispatchBeforePrint
+    // modifies this state regardless of whether a plug-in is being used.
+    // This code should be refactored so that the print_context_ is in scope
+    // when  beforeprint/afterprint events are dispatched So that plug-in
+    // behavior can be differentiated. Also, should beforeprint/afterprint
+    // events even be dispatched when using a plug-in?
+    if (IsFrameValid())
+      GetFrame()->GetDocument()->SetPrinting(Document::kNotPrinting);
+  }
 
   float GetPageShrink(uint32_t page_number) const override {
     // We don't shrink the page (maybe we should ask the widget ??)
