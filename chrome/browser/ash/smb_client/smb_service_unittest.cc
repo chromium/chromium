@@ -177,7 +177,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
         std::make_unique<FakeSmbProviderClient>());
     chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
-    // Takes ownership of |disk_mount_manager_|.
+    // Takes ownership of |disk_mount_manager_|, but Shutdown() must be called.
     disks::DiskMountManager::InitializeForTesting(disk_mount_manager_);
   }
 
@@ -185,6 +185,7 @@ class SmbServiceWithSmbfsTest : public testing::Test {
     smb_service_.reset();
     user_manager_enabler_.reset();
     profile_manager_.reset();
+    disks::DiskMountManager::Shutdown();
     chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
