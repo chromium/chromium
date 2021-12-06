@@ -19,6 +19,7 @@ some chunks.
       let frames_decoded = 0;
       let errors = 0;
       const base_layer_decimator = ([null, null, 2, 4])[arg.layers];
+      let expected_dot_count = [];
 
       const encoder_config = {
         codec: arg.codec,
@@ -38,6 +39,15 @@ some chunks.
       let decoder = new VideoDecoder({
         output(frame) {
           frames_decoded++;
+          let dots = expected_dot_count.shift();
+          // Check that we have intended number of dots and no more.
+          // Completely black frame shouldn't pass the test.
+          if(!validateBlackDots(frame, dots) ||
+            validateBlackDots(frame, dots + 1)) {
+            TEST.reportFailure(
+                `Unexpected dot count ts:${frame.timestamp} dots:${dots}`);
+          }
+
           frame.close();
         },
         error(e) {
@@ -74,6 +84,8 @@ some chunks.
       for (let i = 0; i < frames_to_encode; i++) {
         let frame = await source.getNextFrame();
         encoder.encode(frame, { keyFrame: false });
+        if (i % base_layer_decimator == 0)
+          expected_dot_count.push(i);
         frame.close();
 
         await waitForNextFrame();

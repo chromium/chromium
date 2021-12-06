@@ -83,6 +83,7 @@ crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1
 
 crbug.com/1256493 [ chromeos-board-kevin ] WebCodecs_copyTo_hw_decoder [ Failure ]
 crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
+crbug.com/1275034 [ win nvidia ] WebCodecs_SVC_* [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
