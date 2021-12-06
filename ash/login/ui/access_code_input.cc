@@ -185,6 +185,14 @@ void AccessibleInputField::OnGestureEvent(ui::GestureEvent* event) {
   views::Textfield::OnGestureEvent(event);
 }
 
+void AccessibleInputField::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // Focusable nodes generally must have a name, but the focus of an accessible
+  // input field is propagated to its ancestor.
+  node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+
+  views::Textfield::GetAccessibleNodeData(node_data);
+}
+
 FixedLengthCodeInput::FixedLengthCodeInput(int length,
                                            OnInputChange on_input_change,
                                            OnEnter on_enter,

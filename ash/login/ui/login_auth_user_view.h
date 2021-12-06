@@ -289,7 +289,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
 
   LoginUserView* user_view_ = nullptr;
   LoginPasswordView* password_view_ = nullptr;
-  NonAccessibleView* password_view_container_ = nullptr;
   LoginPinInputView* pin_input_view_ = nullptr;
   views::LabelButton* pin_password_toggle_ = nullptr;
   LoginPinView* pin_view_ = nullptr;
