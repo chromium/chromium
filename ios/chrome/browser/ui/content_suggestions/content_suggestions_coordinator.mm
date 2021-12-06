@@ -262,9 +262,6 @@
   self.ntpMediator.dispatcher =
       static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands,
                      SnackbarCommands>>(self.browser->GetCommandDispatcher());
-  self.ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
-      initWithBrowserState:self.browser->GetBrowserState()
-                  webState:self.webState];
   self.ntpMediator.suggestionsViewController = self.suggestionsViewController;
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
   [self.ntpMediator setUp];

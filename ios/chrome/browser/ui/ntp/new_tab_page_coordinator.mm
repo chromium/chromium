@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -230,6 +231,9 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
                                   self.browser, self.webState)
       voiceSearchAvailability:&_voiceSearchAvailability];
   self.ntpMediator.browser = self.browser;
+  self.ntpMediator.NTPMetrics = [[NTPHomeMetrics alloc]
+      initWithBrowserState:self.browser->GetBrowserState()];
+  self.ntpMediator.NTPMetrics.webState = self.webState;
 
   self.contentSuggestionsCoordinator = [[ContentSuggestionsCoordinator alloc]
       initWithBaseViewController:nil

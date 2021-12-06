@@ -26,9 +26,11 @@ void RecordNTPImpression(ntp_home::IOSNTPImpression impression_type);
 @interface NTPHomeMetrics : NSObject
 
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                            webState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
+
+// Currently active WebState with an active NTP.
+@property(nonatomic, assign) web::WebState* webState;
 
 - (void)recordAction:(new_tab_page_uma::ActionType)action;
 
