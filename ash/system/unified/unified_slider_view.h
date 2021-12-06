@@ -5,14 +5,17 @@
 #ifndef ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SLIDER_VIEW_H_
 
-#include "ui/gfx/vector_icon_types.h"
-#include "ui/views/controls/button/image_button.h"
+#include "ash/style/icon_button.h"
 #include "ui/views/controls/slider.h"
 #include "ui/views/view.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace views {
 class Label;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -25,37 +28,16 @@ class UnifiedSliderListener : public views::SliderListener {
   ~UnifiedSliderListener() override = default;
 };
 
+// TODO(crbug/1276545): Remove UnifiedSliderButton after the migration.
 // A button used in a slider row of UnifiedSystemTray. The button is togglable.
-class UnifiedSliderButton : public views::ImageButton {
+class UnifiedSliderButton : public IconButton {
  public:
   UnifiedSliderButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
                       int accessible_name_id);
-
   UnifiedSliderButton(const UnifiedSliderButton&) = delete;
   UnifiedSliderButton& operator=(const UnifiedSliderButton&) = delete;
-
   ~UnifiedSliderButton() override;
-
-  // Set the vector icon shown in a circle.
-  void SetVectorIcon(const gfx::VectorIcon& icon);
-
-  // Change the toggle state.
-  void SetToggled(bool toggled);
-
-  // views::ImageButton:
-  void PaintButtonContents(gfx::Canvas* canvas) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
-  void OnThemeChanged() override;
-
- private:
-  void UpdateVectorIcon();
-
-  // True if the button is currently toggled.
-  bool toggled_ = false;
-
-  const gfx::VectorIcon* icon_ = nullptr;
 };
 
 // Base view class of a slider row in UnifiedSystemTray. It has a button on the

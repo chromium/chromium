@@ -15,7 +15,11 @@ struct VectorIcon;
 namespace ash {
 
 // A circular ImageButton that can have small/medium/large different sizes. Each
-// of them has the floating version, which do not have the background.
+// of them has the floating version, which does not have the background. The
+// button can be togglable if `is_togglable` is set to true, the icon inside
+// might change on different toggle states. A fixed size of EmptyBorder will be
+// applied to the button if `has_border` is true, this is done to help
+// differentiating focus ring from the content of the button.
 class IconButton : public views::ImageButton {
  public:
   METADATA_HEADER(IconButton);
@@ -33,17 +37,39 @@ class IconButton : public views::ImageButton {
              Type type,
              const gfx::VectorIcon& icon,
              int accessible_name_id);
+  IconButton(PressedCallback callback,
+             Type type,
+             const gfx::VectorIcon& icon,
+             int accessible_name_id,
+             bool is_togglable,
+             bool has_border);
   IconButton(const IconButton&) = delete;
   IconButton& operator=(const IconButton&) = delete;
   ~IconButton() override;
 
+  // Sets the vector icon of the button, it might change on different `toggled_`
+  // states.
+  void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  // Updates the `toggled_` state of the button.
+  void SetToggled(bool toggled);
+
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
  private:
+  void UpdateVectorIcon();
+
   const Type type_;
-  const gfx::VectorIcon& icon_;
+  const gfx::VectorIcon* icon_ = nullptr;
+
+  // True if this button is togglable.
+  bool is_togglable_ = false;
+
+  // True if the button is currently toggled.
+  bool toggled_ = false;
 };
 
 }  // namespace ash
