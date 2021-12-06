@@ -2004,17 +2004,27 @@ int AXPlatformNodeBase::FindTextBoundary(
     ax::mojom::MoveDirection direction,
     ax::mojom::TextAffinity affinity) const {
   DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
-  if (boundary != ax::mojom::TextBoundary::kSentenceStart) {
-    absl::optional<int> boundary_offset =
-        GetDelegate()->FindTextBoundary(boundary, offset, direction, affinity);
-    if (boundary_offset.has_value())
-      return *boundary_offset;
+  if (!delegate_)
+    return offset;  // Unable to compute text boundary.
+
+  const AXPosition position = delegate_->CreateTextPositionAt(offset, affinity);
+  // On Windows and Linux ATK, searching for a text boundary should always stop
+  // at the boundary of the current object.
+  auto boundary_behavior = AXBoundaryBehavior::kStopAtAnchorBoundary;
+  // On Windows and Linux ATK, it is standard text navigation behavior to stop
+  // if we are searching in the backwards direction and the current position is
+  // already at the required text boundary.
+  if (direction == ax::mojom::MoveDirection::kBackward) {
+    boundary_behavior =
+        AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary;
   }
 
-  std::vector<int32_t> unused_line_start_offsets;
-  return static_cast<int>(
-      FindAccessibleTextBoundary(GetHypertext(), unused_line_start_offsets,
-                                 boundary, offset, direction, affinity));
+  const AXPosition boundary_position = position->CreatePositionAtTextBoundary(
+      boundary, direction, boundary_behavior);
+  if (boundary_position->IsNullPosition())
+    return -1;
+  DCHECK_GE(boundary_position->text_offset(), 0);
+  return boundary_position->text_offset();
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::NearestLeafToPoint(

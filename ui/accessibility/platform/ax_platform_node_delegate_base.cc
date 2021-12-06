@@ -265,7 +265,6 @@ const AXTree::Selection AXPlatformNodeDelegateBase::GetUnignoredSelection()
 AXNodePosition::AXPositionInstance AXPlatformNodeDelegateBase::CreatePositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  NOTIMPLEMENTED();
   return AXNodePosition::CreateNullPosition();
 }
 
@@ -273,7 +272,6 @@ AXNodePosition::AXPositionInstance
 AXPlatformNodeDelegateBase::CreateTextPositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  NOTIMPLEMENTED();
   return AXNodePosition::CreateNullPosition();
 }
 
@@ -941,14 +939,6 @@ std::u16string AXPlatformNodeDelegateBase::GetAuthorUniqueId() const {
 const AXUniqueId& AXPlatformNodeDelegateBase::GetUniqueId() const {
   static base::NoDestructor<AXUniqueId> dummy_unique_id;
   return *dummy_unique_id;
-}
-
-absl::optional<int> AXPlatformNodeDelegateBase::FindTextBoundary(
-    ax::mojom::TextBoundary boundary,
-    int offset,
-    ax::mojom::MoveDirection direction,
-    ax::mojom::TextAffinity affinity) const {
-  return absl::nullopt;
 }
 
 const std::vector<gfx::NativeViewAccessible>
