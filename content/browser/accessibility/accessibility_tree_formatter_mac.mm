@@ -471,14 +471,9 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
   std::string subrole_attr = SysNSStringToUTF8(NSAccessibilitySubroleAttribute);
   value = dict.FindStringPath(subrole_attr);
   if (value) {
-    if (*value == kNULLValue) {
-      WriteAttribute(false, StringPrintf("%s=NULL", subrole_attr.c_str()),
-                     &line);
-    } else {
-      WriteAttribute(
-          false, StringPrintf("%s=%s", subrole_attr.c_str(), value->c_str()),
-          &line);
-    }
+    WriteAttribute(false,
+                   StringPrintf("%s=%s", subrole_attr.c_str(), value->c_str()),
+                   &line);
   }
 
   // Expose all other attributes.
