@@ -7,8 +7,6 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/time/calendar_month_view.h"
-#include "ash/system/time/calendar_unittest_utils.h"
-#include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
@@ -599,31 +597,11 @@ class CalendarViewAnimationTest : public AshTestBase {
         delegate_.get(), tray_controller_.get()));
   }
 
-  void UpdateMonth(base::Time date) {
-    calendar_view_->calendar_view_controller()->UpdateMonth(date);
-    calendar_view_->SetMonthViews();
-  }
-
   CalendarView* calendar_view() { return calendar_view_; }
 
   views::Label* month_header() { return calendar_view_->header_->header_; }
   views::Label* header_year() { return calendar_view_->header_->header_year_; }
   CalendarHeaderView* header() { return calendar_view_->header_; }
-  CalendarMonthView* current_month() { return calendar_view_->current_month_; }
-  CalendarMonthView* previous_month() {
-    return calendar_view_->previous_month_;
-  }
-  CalendarMonthView* next_month() { return calendar_view_->next_month_; }
-  views::View* previous_label() { return calendar_view_->previous_label_; }
-  views::View* current_label() { return calendar_view_->current_label_; }
-  views::View* next_label() { return calendar_view_->next_label_; }
-
-  void ScrollUpOneMonth() {
-    calendar_view_->ScrollOneMonthWithAnimation(/*is_scrolling_up=*/true);
-  }
-  void ScrollDownOneMonth() {
-    calendar_view_->ScrollOneMonthWithAnimation(/*is_scrolling_up=*/false);
-  }
 
  private:
   std::unique_ptr<views::Widget> widget_;
@@ -635,7 +613,6 @@ class CalendarViewAnimationTest : public AshTestBase {
   static base::Time fake_time_;
 };
 
-// The header should show the new header with animation when there's an update.
 TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
@@ -646,11 +623,9 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   CreateCalendarView();
   // Gives it a duration to let the animation finish and pass the cool down
   // duration. The same for the other 3s duration.
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
+  task_environment()->FastForwardBy(base::Seconds(3));
   calendar_view()->calendar_view_controller()->UpdateMonth(date);
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
+  task_environment()->FastForwardBy(base::Seconds(3));
 
   EXPECT_EQ(u"October", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
@@ -659,11 +634,18 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   calendar_view()->calendar_view_controller()->UpdateMonth(date +
                                                            base::Days(33));
 
+  // The Opacity is updated from 1.0f to 0.0f after 200ms delay duration.
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(1.0f, header()->layer()->opacity());
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+
   // To prevent flakiness, fast forward until the header changes (see
   // crbug/1270161). The second animation starts after the header is updated to
   // the new month.
   while (u"November" != month_header()->GetText()) {
-    task_environment()->FastForwardBy(base::Milliseconds(30));
+    task_environment()->FastForwardBy(base::Milliseconds(80));
   }
   // The opacity is updated to 0 after the first animation ends.
   EXPECT_EQ(0.0f, header()->layer()->opacity());
@@ -674,123 +656,16 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 
   // The Opacity is back from 0.0f to 1.0 after 200ms delay duration.
-  task_environment()->FastForwardBy(
-      calendar_utils::kAnimationDurationForVisibility);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
   EXPECT_EQ(0.0f, header()->layer()->opacity());
 
   // Gives it a duration to let the animation finish.
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
   EXPECT_EQ(1.0f, header()->layer()->opacity());
 
   // The header is still with the updated new month after all animation
   // finished.
   EXPECT_EQ(u"November", month_header()->GetText());
-  EXPECT_EQ(u"2021", header_year()->GetText());
-}
-
-// The month views and header should animate when scrolling up or down.
-TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("24 Oct 2021 10:00 GMT", &date));
-
-  CreateCalendarView();
-  // Gives it a duration to let the animation finish and pass the cool down
-  // duration.
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-
-  EXPECT_EQ(u"October", month_header()->GetText());
-  EXPECT_EQ(u"2021", header_year()->GetText());
-
-  // Scrolls to the next month.
-  ScrollDownOneMonth();
-
-  // If scrolls down, the month views that will animate are `current_month_`,
-  // `next_month_` and 'next_label_`.
-  EXPECT_EQ(1.0f, header()->layer()->opacity());
-  task_environment()->FastForwardBy(
-      calendar_utils::kAnimationDurationForVisibility);
-  EXPECT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(next_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(next_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(previous_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(previous_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(current_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_EQ(u"October", month_header()->GetText());
-  EXPECT_EQ(u"2021", header_year()->GetText());
-
-  // The header animation starts from 300ms. Its Opacity is updated from 1.0f to
-  // 0.0f after 300+200ms delay duration.
-  task_environment()->FastForwardBy(
-      calendar_utils::kAnimationDurationForMoving);
-  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
-  EXPECT_EQ(1.0f, header()->layer()->opacity());
-
-  // To prevent flakiness, fast forward until the header changes (see
-  // crbug/1270161). The second animation starts after the header is updated to
-  // the new month.
-  while (u"November" != month_header()->GetText()) {
-    task_environment()->FastForwardBy(base::Milliseconds(30));
-  }
-
-  // The opacity is updated to 0 after the first animation ends.
-  EXPECT_EQ(0.0f, header()->layer()->opacity());
-
-  // Now the header is updated to the new month and year before it starts
-  // showing up.
-  EXPECT_EQ(u"November", month_header()->GetText());
-  EXPECT_EQ(u"2021", header_year()->GetText());
-
-  // The Opacity is back from 0.0f to 1.0 after 200ms delay duration.
-  task_environment()->FastForwardBy(
-      calendar_utils::kAnimationDurationForVisibility);
-  EXPECT_EQ(0.0f, header()->layer()->opacity());
-
-  // Gives it a duration to let the animation finish.
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-  EXPECT_EQ(1.0f, header()->layer()->opacity());
-
-  // The header is still with the updated new month after all animation
-  // finished.
-  EXPECT_EQ(u"November", month_header()->GetText());
-  EXPECT_EQ(u"2021", header_year()->GetText());
-
-  // Scrolls to the previous month.
-  ScrollUpOneMonth();
-
-  // If scrolls up, the month views that will animate are `current_month_`,
-  // `previous_month_` and 'current_label_`.
-  EXPECT_EQ(1.0f, header()->layer()->opacity());
-  task_environment()->FastForwardBy(
-      calendar_utils::kAnimationDurationForVisibility);
-  EXPECT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(current_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(previous_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(next_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(previous_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(next_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_EQ(u"November", month_header()->GetText());
-  EXPECT_EQ(u"2021", header_year()->GetText());
-
-  // The header animation starts from 300ms. Its Opacity is updated from 1.0f to
-  // 0.0f after 300+200ms delay duration.
-  task_environment()->FastForwardBy(
-      calendar_utils::kAnimationDurationForMoving);
-  EXPECT_TRUE(header()->layer()->GetAnimator()->is_animating());
-  EXPECT_EQ(1.0f, header()->layer()->opacity());
-
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-
-  EXPECT_EQ(u"October", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 

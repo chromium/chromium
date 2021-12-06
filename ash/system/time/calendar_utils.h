@@ -32,13 +32,6 @@ constexpr int kColumnSetPadding = 3;
 constexpr gfx::Insets kDateCellInsets{kDateVerticalPadding,
                                       kDateHorizontalPadding};
 
-// Duration of opacity animation for visibility changes.
-constexpr base::TimeDelta kAnimationDurationForVisibility =
-    base::Milliseconds(100);
-
-// Duration of moving animation.
-constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
-
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time::Exploded& selected_date);
 
