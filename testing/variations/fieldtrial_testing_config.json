@@ -4108,7 +4108,13 @@
             ],
             "experiments": [
                 {
-                    "name": "DisablePush2"
+                    "name": "Enabled6",
+                    "params": {
+                        "http2_grease_settings": "true"
+                    },
+                    "enable_features": [
+                        "Http2Grease"
+                    ]
                 }
             ]
         }
