@@ -30,11 +30,14 @@ existence-checker value.
 The install executables are executed in an environment with the following
 environment variables defined:
 
- - `PATH`: '/bin:/usr/bin:/Path/To/ksadmin'.
- - `KS_TICKET_XC_PATH`: The absolute path to the installation of the app, based
+-   `PATH`: '/bin:/usr/bin:/Path/To/ksadmin'.
+-   `KS_TICKET_XC_PATH`: The absolute path to the installation of the app, based
  on its existence-checker value.
- - `KS_TICKET_AP`: The ap value of the currently-installed version of the app.
+-   `KS_TICKET_AP`: The ap value of the currently-installed version of the app.
  (Note: "ap" was called "tag" in Keystone.)
+-   `UPDATE_IS_MACHINE`: An indicator of the updater's scope.
+    -   0 if the updater is per-user.
+    -   1 if the updater is cross-user.
 
 ## Updating Product Metadata
 If the install executables succeed, the updater will automatically record the

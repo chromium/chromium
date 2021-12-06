@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/mac/mac_util.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 
 namespace updater {
@@ -119,6 +120,7 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
+                  const UpdaterScope& scope,
                   const base::FilePath& unpacked_path) {
   if (!base::PathExists(unpacked_path)) {
     VLOG(1) << "File path (" << unpacked_path << ") does not exist.";
@@ -169,6 +171,7 @@ int RunExecutable(const base::FilePath& existence_checker_path,
         {"PATH", env_path},
         {"KS_TICKET_XC_PATH", existence_checker_path.value()},
         {"KS_TICKET_AP", ap},
+        {"UPDATE_IS_MACHINE", scope == UpdaterScope::kSystem ? "1" : "0"},
     };
     int exit_code = 0;
     if (!base::LaunchProcess(command, options).WaitForExit(&exit_code))
@@ -305,6 +308,7 @@ int InstallFromApp(const base::FilePath& app_file_path,
 int InstallFromArchive(const base::FilePath& file_path,
                        const base::FilePath& existence_checker_path,
                        const std::string& ap,
+                       const UpdaterScope& scope,
                        const std::string& arguments) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
@@ -319,7 +323,7 @@ int InstallFromArchive(const base::FilePath& file_path,
     if (base::PathExists(new_path)) {
       return entry.second(
           new_path, base::BindOnce(&RunExecutable, existence_checker_path, ap,
-                                   arguments));
+                                   arguments, scope));
     }
   }
 
