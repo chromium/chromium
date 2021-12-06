@@ -8,11 +8,15 @@ import json
 import operator
 import os
 import re
-import six
 import sys
 import tempfile
 import threading
-import urllib
+try:
+  # Workaround for py2/3 compatibility.
+  # TODO(pbirk): remove once py2 support is no longer needed.
+  import urllib.request as urllib_request
+except ImportError:
+  import urllib as urllib_request
 import zipfile
 
 sys.path.append(
@@ -432,11 +436,8 @@ def download(url, destination):
   dest_dir = os.path.dirname(destination)
   if not os.path.isdir(dest_dir):
     os.makedirs(dest_dir)
-  if six.PY2:
-    retrieve_target = urllib.urlretrieve
-  else:
-    retrieve_target = urllib.request.urlretrieve
-  t = threading.Thread(target=retrieve_target, args=(url, destination))
+  t = threading.Thread(target=urllib_request.urlretrieve,
+                       args=(url, destination))
   t.start()
   return t
 
