@@ -305,6 +305,37 @@ TEST_F(PartitionAllocThreadCacheTest, DirectMappedAllocationsAreNotCached) {
   // properly handled.
 }
 
+// This tests that Realloc properly handles bookkeeping, specifically the path
+// that reallocates in place.
+TEST_F(PartitionAllocThreadCacheTest, DirectMappedReallocMetrics) {
+  root_->ResetBookkeepingForTesting();
+
+  size_t expected_allocated_size = root_->get_total_size_of_allocated_bytes();
+
+  EXPECT_EQ(expected_allocated_size,
+            root_->get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_allocated_size, root_->get_max_size_of_allocated_bytes());
+
+  void* ptr = root_->Alloc(10 * kMaxBucketed, "");
+
+  EXPECT_EQ(expected_allocated_size + 10 * kMaxBucketed,
+            root_->get_total_size_of_allocated_bytes());
+
+  void* ptr2 = root_->Realloc(ptr, 9 * kMaxBucketed, "");
+
+  ASSERT_EQ(ptr, ptr2);
+  EXPECT_EQ(expected_allocated_size + 9 * kMaxBucketed,
+            root_->get_total_size_of_allocated_bytes());
+
+  ptr2 = root_->Realloc(ptr, 10 * kMaxBucketed, "");
+
+  ASSERT_EQ(ptr, ptr2);
+  EXPECT_EQ(expected_allocated_size + 10 * kMaxBucketed,
+            root_->get_total_size_of_allocated_bytes());
+
+  root_->Free(ptr);
+}
+
 TEST_F(PartitionAllocThreadCacheTest, MultipleThreadCaches) {
   FillThreadCacheAndReturnIndex(kMediumSize);
   auto* parent_thread_tcache = root_->thread_cache_for_testing();

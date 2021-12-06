@@ -825,8 +825,12 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     return false;
   }
 
+  total_size_of_allocated_bytes -= slot_span->bucket->slot_size;
   slot_span->SetRawSize(raw_size);
   slot_span->bucket->slot_size = new_slot_size;
+  total_size_of_allocated_bytes += slot_span->bucket->slot_size;
+  max_size_of_allocated_bytes =
+      std::max(max_size_of_allocated_bytes, total_size_of_allocated_bytes);
 
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.

@@ -1185,6 +1185,10 @@ template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
     void* slot_start,
     SlotSpan* slot_span) {
+  // An underflow here means we've miscounted |total_size_of_allocated_bytes|
+  // somewhere.
+  PA_DCHECK(total_size_of_allocated_bytes >=
+            slot_span->GetSlotSizeForBookkeeping());
   total_size_of_allocated_bytes -= slot_span->GetSlotSizeForBookkeeping();
   return slot_span->Free(slot_start);
 }
