@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -63,6 +65,10 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/app_controller_mac.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #endif
 
 using content::NavigationEntry;
@@ -269,6 +275,26 @@ void SessionService::SetPinnedState(const SessionID& window_id,
   ScheduleCommand(sessions::CreatePinnedStateCommand(tab_id, is_pinned));
 }
 
+void SessionService::AddTabExtraData(const SessionID& window_id,
+                                     const SessionID& tab_id,
+                                     const char* key,
+                                     const std::string data) {
+  if (!ShouldTrackChangesToWindow(window_id))
+    return;
+
+  ScheduleCommand(sessions::CreateAddTabExtraDataCommand(tab_id, key, data));
+}
+
+void SessionService::AddWindowExtraData(const SessionID& window_id,
+                                        const char* key,
+                                        const std::string data) {
+  if (!ShouldTrackChangesToWindow(window_id))
+    return;
+
+  ScheduleCommand(
+      sessions::CreateAddWindowExtraDataCommand(window_id, key, data));
+}
+
 void SessionService::TabClosed(const SessionID& window_id,
                                const SessionID& tab_id) {
   if (!tab_id.id())
@@ -413,8 +439,6 @@ void SessionService::SetWindowUserTitle(const SessionID& window_id,
   ScheduleCommand(
       sessions::CreateSetWindowUserTitleCommand(window_id, user_title));
 }
-
-
 
 void SessionService::OnErrorWritingSessionCommands() {
   // TODO(sky): if `pending_window_close_ids_` is non-empty, then
@@ -561,6 +585,16 @@ void SessionService::BuildCommandsForTab(
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreateTabGroupCommand(session_id, std::move(group)));
   }
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  absl::optional<std::pair<std::string, std::string>> tab_restore_data =
+      side_search::MaybeGetSideSearchTabRestoreData(tab);
+  if (tab_restore_data.has_value()) {
+    command_storage_manager()->AppendRebuildCommand(
+        sessions::CreateAddTabExtraDataCommand(
+            session_id, tab_restore_data->first, tab_restore_data->second));
+  }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 }
 
 void SessionService::ScheduleResetCommands() {

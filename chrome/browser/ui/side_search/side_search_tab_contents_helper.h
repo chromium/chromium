@@ -94,9 +94,6 @@ class SideSearchTabContentsHelper
   }
 
   const absl::optional<GURL>& last_search_url() { return last_search_url_; }
-  void set_last_search_url(GURL url) {
-    last_search_url_ = absl::optional<GURL>({url});
-  }
 
  private:
   friend class content::WebContentsUserData<SideSearchTabContentsHelper>;
@@ -105,13 +102,13 @@ class SideSearchTabContentsHelper
   // Gets the helper for the side contents.
   SideSearchSideContentsHelper* GetSideContentsHelper();
 
-  // Navigates `side_panel_contents_` to the tab's `last_search_url_` if needed.
-  // Should only be called when `side_contents_active_`.
-  void UpdateSideContentsNavigation();
-
   // Creates the `side_panel_contents_` associated with this helper's tab
   // contents.
   void CreateSidePanelContents();
+
+  // Navigates `side_panel_contents_` to the tab's `last_search_url_` if needed.
+  // Should only be called when `side_contents_active_`.
+  void UpdateSideContentsNavigation();
 
   // Makes a HEAD request for the side search Google SRP to test for the page's
   // availability and sets `is_side_panel_srp_available_` accordingly.

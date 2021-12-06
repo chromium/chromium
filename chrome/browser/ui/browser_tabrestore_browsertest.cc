@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/browser_tabrestore.h"
 
+#include <map>
+#include <string>
+
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -138,6 +141,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       /* last_active_time=*/base::TimeTicks::Now(),
       /* storage_namespace=*/nullptr,
       /* user_agent_override=*/sessions::SerializedUserAgentOverride(),
+      /* extra_data*/ std::map<std::string, std::string>(),
       /* from_session_restore=*/true);
 
   EXPECT_TRUE(web_contents->GetController().GetPendingEntry());
@@ -160,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       /* last_active_time=*/base::TimeTicks::Now(),
       /* storage_namespace=*/nullptr,
       /* user_agent_override=*/sessions::SerializedUserAgentOverride(),
+      /* extra_data*/ std::map<std::string, std::string>(),
       /* from_session_restore=*/true);
 
   EXPECT_FALSE(web_contents->GetController().GetPendingEntry());

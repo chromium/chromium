@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_tabrestore.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -30,6 +31,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#endif
+
 using content::NavigationEntry;
 using content::RestoreType;
 using content::WebContents;
@@ -52,6 +57,7 @@ std::unique_ptr<WebContents> CreateRestoredTab(
     base::TimeTicks last_active_time,
     content::SessionStorageNamespace* session_storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data,
     bool initially_hidden,
     bool from_session_restore) {
   GURL restore_url = navigations.at(selected_navigation).virtual_url();
@@ -90,6 +96,13 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   web_contents->GetController().Restore(selected_navigation,
                                         RestoreType::kRestored, &entries);
   DCHECK_EQ(0u, entries.size());
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  if (IsSideSearchEnabled(browser->profile())) {
+    side_search::SetSideSearchTabStateFromRestoreData(web_contents.get(),
+                                                      extra_data);
+  }
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   return web_contents;
 }
@@ -219,12 +232,13 @@ WebContents* AddRestoredTab(
     base::TimeTicks last_active_time,
     content::SessionStorageNamespace* session_storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data,
     bool from_session_restore) {
   const bool initially_hidden = !select || browser->window()->IsMinimized();
   std::unique_ptr<WebContents> web_contents = CreateRestoredTab(
       browser, navigations, selected_navigation, extension_app_id,
       last_active_time, session_storage_namespace, user_agent_override,
-      initially_hidden, from_session_restore);
+      extra_data, initially_hidden, from_session_restore);
 
   return AddRestoredTabImpl(std::move(web_contents), browser, tab_index, group,
                             select, pin, from_session_restore);
@@ -237,7 +251,8 @@ WebContents* AddRestoredTabFromCache(
     absl::optional<tab_groups::TabGroupId> group,
     bool select,
     bool pin,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data) {
   // TODO(crbug.com/1227397): Check whether |ua_override| has changed for the
   // tab we're trying to restore from ClosedTabCache. Don't restore if the
   // values differ.
@@ -246,6 +261,11 @@ WebContents* AddRestoredTabFromCache(
   ua_override.ua_metadata_override = blink::UserAgentMetadata::Demarshal(
       user_agent_override.opaque_ua_metadata_override);
   web_contents->SetUserAgentOverride(ua_override, false);
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  side_search::SetSideSearchTabStateFromRestoreData(web_contents.get(),
+                                                    extra_data);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
   return AddRestoredTabImpl(std::move(web_contents), browser, tab_index, group,
                             select, pin, /*from_session_restore=*/false);
@@ -258,11 +278,12 @@ WebContents* ReplaceRestoredTab(
     const std::string& extension_app_id,
     content::SessionStorageNamespace* session_storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data,
     bool from_session_restore) {
   std::unique_ptr<WebContents> web_contents = CreateRestoredTab(
       browser, navigations, selected_navigation, extension_app_id,
-      base::TimeTicks(), session_storage_namespace, user_agent_override, false,
-      from_session_restore);
+      base::TimeTicks(), session_storage_namespace, user_agent_override,
+      extra_data, false, from_session_restore);
   WebContents* raw_web_contents = web_contents.get();
 
   // ReplaceWebContentsAt won't animate in the restoration, so manually do the

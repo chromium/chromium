@@ -109,6 +109,15 @@ class SessionService : public SessionServiceBase {
                       const SessionID& tab_id,
                       bool is_pinned);
 
+  void AddTabExtraData(const SessionID& window_id,
+                       const SessionID& tab_id,
+                       const char* key,
+                       const std::string data);
+
+  void AddWindowExtraData(const SessionID& window_id,
+                          const char* key,
+                          const std::string data);
+
   void TabClosed(const SessionID& window_id, const SessionID& tab_id) override;
 
   // Notification a window has opened.

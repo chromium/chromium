@@ -6,6 +6,7 @@
 #define COMPONENTS_SESSIONS_CORE_SESSION_TYPES_H_
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -106,6 +107,9 @@ struct SESSIONS_EXPORT SessionTab {
 
   // Data associated with the tab by the embedder.
   std::map<std::string, std::string> data;
+
+  // Extra data associated with the tab.
+  std::map<std::string, std::string> extra_data;
 };
 
 // SessionTabGroup -----------------------------------------------------------
@@ -201,6 +205,9 @@ struct SESSIONS_EXPORT SessionWindow {
 
   // The user-configured title for this window, may be empty.
   std::string user_title;
+
+  // Extra data associated with the window.
+  std::map<std::string, std::string> extra_data;
 };
 
 }  // namespace sessions

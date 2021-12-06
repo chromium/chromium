@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 #include <list>
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -221,7 +222,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       Browser* browser = CreateRestoredBrowser(
           BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
           (*i)->visible_on_all_workspaces, (*i)->show_state, (*i)->app_name,
-          (*i)->user_title, (*i)->window_id.id());
+          (*i)->user_title, (*i)->extra_data, (*i)->window_id.id());
       browsers.push_back(browser);
 
       // A foreign session window will not contain tab groups, however an
@@ -270,7 +271,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       DCHECK(!use_new_window);
       web_contents = chrome::ReplaceRestoredTab(
           browser, tab.navigations, selected_index, tab.extension_app_id,
-          nullptr, tab.user_agent_override, true /* from_session_restore */);
+          nullptr, tab.user_agent_override, tab.extra_data,
+          true /* from_session_restore */);
     } else {
       int tab_index =
           use_new_window ? 0 : browser->tab_strip_model()->active_index() + 1;
@@ -279,7 +281,7 @@ class SessionRestoreImpl : public BrowserListObserver {
           tab.extension_app_id, absl::nullopt,
           disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB,  // selected
           tab.pinned, base::TimeTicks(), nullptr, tab.user_agent_override,
-          true /* from_session_restore */);
+          tab.extra_data, true /* from_session_restore */);
       // Start loading the tab immediately.
       web_contents->GetController().LoadIfNecessary();
     }
@@ -575,7 +577,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         browser = CreateRestoredBrowser(
             BrowserTypeForWindowType((*i)->type), (*i)->bounds, (*i)->workspace,
             (*i)->visible_on_all_workspaces, show_state, (*i)->app_name,
-            (*i)->user_title, (*i)->window_id.id());
+            (*i)->user_title, (*i)->extra_data, (*i)->window_id.id());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-End", false);
@@ -816,7 +818,8 @@ class SessionRestoreImpl : public BrowserListObserver {
         browser, tab.navigations, tab_index, selected_index,
         tab.extension_app_id, new_group, is_selected_tab, tab.pinned,
         last_active_time, session_storage_namespace.get(),
-        tab.user_agent_override, true /* from_session_restore */);
+        tab.user_agent_override, tab.extra_data,
+        true /* from_session_restore */);
     DCHECK(web_contents);
 
     RestoredTab restored_tab(web_contents, is_selected_tab,
@@ -832,14 +835,16 @@ class SessionRestoreImpl : public BrowserListObserver {
                              web_contents));
   }
 
-  Browser* CreateRestoredBrowser(Browser::Type type,
-                                 gfx::Rect bounds,
-                                 const std::string& workspace,
-                                 bool visible_on_all_workspaces,
-                                 ui::WindowShowState show_state,
-                                 const std::string& app_name,
-                                 const std::string& user_title,
-                                 int32_t restore_id) {
+  Browser* CreateRestoredBrowser(
+      Browser::Type type,
+      gfx::Rect bounds,
+      const std::string& workspace,
+      bool visible_on_all_workspaces,
+      ui::WindowShowState show_state,
+      const std::string& app_name,
+      const std::string& user_title,
+      const std::map<std::string, std::string>& extra_data,
+      int32_t restore_id) {
     Browser::CreateParams params(type, profile_, false);
     params.initial_bounds = bounds;
     params.user_title = user_title;
@@ -863,7 +868,13 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.initial_workspace = workspace;
     params.initial_visible_on_all_workspaces_state = visible_on_all_workspaces;
     params.creation_source = Browser::CreationSource::kSessionRestore;
-    return Browser::Create(params);
+    Browser* browser = Browser::Create(params);
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+    browser->window()->MaybeRestoreSideSearchStatePerWindow(extra_data);
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
+
+    return browser;
   }
 
   void ShowBrowser(Browser* browser, int selected_tab_index) {

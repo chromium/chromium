@@ -11,6 +11,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -390,6 +391,7 @@ void SideSearchBrowserController::SetSidePanelToggledOpen(bool toggled_open) {
     if (auto* active_contents = browser_view_->GetActiveWebContents()) {
       SideSearchTabContentsHelper::FromWebContents(active_contents)
           ->set_toggled_open(toggled_open);
+      side_search::MaybeSaveSideSearchTabSessionData(active_contents);
     }
   } else {
     toggled_open_ = toggled_open;

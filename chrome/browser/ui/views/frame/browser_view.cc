@@ -3162,6 +3162,19 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
     frame_->Hide();
     result = views::CloseRequestResult::kCannotClose;
   }
+
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  // Persist the side search browser controller's window side panel state for
+  // use during session restoration. Since the side panel is closed by default,
+  // we only want to persist the state if the side panel is currently open.
+  if (side_search_controller_ &&
+      side_search_controller_->GetSidePanelToggledOpen()) {
+    side_search::MaybeSaveSideSearchWindowSessionData(
+        GetProfile(), browser()->session_id(),
+        side_search_controller_->GetSidePanelToggledOpen());
+  }
+#endif
+
   browser_->OnWindowClosing();
   return result;
 }

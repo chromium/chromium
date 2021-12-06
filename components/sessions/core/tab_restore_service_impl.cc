@@ -1331,6 +1331,7 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     tab.navigations.swap(i->navigations);
     tab.current_navigation_index = i->current_navigation_index;
     tab.extension_app_id = i->extension_app_id;
+    tab.extra_data = std::move(i->extra_data);
     tab.timestamp = base::Time();
   }
 
@@ -1341,6 +1342,7 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
   window->selected_tab_index =
       std::min(session_window->selected_tab_index,
                static_cast<int>(window->tabs.size() - 1));
+  window->extra_data = std::move(session_window->extra_data);
   window->timestamp = base::Time();
   window->bounds = session_window->bounds;
   window->show_state = session_window->show_state;

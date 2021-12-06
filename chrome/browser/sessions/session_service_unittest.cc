@@ -851,6 +851,34 @@ TEST_F(SessionServiceTest, PersistUserAgentOverrides) {
               tab->user_agent_override.opaque_ua_metadata_override);
 }
 
+TEST_F(SessionServiceTest, PersistExtraData) {
+  SessionID tab_id = SessionID::NewUnique();
+  constexpr char kSampleKey[] = "test";
+  constexpr char kSampleValue[] = "true";
+
+  SerializedNavigationEntry nav1 =
+      ContentTestHelper::CreateNavigation("http://google.com", "abc");
+
+  helper_.PrepareTabInWindow(window_id, tab_id, 0, true);
+  UpdateNavigation(window_id, tab_id, nav1, true);
+  helper_.service()->AddWindowExtraData(window_id, kSampleKey, kSampleValue);
+  helper_.service()->AddTabExtraData(window_id, tab_id, kSampleKey,
+                                     kSampleValue);
+
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  ReadWindows(&windows, nullptr);
+  EXPECT_EQ(1U, windows.size());
+  EXPECT_EQ(1U, windows[0]->tabs.size());
+  EXPECT_EQ(1U, windows[0]->extra_data.size());
+  EXPECT_EQ(kSampleValue, windows[0]->extra_data[kSampleKey]);
+
+  sessions::SessionTab* tab = windows[0]->tabs[0].get();
+  helper_.AssertTabEquals(window_id, tab_id, 0, 0, 1, *tab);
+  helper_.AssertNavigationEquals(nav1, tab->navigations[0]);
+  EXPECT_EQ(1U, tab->extra_data.size());
+  EXPECT_EQ(kSampleValue, tab->extra_data[kSampleKey]);
+}
+
 // Verifies SetWindowBounds maps SHOW_STATE_DEFAULT to SHOW_STATE_NORMAL.
 TEST_F(SessionServiceTest, DontPersistDefault) {
   SessionID tab_id = SessionID::NewUnique();

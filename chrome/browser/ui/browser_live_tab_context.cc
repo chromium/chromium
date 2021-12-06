@@ -108,8 +108,11 @@ std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
   if (IsSideSearchEnabled(browser_->profile())) {
-    side_search::MaybeAddSideSearchTabRestoreData(
-        browser_->tab_strip_model()->GetWebContentsAt(index), extra_data);
+    absl::optional<std::pair<std::string, std::string>> side_search_data =
+        side_search::MaybeGetSideSearchTabRestoreData(
+            browser_->tab_strip_model()->GetWebContentsAt(index));
+    if (side_search_data.has_value())
+      extra_data.insert(side_search_data.value());
   }
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
@@ -204,9 +207,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     if (wc) {
       // Cache hit.
       restored_from_closed_tab_cache = true;
-      web_contents = chrome::AddRestoredTabFromCache(std::move(wc), browser_,
-                                                     tab_index, group, select,
-                                                     pin, user_agent_override);
+      web_contents = chrome::AddRestoredTabFromCache(
+          std::move(wc), browser_, tab_index, group, select, pin,
+          user_agent_override, extra_data);
     }
   }
 
@@ -215,7 +218,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     web_contents = chrome::AddRestoredTab(
         browser_, navigations, tab_index, selected_navigation, extension_app_id,
         group, select, pin, base::TimeTicks(), storage_namespace,
-        user_agent_override, false /* from_session_restore */);
+        user_agent_override, extra_data, false /* from_session_restore */);
   }
 
   // Only update the metadata if the group doesn't already exist since the
@@ -247,10 +250,6 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
   }
 
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-  side_search::SetSideSearchStateFromRestoreData(web_contents, extra_data);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
-
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
@@ -271,12 +270,8 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
 
   WebContents* web_contents = chrome::ReplaceRestoredTab(
       browser_, navigations, selected_navigation, extension_app_id,
-      storage_namespace, user_agent_override, false /* from_session_restore */);
-
-#if BUILDFLAG(ENABLE_SIDE_SEARCH)
-  side_search::SetSideSearchStateFromRestoreData(web_contents, extra_data);
-#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
-
+      storage_namespace, user_agent_override, extra_data,
+      false /* from_session_restore */);
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
