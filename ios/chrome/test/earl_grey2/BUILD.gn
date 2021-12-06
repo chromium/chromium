@@ -125,6 +125,7 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/autofill:eg2_tests",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:eg2_tests",
+    "//ios/chrome/browser/ui/settings/content_settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services:eg2_tests",
     "//ios/chrome/browser/ui/settings/language:eg2_tests",
     "//ios/chrome/browser/ui/settings/password:eg2_tests",

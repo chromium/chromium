@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/block_popups_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/content_settings/block_popups_table_view_controller.h"
 
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
@@ -15,7 +15,6 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -174,8 +173,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell =
-      [super tableView:tableView cellForRowAtIndexPath:indexPath];
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypeHeader:
     case ItemTypeException:
@@ -312,24 +311,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Remove the site from |_exceptions|.
     _exceptions.EraseListIter(exceptions_view.begin() + urlIndex);
   }
-  [self.tableView performBatchUpdates:^{
-    NSInteger exceptionsSection = [self.tableViewModel
-        sectionForSectionIdentifier:SectionIdentifierExceptions];
-    NSUInteger numberOfExceptions =
-        [self.tableViewModel numberOfItemsInSection:exceptionsSection];
-    if (indexPaths.count == numberOfExceptions) {
-      [self.tableViewModel
-          removeSectionWithIdentifier:SectionIdentifierExceptions];
-      [self.tableView
-            deleteSections:[NSIndexSet indexSetWithIndex:exceptionsSection]
-          withRowAnimation:UITableViewRowAnimationAutomatic];
-    } else {
-      [self removeFromModelItemAtIndexPaths:indexPaths];
-      [self.tableView deleteRowsAtIndexPaths:indexPaths
-                            withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
-  }
-                           completion:nil];
+  [self.tableView
+      performBatchUpdates:^{
+        NSInteger exceptionsSection = [self.tableViewModel
+            sectionForSectionIdentifier:SectionIdentifierExceptions];
+        NSUInteger numberOfExceptions =
+            [self.tableViewModel numberOfItemsInSection:exceptionsSection];
+        if (indexPaths.count == numberOfExceptions) {
+          [self.tableViewModel
+              removeSectionWithIdentifier:SectionIdentifierExceptions];
+          [self.tableView
+                deleteSections:[NSIndexSet indexSetWithIndex:exceptionsSection]
+              withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else {
+          [self removeFromModelItemAtIndexPaths:indexPaths];
+          [self.tableView
+              deleteRowsAtIndexPaths:indexPaths
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+      }
+               completion:nil];
 }
 
 // Returns YES if popups are currently blocked by default, NO otherwise.
@@ -418,32 +419,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // Animate in the list of exceptions. Animation looks much better if the
     // section is added at once, rather than row-by-row as each object is added.
     __weak BlockPopupsTableViewController* weakSelf = self;
-    [self.tableView performBatchUpdates:^{
-      BlockPopupsTableViewController* strongSelf = weakSelf;
-      if (!strongSelf)
-        return;
-      [strongSelf populateExceptionsItems];
-      NSUInteger index = [[strongSelf tableViewModel]
-          sectionForSectionIdentifier:SectionIdentifierExceptions];
-      [strongSelf.tableView insertSections:[NSIndexSet indexSetWithIndex:index]
-                          withRowAnimation:UITableViewRowAnimationNone];
-    }
-                             completion:nil];
+    [self.tableView
+        performBatchUpdates:^{
+          BlockPopupsTableViewController* strongSelf = weakSelf;
+          if (!strongSelf)
+            return;
+          [strongSelf populateExceptionsItems];
+          NSUInteger index = [[strongSelf tableViewModel]
+              sectionForSectionIdentifier:SectionIdentifierExceptions];
+          [strongSelf.tableView
+                insertSections:[NSIndexSet indexSetWithIndex:index]
+              withRowAnimation:UITableViewRowAnimationNone];
+        }
+                 completion:nil];
   } else if (!blockPopupsIsOn && exceptionsListShown) {
     // Make sure the exception section is not shown.
     __weak BlockPopupsTableViewController* weakSelf = self;
-    [self.tableView performBatchUpdates:^{
-      BlockPopupsTableViewController* strongSelf = weakSelf;
-      if (!strongSelf)
-        return;
-      NSUInteger index = [[strongSelf tableViewModel]
-          sectionForSectionIdentifier:SectionIdentifierExceptions];
-      [[strongSelf tableViewModel]
-          removeSectionWithIdentifier:SectionIdentifierExceptions];
-      [strongSelf.tableView deleteSections:[NSIndexSet indexSetWithIndex:index]
-                          withRowAnimation:UITableViewRowAnimationNone];
-    }
-                             completion:nil];
+    [self.tableView
+        performBatchUpdates:^{
+          BlockPopupsTableViewController* strongSelf = weakSelf;
+          if (!strongSelf)
+            return;
+          NSUInteger index = [[strongSelf tableViewModel]
+              sectionForSectionIdentifier:SectionIdentifierExceptions];
+          [[strongSelf tableViewModel]
+              removeSectionWithIdentifier:SectionIdentifierExceptions];
+          [strongSelf.tableView
+                deleteSections:[NSIndexSet indexSetWithIndex:index]
+              withRowAnimation:UITableViewRowAnimationNone];
+        }
+                 completion:nil];
   }
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/block_popups_app_interface.h"
+#import "ios/chrome/browser/ui/settings/content_settings/block_popups_app_interface.h"
 
 #import <TestLib/EarlGreyImpl/EarlGrey.h>
 

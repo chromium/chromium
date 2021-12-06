@@ -49,10 +49,6 @@ source_set("settings") {
     "about_chrome_table_view_controller.mm",
     "bandwidth_management_table_view_controller.h",
     "bandwidth_management_table_view_controller.mm",
-    "block_popups_table_view_controller.h",
-    "block_popups_table_view_controller.mm",
-    "content_settings_table_view_controller.h",
-    "content_settings_table_view_controller.mm",
     "dataplan_usage_table_view_controller.h",
     "dataplan_usage_table_view_controller.mm",
     "import_data_table_view_controller.h",
@@ -168,6 +164,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/content_settings",
     "//ios/chrome/browser/ui/settings/default_browser",
     "//ios/chrome/browser/ui/settings/default_browser/resources:default_browser_world",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
@@ -273,8 +270,6 @@ source_set("unit_tests") {
   sources = [
     "about_chrome_table_view_controller_unittest.mm",
     "bandwidth_management_table_view_controller_unittest.mm",
-    "block_popups_table_view_controller_unittest.mm",
-    "content_settings_table_view_controller_unittest.mm",
     "dataplan_usage_table_view_controller_unittest.mm",
     "import_data_table_view_controller_unittest.mm",
     "search_engine_table_view_controller_unittest.mm",
@@ -362,8 +357,6 @@ source_set("eg_app_support+eg2") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "block_popups_app_interface.h",
-    "block_popups_app_interface.mm",
     "settings_app_interface.h",
     "settings_app_interface.mm",
     "signin_settings_app_interface.h",
@@ -391,8 +384,6 @@ source_set("eg_test_support+eg2") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "block_popups_app_interface.h",
-    "block_popups_app_interface_stub.mm",
     "settings_app_interface.h",
     "settings_app_interface_stub.mm",
     "signin_settings_app_interface.h",
@@ -412,7 +403,6 @@ source_set("eg2_tests") {
   ]
   testonly = true
   sources = [
-    "block_popups_egtest.mm",
     "search_engine_settings_egtest.mm",
     "settings_accessibility_egtest.mm",
     "settings_egtest.mm",

@@ -6,7 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/settings/block_popups_app_interface.h"
+#import "ios/chrome/browser/ui/settings/content_settings/block_popups_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

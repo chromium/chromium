@@ -138,6 +138,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/settings/autofill:constants",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/content_settings:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/settings/google_services:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/language:eg_app_support+eg2",

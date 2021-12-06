@@ -12,7 +12,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/ui/settings/block_popups_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/content_settings/block_popups_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -148,8 +148,8 @@ TEST_F(BlockPopupsTableViewControllerTest, TestOneAllowedItemDeleted) {
 
   BlockPopupsTableViewController* popups_controller =
       static_cast<BlockPopupsTableViewController*>(controller());
-  [popups_controller
-      deleteItems:@[ [NSIndexPath indexPathForRow:0 inSection:1] ]];
+  [popups_controller deleteItems:@[ [NSIndexPath indexPathForRow:0
+                                                       inSection:1] ]];
 
   // Verify the resulting UI.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(

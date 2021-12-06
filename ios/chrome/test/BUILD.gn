@@ -327,6 +327,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/autofill:unit_tests",
     "//ios/chrome/browser/ui/settings/cells:unit_tests",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:unit_tests",
+    "//ios/chrome/browser/ui/settings/content_settings:unit_tests",
     "//ios/chrome/browser/ui/settings/default_browser:unit_tests",
     "//ios/chrome/browser/ui/settings/google_services:unit_tests",
     "//ios/chrome/browser/ui/settings/language:unit_tests",
