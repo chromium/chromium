@@ -2987,7 +2987,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_fr
 crbug.com/626703 [ Mac10.12 ] external/wpt/websockets/constructor/009.html?wpt_flags=h2 [ Crash Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] virtual/threaded/external/wpt/css/css-backgrounds/animations/background-color-animation-in-body.html [ Failure ]
-crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/pointer-lock.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/css/selectors/invalidation/has-in-ancestor-position.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
@@ -7117,6 +7116,10 @@ crbug.com/1259652 [ Mac10.13 ] external/wpt/streams/readable-streams/tee.any.sha
 
 # Data URL navigation within Fenced Frames currently crashed in the MPArch implementation.
 crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-data-url-navigation.html [ Crash ]
+
+# Gesture of WPT Test Driver doesn't work well in MPArch Fenced Frame on some Mac try bots.
+crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/pointer-lock.https.html [ Timeout Pass ]
+crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/web-bluetooth.https.html [ Timeout Pass ]
 
 # Sheriff 2021-10-15
 crbug.com/1256763 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]
