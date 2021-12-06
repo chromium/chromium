@@ -54,6 +54,7 @@ public class CommerceSubscriptionsStorageTest {
     private static final String OFFER_ID_1 = "offer_id_1";
     private static final String OFFER_ID_2 = "offer_id_2";
     private static final String OFFER_ID_3 = "offer_id_3";
+    private static final String PRODUCT_CLUSTER_ID = "product_cluster_id";
     private static final String KEY_1 = "PRICE_TRACK_OFFER_ID_offer_id_1";
     private static final String KEY_2 = "PRICE_TRACK_OFFER_ID_offer_id_2";
     private static final String KEY_3 = "PRICE_TRACK_IDENTIFIER_TYPE_UNSPECIFIED_offer_id_3";
@@ -62,6 +63,7 @@ public class CommerceSubscriptionsStorageTest {
     private CommerceSubscription mSubscription1;
     private CommerceSubscription mSubscription2;
     private CommerceSubscription mSubscription3;
+    private CommerceSubscription mSubscription4;
 
     @Before
     public void setUp() throws Exception {
@@ -81,6 +83,10 @@ public class CommerceSubscriptionsStorageTest {
                 new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                         OFFER_ID_3, CommerceSubscription.SubscriptionManagementType.CHROME_MANAGED,
                         CommerceSubscription.TrackingIdType.IDENTIFIER_TYPE_UNSPECIFIED);
+        mSubscription4 = new CommerceSubscription(
+                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, PRODUCT_CLUSTER_ID,
+                CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
+                CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID);
     }
 
     @After
@@ -126,6 +132,9 @@ public class CommerceSubscriptionsStorageTest {
         save(mSubscription3);
         loadSingleAndCheckResult(
                 CommerceSubscriptionsStorage.getKey(mSubscription3), mSubscription3);
+        save(mSubscription4);
+        loadSingleAndCheckResult(
+                CommerceSubscriptionsStorage.getKey(mSubscription4), mSubscription4);
         String prefix1 =
                 String.format("%s_%s", CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                         CommerceSubscription.TrackingIdType.OFFER_ID);
@@ -133,7 +142,8 @@ public class CommerceSubscriptionsStorageTest {
                 prefix1, new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2)));
         String prefix2 = CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK;
         loadPrefixAndCheckResult(prefix2,
-                new ArrayList<>(Arrays.asList(mSubscription3, mSubscription1, mSubscription2)));
+                new ArrayList<>(Arrays.asList(
+                        mSubscription3, mSubscription1, mSubscription2, mSubscription4)));
     }
 
     @MediumTest
