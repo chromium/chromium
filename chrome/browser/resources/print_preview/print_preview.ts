@@ -35,7 +35,7 @@ export {PinModeRestriction} from './native_layer.js';
 export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServersConfig} from './native_layer_cros.js';
 // </if>
 export {PDFPlugin} from './pdf/pdf_scripting_api.js';
-export {getSelectDropdownBackground} from './print_preview_utils.js';
+export {getSelectDropdownBackground, Range} from './print_preview_utils.js';
 export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';
 export {PrintPreviewAdvancedSettingsItemElement} from './ui/advanced_settings_item.js';
 export {PrintPreviewAppElement} from './ui/app.js';
@@ -72,7 +72,10 @@ export {PrintPreviewMediaSizeSettingsElement} from './ui/media_size_settings.js'
 export {PrintPreviewNumberSettingsSectionElement} from './ui/number_settings_section.js';
 export {PrintPreviewOtherOptionsSettingsElement} from './ui/other_options_settings.js';
 export {PrintPreviewPagesPerSheetSettingsElement} from './ui/pages_per_sheet_settings.js';
-export {PrintPreviewPagesSettingsElement} from './ui/pages_settings.js';
+export {PagesValue, PrintPreviewPagesSettingsElement} from './ui/pages_settings.js';
+// <if expr="chromeos or lacros">
+export {PrintPreviewPinSettingsElement} from './ui/pin_settings.js';
+// </if>
 export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin_proxy.js';
 export {PreviewAreaState, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';

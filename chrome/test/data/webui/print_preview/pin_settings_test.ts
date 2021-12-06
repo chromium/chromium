@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement, State} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {PrintPreviewModelElement, PrintPreviewPinSettingsElement, State} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
+
 import {triggerInputEvent} from './print_preview_test_utils.js';
 
 suite('PinSettingsTest', function() {
-  /** @type {?PrintPreviewPinSettingsElement} */
-  let pinSection = null;
+  let pinSection: PrintPreviewPinSettingsElement;
 
-  /** @type {?PrintPreviewModelElement} */
-  let model = null;
+  let model: PrintPreviewModelElement;
 
-  /** @override */
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.set('settings.pin.available', true);
@@ -37,8 +35,8 @@ suite('PinSettingsTest', function() {
   // Tests that checking the box or entering the pin value updates the
   // setting.
   test('enter valid pin value', async () => {
-    const checkbox = pinSection.shadowRoot.querySelector('cr-checkbox');
-    const collapse = pinSection.shadowRoot.querySelector('iron-collapse');
+    const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
+    const collapse = pinSection.shadowRoot!.querySelector('iron-collapse')!;
     assertFalse(checkbox.checked);
     assertFalse(collapse.opened);
     assertFalse(pinSection.getSettingValue('pin'));
@@ -46,13 +44,14 @@ suite('PinSettingsTest', function() {
     assertEquals('', pinSection.getSettingValue('pinValue'));
 
     checkbox.checked = true;
-    checkbox.dispatchEvent(new CustomEvent('change'));
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
     assertTrue(collapse.opened);
     assertTrue(pinSection.getSettingValue('pin'));
     assertTrue(pinSection.getSetting('pin').setFromUi);
     assertEquals('', pinSection.getSettingValue('pinValue'));
 
-    const input = pinSection.shadowRoot.querySelector('cr-input');
+    const input = pinSection.shadowRoot!.querySelector('cr-input')!;
     assertEquals('', input.value);
     assertFalse(pinSection.getSetting('pinValue').setFromUi);
 
@@ -67,10 +66,11 @@ suite('PinSettingsTest', function() {
   // Tests that entering non-digit pin value updates the validity of the
   // setting.
   test('enter non-digit pin value', async () => {
-    const checkbox = pinSection.shadowRoot.querySelector('cr-checkbox');
+    const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     checkbox.checked = true;
-    checkbox.dispatchEvent(new CustomEvent('change'));
-    const input = pinSection.shadowRoot.querySelector('cr-input');
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
+    const input = pinSection.shadowRoot!.querySelector('cr-input')!;
 
     // Verify that entering the non-digit pin value in the input updates the
     // setting validity and doesn't update its value.
@@ -89,10 +89,11 @@ suite('PinSettingsTest', function() {
   // Tests that entering too short pin value updates the validity of the
   // setting.
   test('enter too short pin value', async () => {
-    const checkbox = pinSection.shadowRoot.querySelector('cr-checkbox');
+    const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     checkbox.checked = true;
-    checkbox.dispatchEvent(new CustomEvent('change'));
-    const input = pinSection.shadowRoot.querySelector('cr-input');
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
+    const input = pinSection.shadowRoot!.querySelector('cr-input')!;
 
     // Verify that entering too short pin value in the input updates the
     // setting validity and doesn't update its value.
@@ -110,10 +111,11 @@ suite('PinSettingsTest', function() {
   // Tests that entering empty pin value updates the validity of the
   // setting.
   test('enter empty pin value', async () => {
-    const checkbox = pinSection.shadowRoot.querySelector('cr-checkbox');
+    const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     checkbox.checked = true;
-    checkbox.dispatchEvent(new CustomEvent('change'));
-    const input = pinSection.shadowRoot.querySelector('cr-input');
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
+    const input = pinSection.shadowRoot!.querySelector('cr-input')!;
 
     // Verify that initial pin value is empty and the setting is invalid.
     assertTrue(pinSection.getSettingValue('pin'));
@@ -140,18 +142,19 @@ suite('PinSettingsTest', function() {
 
     // Check that after unchecking the checkbox the pin value is valid again.
     checkbox.checked = false;
-    checkbox.dispatchEvent(new CustomEvent('change'));
+    checkbox.dispatchEvent(
+        new CustomEvent('change', {bubbles: true, composed: true}));
     assertEquals(true, pinSection.getSetting('pinValue').valid);
   });
 
   // Tests that if settings are enforced by enterprise policy the
   // appropriate UI is disabled.
   test('disabled by policy', function() {
-    const checkbox = pinSection.shadowRoot.querySelector('cr-checkbox');
+    const checkbox = pinSection.shadowRoot!.querySelector('cr-checkbox')!;
     assertFalse(checkbox.disabled);
 
     pinSection.setSetting('pin', true);
-    const input = pinSection.shadowRoot.querySelector('cr-input');
+    const input = pinSection.shadowRoot!.querySelector('cr-input')!;
     assertFalse(input.disabled);
 
     model.set('settings.pin.setByPolicy', true);

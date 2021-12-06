@@ -50,8 +50,8 @@ non_preprocessed_tests = [
   "number_settings_section_interactive_test.ts",
   "number_settings_section_test.ts",
   "other_options_settings_test.ts",
-  "pages_per_sheet_settings_test.js",
-  "pages_settings_test.js",
+  "pages_per_sheet_settings_test.ts",
+  "pages_settings_test.ts",
 
   # TODO(rbpotter): Figure out how to enable these while PDF viewer is still
   # using JS.
@@ -76,7 +76,7 @@ if (is_chromeos) {
     "destination_search_test_chromeos.ts",
     "destination_select_test_cros.ts",
     "native_layer_cros_stub.ts",
-    "pin_settings_test.js",
+    "pin_settings_test.ts",
     "print_server_store_test.js",
   ]
 } else {

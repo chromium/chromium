@@ -38,6 +38,8 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
     ];
   }
 
+  disabled: boolean;
+
   /**
    * @param newValue The new value of the pages per sheet setting.
    */
@@ -47,6 +49,13 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
 
   onProcessSelectChange(value: string) {
     this.setSetting('pagesPerSheet', parseInt(value, 10));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-pages-per-sheet-settings':
+        PrintPreviewPagesPerSheetSettingsElement;
   }
 }
 

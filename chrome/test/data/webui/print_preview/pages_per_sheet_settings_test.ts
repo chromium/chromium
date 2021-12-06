@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 import 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {PrintPreviewPagesPerSheetSettingsElement} from 'chrome://print/print_preview.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 import {selectOption} from './print_preview_test_utils.js';
 
 suite('PagesPerSheetSettingsTest', function() {
-  /** @type {?PrintPreviewPagesPerSheetSettingsElement} */
-  let pagesPerSheetSection = null;
+  let pagesPerSheetSection: PrintPreviewPagesPerSheetSettingsElement;
 
-  /** @override */
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 
@@ -27,7 +26,7 @@ suite('PagesPerSheetSettingsTest', function() {
 
   // Tests that setting the setting updates the UI.
   test('set setting', async () => {
-    const select = pagesPerSheetSection.shadowRoot.querySelector('select');
+    const select = pagesPerSheetSection.shadowRoot!.querySelector('select')!;
     assertEquals('1', select.value);
 
     pagesPerSheetSection.setSetting('pagesPerSheet', 4);
@@ -38,7 +37,7 @@ suite('PagesPerSheetSettingsTest', function() {
   // Tests that selecting a new option in the dropdown updates the setting.
   test('select option', async () => {
     // Verify that the selected option and names are as expected.
-    const select = pagesPerSheetSection.shadowRoot.querySelector('select');
+    const select = pagesPerSheetSection.shadowRoot!.querySelector('select')!;
     assertEquals('1', select.value);
     assertEquals(1, pagesPerSheetSection.getSettingValue('pagesPerSheet'));
     assertFalse(pagesPerSheetSection.getSetting('pagesPerSheet').setFromUi);

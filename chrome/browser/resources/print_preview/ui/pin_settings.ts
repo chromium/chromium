@@ -19,7 +19,7 @@ import {State} from '../data/state.js';
 import {InputMixin} from './input_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-interface PrintPreviewPinSettingsElement {
+export interface PrintPreviewPinSettingsElement {
   $: {
     pin: CrCheckboxElement,
     pinValue: CrInputElement,
@@ -29,7 +29,7 @@ interface PrintPreviewPinSettingsElement {
 const PrintPreviewPinSettingsElementBase =
     WebUIListenerMixin(InputMixin(SettingsMixin(I18nMixin(PolymerElement))));
 
-class PrintPreviewPinSettingsElement extends
+export class PrintPreviewPinSettingsElement extends
     PrintPreviewPinSettingsElementBase {
   static get is() {
     return 'print-preview-pin-settings';
@@ -193,6 +193,13 @@ class PrintPreviewPinSettingsElement extends
     return this.inputValid_ ? '' : this.i18n('pinErrorMessage');
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-pin-settings': PrintPreviewPinSettingsElement;
+  }
+}
+
 
 customElements.define(
     PrintPreviewPinSettingsElement.is, PrintPreviewPinSettingsElement);

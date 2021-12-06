@@ -28,7 +28,7 @@ enum PagesInputErrorState {
   EMPTY = 3,
 }
 
-enum PagesValue {
+export enum PagesValue {
   ALL = 0,
   ODDS = 1,
   EVENS = 2,
@@ -509,6 +509,12 @@ export class PrintPreviewPagesSettingsElement extends
     } else {
       this.updatePagesToPrint_();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-pages-settings': PrintPreviewPagesSettingsElement;
   }
 }
 
