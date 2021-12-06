@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
@@ -67,8 +68,45 @@ const variations::VariationID
 const variations::VariationID
     kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3342138;
 
+// FRE UI Trial name.
+const char kFREUITrialName[] = "EnableFREUIModuleIOSV2";
+
+// Group names for the second trial of the FRE UI.
+const char kDisabledGroup[] = "Disabled";
+const char kIdentitySwitcherInTopAndOldStringsSetGroup[] =
+    "IdentitySwitcherInTopAndOldStringsSet";
+const char kIdentitySwitcherInTopAndNewStringsSetGroup[] =
+    "IdentitySwitcherInTopAndNewStringsSet";
+const char kIdentitySwitcherInBottomAndOldStringsSetGroup[] =
+    "IdentitySwitcherInBottomAndOldStringsSet";
+const char kIdentitySwitcherInBottomAndNewStringsSetGroup[] =
+    "IdentitySwitcherInBottomAndNewStringsSet";
+
+// Experiment IDs defined for the second trial of the FRE UI.
+const variations::VariationID kDisabledTrialID = 3344682;
+const variations::VariationID kIdentitySwitcherInTopAndOldStringsSetID =
+    3344678;
+const variations::VariationID kIdentitySwitcherInTopAndNewStringsSetID =
+    3344679;
+const variations::VariationID kIdentitySwitcherInBottomAndOldStringsSetID =
+    3344680;
+const variations::VariationID kIdentitySwitcherInBottomAndNewStringsSetID =
+    3344681;
+
 // Default local state pref value.
 const int kDefaultPrefValue = -1;
+
+// Sets the parameters value of the position and the strings set for a specific
+// group for the FRE second experiment.
+void AssociateFieldTrialParamsForFRESecondTrialGroup(
+    const std::string& group_name,
+    const std::string& position,
+    const std::string& stringsSet) {
+  base::FieldTrialParams params;
+  params[kFREUIIdentitySwitcherPositionParam] = position;
+  params[kFREUIStringsSetParam] = stringsSet;
+  DCHECK(base::AssociateFieldTrialParams(kFREUITrialName, group_name, params));
+}
 }  // namespace
 
 namespace fre_field_trial {
@@ -192,6 +230,105 @@ int CreateFirstRunTrial(
   return group;
 }
 
+// Creates the trial config, initialize the trial and returns the ID of the
+// trial group. There are 6 groups:
+// - Control (Default)
+// - Disabled
+// - Top position + Old strings set
+// - Top position + New strings set
+// - Bottom position + Old strings set
+// - Bottom position + New strings set
+int CreateFirstRunSecondTrial(
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    base::FeatureList* feature_list) {
+  // Experiment groups
+  int new_fre_default_percent = 0;
+  int new_fre_disabled_percent = 0;
+  int new_fre_with_top_position_old_strings_set_percent = 0;
+  int new_fre_with_top_position_new_strings_set_percent = 0;
+  int new_fre_with_bottom_position_old_strings_set_percent = 0;
+  int new_fre_with_bottom_position_new_strings_set_percent = 0;
+
+  switch (GetChannel()) {
+    case version_info::Channel::UNKNOWN:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
+      new_fre_with_top_position_old_strings_set_percent = 0;
+      new_fre_with_top_position_new_strings_set_percent = 0;
+      new_fre_with_bottom_position_old_strings_set_percent = 0;
+      new_fre_with_bottom_position_new_strings_set_percent = 0;
+      new_fre_disabled_percent = 0;
+      new_fre_default_percent = 100;
+      break;
+    case version_info::Channel::STABLE:
+      new_fre_with_top_position_old_strings_set_percent = 0;
+      new_fre_with_top_position_new_strings_set_percent = 0;
+      new_fre_with_bottom_position_old_strings_set_percent = 0;
+      new_fre_with_bottom_position_new_strings_set_percent = 0;
+      new_fre_disabled_percent = 0;
+      new_fre_default_percent = 100;
+      break;
+  }
+
+  // Set up the trial and groups.
+  FirstRunFieldTrialConfig config(kFREUITrialName);
+
+  config.AddGroup(kIdentitySwitcherInTopAndOldStringsSetGroup,
+                  kIdentitySwitcherInTopAndOldStringsSetID,
+                  new_fre_with_top_position_old_strings_set_percent);
+
+  config.AddGroup(kIdentitySwitcherInTopAndNewStringsSetGroup,
+                  kIdentitySwitcherInTopAndNewStringsSetID,
+                  new_fre_with_top_position_new_strings_set_percent);
+
+  config.AddGroup(kIdentitySwitcherInBottomAndOldStringsSetGroup,
+                  kIdentitySwitcherInBottomAndOldStringsSetID,
+                  new_fre_with_bottom_position_old_strings_set_percent);
+
+  config.AddGroup(kIdentitySwitcherInBottomAndNewStringsSetGroup,
+                  kIdentitySwitcherInBottomAndNewStringsSetID,
+                  new_fre_with_bottom_position_new_strings_set_percent);
+
+  config.AddGroup(kDisabledGroup, kDisabledTrialID, new_fre_disabled_percent);
+  config.AddGroup(kDefaultGroup, kDefaultTrialID, new_fre_default_percent);
+
+  DCHECK_EQ(100, config.GetTotalProbability());
+
+  // Associate field trial params to each group.
+  AssociateFieldTrialParamsForFRESecondTrialGroup(
+      kIdentitySwitcherInTopAndOldStringsSetGroup, "top", "old");
+  AssociateFieldTrialParamsForFRESecondTrialGroup(
+      kIdentitySwitcherInTopAndNewStringsSetGroup, "top", "new");
+  AssociateFieldTrialParamsForFRESecondTrialGroup(
+      kIdentitySwitcherInBottomAndOldStringsSetGroup, "bottom", "old");
+  AssociateFieldTrialParamsForFRESecondTrialGroup(
+      kIdentitySwitcherInBottomAndNewStringsSetGroup, "bottom", "new");
+
+  scoped_refptr<base::FieldTrial> trial =
+      config.CreateOneTimeRandomizedTrial(kDefaultGroup, low_entropy_provider);
+
+  // Finalize the group choice and activates the trial - similar to a variation
+  // config that's marked with |starts_active| true. This is required for
+  // studies that register variation ids, so they don't reveal extra information
+  // beyond the low-entropy source.
+  const std::string& group_name = trial->group_name();
+  if (group_name == kIdentitySwitcherInTopAndOldStringsSetGroup ||
+      group_name == kIdentitySwitcherInTopAndNewStringsSetGroup ||
+      group_name == kIdentitySwitcherInBottomAndOldStringsSetGroup ||
+      group_name == kIdentitySwitcherInBottomAndNewStringsSetGroup) {
+    feature_list->RegisterFieldTrialOverride(
+        kFREUITrialName, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        trial.get());
+  } else if (group_name == kDisabledGroup) {
+    feature_list->RegisterFieldTrialOverride(
+        kFREUITrialName, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+        trial.get());
+  }
+
+  return trial->group();
+}
+
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kTrialGroupPrefName, kDefaultPrefValue);
 }
@@ -209,6 +346,7 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   // Create trial and group user for the first time, or tag users again to
   // ensure the experiment can be used to filter UMA metrics.
   trial_group = CreateFirstRunTrial(low_entropy_provider, feature_list);
+  trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
   // Persist the assigned group for subsequent runs.
   local_state->SetInteger(kTrialGroupPrefName, trial_group);
 }
