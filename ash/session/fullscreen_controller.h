@@ -29,6 +29,11 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  void OnLockStateChanged(bool locked);
+
+  // Returns the bubble for testing purposes.
+  FullscreenNotificationBubble* bubble_for_test() { return bubble_.get(); }
+
  private:
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;

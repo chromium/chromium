@@ -219,6 +219,10 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // Test helpers.
   void ClearUserSessionsForTest();
 
+  FullscreenController* fullscreen_controller_for_test() {
+    return fullscreen_controller_.get();
+  }
+
  private:
   friend class TestSessionControllerClient;
 

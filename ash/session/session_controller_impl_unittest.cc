@@ -9,21 +9,28 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/fullscreen_controller.h"
+#include "ash/session/fullscreen_notification_bubble.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -796,6 +803,98 @@ TEST_F(SessionControllerImplUnblockTest, ActiveWindowAfterUnblocking) {
   // |widget| should now be active as SessionControllerImpl no longer is
   // blocking windows from becoming active.
   EXPECT_TRUE(widget->IsActive());
+}
+
+class SessionControllerImplLockStateChangedTest : public AshTestBase {
+ public:
+  SessionControllerImplLockStateChangedTest() {}
+
+  SessionControllerImplLockStateChangedTest(
+      const SessionControllerImplLockStateChangedTest&) = delete;
+  SessionControllerImplLockStateChangedTest& operator=(
+      const SessionControllerImplLockStateChangedTest&) = delete;
+
+  ~SessionControllerImplLockStateChangedTest() override {}
+
+  // AshTestBase:
+  void SetUp() override {
+    // Enable the FullscreenAlertBubble feature for testing.
+    feature_list_.InitAndEnableFeature(features::kFullscreenAlertBubble);
+
+    AshTestBase::SetUp();
+
+    // Set the FullscreenAlertEnabled pref value to true for testing.
+    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
+        prefs::kFullscreenAlertEnabled, true);
+
+    fullscreen_controller_ =
+        Shell::Get()->session_controller()->fullscreen_controller_for_test();
+  }
+
+  void TearDown() override {
+    window_.reset();
+    AshTestBase::TearDown();
+  }
+
+  void CreateFullscreenWindow() {
+    window_ = CreateTestWindow();
+    window_->SetProperty(aura::client::kShowStateKey,
+                         ui::SHOW_STATE_FULLSCREEN);
+    window_state_ = WindowState::Get(window_.get());
+  }
+
+  void ExpectFullscreenNotificationShowing(bool expect_notification) {
+    if (expect_notification) {
+      views::Widget* fullscreen_notification_widget =
+          fullscreen_controller_->bubble_for_test()->widget_for_test();
+      EXPECT_TRUE(fullscreen_notification_widget->IsVisible());
+      return;
+    }
+    EXPECT_TRUE(!fullscreen_controller_->bubble_for_test() ||
+                !fullscreen_controller_->bubble_for_test()->widget_for_test() ||
+                !fullscreen_controller_->bubble_for_test()
+                     ->widget_for_test()
+                     ->IsVisible());
+  }
+
+ protected:
+  std::unique_ptr<aura::Window> window_;
+
+  WindowState* window_state_ = nullptr;
+  FullscreenController* fullscreen_controller_ = nullptr;
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SessionControllerImplLockStateChangedTest, ExitFullscreenBeforeLock) {
+  CreateFullscreenWindow();
+  EXPECT_TRUE(window_state_->IsFullscreen());
+
+  base::RunLoop run_loop;
+  Shell::Get()->session_controller()->PrepareForLock(run_loop.QuitClosure());
+  EXPECT_FALSE(window_state_->IsFullscreen());
+}
+
+// Test that no full screen notification is shown on session lock or unlock when
+// there is no window in full screen mode.
+TEST_F(SessionControllerImplLockStateChangedTest, WithoutFullscreenWindow) {
+  GetSessionControllerClient()->LockScreen();
+  ExpectFullscreenNotificationShowing(false);
+
+  GetSessionControllerClient()->UnlockScreen();
+  ExpectFullscreenNotificationShowing(false);
+}
+
+// Test that the full screen notification is shown on session unlock when there
+// is a window in full screen mode.
+TEST_F(SessionControllerImplLockStateChangedTest, WithFullscreenWindow) {
+  CreateFullscreenWindow();
+
+  GetSessionControllerClient()->LockScreen();
+  ExpectFullscreenNotificationShowing(false);
+
+  GetSessionControllerClient()->UnlockScreen();
+  ExpectFullscreenNotificationShowing(true);
 }
 
 }  // namespace

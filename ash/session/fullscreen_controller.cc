@@ -146,4 +146,9 @@ void FullscreenController::LidEventReceived(
     MaybeShowNotification();
 }
 
+void FullscreenController::OnLockStateChanged(bool locked) {
+  if (!locked)
+    MaybeShowNotification();
+}
+
 }  // namespace ash
