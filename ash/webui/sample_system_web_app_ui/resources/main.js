@@ -11,7 +11,10 @@ const additional = document.querySelector('#additional');
 const result = document.querySelector('#result');
 const form = document.querySelector('form');
 
-const myWorker = new SharedWorker('worker.js');
+const workerUrlPolicy = trustedTypes.createPolicy(
+    'worker-js-static',
+    {createScriptURL: () => 'chrome://sample-system-web-app/worker.js'});
+const myWorker = new SharedWorker(workerUrlPolicy.createScriptURL(''));
 
 first.onchange = () => {
   myWorker.port.postMessage([first.value, second.value]);

@@ -28,13 +28,6 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   trusted_source->AddResourcePaths(base::make_span(
       kAshSampleSystemWebAppResources, kAshSampleSystemWebAppResourcesSize));
 
-  // TODO(https://crbug/1169829): Don't simply disable trusted types. Do the
-  // right thing.
-  trusted_source->DisableTrustedTypesCSP();
-  trusted_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc,
-      std::string("worker-src 'self';"));
-
 #if !DCHECK_IS_ON()
   // If a user goes to an invalid url and non-DCHECK mode (DHECK = debug mode)
   // is set, serve a default page so the user sees your default page instead
@@ -48,9 +41,14 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
       std::string("frame-src ") + kChromeUIUntrustedSampleSystemWebAppURL + ";";
   trusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
+
+  trusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      std::string("worker-src 'self';"));
   trusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types lit-html;");
+      "trusted-types lit-html worker-js-static;");
+
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, trusted_source.release());
 
