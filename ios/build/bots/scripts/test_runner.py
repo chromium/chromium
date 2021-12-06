@@ -640,7 +640,7 @@ class TestRunner(object):
       interrupted = overall_result.crashed
 
       if interrupted:
-        overall_result.add_and_report_crash(
+        overall_result.set_crashed_with_prefix(
             crash_message_prefix_line='Test application crashed when running '
             'tests which might have caused some tests never ran or finished.')
 

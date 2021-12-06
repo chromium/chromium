@@ -289,20 +289,17 @@ class ResultCollection(object):
     """A set of test names with only expected status in the collection."""
     return self.expected_tests().difference(self.unexpected_tests())
 
-  def add_and_report_crash(self, crash_message_prefix_line=''):
-    """Adds and reports a dummy failing test for crash.
+  def set_crashed_with_prefix(self, crash_message_prefix_line=''):
+    """Updates collection with the crash status and add prefix to crash message.
 
     Typically called at the end of runner run when runner reports failure due to
-    crash but there isn't unexpected tests.
+    crash but there isn't unexpected tests. The crash status and crash message
+    will reflect in LUCI build page step log.
     """
     self._crashed = True
-    self._crash_message = crash_message_prefix_line + '\n' + self.crash_message
-    crash_result = TestResult(
-        "BUILD_INTERRUPTED", TestStatus.CRASH, test_log=self.crash_message)
-    self.add_test_result(crash_result)
-    result_sink_client = ResultSinkClient()
-    crash_result.report_to_result_sink(result_sink_client)
-    result_sink_client.close()
+    if crash_message_prefix_line:
+      crash_message_prefix_line += '\n'
+    self._crash_message = crash_message_prefix_line + self.crash_message
 
   def report_to_result_sink(self):
     """Reports current results to result sink once.
@@ -404,5 +401,8 @@ class ResultCollection(object):
       logs[test] = log_lines
     for test, log_lines in flaked.items():
       logs[test] = log_lines
+
+    if self.crashed:
+      logs['test suite crash'] = self.crash_message.split('\n')
 
     return logs

@@ -284,22 +284,13 @@ class ResultCollectionTest(test_runner_test.TestCase):
     self.assertEqual(collection.pure_expected_tests(),
                      set(['passed/test', 'disabled/test']))
 
-  @mock.patch('test_result_util.TestResult.report_to_result_sink')
-  @mock.patch('result_sink_util.ResultSinkClient.close')
-  @mock.patch('result_sink_util.ResultSinkClient.__init__', return_value=None)
-  def test_add_and_report_crash(self, mock_sink_init, mock_sink_close,
-                                mock_report):
+  def test_add_and_report_crash(self):
     """Tests add_and_report_crash."""
     collection = copy.copy(self.full_collection)
-    self.assertFalse('BUILD_INTERRUPTED' in collection.crashed_tests())
 
-    collection.add_and_report_crash('Prefix Line')
+    collection.set_crashed_with_prefix('Prefix Line')
     self.assertEqual(collection.crash_message, 'Prefix Line\n')
-    self.assertTrue('BUILD_INTERRUPTED' in collection.crashed_tests())
-
-    mock_sink_init.assert_called_once()
-    mock_report.assert_called_once()
-    mock_sink_close.assert_called_once()
+    self.assertTrue(collection.crashed)
 
   @mock.patch('test_result_util.TestResult.report_to_result_sink')
   @mock.patch('result_sink_util.ResultSinkClient.close')

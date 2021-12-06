@@ -214,7 +214,7 @@ class SimulatorTestRunnerTest(TestCase):
     tr.launch()
     self.assertEquals(len(mock_run.mock_calls), 5)
     self.assertTrue(tr.test_results['interrupted'])
-    self.assertIn('BUILD_INTERRUPTED', tr.test_results['tests'])
+    self.assertIn('test suite crash', tr.logs)
     self.assertTrue(tr.logs)
 
   @mock.patch('test_runner.SimulatorTestRunner.tear_down')
