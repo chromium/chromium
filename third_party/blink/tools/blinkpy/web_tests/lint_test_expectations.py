@@ -315,7 +315,7 @@ def _check_expectations(host, port, path, test_expectations, options):
     failures, warnings = _check_test_existence(
         host, port, path, expectations)
     failures.extend(_check_directory_glob(host, port, path, expectations))
-    warnings.extend(_check_not_slow_and_timeout(host, port, path, expectations))
+    failures.extend(_check_not_slow_and_timeout(host, port, path, expectations))
     failures.extend(_check_never_fix_tests(host, port, path, expectations))
     if path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
         failures.extend(_check_non_wpt_in_android_override(
