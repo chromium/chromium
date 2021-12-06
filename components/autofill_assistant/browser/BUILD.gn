@@ -168,6 +168,8 @@ static_library("browser") {
     "info_box.h",
     "intent_strings.cc",
     "intent_strings.h",
+    "js_flow_executor.cc",
+    "js_flow_executor.h",
     "metrics.cc",
     "metrics.h",
     "onboarding_result.h",
