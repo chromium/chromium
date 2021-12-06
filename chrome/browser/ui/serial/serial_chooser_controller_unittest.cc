@@ -285,7 +285,13 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
   }
 }
 
-TEST_F(SerialChooserControllerTest, Blocklist) {
+// TODO(crbug.com/1276915): Flaky on Linux TSan Tests.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Blocklist DISABLED_Blocklist
+#else
+#define MAYBE_Blocklist Blocklist
+#endif
+TEST_F(SerialChooserControllerTest, MAYBE_Blocklist) {
   base::HistogramTester histogram_tester;
 
   // Create two ports from the same vendor with different product IDs.
