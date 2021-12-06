@@ -25,13 +25,15 @@ class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
   SmartLockAuthFactorModel& operator=(SmartLockAuthFactorModel&) = delete;
   ~SmartLockAuthFactorModel() override;
 
+  // AuthFactorModel:
+  void OnArrowButtonTapOrClickEvent() override;
+
   // TODO(crbug.com/1233614): Remove this once SmartLockState is passed in
   // instead of EasyUnlockIconState.
   void SetEasyUnlockIconState(EasyUnlockIconState state);
 
   void SetSmartLockState(SmartLockState state);
   void NotifySmartLockAuthResult(bool result);
-  void OnArrowButtonTapOrClickEvent() override;
 
  private:
   // AuthFactorModel:

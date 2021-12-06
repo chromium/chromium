@@ -20,6 +20,12 @@ SmartLockAuthFactorModel::SmartLockAuthFactorModel(
 
 SmartLockAuthFactorModel::~SmartLockAuthFactorModel() = default;
 
+void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
+  if (state_ == SmartLockState::kPhoneAuthenticated) {
+    arrow_button_tap_callback_.Run();
+  }
+}
+
 void SmartLockAuthFactorModel::SetEasyUnlockIconState(
     EasyUnlockIconState state) {
   switch (state) {
@@ -218,12 +224,6 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
 void SmartLockAuthFactorModel::DoHandleTapOrClick() {
   // Do Nothing: Smart Lock does not react to taps on its icon. Clicks on the
   // arrow button are handled in LoginAuthFactorsView.
-}
-
-void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
-  if (state_ == SmartLockState::kPhoneAuthenticated) {
-    arrow_button_tap_callback_.Run();
-  }
 }
 
 void SmartLockAuthFactorModel::DoHandleErrorTimeout() {
