@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/mac/mac_util.h"
+
 #import <Cocoa/Cocoa.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include "base/mac/mac_util.h"
+#include <sys/xattr.h>
 
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
@@ -15,12 +17,10 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#include <errno.h>
-#include <sys/xattr.h>
 
 namespace base {
 namespace mac {
@@ -95,28 +95,46 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
   }
 }
 
-TEST_F(MacUtilTest, TestExcludeFileFromBackups) {
+TEST_F(MacUtilTest, TestExcludeFileFromBackups_Persists) {
   // The file must already exist in order to set its exclusion property.
   ScopedTempDir temp_dir_;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath dummy_file_path = temp_dir_.GetPath().Append("DummyFile");
-  const char dummy_data[] = "All your base are belong to us!";
+  FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
+  constexpr char placeholder_data[] = "All your base are belong to us!";
   // Dump something real into the file.
-  ASSERT_EQ(static_cast<int>(base::size(dummy_data)),
-            WriteFile(dummy_file_path, dummy_data, base::size(dummy_data)));
+  ASSERT_EQ(checked_cast<int>(base::size(placeholder_data)),
+            WriteFile(excluded_file_path, placeholder_data,
+                      base::size(placeholder_data)));
   // Initial state should be non-excluded.
-  EXPECT_FALSE(GetFileBackupExclusion(dummy_file_path));
+  EXPECT_FALSE(GetFileBackupExclusion(excluded_file_path));
   // Exclude the file.
-  ASSERT_TRUE(SetFileBackupExclusion(dummy_file_path));
-  EXPECT_TRUE(GetFileBackupExclusion(dummy_file_path));
+  ASSERT_TRUE(SetFileBackupExclusion(excluded_file_path));
+  EXPECT_TRUE(GetFileBackupExclusion(excluded_file_path));
+}
 
-  // Ensure that SetFileBackupExclusion never excludes by path.
-  base::ScopedCFTypeRef<CFURLRef> file_url =
-      base::mac::FilePathToCFURL(dummy_file_path);
-  Boolean excluded_by_path = FALSE;
-  Boolean excluded = CSBackupIsItemExcluded(file_url, &excluded_by_path);
-  EXPECT_TRUE(excluded);
-  EXPECT_FALSE(excluded_by_path);
+TEST_F(MacUtilTest, TestExcludeFileFromBackups_NotByPath) {
+  ScopedTempDir temp_dir_;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
+  base::ScopedCFTypeRef<CFURLRef> excluded_url =
+      base::mac::FilePathToCFURL(excluded_file_path);
+
+  constexpr char placeholder_data[] = "All your base are belong to us!";
+  ASSERT_EQ(checked_cast<int>(base::size(placeholder_data)),
+            WriteFile(excluded_file_path, placeholder_data,
+                      base::size(placeholder_data)));
+
+  ASSERT_TRUE(SetFileBackupExclusion(excluded_file_path));
+  EXPECT_TRUE(GetFileBackupExclusion(excluded_file_path))
+      << "Backup exclusion persists as long as the file exists";
+
+  // Re-create the file.
+  ASSERT_TRUE(DeleteFile(excluded_file_path));
+  ASSERT_EQ(checked_cast<int>(base::size(placeholder_data)),
+            WriteFile(excluded_file_path, placeholder_data,
+                      base::size(placeholder_data)));
+  EXPECT_FALSE(GetFileBackupExclusion(excluded_file_path))
+      << "Re-created file should not be excluded from backup";
 }
 
 TEST_F(MacUtilTest, NSObjectRetainRelease) {
