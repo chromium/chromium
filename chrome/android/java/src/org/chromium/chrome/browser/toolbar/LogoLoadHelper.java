@@ -64,10 +64,13 @@ public class LogoLoadHelper {
                 assert profile != null : "Unexpectedly null profile from TabModel.";
                 loadSearchProviderLogo();
             }));
-        } else if (startSurfaceState == StartSurfaceState.NOT_SHOWN
-                || startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                || startSurfaceState == StartSurfaceState.DISABLED) {
-            destroy();
+        } else if ((startSurfaceState == StartSurfaceState.NOT_SHOWN
+                           || startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                           || startSurfaceState == StartSurfaceState.DISABLED)
+                && mLogoDelegate != null) {
+            // Destroy |mLogoDelegate| when hiding Start surface homepage to save memory.
+            mLogoDelegate.destroy();
+            mLogoDelegate = null;
         }
     }
 
