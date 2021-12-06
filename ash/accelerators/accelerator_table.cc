@@ -38,7 +38,7 @@ const AcceleratorData kDeprecatedAccelerators[] = {
 
     // Deprecated in M59.
     {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     SHOW_IME_MENU_BUBBLE}};
+     TOGGLE_IME_MENU_BUBBLE}};
 
 const size_t kDeprecatedAcceleratorsLength =
     base::size(kDeprecatedAccelerators);
@@ -51,7 +51,7 @@ const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
      IDS_SHORTCUT_TASK_MANAGER_NEW, false},
     // The action for the old shortcut was stopped in M92. Delete
     // completely in M94.
-    {SHOW_IME_MENU_BUBBLE, "Ash.Accelerators.Deprecated.ShowImeMenuBubble",
+    {TOGGLE_IME_MENU_BUBBLE, "Ash.Accelerators.Deprecated.ShowImeMenuBubble",
      IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG, IDS_SHORTCUT_IME_BUBBLE_OLD,
      IDS_SHORTCUT_IME_BUBBLE_NEW, false}};
 
@@ -171,7 +171,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     SCALE_UI_DOWN,
     SCALE_UI_RESET,
     SCALE_UI_UP,
-    SHOW_IME_MENU_BUBBLE,
+    TOGGLE_IME_MENU_BUBBLE,
     START_AMBIENT_MODE,
     SWITCH_TO_LAST_USED_IME,
     SWITCH_TO_NEXT_IME,
@@ -247,7 +247,7 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     SCALE_UI_DOWN,
     SCALE_UI_RESET,
     SCALE_UI_UP,
-    SHOW_IME_MENU_BUBBLE,
+    TOGGLE_IME_MENU_BUBBLE,
     SHOW_SHORTCUT_VIEWER,
     START_AMBIENT_MODE,
     SUSPEND,

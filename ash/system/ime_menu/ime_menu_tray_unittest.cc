@@ -300,7 +300,7 @@ TEST_F(ImeMenuTrayTest, TestAccelerator) {
   ASSERT_FALSE(IsTrayBackgroundActive());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      SHOW_IME_MENU_BUBBLE, {});
+      TOGGLE_IME_MENU_BUBBLE, {});
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 
@@ -327,6 +327,23 @@ TEST_F(ImeMenuTrayTest, ShowingEmojiKeysetHidesBubble) {
   GetTray()->ShowKeyboardWithKeyset(input_method::ImeKeyset::kEmoji);
 
   // The menu should be hidden.
+  EXPECT_FALSE(IsBubbleShown());
+}
+
+// Tests that the IME menu accelerator toggles the bubble on and off.
+TEST_F(ImeMenuTrayTest, ImeBubbleAccelerator) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+  EXPECT_FALSE(IsBubbleShown());
+
+  PressAndReleaseKey(ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(IsBubbleShown());
+
+  PressAndReleaseKey(ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_FALSE(IsBubbleShown());
 }
 

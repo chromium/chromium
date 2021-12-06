@@ -2550,7 +2550,7 @@ TEST_F(DeprecatedAcceleratorTester, TestNewAccelerators) {
        SWITCH_TO_NEXT_IME},
       {true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN, SHOW_TASK_MANAGER},
       {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-       SHOW_IME_MENU_BUBBLE},
+       TOGGLE_IME_MENU_BUBBLE},
       {true, ui::VKEY_H, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
        TOGGLE_HIGH_CONTRAST},
   };

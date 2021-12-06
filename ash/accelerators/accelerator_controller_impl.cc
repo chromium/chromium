@@ -909,15 +909,20 @@ void HandleShowEmojiPicker() {
   ui::ShowEmojiPanel();
 }
 
-void HandleShowImeMenuBubble() {
+void HandleToggleImeMenuBubble() {
   base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
 
   StatusAreaWidget* status_area_widget =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetStatusAreaWidget();
   if (status_area_widget) {
     ImeMenuTray* ime_menu_tray = status_area_widget->ime_menu_tray();
-    if (ime_menu_tray && ime_menu_tray->GetVisible() &&
-        !ime_menu_tray->GetBubbleView()) {
+    if (!ime_menu_tray || !ime_menu_tray->GetVisible()) {
+      // Do nothing when Ime tray is not being shown.
+      return;
+    }
+    if (ime_menu_tray->GetBubbleView()) {
+      ime_menu_tray->CloseBubble();
+    } else {
       ime_menu_tray->ShowBubble();
     }
   }
@@ -1988,7 +1993,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case RESTORE_TAB:
     case ROTATE_WINDOW:
     case SHOW_EMOJI_PICKER:
-    case SHOW_IME_MENU_BUBBLE:
+    case TOGGLE_IME_MENU_BUBBLE:
     case SHOW_SHORTCUT_VIEWER:
     case SHOW_TASK_MANAGER:
     case SUSPEND:
@@ -2317,8 +2322,8 @@ void AcceleratorControllerImpl::PerformAction(
     case SHOW_EMOJI_PICKER:
       HandleShowEmojiPicker();
       break;
-    case SHOW_IME_MENU_BUBBLE:
-      HandleShowImeMenuBubble();
+    case TOGGLE_IME_MENU_BUBBLE:
+      HandleToggleImeMenuBubble();
       break;
     case SHOW_SHORTCUT_VIEWER:
       HandleShowKeyboardShortcutViewer();

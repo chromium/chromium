@@ -153,7 +153,7 @@ const AcceleratorData kAcceleratorData[] = {
     // key opens quick settings.
     {true, ui::VKEY_SETTINGS, ui::EF_NONE, TOGGLE_SYSTEM_TRAY_BUBBLE},
     {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN,
-     SHOW_IME_MENU_BUBBLE},
+     TOGGLE_IME_MENU_BUBBLE},
     {true, ui::VKEY_1, ui::EF_ALT_DOWN, LAUNCH_APP_0},
     {true, ui::VKEY_2, ui::EF_ALT_DOWN, LAUNCH_APP_1},
     {true, ui::VKEY_3, ui::EF_ALT_DOWN, LAUNCH_APP_2},
