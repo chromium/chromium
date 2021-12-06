@@ -238,10 +238,7 @@
     },
     button_ripple_color_primary: { light: "$white", dark: "$black" },
     /* button-primary:hover */
-    button_background_color_primary_hover_overlay: {
-      light:"rgba($black_rgb, 0.08)",
-      dark: "rgba($white_rgb,0.08)"
-    },
+    button_background_color_primary_hover_overlay: "rgba($black_rgb, 0.08)",
     /* button-primary:active */
     button_active_shadow_color_ambient_primary: {
       light: "rgba($google_blue_500_rgb, 0.15)",
