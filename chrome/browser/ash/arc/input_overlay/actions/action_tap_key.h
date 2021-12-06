@@ -34,6 +34,9 @@ class ActionTapKey : public Action {
   bool RewriteEvent(const ui::Event& origin,
                     std::list<ui::TouchEvent>& touch_events,
                     const gfx::RectF& content_bounds) override;
+  gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) override;
+  std::unique_ptr<ActionLabel> CreateView(
+      const gfx::RectF& content_bounds) override;
 
   ui::DomCode key() { return key_; }
 

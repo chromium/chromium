@@ -91,6 +91,25 @@ bool ActionMoveKey::RewriteEvent(const ui::Event& origin,
   return rewritten;
 }
 
+gfx::PointF ActionMoveKey::GetUIPosition(const gfx::RectF& content_bounds) {
+  // TODO(cuicuiruan): will update the UI position according to design specs.
+  auto* position = locations().front().get();
+  return position->CalculatePosition(content_bounds);
+}
+
+std::unique_ptr<ActionLabel> ActionMoveKey::CreateView(
+    const gfx::RectF& content_bounds) {
+  // TODO(cuicuiruan): will update the view according to design specs.
+  std::string text;
+  for (auto key : keys_) {
+    text += GetDisplayText(ui::KeycodeConverter::DomCodeToCodeString(key));
+  }
+  auto view = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
+  auto center_pos = GetUIPosition(content_bounds);
+  view->SetPositionFromCenterPosition(center_pos);
+  return view;
+}
+
 bool ActionMoveKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
                                     std::list<ui::TouchEvent>& rewritten_events,
                                     const gfx::RectF& content_bounds) {

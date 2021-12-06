@@ -16,6 +16,8 @@ namespace input_overlay {
 // event.
 constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 
+gfx::RectF CalculateWindowContentBounds(aura::Window* window);
+
 }  // namespace input_overlay
 
 // TouchInjector includes all the touch actions related to the specific window

@@ -138,16 +138,19 @@ void ArcInputOverlayManager::RemoveObserverFromInputMethod() {
   input_method_ = nullptr;
 }
 
-void ArcInputOverlayManager::RegisterWindow(aura::Window* top_level_window) {
-  if (!top_level_window || registered_top_level_window_ == top_level_window)
+void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
+  if (!window || window != window->GetToplevelWindow() ||
+      registered_top_level_window_ == window) {
     return;
-  auto it = input_overlay_enabled_windows_.find(top_level_window);
+  }
+  auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end())
     return;
   DCHECK(!registered_top_level_window_);
   it->second->RegisterEventRewriter();
-  registered_top_level_window_ = top_level_window;
+  registered_top_level_window_ = window;
   AddObserverToInputMethod();
+  AddDisplayOverlayController();
   // If the window is on the extended window, it turns out only primary root
   // window catches the key event. So it needs to forward the key event from
   // primary root window to extended root window event source.
@@ -158,11 +161,9 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* top_level_window) {
   }
 }
 
-void ArcInputOverlayManager::UnRegisterWindow(aura::Window* top_level_window) {
-  if (!registered_top_level_window_ ||
-      registered_top_level_window_ != top_level_window) {
+void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
+  if (!registered_top_level_window_ || registered_top_level_window_ != window)
     return;
-  }
   auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
   DCHECK(it != input_overlay_enabled_windows_.end());
   if (it == input_overlay_enabled_windows_.end())
@@ -170,8 +171,26 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* top_level_window) {
   if (key_event_source_rewriter_)
     key_event_source_rewriter_.reset();
   it->second->UnRegisterEventRewriter();
-  registered_top_level_window_ = nullptr;
+  RemoveDisplayOverlayController();
   RemoveObserverFromInputMethod();
+  registered_top_level_window_ = nullptr;
+}
+
+void ArcInputOverlayManager::AddDisplayOverlayController() {
+  if (!registered_top_level_window_)
+    return;
+  DCHECK(!display_overlay_controller_);
+  auto it = input_overlay_enabled_windows_.find(registered_top_level_window_);
+  DCHECK(it != input_overlay_enabled_windows_.end());
+  display_overlay_controller_ =
+      std::make_unique<DisplayOverlayController>(it->second.get());
+}
+
+void ArcInputOverlayManager::RemoveDisplayOverlayController() {
+  if (!registered_top_level_window_)
+    return;
+  DCHECK(display_overlay_controller_);
+  display_overlay_controller_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +230,7 @@ void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
 void ArcInputOverlayManager::OnWindowAddedToRootWindow(aura::Window* window) {
   if (!window)
     return;
-  RegisterWindow(window->GetToplevelWindow());
+  RegisterWindow(window);
 }
 
 void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
@@ -222,6 +241,17 @@ void ArcInputOverlayManager::OnWindowRemovingFromRootWindow(
   // There might be child window surface removing, we don't unregister window
   // until the top_level_window is removed from the root.
   UnRegisterWindow(window);
+}
+
+void ArcInputOverlayManager::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  if (!window || window != registered_top_level_window_)
+    return;
+  if (display_overlay_controller_)
+    display_overlay_controller_->OnWindowBoundsChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

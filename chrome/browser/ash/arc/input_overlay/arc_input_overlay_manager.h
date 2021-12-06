@@ -9,6 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/key_event_source_rewriter.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,6 +57,10 @@ class ArcInputOverlayManager : public KeyedService,
   void OnWindowAddedToRootWindow(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
 
   // KeyedService overrides:
   void Shutdown() override;
@@ -84,14 +89,18 @@ class ArcInputOverlayManager : public KeyedService,
   // each time.
   aura::Window* registered_top_level_window_ = nullptr;
   std::unique_ptr<KeyEventSourceRewriter> key_event_source_rewriter_;
+  std::unique_ptr<DisplayOverlayController> display_overlay_controller_;
 
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);
   void NotifyTextInputState();
   void AddObserverToInputMethod();
   void RemoveObserverFromInputMethod();
-  void RegisterWindow(aura::Window* top_level_window);
-  void UnRegisterWindow(aura::Window* top_level_window);
+  // Only top level window will be registered successfully.
+  void RegisterWindow(aura::Window* window);
+  void UnRegisterWindow(aura::Window* window);
+  void AddDisplayOverlayController();
+  void RemoveDisplayOverlayController();
 
   base::WeakPtrFactory<ArcInputOverlayManager> weak_ptr_factory_{this};
 };

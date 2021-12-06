@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
+#include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/test/event_capturer.h"
+#include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -16,26 +17,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace arc {
-namespace {
-
-std::unique_ptr<aura::Window> CreateArcWindowWithRootAndPackage(
-    aura::Window* root,
-    const std::string& package_name) {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-  params.bounds = gfx::Rect();
-  params.context = root;
-  views::Widget* widget = new views::Widget();
-  widget->Init(std::move(params));
-  widget->GetNativeWindow()->SetTitle(u"foo");
-  widget->GetNativeWindow()->SetProperty(ash::kArcPackageNameKey, package_name);
-  widget->Show();
-  widget->Activate();
-  return base::WrapUnique(widget->GetNativeWindow());
-}
-
-}  // namespace
-
-class ArcInputOverlayManagerTest : public ash::AshTestBase {
+class ArcInputOverlayManagerTest : public exo::test::ExoTestBase {
  public:
   ArcInputOverlayManagerTest() = default;
 
@@ -76,6 +58,14 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
     return arc_test_input_overlay_manager_->key_event_source_rewriter_.get();
   }
 
+  DisplayOverlayController* GetDisplayOverlayController() {
+    return arc_test_input_overlay_manager_->display_overlay_controller_.get();
+  }
+
+  void WindowFocus(aura::Window* gain_focus, aura::Window* lost_focus) {
+    arc_test_input_overlay_manager_->OnWindowFocused(gain_focus, lost_focus);
+  }
+
  protected:
   std::unique_ptr<ArcInputOverlayManager> arc_test_input_overlay_manager_;
 
@@ -83,7 +73,7 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
   aura::test::TestWindowDelegate dummy_delegate_;
 
   void SetUp() override {
-    ash::AshTestBase::SetUp();
+    exo::test::ExoTestBase::SetUp();
     arc_test_input_overlay_manager_ =
         base::WrapUnique(new ArcInputOverlayManager(nullptr, nullptr));
   }
@@ -91,33 +81,40 @@ class ArcInputOverlayManagerTest : public ash::AshTestBase {
   void TearDown() override {
     arc_test_input_overlay_manager_->Shutdown();
     arc_test_input_overlay_manager_.reset();
-    ash::AshTestBase::TearDown();
+    exo::test::ExoTestBase::TearDown();
   }
 };
 
 TEST_F(ArcInputOverlayManagerTest, TestPropertyChangeAndWindowDestroy) {
   // Test app with input overlay data.
-  auto arc_window = CreateArcWindowWithRootAndPackage(
-      nullptr, "org.chromium.arc.testapp.inputoverlay");
-  EXPECT_TRUE(IsInputOverlayEnabled(arc_window.get()));
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+      "org.chromium.arc.testapp.inputoverlay");
+  EXPECT_TRUE(IsInputOverlayEnabled(arc_window->GetWindow()));
+  EXPECT_FALSE(GetRegisteredWindow());
+  WindowFocus(arc_window->GetWindow(), nullptr);
+  EXPECT_TRUE(GetRegisteredWindow());
 
   // Test app with input overlay data when window is destroyed.
+  auto* arc_window_ptr = arc_window->GetWindow();
   arc_window.reset();
-  EXPECT_FALSE(IsInputOverlayEnabled(arc_window.get()));
+  EXPECT_FALSE(IsInputOverlayEnabled(arc_window_ptr));
 
   // Test app without input overlay data.
-  auto arc_window_no_data = CreateArcWindowWithRootAndPackage(
-      nullptr, "org.chromium.arc.testapp.inputoverlay_no_data");
-  EXPECT_FALSE(IsInputOverlayEnabled(arc_window_no_data.get()));
+  auto arc_window_no_data =
+      std::make_unique<input_overlay::test::ArcTestWindow>(
+          exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+          "org.chromium.arc.testapp.inputoverlay_no_data");
+  EXPECT_FALSE(IsInputOverlayEnabled(arc_window_no_data->GetWindow()));
 }
 
 TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
   ASSERT_FALSE(GetInputMethod());
   ASSERT_FALSE(IsTextInputActive());
-  auto arc_window = CreateArcWindowWithRootAndPackage(
-      ash::Shell::GetPrimaryRootWindow(),
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
       "org.chromium.arc.testapp.inputoverlay");
-  arc_test_input_overlay_manager_->OnWindowFocused(arc_window.get(), nullptr);
+  WindowFocus(arc_window->GetWindow(), nullptr);
   ui::InputMethod* input_method = GetInputMethod();
   EXPECT_TRUE(GetInputMethod());
   input_method->SetFocusedTextInputClient(nullptr);
@@ -133,26 +130,27 @@ TEST_F(ArcInputOverlayManagerTest, TestInputMethodObsever) {
 }
 
 TEST_F(ArcInputOverlayManagerTest, TestWindowFocusChange) {
-  auto arc_window = CreateArcWindowWithRootAndPackage(
-      ash::Shell::GetPrimaryRootWindow(),
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
       "org.chromium.arc.testapp.inputoverlay");
-  auto arc_window_no_data = CreateArcWindowWithRootAndPackage(
-      ash::Shell::GetPrimaryRootWindow(),
-      "org.chromium.arc.testapp.inputoverlay_no_data");
+  auto arc_window_no_data =
+      std::make_unique<input_overlay::test::ArcTestWindow>(
+          exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),
+          "org.chromium.arc.testapp.inputoverlay_no_data");
   EXPECT_EQ(1, EnabledWindows());
 
-  auto* injector = GetTouchInjector(arc_window.get());
+  auto* injector = GetTouchInjector(arc_window->GetWindow());
   EXPECT_TRUE(injector);
   // The action number should be adjusted with the data in the
   // org.chromium.arc.testapp.inputoverlay.json.
   EXPECT_EQ(2, (int)injector->actions().size());
 
-  EXPECT_TRUE(!GetRegisteredWindow());
-  arc_test_input_overlay_manager_->OnWindowFocused(arc_window.get(), nullptr);
-  EXPECT_EQ(arc_window.get(), GetRegisteredWindow());
-  arc_test_input_overlay_manager_->OnWindowFocused(arc_window_no_data.get(),
-                                                   arc_window.get());
-  EXPECT_TRUE(!GetRegisteredWindow());
+  EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
+  WindowFocus(arc_window->GetWindow(), nullptr);
+  EXPECT_EQ(arc_window->GetWindow(), GetRegisteredWindow());
+  EXPECT_TRUE(GetDisplayOverlayController());
+  WindowFocus(arc_window_no_data->GetWindow(), arc_window->GetWindow());
+  EXPECT_TRUE(!GetRegisteredWindow() && !GetDisplayOverlayController());
 }
 
 TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
@@ -167,9 +165,11 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   // should be |key_event_source_rewriter_| registered on the primary root
   // window.
   EXPECT_FALSE(GetKeyEventSourceRewriter());
-  auto arc_window = CreateArcWindowWithRootAndPackage(
-      root_windows[1], "org.chromium.arc.testapp.inputoverlay");
-  arc_window->SetBoundsInScreen(gfx::Rect(1010, 910, 100, 100), display1);
+  auto arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), root_windows[1],
+      "org.chromium.arc.testapp.inputoverlay");
+  // arc_window->SetBounds(display1, gfx::Rect(1010, 910, 100, 100));
+  WindowFocus(arc_window->GetWindow(), nullptr);
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   // Simulate the fact that key events are only sent to primary root window
   // when there is no text input focus. Make sure the input overlay window can
@@ -187,31 +187,35 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   event_capturer.Clear();
   root_windows[1]->RemovePostTargetHandler(&event_capturer);
   // Move to the primary display.
-  arc_window->SetBoundsInScreen(gfx::Rect(10, 10, 100, 100), display0);
+  arc_window->SetBounds(display0, gfx::Rect(10, 10, 100, 100));
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   // Move back to the secondary display.
-  arc_window->SetBoundsInScreen(gfx::Rect(1010, 910, 100, 100), display1);
+  arc_window->SetBounds(display1, gfx::Rect(1010, 910, 100, 100));
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   arc_window.reset();
 
   // Test when launching input overlay window on the primary display, there
   // shouldn't be |key_event_source_rewriter_|.
   EXPECT_FALSE(GetKeyEventSourceRewriter());
-  arc_window = CreateArcWindowWithRootAndPackage(
-      root_windows[0], "org.chromium.arc.testapp.inputoverlay");
+  arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), root_windows[0],
+      "org.chromium.arc.testapp.inputoverlay");
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   // Move to the secondary display.
-  arc_window->SetBoundsInScreen(gfx::Rect(1010, 910, 100, 100), display1);
+  arc_window->SetBounds(display1, gfx::Rect(10, 10, 100, 100));
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   // When losing focus, |key_event_source_rewriter_| should be destroyed too.
-  arc_test_input_overlay_manager_->OnWindowFocused(nullptr, arc_window.get());
+  WindowFocus(nullptr, arc_window->GetWindow());
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   arc_window.reset();
 
   // Test when this is non input overlay window launched on the secondry
   // display, there shouldn't be |key_event_source_rewriter_|.
-  auto arc_window_no_data = CreateArcWindowWithRootAndPackage(
-      root_windows[1], "org.chromium.arc.testapp.inputoverlay_no_data");
+  auto arc_window_no_data =
+      std::make_unique<input_overlay::test::ArcTestWindow>(
+          exo_test_helper(), root_windows[1],
+          "org.chromium.arc.testapp.inputoverlay_no_data");
+  WindowFocus(arc_window_no_data->GetWindow(), nullptr);
   EXPECT_FALSE(GetKeyEventSourceRewriter());
   arc_window_no_data.reset();
 
@@ -220,20 +224,20 @@ TEST_F(ArcInputOverlayManagerTest, TestKeyEventSourceRewriterForMultiDisplay) {
   // events. When input overlay window on the secondary root window is not
   // registered/not focused, primary window should receive key events.
   root_windows[0]->AddPostTargetHandler(&event_capturer);
-  arc_window = CreateArcWindowWithRootAndPackage(
-      root_windows[1], "org.chromium.arc.testapp.inputoverlay");
-  arc_window_no_data = CreateArcWindowWithRootAndPackage(
-      root_windows[0], "org.chromium.arc.testapp.inputoverlay_no_data");
+  arc_window = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), root_windows[1],
+      "org.chromium.arc.testapp.inputoverlay");
+  arc_window_no_data = std::make_unique<input_overlay::test::ArcTestWindow>(
+      exo_test_helper(), root_windows[0],
+      "org.chromium.arc.testapp.inputoverlay_no_data");
   // Focus on window without input overlay.
-  arc_test_input_overlay_manager_->OnWindowFocused(arc_window_no_data.get(),
-                                                   nullptr);
+  WindowFocus(arc_window_no_data->GetWindow(), nullptr);
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   EXPECT_TRUE(event_capturer.key_events().size() == 2);
   event_capturer.Clear();
   // Focus input overlay window.
-  arc_test_input_overlay_manager_->OnWindowFocused(arc_window.get(),
-                                                   arc_window_no_data.get());
+  WindowFocus(arc_window->GetWindow(), arc_window_no_data->GetWindow());
   EXPECT_TRUE(GetKeyEventSourceRewriter());
   event_generator->PressKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);
   event_generator->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 1 /* keyboard id */);

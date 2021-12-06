@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -21,6 +22,10 @@ namespace input_overlay {
 // Log events for debugging.
 void LogEvent(const ui::Event& event);
 void LogTouchEvents(const std::list<ui::TouchEvent>& events);
+// TODO(cuicuiruan): Currently, it shows the dom_code.
+// Will replace it with showing the result of dom_key / keyboard key depending
+// on different keyboard layout.
+std::string GetDisplayText(const std::string& dom_code_string);
 
 // This is the base touch action which converts other events to touch
 // events for input overlay.
@@ -41,6 +46,10 @@ class Action {
   virtual bool RewriteEvent(const ui::Event& origin,
                             std::list<ui::TouchEvent>& touch_events,
                             const gfx::RectF& content_bounds) = 0;
+  // Get the UI location in the content view.
+  virtual gfx::PointF GetUIPosition(const gfx::RectF& content_bounds) = 0;
+  virtual std::unique_ptr<ActionLabel> CreateView(
+      const gfx::RectF& content_bounds) = 0;
 
   const std::string& name() { return name_; }
   const std::vector<std::unique_ptr<Position>>& locations() const {

@@ -10,6 +10,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/label.h"
 
 namespace arc {
 namespace input_overlay {
@@ -109,6 +111,22 @@ bool ActionTapKey::RewriteKeyEvent(const ui::KeyEvent& key_event,
     OnTouchReleased();
   }
   return true;
+}
+
+gfx::PointF ActionTapKey::GetUIPosition(const gfx::RectF& content_bounds) {
+  // TODO(cuicuiruan): will update the UI position according to design specs.
+  auto* position = locations().front().get();
+  return position->CalculatePosition(content_bounds);
+}
+
+std::unique_ptr<ActionLabel> ActionTapKey::CreateView(
+    const gfx::RectF& content_bounds) {
+  // TODO(cuicuiruan): will update the view according to design specs.
+  auto text = GetDisplayText(ui::KeycodeConverter::DomCodeToCodeString(key_));
+  auto view = std::make_unique<ActionLabel>(base::UTF8ToUTF16(text));
+  auto center_pos = GetUIPosition(content_bounds);
+  view->SetPositionFromCenterPosition(center_pos);
+  return view;
 }
 
 }  // namespace input_overlay

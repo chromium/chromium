@@ -9,6 +9,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/views/controls/label.h"
 
 namespace arc {
 namespace input_overlay {
@@ -35,12 +36,25 @@ void LogEvent(const ui::Event& event) {
             << "}. Pointer detail {" << touch_event.pointer_details().ToString()
             << "}, TouchID {" << touch_event.pointer_details().id << "}.";
   }
-  // TODO (cuicuiruan): Add logging other events as needed.
+  // TODO(cuicuiruan): Add logging other events as needed.
 }
 
 void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
   for (auto& event : events)
     LogEvent(event);
+}
+
+std::string GetDisplayText(const std::string& dom_code_string) {
+  if (base::StartsWith(dom_code_string, "Key", base::CompareCase::SENSITIVE))
+    return dom_code_string.substr(3);
+  if (base::StartsWith(dom_code_string, "Digit", base::CompareCase::SENSITIVE))
+    return dom_code_string.substr(5);
+  auto lower = base::ToLowerASCII(dom_code_string);
+  if (lower == "escape")
+    return "esc";
+  // TODO(cuicuiruan): adjust more display text according to UX design
+  // requirement.
+  return lower;
 }
 
 Action::Action(aura::Window* window) : target_window_(window) {}
