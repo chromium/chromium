@@ -649,6 +649,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // removal which caused a layout subtree to be detached.
   void MarkForLayoutTreeChangesAfterDetach();
 
+  void RebuildLayoutTreeForTraversalRootAncestors(Element* parent);
+
+  // Separate path for layout tree rebuild for html fieldset as a size query
+  // container.
+  void RebuildFieldSetContainer(HTMLFieldSetElement& fieldset);
+
   Member<Document> document_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded

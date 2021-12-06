@@ -27,6 +27,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/types/pass_key.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -81,6 +82,7 @@ class ExceptionState;
 class FloatQuad;
 class FocusOptions;
 class GetInnerHTMLOptions;
+class HTMLFieldSetElement;
 class HTMLTemplateElement;
 class Image;
 class InputDeviceCapabilities;
@@ -1106,6 +1108,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void AdjustForceLegacyLayout(const ComputedStyle*,
                                bool* should_force_legacy_layout);
 
+  // Reattach layout tree for all children but not the element itself. This is
+  // only used for reattaching fieldset children when the fieldset is a query
+  // container for size container queries.
+  void ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>);
+
  private:
   friend class AXObject;
 
@@ -1192,6 +1199,29 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                                     const StyleRecalcContext&);
   void AttachPseudoElement(PseudoId, AttachContext&);
   void DetachPseudoElement(PseudoId, bool performing_reattach);
+
+  void AttachPrecedingPseudoElements(AttachContext& context) {
+    AttachPseudoElement(kPseudoIdMarker, context);
+    AttachPseudoElement(kPseudoIdBefore, context);
+  }
+
+  void AttachSucceedingPseudoElements(AttachContext& context) {
+    AttachPseudoElement(kPseudoIdAfter, context);
+    AttachPseudoElement(kPseudoIdBackdrop, context);
+    UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
+    AttachPseudoElement(kPseudoIdFirstLetter, context);
+  }
+
+  void DetachPrecedingPseudoElements(bool performing_reattach) {
+    DetachPseudoElement(kPseudoIdMarker, performing_reattach);
+    DetachPseudoElement(kPseudoIdBefore, performing_reattach);
+  }
+
+  void DetachSucceedingPseudoElements(bool performing_reattach) {
+    DetachPseudoElement(kPseudoIdAfter, performing_reattach);
+    DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
+    DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
+  }
 
   ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
 

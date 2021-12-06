@@ -121,6 +121,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -2782,8 +2783,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
     return;
   }
 
-  AttachPseudoElement(kPseudoIdMarker, children_context);
-  AttachPseudoElement(kPseudoIdBefore, children_context);
+  AttachPrecedingPseudoElements(children_context);
 
   if (ShadowRoot* shadow_root = GetShadowRoot()) {
     // When a shadow root exists, it does the work of attaching the children.
@@ -2794,11 +2794,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
     ContainerNode::AttachLayoutTree(children_context);
   }
 
-  AttachPseudoElement(kPseudoIdAfter, children_context);
-  AttachPseudoElement(kPseudoIdBackdrop, children_context);
+  AttachSucceedingPseudoElements(children_context);
 
-  UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
-  AttachPseudoElement(kPseudoIdFirstLetter, children_context);
   if (layout_object) {
     if (layout_object->AffectsWhitespaceSiblings())
       context.previous_in_flow = layout_object;
@@ -2828,8 +2825,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     }
   }
 
-  DetachPseudoElement(kPseudoIdMarker, performing_reattach);
-  DetachPseudoElement(kPseudoIdBefore, performing_reattach);
+  DetachPrecedingPseudoElements(performing_reattach);
 
   // TODO(futhark): We need to traverse into IsUserActionElement() subtrees,
   // even if they are already display:none because we do not clear the
@@ -2851,9 +2847,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     Node::DetachLayoutTree(performing_reattach);
   }
 
-  DetachPseudoElement(kPseudoIdAfter, performing_reattach);
-  DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
-  DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
+  DetachSucceedingPseudoElements(performing_reattach);
 
   if (!performing_reattach) {
     UpdateCallbackSelectors(GetComputedStyle(), nullptr);
@@ -2871,6 +2865,40 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   if (auto* context = GetDisplayLockContext()) {
     context->DetachLayoutTree();
   }
+}
+
+void Element::ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>) {
+  DCHECK(NeedsReattachLayoutTree());
+  DCHECK(ChildNeedsReattachLayoutTree());
+  DCHECK(!GetShadowRoot());
+  DCHECK(GetLayoutObject());
+  DCHECK(GetLayoutObject()->StyleRef().IsContainerForContainerQueries());
+
+  constexpr bool performing_reattach = true;
+
+  DetachPrecedingPseudoElements(performing_reattach);
+
+  for (Node* child = firstChild(); child; child = child->nextSibling())
+    child->DetachLayoutTree(performing_reattach);
+
+  DetachSucceedingPseudoElements(performing_reattach);
+
+  AttachContext context;
+  context.parent = GetLayoutObject();
+  context.performing_reattach = performing_reattach;
+  context.use_previous_in_flow = true;
+  context.next_sibling_valid = true;
+  AdjustForceLegacyLayout(GetComputedStyle(), &context.force_legacy_layout);
+
+  AttachPrecedingPseudoElements(context);
+
+  for (Node* child = firstChild(); child; child = child->nextSibling())
+    child->AttachLayoutTree(context);
+
+  AttachSucceedingPseudoElements(context);
+
+  ClearChildNeedsReattachLayoutTree();
+  ClearNeedsReattachLayoutTree();
 }
 
 scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(

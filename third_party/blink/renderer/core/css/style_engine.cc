@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
@@ -2319,7 +2320,19 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   // with itself for its children.
   RecalcStyle(change, StyleRecalcContext());
 
-  if (container.ChildNeedsReattachLayoutTree()) {
+  if (UNLIKELY(container.NeedsReattachLayoutTree())) {
+    // Generally, the container itself should not be marked for re-attachment.
+    // In the case where we have a fieldset as a container, the fieldset itself
+    // is marked for re-attachment in HTMLFieldSetElement::DidRecalcStyle to
+    // make sure the rendered legend is appropriately placed in the layout tree.
+    // We cannot re-attach the fieldset itself in this case since we are in the
+    // process of laying it out. Instead we re-attach all children, which should
+    // be sufficient.
+    auto* fieldset = DynamicTo<HTMLFieldSetElement>(container);
+    DCHECK(fieldset)
+        << "Only fieldsets may be marked for re-attachment as query containers";
+    RebuildFieldSetContainer(*fieldset);
+  } else if (container.ChildNeedsReattachLayoutTree()) {
     DCHECK(layout_tree_rebuild_root_.GetRootNode());
     if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
       // Avoid traversing from outside the container root. We know none of the
@@ -2394,6 +2407,15 @@ void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
   }
 }
 
+void StyleEngine::RebuildLayoutTreeForTraversalRootAncestors(Element* parent) {
+  for (auto* ancestor = parent; ancestor;
+       ancestor = ancestor->GetReattachParent()) {
+    ancestor->RebuildLayoutTreeForTraversalRootAncestor();
+    ancestor->ClearChildNeedsStyleRecalc();
+    ancestor->ClearChildNeedsReattachLayoutTree();
+  }
+}
+
 void StyleEngine::RebuildLayoutTree() {
   bool propagate_to_root = false;
   {
@@ -2411,13 +2433,8 @@ void StyleEngine::RebuildLayoutTree() {
       root_element.RebuildLayoutTree(whitespace_attacher);
     }
 
-    for (ContainerNode* ancestor = root_element.GetReattachParent(); ancestor;
-         ancestor = ancestor->GetReattachParent()) {
-      if (auto* ancestor_element = DynamicTo<Element>(ancestor))
-        ancestor_element->RebuildLayoutTreeForTraversalRootAncestor();
-      ancestor->ClearChildNeedsStyleRecalc();
-      ancestor->ClearChildNeedsReattachLayoutTree();
-    }
+    RebuildLayoutTreeForTraversalRootAncestors(
+        root_element.GetReattachParent());
     layout_tree_rebuild_root_.Clear();
     propagate_to_root = IsA<HTMLHtmlElement>(root_element) ||
                         IsA<HTMLBodyElement>(root_element);
@@ -2427,6 +2444,14 @@ void StyleEngine::RebuildLayoutTree() {
     if (NeedsLayoutTreeRebuild())
       RebuildLayoutTree();
   }
+}
+
+void StyleEngine::RebuildFieldSetContainer(HTMLFieldSetElement& fieldset) {
+  DCHECK(fieldset.NeedsReattachLayoutTree());
+  base::AutoReset<bool> rebuild_scope(&in_layout_tree_rebuild_, true);
+  fieldset.ReattachLayoutTreeChildren();
+  RebuildLayoutTreeForTraversalRootAncestors(&fieldset);
+  layout_tree_rebuild_root_.Clear();
 }
 
 void StyleEngine::UpdateStyleAndLayoutTree() {
