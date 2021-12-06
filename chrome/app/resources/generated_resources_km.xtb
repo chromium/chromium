@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">ឧបករណ៍​ដែល​បាន​ផ្គូផ្គង</translation>
 <translation id="1153636665119721804">កម្មវិធី​ការពារ​កម្រិតខ្ពស់​របស់ Google</translation>
 <translation id="1155816283571436363">កំពុងភ្ជាប់​ជាមួយទូរសព្ទ​របស់អ្នក</translation>
+<translation id="1158080958325422608">កំណត់ជាអក្សរធំ</translation>
 <translation id="1158238185437008462">មើលអនុស្សាវរីយ៍</translation>
 <translation id="1161575384898972166">សូមចូលទៅ <ph name="TOKEN_NAME" /> ដើម្បីនាំចេញវិញ្ញាបនប័ត្រអតិថិជន។</translation>
 <translation id="116173250649946226">អ្នកគ្រប់គ្រង​របស់អ្នក​បានកំណត់​រចនាប័ទ្មលំនាំដើម ដែលមិនអាច​ប្ដូរបានទេ។</translation>
@@ -697,6 +698,7 @@
 <translation id="1700079447639026019">គេហទំព័រ​ដែល​មិនអាច​ប្រើ​ខូគីបាន</translation>
 <translation id="1703331064825191675">មិនចាំបាច់​បារម្ភអំពីពាក្យ​សម្ងាត់របស់អ្នកទេ</translation>
 <translation id="1703666494654169921">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ប្រើទិន្នន័យ ឬ​ឧបករណ៍ VR ទេ</translation>
+<translation id="1704097193565924901">អក្សរធំ</translation>
 <translation id="1704230497453185209">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ចាក់សំឡេងទេ</translation>
 <translation id="1704970325597567340">ការពិនិត្យ​សុវត្ថិភាពបានដំណើរការនៅថ្ងៃទី <ph name="DATE" /></translation>
 <translation id="1706586824377653884">បានបញ្ចូល​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
@@ -3581,6 +3583,7 @@
 <translation id="4681453295291708042">បិទ​ការចែករំលែក​នៅជិត</translation>
 <translation id="4681930562518940301">បើករូបភាពដើមនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="4682551433947286597">ផ្ទាំងរូបភាពលេចឡើងនៅលើអេក្រង់ចូល។</translation>
+<translation id="4683629100208651599">កំណត់ជាអក្សរតូច</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (លំនាំដើម)</translation>
 <translation id="4684427112815847243">ធ្វើសមកម្មគ្រប់យ៉ាង</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> កំពុងព្យាយាមចូលប្រើកាមេរ៉ា។ សូមបិទ​ប៊ូតុងបិទបើក​ឯកជនភាព​របស់កាមេរ៉ា ដើម្បី​អនុញ្ញាត​ការចូលប្រើ។</translation>
@@ -5977,6 +5980,7 @@
 <translation id="7257173066616499747">បណ្តាញ Wi-Fi</translation>
 <translation id="725758059478686223">សេវាកម្ម​បោះពុម្ព</translation>
 <translation id="7257666756905341374">អានទិន្នន័យដែលអ្នកចម្លង និងបិទភ្ជាប់</translation>
+<translation id="7258192266780953209">ការបំប្លែង</translation>
 <translation id="7258225044283673131">កម្មវិធី​មិនដំណើរ​ការទេ។ សូមជ្រើសរើស "បង្ខំឱ្យបិទ" ដើម្បីបិទ​កម្មវិធី។</translation>
 <translation id="7262004276116528033">សេវាកម្មចូលនេះត្រូវបានបង្ហោះដោយ <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />សាកល្បងជំហានដោះស្រាយបញ្ហាទាំងនេះ៖

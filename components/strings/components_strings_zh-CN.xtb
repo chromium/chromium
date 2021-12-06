@@ -400,6 +400,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="2187317261103489799">检测（默认）</translation>
 <translation id="2188375229972301266">多孔（底部）</translation>
+<translation id="2188852899391513400">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理器建议您立即更改此密码并检查已保存的所有密码。</translation>
 <translation id="2202020181578195191">请输入有效的失效年份</translation>
 <translation id="22081806969704220">纸匣 3</translation>
 <translation id="2212735316055980242">找不到策略</translation>
@@ -889,6 +890,7 @@
 <translation id="3827112369919217609">绝对</translation>
 <translation id="3827475930221174051">基于与“<ph name="SEARCH_TERM" />”相关的活动记录</translation>
 <translation id="3828924085048779000">密码输入字段不能留空。</translation>
+<translation id="3831065134033923230">检查已保存的所有密码</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> 已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="3832522519263485449">多孔（左侧）</translation>
 <translation id="3835233591525155343">您的设备使用情况</translation>
@@ -1083,6 +1085,7 @@
 <translation id="443673843213245140">已停用代理，但是指定了明确的代理配置。</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
+<translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理器建议您检查已保存的所有密码。</translation>
 <translation id="4455222631300069614">请立即更改密码</translation>
 <translation id="4460315069258617173">可以使用，直到您关闭在此网站上打开的所有标签页</translation>
 <translation id="4464826014807964867">包含来自贵组织的信息的网站</translation>
@@ -1571,6 +1574,7 @@
 <translation id="6051221802930200923">您目前无法访问 <ph name="SITE" />，因为此网站使用了证书锁定。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="6051898664905071243">页数：</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">您刚才使用的密码遭遇了数据泄露。Google 密码管理器建议您立即更改此密码。</translation>
 <translation id="6055888660316801977">“无匹配的安全付款凭据”表单</translation>
 <translation id="6058977677006700226">在您的所有设备上使用您的卡？</translation>
 <translation id="6059925163896151826">USB 设备</translation>

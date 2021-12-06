@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">Лупа в прикрепен режим</translation>
 <translation id="2942516765047364088">Позиция на лавицата</translation>
 <translation id="2946119680249604491">Добавяне на връзка</translation>
+<translation id="2960314608273155470">Стандартната опция за режима на заснемане е <ph name="SOURCE" /> <ph name="TYPE" />. Натиснете Tab за навигиране с клавиатурата.</translation>
 <translation id="2961963223658824723">Нещо се обърка. Опитайте отново след няколко секунди.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Файловете за говор на <ph name="LANGUAGE" /> не бяха изтеглени</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">Свиване на лентата на състоянието</translation>
 <translation id="7045033600005038336">Да се замени ли шаблонът?</translation>
 <translation id="7045595904618419789">Стартиране на лупата</translation>
+<translation id="7051244143160304048">Връзката с(ъс) <ph name="DEVICE_NAME" /> е прекратена</translation>
 <translation id="7055381872777910864">ср</translation>
 <translation id="7055910611768509537">Писалката не е използвана от повече от една седмица</translation>
 <translation id="7066646422045619941">Тази мрежа е деактивирана от администратора ви.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8413272770729657668">Записването започва след 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (калъф)</translation>
+<translation id="8421270167862077762">Приложението <ph name="UNAVAILABLE_APPS" /> не е инсталирано на това устройство.</translation>
 <translation id="8425213833346101688">Промяна</translation>
 <translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Настройки</translation>

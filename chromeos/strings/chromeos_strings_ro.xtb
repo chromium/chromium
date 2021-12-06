@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
+<translation id="3924044641767672375">Conectarea la Wi-Fi este recomandată pentru a simplifica procesul de reparare. Rețeaua se va salva.</translation>
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
 <translation id="3942420633017001071">Diagnosticare</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4485626319513081846">Selectează această opțiune dacă dispozitivul este înlocuit sau recondiționat pentru distribuirea către un client nou.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Potrivire a numelui alternativ al subiectului</translation>
 <translation id="4536864596629708641">Configurația adresei IP</translation>
@@ -416,6 +418,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6957231940976260713">Nume serviciu</translation>
 <translation id="6961170852793647506">Pentru a începe, așază documentul pe scaner</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
+<translation id="6992266763844448459">Selectează această opțiune dacă nu se schimbă calitatea de proprietar al dispozitivului. De exemplu, dispozitivul este transferat unei alte persoane din organizație.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Finalizează și salvează</translation>

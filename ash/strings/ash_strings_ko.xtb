@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">고정 돋보기</translation>
 <translation id="2942516765047364088">실행기 위치</translation>
 <translation id="2946119680249604491">연결 추가</translation>
+<translation id="2960314608273155470">캡처 모드, 기본값은 <ph name="SOURCE" /> <ph name="TYPE" />입니다. 키보드 탐색을 사용하려면 Tab 키를 누르세요.</translation>
 <translation id="2961963223658824723">문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> 음성 파일을 다운로드할 수 없음</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">상태 영역 접기</translation>
 <translation id="7045033600005038336">템플릿을 교체하시겠습니까?</translation>
 <translation id="7045595904618419789">돋보기 시작</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> 연결 해제됨</translation>
 <translation id="7055381872777910864">수</translation>
 <translation id="7055910611768509537">1주일 넘게 스타일러스가 사용되지 않았습니다.</translation>
 <translation id="7066646422045619941">관리자가 사용 중지한 네트워크입니다.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">디스플레이 설정 표시</translation>
 <translation id="8413272770729657668">녹화가 곧 시작됩니다. 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>
+<translation id="8421270167862077762">이 기기에 <ph name="UNAVAILABLE_APPS" /> 앱이 없습니다.</translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8426708595819210923">편안한 저녁 보내세요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="8428213095426709021">설정</translation>

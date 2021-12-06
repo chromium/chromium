@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2942516765047364088">ตำแหน่งของชั้นวาง</translation>
 <translation id="2946119680249604491">เพิ่มการเชื่อมต่อ</translation>
+<translation id="2960314608273155470">โหมดจับภาพ ค่าเริ่มต้นคือ<ph name="TYPE" /><ph name="SOURCE" /> กดแป้น Tab เพื่อไปยังส่วนต่างๆ ด้วยแป้นพิมพ์</translation>
 <translation id="2961963223658824723">เกิดข้อผิดพลาด โปรดลองอีกครั้งในอีกสักครู่</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">ยุบพื้นที่แสดงสถานะ</translation>
 <translation id="7045033600005038336">แทนที่เทมเพลตใช่ไหม</translation>
 <translation id="7045595904618419789">เริ่มใช้แว่นขยาย</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ยกเลิกการเชื่อมต่อแล้ว</translation>
 <translation id="7055381872777910864">พ.</translation>
 <translation id="7055910611768509537">คุณไม่ได้ใช้สไตลัสนานกว่า 1 สัปดาห์แล้ว</translation>
 <translation id="7066646422045619941">ผู้ดูแลระบบปิดใช้เครือข่ายนี้</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">แสดงการตั้งค่าการแสดงผล</translation>
 <translation id="8413272770729657668">การบันทึกจะเริ่มใน 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> ไม่ได้อยู่ในอุปกรณ์นี้</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8426708595819210923">สวัสดียามเย็น <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>

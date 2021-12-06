@@ -182,6 +182,7 @@
 <translation id="3858860766373142691">名称</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
+<translation id="3924044641767672375">为简化维修过程，建议您连接到 Wi-Fi。系统会保存您的网络信息。</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
 <translation id="3942420633017001071">诊断</translation>
@@ -226,6 +227,7 @@
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4485626319513081846">若要将设备重新上架或翻新后发放给新客户，请选择此选项。</translation>
 <translation id="4511264077854731334">门户网站</translation>
 <translation id="4521826082652183069">主题备用名称匹配</translation>
 <translation id="4536864596629708641">IP 配置</translation>
@@ -415,6 +417,7 @@
 <translation id="6957231940976260713">服务名称</translation>
 <translation id="6961170852793647506">首先，将您的文件放置在扫描仪上</translation>
 <translation id="6977381486153291903">固件版本</translation>
+<translation id="6992266763844448459">如果设备的所有权未变，请选择此选项。例如，将这部设备转给同一单位内的另一个人。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7058278511608979688">结束并保存</translation>

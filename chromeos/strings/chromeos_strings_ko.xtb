@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">이름</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
+<translation id="3924044641767672375">수리 과정을 간편하게 진행하려면 Wi-Fi에 연결하는 것이 좋습니다. 네트워크가 저장됩니다.</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">시작하기</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="4485626319513081846">기기가 새 고객에게 제공되는 절차 중에 재입고되거나 리퍼 처리되는 경우 이 옵션을 선택하세요.</translation>
 <translation id="4511264077854731334">포털</translation>
 <translation id="4521826082652183069">제목 보조 이름 일치</translation>
 <translation id="4536864596629708641">IP 구성</translation>
@@ -416,6 +418,7 @@
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6961170852793647506">시작하려면 스캐너에 문서를 올리세요.</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
+<translation id="6992266763844448459">기기 소유자가 변경되지 않으면 이 옵션을 선택하세요. 예를 들어 기기가 조직 내 다른 사용자에게 이전되는 경우입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7058278511608979688">종료 및 저장</translation>

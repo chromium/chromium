@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ჩამაგრებული ლუპა</translation>
 <translation id="2942516765047364088">თაროს პოზიცია</translation>
 <translation id="2946119680249604491">კავშირის დამატება</translation>
+<translation id="2960314608273155470">აღბეჭდვის რეჟიმი, ნაგულისხმევია <ph name="SOURCE" /> <ph name="TYPE" />. კლავიატურით ნავიგაციისთვის დააჭირეთ კლავიშს Tab.</translation>
 <translation id="2961963223658824723">წარმოიქმნა შეფერხება. ცადეთ ხელახლა რამდენიმე წამში.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> მეტყველების ფაილები ვერ ჩამოიტვირთა</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">სტატუსის არის ჩაკეცვა</translation>
 <translation id="7045033600005038336">გსურთ, ჩაანაცვლოთ შაბლონი?</translation>
 <translation id="7045595904618419789">გამადიდებლის გაშვება</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> გათიშულია</translation>
 <translation id="7055381872777910864">ო</translation>
 <translation id="7055910611768509537">სტილუსი არ გამოგიყენებიათ ერთ კვირაზე მეტი ხნის განმავლობაში</translation>
 <translation id="7066646422045619941">ეს ქსელი გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">ჩვენების პარამეტრების ჩვენება</translation>
 <translation id="8413272770729657668">ჩაწერის დაწყებამდე დარჩენილია 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (სათავსო)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> არ არის ამ მოწყობილობაზე.</translation>
 <translation id="8425213833346101688">შეცვლა</translation>
 <translation id="8426708595819210923">საღამო მშვიდობის, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>

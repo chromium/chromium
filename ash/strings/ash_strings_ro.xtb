@@ -280,6 +280,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2942350706960889382">Lupă andocată</translation>
 <translation id="2942516765047364088">Poziție raft</translation>
 <translation id="2946119680249604491">Adăugați o conexiune</translation>
+<translation id="2960314608273155470">Modul de capturare, setarea prestabilită este <ph name="TYPE" /> <ph name="SOURCE" />. Apasă pe tasta Tab pentru navigare pe tastatură.</translation>
 <translation id="2961963223658824723">A apărut o eroare. Încearcă din nou în câteva secunde.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Nu s-au putut descărca fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /></translation>
@@ -886,6 +887,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7042322267639375032">Restrânge zona de stare</translation>
 <translation id="7045033600005038336">Înlocuiești șablonul?</translation>
 <translation id="7045595904618419789">Activează lupa</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s-a deconectat</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Creionul nu a fost folosit de mai mult de o săptămână</translation>
 <translation id="7066646422045619941">Această rețea este dezactivată de administrator.</translation>
@@ -1079,6 +1081,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8412677897383510995">Afișează setările de afișare</translation>
 <translation id="8413272770729657668">Înregistrarea începe în 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (carcasă)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> nu este disponibilă pe acest dispozitiv.</translation>
 <translation id="8425213833346101688">Modificați</translation>
 <translation id="8426708595819210923">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Setări</translation>

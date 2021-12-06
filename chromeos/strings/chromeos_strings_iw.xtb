@@ -182,6 +182,7 @@
 <translation id="3858860766373142691">שם</translation>
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
+<translation id="3924044641767672375">‏כדי שתהליך התיקון יהיה פשוט יותר, כדאי להתחבר לרשת Wi-Fi. הרשת שלך תישמר.</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
@@ -226,6 +227,7 @@
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
+<translation id="4485626319513081846">צריך לבחור באפשרות הזו אם המכשיר מוחזר למלאי או מחודש לצורך הפצה ללקוח חדש.</translation>
 <translation id="4511264077854731334">פורטל</translation>
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
 <translation id="4536864596629708641">‏תצורת IP</translation>
@@ -415,6 +417,7 @@
 <translation id="6957231940976260713">שם שירות</translation>
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
+<translation id="6992266763844448459">צריך לבחור באפשרות הזו אם הבעלות על המכשיר לא משתנה. לדוגמה: המכשיר מועבר למשתמש אחר באותו ארגון.</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>

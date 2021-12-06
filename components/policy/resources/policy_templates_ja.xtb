@@ -1431,6 +1431,10 @@
 <translation id="2716623398185506073">このポリシーを有効に設定すると、登録済みのデバイスは電源に関連するハードウェアの統計情報と識別子を報告します。
 
       このポリシーを無効にするか、未設定のままにすると、登録済みのデバイスは電源に関連する統計情報を報告しません。</translation>
+<translation id="2717628606602248727">このポリシーはデフォルトでは有効に設定されています。このポリシーは、メモリの情報を報告するように登録済みのデバイスを制御します。
+
+      このポリシーを無効に設定した場合、登録済みのデバイスはメモリの情報を報告しません。
+      例外: M95 以前では、空きメモリの情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
 <translation id="2721185634942265347">検索候補を無効にする</translation>
 <translation id="2721582713721006926">クイック アンサーの定義を無効にする</translation>
 <translation id="2723692978495226412">このポリシーを有効に設定した場合、ユーザーが他のデバイスで以前インストールしたアプリのおすすめが表示されます。このおすすめは、検索テキストが入力されていない場合に、ランチャー内のローカルアプリのおすすめの後に表示されます。
@@ -3865,6 +3869,9 @@
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスの VPD に関する情報が報告されます。
       バイタル商品データ （VPD）は、デバイスに関連付けられた一連の構成データと情報データ（部品およびシリアル番号など）です。</translation>
+<translation id="576158229686912964">このポリシーは M96 でサポート終了となりました。代わりに <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> と <ph name="REPORT_DEVICE_NETWORK_STATUS" /> を使用してください。
+
+      このポリシーを有効にするか未設定のままにした場合、登録済みのデバイスはネットワーク インターフェースのリスト（タイプとハードウェア アドレスを含む）を報告します。このポリシーを無効に設定した場合、登録済みのデバイスはネットワーク インターフェースを報告しません。</translation>
 <translation id="5762969307102447459">住所の自動入力を無効にする</translation>
 <translation id="5765780083710877561">説明:</translation>
 <translation id="5766438888216077649"><ph name="BLANK_PAGE_NAME" /> をターゲットとするリンクで <ph name="WINDOW_OPENER_PROPERTY" /> を設定しない</translation>
@@ -5195,6 +5202,10 @@
           このポリシーが未設定のままの場合、すべてのサイトでグローバルなデフォルト値（「DefaultKeygenSetting」ポリシーで値が設定されていればその値、設定されていなければユーザーの個人設定の値）が使用されます。
 
           有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
+<translation id="7394023172636522064">このポリシーを有効に設定した場合、デバイスの TPM セキュリティ ステータスが報告されます。
+
+      このポリシーを無効に設定するか未設定のままにした場合、登録済みのデバイスは TPM セキュリティ ステータスの記録および報告を行いません。
+      例外: M95 以前では、TPM の情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
 <translation id="739556497251174388"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報をネットワーク認証で再利用することを許可する</translation>
 <translation id="7400971609879083218">このポリシーを有効に設定した場合、ページ上のサードパーティの画像による認証プロンプトの表示が許可されます。
 
@@ -5270,6 +5281,9 @@
       このポリシーが未設定の場合、デフォルトで、企業の管理対象ユーザーは <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" />、管理対象外のユーザーは <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> に設定されます。
 
       今後、<ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> 値を使用して、<ph name="PRODUCT_OS_NAME" /> で <ph name="LACROS_NAME" /> を唯一の使用可能なブラウザとして設定できるようになる予定です。</translation>
+<translation id="7509761893401042250">このポリシーは M96 でサポートが終了しました。代わりに <ph name="REPORT_DEVICE_CPU_INFO" />、<ph name="REPORT_DEVICE_MEMORY_INFO" />、<ph name="REPORT_DEVICE_STORAGE_STATUS" />、<ph name="REPORT_DEVICE_SECURITY_STATUS" />、<ph name="REPORT_DEVICE_AUDIO_STATUS" /> を使用してください。
+
+      このポリシーを有効にするか未設定のままにした場合、登録済みのデバイスは CPU/RAM 使用量などに関するハードウェアの統計情報を報告します。このポリシーを無効に設定した場合、登録済みのデバイスはハードウェアの統計情報を報告しません。</translation>
 <translation id="7519218194072744342">プロトコル ハンドラの URL です。</translation>
 <translation id="7519251620064708155">指定サイトでのキー生成を許可する</translation>
 <translation id="7529144158022474049">自動更新の散乱係数</translation>
@@ -5277,6 +5291,10 @@
 
       このポリシーを設定しないか True に設定した場合、パスワード入力の前に全画面表示を終了するようユーザーに警告が表示されます。このポリシーを False に設定した場合、警告は表示されません。</translation>
 <translation id="7534199150025803530">このポリシーは Android Google ドライブアプリには適用されません。モバイルデータ通信時に Google ドライブを使用できないようにするには、Android Google ドライブアプリのインストールを禁止する必要があります。</translation>
+<translation id="7538583957913002726">このポリシーはデフォルトでは有効に設定されています。このポリシーは、CPU のモデル名、アーキテクチャ、最大クロック速度（M96 以降では CPU の使用量と温度も）を報告するように登録済みのデバイスを制御します。
+
+      このポリシーを無効に設定した場合、登録済みのデバイスは CPU の情報を報告しません。
+      例外: M95 以前では、CPU の使用量と温度の報告は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
 <translation id="7540622499178214923">Wilco の診断およびテレメトリー用コントローラを許可します</translation>
 <translation id="7540826630642174841">このポリシーを設定した場合は、指定した期間、指定したデバイス ポリシーが無視されます（これらのポリシーのデフォルトの設定が使用されます）。デバイス ポリシーは、ポリシー期間が開始または終了したときに <ph name="PRODUCT_NAME" /> により再適用されます。この期間やデバイス ポリシーの設定が変更された場合（許可されていないアカウントでユーザーがログインした場合など）には、ユーザーは通知を受けたうえで強制的にログアウトされます。</translation>
 <translation id="7540945123920084379">このポリシーでは、ロック画面を解除できるロックのクイック解除モードを管理できます。
@@ -5437,6 +5455,10 @@
 
       注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="7717938661004793600"><ph name="PRODUCT_OS_NAME" /> のユーザー補助機能を設定します。</translation>
+<translation id="7718127720248642697">このポリシーはデフォルトでは有効に設定されています。このポリシーは、ストレージ デバイスに関するハードウェアの統計情報と識別子を報告するように登録済みのデバイスを制御します。
+
+      このポリシーを無効にした場合、登録済みのデバイスはストレージに関する統計情報を報告しません。
+      例外: M95 以前では、ディスクサイズとディスクの空き容量は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" /> ユーザー ID</translation>
 <translation id="7724161903134898864">このポリシーを 1 に設定した場合、ウェブサイトによるポップアップの表示が許可されます。このポリシーを 2 に設定した場合、ポップアップは拒否されます。
 
@@ -6557,6 +6579,10 @@
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="9068629430243705879">ポート 6566（ブロックの解除は 2021 年 10 月 15 日まで可能）</translation>
+<translation id="9069588907259547232">このポリシーを有効に設定するか未設定のままにした場合、登録済みのデバイスはデバイスの音量を報告します。
+
+      このポリシーを無効に設定した場合、登録済みのデバイスは音声の状態の記録および報告を行いません。
+      例外: M95 以前では、システム音量レベルの情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
 <translation id="9073405975862312795">このポリシーを有効にするか、未設定のままにすると、登録済みのデバイスはユーザーがデバイス上でアクティブになっていた期間を報告します。
 
       このポリシーを無効に設定すると、登録済みのデバイスはアクティブな期間を記録または報告しません。</translation>

@@ -182,6 +182,7 @@
 <translation id="3858860766373142691">Ime</translation>
 <translation id="3865414814144988605">Ločljivost</translation>
 <translation id="387301095347517405">Število ciklov popolnega polnjenja baterije.</translation>
+<translation id="3924044641767672375">Če želite olajšati postopek popravila, priporočamo, da se povežete v omrežje Wi-Fi. Omrežje bo shranjeno.</translation>
 <translation id="3932043219784172185">Nobena naprava ni povezana</translation>
 <translation id="3941014780699102620">Ni bilo mogoče razrešiti gostitelja</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
@@ -226,6 +227,7 @@
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
+<translation id="4485626319513081846">Izberite to možnost, če bo ta naprava vrnjena med zaloge ali obnovljena za distribucijo novi stranki.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Ujemanje nadomestnega imena subjekta</translation>
 <translation id="4536864596629708641">Konfiguracija naslova IP</translation>
@@ -415,6 +417,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6957231940976260713">Ime storitve</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
+<translation id="6992266763844448459">Izberite to možnost, če se lastništvo naprave ne spreminja. Ta naprava se na primer prenaša na drugo osebo v organizaciji.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7058278511608979688">Končaj in shrani</translation>

@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">停靠的放大镜</translation>
 <translation id="2942516765047364088">任务栏位置</translation>
 <translation id="2946119680249604491">添加连接</translation>
+<translation id="2960314608273155470">截屏/录屏模式，默认为<ph name="SOURCE" /><ph name="TYPE" />。按 Tab 键即可使用键盘进行导航。</translation>
 <translation id="2961963223658824723">出了点问题。请过几秒钟后重试。</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">无法下载<ph name="LANGUAGE" />语音识别结果文件</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">收起状态区</translation>
 <translation id="7045033600005038336">替换此模板？</translation>
 <translation id="7045595904618419789">启用放大镜</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" />已断开连接</translation>
 <translation id="7055381872777910864">三</translation>
 <translation id="7055910611768509537">触控笔已被闲置不止 1 周了</translation>
 <translation id="7066646422045619941">您的管理员已禁用此网络。</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">显示“显示设置”部分</translation>
 <translation id="8413272770729657668">录制倒计时：3、2、1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>
+<translation id="8421270167862077762">这部设备上未安装<ph name="UNAVAILABLE_APPS" />。</translation>
 <translation id="8425213833346101688">更改</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚上好！</translation>
 <translation id="8428213095426709021">设置</translation>

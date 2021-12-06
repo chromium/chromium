@@ -182,6 +182,7 @@
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3865414814144988605">Resolusi</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
+<translation id="3924044641767672375">Sebaiknya hubungkan ke Wi-Fi untuk mempermudah proses perbaikan. Jaringan Anda akan disimpan.</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
@@ -226,6 +227,7 @@
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
+<translation id="4485626319513081846">Pilih opsi ini jika perangkat sedang di-stok ulang atau di-refurbished untuk dikirimkan kepada pelanggan baru.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
@@ -415,6 +417,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6957231940976260713">Nama layanan</translation>
 <translation id="6961170852793647506">Untuk memulai, letakkan dokumen Anda pada pemindai</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
+<translation id="6992266763844448459">Pilih opsi ini jika kepemilikan perangkat tidak berubah. Misalnya, perangkat sedang ditransfer kepada pengguna lain dalam organisasi.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7058278511608979688">Akhiri &amp; simpan</translation>
