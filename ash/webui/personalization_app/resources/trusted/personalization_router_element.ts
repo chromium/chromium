@@ -12,14 +12,15 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @enum {string} */
-export const Paths = {
-  CollectionImages: '/wallpaper/collection',
-  Collections: '/wallpaper',
-  GooglePhotosCollection: '/wallpaper/google-photos',
-  LocalCollection: '/wallpaper/local',
-  Root: '/',
-};
+import {WallpaperCollection} from './personalization_app.mojom-webui.js';
+
+export enum Paths {
+  CollectionImages = '/wallpaper/collection',
+  Collections = '/wallpaper',
+  GooglePhotosCollection = '/wallpaper/google-photos',
+  LocalCollection = '/wallpaper/local',
+  Root = '/',
+}
 
 export class PersonalizationRouter extends PolymerElement {
   static get is() {
@@ -32,22 +33,22 @@ export class PersonalizationRouter extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private */
       path_: {
         type: String,
       },
 
-      /** @private */
       query_: {
         type: String,
       },
 
-      /** @private */
       queryParams_: {
         type: Object,
       },
     };
   }
+  private path_: string;
+  private query_: string;
+  private queryParams_: {id?: string; googlePhotosAlbumId?: string;};
 
   static instance() {
     return document.querySelector(PersonalizationRouter.is);
@@ -60,7 +61,6 @@ export class PersonalizationRouter extends PolymerElement {
     window.location.replace(Paths.Collections);
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     // Force the user onto the wallpaper subpage if personalization hub feature
@@ -81,9 +81,8 @@ export class PersonalizationRouter extends PolymerElement {
   /**
    * Navigate to the selected collection id. Assumes validation of the
    * collection has already happened.
-   * @param {!WallpaperCollection} collection
    */
-  selectCollection(collection) {
+  selectCollection(collection: WallpaperCollection) {
     document.title = collection.name;
     this.setProperties(
         {path_: Paths.CollectionImages, queryParams_: {id: collection.id}});
@@ -91,9 +90,8 @@ export class PersonalizationRouter extends PolymerElement {
 
   /**
    * Navigate to a specific album in the Google Photos collection page.
-   * @param {WallpaperCollection} album
    */
-  selectGooglePhotosAlbum(album) {
+  selectGooglePhotosAlbum(album: WallpaperCollection) {
     this.setProperties({
       path_: Paths.GooglePhotosCollection,
       queryParams_: {googlePhotosAlbumId: album.id}
@@ -114,67 +112,35 @@ export class PersonalizationRouter extends PolymerElement {
     this.setProperties({path_: Paths.LocalCollection, query_: ''});
   }
 
-  /**
-   * @param {string} path
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCollections_(path) {
+  private shouldShowCollections_(path: string): boolean {
     return path === Paths.Collections;
   }
 
-  /**
-   * @param {string} path
-   * @return {boolean}
-   * @private
-   */
-  shouldShowCollectionImages_(path) {
+  private shouldShowCollectionImages_(path: string): boolean {
     return path === Paths.CollectionImages;
   }
 
-  /**
-   * @param {string} path
-   * @return {boolean}
-   * @private
-   */
-  shouldShowGooglePhotosCollection_(path) {
+  private shouldShowGooglePhotosCollection_(path: string): boolean {
     return path === Paths.GooglePhotosCollection;
   }
 
-  /**
-   * @param {string} path
-   * @return  {boolean}
-   * @private
-   */
-  shouldShowLocalCollection_(path) {
+  private shouldShowLocalCollection_(path: string): boolean {
     return path === Paths.LocalCollection;
   }
 
   /**
    * Whether Google Photos integration is enabled.
-   * @return {boolean}
-   * @private
    */
-  isGooglePhotosIntegrationEnabled_() {
+  private isGooglePhotosIntegrationEnabled_(): boolean {
     return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
   }
 
-  /**
-   * @param {?string} path
-   * @return {boolean}
-   * @private
-   */
-  shouldShowRootPage_(path) {
+  private shouldShowRootPage_(path: string|null): boolean {
     return loadTimeData.getBoolean('isPersonalizationHubEnabled') &&
         path === Paths.Root;
   }
 
-  /**
-   * @param {?string} path
-   * @return {boolean}
-   * @private
-   */
-  shouldShowWallpaperSubpage_(path) {
+  private shouldShowWallpaperSubpage_(path: string|null): boolean {
     return !!path?.startsWith(Paths.Collections);
   }
 }
