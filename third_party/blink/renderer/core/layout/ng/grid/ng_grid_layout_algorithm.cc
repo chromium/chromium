@@ -1938,32 +1938,6 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     grid_geometry->minor_block_baselines.Fill(LayoutUnit::Min());
   }
 
-  auto CanLayoutGridItem = [](const ComputedStyle& item_style,
-                              const NGConstraintSpace& space) -> bool {
-    const bool logical_width_depends_on_container =
-        item_style.LogicalWidth().IsPercentOrCalc() ||
-        item_style.LogicalMinWidth().IsPercentOrCalc() ||
-        item_style.LogicalMaxWidth().IsPercentOrCalc();
-
-    const bool logical_height_depends_on_container =
-        item_style.LogicalHeight().IsPercentOrCalc() ||
-        item_style.LogicalMinHeight().IsPercentOrCalc() ||
-        item_style.LogicalMaxHeight().IsPercentOrCalc() ||
-        item_style.LogicalHeight().IsAuto();
-
-    // TODO(kschmi) - this should be using 'BlockLengthUnresolvable' and
-    // 'InlineLengthUnresolvable', however those are a too strict and don't
-    // end up laying out enough grid items.
-    const bool can_layout_block_axis =
-        space.AvailableSize().block_size != kIndefiniteSize ||
-        !logical_height_depends_on_container;
-    const bool can_layout_inline_axis =
-        space.AvailableSize().inline_size != kIndefiniteSize ||
-        !logical_width_depends_on_container;
-
-    return can_layout_inline_axis && can_layout_block_axis;
-  };
-
   auto UpdateBaseline = [&](const GridItemData& grid_item,
                             LayoutUnit candidate_baseline) {
     // "If a box spans multiple shared alignment contexts, then it participates
@@ -1999,7 +1973,9 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     // be performed in certain scenarios. So force an additional pass in
     // these cases and skip layout for now.
     const auto& item_style = grid_item.node.Style();
-    if (!CanLayoutGridItem(item_style, space)) {
+    if (InlineLengthUnresolvable(space, item_style.LogicalWidth()) ||
+        InlineLengthUnresolvable(space, item_style.LogicalMinWidth()) ||
+        InlineLengthUnresolvable(space, item_style.LogicalMaxWidth())) {
       if (needs_additional_pass)
         *needs_additional_pass = true;
       continue;
