@@ -2781,6 +2781,14 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
   if (!IsInMainFrame())
     return false;
 
+  // Filter out URLs with origins that are considered invalid for being
+  // isolated. Note that the origin we'll eventually attempt to isolate should
+  // be based on process_lock_url(), so that we apply isolation to the actual
+  // site rather than the effective URL in the case of hosted apps.
+  url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
+  if (!IsolatedOriginUtil::IsValidIsolatedOrigin(origin))
+    return false;
+
   // Check the COOP header value. All same-origin values are considered to be
   // an implicit hint for site isolation.
   bool should_header_value_trigger_isolation = false;
@@ -2816,11 +2824,9 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
   DCHECK(!site_info_.does_site_request_dedicated_process_for_coop());
   if (site_info_.RequiresDedicatedProcess(
           GetStartingSiteInstance()->GetIsolationContext())) {
-    // Note: use process_lock_url() to check isolation on the actual site
-    // rather than the effective URL in the case of hosted apps.
     bool is_already_isolated_due_to_coop =
         ChildProcessSecurityPolicyImpl::GetInstance()->IsIsolatedSiteFromSource(
-            url::Origin::Create(site_info_.process_lock_url()),
+            origin,
             ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
     return is_already_isolated_due_to_coop;
   }

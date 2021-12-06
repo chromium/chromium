@@ -6124,6 +6124,31 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInAboutBlankSubframe) {
   }
 }
 
+// Ensure that navigating to http://localhost which has COOP+COEP headers, and
+// hence will attempt to trigger COOP isolation, will not crash.  See
+// https://crbug.com/1276155.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, Localhost) {
+  // Navigate to a URL with COOP + COEP on http://localhost.
+  GURL coop_url = https_server()->GetURL(
+      "localhost",
+      "/set-header?Cross-Origin-Opener-Policy: same-origin&"
+      "Cross-Origin-Embedder-Policy: require-corp");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep);
+
+  // http://localhost isn't currently considered a valid isolated origin (since
+  // it won't work for subdomain matching), so the navigation should not
+  // trigger site isolation.  Note, however, that the process lock should still
+  // reflect COOP+COEP isolation.
+  SiteInstanceImpl* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_FALSE(coop_instance->RequiresDedicatedProcess());
+  auto lock = coop_instance->GetProcess()->GetProcessLock();
+  EXPECT_TRUE(lock.GetWebExposedIsolationInfo().is_isolated());
+  EXPECT_FALSE(lock.is_locked_to_site());
+}
+
 // Helper class for testing site isolation triggered by different JIT policies
 // being applied.
 class JITIsolationTest : public IsolatedOriginTest,
