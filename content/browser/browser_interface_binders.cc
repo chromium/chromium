@@ -263,9 +263,10 @@ void BindAttributionInternalsHandler(
       web_ui ? web_ui->GetController()->GetAs<AttributionInternalsUI>()
              : nullptr;
 
-  // This is expected to be called only for main frames and for the right WebUI
-  // pages matching the same WebUI associated to the RenderFrameHost.
-  if (host->GetParent() || !attribution_internals_ui) {
+  // This is expected to be called only for outermost main frames and for the
+  // right WebUI pages matching the same WebUI associated to the
+  // RenderFrameHost.
+  if (host->GetParentOrOuterDocument() || !attribution_internals_ui) {
     ReceivedBadMessage(
         host->GetProcess(),
         bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
@@ -287,9 +288,10 @@ void BindPrerenderInternalsHandler(
   PrerenderInternalsUI* prerender_internals_ui =
       web_ui ? web_ui->GetController()->GetAs<PrerenderInternalsUI>() : nullptr;
 
-  // This is expected to be called only for main frames and for the right WebUI
-  // pages matching the same WebUI associated to the RenderFrameHost.
-  if (host->GetParent() || !prerender_internals_ui) {
+  // This is expected to be called only for outermost main frames and for the
+  // right WebUI pages matching the same WebUI associated to the
+  // RenderFrameHost.
+  if (host->GetParentOrOuterDocument() || !prerender_internals_ui) {
     ReceivedBadMessage(
         host->GetProcess(),
         bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
@@ -312,9 +314,10 @@ void BindProcessInternalsHandler(
   ProcessInternalsUI* process_internals_ui =
       web_ui ? web_ui->GetController()->GetAs<ProcessInternalsUI>() : nullptr;
 
-  // This is expected to be called only for main frames and for the right WebUI
-  // pages matching the same WebUI associated to the RenderFrameHost.
-  if (host->GetParent() || !process_internals_ui) {
+  // This is expected to be called only for outermost main frames and for the
+  // right WebUI pages matching the same WebUI associated to the
+  // RenderFrameHost.
+  if (host->GetParentOrOuterDocument() || !process_internals_ui) {
     ReceivedBadMessage(
         host->GetProcess(),
         bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
