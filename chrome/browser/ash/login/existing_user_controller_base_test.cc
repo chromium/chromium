@@ -34,15 +34,15 @@ class FakeUserManagerWithLocalState : public FakeChromeUserManager {
 }  // namespace
 
 ExistingUserControllerBaseTest::ExistingUserControllerBaseTest()
-    : mock_user_manager_(new MockUserManager()) {
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<FakeUserManagerWithLocalState>(mock_user_manager_));
-}
+    : mock_user_manager_(std::make_unique<MockUserManager>()),
+      scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
+          std::make_unique<FakeUserManagerWithLocalState>(
+              mock_user_manager_.get()))) {}
 
 ExistingUserControllerBaseTest::~ExistingUserControllerBaseTest() = default;
 
 MockUserManager* ExistingUserControllerBaseTest::mock_user_manager() {
-  return mock_user_manager_;
+  return mock_user_manager_.get();
 }
 
 }  // namespace ash
