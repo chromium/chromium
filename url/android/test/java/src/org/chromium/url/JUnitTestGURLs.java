@@ -47,6 +47,9 @@ public class JUnitTestGURLs {
             "https://www.google.com/amp/www.nyt.com/ampthml/blogs.html";
     public static final String AMP_CACHE_URL =
             "https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html";
+    public static final String TEXT_FRAGMENT_URL = "https://www.example.com/#:~:text=selector";
+    public static final String MULTI_TEXT_FRAGMENT_URL =
+            "https://www.example.com/#:~:text=selector1&text=selector2&text=selector3";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -114,6 +117,10 @@ public class JUnitTestGURLs {
                 "116,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,35,0,-1,0,-1,false,false,https://www.google.com/amp/www.nyt.com/ampthml/blogs.html");
         map.put(AMP_CACHE_URL,
                 "118,1,true,0,5,0,-1,0,-1,8,14,0,-1,22,37,0,-1,0,-1,false,false,https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html");
+        map.put(TEXT_FRAGMENT_URL,
+                "100,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,16,false,false,https://www.example.com/#:~:text=selector");
+        map.put(MULTI_TEXT_FRAGMENT_URL,
+                "131,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,47,false,false,https://www.example.com/#:~:text=selector1&text=selector2&text=selector3");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 
