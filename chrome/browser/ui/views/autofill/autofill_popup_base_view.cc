@@ -283,7 +283,6 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnBubble(
 
   // Set the arrow position to the border.
   border->set_arrow(arrow);
-  border->set_visible_arrow(true);
   border->AddArrowToBubbleCornerAndPointTowardsAnchor(
       element_bounds, /*move_bubble_to_add_arrow=*/true, bubble_bounds);
 
