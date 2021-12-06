@@ -500,8 +500,16 @@ TEST_F(ChromePasswordProtectionServiceTest,
       reused_password_type));
 }
 
+// TODO(crbug.com/1276906): Flaky on Linux TSan Tests.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_VerifyUserPopulationForSyncPasswordEntryPing \
+  DISABLED_VerifyUserPopulationForSyncPasswordEntryPing
+#else
+#define MAYBE_VerifyUserPopulationForSyncPasswordEntryPing \
+  VerifyUserPopulationForSyncPasswordEntryPing
+#endif
 TEST_F(ChromePasswordProtectionServiceTest,
-       VerifyUserPopulationForSyncPasswordEntryPing) {
+       MAYBE_VerifyUserPopulationForSyncPasswordEntryPing) {
   // Sets up the account as a gmail account as there is no hosted domain.
   ReusedPasswordAccountType reused_password_type;
   reused_password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
