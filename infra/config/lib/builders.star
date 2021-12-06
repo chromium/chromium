@@ -29,6 +29,7 @@ load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./bootstrap.star", "register_bootstrap")
+load("./builder_config.star", "builder_config", "register_builder_config")
 load("./listify.star", "listify")
 
 ################################################################################
@@ -384,6 +385,8 @@ def builder(
         cpu = args.DEFAULT,
         bootstrap = False,
         builder_group = args.DEFAULT,
+        builder_spec = None,
+        mirrors = None,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         sheriff_rotations = None,
@@ -466,6 +469,10 @@ def builder(
         builder_group: a string with the group of the builder. Emits a property
             of the form 'builder_group:<builder_group>'. By default, considered
             None.
+        builder_spec: The spec describing the configuration for the builder.
+            Cannot be set if `mirrors` is set.
+        mirrors: References to the builders that the builder should mirror.
+            Cannot be set if `builder_spec` is set.
         cores: an int indicating the number of cores the builder requires for
             the machines that run it. Emits a dimension of the form
             'cores:<cores>' will be emitted. By default, considered None.
@@ -582,6 +589,9 @@ def builder(
     if "dimensions" in "kwargs":
         fail("Explicit dimensions are not supported: " +
              "use builderless, cores, cpu, os or ssd instead")
+
+    if builder_spec and mirrors:
+        fail("Only one of builder_spec or mirrors can be set")
 
     dimensions = {}
 
@@ -725,9 +735,6 @@ def builder(
     executable = defaults.get_value("executable", executable)
     if executable != args.COMPUTE:
         kwargs["executable"] = executable
-    triggered_by = defaults.get_value("triggered_by", triggered_by)
-    if triggered_by != args.COMPUTE:
-        kwargs["triggered_by"] = triggered_by
     xcode = defaults.get_value("xcode", xcode)
     if xcode:
         kwargs["caches"] = (kwargs.get("caches") or []) + [swarming.cache(
@@ -746,6 +753,15 @@ def builder(
             by_timestamp = resultdb_index_by_timestamp,
         )
 
+    if builder_spec and builder_spec.execution_mode == builder_config.execution_mode.TEST:
+        if triggered_by != args.DEFAULT:
+            fail("triggered testers cannot specify triggered_by")
+        triggered_by = [builder_spec.parent]
+
+    triggered_by = defaults.get_value("triggered_by", triggered_by)
+    if triggered_by != args.COMPUTE:
+        kwargs["triggered_by"] = triggered_by
+
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
@@ -761,6 +777,13 @@ def builder(
         ),
         **kwargs
     )
+
+    # builder will be None if the builder isn't being defined due to the project
+    # settings and the branch selector
+    if builder == None:
+        return None
+
+    register_builder_config(bucket, name, builder_group, builder_spec, mirrors)
 
     register_bootstrap(bucket, name, bootstrap, executable)
 

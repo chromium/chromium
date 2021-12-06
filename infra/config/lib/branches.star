@@ -106,8 +106,8 @@ def _exec(module, *, branch_selector = MAIN):
 def _make_branch_conditional(fn):
     def conditional_fn(*args, branch_selector = MAIN, **kwargs):
         if not _matches(branch_selector):
-            return
-        fn(*args, **kwargs)
+            return None
+        return fn(*args, **kwargs)
 
     return conditional_fn
 
