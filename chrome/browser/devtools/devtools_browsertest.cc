@@ -2912,3 +2912,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
   EXPECT_TRUE(*result.value.FindBoolKey("arePreferencesSynced"));
   EXPECT_EQ(*result.value.FindStringKey("accountEmail"), "user@gmail.com");
 }
+
+// Regression test for https://crbug.com/1270184.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, NoCrashFor1270184) {
+  OpenDevToolsWindow("/devtools/regress-crbug-1270184.html", true);
+}

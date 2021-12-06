@@ -1361,18 +1361,20 @@ std::unique_ptr<protocol::Page::AdFrameStatus> BuildAdFrameStatus(
 std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
     LocalFrame* frame) {
   DocumentLoader* loader = frame->Loader().GetDocumentLoader();
+  // There are some rare cases where no DocumentLoader is set. We use an empty
+  // Url and MimeType in those cases. See e.g. https://crbug.com/1270184.
+  const KURL url = loader ? loader->Url() : KURL();
+  const String mime_type = loader ? loader->MimeType() : String();
   std::unique_ptr<protocol::Page::Frame> frame_object =
       protocol::Page::Frame::create()
           .setId(IdentifiersFactory::FrameId(frame))
           .setLoaderId(IdentifiersFactory::LoaderId(loader))
-          .setUrl(UrlWithoutFragment(loader->Url()).GetString())
+          .setUrl(UrlWithoutFragment(url).GetString())
           .setDomainAndRegistry(blink::network_utils::GetDomainAndRegistry(
-              loader->Url().Host(),
-              blink::network_utils::PrivateRegistryFilter::
-                  kIncludePrivateRegistries))
-          .setMimeType(frame->Loader().GetDocumentLoader()->MimeType())
-          .setSecurityOrigin(
-              SecurityOrigin::Create(loader->Url())->ToRawString())
+              url.Host(), blink::network_utils::PrivateRegistryFilter::
+                              kIncludePrivateRegistries))
+          .setMimeType(mime_type)
+          .setSecurityOrigin(SecurityOrigin::Create(url)->ToRawString())
           .setSecureContextType(CreateProtocolSecureContextType(
               frame->DomWindow()
                   ->GetSecurityContext()
@@ -1381,8 +1383,8 @@ std::unique_ptr<protocol::Page::Frame> InspectorPageAgent::BuildObjectForFrame(
               CreateProtocolCrossOriginIsolatedContextType(frame->DomWindow()))
           .setGatedAPIFeatures(CreateGatedAPIFeaturesArray(frame->DomWindow()))
           .build();
-  if (loader->Url().HasFragmentIdentifier())
-    frame_object->setUrlFragment("#" + loader->Url().FragmentIdentifier());
+  if (url.HasFragmentIdentifier())
+    frame_object->setUrlFragment("#" + url.FragmentIdentifier());
   Frame* parent_frame = frame->Tree().Parent();
   if (parent_frame) {
     frame_object->setParentId(IdentifiersFactory::FrameId(parent_frame));
