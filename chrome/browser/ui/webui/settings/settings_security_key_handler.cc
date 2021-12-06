@@ -17,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
 #include "device/fido/credential_management.h"
-#include "device/fido/credential_management_handler.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -516,19 +515,21 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
 }
 
 void SecurityKeysCredentialHandler::OnGatherPIN(
-    uint32_t min_pin_length,
-    int64_t num_retries,
+    device::CredentialManagementHandler::AuthenticatorProperties
+        authenticator_properties,
     base::OnceCallback<void(std::string)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback_id_.empty());
   DCHECK(!credential_management_provide_pin_cb_);
 
   credential_management_provide_pin_cb_ = std::move(callback);
-
-  base::Value::ListStorage response;
-  response.emplace_back(static_cast<int>(min_pin_length));
   if (state_ == State::kStart) {
     // Resolve the promise to startCredentialManagement().
+    base::DictionaryValue response;
+    response.SetIntKey("minPinLength", authenticator_properties.min_pin_length);
+    response.SetBoolKey(
+        "supportsUpdateUserInformation",
+        authenticator_properties.supports_update_user_information);
     state_ = State::kPIN;
     ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
                               base::Value(std::move(response)));
@@ -537,7 +538,10 @@ void SecurityKeysCredentialHandler::OnGatherPIN(
 
   // Resolve the promise to credentialManagementProvidePIN().
   DCHECK_EQ(state_, State::kPIN);
-  response.emplace_back(static_cast<int>(num_retries));
+  base::Value::ListStorage response;
+  response.emplace_back(
+      static_cast<int>(authenticator_properties.min_pin_length));
+  response.emplace_back(static_cast<int>(authenticator_properties.pin_retries));
   ResolveJavascriptCallback(base::Value(std::move(callback_id_)),
                             base::Value(std::move(response)));
 }

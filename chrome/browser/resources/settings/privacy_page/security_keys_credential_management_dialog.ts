@@ -29,7 +29,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {Credential, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl} from './security_keys_browser_proxy.js';
+import {Credential, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, StartCredentialManagementResponse} from './security_keys_browser_proxy.js';
 import {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
 
 export enum CredentialManagementDialogPage {
@@ -106,6 +106,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       credentialIdToDelete_: String,
       displayNameInputError_: String,
       editingCredential_: Object,
+      editButtonVisible_: Boolean,
       minPinLength_: Number,
       newDisplayName_: String,
       newUsername_: String,
@@ -126,6 +127,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
   private dialogTitle_: string;
   private displayNameInputError_: string;
   private editingCredential_: Credential;
+  private editButtonVisible_: Boolean;
   private errorMsg_: string;
   private minPinLength_: number;
   private newDisplayName_: string;
@@ -144,10 +146,12 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         'security-keys-credential-management-finished',
         (error: string, requiresPINChange = false) =>
             this.onPinError_(error, requiresPINChange));
-    this.browserProxy_.startCredentialManagement().then(([minPinLength]) => {
-      this.minPinLength_ = minPinLength;
-      this.dialogPage_ = CredentialManagementDialogPage.PIN_PROMPT;
-    });
+    this.browserProxy_.startCredentialManagement().then(
+        (response: StartCredentialManagementResponse) => {
+          this.minPinLength_ = response.minPinLength;
+          this.editButtonVisible_ = response.supportsUpdateUserInformation;
+          this.dialogPage_ = CredentialManagementDialogPage.PIN_PROMPT;
+        });
   }
 
   private onPinError_(error: string, requiresPINChange = false) {

@@ -145,6 +145,23 @@ class SecurityKeysCredentialHandlerTest
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 
+TEST_F(SecurityKeysCredentialHandlerTest,
+       TestUpdateUserInformationNotSupported) {
+  handler_->GetDiscoveryFactory()->mutable_state()->pin = kTestPIN;
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.credential_management_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_0};
+  handler_->GetDiscoveryFactory()->SetCtap2Config(config);
+
+  std::string start_callback_id = handler_->SimulateStart();
+  ASSERT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), start_callback_id);
+  ASSERT_TRUE(web_ui_->call_data()[0]->arg3()->is_dict());
+  const base::DictionaryValue* response;
+  web_ui_->call_data()[0]->arg3()->GetAsDictionary(&response);
+  EXPECT_FALSE(*response->FindBoolKey("supportsUpdateUserInformation"));
+}
+
 TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   handler_->GetDiscoveryFactory()->mutable_state()->pin = kTestPIN;
   device::VirtualCtap2Device::Config config;
@@ -187,7 +204,13 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   args.Append(new_username);
   args.Append(new_displayname);
 
-  handler_->SimulateStart();
+  std::string start_callback_id = handler_->SimulateStart();
+  ASSERT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), start_callback_id);
+  ASSERT_TRUE(web_ui_->call_data()[0]->arg3()->is_dict());
+  const base::DictionaryValue* response;
+  web_ui_->call_data()[0]->arg3()->GetAsDictionary(&response);
+  EXPECT_TRUE(*response->FindBoolKey("supportsUpdateUserInformation"));
+
   handler_->SimulateProvidePIN();
   handler_->HandleUpdateUserInformation(&args);
   base::RunLoop().RunUntilIdle();

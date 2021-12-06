@@ -44,6 +44,18 @@ enum class CredentialManagementStatus {
 class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
     : public FidoRequestHandlerBase {
  public:
+  // Details of the authenticator tapped by the user that are interesting to the
+  // UI when starting a request or requesting a PIN.
+  struct AuthenticatorProperties {
+    // The minimum accepted PIN length for the authenticator.
+    uint32_t min_pin_length;
+    // The number of PIN retries before the authenticator locks down.
+    int64_t pin_retries;
+    // True if the authenticator supports the UpdateUserInformation command (and
+    // therefore, calling |UpdateUserInformation| is valid). False otherwise.
+    bool supports_update_user_information;
+  };
+
   using DeleteCredentialCallback =
       base::OnceCallback<void(CtapDeviceResponseCode)>;
   using UpdateUserInformationCallback =
@@ -54,8 +66,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) CredentialManagementHandler
       absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
       absl::optional<size_t>)>;
   using GetPINCallback =
-      base::RepeatingCallback<void(uint32_t min_pin_length,
-                                   int64_t retries,
+      base::RepeatingCallback<void(AuthenticatorProperties,
                                    base::OnceCallback<void(std::string)>)>;
   using ReadyCallback = base::OnceClosure;
 

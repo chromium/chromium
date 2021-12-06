@@ -105,10 +105,13 @@ void CredentialManagementHandler::OnRetriesResponse(
     return;
   }
   state_ = State::kWaitingForPIN;
-  get_pin_callback_.Run(authenticator_->CurrentMinPINLength(),
-                        response->retries,
-                        base::BindOnce(&CredentialManagementHandler::OnHavePIN,
-                                       weak_factory_.GetWeakPtr()));
+  get_pin_callback_.Run(
+      {.min_pin_length = authenticator_->CurrentMinPINLength(),
+       .pin_retries = response->retries,
+       .supports_update_user_information =
+           authenticator_->SupportsUpdateUserInformation()},
+      base::BindOnce(&CredentialManagementHandler::OnHavePIN,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CredentialManagementHandler::OnHavePIN(std::string pin) {

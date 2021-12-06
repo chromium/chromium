@@ -49,8 +49,8 @@ class CredentialManagementHandlerTest : public ::testing::Test {
     return handler;
   }
 
-  void GetPIN(uint32_t min_pin_length,
-              int64_t num_attempts,
+  void GetPIN(CredentialManagementHandler::AuthenticatorProperties
+                  authenticator_properties,
               base::OnceCallback<void(std::string)> provide_pin) {
     std::move(provide_pin).Run(kPIN);
   }

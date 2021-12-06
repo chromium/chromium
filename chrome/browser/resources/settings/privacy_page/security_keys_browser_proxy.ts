@@ -105,6 +105,17 @@ export type SetPINResponse = {
 };
 
 /**
+ * StartCredentialManagementResponse is the response to
+ * startCredentialManagement.
+ *
+ * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
+ */
+export type StartCredentialManagementResponse = {
+  minPinLength: number,
+  supportsUpdateUserInformation: boolean,
+};
+
+/**
  * CredentialManagementResponse is the response to a deleteCredential or
  * updateUserInfo suboperation.
  *
@@ -151,7 +162,7 @@ export interface SecurityKeysCredentialBrowserProxy {
    * @return A promise that resolves when the handler is ready for
    *     the authenticator PIN to be provided.
    */
-  startCredentialManagement(): Promise<Array<number>>;
+  startCredentialManagement(): Promise<StartCredentialManagementResponse>;
 
   /**
    * Provides a PIN for a credential management operation. The

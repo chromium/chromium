@@ -624,7 +624,10 @@ suite('SecurityKeysCredentialManagement', function() {
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('startCredentialManagement');
     assertShown(allDivs, dialog, 'initial');
-    startResolver.resolve([currentMinPinLength]);
+    startResolver.resolve({
+      minPinLength: currentMinPinLength,
+      supportsUpdateUserInformation: true,
+    });
 
     const error = 'foo bar baz';
     webUIListenerCallback(
@@ -641,7 +644,10 @@ suite('SecurityKeysCredentialManagement', function() {
     document.body.appendChild(dialog);
     await browserProxy.whenCalled('startCredentialManagement');
     assertShown(allDivs, dialog, 'initial');
-    startResolver.resolve([currentMinPinLength]);
+    startResolver.resolve({
+      minPinLength: currentMinPinLength,
+      supportsUpdateUserInformation: true,
+    });
 
     const error = 'foo bar baz';
     webUIListenerCallback(
@@ -655,6 +661,63 @@ suite('SecurityKeysCredentialManagement', function() {
     const setPinEvent = eventToPromise('credential-management-set-pin', dialog);
     dialog.$.confirmButton.click();
     await setPinEvent;
+  });
+
+  test('UpdateNotSupported', async function() {
+    const startCredentialManagementResolver = new PromiseResolver();
+    browserProxy.setResponseFor(
+        'startCredentialManagement', startCredentialManagementResolver.promise);
+    const pinResolver = new PromiseResolver();
+    browserProxy.setResponseFor('providePIN', pinResolver.promise);
+    const enumerateResolver = new PromiseResolver();
+    browserProxy.setResponseFor(
+        'enumerateCredentials', enumerateResolver.promise);
+
+    document.body.appendChild(dialog);
+    await browserProxy.whenCalled('startCredentialManagement');
+    assertShown(allDivs, dialog, 'initial');
+
+    // Simulate PIN entry.
+    let uiReady = eventToPromise(
+        'credential-management-dialog-ready-for-testing', dialog);
+    startCredentialManagementResolver.resolve({
+      minPinLength: currentMinPinLength,
+      supportsUpdateUserInformation: false,
+    });
+
+    await uiReady;
+    assertShown(allDivs, dialog, 'pinPrompt');
+    assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
+    dialog.$.pin.$.pin.value = '000000';
+    dialog.$.confirmButton.click();
+    const pin = await browserProxy.whenCalled('providePIN');
+    assertEquals(pin, '000000');
+
+    // Show a credential.
+    pinResolver.resolve(null);
+    await browserProxy.whenCalled('enumerateCredentials');
+    uiReady = eventToPromise(
+        'credential-management-dialog-ready-for-testing', dialog);
+    const credentials = [
+      {
+        credentialId: 'aaaaaa',
+        relyingPartyId: 'acme.com',
+        userHandle: 'userausera',
+        userName: 'userA@example.com',
+        userDisplayName: 'User Aaa',
+      },
+    ];
+    enumerateResolver.resolve(credentials);
+    await uiReady;
+    assertShown(allDivs, dialog, 'credentials');
+    assertEquals(dialog.$.credentialList.items, credentials);
+
+    // Check that the edit button is disabled.
+    flush();
+    const editButtons: Array<CrIconButtonElement> =
+        Array.from(dialog.$.credentialList.querySelectorAll('.edit-button'));
+    assertEquals(editButtons.length, 1);
+    assertTrue(editButtons[0]!.hidden);
   });
 
   test('Credentials', async function() {
@@ -679,7 +742,10 @@ suite('SecurityKeysCredentialManagement', function() {
     // Simulate PIN entry.
     let uiReady = eventToPromise(
         'credential-management-dialog-ready-for-testing', dialog);
-    startCredentialManagementResolver.resolve([currentMinPinLength]);
+    startCredentialManagementResolver.resolve({
+      minPinLength: currentMinPinLength,
+      supportsUpdateUserInformation: true,
+    });
     await uiReady;
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
@@ -726,6 +792,7 @@ suite('SecurityKeysCredentialManagement', function() {
     const editButtons: Array<CrIconButtonElement> =
         Array.from(dialog.$.credentialList.querySelectorAll('.edit-button'));
     assertEquals(editButtons.length, 3);
+    editButtons.forEach(button => assertFalse(button.hidden));
     editButtons[0]!.click();
     assertShown(allDivs, dialog, 'edit');
     dialog.$.displayNameInput.value = 'Bobby Example';

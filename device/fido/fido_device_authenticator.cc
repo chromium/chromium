@@ -720,6 +720,11 @@ void FidoDeviceAuthenticator::DeleteCredential(
       /*string_fixup_predicate=*/nullptr);
 }
 
+bool FidoDeviceAuthenticator::SupportsUpdateUserInformation() const {
+  return device_->device_info() &&
+         device_->device_info()->SupportsAtLeast(Ctap2Version::kCtap2_1);
+}
+
 void FidoDeviceAuthenticator::UpdateUserInformation(
     const pin::TokenResponse& pin_token,
     const PublicKeyCredentialDescriptor& credential_id,

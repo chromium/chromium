@@ -211,6 +211,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const PublicKeyCredentialDescriptor& credential_id,
       DeleteCredentialCallback callback);
 
+  virtual bool SupportsUpdateUserInformation() const;
   virtual void UpdateUserInformation(
       const pin::TokenResponse& pin_token,
       const PublicKeyCredentialDescriptor& credential_id,
