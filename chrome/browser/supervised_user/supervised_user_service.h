@@ -170,8 +170,8 @@ class SupervisedUserService : public KeyedService,
 
   static std::string GetEduCoexistenceLoginUrl();
 
-  // Returns true if the user is a type of Family Link Child account,
-  // but will not return true for a Legacy Supervised user (or non child users).
+  // Returns true if the user is a type of Family Link supervised account, this
+  // includes Unicorn, Geller, and Griffin accounts.
   bool IsChild() const;
 
   bool IsSupervisedUserExtensionInstallEnabled() const;

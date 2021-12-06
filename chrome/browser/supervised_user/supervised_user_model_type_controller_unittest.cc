@@ -25,7 +25,7 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
   TestingProfile::Builder builder;
   builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
   std::unique_ptr<Profile> child_profile = builder.Build();
-  ASSERT_TRUE(child_profile->IsSupervised());
+  ASSERT_TRUE(child_profile->IsChild());
 
   SupervisedUserSyncModelTypeController controller(
       syncer::SUPERVISED_USER_SETTINGS, child_profile.get(),
@@ -40,7 +40,7 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
        NonSupervisedUserDoesNotMeetPreconditions) {
   TestingProfile::Builder builder;
   std::unique_ptr<Profile> non_child_profile = builder.Build();
-  ASSERT_FALSE(non_child_profile->IsSupervised());
+  ASSERT_FALSE(non_child_profile->IsChild());
 
   SupervisedUserSyncModelTypeController controller(
       syncer::SUPERVISED_USER_SETTINGS, non_child_profile.get(),
@@ -55,7 +55,7 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest, HasTransportModeDelegate) {
   TestingProfile::Builder builder;
   builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
   std::unique_ptr<Profile> child_profile = builder.Build();
-  ASSERT_TRUE(child_profile->IsSupervised());
+  ASSERT_TRUE(child_profile->IsChild());
 
   SupervisedUserSyncModelTypeController controller(
       syncer::SUPERVISED_USER_SETTINGS, child_profile.get(),

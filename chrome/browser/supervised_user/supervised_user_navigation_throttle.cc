@@ -125,7 +125,7 @@ SupervisedUserNavigationThrottle::MaybeCreateThrottleFor(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
 
-  if (!profile->IsSupervised())
+  if (!profile->IsChild())
     return nullptr;
 
   // Can't use std::make_unique because the constructor is private.

@@ -223,7 +223,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
   EXPECT_FALSE(supervised_user_service
                    ->GetSupervisedUserExtensionsMayRequestPermissionsPref());
-  EXPECT_TRUE(profile_->IsSupervised());
+  EXPECT_TRUE(profile_->IsChild());
 
   // Check that a supervised user can install and uninstall a theme even if
   // they are not allowed to install extensions.
@@ -276,7 +276,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
   EXPECT_TRUE(supervised_user_service
                   ->GetSupervisedUserExtensionsMayRequestPermissionsPref());
-  EXPECT_TRUE(profile_->IsSupervised());
+  EXPECT_TRUE(profile_->IsChild());
 
   // The supervised user should be able to load and uninstall the extensions
   // they install.
