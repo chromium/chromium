@@ -79,7 +79,6 @@ class NativeWebContentsModalDialogManagerViews
   raw_ptr<web_modal::SingleWebContentsDialogManagerDelegate> native_delegate_;
   gfx::NativeWindow dialog_;
   raw_ptr<web_modal::WebContentsModalDialogHost> host_ = nullptr;
-  bool within_show_ = false;
   bool host_destroying_ = false;
   std::set<views::Widget*> observed_widgets_;
   std::set<views::Widget*> shown_widgets_;
