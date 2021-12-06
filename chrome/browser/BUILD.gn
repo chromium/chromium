@@ -2014,6 +2014,7 @@ static_library("browser") {
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
     "//chrome/browser/ui/webui/federated_learning:mojo_bindings",
     "//chrome/browser/ui/webui/history_clusters:mojo_bindings",
+    "//chrome/browser/ui/webui/image_editor:mojo_bindings",
     "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
     "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",

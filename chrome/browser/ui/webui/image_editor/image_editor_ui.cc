@@ -12,8 +12,10 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+namespace image_editor {
+
 ImageEditorUI::ImageEditorUI(content::WebUI* web_ui)
-    : WebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
+    : content::WebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   // Set up the chrome://image-editor source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUIImageEditorHost);
@@ -27,3 +29,19 @@ ImageEditorUI::ImageEditorUI(content::WebUI* web_ui)
       profile_, std::make_unique<EditorUntrustedSource>(profile_));
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
+
+ImageEditorUI::~ImageEditorUI() = default;
+
+void ImageEditorUI::RecordUserAction(mojom::EditAction action) {
+  // TODO(crbug/1269052) add metrics code;
+}
+
+void ImageEditorUI::BindInterface(
+    mojo::PendingReceiver<image_editor::mojom::ScreenshotCoordinator>
+        receiver) {
+  receiver_.Bind(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(ImageEditorUI)
+
+}  // namespace image_editor
