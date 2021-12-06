@@ -66,6 +66,9 @@ class WallpaperControllerClientImpl
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
+  void FetchImagesForCollection(
+      const std::string& collection_id,
+      FetchImagesForCollectionCallback callback) override;
   bool SaveWallpaperToDriveFs(const AccountId& account_id,
                               const base::FilePath& origin) override;
   base::FilePath GetWallpaperPathFromDriveFs(
@@ -167,7 +170,10 @@ class WallpaperControllerClientImpl
                                bool success,
                                const backdrop::Image& image,
                                const std::string& next_resume_token);
-
+  void OnFetchImagesForCollection(FetchImagesForCollectionCallback callback,
+                                  bool success,
+                                  const std::string& collection_id,
+                                  const std::vector<backdrop::Image>& images);
   void OnProfileCreated(user_manager::User* user);
   void ObserveVolumeManagerForActiveUser(user_manager::User* user);
 
@@ -186,6 +192,9 @@ class WallpaperControllerClientImpl
 
   std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
+
+  std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher>
+      images_info_fetcher_;
 
   base::ScopedObservation<file_manager::VolumeManager,
                           file_manager::VolumeManagerObserver>

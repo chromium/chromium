@@ -457,11 +457,11 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
       }
       image_asset_id_map_.insert(
           {proto_image.asset_id(),
-           {GURL(proto_image.image_url()), collection_id,
-            proto_image.asset_id(), proto_image.unit_id(),
-            proto_image.has_image_type()
-                ? proto_image.image_type()
-                : backdrop::Image::IMAGE_TYPE_UNKNOWN}});
+           ImageInfo(GURL(proto_image.image_url()), collection_id,
+                     proto_image.asset_id(), proto_image.unit_id(),
+                     proto_image.has_image_type()
+                         ? proto_image.image_type()
+                         : backdrop::Image::IMAGE_TYPE_UNKNOWN)});
     }
     result = std::move(images);
   }

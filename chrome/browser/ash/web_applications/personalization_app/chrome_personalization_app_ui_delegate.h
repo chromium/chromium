@@ -215,6 +215,17 @@ class ChromePersonalizationAppUiDelegate
     uint64_t asset_id;
     uint64_t unit_id;
     backdrop::Image::ImageType type;
+
+    ImageInfo(const GURL& in_image_url,
+              const std::string& in_collection_id,
+              uint64_t in_asset_id,
+              uint64_t in_unit_id,
+              backdrop::Image::ImageType in_type)
+        : image_url(in_image_url),
+          collection_id(in_collection_id),
+          asset_id(in_asset_id),
+          unit_id(in_unit_id),
+          type(in_type) {}
   };
 
   // Store a mapping of valid image asset_ids to their ImageInfo to validate

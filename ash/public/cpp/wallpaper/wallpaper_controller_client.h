@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
+#include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,8 +40,7 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   // Downloads and sets a new random wallpaper from the collection of the
   // specified collection_id.
   using DailyWallpaperUrlFetchedCallback =
-      base::OnceCallback<void(const absl::optional<uint64_t>& asset_id,
-                              const std::string& url)>;
+      base::OnceCallback<void(bool success, const backdrop::Image& image)>;
   virtual void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) = 0;
@@ -56,6 +57,13 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       base::OnceCallback<void(const std::string&)> files_id_callback) const = 0;
 
   virtual bool IsWallpaperSyncEnabled(const AccountId& account_id) const = 0;
+
+  using FetchImagesForCollectionCallback =
+      base::OnceCallback<void(bool success,
+                              const std::vector<backdrop::Image>& images)>;
+  virtual void FetchImagesForCollection(
+      const std::string& collection_id,
+      FetchImagesForCollectionCallback callback) = 0;
 };
 
 }  // namespace ash

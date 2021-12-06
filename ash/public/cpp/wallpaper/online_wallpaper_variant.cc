@@ -23,6 +23,17 @@ OnlineWallpaperVariant::OnlineWallpaperVariant(OnlineWallpaperVariant&& other) =
 OnlineWallpaperVariant& OnlineWallpaperVariant::operator=(
     const OnlineWallpaperVariant& other) = default;
 
+bool OnlineWallpaperVariant::operator==(
+    const OnlineWallpaperVariant& other) const {
+  return (asset_id == other.asset_id) && (url == other.url) &&
+         (type == other.type);
+}
+
+bool OnlineWallpaperVariant::operator!=(
+    const OnlineWallpaperVariant& other) const {
+  return !(*this == other);
+}
+
 OnlineWallpaperVariant::~OnlineWallpaperVariant() = default;
 
 }  // namespace ash

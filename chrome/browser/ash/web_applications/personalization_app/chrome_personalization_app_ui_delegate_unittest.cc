@@ -148,7 +148,7 @@ class ChromePersonalizationAppUiDelegateTest : public testing::Test {
   void AddWallpaperImage(
       uint64_t asset_id,
       const ChromePersonalizationAppUiDelegate::ImageInfo& image_info) {
-    delegate_->image_asset_id_map_[asset_id] = image_info;
+    delegate_->image_asset_id_map_.insert({asset_id, image_info});
   }
 
   TestWallpaperController* test_wallpaper_controller() {

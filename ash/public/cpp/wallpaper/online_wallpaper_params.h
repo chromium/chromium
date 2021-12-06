@@ -65,6 +65,11 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   ~OnlineWallpaperParams();
 };
 
+// For logging use only. Prints out text representation of the
+// `OnlineWallpaperParams`.
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
+                                           const OnlineWallpaperParams& params);
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_WALLPAPER_ONLINE_WALLPAPER_PARAMS_H_

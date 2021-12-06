@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
@@ -695,6 +696,19 @@ void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void WallpaperControllerClientImpl::FetchImagesForCollection(
+    const std::string& collection_id,
+    FetchImagesForCollectionCallback callback) {
+  DCHECK(!images_info_fetcher_);
+  images_info_fetcher_ =
+      std::make_unique<wallpaper_handlers::BackdropImageInfoFetcher>(
+          collection_id);
+
+  images_info_fetcher_->Start(
+      base::BindOnce(&WallpaperControllerClientImpl::OnFetchImagesForCollection,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
   ash::CrosSettings::Get()->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
@@ -733,12 +747,17 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
     bool success,
     const backdrop::Image& image,
     const std::string& next_resume_token) {
-  if (success) {
-    std::move(callback).Run(image.asset_id(), image.image_url());
-  } else {
-    std::move(callback).Run(absl::nullopt, std::string());
-  }
+  std::move(callback).Run(success, std::move(image));
   surprise_me_image_fetcher_.reset();
+}
+
+void WallpaperControllerClientImpl::OnFetchImagesForCollection(
+    FetchImagesForCollectionCallback callback,
+    bool success,
+    const std::string& collection_id,
+    const std::vector<backdrop::Image>& images) {
+  std::move(callback).Run(success, std::move(images));
+  images_info_fetcher_.reset();
 }
 
 void WallpaperControllerClientImpl::OnProfileCreated(user_manager::User* user) {

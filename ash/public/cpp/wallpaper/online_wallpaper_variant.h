@@ -24,6 +24,10 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperVariant {
 
   OnlineWallpaperVariant& operator=(const OnlineWallpaperVariant& other);
 
+  bool operator==(const OnlineWallpaperVariant& other) const;
+
+  bool operator!=(const OnlineWallpaperVariant& other) const;
+
   ~OnlineWallpaperVariant();
 
   // The unique identifier of the wallpaper.

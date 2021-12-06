@@ -243,7 +243,7 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   static get observers() {
     return [
-      'onImagesUpdated_(hasImages_, hasError_, collectionId)',
+      'onImagesUpdated_(hasImages_, hasError_, collectionId, isDarkModeActive_)',
     ];
   }
 
@@ -355,9 +355,10 @@ export class WallpaperImages extends WithPersonalizationStore {
    * @param {boolean} hasImages
    * @param {boolean} hasError
    * @param {string} collectionId
+   * @param {boolean} isDarkModeActive
    * @private
    */
-  async onImagesUpdated_(hasImages, hasError, collectionId) {
+  async onImagesUpdated_(hasImages, hasError, collectionId, isDarkModeActive) {
     if (hasError) {
       console.warn('An error occurred while loading collections or images');
       // Navigate back to main page and refresh.
@@ -375,7 +376,7 @@ export class WallpaperImages extends WithPersonalizationStore {
       if (isDarkLightModeEnabled) {
         sendImageTilesFunction(
             iframe.contentWindow,
-            getDarkLightImageTiles(this.isDarkModeActive_, imageArr));
+            getDarkLightImageTiles(isDarkModeActive, imageArr));
       } else {
         sendImageTilesFunction(
             iframe.contentWindow, getRegularImageTiles(imageArr));

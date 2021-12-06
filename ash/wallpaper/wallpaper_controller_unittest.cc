@@ -1080,13 +1080,13 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   // data fails.
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
+  const OnlineWallpaperParams& params = OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId, layout,
+      /*preview_mode=*/false, /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, kUnitId,
+      /*variants=*/std::vector<OnlineWallpaperVariant>());
   controller_->SetOnlineWallpaperIfExists(
-      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
-                            kDummyCollectionId, layout,
-                            /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false, kUnitId,
-                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
-      base::BindLambdaForTesting([&run_loop](bool file_exists) {
+      params, base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_FALSE(file_exists);
         run_loop->Quit();
       }));
@@ -1097,12 +1097,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   // successfully.
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      OnlineWallpaperParams(account_id_1, /*asset_id=*/absl::nullopt,
-                            GURL(kDummyUrl),
-                            /*collection_id=*/std::string(), layout,
-                            /*preview_mode=*/false, /*from_user=*/false,
-                            /*daily_refresh_enabled=*/false, kUnitId,
-                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
+      params,
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -1111,9 +1106,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   // Verify that the user wallpaper info is updated.
   WallpaperInfo wallpaper_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
-  WallpaperInfo expected_wallpaper_info(kDummyUrl, layout,
-                                        WallpaperType::kOnline,
-                                        base::Time::Now().LocalMidnight());
+  WallpaperInfo expected_wallpaper_info(params);
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
 
   // Change the on-screen wallpaper to a different one. (Otherwise the
@@ -1133,12 +1126,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   ClearWallpaperCount();
   run_loop = std::make_unique<base::RunLoop>();
   controller_->SetOnlineWallpaperIfExists(
-      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
-                            kDummyCollectionId, layout,
-                            /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false, kUnitId,
-                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
-      base::BindLambdaForTesting([&run_loop](bool file_exists) {
+      params, base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_TRUE(file_exists);
         run_loop->Quit();
       }));
@@ -1200,7 +1188,7 @@ TEST_P(WallpaperControllerTest,
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false, kUnitId,
+          /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
@@ -1222,7 +1210,7 @@ TEST_P(WallpaperControllerTest,
           account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl2),
           /*collection_id=*/std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
           /*preview_mode=*/false, /*from_user=*/false,
-          /*daily_refresh_enabled=*/false, kUnitId,
+          /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
@@ -2094,12 +2082,12 @@ TEST_P(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
   image = CreateImage(640, 480, kWallpaperColor);
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      OnlineWallpaperParams(account_id_1, /*asset_id=*/absl::nullopt,
-                            GURL(kDummyUrl),
-                            /*collection_id=*/std::string(), layout,
-                            /*preview_mode=*/false, /*from_user=*/false,
-                            /*daily_refresh_enabled=*/false, kUnitId,
-                            /*variants=*/std::vector<OnlineWallpaperVariant>()),
+      OnlineWallpaperParams(
+          account_id_1, /*asset_id=*/absl::nullopt, GURL(kDummyUrl),
+          /*collection_id=*/std::string(), layout,
+          /*preview_mode=*/false, /*from_user=*/false,
+          /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
+          /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -3379,7 +3367,11 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, MigrateWallpaperInfo) {
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest, MigrateWallpaperInfoDaily) {
-  WallpaperInfo expected_info = InfoWithType(WallpaperType::kOnline);
+  WallpaperInfo expected_info = WallpaperInfo(OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER, /*preview_mode=*/false, /*from_user=*/false,
+      /*daily_refresh_enabled=*/false, kUnitId,
+      std::vector<OnlineWallpaperVariant>()));
   PutWallpaperInfoInPrefs(account_id_1, expected_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);
   SimulateUserLogin(account_id_1);
@@ -3393,10 +3385,18 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
        MigrateWallpaperInfoDoesntHappenWhenSyncedInfoAlreadyExists) {
   SetBypassDecode();
 
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(WallpaperType::kOnline),
-                          GetLocalPrefService(), prefs::kUserWallpaperInfo);
-
-  WallpaperInfo synced_info = InfoWithType(WallpaperType::kOnline);
+  WallpaperInfo local_info = WallpaperInfo(OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER, /*preview_mode=*/false, /*from_user=*/false,
+      /*daily_refresh_enabled=*/false, kUnitId,
+      std::vector<OnlineWallpaperVariant>()));
+  WallpaperInfo synced_info = WallpaperInfo(OnlineWallpaperParams(
+      account_id_1, kAssetId2, GURL(kDummyUrl2), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER, /*preview_mode=*/false, /*from_user=*/false,
+      /*daily_refresh_enabled=*/false, kUnitId,
+      std::vector<OnlineWallpaperVariant>()));
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
   PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
@@ -3562,12 +3562,15 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, UpdateDailyRefreshWallpaper) {
 
 TEST_F(WallpaperControllerWallpaperWebUiTest,
        UpdateDailyRefreshWallpaperCalledOnLogin) {
-  std::string expected{"fun_collection"};
   SimulateUserLogin(account_id_1);
 
-  WallpaperInfo info = {std::string(), WALLPAPER_LAYOUT_CENTER,
-                        WallpaperType::kDaily, DayBeforeYesterdayish()};
-  info.collection_id = expected;
+  WallpaperInfo info = WallpaperInfo(OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*from_user=*/false,
+      /*daily_refresh_enabled=*/true, /*unit_id=*/absl::nullopt,
+      /*variants=*/std::vector<OnlineWallpaperVariant>()));
+  info.date = DayBeforeYesterdayish();
   controller_->SetUserWallpaperInfo(account_id_1, info);
 
   ClearLogin();
@@ -3577,7 +3580,8 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   // within the task that it is called in.
   RunAllTasksUntilIdle();
 
-  EXPECT_EQ(expected, client_.get_fetch_daily_refresh_wallpaper_param());
+  EXPECT_EQ(kDummyCollectionId,
+            client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest,
@@ -3858,12 +3862,10 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   auto run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
   std::vector<OnlineWallpaperVariant> variants;
-  variants.emplace_back(
-      OnlineWallpaperVariant(kAssetId.value(), GURL(kDummyUrl),
-                             backdrop::Image::IMAGE_TYPE_LIGHT_MODE));
-  variants.emplace_back(
-      OnlineWallpaperVariant(kAssetId2.value(), GURL(kDummyUrl2),
-                             backdrop::Image::IMAGE_TYPE_DARK_MODE));
+  variants.emplace_back(kAssetId.value(), GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId2.value(), GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
   const OnlineWallpaperParams& params =
       OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
                             kDummyCollectionId, WALLPAPER_LAYOUT_CENTER_CROPPED,
@@ -3879,9 +3881,64 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 
   controller_->SetUserWallpaperInfo(account_id_1, WallpaperInfo(params));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
   controller_->OnColorModeChanged(true);
   RunAllTasksUntilIdle();
   EXPECT_EQ(2, GetWallpaperCount());
+
+  WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, kUnitId, variants));
+  WallpaperInfo actual;
+  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual));
+  EXPECT_EQ(expected, actual);
+}
+
+TEST_F(WallpaperControllerWallpaperWebUiTest,
+       UpdateWallpaperWithMissingVariantsOnColorModeChanged) {
+  SimulateUserLogin(account_id_1);
+
+  auto run_loop = std::make_unique<base::RunLoop>();
+  ClearWallpaperCount();
+
+  const OnlineWallpaperParams& params = OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED,
+      /*preview_mode=*/false, /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
+      /*variants=*/std::vector<OnlineWallpaperVariant>());
+  controller_->SetOnlineWallpaper(
+      params, base::BindLambdaForTesting([&run_loop](bool success) {
+        EXPECT_TRUE(success);
+        run_loop->Quit();
+      }));
+  run_loop->Run();
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+
+  controller_->SetUserWallpaperInfo(account_id_1, WallpaperInfo(params));
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+  controller_->OnColorModeChanged(true);
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(2, GetWallpaperCount());
+
+  std::vector<OnlineWallpaperVariant> variants;
+  variants.emplace_back(kAssetId.value(), GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
+  variants.emplace_back(kAssetId2.value(), GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, kUnitId, variants));
+  WallpaperInfo actual;
+  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &actual));
+  EXPECT_EQ(expected, actual);
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest,
@@ -3890,12 +3947,10 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 
   // auto run_loop = std::make_unique<base::RunLoop>();
   std::vector<OnlineWallpaperVariant> variants;
-  variants.emplace_back(
-      OnlineWallpaperVariant(kAssetId.value(), GURL(kDummyUrl),
-                             backdrop::Image::IMAGE_TYPE_LIGHT_MODE));
-  variants.emplace_back(
-      OnlineWallpaperVariant(kAssetId2.value(), GURL(kDummyUrl2),
-                             backdrop::Image::IMAGE_TYPE_DARK_MODE));
+  variants.emplace_back(kAssetId.value(), GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+  variants.emplace_back(kAssetId2.value(), GURL(kDummyUrl2),
+                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
   const OnlineWallpaperParams& params =
       OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
                             kDummyCollectionId, WALLPAPER_LAYOUT_CENTER_CROPPED,
@@ -3914,20 +3969,20 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetOnlineWallpaperIfExists) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER_CROPPED;
   std::vector<OnlineWallpaperVariant> variants;
-  variants.emplace_back(OnlineWallpaperVariant(
-      kAssetId.value(), GURL(kDummyUrl), backdrop::Image::IMAGE_TYPE_UNKNOWN));
+  variants.emplace_back(kAssetId.value(), GURL(kDummyUrl),
+                        backdrop::Image::IMAGE_TYPE_UNKNOWN);
   SimulateUserLogin(account_id_1);
 
   // Verify that calling |SetOnlineWallpaperIfExists| without providing image
   // data fails.
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   ClearWallpaperCount();
+  const OnlineWallpaperParams& params = OnlineWallpaperParams(
+      account_id_1, kAssetId, GURL(kDummyUrl), kDummyCollectionId, layout,
+      /*preview_mode=*/false, /*from_user=*/true,
+      /*daily_refresh_enabled=*/false, kUnitId, variants);
   controller_->SetOnlineWallpaperIfExists(
-      OnlineWallpaperParams(account_id_1, kAssetId, GURL(kDummyUrl),
-                            kDummyCollectionId, layout,
-                            /*preview_mode=*/false, /*from_user=*/true,
-                            /*daily_refresh_enabled=*/false, kUnitId, variants),
-      base::BindLambdaForTesting([&run_loop](bool file_exists) {
+      params, base::BindLambdaForTesting([&run_loop](bool file_exists) {
         EXPECT_FALSE(file_exists);
         run_loop->Quit();
       }));
@@ -3938,11 +3993,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetOnlineWallpaperIfExists) {
   // successfully.
   ClearWallpaperCount();
   controller_->SetOnlineWallpaperFromData(
-      OnlineWallpaperParams(account_id_1, /*asset_id=*/absl::nullopt,
-                            GURL(kDummyUrl),
-                            /*collection_id=*/std::string(), layout,
-                            /*preview_mode=*/false, /*from_user=*/false,
-                            /*daily_refresh_enabled=*/false, kUnitId, variants),
+      params,
       /*image_data=*/std::string(),
       WallpaperControllerImpl::SetOnlineWallpaperCallback());
   RunAllTasksUntilIdle();
@@ -3951,9 +4002,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetOnlineWallpaperIfExists) {
   // Verify that the user wallpaper info is updated.
   WallpaperInfo wallpaper_info;
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
-  WallpaperInfo expected_wallpaper_info(kDummyUrl, layout,
-                                        WallpaperType::kOnline,
-                                        base::Time::Now().LocalMidnight());
+  WallpaperInfo expected_wallpaper_info = WallpaperInfo(params);
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
 
   // Change the on-screen wallpaper to a different one. (Otherwise the

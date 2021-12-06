@@ -637,15 +637,15 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsDailyRefreshEnabled() const;
 
   // Callback from the client providing a url to a wallpaper from the user
-  // specified collection when daily refresh is enabled. If |image_url| is
-  // empty, fetching the url failed, and should be tried again soon.
+  // specified collection when daily refresh is enabled. If |success| is
+  // false, fetching the |image| failed, and should be tried again soon.
   void SetDailyWallpaper(const AccountId& account_id,
                          const std::string& collection_id,
                          WallpaperLayout layout,
                          bool preview_mode,
                          RefreshWallpaperCallback callback,
-                         const absl::optional<uint64_t>& asset_id,
-                         const std::string& image_url);
+                         bool success,
+                         const backdrop::Image& image);
 
   // Called after attempting to download and set a daily refresh wallpaper.
   // On failure retry again in a while.
@@ -675,8 +675,28 @@ class ASH_EXPORT WallpaperControllerImpl
 
   PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;
 
+  // This will not update a new wallpaper if the synced |info.collection_id| is
+  // the same as the user's current collection_id.
   void HandleDailyWallpaperInfoSyncedIn(const AccountId& account_id,
                                         const WallpaperInfo& info);
+
+  void HandleOnlineWallpaperInfoSyncedIn(const AccountId& account_id,
+                                         const WallpaperInfo& info);
+
+  // Updates the online and daily wallpaper with the correct variant based on
+  // the color mode.
+  void HandleSettingOnlineWallpaperFromWallpaperInfo(
+      const AccountId& account_id,
+      const WallpaperInfo& info);
+
+  // Find the variants for the online wallpaper with given |params.asset_id| and
+  // |params.collection_id| and determine the right variant to set based on the
+  // system's color mode.
+  void FindAndSetOnlineWallpaperVariants(
+      const OnlineWallpaperParams& params,
+      base::OnceCallback<void(bool)> callback,
+      bool success,
+      const std::vector<backdrop::Image>& images);
 
   bool locked_ = false;
 

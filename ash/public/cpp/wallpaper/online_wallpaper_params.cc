@@ -46,4 +46,20 @@ OnlineWallpaperParams& OnlineWallpaperParams::operator=(
 
 OnlineWallpaperParams::~OnlineWallpaperParams() = default;
 
+std::ostream& operator<<(std::ostream& os,
+                         const OnlineWallpaperParams& params) {
+  os << "OnlineWallpaperParams:" << std::endl
+     << "  account_id: " << params.account_id << std::endl
+     << "  asset_id: " << params.asset_id.value_or(-1) << std::endl
+     << "  url: " << params.url << std::endl
+     << "  collection_id: " << params.collection_id << std::endl
+     << "  layout: " << params.layout << std::endl
+     << "  preview_mode: " << params.preview_mode << std::endl
+     << "  from_user: " << params.from_user << std::endl
+     << "  daily_refresh_enabled: " << params.daily_refresh_enabled << std::endl
+     << "  unit_id: " << params.unit_id.value_or(-1) << std::endl
+     << "  variants_size: " << params.variants.size() << std::endl;
+  return os;
+}
+
 }  // namespace ash

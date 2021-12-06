@@ -313,6 +313,9 @@ function pendingSelectedReducer(
       if (!image) {
         console.warn('pendingSelectedReducer: Failed to get selected image.');
         return null;
+      } else if (globalState.loading.setImage == 0) {
+        // Clear the pending state when there are no more requests.
+        return null;
       }
       return state;
     case ActionName.SET_FULLSCREEN_ENABLED:

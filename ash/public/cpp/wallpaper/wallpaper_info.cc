@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
@@ -42,9 +43,12 @@ WallpaperInfo::WallpaperInfo(WallpaperInfo&& other) = default;
 WallpaperInfo& WallpaperInfo::operator=(WallpaperInfo&& other) = default;
 
 bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
-  return (location == other.location) && (asset_id == other.asset_id) &&
-         (collection_id == other.collection_id) && (layout == other.layout) &&
-         (type == other.type);
+  // |asset_id| is skipped on purpose in favor of |unit_id| as wallpapers can
+  // vary across devices due to their color mode.
+  return (location == other.location) && (layout == other.layout) &&
+         (type == other.type) && (collection_id == other.collection_id) &&
+         (unit_id == other.unit_id) &&
+         (std::equal(variants.begin(), variants.end(), other.variants.begin()));
 }
 
 bool WallpaperInfo::operator!=(const WallpaperInfo& other) const {
