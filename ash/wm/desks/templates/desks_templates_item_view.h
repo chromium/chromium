@@ -46,7 +46,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void Layout() override;
   void OnThemeChanged() override;
 
-  // views::ViewTargeterDelegate
+  // views::ViewTargeterDelegate:
   views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
  private:

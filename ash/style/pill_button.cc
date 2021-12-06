@@ -118,6 +118,7 @@ PillButton::PillButton(PressedCallback callback,
     SetBackground(views::CreateRoundedRectBackground(
         GetPillButtonBackgroundColor(type), kPillButtonHeight / 2.f));
   }
+  SetTooltipText(text);
 }
 
 PillButton::~PillButton() = default;
