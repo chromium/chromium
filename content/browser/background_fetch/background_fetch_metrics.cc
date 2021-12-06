@@ -40,7 +40,9 @@ void RecordBackgroundFetchUkmEvent(
 
   // Only record UKM data if the origin of the last committed page is the same
   // as the one the background fetch was started with.
-  auto last_committed_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+  // For a fenced frame, it should be treated as a sub frame for a UKM record.
+  auto last_committed_origin =
+      rfh->GetOutermostMainFrame()->GetLastCommittedOrigin();
   if (!storage_key.origin().IsSameOriginWith(last_committed_origin))
     return;
   ukm::SourceId source_id = rfh->GetPageUkmSourceId();

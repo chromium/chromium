@@ -32,10 +32,12 @@
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -281,8 +283,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     offline_content_provider_observer_->set_delegate(delegate_);
   }
 
-  void SetUpBrowser(Browser* browser) {
-    active_browser_ = browser;
+  virtual void SetUpBrowser(Browser* browser) {
+    set_active_browser(browser);
     // Load the helper page that helps drive these tests.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser, https_server_->GetURL(kHelperPage)));
@@ -461,6 +463,10 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     *out_item = item;
     std::move(quit_closure).Run();
   }
+
+  void set_active_browser(Browser* browser) { active_browser_ = browser; }
+
+  net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  protected:
   raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
@@ -939,4 +945,127 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
                 CONTENT_SETTING_BLOCK);
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
       "StartFetchFromIframe()", "permissionerror"));
+}
+
+class BackgroundFetchFencedFrameBrowserTest
+    : public BackgroundFetchBrowserTest {
+ public:
+  BackgroundFetchFencedFrameBrowserTest() = default;
+  ~BackgroundFetchFencedFrameBrowserTest() override = default;
+
+  void SetUpBrowser(Browser* browser) override {
+    set_active_browser(browser);
+    GURL url = https_server()->GetURL("/empty.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  void RegisterServiceWorker(content::RenderFrameHost* render_frame_host) {
+    std::string script_result;
+    ASSERT_TRUE(RunScript("RegisterServiceWorker()", &script_result,
+                          render_frame_host));
+    ASSERT_EQ("ok - service worker registered", script_result);
+  }
+
+  void StartSingleFileDownload(content::RenderFrameHost* render_frame_host,
+                               std::string expected_result) {
+    std::string script_result;
+    ASSERT_NO_FATAL_FAILURE(RunScript("StartSingleFileDownload()",
+                                      &script_result, render_frame_host));
+    ASSERT_EQ(expected_result, script_result);
+  }
+
+ private:
+  // Runs the `script` in `render_frame_host` and writes the output to
+  // `*result`.
+  bool RunScript(const std::string& script,
+                 std::string* result,
+                 content::RenderFrameHost* render_frame_host) {
+    return content::ExecuteScriptAndExtractString(render_frame_host, script,
+                                                  result);
+  }
+
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+};
+
+// Tests that UKM records that the background fetch is denied in a fenced frame.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
+                       RecordBackgroundFetchUkmEvent) {
+  // Load a fenced frame.
+  GURL fenced_frame_url(https_server()->GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+          fenced_frame_url);
+
+  GURL fenced_frame_test_url(
+      https_server()->GetURL("/fenced_frames/background_fetch.html"));
+
+  // Navigate the fenced frame again.
+  fenced_frame = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame, fenced_frame_test_url);
+
+  // Register the Service Worker that's required for Background Fetch.
+  RegisterServiceWorker(fenced_frame);
+
+  constexpr char kExpectedError[] =
+      "TypeError - This origin does not have permission to start a fetch.";
+  StartSingleFileDownload(fenced_frame, kExpectedError);
+
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      test_ukm_recorder_->GetEntriesByName(
+          ukm::builders::BackgroundFetch::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const auto* entry = entries[0];
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, ukm::builders::BackgroundFetch::kHasTitleName, 1);
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, ukm::builders::BackgroundFetch::kNumRequestsInFetchName,
+      ukm::GetExponentialBucketMin(kNumRequestsInFetch,
+                                   kUkmEventDataBucketSpacing));
+  // In a fenced frame, it should be denied.
+  test_ukm_recorder_->ExpectEntryMetric(
+      entry, ukm::builders::BackgroundFetch::kDeniedDueToPermissionsName, 1);
+}
+
+// Tests that UKM record works based on the outer most main frame. So, the
+// fenced frame loaded not from the same origin is not be recorded.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
+                       NoRecordBackgroundFetchUkmEventNotInSameOrigin) {
+  net::EmbeddedTestServer cross_origin_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  cross_origin_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  cross_origin_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(cross_origin_server.Start());
+
+  // Load a fenced frame.
+  GURL fenced_frame_url(
+      cross_origin_server.GetURL("/fenced_frames/title1.html"));
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+          fenced_frame_url);
+
+  GURL fenced_frame_test_url(
+      cross_origin_server.GetURL("/fenced_frames/background_fetch.html"));
+  // Navigate the fenced frame again.
+  fenced_frame = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame, fenced_frame_test_url);
+
+  // Register the Service Worker that's required for Background Fetch.
+  RegisterServiceWorker(fenced_frame);
+
+  constexpr char kExpectedError[] =
+      "TypeError - This origin does not have permission to start a fetch.";
+  StartSingleFileDownload(fenced_frame, kExpectedError);
+
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      test_ukm_recorder_->GetEntriesByName(
+          ukm::builders::BackgroundFetch::kEntryName);
+  ASSERT_EQ(0u, entries.size());
 }
