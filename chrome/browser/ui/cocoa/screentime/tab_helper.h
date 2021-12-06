@@ -33,7 +33,7 @@ class TabHelper : public content::WebContentsObserver,
   ~TabHelper() override;
 
   // WebContentsObserver:
-  void DidFinishNavigation(content::NavigationHandle* handle) override;
+  void PrimaryPageChanged(content::Page& handle) override;
 
   WebpageController* page_controller_for_testing() const {
     return page_controller_.get();
