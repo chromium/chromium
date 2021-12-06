@@ -6,7 +6,6 @@
  * @fileoverview
  * 'settings-basic-page' is the settings page containing the actual settings.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
@@ -33,7 +32,7 @@ import '../default_browser_page/default_browser_page.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {beforeNextRender, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -112,6 +111,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         },
       },
 
+      /**
+       * Whether a search operation is in progress or previous search
+       * results are being displayed.
+       */
+      inSearchMode: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       advancedToggleExpanded: {
         type: Boolean,
         value: false,
@@ -161,6 +170,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   pageVisibility: PageVisibility;
+  inSearchMode: boolean;
   advancedToggleExpanded: boolean;
   private hasExpandedSection_: boolean;
   private showResetProfileBanner_: boolean;
@@ -348,43 +358,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  private advancedToggleClicked_() {
-    if (this.advancedTogglingInProgress_) {
-      return;
-    }
-
-    this.advancedTogglingInProgress_ = true;
-    const toggle =
-        this.shadowRoot!.querySelector('#toggleContainer') as HTMLElement;
-    if (!this.advancedToggleExpanded) {
-      this.advancedToggleExpanded = true;
-      microTask.run(() => {
-        this.getIdleLoad_().then(() => {
-          this.fire_('scroll-to-top', {
-            top: toggle.offsetTop,
-            callback: () => {
-              this.advancedTogglingInProgress_ = false;
-            }
-          });
-        });
-      });
-    } else {
-      this.fire_('scroll-to-bottom', {
-        bottom: toggle.offsetTop + toggle.offsetHeight + 24,
-        callback: () => {
-          this.advancedToggleExpanded = false;
-          this.advancedTogglingInProgress_ = false;
-        }
-      });
-    }
-  }
-
-  private showAdvancedToggle_(
-      inSearchMode: boolean, hasExpandedSection: boolean): boolean {
-    return !inSearchMode && !hasExpandedSection &&
-        !loadTimeData.getBoolean('enableLandingPageRedesign');
-  }
-
   /**
    * @return Whether to show the basic page, taking into account both routing
    *     and search state.
@@ -409,14 +382,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showAdvancedSettings_(visibility?: boolean): boolean {
     return visibility !== false;
-  }
-
-  private getArrowIcon_(opened: boolean): string {
-    return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  }
-
-  private boolToString_(bool: boolean): string {
-    return bool.toString();
   }
 }
 

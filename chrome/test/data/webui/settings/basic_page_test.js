@@ -14,14 +14,27 @@ import {loadTimeData, pageVisibility, Router, routes} from 'chrome://settings/se
 import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
-// Register mocha tests.
-suite('SettingsBasicPage', function() {
+suite('SettingsBasicPage', () => {
   let page = null;
 
-  setup(function() {
+  setup(async function() {
     PolymerTest.clearBody();
     page = document.createElement('settings-basic-page');
     document.body.appendChild(page);
+    page.scroller = document.body;
+
+    // Need to wait for the 'show-container' event to fire after every
+    // transition, to ensure no logic related to previous transitions is still
+    // running when later transitions are tested.
+    const whenDone = eventToPromise('show-container', page);
+
+    // Ensure that all settings-section instances are rendered.
+    flush();
+    await page.$$('#advancedPageTemplate').get();
+    const sections = page.shadowRoot.querySelectorAll('settings-section');
+    assertTrue(sections.length > 1);
+
+    await whenDone;
   });
 
   test('load page', function() {
@@ -54,41 +67,6 @@ suite('SettingsBasicPage', function() {
 
     const sectionElement = page.$$('settings-section-safety-check');
     assertFalse(!!sectionElement);
-  });
-});
-
-suite('SettingsBasicPageRedesign', () => {
-  let page = null;
-
-  suiteSetup(function() {
-    assertTrue(loadTimeData.getBoolean('enableLandingPageRedesign'));
-    const attribute =
-        loadTimeData.getString('enableLandingPageRedesignAttribute');
-    assertEquals('enable-landing-page-redesign', attribute);
-
-    // Do this manually as it is normally part of settings.html, which is not
-    // part of this test.
-    document.documentElement.toggleAttribute(attribute, true);
-  });
-
-  setup(async function() {
-    PolymerTest.clearBody();
-    page = document.createElement('settings-basic-page');
-    document.body.appendChild(page);
-    page.scroller = document.body;
-
-    // Need to wait for the 'show-container' event to fire after every
-    // transition, to ensure no logic related to previous transitions is still
-    // running when later transitions are tested.
-    const whenDone = eventToPromise('show-container', page);
-
-    // Ensure that all settings-section instances are rendered.
-    flush();
-    await page.$$('#advancedPageTemplate').get();
-    const sections = page.shadowRoot.querySelectorAll('settings-section');
-    assertTrue(sections.length > 1);
-
-    await whenDone;
   });
 
   /** @param {string} section */
