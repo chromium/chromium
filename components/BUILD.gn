@@ -58,6 +58,7 @@ test("components_unittests") {
 
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
     ]
   }
 
