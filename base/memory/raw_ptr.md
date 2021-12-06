@@ -1,12 +1,12 @@
 # raw_ptr&lt;T&gt; (aka MiraclePtr, aka BackupRefPtr)
 
 `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety over
-raw pointers.
-It behaves just like a
-raw pointer with an exception that it is zero-initialized and cleared on
-destruction and move. Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`,
-etc., it doesn’t manage ownership or lifetime of an allocated object - you are
-still responsible for freeing the object when no longer used, just as you would
+over raw pointers.  It behaves just like a raw pointer on platforms where
+USE_BACKUP_REF_PTR is off, and almost like one when it's on (the main
+difference is that it's zero-initialized and cleared on destruction and
+move). Unlike `std::unique_ptr<T>`, `base::scoped_refptr<T>`, etc., it
+doesn’t manage ownership or lifetime of an allocated object - you are still
+responsible for freeing the object when no longer used, just as you would
 with a raw C++ pointer.
 
 `raw_ptr<T>` is beneficial for security, because it can prevent a significant
@@ -106,7 +106,8 @@ below.
 
 ### Performance impact of using |raw_ptr&lt;T&gt;| instead of |T*|
 
-Compared to a raw C++ pointer, `raw_ptr<T>` incurs additional runtime
+Compared to a raw C++ pointer, on platforms where USE_BACKUP_REF_PTR is on,
+`raw_ptr<T>` incurs additional runtime
 overhead for initialization, destruction, and assignment (including
 `ptr++` and `ptr += ...`).
 There is no overhead when dereferencing or extracting a pointer (including
