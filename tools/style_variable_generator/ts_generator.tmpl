@@ -24,33 +24,41 @@ import {css} from 'lit';
 /* SAFETY_BOILERPLATE */
 
 export interface GetColorsCSSOptions {
-  lockTheme?: 'light'|'dark';
+  /** The html selector the colors should be attached too. */
+  target?: 'host' | 'html';
+  /**
+   * Generate a css dump which sets variables to their dark mode values in light
+   * mode and vice versa. If true lockTheme is ignored.
+   */
+  invert?: boolean;
+  /**
+   * Generate a css dump which sets variables to either their dark mode or light
+   * mode values and ignores the documents prefers-color-scheme.
+   */
+  lockTheme?: 'light' | 'dark';
 }
 
 const DEFAULT_CSS = `
-{#
-The :not(body) adds extra selector specificity so that these colors 'win'
-against paper-styles/color.html.
-TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
-Chrome OS pages.
--#}
-html:not(body) {
 {{- render_variables_as_css(Modes.DEFAULT) -}}
-}
+`;
 
+const DARK_MODE_OVERRIDES_CSS = `
+{{- render_variables_as_css(Modes.DARK) -}}
+`;
+
+const UNTYPED_CSS = `
 {%- if untyped_css %}
-html {
 {%- for group_name, vars in untyped_css.items() %}
   /* {{group_name}} */
 {%-     for name, value in vars.items() %}
   {{name | to_css_var_name}}: {{value}};
 {%-     endfor %}
 {%-   endfor %}
-}
-{%- endif -%}
+{% endif -%}
+`;
 
+const TYPOGRAPHY_CSS = `
 {%- if typography.font_families or typography.typefaces %}
-html {
   /* font families */
 {%-   for name, value in typography.font_families.items() %}
   {{name | to_css_var_name}}: {{value}};
@@ -65,14 +73,7 @@ html {
   {{name | to_css_var_name}}-line-height: {{typeface.line_height}}px;
 
 {%-   endfor %}
-}
-{%- endif %}
-`;
-
-const DARK_MODE_OVERRIDES_CSS = `
-html:not(body) {
-{{- render_variables_as_css(Modes.DARK) -}}
-}
+{% endif -%}
 `;
 
 /**
@@ -85,27 +86,58 @@ html:not(body) {
  */
 export function getColorsCSS(options?: GetColorsCSSOptions) {
   let cssString;
-  if (options?.lockTheme === 'light') {
+  if (options?.invert) {
+    cssString = /* SAFE */ (`
+      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+        ${DEFAULT_CSS}
+        ${UNTYPED_CSS}
+        ${TYPOGRAPHY_CSS}
+        ${DARK_MODE_OVERRIDES_CSS}
+      }
+
+      @media (prefers-color-scheme: dark) {
+        ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+          ${DEFAULT_CSS}
+        }
+      }
+    `);
+  } else if (options?.lockTheme === 'light') {
     // Tag strings which are safe with a special comment so copybara can add
     // the right safety wrappers whem moving this code into Google3.
-    cssString = /* SAFE */ (DEFAULT_CSS);
+    cssString = /* SAFE */ (`
+      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+        ${DEFAULT_CSS}
+        ${UNTYPED_CSS}
+        ${TYPOGRAPHY_CSS}
+      }
+    `);
   } else if (options?.lockTheme === 'dark') {
     cssString = /* SAFE */ (`
-      ${DEFAULT_CSS}
-      ${DARK_MODE_OVERRIDES_CSS}
+      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+        ${DEFAULT_CSS}
+        ${UNTYPED_CSS}
+        ${TYPOGRAPHY_CSS}
+        ${DARK_MODE_OVERRIDES_CSS}
+      }
     `);
   } else {
     cssString = /* SAFE */ (`
-      ${DEFAULT_CSS}
-
+      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+        ${DEFAULT_CSS}
+        ${UNTYPED_CSS}
+        ${TYPOGRAPHY_CSS}
+      }
       @media (prefers-color-scheme: dark) {
-        ${DARK_MODE_OVERRIDES_CSS}
+        ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+          ${DARK_MODE_OVERRIDES_CSS}
+        }
       }
     `);
   }
 
   return cssString;
 }
+
 {%- endif %}
 
 {% for model_name, color in colors[Modes.DEFAULT].items() -%}
