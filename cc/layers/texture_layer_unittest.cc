@@ -1069,7 +1069,10 @@ class TextureLayerChangeInvisibleMailboxTest
         break;
       case 4:
         // Layer should have been updated.
-        EXPECT_EQ(2, prepare_called_);
+        // It's not sufficient to check if |prepare_called_| is 2. It's possible
+        // for BeginMainFrame and hence PrepareTransferableResource to run twice
+        // before DidReceiveCompositorFrameAck due to pipelining.
+        EXPECT_GE(prepare_called_, 2);
         // So the old resource should have been returned already.
         EXPECT_EQ(1, resource_returned_);
         texture_layer_->ClearClient();
