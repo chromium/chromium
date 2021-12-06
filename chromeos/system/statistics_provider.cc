@@ -43,12 +43,9 @@ namespace system {
 
 namespace {
 
-// Path to the tool used to get system info, and delimiters for the output
-// format of the tool.
+// Path to the tool used to get system info, and special values for the
+// output of the tool.
 const char* kCrosSystemTool[] = {"/usr/bin/crossystem"};
-const char kCrosSystemEq[] = "=";
-const char kCrosSystemDelim[] = "\n";
-const char kCrosSystemCommentDelim[] = "#";
 const char kCrosSystemValueError[] = "(error)";
 
 const char kHardwareClassCrosSystemKey[] = "hwid";
@@ -56,22 +53,10 @@ const char kHardwareClassValueUnknown[] = "unknown";
 
 const char kIsVmCrosSystemKey[] = "inside_vm";
 
-// Key/value delimiters of machine hardware info file. machine-info is generated
-// only for OOBE and enterprise enrollment and may not be present. See
-// login-manager/init/machine-info.conf.
-const char kMachineHardwareInfoEq[] = "=";
-const char kMachineHardwareInfoDelim[] = " \n";
-
 // File to get ECHO coupon info from, and key/value delimiters of
 // the file.
 const char kEchoCouponFile[] =
     "/mnt/stateful_partition/unencrypted/cache/vpd/echo/vpd_echo.txt";
-const char kEchoCouponEq[] = "=";
-const char kEchoCouponDelim[] = "\n";
-
-// Key/value delimiters for VPD file.
-const char kVpdEq[] = "=";
-const char kVpdDelim[] = "\n";
 
 // File to get regional data from.
 const char kCrosRegions[] = "/usr/share/misc/cros-regions.json";
@@ -508,8 +493,8 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // Parse all of the key/value pairs from the crossystem tool.
     if (!parser.ParseNameValuePairsFromTool(
-            base::size(kCrosSystemTool), kCrosSystemTool, kCrosSystemEq,
-            kCrosSystemDelim, kCrosSystemCommentDelim)) {
+            base::size(kCrosSystemTool), kCrosSystemTool,
+            NameValuePairsFormat::kCrossystem)) {
       LOG(ERROR) << "Errors parsing output from: " << kCrosSystemTool;
     }
     // Drop useless "(error)" values so they don't displace valid values
@@ -549,15 +534,17 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     int bytes_written =
         base::WriteFile(vpd_path, stub_contents.c_str(), stub_contents.size());
     if (bytes_written < static_cast<int>(stub_contents.size())) {
-      PLOG(ERROR) << "Error writing vpd stub " << vpd_path.value();
+      PLOG(ERROR) << "Error writing VPD stub " << vpd_path.value();
     }
   }
 
-  parser.GetNameValuePairsFromFile(machine_info_path, kMachineHardwareInfoEq,
-                                   kMachineHardwareInfoDelim);
-  parser.GetNameValuePairsFromFile(base::FilePath(kEchoCouponFile),
-                                   kEchoCouponEq, kEchoCouponDelim);
-  parser.GetNameValuePairsFromFile(vpd_path, kVpdEq, kVpdDelim);
+  // The machine-info file is generated only for OOBE and enterprise enrollment
+  // and may not be present. See login-manager/init/machine-info.conf.
+  parser.ParseNameValuePairsFromFile(machine_info_path,
+                                     NameValuePairsFormat::kMachineInfo);
+  parser.ParseNameValuePairsFromFile(base::FilePath(kEchoCouponFile),
+                                     NameValuePairsFormat::kVpdDump);
+  parser.ParseNameValuePairsFromFile(vpd_path, NameValuePairsFormat::kVpdDump);
 
   // Ensure that the hardware class key is present with the expected
   // key name, and if it couldn't be retrieved, that the value is "unknown".

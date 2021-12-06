@@ -18,6 +18,24 @@ class FilePath;
 namespace chromeos {
 namespace system {
 
+// The name value pairs formats the parser understands.
+enum class NameValuePairsFormat {
+  // Values produced by the dump_vpd_log tool.
+  // Each key and value is surrounded by double quotes ('"'), and separated by
+  // an equal ('=') sign. There is no whitespace around the quoted key or value.
+  kVpdDump,
+  // Values produced by write-machine-info in the machine-info file.
+  // The base for this format is that of |kVpdDump|, with the additional
+  // provision that keys may be unquoted.
+  kMachineInfo,
+  // Values produced by the crossystem tool.
+  // Each key and value is unquoted, and separated by an equal ('=') sign.
+  // Whitespace is allowed, and used, around key and value, and is not part of
+  // either. Comments are supported and start with a sharp ('#') character and
+  // run to the end of the line.
+  kCrossystem
+};
+
 // The parser is used to get machine info as name-value pairs. Defined here to
 // be accessible by tests.
 class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
@@ -30,51 +48,42 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
   NameValuePairsParser(const NameValuePairsParser&) = delete;
   NameValuePairsParser& operator=(const NameValuePairsParser&) = delete;
 
-  // Parses name-value pairs from the file.
-  // Returns false if there was any error in the file. Valid pairs will still be
-  // added to the map.
-  bool GetNameValuePairsFromFile(const base::FilePath& file_path,
-                                 const std::string& eq,
-                                 const std::string& delim);
+  // Parses name-value pairs in the specified |format| from a file.
+  //
+  // Returns false if there was any error when parsing the file. Valid pairs
+  // will still be added to the map.
+  bool ParseNameValuePairsFromFile(const base::FilePath& file_path,
+                                   NameValuePairsFormat format);
 
-  // Same as ParseNameValuePairsWithComments(), but uses the output of the given
-  // tool as the input to parse.
+  // Parses name-value pairs in the specified |format| from the standard output
+  // of a tool invocation specified by |argc| and |argv|.
+  //
+  // Returns false if there was any error in the command invocation or when
+  // parsing its output. Valid pairs will still be added to the map.
   bool ParseNameValuePairsFromTool(int argc,
                                    const char* argv[],
-                                   const std::string& eq,
-                                   const std::string& delim,
-                                   const std::string& comment_delim);
+                                   NameValuePairsFormat format);
 
   // Delete all pairs with |value|.
   void DeletePairsWithValue(const std::string& value);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser, TestParseNameValuePairs);
+  FRIEND_TEST_ALL_PREFIXES(VpdDumpNameValuePairsParserTest,
+                           TestParseNameValuePairs);
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
-                           TestParseNameValuePairsWithComments);
+                           TestParseNameValuePairsInVpdDumpFormat);
+  FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
+                           TestParseNameValuePairsInMachineInfoFormat);
+  FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
+                           TestParseNameValuePairsFromCrossytemTool);
 
   friend class NameValuePairsParserFuzzer;
 
   void AddNameValuePair(const std::string& key, const std::string& value);
 
-  // These will parse strings with output in the format:
-  // <key><EQ><value><DELIM>[<key><EQ><value>][...]
-  // e.g. ParseNameValuePairs("key1=value1 key2=value2", "=", " ")
-  // Returns false if there was any error in in_string. Valid pairs will still
-  // be added to the map.
-  bool ParseNameValuePairs(const std::string& in_string,
-                           const std::string& eq,
-                           const std::string& delim);
-
-  // This version allows for values which end with a comment beginning with
-  // |comment_delim|.
-  // e.g. "key2=value2 # Explanation of value\n"
-  // Returns false if there was any error in in_string. Valid pairs will still
-  // be added to the map.
-  bool ParseNameValuePairsWithComments(const std::string& in_string,
-                                       const std::string& eq,
-                                       const std::string& delim,
-                                       const std::string& comment_delim);
+  bool ParseNameValuePairs(const std::string& input,
+                           NameValuePairsFormat format,
+                           const std::string& debug_source);
 
   NameValueMap* map_;
 };
