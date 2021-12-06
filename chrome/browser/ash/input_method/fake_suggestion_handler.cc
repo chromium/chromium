@@ -48,6 +48,7 @@ bool FakeSuggestionHandler::SetButtonHighlighted(
     const ui::ime::AssistiveWindowButton& button,
     bool highlighted,
     std::string* error) {
+  highlighted_suggestion_ = highlighted;
   return false;
 }
 

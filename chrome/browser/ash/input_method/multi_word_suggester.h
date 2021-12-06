@@ -65,6 +65,7 @@ class MultiWordSuggester : public Suggester {
       size_t confirmed_length;
       size_t initial_confirmed_length;
       base::TimeTicks time_first_shown;
+      bool highlighted = false;
     };
 
     struct SurroundingText {
@@ -89,12 +90,18 @@ class MultiWordSuggester : public Suggester {
     // confirmed length or any other suggestion details are correct.
     void ReconcileSuggestionWithText();
 
+    // Toggles the highlight state of the current suggeston.
+    void ToggleSuggestionHighlight();
+
     // As the name suggests, is there a suggestion currently shown to the user?
     bool IsSuggestionShowing();
 
     // Is the user's cursor located at the end of the text they are currently
     // editing?
     bool IsCursorAtEndOfText();
+
+    // Has the user highlighted the current suggestion showing?
+    bool IsSuggestionHighlighted();
 
     // Returns the current suggestion state if there is any available.
     absl::optional<Suggestion> GetSuggestion();
@@ -128,6 +135,9 @@ class MultiWordSuggester : public Suggester {
   void ResetSuggestionState();
   void ResetTextState();
 
+  // Visibly highlight the suggestion in the ui shown to the user.
+  void SetSuggestionHighlight(bool highlighted);
+
   // Announce the given message to the user.
   void Announce(const std::u16string& message);
 
@@ -139,6 +149,8 @@ class MultiWordSuggester : public Suggester {
 
   // Current suggestion state
   SuggestionState state_;
+
+  ui::ime::AssistiveWindowButton suggestion_button_;
 };
 
 }  // namespace input_method

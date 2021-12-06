@@ -196,6 +196,7 @@ void AssistiveWindowController::SetButtonHighlighted(
   switch (button.window_type) {
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
       if (!suggestion_window_view_)
         return;
 
@@ -251,6 +252,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
       break;
     case ui::ime::AssistiveWindowType::kEmojiSuggestion:
     case ui::ime::AssistiveWindowType::kPersonalInfoSuggestion:
+    case ui::ime::AssistiveWindowType::kMultiWordSuggestion:
       if (!suggestion_window_view_)
         InitSuggestionWindow();
       if (window_.visible) {

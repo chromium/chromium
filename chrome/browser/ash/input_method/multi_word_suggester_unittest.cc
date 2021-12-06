@@ -114,11 +114,167 @@ TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnNonTabKeypress) {
   suggester.OnFocus(kFocusedContextId);
   suggester.OnSurroundingTextChanged(u"", 0, 0);
   suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_UP);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hi there!");
+}
+
+TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnArrowDownKeypress) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
   SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
 
   EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
   EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hi there!");
+}
+
+TEST(MultiWordSuggesterTest, DoesNotAcceptSuggestionOnEnterKeypress) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ENTER);
+
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hi there!");
+}
+
+TEST(MultiWordSuggesterTest, AcceptsSuggestionOnDownPlusEnterPress) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+  SendKeyEvent(&suggester, ui::DomCode::ENTER);
+
+  EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_FALSE(suggestion_handler.GetDismissedSuggestion());
+  EXPECT_TRUE(suggestion_handler.GetAcceptedSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
+}
+
+TEST(MultiWordSuggesterTest, HighlightsSuggestionOnDownArrow) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+
+  EXPECT_TRUE(suggestion_handler.GetHighlightedSuggestion());
+}
+
+TEST(MultiWordSuggesterTest, MaintainsHighlightOnMultipleDownArrow) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+
+  EXPECT_TRUE(suggestion_handler.GetHighlightedSuggestion());
+}
+
+TEST(MultiWordSuggesterTest, RemovesHighlightOnDownThenUpArrow) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_UP);
+
+  EXPECT_FALSE(suggestion_handler.GetHighlightedSuggestion());
+}
+
+TEST(MultiWordSuggesterTest, HighlightIsNotShownWithUpArrow) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_UP);
+
+  EXPECT_FALSE(suggestion_handler.GetHighlightedSuggestion());
+}
+
+TEST(MultiWordSuggesterTest, HighlightIsNotShownWithMultipleUpArrow) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"", 0, 0);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_UP);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_UP);
+
+  EXPECT_FALSE(suggestion_handler.GetHighlightedSuggestion());
 }
 
 TEST(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {

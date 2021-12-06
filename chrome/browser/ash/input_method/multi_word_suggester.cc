@@ -70,7 +70,12 @@ void RecordTimeToDismiss(base::TimeDelta delta) {
 
 MultiWordSuggester::MultiWordSuggester(
     SuggestionHandlerInterface* suggestion_handler)
-    : suggestion_handler_(suggestion_handler), state_(this) {}
+    : suggestion_handler_(suggestion_handler), state_(this) {
+  suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
+  suggestion_button_.window_type =
+      ui::ime::AssistiveWindowType::kMultiWordSuggestion;
+  suggestion_button_.index = 0;
+}
 
 MultiWordSuggester::~MultiWordSuggester() = default;
 
@@ -122,6 +127,23 @@ SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
 
   switch (event.code()) {
     case ui::DomCode::TAB:
+      AcceptSuggestion();
+      return SuggestionStatus::kAccept;
+    case ui::DomCode::ARROW_DOWN:
+      if (state_.IsSuggestionHighlighted())
+        return SuggestionStatus::kNotHandled;
+      state_.ToggleSuggestionHighlight();
+      SetSuggestionHighlight(true);
+      return SuggestionStatus::kBrowsing;
+    case ui::DomCode::ARROW_UP:
+      if (!state_.IsSuggestionHighlighted())
+        return SuggestionStatus::kNotHandled;
+      state_.ToggleSuggestionHighlight();
+      SetSuggestionHighlight(false);
+      return SuggestionStatus::kBrowsing;
+    case ui::DomCode::ENTER:
+      if (!state_.IsSuggestionHighlighted())
+        return SuggestionStatus::kNotHandled;
       AcceptSuggestion();
       return SuggestionStatus::kAccept;
     default:
@@ -202,6 +224,15 @@ void MultiWordSuggester::DisplaySuggestion(
   if (!error.empty()) {
     LOG(ERROR) << "suggest: Failed to show suggestion in assistive framework"
                << " - " << error;
+  }
+}
+
+void MultiWordSuggester::SetSuggestionHighlight(bool highlighted) {
+  std::string error;
+  suggestion_handler_->SetButtonHighlighted(
+      focused_context_id_, suggestion_button_, highlighted, &error);
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to set button highlighted. " << error;
   }
 }
 
@@ -297,6 +328,18 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
                            .confirmed_length = new_confirmed_length,
                            .initial_confirmed_length = initial_confirmed_length,
                            .time_first_shown = suggestion_->time_first_shown};
+}
+
+void MultiWordSuggester::SuggestionState::ToggleSuggestionHighlight() {
+  if (!suggestion_)
+    return;
+  suggestion_->highlighted = !suggestion_->highlighted;
+}
+
+bool MultiWordSuggester::SuggestionState::IsSuggestionHighlighted() {
+  if (!suggestion_)
+    return false;
+  return suggestion_->highlighted;
 }
 
 bool MultiWordSuggester::SuggestionState::IsSuggestionShowing() {
