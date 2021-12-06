@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
@@ -208,14 +207,6 @@ public class TabStateFileManager {
                         "Failed to read tab root id from tab state. "
                                 + "Assuming root id is Tab.INVALID_TAB_ID");
             }
-            try {
-                tabState.userAgent = stream.readInt();
-            } catch (EOFException eof) {
-                tabState.userAgent = TabUserAgent.UNSET;
-                Log.w(TAG,
-                        "Failed to read tab user agent from tab state. "
-                                + "Assuming user agent is TabUserAgent.UNSET");
-            }
             return tabState;
         } finally {
             stream.close();
@@ -277,7 +268,6 @@ public class TabStateFileManager {
             dataOutputStream.writeInt(
                     state.tabLaunchTypeAtCreation != null ? state.tabLaunchTypeAtCreation : -1);
             dataOutputStream.writeInt(state.rootId);
-            dataOutputStream.writeInt(state.userAgent);
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.SaveTime", SystemClock.elapsedRealtime() - startTime);
         } catch (FileNotFoundException e) {

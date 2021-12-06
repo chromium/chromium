@@ -39,9 +39,6 @@ public class TabState {
     /** Whether this TabState was created from a file containing info about an incognito Tab. */
     public boolean isIncognito;
 
-    /** Tab level Request Desktop Site setting. */
-    public @TabUserAgent int userAgent;
-
     public boolean isIncognito() {
         return isIncognito;
     }

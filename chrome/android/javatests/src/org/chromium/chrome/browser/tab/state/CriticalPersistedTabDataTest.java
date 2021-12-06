@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
-import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -69,8 +68,6 @@ public class CriticalPersistedTabDataTest {
     private static final String OPENER_APP_ID = "OpenerAppId";
     private static final int THEME_COLOR = 5;
     private static final Integer LAUNCH_TYPE_AT_CREATION = 3;
-    private static final @TabUserAgent int USER_AGENT_A = TabUserAgent.MOBILE;
-    private static final @TabUserAgent int USER_AGENT_B = TabUserAgent.DESKTOP;
     private static final String TITLE_A = "original title";
     private static final String TITLE_B = "new title";
     private static final GURL URL_A = new GURL("https://a.com");
@@ -152,7 +149,7 @@ public class CriticalPersistedTabDataTest {
             CriticalPersistedTabData criticalPersistedTabData =
                     new CriticalPersistedTabData(mockTab(TAB_ID, isEncrypted), "", "", PARENT_ID,
                             ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
-                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
+                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
             criticalPersistedTabData.setShouldSaveForTesting(true);
             mStorage.setSemaphore(saveSemaphore);
             ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
@@ -176,7 +173,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertArrayEquals(CriticalPersistedTabData.getContentStateByteArray(
                                          mCriticalPersistedTabData.getWebContentsState().buffer()),
                 WEB_CONTENTS_STATE_BYTES);
-        Assert.assertEquals(mCriticalPersistedTabData.getUserAgent(), USER_AGENT_A);
         Semaphore deleteSemaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mStorage.setSemaphore(deleteSemaphore);
@@ -288,7 +284,7 @@ public class CriticalPersistedTabDataTest {
         Tab tab = mockTab(TAB_ID, false);
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
-                OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
+                OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
         ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
@@ -305,7 +301,6 @@ public class CriticalPersistedTabDataTest {
         Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
                 CriticalPersistedTabData.getContentStateByteArray(
                         deserialized.getWebContentsState().buffer()));
-        Assert.assertEquals(USER_AGENT_A, deserialized.getUserAgent());
     }
 
     @SmallTest
@@ -317,7 +312,7 @@ public class CriticalPersistedTabDataTest {
             CriticalPersistedTabData criticalPersistedTabData =
                     new CriticalPersistedTabData(tab, "", "", PARENT_ID, ROOT_ID, TIMESTAMP,
                             TabStateExtractor.getWebContentsState(tab), CONTENT_STATE_VERSION,
-                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
+                            OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
             ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
             PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                     ShoppingPersistedTabData.class, tab.isIncognito());
@@ -336,7 +331,7 @@ public class CriticalPersistedTabDataTest {
         Tab tab = mockTab(TAB_ID, false);
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
-                THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
+                THEME_COLOR, LAUNCH_TYPE_AT_CREATION);
         ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
@@ -544,31 +539,6 @@ public class CriticalPersistedTabDataTest {
         }
     }
 
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testUserAgentSavedWhenNecessary() {
-        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-            CriticalPersistedTabData spyCriticalPersistedTabData =
-                    spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
-            Assert.assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
-            Assert.assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_B);
-            Assert.assertEquals(USER_AGENT_B, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(2)).save();
-
-            spyCriticalPersistedTabData.setUserAgent(USER_AGENT_A);
-            Assert.assertEquals(USER_AGENT_A, spyCriticalPersistedTabData.getUserAgent());
-            verify(spyCriticalPersistedTabData, times(3)).save();
-        }
-    }
-
     @SmallTest
     @Test
     public void testConvertTabLaunchTypeToProtoLaunchType() {
@@ -585,37 +555,6 @@ public class CriticalPersistedTabDataTest {
                 CriticalPersistedTabDataProto.LaunchTypeAtCreation.values()) {
             if (type == CriticalPersistedTabDataProto.LaunchTypeAtCreation.UNKNOWN) continue;
             CriticalPersistedTabData.getLaunchType(type);
-        }
-    }
-
-    @SmallTest
-    @Test
-    public void testConvertTabUserAgentToProtoUserAgentType() {
-        for (@TabUserAgent Integer tabUserAgent = 0; tabUserAgent <= TabUserAgent.SIZE;
-                tabUserAgent++) {
-            CriticalPersistedTabDataProto.UserAgentType protoUserAgentType =
-                    CriticalPersistedTabData.getUserAgentType(tabUserAgent);
-            Assert.assertNotEquals("TabUserAgent value is invalid.", protoUserAgentType,
-                    CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN);
-            if (tabUserAgent != TabUserAgent.SIZE) continue;
-            Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
-                    protoUserAgentType,
-                    CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_SIZE);
-        }
-    }
-
-    @SmallTest
-    @Test
-    public void testConvertProtoUserAgentTypeToTabUserAgent() {
-        for (CriticalPersistedTabDataProto.UserAgentType type :
-                CriticalPersistedTabDataProto.UserAgentType.values()) {
-            if (type == CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN) continue;
-            @TabUserAgent
-            Integer tabUserAgent = CriticalPersistedTabData.getUserAgentType(type);
-            Assert.assertNotNull("ProtoUserAgentType value is invalid.", tabUserAgent);
-            if (type != CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_SIZE) continue;
-            Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
-                    (int) tabUserAgent, TabUserAgent.SIZE);
         }
     }
 }

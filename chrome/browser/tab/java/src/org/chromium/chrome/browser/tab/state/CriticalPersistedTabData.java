@@ -20,7 +20,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
@@ -76,8 +75,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
     private ObserverList<CriticalPersistedTabDataObserver> mObservers =
             new ObserverList<CriticalPersistedTabDataObserver>();
     private boolean mShouldSaveForTesting;
-    /** Tab level Request Desktop Site setting. */
-    private @Nullable @TabUserAgent Integer mUserAgent;
 
     @VisibleForTesting
     protected CriticalPersistedTabData(Tab tab) {
@@ -93,17 +90,19 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param parentId parent identiifer for the {@link Tab}
      * @param rootId root identifier for the {@link Tab}
      * @param timestampMillis creation timestamp for the {@link Tab}
+     * @param contentStateBytes content state bytes for the {@link Tab}
      * @param contentStateVersion content state version for the {@link Tab}
      * @param openerAppId identifier for app opener
      * @param themeColor theme color
      * @param launchTypeAtCreation launch type at creation
-     * @param userAgent user agent for the {@link Tab}
+     * @param persistedTabDataStorage storage for {@link PersistedTabData}
+     * @param persistedTabDataId identifier for {@link PersistedTabData} in storage
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     CriticalPersistedTabData(Tab tab, String url, String title, int parentId, int rootId,
             long timestampMillis, WebContentsState webContentsState, int contentStateVersion,
             String openerAppId, int themeColor,
-            @Nullable @TabLaunchType Integer launchTypeAtCreation, @TabUserAgent int userAgent) {
+            @Nullable @TabLaunchType Integer launchTypeAtCreation) {
         this(tab);
         mUrl = url == null || url.isEmpty() ? GURL.emptyGURL() : new GURL(url);
         mTitle = title;
@@ -115,7 +114,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mOpenerAppId = openerAppId;
         mThemeColor = themeColor;
         mTabLaunchTypeAtCreation = launchTypeAtCreation;
-        mUserAgent = userAgent;
     }
 
     /**
@@ -204,9 +202,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static CriticalPersistedTabData build(Tab tab) {
         // CriticalPersistedTabData is initialized with default values
-        CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
-                "", Tab.INVALID_TAB_ID, tab.getId(), INVALID_TIMESTAMP, null, -1, "",
-                UNSPECIFIED_THEME_COLOR, null, TabUserAgent.DEFAULT);
+        CriticalPersistedTabData criticalPersistedTabData =
+                new CriticalPersistedTabData(tab, "", "", Tab.INVALID_TAB_ID, tab.getId(),
+                        INVALID_TIMESTAMP, null, -1, "", UNSPECIFIED_THEME_COLOR, null);
         criticalPersistedTabData.save();
         return criticalPersistedTabData;
     }
@@ -236,11 +234,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             mThemeColor = criticalPersistedTabDataProto.getThemeColor();
             mTabLaunchTypeAtCreation =
                     getLaunchType(criticalPersistedTabDataProto.getLaunchTypeAtCreation());
-            if (criticalPersistedTabDataProto.hasUserAgent()) {
-                mUserAgent = getUserAgentType(criticalPersistedTabDataProto.getUserAgent());
-            } else {
-                mUserAgent = TabUserAgent.UNSET;
-            }
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,
@@ -354,53 +347,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
     }
 
-    @VisibleForTesting
-    static @Nullable @TabUserAgent Integer getUserAgentType(
-            CriticalPersistedTabDataProto.UserAgentType protoUserAgent) {
-        switch (protoUserAgent) {
-            case DEFAULT:
-                return TabUserAgent.DEFAULT;
-            case MOBILE:
-                return TabUserAgent.MOBILE;
-            case DESKTOP:
-                return TabUserAgent.DESKTOP;
-            case UNSET:
-                return TabUserAgent.UNSET;
-            case USER_AGENT_SIZE:
-                return TabUserAgent.SIZE;
-            default:
-                assert false : "Unexpected deserialization of UserAgentType: " + protoUserAgent;
-                // shouldn't happen
-                return null;
-        }
-    }
-
-    @VisibleForTesting
-    static CriticalPersistedTabDataProto.UserAgentType getUserAgentType(
-            @Nullable @TabUserAgent Integer protoUserAgent) {
-        if (protoUserAgent == null) {
-            assert false : "TabUserAgent should never be null.";
-            // shouldn't happen
-            return CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN;
-        }
-        switch (protoUserAgent) {
-            case TabUserAgent.DEFAULT:
-                return CriticalPersistedTabDataProto.UserAgentType.DEFAULT;
-            case TabUserAgent.MOBILE:
-                return CriticalPersistedTabDataProto.UserAgentType.MOBILE;
-            case TabUserAgent.DESKTOP:
-                return CriticalPersistedTabDataProto.UserAgentType.DESKTOP;
-            case TabUserAgent.UNSET:
-                return CriticalPersistedTabDataProto.UserAgentType.UNSET;
-            case TabUserAgent.SIZE:
-                return CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_SIZE;
-            default:
-                assert false : "Unexpected serialization of UserAgentType: " + protoUserAgent;
-                // shouldn't happen
-                return CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN;
-        }
-    }
-
     private static WebContentsState getWebContentsStateFromTab(Tab tab) {
         // Native call returns null when buffer allocation needed to serialize the state failed.
         ByteBuffer buffer = getWebContentsStateAsByteBuffer(tab);
@@ -444,8 +390,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
                               .setContentStateVersion(mContentStateVersion)
                               .setOpenerAppId(mOpenerAppId == null ? "" : mOpenerAppId)
                               .setThemeColor(mThemeColor)
-                              .setLaunchTypeAtCreation(getLaunchType(mTabLaunchTypeAtCreation))
-                              .setUserAgent(getUserAgentType(mUserAgent));
+                              .setLaunchTypeAtCreation(getLaunchType(mTabLaunchTypeAtCreation));
         }
         return () -> {
             try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
@@ -670,24 +615,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             return;
         }
         mTabLaunchTypeAtCreation = launchTypeAtCreation;
-        save();
-    }
-
-    /**
-     * @return user agent type for the {@link Tab}
-     */
-    public @TabUserAgent int getUserAgent() {
-        return mUserAgent;
-    }
-
-    /**
-     * Set user agent type for the {@link Tab}
-     */
-    public void setUserAgent(@TabUserAgent int userAgent) {
-        if (mUserAgent == userAgent) {
-            return;
-        }
-        mUserAgent = userAgent;
         save();
     }
 
