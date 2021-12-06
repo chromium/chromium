@@ -222,7 +222,15 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
       }
       break;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
+#if defined(OS_WIN)
+      // On windows with MediaFoundationD3D11VideoCapture if the
+      // texture capture path fails, a ShMem buffer might be produced instead.
+      DCHECK(buffer_handle_->is_shared_buffer_handle());
+      CloneSharedBufferHandle(buffer_handle_->get_shared_buffer_handle(),
+                              &result);
+#else
       NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
+#endif
       break;
   }
   return result;

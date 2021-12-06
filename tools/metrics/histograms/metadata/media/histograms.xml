@@ -4715,6 +4715,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.D3DDeviceRemovedReason" enum="Hresult"
+    expires_after="2022-06-17">
+  <owner>ilnik@chromium.org</owner>
+  <owner>video-cmi-mpp@chromium.org</owner>
+  <summary>
+    Error codes received by VideoCaptureDeviceMFWin when checking for D3D11
+    device removal reason.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.Device.CapturePixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2022-05-01">
   <owner>ilnik@google.com</owner>

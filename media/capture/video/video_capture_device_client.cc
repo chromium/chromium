@@ -571,7 +571,16 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
         media::mojom::VideoBufferHandle::New();
-    switch (target_buffer_type_) {
+    VideoCaptureBufferType target_buffer_type = target_buffer_type_;
+#if defined(OS_WIN)
+    // If MediaFoundationD3D11VideoCapture fails, a shared memory buffer may be
+    // sent instead.
+    if (target_buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
+        pixel_format != PIXEL_FORMAT_NV12) {
+      target_buffer_type = VideoCaptureBufferType::kSharedMemory;
+    }
+#endif
+    switch (target_buffer_type) {
       case VideoCaptureBufferType::kSharedMemory:
         buffer_handle->set_shared_buffer_handle(
             buffer_pool_->DuplicateAsMojoBuffer(buffer_id));
