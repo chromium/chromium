@@ -517,5 +517,5 @@ bool PluginVarTracker::StopTrackingSharedMemoryRegion(
   return false;
 }
 
-}  // namesace proxy
+}  // namespace proxy
 }  // namespace ppapi
