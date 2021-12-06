@@ -6,6 +6,7 @@
 
 // clang-format off
 import 'chrome://settings/settings.js';
+import 'chrome://settings/lazy_load.js';
 
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -168,10 +169,21 @@ suite('SettingsBasicPage', () => {
     whenDone = eventToPromise('show-container', page);
     // Navigate specifically to a subpage that is *not* a child of
     // TOP_LEVEL_EQUIVALENT_ROUTE .
-    Router.getInstance().navigateTo(routes.FONTS);
+    Router.getInstance().navigateTo(routes.COOKIES);
     await whenDone;
     await flushTasks();
-    assertActiveSubpage(routes.FONTS.section);
+    assertActiveSubpage(routes.COOKIES.section);
+
+    // RouteState.SUBPAGE -> RoutState.DIALOG
+    Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
+    await flushTasks();
+
+    // RouteState.DIALOG -> RoutState.SUBPAGE
+    whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.SYNC);
+    await whenDone;
+    await flushTasks();
+    assertActiveSubpage(routes.SYNC.section);
   });
 
   // Test cases where a settings-section is appearing next to another section

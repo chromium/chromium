@@ -369,7 +369,16 @@ export const MainPageMixin = dedupingMixin(
             return;
           }
 
-          // Nothing to do for when oldState === RouteState.DIALOG.
+          if (oldState === RouteState.DIALOG) {
+            if (newState === RouteState.SUBPAGE) {
+              // The only known cases currently for such a transition are from
+              // 1) /signOut to /syncSetup
+              // 2) /clearBrowserData to /syncSetup
+              this.switchToSections_(newRoute);
+              this.enterSubpage_(newRoute);
+            }
+            // Nothing to do for all other cases.
+          }
         }
 
         /**
