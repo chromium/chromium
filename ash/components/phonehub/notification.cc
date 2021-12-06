@@ -6,11 +6,17 @@
 
 #include <tuple>
 
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 
 namespace ash {
 namespace phonehub {
+
+const char kVisibleAppName[] = "visible_app_name";
+const char kPackageName[] = "package_name";
+const char kUserId[] = "user_id";
+const char kIcon[] = "icon";
 
 Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
                                        const std::string& package_name,
@@ -34,6 +40,44 @@ bool Notification::AppMetadata::operator==(const AppMetadata& other) const {
 
 bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {
   return !(*this == other);
+}
+
+base::Value Notification::AppMetadata::ToValue() const {
+  scoped_refptr<base::RefCountedMemory> png_data = icon.As1xPNGBytes();
+
+  base::Value val(base::Value::Type::DICTIONARY);
+  val.SetKey(kVisibleAppName, base::Value(visible_app_name));
+  val.SetKey(kPackageName, base::Value(package_name));
+  val.SetDoubleKey(kUserId, user_id);
+  val.SetKey(kIcon, base::Value(base::Base64Encode(*png_data)));
+  return val;
+}
+
+// static
+Notification::AppMetadata Notification::AppMetadata::FromValue(
+    const base::Value& value) {
+  DCHECK(value.is_dict());
+  DCHECK(value.FindKey(kVisibleAppName));
+  DCHECK(value.FindKey(kVisibleAppName)->is_string());
+  DCHECK(value.FindKey(kPackageName));
+  DCHECK(value.FindKey(kPackageName)->is_string());
+  DCHECK(value.FindKey(kUserId));
+  DCHECK(value.FindKey(kUserId)->is_double());
+  DCHECK(value.FindKey(kIcon));
+  DCHECK(value.FindKey(kIcon)->is_string());
+
+  const base::Value* visible_app_name_value = value.FindPath(kVisibleAppName);
+  std::u16string visible_app_name_string_value;
+  visible_app_name_value->GetAsString(&visible_app_name_string_value);
+
+  std::string icon_str;
+  base::Base64Decode(*(value.FindStringPath(kIcon)), &icon_str);
+  gfx::Image decode_icon = gfx::Image::CreateFrom1xPNGBytes(
+      base::RefCountedString::TakeString(&icon_str));
+
+  return Notification::AppMetadata(
+      visible_app_name_string_value, *(value.FindStringPath(kPackageName)),
+      decode_icon, *(value.FindDoublePath(kUserId)));
 }
 
 Notification::Notification(

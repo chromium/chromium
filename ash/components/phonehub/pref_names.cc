@@ -53,6 +53,10 @@ const char kNeedsOneTimeNotificationAccessUpdate[] =
 // the numerical value associated with the ScreenLockManager::LockStatus enum.
 const char kScreenLockStatus[] = "cros.phonehub.screen_lock_status";
 
+// The last provided recent app information before the Eche disconnects. The
+// pref stores the vector value associated with Notification::AppMetadata.
+const char kRecentAppsHistory[] = "cros.phonehub.recent_apps_history";
+
 }  // namespace prefs
 }  // namespace phonehub
 }  // namespace ash

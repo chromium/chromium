@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 
 #include <memory>
 
 #include "ash/components/phonehub/notification.h"
+#include "ash/components/phonehub/pref_names.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -42,7 +44,9 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    interaction_handler_ = std::make_unique<RecentAppsInteractionHandler>();
+    RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
+    interaction_handler_ =
+        std::make_unique<RecentAppsInteractionHandlerImpl>(&pref_service_);
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
   }
 
@@ -50,15 +54,37 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     interaction_handler_->RemoveRecentAppClickObserver(&fake_click_handler_);
   }
 
+  void Initialize() {
+    const char16_t app_visible_name1[] = u"Fake App";
+    const char package_name1[] = "com.fakeapp";
+    const int64_t expected_user_id1 = 1;
+    auto app_metadata1 = Notification::AppMetadata(
+        app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
+
+    const char16_t app_visible_name2[] = u"Fake App2";
+    const char package_name2[] = "com.fakeapp2";
+    const int64_t expected_user_id2 = 2;
+    auto app_metadata2 = Notification::AppMetadata(
+        app_visible_name2, package_name2, gfx::Image(), expected_user_id2);
+
+    std::vector<base::Value> app_metadata_value_list;
+    app_metadata_value_list.push_back(app_metadata1.ToValue());
+    app_metadata_value_list.push_back(app_metadata2.ToValue());
+
+    pref_service_.Set(prefs::kRecentAppsHistory,
+                      base::Value(std::move(app_metadata_value_list)));
+  }
+
   std::string GetPackageName() {
     return fake_click_handler_.get_package_name();
   }
 
-  RecentAppsInteractionHandler& handler() { return *interaction_handler_; }
+  RecentAppsInteractionHandlerImpl& handler() { return *interaction_handler_; }
 
  private:
   FakeClickHandler fake_click_handler_;
-  std::unique_ptr<RecentAppsInteractionHandler> interaction_handler_;
+  std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
@@ -173,6 +199,24 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
   EXPECT_EQ(package_name4, recent_apps_metadata_result[2].package_name);
   EXPECT_EQ(package_name3, recent_apps_metadata_result[3].package_name);
   EXPECT_EQ(package_name2, recent_apps_metadata_result[4].package_name);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       FetchRecentAppMetadataListFromPreference) {
+  Initialize();
+
+  const char package_name1[] = "com.fakeapp";
+  const char package_name2[] = "com.fakeapp2";
+  std::vector<Notification::AppMetadata> recent_apps_metadata_result =
+      handler().FetchRecentAppMetadataList();
+
+  const size_t number_of_recent_apps_in_preference = 2;
+  recent_apps_metadata_result = handler().FetchRecentAppMetadataList();
+  EXPECT_EQ(number_of_recent_apps_in_preference,
+            recent_apps_metadata_result.size());
+
+  EXPECT_EQ(package_name1, recent_apps_metadata_result[0].package_name);
+  EXPECT_EQ(package_name2, recent_apps_metadata_result[1].package_name);
 }
 
 }  // namespace phonehub

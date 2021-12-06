@@ -21,28 +21,27 @@ namespace phonehub {
 // observer via this handler.
 class RecentAppsInteractionHandler {
  public:
-  RecentAppsInteractionHandler();
   RecentAppsInteractionHandler(const RecentAppsInteractionHandler&) = delete;
-  RecentAppsInteractionHandler* operator=(const RecentAppsInteractionHandler&) =
+  RecentAppsInteractionHandler& operator=(const RecentAppsInteractionHandler&) =
       delete;
   virtual ~RecentAppsInteractionHandler();
 
-  virtual void NotifyRecentAppClicked(
-      const Notification::AppMetadata& app_metadata);
   virtual void AddRecentAppClickObserver(RecentAppClickObserver* observer);
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
 
+  virtual void NotifyRecentAppClicked(
+      const Notification::AppMetadata& app_metadata) = 0;
   virtual void NotifyRecentAppAddedOrUpdated(
       const Notification::AppMetadata& app_metadata,
-      base::Time last_accessed_timestamp);
-  virtual std::vector<Notification::AppMetadata> FetchRecentAppMetadataList();
+      base::Time last_accessed_timestamp) = 0;
+  virtual std::vector<Notification::AppMetadata>
+  FetchRecentAppMetadataList() = 0;
+
+ protected:
+  RecentAppsInteractionHandler();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(RecentAppsInteractionHandlerTest, RecentAppsUpdated);
-
   base::ObserverList<RecentAppClickObserver> observer_list_;
-  std::vector<std::pair<Notification::AppMetadata, base::Time>>
-      recent_app_metadata_list_;
 };
 
 }  // namespace phonehub

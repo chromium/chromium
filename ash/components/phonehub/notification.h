@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
@@ -34,6 +35,9 @@ class Notification {
 
     bool operator==(const AppMetadata& other) const;
     bool operator!=(const AppMetadata& other) const;
+
+    static AppMetadata FromValue(const base::Value& value);
+    base::Value ToValue() const;
 
     std::u16string visible_app_name;
     std::string package_name;

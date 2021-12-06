@@ -26,7 +26,7 @@
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/components/phonehub/phone_status_processor.h"
-#include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/components/phonehub/tether_controller_impl.h"
 #include "ash/components/phonehub/user_action_recorder_impl.h"
@@ -125,7 +125,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           phone_model_.get())),
       recent_apps_interaction_handler_(
           features::IsPhoneHubRecentAppsEnabled()
-              ? std::make_unique<RecentAppsInteractionHandler>()
+              ? std::make_unique<RecentAppsInteractionHandlerImpl>(pref_service)
               : nullptr),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),

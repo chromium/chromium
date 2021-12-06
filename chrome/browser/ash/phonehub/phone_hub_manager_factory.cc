@@ -9,6 +9,7 @@
 #include "ash/components/phonehub/notification_access_manager_impl.h"
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "ash/components/phonehub/phone_hub_manager_impl.h"
+#include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
 #include "ash/components/phonehub/user_action_recorder_impl.h"
 #include "ash/constants/ash_features.h"
@@ -168,6 +169,7 @@ void PhoneHubManagerFactory::RegisterProfilePrefs(
   NotificationAccessManagerImpl::RegisterPrefs(registry);
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
   ScreenLockManagerImpl::RegisterPrefs(registry);
+  RecentAppsInteractionHandlerImpl::RegisterPrefs(registry);
 }
 
 }  // namespace phonehub
