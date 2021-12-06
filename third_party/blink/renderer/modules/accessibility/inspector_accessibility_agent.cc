@@ -654,6 +654,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForAXObject(
   if (parent) {
     protocol_node->setParentId(String::Number(parent->AXObjectID()));
   } else {
+    DCHECK(ax_object.GetDocument() && ax_object.GetDocument()->GetFrame());
     auto& frame_token =
         ax_object.GetDocument()->GetFrame()->GetDevToolsFrameToken();
     protocol_node->setFrameId(IdentifiersFactory::IdFromToken(frame_token));
@@ -918,7 +919,7 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
   AXID ax_id = in_id.ToUInt();
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
 
-  if (!ax_object)
+  if (!ax_object || ax_object->IsDetached())
     return Response::InvalidParams("Invalid ID");
 
   *out_nodes =
@@ -971,6 +972,9 @@ void InspectorAccessibilityAgent::AddChildren(
   while (!reachable.IsEmpty()) {
     AXObject* descendant = reachable.back();
     reachable.pop_back();
+    if (descendant->IsDetached())
+      continue;
+
     // If the node is ignored or has no corresponding DOM node, we include
     // another layer of children.
     if (follow_ignored &&
@@ -1059,8 +1063,6 @@ Response InspectorAccessibilityAgent::queryAXTree(
 }
 
 void InspectorAccessibilityAgent::RefreshFrontendNodes() {
-  if (!enabled_.Get())
-    return;
   auto nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
   for (AXObject* changed_node : dirty_nodes_) {
@@ -1075,6 +1077,8 @@ void InspectorAccessibilityAgent::RefreshFrontendNodes() {
 
 void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
                                                ax::mojom::blink::Event event) {
+  if (!enabled_.Get())
+    return;
   DCHECK(ax_object->AccessibilityIsIncludedInTree());
   switch (event) {
     case ax::mojom::blink::Event::kLoadComplete:
@@ -1088,6 +1092,7 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
       break;
     default:
       AXObjectModified(ax_object, false);
+      RefreshFrontendNodes();
       break;
   }
 }
@@ -1100,6 +1105,8 @@ bool InspectorAccessibilityAgent::MarkAXObjectDirty(AXObject* ax_object) {
 
 void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
                                                    bool subtree) {
+  if (!enabled_.Get())
+    return;
   DCHECK(ax_object->AccessibilityIsIncludedInTree());
   if (subtree) {
     HeapVector<Member<AXObject>> reachable;
@@ -1117,7 +1124,6 @@ void InspectorAccessibilityAgent::AXObjectModified(AXObject* ax_object,
   } else {
     MarkAXObjectDirty(ax_object);
   }
-  RefreshFrontendNodes();
 }
 
 void InspectorAccessibilityAgent::EnableAndReset() {
