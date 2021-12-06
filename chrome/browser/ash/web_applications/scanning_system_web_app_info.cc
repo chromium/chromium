@@ -33,8 +33,12 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForScanningSystemWebApp() {
           {"scanning_app_icon_256.png", 256, IDR_SCANNING_APP_ICON_256},
       },
       *info);
-  info->theme_color = 0xFFFFFFFF;
-  info->background_color = 0xFFFFFFFF;
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
