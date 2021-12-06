@@ -69,11 +69,6 @@ class WTF_EXPORT Partitions {
     return buffer_root_;
   }
 
-  ALWAYS_INLINE static base::ThreadUnsafePartitionRoot* LayoutPartition() {
-    DCHECK(initialized_);
-    return layout_root_;
-  }
-
   ALWAYS_INLINE static size_t ComputeAllocationSize(size_t count, size_t size) {
     base::CheckedNumeric<size_t> total = count;
     total *= size;
@@ -119,7 +114,6 @@ class WTF_EXPORT Partitions {
 #endif
   static base::ThreadSafePartitionRoot* array_buffer_root_;
   static base::ThreadSafePartitionRoot* buffer_root_;
-  static base::ThreadUnsafePartitionRoot* layout_root_;
 };
 
 }  // namespace WTF

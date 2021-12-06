@@ -69,7 +69,6 @@ base::ThreadSafePartitionRoot* Partitions::fast_malloc_root_ = nullptr;
 #endif
 base::ThreadSafePartitionRoot* Partitions::array_buffer_root_ = nullptr;
 base::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
-base::ThreadUnsafePartitionRoot* Partitions::layout_root_ = nullptr;
 
 // static
 void Partitions::Initialize() {
@@ -132,7 +131,6 @@ bool Partitions::InitializeOnce() {
                           lazy_commit});
 
   buffer_root_ = buffer_allocator->root();
-  layout_root_ = layout_allocator->root();
 
 #if defined(PA_ALLOW_PCSCAN)
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
@@ -211,7 +209,6 @@ void Partitions::DumpMemoryStats(
                                       partition_stats_dumper);
   }
   BufferPartition()->DumpStats("buffer", is_light_dump, partition_stats_dumper);
-  LayoutPartition()->DumpStats("layout", is_light_dump, partition_stats_dumper);
 }
 
 namespace {
@@ -253,8 +250,6 @@ size_t Partitions::TotalSizeOfCommittedPages() {
   }
   total_size +=
       TS_UNCHECKED_READ(BufferPartition()->total_size_of_committed_pages);
-  total_size +=
-      TS_UNCHECKED_READ(LayoutPartition()->total_size_of_committed_pages);
   return total_size;
 }
 
