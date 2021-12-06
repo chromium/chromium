@@ -9,7 +9,7 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/min_touch_target_size"
     style="@style/AssistiveChip"
-    app:chipColor="@color/default_bg_color"
+    app:chipColor="@macro/default_bg_color"
     app:cornerRadius="@dimen/autofill_assistant_button_corner_radius"
     app:iconWidth="24dp"
     app:iconHeight="24dp"

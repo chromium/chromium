@@ -7,11 +7,10 @@
     tools:ignore="UnusedResources">
     <item>
         <shape android:shape="rectangle" >
-            <solid android:color="@color/default_bg_color" />
+            <solid android:color="@macro/default_bg_color" />
             <corners
                 android:topRightRadius="16dp"
                 android:topLeftRadius="16dp" />
         </shape>
     </item>
 </layer-list>
-

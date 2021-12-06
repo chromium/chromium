@@ -12,7 +12,7 @@
         <item name="switchStyle">@style/SwitchMaterialStyle</item>
 
         <!-- Window Properties -->
-        <item name="android:windowBackground">@color/default_bg_color</item>
+        <item name="android:windowBackground">@macro/default_bg_color</item>
 
         <!-- Status bar color -->
         <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
@@ -197,7 +197,7 @@
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">@macro/default_text_color</item>
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:background">@color/default_bg_color</item>
+        <item name="android:background">@macro/default_bg_color</item>
     </style>
 
     <!-- Text styles -->

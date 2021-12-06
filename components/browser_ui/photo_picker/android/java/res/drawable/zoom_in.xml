@@ -10,7 +10,7 @@
     android:viewportHeight="24">
 
     <path
-        android:fillColor="@color/default_bg_color"
+        android:fillColor="@macro/default_bg_color"
         android:pathData="M0 12a12 12 0 1 1 24 0a12 12 0 1 1 -24 0"/>
     <path
         android:fillColor="@macro/default_icon_color"
