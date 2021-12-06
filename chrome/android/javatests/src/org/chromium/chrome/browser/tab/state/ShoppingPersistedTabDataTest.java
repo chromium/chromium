@@ -93,8 +93,10 @@ public class ShoppingPersistedTabDataTest {
                 mOptimizationGuideBridgeJniMock,
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersistedTabDataConfiguration.setUseTestConfig(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
+            PersistedTabDataConfiguration.setUseTestConfig(true);
+        });
         Profile.setLastUsedProfileForTesting(mProfileMock);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
     }

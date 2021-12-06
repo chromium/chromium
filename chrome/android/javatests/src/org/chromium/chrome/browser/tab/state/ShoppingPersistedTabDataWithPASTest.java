@@ -86,6 +86,7 @@ public class ShoppingPersistedTabDataWithPASTest {
                 OptimizationGuideDecision.TRUE, null);
         doReturn(mPageAnnotationsServiceMock).when(mServiceFactoryMock).getForLastUsedProfile();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
             PersistedTabDataConfiguration.setUseTestConfig(true);
             Profile.setLastUsedProfileForTesting(mProfileMock);
             ShoppingPersistedTabData.sPageAnnotationsServiceFactory = mServiceFactoryMock;

@@ -44,11 +44,13 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -87,6 +89,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             new PageAnnotationsServiceFactory();
 
     private static boolean sPriceTrackingWithOptimizationGuideForTesting;
+
+    private static Queue<ShoppingDataRequest> sShoppingDataRequests = new ArrayDeque<>();
+    private static boolean sDelayedInitFinished;
 
     public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
 
@@ -146,6 +151,24 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             this.priceMicros = shoppingPersistedTabData.getPriceMicros();
             this.previousPriceMicros = shoppingPersistedTabData.getPreviousPriceMicros();
             this.lastPriceChangeTimeMs = shoppingPersistedTabData.getLastPriceChangeTimeMs();
+        }
+    }
+
+    /**
+     * Used to defer initialization/acquisition of {@link ShoppingPersistedTabData}
+     * until DeferredStartup.
+     */
+    private static class ShoppingDataRequest {
+        public Tab tab;
+        public Callback<ShoppingPersistedTabData> callback;
+
+        /**
+         * @param tab {@link Tab} {@link ShoppingPersistedTabData} is being acquired for
+         * @param callback {@link Callback} {@link ShoppingPersistedTabData} is passed back in
+         */
+        ShoppingDataRequest(Tab tab, Callback<ShoppingPersistedTabData> callback) {
+            this.tab = tab;
+            this.callback = callback;
         }
     }
 
@@ -407,6 +430,15 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * - Uninitialized Tab
      */
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
+        if (sDelayedInitFinished) {
+            fromWithoutDelayedInit(tab, callback);
+        } else {
+            sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
+        }
+    }
+
+    private static void fromWithoutDelayedInit(
+            Tab tab, Callback<ShoppingPersistedTabData> callback) {
         // Shopping related data is not available for incognito or Custom Tabs. For example,
         // for incognito Tabs it is not possible to call a backend service with the user's URL.
         if (tab.isIncognito() || tab.isCustomTab()) {
@@ -1019,6 +1051,36 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                             callback.onResult(decision == OptimizationGuideDecision.TRUE
                                     || decision == OptimizationGuideDecision.UNKNOWN);
                         });
+    }
+
+    /**
+     * Called when it is appropriate to initialize and acquire {@link ShoppingPersistedTabData}.
+     * Initialization and acquisition are delayed to avoid consuming system resources when
+     * the system is busy with other urgent tasks on startup.
+     */
+    public static void onDeferredStartup() {
+        processNextItemOnQueue();
+    }
+
+    private static void processNextItemOnQueue() {
+        if (sShoppingDataRequests.isEmpty()) {
+            sDelayedInitFinished = true;
+            return;
+        }
+        ShoppingDataRequest shoppingDataRequest = sShoppingDataRequests.poll();
+        if (shoppingDataRequest.tab.isDestroyed()) {
+            // If Tab was destroyed we should just return null and not try and
+            // create and associate {@link ShoppingPersistedTabData} with a
+            // destroyed {@link Tab}.
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    () -> { shoppingDataRequest.callback.onResult(null); });
+            processNextItemOnQueue();
+            return;
+        }
+        ShoppingPersistedTabData.fromWithoutDelayedInit(shoppingDataRequest.tab, (res) -> {
+            shoppingDataRequest.callback.onResult(res);
+            processNextItemOnQueue();
+        });
     }
 
     /**

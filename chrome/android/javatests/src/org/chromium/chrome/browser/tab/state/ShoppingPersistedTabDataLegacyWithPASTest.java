@@ -83,6 +83,7 @@ public class ShoppingPersistedTabDataLegacyWithPASTest {
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
             PersistedTabDataConfiguration.setUseTestConfig(true);
             Profile.setLastUsedProfileForTesting(mProfileMock);
             doReturn(mPageAnnotationsServiceMock).when(mServiceFactoryMock).getForLastUsedProfile();

@@ -880,6 +880,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     @UiThreadTest
     public void testPriceDropEndToEnd() {
         ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
+        ShoppingPersistedTabData.onDeferredStartup();
         PersistedTabDataConfiguration.setUseTestConfig(true);
         setPriceTrackingEnabledForTesting(true);
         mockCurrencyFormatter();
