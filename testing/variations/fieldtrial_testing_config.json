@@ -5852,7 +5852,7 @@
             ]
         }
     ],
-    "PageContentAnnotationsAndroid": [
+    "PageContentAnnotations": [
         {
             "platforms": [
                 "android"
@@ -5869,9 +5869,7 @@
                     ]
                 }
             ]
-        }
-    ],
-    "PageContentAnnotationsDesktop": [
+        },
         {
             "platforms": [
                 "chromeos",
