@@ -1236,7 +1236,7 @@ bool PrefsUtil::IsPrefSupervisorControlled(const std::string& pref_name) {
       pref_name != prefs::kBrowserAddPersonEnabled) {
     return false;
   }
-  return profile_->IsSupervised();
+  return profile_->IsChild();
 }
 
 bool PrefsUtil::IsPrefUserModifiable(const std::string& pref_name) {

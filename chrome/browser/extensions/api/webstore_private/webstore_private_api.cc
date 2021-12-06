@@ -1121,7 +1121,7 @@ WebstorePrivateIsPendingCustodianApprovalFunction::Run() {
       IsPendingCustodianApproval::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!Profile::FromBrowserContext(browser_context())->IsSupervised())
+  if (!Profile::FromBrowserContext(browser_context())->IsChild())
     return RespondNow(BuildResponse(false));
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());

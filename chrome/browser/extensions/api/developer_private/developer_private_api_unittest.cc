@@ -1881,6 +1881,7 @@ class DeveloperPrivateApiSupervisedUserUnitTest
 };
 
 // Tests trying to call loadUnpacked when the profile shouldn't be allowed to.
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
        LoadUnpackedFailsForSupervisedUsers) {
   std::unique_ptr<content::WebContents> web_contents(
@@ -1889,7 +1890,7 @@ TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
   api::EntryPicker::SkipPickerAndAlwaysSelectPathForTest(&path);
 
-  ASSERT_TRUE(profile()->IsSupervised());
+  ASSERT_TRUE(profile()->IsChild());
 
   scoped_refptr<ExtensionFunction> function =
       base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
@@ -1898,5 +1899,6 @@ TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
       function.get(), "[]", browser());
   EXPECT_THAT(error, testing::HasSubstr("Supervised"));
 }
+#endif
 
 }  // namespace extensions

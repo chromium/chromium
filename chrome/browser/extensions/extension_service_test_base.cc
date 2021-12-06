@@ -91,8 +91,6 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   if (params.profile_is_supervised) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     profile_builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-#else
-    profile_builder.SetSupervisedUserId("asdf");
 #endif
   }
 
