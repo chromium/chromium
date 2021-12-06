@@ -39,7 +39,7 @@ class MockDelegate : public AssistiveWindowControllerDelegate {
 
 class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
  public:
-  TestAccessibilityView() {}
+  TestAccessibilityView() = default;
   void VerifyAnnouncement(const std::u16string& expected_text) {
     EXPECT_EQ(text_, expected_text);
   }
@@ -72,6 +72,11 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
         ->set_layout_provider(ChromeLayoutProvider::CreateLayoutProvider());
   }
 
+  void TearDown() override {
+    controller_.reset();
+    ChromeAshTestBase::TearDown();
+  }
+
   std::vector<std::u16string> Candidates() {
     std::vector<std::u16string> candidates;
     for (int i = 0; i < 3; i++) {
@@ -99,6 +104,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
         /*disabled_features=*/{});
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;
@@ -106,12 +112,6 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   ui::ime::AssistiveWindowButton emoji_button_;
   AssistiveWindowProperties emoji_window_;
   std::unique_ptr<TestAccessibilityView> accessibility_view_;
-  base::test::ScopedFeatureList feature_list_;
-
-  void TearDown() override {
-    controller_.reset();
-    ChromeAshTestBase::TearDown();
-  }
 };
 
 TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
