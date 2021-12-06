@@ -47,18 +47,18 @@ std::u16string GetAccessibleNameFromTree(views::View* view) {
 
 namespace payments {
 
+PaymentRequestRowView::PaymentRequestRowView()
+    : PaymentRequestRowView(PressedCallback(),
+                            /*clickable=*/true,
+                            gfx::Insets()) {}
+
 PaymentRequestRowView::PaymentRequestRowView(PressedCallback callback,
                                              bool clickable,
                                              const gfx::Insets& insets)
     : views::Button(std::move(callback)),
       clickable_(clickable),
-      insets_(insets),
-      previous_row_(nullptr) {
-  // When not clickable, use Button's STATE_DISABLED but don't set our
-  // View state to disabled. The former ensures we aren't clickable, the
-  // latter also disables us and our children for event handling.
-  views::Button::SetState(clickable_ ? views::Button::STATE_NORMAL
-                                     : views::Button::STATE_DISABLED);
+      row_insets_(insets) {
+  UpdateButtonState();
   ShowBottomSeparator();
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 }
@@ -67,6 +67,26 @@ PaymentRequestRowView::~PaymentRequestRowView() = default;
 
 bool PaymentRequestRowView::GetClickable() const {
   return clickable_;
+}
+void PaymentRequestRowView::SetClickable(bool clickable) {
+  if (clickable == clickable_)
+    return;
+  clickable_ = clickable;
+  UpdateButtonState();
+  OnPropertyChanged(&clickable_, views::PropertyEffects::kPropertyEffectsPaint);
+}
+
+gfx::Insets PaymentRequestRowView::GetRowInsets() const {
+  return row_insets_;
+}
+
+void PaymentRequestRowView::SetRowInsets(const gfx::Insets& row_insets) {
+  if (row_insets == row_insets_)
+    return;
+  row_insets_ = row_insets;
+  UpdateBottomSeparator();
+  OnPropertyChanged(&row_insets_,
+                    views::PropertyEffects::kPropertyEffectsPaint);
 }
 
 void PaymentRequestRowView::SetActiveBackground() {
@@ -97,8 +117,8 @@ void PaymentRequestRowView::UpdateBottomSeparator() {
   SetBorder(
       bottom_separator_visible_ && GetWidget()
           ? payments::CreatePaymentRequestRowBorder(
-                GetColorProvider()->GetColor(ui::kColorSeparator), insets_)
-          : views::CreateEmptyBorder(insets_));
+                GetColorProvider()->GetColor(ui::kColorSeparator), row_insets_)
+          : views::CreateEmptyBorder(row_insets_));
 }
 
 void PaymentRequestRowView::SetIsHighlighted(bool highlighted) {
@@ -113,6 +133,14 @@ void PaymentRequestRowView::SetIsHighlighted(bool highlighted) {
     if (previous_row_)
       previous_row_->ShowBottomSeparator();
   }
+}
+
+void PaymentRequestRowView::UpdateButtonState() {
+  // When not clickable, use Button's STATE_DISABLED but don't set our
+  // View state to disabled. The former ensures we aren't clickable, the
+  // latter also disables us and our children for event handling.
+  views::Button::SetState(clickable_ ? views::Button::STATE_NORMAL
+                                     : views::Button::STATE_DISABLED);
 }
 
 void PaymentRequestRowView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -150,7 +178,8 @@ void PaymentRequestRowView::OnBlur() {
 }
 
 BEGIN_METADATA(PaymentRequestRowView, views::Button)
-ADD_READONLY_PROPERTY_METADATA(bool, Clickable)
+ADD_PROPERTY_METADATA(bool, Clickable)
+ADD_PROPERTY_METADATA(gfx::Insets, RowInsets)
 END_METADATA
 
 }  // namespace payments
