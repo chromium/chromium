@@ -323,30 +323,19 @@ template("apple_toolchain") {
 
     tool("alink") {
       rspfile = "{{output}}.rsp"
+      rspfile_content = "{{inputs}}"
 
       if (!toolchain_uses_lld) {
-        # Note about -filelist: Apple's linker reads the file list file and
-        # interprets each newline-separated chunk of text as a file name. It
-        # doesn't do the things one would expect from the shell like unescaping
-        # or handling quotes. In contrast, when Ninja finds a file name with
-        # spaces, it single-quotes them in $inputs_newline as it would normally
-        # do for command-line arguments. Thus any source names with spaces, or
-        # label names with spaces (which GN bases the output paths on) will be
-        # corrupted by this process. Don't use spaces for source files or
-        # labels.
-        rspfile_content = "{{inputs_newline}}"
-
         script = rebase_path("//build/toolchain/apple/filter_libtool.py",
                              root_build_dir)
 
         # Specify explicit path for libtool.
         libtool = invoker.bin_path + "libtool"
-        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} -filelist $rspfile"
+        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} @$rspfile"
         description = "LIBTOOL-STATIC {{output}}"
       } else {
-        rspfile_content = "{{inputs}}"
         ar = "${prefix}llvm-ar"
-        command = "\"$ar\" {{arflags}} -r -c -s -D {{output}} \"@$rspfile\""
+        command = "\"$ar\" {{arflags}} -r -c -s -D {{output}} @$rspfile"
 
         # Remove the output file first so that ar doesn't try to modify the
         # existing file.
@@ -395,14 +384,14 @@ template("apple_toolchain") {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch
-      link_command += "{{ldflags}} -o \"$dylib\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
+      link_command += "{{ldflags}} -o \"$dylib\" \"@$rspfile\""
 
       replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
       extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
 
       command = "if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
 
-      rspfile_content = "{{inputs_newline}}"
+      rspfile_content = "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
 
       description = "SOLINK {{output}}"
 
@@ -442,13 +431,12 @@ template("apple_toolchain") {
       rspfile = sofile + ".rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" -Wl,-filelist,\"$rspfile\""
+      link_command =
+          "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" \"@$rspfile\""
       link_command += dsym_switch
-      link_command +=
-          " {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
       command = link_command
 
-      rspfile_content = "{{inputs_newline}}"
+      rspfile_content = "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
 
       description = "SOLINK_MODULE {{output}}"
 
@@ -473,17 +461,9 @@ template("apple_toolchain") {
       rspfile = "$outfile.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      # Note about -filelist: Apple's linker reads the file list file and
-      # interprets each newline-separated chunk of text as a file name. It
-      # doesn't do the things one would expect from the shell like unescaping
-      # or handling quotes. In contrast, when Ninja finds a file name with
-      # spaces, it single-quotes them in $inputs_newline as it would normally
-      # do for command-line arguments. Thus any source names with spaces, or
-      # label names with spaces (which GN bases the output paths on) will be
-      # corrupted by this process. Don't use spaces for source files or labels.
-      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
+      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" \"@$rspfile\""
       description = "LINK $outfile"
-      rspfile_content = "{{inputs_newline}}"
+      rspfile_content = "{{inputs}} {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
       outputs = [ outfile ]
 
       if (_enable_dsyms) {
