@@ -1918,6 +1918,34 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800
+      },
+      {
+        "args": [],
+        "cros_board": "kevin",
+        "cros_img": "kevin-release/R98-14362.0.0",
+        "name": "ozone_unittests_KEVIN_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600
+      },
+      {
+        "args": [],
+        "cros_board": "kevin",
+        "cros_img": "kevin-release/R98-14362.0.0",
+        "name": "viz_unittests_KEVIN_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600
       }
     ]
   },

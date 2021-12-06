@@ -4298,6 +4298,12 @@
         'tast_expr': '("group:mainline" && "dep:lacros" && "dep:lacros_unstable")',
         'timeout_sec': 10800,
       },
+      'ozone_unittests': {
+        'timeout_sec': 3600,
+      },
+      'viz_unittests': {
+        'timeout_sec': 3600,
+      },
     },
 
     'lacros_skylab_poc': {
@@ -4306,7 +4312,7 @@
         'timeout_sec': 10800,
       },
       'ozone_unittests': {
-        'timeout_sec': 10800,
+        'timeout_sec': 3600,
       },
     },
 
