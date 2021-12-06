@@ -271,6 +271,6 @@ class Testprinter(unittest.TestCase):
             self._port, result, expected=True, exp_str='', got_str='')
 
         # Only the first test's start should be printed.
-        lines = err.buflist
+        lines = err.getvalue().splitlines()
         self.assertEqual(len(lines), 1)
-        self.assertTrue(lines[0].endswith('passes/image.html\n'))
+        self.assertTrue(lines[0].endswith('passes/image.html'))
