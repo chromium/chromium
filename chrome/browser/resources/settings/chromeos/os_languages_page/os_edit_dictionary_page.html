@@ -58,7 +58,8 @@
       <cr-input id="newWord" value="{{newWordValue_}}"
           invalid="[[isNewWordInvalid_(newWordState_)]]"
           error-message="[[getErrorMessage_(newWordState_)]]"
-          spellcheck="false">
+          spellcheck="false"
+          aria-label="$i18n{editDictionaryDescription}">
         <cr-button on-click="onAddWordTap_" id="addWord" slot="suffix"
             disabled="[[disableAddButton_]]">
           $i18n{addDictionaryWordButtonLabel}
