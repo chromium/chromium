@@ -87,9 +87,9 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
     public void destroy() {
         mDestroyChecker.checkNotDestroyed();
 
+        mDestroyChecker.destroy();
         mBookmarkModel.removeDeleteObserver(this);
         mSnackbarManager.dismissSnackbars(this);
-        mDestroyChecker.destroy();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
     public void onDismissNoAction(Object actionData) {
         mDestroyChecker.checkNotDestroyed();
 
-        if (mDestroyAfterFirstAction) destroy();
+        if (mDestroyAfterFirstAction) destroyIfNecessary();
     }
 
     // Overriding BookmarkModelObserver
