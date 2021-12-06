@@ -292,7 +292,7 @@ v8::Local<v8::Context> MainThreadDebugger::ensureDefaultContextInGroup(
   // CrOS and this check failed when tested on an experimental builder. Revert
   // https://crrev.com/c/2727867 to enable it.
   // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!frame->IsProvisional());
 #endif
   if (frame->IsProvisional())
