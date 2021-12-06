@@ -492,6 +492,39 @@ FrameSinkVideoCapturerImpl::GetOverlaysInOrder() const {
   return list;
 }
 
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::CaptureRequestProperties(
+    int64_t capture_frame_number,
+    OracleFrameNumber oracle_frame_number,
+    int64_t content_version,
+    gfx::Rect content_rect,
+    gfx::Rect capture_rect,
+    gfx::Rect active_frame_rect,
+    scoped_refptr<media::VideoFrame> frame,
+    base::TimeTicks request_time)
+    : capture_frame_number(capture_frame_number),
+      oracle_frame_number(oracle_frame_number),
+      content_version(content_version),
+      content_rect(content_rect),
+      capture_rect(capture_rect),
+      active_frame_rect(active_frame_rect),
+      frame(std::move(frame)),
+      request_time(request_time) {}
+
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::
+    CaptureRequestProperties() = default;
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::CaptureRequestProperties(
+    const FrameSinkVideoCapturerImpl::CaptureRequestProperties&) = default;
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::CaptureRequestProperties(
+    FrameSinkVideoCapturerImpl::CaptureRequestProperties&&) = default;
+FrameSinkVideoCapturerImpl::CaptureRequestProperties&
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::operator=(
+    const FrameSinkVideoCapturerImpl::CaptureRequestProperties&) = default;
+FrameSinkVideoCapturerImpl::CaptureRequestProperties&
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::operator=(
+    FrameSinkVideoCapturerImpl::CaptureRequestProperties&&) = default;
+FrameSinkVideoCapturerImpl::CaptureRequestProperties::
+    ~CaptureRequestProperties() = default;
+
 void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     VideoCaptureOracle::Event event,
     const gfx::Rect& damage_rect,
@@ -702,6 +735,11 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
   }
   DCHECK(capture_region.size() == source_size);
+  CaptureRequestProperties request_properties(
+      capture_frame_number, oracle_frame_number, content_version_, content_rect,
+      capture_region,
+      resolved_target_->GetCopyOutputRequestRegion(VideoCaptureSubTarget{}),
+      std::move(frame), base::TimeTicks::Now());
 
   // Request a copy of the next frame from the frame sink.
   auto request = std::make_unique<CopyOutputRequest>(
@@ -710,9 +748,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           : CopyOutputRequest::ResultFormat::RGBA,
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
-                     capture_weak_factory_.GetWeakPtr(), capture_frame_number,
-                     oracle_frame_number, content_version_, content_rect,
-                     std::move(frame), base::TimeTicks::Now()));
+                     capture_weak_factory_.GetWeakPtr(),
+                     std::move(request_properties)));
   request->set_result_task_runner(base::SequencedTaskRunnerHandle::Get());
   request->set_source(copy_request_source_);
   request->set_area(capture_region);
@@ -752,18 +789,15 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 }
 
 void FrameSinkVideoCapturerImpl::DidCopyFrame(
-    int64_t capture_frame_number,
-    OracleFrameNumber oracle_frame_number,
-    int64_t content_version,
-    const gfx::Rect& content_rect,
-    scoped_refptr<VideoFrame> frame,
-    base::TimeTicks request_time,
+    CaptureRequestProperties properties,
     std::unique_ptr<CopyOutputResult> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(capture_frame_number, next_delivery_frame_number_);
-  DCHECK(frame);
+  DCHECK_GE(properties.capture_frame_number, next_delivery_frame_number_);
+  DCHECK(properties.frame);
   DCHECK(result);
 
+  scoped_refptr<media::VideoFrame>& frame = properties.frame;
+  const gfx::Rect& content_rect = properties.content_rect;
   if (log_to_webrtc_ && consumer_) {
     std::string format = "";
     std::string strides = "";
@@ -834,7 +868,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       // the Rec.709 color space.
       frame->set_color_space(gfx::ColorSpace::CreateREC709());
       UMA_HISTOGRAM_CAPTURE_DURATION_CUSTOM_TIMES(
-          "I420", base::TimeTicks::Now() - request_time);
+          "I420", base::TimeTicks::Now() - properties.request_time);
     } else {
       frame = nullptr;
     }
@@ -849,7 +883,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     if (success) {
       frame->set_color_space(result->GetRGBAColorSpace());
       UMA_HISTOGRAM_CAPTURE_DURATION_CUSTOM_TIMES(
-          "RGBA", base::TimeTicks::Now() - request_time);
+          "RGBA", base::TimeTicks::Now() - properties.request_time);
     } else {
       frame = nullptr;
     }
@@ -858,10 +892,14 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
   }
 
   if (frame) {
-    // TODO(https://crbug.com/1247761): the mouse overlay needs to get adjusted
-    // when we have a valid |crop_id_|.
+    gfx::Rect sub_region = properties.capture_rect;
+    // In some cases, the content_rect is smaller than the capture_rect.
+    sub_region.ClampToCenteredSize(content_rect.size());
+
     auto overlay_renderer = VideoCaptureOverlay::MakeCombinedRenderer(
-        GetOverlaysInOrder(), content_rect, frame->format());
+        GetOverlaysInOrder(),
+        VideoCaptureOverlay::CapturedFrameProperties{
+            properties.active_frame_rect, sub_region, frame->format()});
     if (overlay_renderer) {
       std::move(overlay_renderer).Run(frame.get());
     }
@@ -876,13 +914,14 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
         frame.get(), gfx::Rect(content_rect.origin(),
                                AdjustSizeForPixelFormat(result->size())));
 
-    if (ShouldMark(*frame, content_version)) {
-      MarkFrame(frame, content_version);
+    if (ShouldMark(*frame, properties.content_version)) {
+      MarkFrame(frame, properties.content_version);
     }
   }
 
-  OnFrameReadyForDelivery(capture_frame_number, oracle_frame_number,
-                          content_rect, std::move(frame));
+  OnFrameReadyForDelivery(properties.capture_frame_number,
+                          properties.oracle_frame_number, content_rect,
+                          std::move(frame));
 }
 
 void FrameSinkVideoCapturerImpl::OnFrameReadyForDelivery(

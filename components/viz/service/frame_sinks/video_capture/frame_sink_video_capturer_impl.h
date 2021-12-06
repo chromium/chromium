@@ -206,14 +206,62 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
                          base::TimeTicks event_time,
                          const CompositorFrameMetadata& frame_metadata);
 
+  struct CaptureRequestProperties {
+    CaptureRequestProperties(int64_t capture_frame_number,
+                             OracleFrameNumber oracle_frame_number,
+                             int64_t content_version,
+                             gfx::Rect content_rect,
+                             gfx::Rect capture_rect,
+                             gfx::Rect active_frame_rect,
+                             scoped_refptr<media::VideoFrame> frame,
+                             base::TimeTicks request_time);
+    CaptureRequestProperties();
+    CaptureRequestProperties(const CaptureRequestProperties&);
+    CaptureRequestProperties(CaptureRequestProperties&&);
+    CaptureRequestProperties& operator=(const CaptureRequestProperties&);
+    CaptureRequestProperties& operator=(CaptureRequestProperties&&);
+    ~CaptureRequestProperties();
+
+    // The current capture frame number, starting from zero and incremented
+    // by one for every CopyOutputRequest.
+    int64_t capture_frame_number;
+
+    // The oracle's frame number for this frame. Unlike |capture_frame_number|,
+    // this gets incremented with each call to MaybeCaptureFrame, whether or
+    // not we decide to actually capture a frame. If the pipeline is too full,
+    // the |oracle_frame_number| will increment while the |capture_frame_number|
+    // will not.
+    OracleFrameNumber oracle_frame_number;
+
+    // The current content version of the capturer at time of request. The
+    // content version is incremented whenever the source or a subsection
+    // of the source gets invalidated, and is used to determine which frames
+    // become marked and can be resurrected.
+    int64_t content_version;
+
+    // The actual content size of the copied frame, as a post-scaled size
+    // with an origin at (0, 0).
+    gfx::Rect content_rect;
+
+    // The requested capture region, may be larger or at a different
+    // location than |content_rect| but is also post-scaling and should
+    // be in the same coordinate system.
+    gfx::Rect capture_rect;
+
+    // The size of the entire active frame. If we are not using sub target
+    // capture, should be the same size as the capture rect.
+    gfx::Rect active_frame_rect;
+
+    // The actual frame.
+    scoped_refptr<media::VideoFrame> frame;
+
+    // When the request for capture was made.
+    base::TimeTicks request_time;
+  };
+
   // Extracts the image data from the copy output |result|, populating the
   // |content_rect| region of a [possibly letterboxed] video |frame|.
-  void DidCopyFrame(int64_t capture_frame_number,
-                    OracleFrameNumber oracle_frame_number,
-                    int64_t content_version,
-                    const gfx::Rect& content_rect,
-                    scoped_refptr<media::VideoFrame> frame,
-                    base::TimeTicks request_time,
+  void DidCopyFrame(CaptureRequestProperties properties,
                     std::unique_ptr<CopyOutputResult> result);
 
   // Places the frame in the |delivery_queue_| and calls MaybeDeliverFrame(),
