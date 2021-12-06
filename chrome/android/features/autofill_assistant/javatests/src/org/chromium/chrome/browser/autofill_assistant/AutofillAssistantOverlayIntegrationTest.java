@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toIFrameCssSelector;
 
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -40,6 +41,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
@@ -275,7 +277,10 @@ public class AutofillAssistantOverlayIntegrationTest {
      */
     @Test
     @MediumTest
-    public void testShowCastOnIFrameElementInScrollIFrame() throws Exception {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q,
+            message = "Flaky on Android 11: https://crbug.com/1276995")
+    public void
+    testShowCastOnIFrameElementInScrollIFrame() throws Exception {
         SelectorProto element = toIFrameCssSelector("#iframe", "#touch_area_3");
 
         ArrayList<ActionProto> list = new ArrayList<>();
