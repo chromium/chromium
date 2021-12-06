@@ -332,12 +332,12 @@ class OutputDeviceMixerImpl::MixableOutputStream final
 // playback starts, and destroyed when it ends.
 class OutputDeviceMixerImpl::MixingStats {
  public:
-  MixingStats(int active_tracks, int listeners)
-      : active_tracks_(active_tracks),
-        listeners_(listeners),
+  MixingStats(int active_track_count, int listener_count)
+      : active_track_count_(active_track_count),
+        listener_count_(listener_count),
         start_(base::TimeTicks::Now()) {
-    DCHECK_GT(active_tracks, 0);
-    DCHECK_GT(listeners, 0);
+    DCHECK_GT(active_track_count, 0);
+    DCHECK_GT(listener_count, 0);
   }
 
   ~MixingStats() {
@@ -354,29 +354,29 @@ class OutputDeviceMixerImpl::MixingStats {
 
     base::UmaHistogramExactLinear(
         "Media.Audio.OutputDeviceMixer.MaxMixedStreamCount",
-        active_tracks_.GetMax(), kMaxActiveStreamCount);
+        active_track_count_.GetMax(), kMaxActiveStreamCount);
     base::UmaHistogramExactLinear(
-        "Media.Audio.OutputDeviceMixer.MaxListenerCount", listeners_.GetMax(),
-        kMaxListeners);
+        "Media.Audio.OutputDeviceMixer.MaxListenerCount",
+        listener_count_.GetMax(), kMaxListeners);
   }
 
-  void AddListener() { listeners_.Increment(); }
+  void AddListener() { listener_count_.Increment(); }
 
-  void RemoveListener() { listeners_.Decrement(); }
+  void RemoveListener() { listener_count_.Decrement(); }
 
   void AddActiveTrack() {
-    active_tracks_.Increment();
+    active_track_count_.Increment();
     if (!noop_mixing_start_.is_null()) {
       // First track after a period of feeding silence to the listeners.
-      DCHECK_EQ(active_tracks_.GetCurrent(), 1);
-      DCHECK(listeners_.GetCurrent());
+      DCHECK_EQ(active_track_count_.GetCurrent(), 1);
+      DCHECK(listener_count_.GetCurrent());
       LogNoopMixingDuration();
     }
   }
 
   void RemoveActiveTrack() {
-    active_tracks_.Decrement();
-    if (listeners_.GetCurrent() && !active_tracks_.GetCurrent()) {
+    active_track_count_.Decrement();
+    if (listener_count_.GetCurrent() && !active_track_count_.GetCurrent()) {
       // No more tracks, so we start feeding silence to listeners.
       DCHECK(noop_mixing_start_.is_null());
       noop_mixing_start_ = base::TimeTicks::Now();
@@ -412,8 +412,8 @@ class OutputDeviceMixerImpl::MixingStats {
     noop_mixing_start_ = base::TimeTicks();
   }
 
-  MaxTracker active_tracks_;
-  MaxTracker listeners_;
+  MaxTracker active_track_count_;
+  MaxTracker listener_count_;
   const base::TimeTicks start_;
 
   // Start of the period when there are no active tracks and we play and feed
@@ -459,6 +459,7 @@ media::AudioOutputStream* OutputDeviceMixerImpl::MakeMixableStream(
     const media::AudioParameters& params,
     base::OnceClosure on_device_change_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
   if (!(params.IsValid() &&
         params.format() == media::AudioParameters::AUDIO_PCM_LOW_LATENCY)) {
     LOG(ERROR) << "Invalid output stream patameters for device [" << device_id()
@@ -478,10 +479,15 @@ media::AudioOutputStream* OutputDeviceMixerImpl::MakeMixableStream(
 
 void OutputDeviceMixerImpl::ProcessDeviceChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
+
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);
   device_changed_ = true;
 #endif
+
+  // Make all MixableOutputStream instances no-op.
+  weak_factory_.InvalidateWeakPtrs();
 
   // Stop and close all audio playback.
   if (mixing_graph_output_stream_) {
@@ -508,9 +514,6 @@ void OutputDeviceMixerImpl::ProcessDeviceChange() {
     listeners_.clear();
   }
 
-  // Make all MixableOutputStream instances no-op.
-  weak_factory_.InvalidateWeakPtrs();
-
   // Notify MixableOutputStream users of the device change. Normally they should
   // close the current stream they are holding to, create/open a new one and
   // resume the playback. We already released all the resources; closing a
@@ -522,6 +525,7 @@ void OutputDeviceMixerImpl::ProcessDeviceChange() {
 
 void OutputDeviceMixerImpl::StartListening(Listener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);
 #endif
@@ -597,6 +601,7 @@ void OutputDeviceMixerImpl::StartStream(
     MixTrack* mix_track,
     media::AudioOutputStream::AudioSourceCallback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);
 #endif
@@ -630,6 +635,7 @@ void OutputDeviceMixerImpl::StartStream(
 
 void OutputDeviceMixerImpl::StopStream(MixTrack* mix_track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);
 #endif
@@ -667,6 +673,7 @@ void OutputDeviceMixerImpl::StopStream(MixTrack* mix_track) {
 
 void OutputDeviceMixerImpl::CloseStream(MixTrack* mix_track) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);
 #endif
@@ -816,6 +823,7 @@ void OutputDeviceMixerImpl::StopMixingGraphPlayback(MixingError error) {
 
 void OutputDeviceMixerImpl::SwitchToUnmixedPlaybackTimerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  NON_REENTRANT_SCOPE(reentrancy_checker_);
   DCHECK(mixing_graph_output_stream_);
 #if DCHECK_IS_ON()
   DCHECK(!device_changed_);

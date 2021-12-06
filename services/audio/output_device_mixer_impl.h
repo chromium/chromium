@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/reentrancy_checker.h"
 #include "services/audio/mixing_graph.h"
 #include "services/audio/output_device_mixer.h"
 
@@ -167,6 +168,12 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 #if DCHECK_IS_ON()
   bool device_changed_ = false;
 #endif
+
+  // A mixable stream operation cannot be invoked within a context of another
+  // such operation. In practice it means that AudioOutputStream created by the
+  // mixer cannot be stopped/closed synchronously from AudioSourceCallback
+  // provided to it on AudioOutputStream::Start().
+  REENTRANCY_CHECKER(reentrancy_checker_);
 
   // Supplies weak pointers to |this| for MixableOutputStream instances.
   base::WeakPtrFactory<OutputDeviceMixerImpl> weak_factory_{this};
