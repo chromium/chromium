@@ -781,6 +781,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.Tabs.TabSwitchHasRWHV" enum="BooleanExists"
+    expires_after="2022-04-26">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reported at the beginning of every tab switch to record whether a
+    RenderWidgetHostView existed for the target tab. If not, the
+    Browser.Tabs.TabSwitchResult family of metrics will be recorded for the tab
+    switch if the TabSwitchMetrics2 feature is enabled (new behaviour) but not
+    if it is disabled (existing behaviour). So the count of
+    Browser.Tabs.TabSwitchHasRWHV == false should equal the number of extra
+    Browser.Tabs.TabSwitchResult records received with the feature enabled.
+  </summary>
+</histogram>
+
 <histogram name="Browser.Tabs.TabSwitchResult2{TabSwitchingType}"
     enum="TabSwitchResult" expires_after="2022-04-26">
   <owner>fdoray@chromium.org</owner>
