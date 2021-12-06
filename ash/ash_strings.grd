@@ -3981,6 +3981,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER" desc="The label of the menu item button for selecting a folder to store the captured images and videos.">
         Select folder...
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE" desc="The label of window hosting the screen capture toolbar that will be read by ChromeVox when prompted for title.">
+        Screen capture, tools to take screenshots and screen recordings
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE" desc="The label of window hosting the screen capture settings menu that will be read by ChromeVox when prompted for title.">
+        Screen capture settings
+      </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">

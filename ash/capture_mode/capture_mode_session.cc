@@ -544,6 +544,8 @@ void CaptureModeSession::Initialize() {
                          "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       std::make_unique<CaptureModeBarView>(is_in_projector_mode_));
+  capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
   capture_mode_bar_widget_->Show();
 
   // Advance focus once if spoken feedback is on so that the capture bar takes
@@ -746,6 +748,8 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown) {
         capture_label_widget_->Hide();
       }
     }
+    capture_mode_settings_widget_->GetNativeWindow()->SetTitle(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SETTINGS_A11Y_TITLE));
     capture_mode_settings_widget_->Show();
   }
 }
@@ -1805,6 +1809,8 @@ void CaptureModeSession::UpdateCaptureLabelWidget(
     capture_label_widget_->SetContentsView(std::make_unique<CaptureLabelView>(
         this, base::BindRepeating(&CaptureModeSession::DoPerformCapture,
                                   base::Unretained(this))));
+    capture_label_widget_->GetNativeWindow()->SetTitle(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE));
     capture_label_widget_->Show();
   }
 
