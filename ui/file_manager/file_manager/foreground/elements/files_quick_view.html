@@ -23,9 +23,6 @@
       <cr-button id="delete-button" on-click="onDeleteButtonTap" hidden$="[[!shouldShowDeleteButton_(canDelete, isModal)]]" aria-label="$i18n{QUICK_VIEW_DELETE_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon"></span>
       </cr-button>
-      <!-- TODO(files-ng): this fancy Polymer icon toggle button is not used in files-ng. Remove it. -->
-      <files-icon-button toggles id="metadata-button" on-tap="onMetadataButtonTap_" active="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" tabindex="0" has-tooltip invert-tooltip>
-      </files-icon-button>
       <cr-button id="info-button" on-click="onMetadataButtonTap_" aria-pressed="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" has-tooltip invert-tooltip>
         <span class="icon"></span>
       </cr-button>

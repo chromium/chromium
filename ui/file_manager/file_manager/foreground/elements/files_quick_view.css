@@ -63,12 +63,10 @@ dialog#delete-confirm-dialog::backdrop {
   margin: 0;
   padding: 0;
   position: absolute;
-  top: 48px;
+  /* The top value here should be the total height of the #toolbar including
+  the height and the border-width */
+  top: 57px;
   width: 100%;
-}
-
-:host([files-ng]) #mainPanel {
-  top: 56px;
 }
 
 #contentPanel {
@@ -89,8 +87,8 @@ dialog#delete-confirm-dialog::backdrop {
 }
 
 #innerContentPanel {
-  background-color: transparent;
-  color: white;
+  background-color: var(--cros-app-shield-80);
+  color: var(--cros-text-color-primary);
   display: flex;
   flex-direction: column;
   height: calc(100% - 64px);
@@ -114,28 +112,22 @@ dialog#delete-confirm-dialog::backdrop {
 }
 
 .text-content {
-  background-color: white;
+  background-color: var(--cros-bg-color);
 }
 
 #toolbar {
   align-items: center;
-  background-color: rgb(40, 42, 45);
-  color: white;
+  background-color: var(--cros-bg-color);
+  border-bottom: 1px solid var(--cros-separator-color);
+  color: var(--cros-text-color-primary);
   display: flex;
-  font-size: 108%;
-  height: 48px;
-  margin: 0;
-  opacity: 0.9;
-  padding: 0;
-  z-index: 1;
-}
-
-:host([files-ng]) #toolbar {
-  color: var(--google-grey-200);
   font-family: 'Roboto Medium';
   font-size: 14px;
   height: 56px;
+  margin: 0;
   opacity: 1;
+  padding: 0;
+  z-index: 1;
 }
 
 #file-path {
@@ -153,10 +145,11 @@ dialog#delete-confirm-dialog::backdrop {
   display: flex;
 }
 
-:host([files-ng]) cr-button {
-  --hover-bg-color: rgba(255, 255, 255, 4%);
-  --ink-color: rgba(255, 255, 255, 88%);
-  --text-color: currentColor;
+cr-button {
+  --hover-bg-color:var(--cros-ripple-color);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
+  --text-color: var(--cros-icon-color-primary);
   border: 2px solid transparent;
   border-radius: 50%;
   box-shadow: none;
@@ -210,51 +203,32 @@ iron-icon {
 }
 
 #delete-button > .icon {
-  -webkit-mask-image: url(../images/files/ui/delete.svg);
-  background-color: currentColor;
+  -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
   height: 16px;
   width: 16px;
 }
 
-:host([files-ng]) #delete-button > .icon {
-  -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
+#info-button[aria-pressed=true] {
+  background-color: var(--cros-ripple-color);
 }
 
-#metadata-button {
-  --files-toggle-ripple-bg-color: white;
-  --files-toggle-ripple-activated-opacity: 0.3;
-}
-
-:host([files-ng]) #metadata-button {
-  display: none;
-}
-
-:host([files-ng]) #info-button[aria-pressed=true] {
-  background-color: rgba(255, 255, 255, 12%);
-}
-
-:host([files-ng]) #info-button > .icon {
+#info-button > .icon {
   -webkit-mask-image: url(../images/files/ui/info.svg);
 }
 
 :host-context(html.focus-outline-visible.files-ng) cr-button:not(:active):focus {
-  border: 2px solid var(--google-blue-300);
+  border: 2px solid var(--cros-focus-ring-color);
 }
 
 #metadata-box {
-  background-color: rgba(20, 22, 24, 80%);
+  background-color: var(--cros-bg-color-dropped-elevation-1);
   bottom: 0;
   height: 100%;
   margin: 0;
-  opacity: 0.8;
+  opacity: 1;
   overflow-y: auto;
   position: absolute;
   right: 0;
-}
-
-:host([files-ng]) #metadata-box {
-  background-color: var(--google-grey-900);
-  opacity: 1;
 }
 
 :host-context(html[dir='rtl']) #metadata-box {
