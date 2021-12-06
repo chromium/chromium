@@ -1826,7 +1826,8 @@ void Browser::RendererUnresponsive(
     base::RepeatingClosure hang_monitor_restarter) {
   // Don't show the page hung dialog when a HTML popup hangs because
   // the dialog will take the focus and immediately close the popup.
-  if (!render_widget_host->GetView()->IsHTMLFormPopup()) {
+  RenderWidgetHostView* view = render_widget_host->GetView();
+  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
     TabDialogs::FromWebContents(source)->ShowHungRendererDialog(
         render_widget_host, std::move(hang_monitor_restarter));
   }
@@ -1835,7 +1836,8 @@ void Browser::RendererUnresponsive(
 void Browser::RendererResponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host) {
-  if (!render_widget_host->GetView()->IsHTMLFormPopup()) {
+  RenderWidgetHostView* view = render_widget_host->GetView();
+  if (view && !render_widget_host->GetView()->IsHTMLFormPopup()) {
     TabDialogs::FromWebContents(source)->HideHungRendererDialog(
         render_widget_host);
   }
