@@ -442,7 +442,14 @@ TEST_F(MediaEngagementScoreTest, DefaultValues) {
   EXPECT_TRUE(score_->high_score());
 }
 
-TEST_F(MediaEngagementScoreWithOverrideFieldTrialsTest, OverrideFieldTrial) {
+// TODO(crbug.com/1276910): Consistently failing on Linux TSan Tests.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_OverrideFieldTrial DISABLED_OverrideFieldTrial
+#else
+#define MAYBE_OverrideFieldTrial OverrideFieldTrial
+#endif
+TEST_F(MediaEngagementScoreWithOverrideFieldTrialsTest,
+       MAYBE_OverrideFieldTrial) {
   EXPECT_TRUE(score_->high_score());
   EXPECT_EQ(0.7, MediaEngagementScore::GetHighScoreLowerThreshold());
   EXPECT_EQ(0.9, MediaEngagementScore::GetHighScoreUpperThreshold());
