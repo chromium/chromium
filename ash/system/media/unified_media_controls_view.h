@@ -6,11 +6,11 @@
 #define ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/style/icon_button.h"
 #include "base/containers/flat_set.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace gfx {
 class ImageSkia;
@@ -54,22 +54,19 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
  private:
   friend class UnifiedMediaControlsControllerTest;
 
-  class MediaActionButton : public views::ImageButton {
+  class MediaActionButton : public IconButton {
    public:
     MediaActionButton(UnifiedMediaControlsController* controller,
                       media_session::mojom::MediaSessionAction action,
-                      const std::u16string& accessible_name);
+                      int accessible_name_id);
+    MediaActionButton(const MediaActionButton&) = delete;
+    MediaActionButton& operator=(const MediaActionButton&) = delete;
     ~MediaActionButton() override = default;
 
     void SetAction(media_session::mojom::MediaSessionAction action,
                    const std::u16string& accessible_name);
 
-    // views::ImageButton:
-    void OnThemeChanged() override;
-
    private:
-    void UpdateVectorIcon();
-
     // Action that can be taken on the media through the button, it can be paly,
     // pause or stop the media etc. See MediaSessionAction for all the actions.
     media_session::mojom::MediaSessionAction action_;

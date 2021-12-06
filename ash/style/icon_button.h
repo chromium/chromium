@@ -59,9 +59,10 @@ class IconButton : public views::ImageButton {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
- private:
+ protected:
   void UpdateVectorIcon();
 
+ private:
   const Type type_;
   const gfx::VectorIcon* icon_ = nullptr;
 
