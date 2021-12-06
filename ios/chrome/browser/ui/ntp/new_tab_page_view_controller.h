@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
+@class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
 @class DiscoverFeedMetricsRecorder;
@@ -69,6 +70,9 @@
 
 // The handler for feed menu commands.
 @property(nonatomic, weak) id<FeedMenuCommands> feedMenuHandler;
+
+// Bubble presenter for displaying IPH bubbles relating to the NTP.
+@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

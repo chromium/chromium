@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_text_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
@@ -44,7 +43,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeEmpty,
   ItemTypeMostVisited,
   ItemTypePromo,
-  ItemTypeDiscover,
   ItemTypeReturnToRecentTab,
   ItemTypeUnknown,
 };
@@ -56,7 +54,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLogo,
   SectionIdentifierReturnToRecentTab,
   SectionIdentifierPromo,
-  SectionIdentifierDiscover,
   SectionIdentifierDefault,
 };
 
@@ -70,8 +67,6 @@ ContentSuggestionType ContentSuggestionTypeForItemType(NSInteger type) {
     return ContentSuggestionTypeMostVisited;
   if (type == ItemTypePromo)
     return ContentSuggestionTypePromo;
-  if (type == ItemTypeDiscover)
-    return ContentSuggestionTypeDiscover;
   // Add new type here
 
   // Default type.
@@ -87,8 +82,6 @@ ItemType ItemTypeForInfo(ContentSuggestionsSectionInformation* info) {
       return ItemTypeMostVisited;
     case ContentSuggestionsSectionPromo:
       return ItemTypePromo;
-    case ContentSuggestionsSectionDiscover:
-      return ItemTypeDiscover;
     case ContentSuggestionsSectionLogo:
     case ContentSuggestionsSectionUnknown:
       return ItemTypeUnknown;
@@ -107,8 +100,6 @@ SectionIdentifier SectionIdentifierForInfo(
       return SectionIdentifierReturnToRecentTab;
     case ContentSuggestionsSectionPromo:
       return SectionIdentifierPromo;
-    case ContentSuggestionsSectionDiscover:
-      return SectionIdentifierDiscover;
     case ContentSuggestionsSectionUnknown:
       return SectionIdentifierDefault;
   }
@@ -131,10 +122,6 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
 // All SectionIdentifier from ContentSuggestions.
 @property(nonatomic, strong)
     NSMutableSet<NSNumber*>* sectionIdentifiersFromContentSuggestions;
-// Discover feed header to prevent it from being recreated each time view is
-// reloaded.
-@property(nonatomic, strong)
-    ContentSuggestionsDiscoverHeaderItem* discoverFeedHeader;
 
 @end
 
@@ -175,15 +162,6 @@ NSString* const kContentSuggestionsCollectionUpdaterSnackbarCategory =
 
   if (self.collectionViewController)
     [self reloadAllData];
-}
-
-- (ContentSuggestionsDiscoverHeaderItem*)discoverFeedHeader {
-  if (!_discoverFeedHeader) {
-    _discoverFeedHeader = [[ContentSuggestionsDiscoverHeaderItem alloc]
-               initWithType:ItemTypeHeader
-        discoverFeedVisible:self.discoverFeedVisible];
-  }
-  return _discoverFeedHeader;
 }
 
 #pragma mark - ContentSuggestionsDataSink
@@ -492,8 +470,6 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
 
     if (sectionIdentifier == SectionIdentifierLogo) {
       [self addLogoHeaderIfNeeded];
-    } else {
-      [self addHeaderIfNeeded:sectionInfo];
     }
   }
 
@@ -537,49 +513,12 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
              sectionIdentifierForSection:section] == SectionIdentifierLogo;
 }
 
-- (BOOL)isDiscoverSection:(NSInteger)section {
-  return [self.collectionViewController.collectionViewModel
-             sectionIdentifierForSection:section] == SectionIdentifierDiscover;
-}
-
 - (BOOL)isPromoSection:(NSInteger)section {
   return [self.collectionViewController.collectionViewModel
              sectionIdentifierForSection:section] == SectionIdentifierPromo;
 }
 
 #pragma mark - Private methods
-
-// Adds the header corresponding to |sectionInfo| to the section if there is
-// none present and the section info contains a title.
-// In addition to that, if the section is for a content suggestion, only show a
-// title if there are more than 1 occurence of a content suggestion section.
-- (void)addHeaderIfNeeded:(ContentSuggestionsSectionInformation*)sectionInfo {
-  NSInteger sectionIdentifier = SectionIdentifierForInfo(sectionInfo);
-
-  CSCollectionViewModel* model =
-      self.collectionViewController.collectionViewModel;
-
-  NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
-  if ([self isDiscoverSection:section]) {
-    CollectionViewItem* discoverSectionHeader =
-        [self headerForSectionInfo:sectionInfo];
-    // TODO(crbug.com/1145106): Potential fix for crash where cellClass is nil.
-    if ([discoverSectionHeader cellClass]) {
-      [model setHeader:discoverSectionHeader
-          forSectionWithIdentifier:sectionIdentifier];
-    }
-    return;
-  }
-
-}
-
-// Returns the header for this |sectionInfo|.
-- (CollectionViewItem*)headerForSectionInfo:
-    (ContentSuggestionsSectionInformation*)sectionInfo {
-  DCHECK(SectionIdentifierForInfo(sectionInfo) == SectionIdentifierDiscover);
-  self.discoverFeedHeader.title = sectionInfo.title;
-  return self.discoverFeedHeader;
-}
 
 // Adds the header for the first section, containing the logo and the omnibox,
 // if there is no header for the section.
@@ -629,13 +568,6 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
   [model addItem:item toSectionWithIdentifier:sectionIdentifier];
 
   return [NSIndexPath indexPathForItem:itemNumber inSection:section];
-}
-
-#pragma mark - DiscoverFeedHeaderChanging
-
-- (void)changeDiscoverFeedHeaderVisibility:(BOOL)visible {
-  self.discoverFeedVisible = visible;
-  self.discoverFeedHeader.discoverFeedVisible = visible;
 }
 
 @end

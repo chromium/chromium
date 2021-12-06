@@ -105,9 +105,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // Section Info for the Most Visited section.
 @property(nonatomic, strong)
     ContentSuggestionsSectionInformation* mostVisitedSectionInfo;
-// Section Info for the section containing the Discover feed.
-@property(nonatomic, strong)
-    ContentSuggestionsSectionInformation* discoverSectionInfo;
 // Whether the page impression has been recorded.
 @property(nonatomic, assign) BOOL recordedPageImpression;
 // Map the section information created to the relevant category.
@@ -163,9 +160,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     _promoSectionInfo = PromoSectionInformation();
     _mostVisitedSectionInfo = MostVisitedSectionInformation();
 
-    _discoverSectionInfo =
-        DiscoverSectionInformation(isGoogleDefaultSearchProvider);
-
     _notificationPromo = std::make_unique<NotificationPromoWhatsNew>(
         GetApplicationContext()->GetLocalState());
     _notificationPromo->Init();
@@ -182,6 +176,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   return self;
 }
 
+// TODO: Whats this
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(prefs::kIosDiscoverFeedLastRefreshTime, 0);
 }

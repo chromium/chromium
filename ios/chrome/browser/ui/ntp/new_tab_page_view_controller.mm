@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
@@ -228,6 +229,8 @@
   if (!self.isFeedVisible) {
     [self setMinimumHeight];
   }
+
+  [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
 
   self.viewDidAppear = YES;
 }

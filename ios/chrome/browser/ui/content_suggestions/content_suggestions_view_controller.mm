@@ -7,11 +7,9 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_discover_header_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
@@ -24,9 +22,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp_tile_views/ntp_tile_layout_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -45,9 +41,6 @@ namespace {
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 const CGFloat kMostVisitedBottomMargin = 13;
 const CGFloat kCardBorderRadius = 11;
-const CGFloat kDiscoverFeedContentWith = 430;
-// Height for the Discover Feed section header.
-const CGFloat kDiscoverFeedFeaderHeight = 30;
 }
 
 @interface ContentSuggestionsViewController () <UIGestureRecognizerDelegate>
@@ -71,7 +64,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   self = [super initWithLayout:_layout style:style];
   if (self) {
     _collectionUpdater = [[ContentSuggestionsCollectionUpdater alloc] init];
-    _discoverFeedHeaderDelegate = _collectionUpdater;
   }
   return self;
 }
@@ -189,7 +181,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
   // This shouldn't be necessary once we stop starting and stopping the
   // Coordinator to achieve this.
   [self.collectionView reloadData];
-  [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -220,7 +211,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
       [self.suggestionCommandHandler handlePromoTapped];
       [self.collectionViewLayout invalidateLayout];
       break;
-    case ContentSuggestionTypeDiscover:
     case ContentSuggestionTypeEmpty:
       break;
   }
@@ -266,24 +256,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
                                           cellForItemAtIndexPath:indexPath]];
 }
 
-#pragma mark - UICollectionViewDataSource
-
-- (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
-          viewForSupplementaryElementOfKind:(NSString*)kind
-                                atIndexPath:(NSIndexPath*)indexPath {
-  UICollectionReusableView* cell = [super collectionView:collectionView
-                       viewForSupplementaryElementOfKind:kind
-                                             atIndexPath:indexPath];
-  // TODO(crbug.com/1261554): Clean this out after moving the header.
-  if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&
-      [self.collectionUpdater isDiscoverSection:indexPath.section]) {
-    ContentSuggestionsDiscoverHeaderCell* discoverFeedHeader =
-        base::mac::ObjCCastStrict<ContentSuggestionsDiscoverHeaderCell>(cell);
-    [self.audience discoverHeaderMenuButtonShown:discoverFeedHeader.menuButton];
-  }
-  return cell;
-}
-
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView*)collectionView
@@ -327,13 +299,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
     if ([self.collectionUpdater isMostVisitedSection:section]) {
       parentInset.bottom = kMostVisitedBottomMargin;
     }
-  } else if ([self.collectionUpdater isDiscoverSection:section]) {
-    // TODO(crbug.com/1085419): Get card width from Mulder.
-    CGFloat feedCardWidth = kDiscoverFeedContentWith;
-    CGFloat margin =
-        MAX(0, (collectionView.frame.size.width - feedCardWidth) / 2);
-    parentInset.left = margin;
-    parentInset.right = margin;
   } else if (self.styler.cellStyle == MDCCollectionViewCellStyleCard) {
     CGFloat collectionWidth = collectionView.bounds.size.width;
     CGFloat maxCardWidth = content_suggestions::searchFieldWidth(
@@ -380,9 +345,6 @@ const CGFloat kDiscoverFeedFeaderHeight = 30;
     referenceSizeForHeaderInSection:(NSInteger)section {
   if ([self.collectionUpdater isHeaderSection:section]) {
     return CGSizeMake(0, [self.headerProvider headerHeight]);
-  }
-  if ([self.collectionUpdater isDiscoverSection:section]) {
-    return CGSizeMake(0, kDiscoverFeedFeaderHeight);
   }
   CGSize defaultSize = [super collectionView:collectionView
                                       layout:collectionViewLayout

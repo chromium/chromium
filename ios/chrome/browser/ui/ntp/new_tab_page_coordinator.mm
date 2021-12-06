@@ -399,6 +399,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   [self configureMainViewControllerUsing:self.ntpViewController];
   self.ntpViewController.discoverFeedMetricsRecorder =
       self.discoverFeedMetricsRecorder;
+  self.ntpViewController.bubblePresenter = self.bubblePresenter;
 }
 
 // Configures the main ViewController managed by this Coordinator.
@@ -853,7 +854,6 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   contentSuggestionsCoordinator.toolbarDelegate = self.toolbarDelegate;
   contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   contentSuggestionsCoordinator.ntpCommandHandler = self;
-  contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
   contentSuggestionsCoordinator.discoverFeedDelegate = self;
   contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
       self.discoverFeedMetricsRecorder;

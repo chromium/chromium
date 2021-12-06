@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_header_changing.h"
-
 @class CollectionViewItem;
 @class ContentSuggestionsSectionInformation;
 @class ContentSuggestionsViewController;
@@ -25,13 +23,11 @@ typedef NS_ENUM(NSInteger, ContentSuggestionType) {
   ContentSuggestionTypeMostVisited,
   ContentSuggestionTypeReturnToRecentTab,
   ContentSuggestionTypePromo,
-  ContentSuggestionTypeDiscover,
 };
 
 // Updater for a CollectionViewController populating it with some items and
 // handling the items addition.
-@interface ContentSuggestionsCollectionUpdater
-    : NSObject <DiscoverFeedHeaderChanging>
+@interface ContentSuggestionsCollectionUpdater : NSObject
 
 // Data source for this object.
 @property(nonatomic, weak) id<ContentSuggestionsDataSource> dataSource;
@@ -40,9 +36,6 @@ typedef NS_ENUM(NSInteger, ContentSuggestionType) {
 // adding items.
 @property(nonatomic, weak)
     ContentSuggestionsViewController* collectionViewController;
-
-// Represents whether the Discover feed is visible or hidden.
-@property(nonatomic, assign) BOOL discoverFeedVisible;
 
 @property(nonatomic, weak) id<SnackbarCommands> dispatcher;
 
@@ -87,9 +80,6 @@ addSuggestionsToModel:
 // Returns whether |section| contains the promo if there is one and with a
 // header containing the fake omnibox and the logo.
 - (BOOL)isHeaderSection:(NSInteger)section;
-
-// Returns whether |section| contains the Discover feed.
-- (BOOL)isDiscoverSection:(NSInteger)section;
 
 @end
 

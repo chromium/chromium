@@ -28,10 +28,6 @@ ContentSuggestionsSectionInformation* PromoSectionInformation();
 // Creates and returns a SectionInfo for the Most Visited section.
 ContentSuggestionsSectionInformation* MostVisitedSectionInformation();
 
-// Creates and returns a SectionInfo for the Discover feed section.
-ContentSuggestionsSectionInformation* DiscoverSectionInformation(
-    BOOL isGoogleDefaultSearchProvider);
-
 // Converts a ntp_tiles::NTPTile |tile| to a ContentSuggestionsMostVisitedItem
 // with a |sectionInfo|.
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(

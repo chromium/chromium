@@ -47,13 +47,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_header_changing.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
-#import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -75,7 +72,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -88,7 +84,6 @@
     ContentSuggestionsHeaderCommands,
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
-    ThemeChangeDelegate,
     URLDropDelegate> {
   // Observer bridge for mediator to listen to
   // StartSurfaceRecentTabObserverBridge.
@@ -101,7 +96,6 @@
     ContentSuggestionsMediator* contentSuggestionsMediator;
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
-@property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 @property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 // Redefined as readwrite.
@@ -109,9 +103,6 @@
     ContentSuggestionsHeaderViewController* headerController;
 @property(nonatomic, strong) PrefBackedBoolean* contentSuggestionsExpanded;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
-// Delegate for handling Discover feed header UI changes.
-@property(nonatomic, weak) id<DiscoverFeedHeaderChanging>
-    discoverFeedHeaderDelegate;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
 // Coordinator in charge of handling sharing use cases.
@@ -234,17 +225,9 @@
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
   self.suggestionsViewController.audience = self;
-  self.suggestionsViewController.themeChangeDelegate = self;
   id<SnackbarCommands> dispatcher =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
   self.suggestionsViewController.dispatcher = dispatcher;
-  self.suggestionsViewController.bubblePresenter = self.bubblePresenter;
-
-  self.discoverFeedHeaderDelegate =
-      self.suggestionsViewController.discoverFeedHeaderDelegate;
-  [self.discoverFeedHeaderDelegate
-      changeDiscoverFeedHeaderVisibility:[self.contentSuggestionsExpanded
-                                                 value]];
   self.suggestionsViewController.contentSuggestionsEnabled =
       self.contentSuggestionsEnabled;
 
@@ -312,22 +295,9 @@
   [self.headerController setPromoCanShow:notificationPromo->CanShow()];
 }
 
-- (void)discoverHeaderMenuButtonShown:(UIView*)menuButton {
-  _discoverFeedHeaderMenuButton = menuButton;
-}
-
 - (void)viewDidDisappear {
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     [self.contentSuggestionsMediator hideRecentTabTile];
-  }
-}
-
-
-#pragma mark - ThemeChangeDelegate
-
-- (void)handleThemeChange {
-  if (IsDiscoverFeedEnabled()) {
-    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->UpdateTheme();
   }
 }
 

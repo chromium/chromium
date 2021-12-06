@@ -11,10 +11,6 @@
 // Notifies the audience that the promo has been shown.
 - (void)promoShown;
 
-// Notifies the audience that the Discover feed header menu has been shown, and
-// provides a reference to the button.
-- (void)discoverHeaderMenuButtonShown:(UIView*)menuButton;
-
 // Notifies the audience of the UIKit viewDidDisappear: callback.
 - (void)viewDidDisappear;
 

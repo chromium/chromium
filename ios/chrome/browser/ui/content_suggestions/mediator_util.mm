@@ -58,22 +58,6 @@ ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
 }
 
-ContentSuggestionsSectionInformation* DiscoverSectionInformation(
-    BOOL isGoogleDefaultSearchProvider) {
-  ContentSuggestionsSectionInformation* sectionInfo =
-      [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionDiscover];
-  sectionInfo.footerTitle = nil;
-  sectionInfo.showIfEmpty = YES;
-  sectionInfo.layout = ContentSuggestionsSectionLayoutCustom;
-  sectionInfo.title =
-      isGoogleDefaultSearchProvider
-          ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-          : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
-
-  return sectionInfo;
-}
-
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
     const ntp_tiles::NTPTile& tile,
     ContentSuggestionsSectionInformation* sectionInfo) {

@@ -20,7 +20,6 @@ source_set("content_suggestions") {
     "ntp_home_mediator.mm",
     "ntp_home_metrics.h",
     "ntp_home_metrics.mm",
-    "theme_change_delegate.h",
   ]
   deps = [
     ":constants",
@@ -47,7 +46,6 @@ source_set("content_suggestions") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
@@ -94,7 +92,6 @@ source_set("content_suggestions") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/discover_feed",
     "//ui/base",
     "//ui/strings",
   ]
@@ -136,10 +133,7 @@ source_set("content_suggestions_ui") {
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
-    "discover_feed_header_changing.h",
-    "discover_feed_menu_commands.h",
     "ntp_home_consumer.h",
-    "theme_change_delegate.h",
     "user_account_image_update_delegate.h",
   ]
   deps = [
@@ -157,7 +151,6 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions/cells",
@@ -178,7 +171,6 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/web/common",
     "//ui/base",
   ]
