@@ -77,10 +77,6 @@ class SkiaGoldProperties(object):
     return self._bypass_skia_gold_functionality
 
   @staticmethod
-  def _GetGitOriginMasterHeadSha1():
-    raise NotImplementedError()
-
-  @staticmethod
   def _GetGitOriginMainHeadSha1():
     raise NotImplementedError()
 
@@ -91,7 +87,7 @@ class SkiaGoldProperties(object):
       if not self._IsLocalRun():
         raise RuntimeError(
             '--git-revision was not passed when running on a bot')
-      revision = self._GetGitOriginMasterHeadSha1()
+      revision = self._GetGitOriginMainHeadSha1()
       if not revision or len(revision) != 40:
         raise RuntimeError(
             '--git-revision not passed and unable to determine from git')
