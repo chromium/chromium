@@ -898,6 +898,7 @@ void UserMediaProcessor::SelectVideoContentSettings() {
   if (!settings.HasValue()) {
     String failed_constraint_name = String(settings.failed_constraint_name());
     DCHECK(!failed_constraint_name.IsEmpty());
+
     GetUserMediaRequestFailed(
         MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED,
         failed_constraint_name);

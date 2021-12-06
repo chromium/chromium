@@ -10,8 +10,13 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
+#include "media/base/video_types.h"
 #include "media/mojo/mojom/display_media_information.mojom-blink.h"
+#include "media/webrtc/webrtc_features.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
@@ -732,6 +737,41 @@ VideoDeviceCaptureCapabilities::~VideoDeviceCaptureCapabilities() = default;
 VideoDeviceCaptureCapabilities& VideoDeviceCaptureCapabilities::operator=(
     VideoDeviceCaptureCapabilities&& other) = default;
 
+// Enables debug logging of capabilities processing when picking a video.
+// TODO(crbug.com/1275617): Remove this and calls once investigation is
+// complete.
+const base::Feature kMediaStreamCapabilitiesDebugLogging{
+    "MediaStreamCapabilitiesDebugLogging", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// TODO(crbug.com/1275617): Remove this and calls once investigation is
+// complete.
+void MaybeLogDebugInfo(const std::string& message) {
+  if (base::FeatureList::IsEnabled(kMediaStreamCapabilitiesDebugLogging)) {
+    blink::WebRtcLogMessage("SelectSettingsVideoDeviceCapture(): " + message);
+  }
+}
+
+// TODO(crbug.com/1275617): Remove this and calls once investigation is
+// complete.
+void MaybeLogDeviceCapabilities(
+    const Vector<VideoInputDeviceCapabilities>& device_capabilities) {
+  if (base::FeatureList::IsEnabled(kMediaStreamCapabilitiesDebugLogging)) {
+    std::string devices_string;
+    for (auto& device : device_capabilities) {
+      std::string formats_string;
+      for (auto& format : device.formats) {
+        formats_string += media::VideoCaptureFormat::ToString(format);
+      }
+      devices_string += base::StringPrintf(
+          "{device_id:%s, formats:[%s], facing_mode:%s},",
+          device.device_id.Utf8().c_str(), formats_string.c_str(),
+          ToWebString(device.facing_mode).Utf8().c_str());
+    }
+    MaybeLogDebugInfo(
+        base::StringPrintf("Received devices %s", devices_string.c_str()));
+  }
+}
+
 VideoCaptureSettings SelectSettingsVideoDeviceCapture(
     const VideoDeviceCaptureCapabilities& capabilities,
     const MediaConstraints& constraints,
@@ -743,6 +783,11 @@ VideoCaptureSettings SelectSettingsVideoDeviceCapture(
   DCHECK_GE(default_frame_rate, 0.0);
   // This function works only if infinity is defined for the double type.
   static_assert(std::numeric_limits<double>::has_infinity, "Requires infinity");
+
+  // TODO(crbug.com/1275617): Remove once investigation is complete.
+  MaybeLogDebugInfo(base::StringPrintf("Media constraints %s",
+                                       constraints.ToString().Utf8().c_str()));
+  MaybeLogDeviceCapabilities(capabilities.device_capabilities);
 
   // A distance vector contains:
   // a) For each advanced constraint set, a 0/Infinity value indicating if the
@@ -765,6 +810,9 @@ VideoCaptureSettings SelectSettingsVideoDeviceCapture(
   for (auto& device : capabilities.device_capabilities) {
     if (!DeviceSatisfiesConstraintSet(device, constraints.Basic(),
                                       &failed_constraint_name)) {
+      MaybeLogDebugInfo(base::StringPrintf(
+          "Device %s rejected due to constraint %s",
+          device.device_id.Utf8().c_str(), failed_constraint_name));
       continue;
     }
 
@@ -779,6 +827,11 @@ VideoCaptureSettings SelectSettingsVideoDeviceCapture(
       CandidateFormat candidate_format(format);
       if (!candidate_format.ApplyConstraintSet(constraints.Basic(),
                                                &failed_constraint_name)) {
+        MaybeLogDebugInfo(base::StringPrintf(
+            "Device %s format %s rejected due to constraint %s",
+            device.device_id.Utf8().c_str(),
+            media::VideoCaptureFormat::ToString(format).c_str(),
+            failed_constraint_name));
         continue;
       }
 
@@ -853,9 +906,15 @@ VideoCaptureSettings SelectSettingsVideoDeviceCapture(
     }
   }
 
-  if (!result.HasValue())
+  if (!result.HasValue()) {
+    MaybeLogDebugInfo(base::StringPrintf(
+        "No matching devices. Returning with failed constraint name %s",
+        failed_constraint_name));
     return VideoCaptureSettings(failed_constraint_name);
+  }
 
+  MaybeLogDebugInfo(base::StringPrintf("Returning best matching result %s",
+                                       failed_constraint_name));
   return result;
 }
 
