@@ -63,6 +63,7 @@ static_assert(
 namespace {
 
 static int g_wrap_raw_ptr_cnt = INT_MIN;
+static int g_release_wrapped_ptr_cnt = INT_MIN;
 static int g_get_for_dereference_cnt = INT_MIN;
 static int g_get_for_extraction_cnt = INT_MIN;
 static int g_get_for_comparison_cnt = INT_MIN;
@@ -70,19 +71,31 @@ static int g_wrapped_ptr_swap_cnt = INT_MIN;
 
 static void ClearCounters() {
   g_wrap_raw_ptr_cnt = 0;
+  g_release_wrapped_ptr_cnt = 0;
   g_get_for_dereference_cnt = 0;
   g_get_for_extraction_cnt = 0;
   g_get_for_comparison_cnt = 0;
   g_wrapped_ptr_swap_cnt = 0;
 }
 
-struct RawPtrCountingNoOpImpl : base::internal::RawPtrNoOpImpl {
-  using Super = base::internal::RawPtrNoOpImpl;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+using CountingSuperClass = base::internal::BackupRefPtrImpl;
+#else
+using CountingSuperClass = base::internal::RawPtrNoOpImpl;
+#endif
+struct RawPtrCountingImpl : public CountingSuperClass {
+  using Super = CountingSuperClass;
 
   template <typename T>
   static ALWAYS_INLINE T* WrapRawPtr(T* ptr) {
     ++g_wrap_raw_ptr_cnt;
     return Super::WrapRawPtr(ptr);
+  }
+
+  template <typename T>
+  static ALWAYS_INLINE void ReleaseWrappedPtr(T* ptr) {
+    ++g_release_wrapped_ptr_cnt;
+    Super::ReleaseWrappedPtr(ptr);
   }
 
   template <typename T>
@@ -109,7 +122,7 @@ struct RawPtrCountingNoOpImpl : base::internal::RawPtrNoOpImpl {
 };
 
 template <typename T>
-using CountingRawPtr = raw_ptr<T, RawPtrCountingNoOpImpl>;
+using CountingRawPtr = raw_ptr<T, RawPtrCountingImpl>;
 
 struct MyStruct {
   int x;
@@ -721,6 +734,114 @@ TEST_F(RawPtrTest, AssignmentFromNullptr) {
   EXPECT_EQ(g_get_for_comparison_cnt, 0);
   EXPECT_EQ(g_get_for_extraction_cnt, 0);
   EXPECT_EQ(g_get_for_dereference_cnt, 0);
+}
+
+void FunctionWithRawPtrParameter(raw_ptr<int> actual_ptr, int* expected_ptr) {
+  EXPECT_EQ(actual_ptr.get(), expected_ptr);
+  EXPECT_EQ(*actual_ptr, *expected_ptr);
+}
+
+// This test checks that raw_ptr<T> can be passed by value into function
+// parameters.  This is mostly a smoke test for TRIVIAL_ABI attribute.
+TEST_F(RawPtrTest, FunctionParameters_ImplicitlyMovedTemporary) {
+  int x = 123;
+  FunctionWithRawPtrParameter(
+      raw_ptr<int>(&x),  // Temporary that will be moved into the function.
+      &x);
+}
+
+// This test checks that raw_ptr<T> can be passed by value into function
+// parameters.  This is mostly a smoke test for TRIVIAL_ABI attribute.
+TEST_F(RawPtrTest, FunctionParameters_ExplicitlyMovedLValue) {
+  int x = 123;
+  raw_ptr<int> ptr(&x);
+  FunctionWithRawPtrParameter(std::move(ptr), &x);
+}
+
+// This test checks that raw_ptr<T> can be passed by value into function
+// parameters.  This is mostly a smoke test for TRIVIAL_ABI attribute.
+TEST_F(RawPtrTest, FunctionParameters_Copy) {
+  int x = 123;
+  raw_ptr<int> ptr(&x);
+  FunctionWithRawPtrParameter(ptr,  // `ptr` will be copied into the function.
+                              &x);
+}
+
+// This test checks how the std library handles collections like
+// std::vector<raw_ptr<T>>.
+//
+// When this test is written, reallocating std::vector's storage (e.g.
+// when growing the vector) requires calling raw_ptr's destructor on the
+// old storage (after std::move-ing the data to the new storage).  In
+// the future we hope that TRIVIAL_ABI (or [trivially_relocatable]]
+// proposed by P1144 [1]) will allow memcpy-ing the elements into the
+// new storage (without invoking destructors and move constructors
+// and/or move assignment operators).  At that point, the assert in the
+// test should be modified to capture the new, better behavior.
+//
+// In the meantime, this test serves as a basic correctness test that
+// ensures that raw_ptr<T> stored in a std::vector passes basic smoke
+// tests.
+//
+// [1]
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p1144r5.html#wording-attribute
+TEST_F(RawPtrTest, TrivialRelocability) {
+  std::vector<CountingRawPtr<int>> vector;
+  int x = 123;
+
+  // See how many times raw_ptr's destructor is called when std::vector
+  // needs to increase its capacity and reallocate the internal vector
+  // storage (moving the raw_ptr elements).
+  ClearCounters();
+  size_t number_of_capacity_changes = 0;
+  do {
+    size_t previous_capacity = vector.capacity();
+    while (vector.capacity() == previous_capacity)
+      vector.emplace_back(&x);
+    number_of_capacity_changes++;
+  } while (number_of_capacity_changes < 10);
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  // TODO(lukasza): In the future (once C++ language and std library
+  // support custom trivially relocatable objects) this #if branch can
+  // be removed (keeping only the right long-term expectation from the
+  // #else branch).
+  EXPECT_NE(0, g_release_wrapped_ptr_cnt);
+#else
+  // This is the right long-term expectation.
+  //
+  // (This EXPECT_EQ assertion is slightly misleading in
+  // !USE_BACKUP_REF_PTR mode, because RawPtrNoOpImpl has a default
+  // destructor that doesn't go through
+  // RawPtrCountingImpl::ReleaseWrappedPtr.  Nevertheless, the spirit of
+  // the EXPECT_EQ is correct + the assertion should be true in the
+  // long-term.)
+  EXPECT_EQ(0, g_release_wrapped_ptr_cnt);
+#endif
+
+  // Basic smoke test that raw_ptr elements in a vector work okay.
+  for (const auto& elem : vector) {
+    EXPECT_EQ(elem.get(), &x);
+    EXPECT_EQ(*elem, x);
+  }
+
+  // Verification that g_release_wrapped_ptr_cnt does capture how many
+  // times the destructors are called (e.g. that it is not always
+  // zero).
+  ClearCounters();
+  size_t number_of_cleared_elements = vector.size();
+  vector.clear();
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  EXPECT_EQ((int)number_of_cleared_elements, g_release_wrapped_ptr_cnt);
+#else
+  // TODO(lukasza): !USE_BACKUP_REF_PTR / RawPtrNoOpImpl has a default
+  // destructor that doesn't go through
+  // RawPtrCountingImpl::ReleaseWrappedPtr.  So we can't really depend
+  // on `g_release_wrapped_ptr_cnt`.  This #else branch should be
+  // deleted once USE_BACKUP_REF_PTR is removed (e.g. once BackupRefPtr
+  // ships to the Stable channel).
+  EXPECT_EQ(0, g_release_wrapped_ptr_cnt);
+  std::ignore = number_of_cleared_elements;
+#endif
 }
 
 struct BaseStruct {
