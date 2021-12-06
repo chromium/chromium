@@ -1534,7 +1534,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   const bool is_quarantine_enabled = IsQuarantineEnabled();
   // PCScan safepoint. Call before trying to allocate from cache.
-  if (is_quarantine_enabled) {
+  // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
+  // default.
+  if (UNLIKELY(is_quarantine_enabled)) {
     PCScan::JoinScanIfNeeded();
   }
 
