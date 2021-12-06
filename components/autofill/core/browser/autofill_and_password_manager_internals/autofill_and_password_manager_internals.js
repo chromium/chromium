@@ -278,6 +278,28 @@ function setUpLogDisplayConfig() {
       window.getSelection().collapse(textNode, textNode.length);
     }
   });
+
+  const downloadFakeButton = document.getElementById('download-fake-button');
+  downloadFakeButton.addEventListener('click', () => {
+    const html = document.documentElement.outerHTML;
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = window.URL.createObjectURL(blob);
+    const dateString = new Date()
+                           .toISOString()
+                           .replace(/T/g, '_')
+                           .replace(/\..+/, '')
+                           .replace(/:/g, '-');
+    const filename = `autofill-internals-${dateString}.html`;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
