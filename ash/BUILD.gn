@@ -917,6 +917,8 @@ component("ash") {
     "style/scoped_light_mode_as_default.cc",
     "style/style_util.cc",
     "style/style_util.h",
+    "style/system_toast_style.cc",
+    "style/system_toast_style.h",
     "system/accessibility/accessibility_feature_disable_dialog.cc",
     "system/accessibility/accessibility_feature_disable_dialog.h",
     "system/accessibility/accessibility_feature_pod_controller.cc",

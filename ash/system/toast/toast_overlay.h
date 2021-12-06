@@ -29,7 +29,7 @@ class Widget;
 namespace ash {
 
 class ToastManagerImplTest;
-class ToastOverlayView;
+class SystemToastStyle;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                                 public KeyboardControllerObserver {
@@ -92,7 +92,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   const std::u16string text_;
   const absl::optional<std::u16string> dismiss_text_;
   std::unique_ptr<views::Widget> overlay_widget_;
-  std::unique_ptr<ToastOverlayView> overlay_view_;
+  std::unique_ptr<SystemToastStyle> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   base::RepeatingClosure dismiss_callback_;
 

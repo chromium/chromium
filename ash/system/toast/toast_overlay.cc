@@ -16,6 +16,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/element_style.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/system_toast_style.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -49,13 +50,6 @@ namespace {
 // Duration of slide animation when overlay is shown or hidden.
 constexpr int kSlideAnimationDurationMs = 100;
 
-// These values are in DIP.
-constexpr int kToastCornerRounding = 16;
-constexpr int kToastHeight = 32;
-constexpr int kToastHorizontalSpacing = 16;
-constexpr int kToastMaximumWidth = 512;
-constexpr int kToastMinimumWidth = 288;
-
 // Returns the work area bounds for the root window where new windows are added
 // (including new toasts).
 gfx::Rect GetUserWorkAreaBounds(aura::Window* window) {
@@ -71,37 +65,6 @@ void AdjustWorkAreaBoundsForHotseatState(gfx::Rect& bounds,
   if (hotseat_widget->state() == HotseatState::kShownHomeLauncher)
     bounds.set_height(hotseat_widget->GetTargetBounds().y() - bounds.y());
 }
-
-///////////////////////////////////////////////////////////////////////////////
-//  ToastOverlayLabel
-class ToastOverlayLabel : public views::Label {
- public:
-  explicit ToastOverlayLabel(const std::u16string& label)
-      : Label(label, CONTEXT_TOAST_OVERLAY) {
-    SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    SetAutoColorReadabilityEnabled(false);
-    SetMultiLine(true);
-    SetMaxLines(2);
-    SetSubpixelRenderingEnabled(false);
-
-    int vertical_spacing =
-        std::max((kToastHeight - GetPreferredSize().height()) / 2, 0);
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets(vertical_spacing, kToastHorizontalSpacing)));
-  }
-
-  ToastOverlayLabel(const ToastOverlayLabel&) = delete;
-  ToastOverlayLabel& operator=(const ToastOverlayLabel&) = delete;
-  ~ToastOverlayLabel() override = default;
-
- private:
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
-  }
-};
 
 }  // namespace
 
@@ -128,91 +91,6 @@ class ToastOverlay::ToastDisplayObserver : public display::DisplayObserver {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-//  ToastOverlayView
-class ToastOverlayView : public views::View {
- public:
-  // This object is not owned by the views hierarchy or by the widget.
-  ToastOverlayView(base::RepeatingClosure dismiss_callback,
-                   const std::u16string& text,
-                   const absl::optional<std::u16string>& dismiss_text,
-                   const bool is_managed) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kToastCornerRounding));
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
-
-    int icon_width = 0;
-    if (is_managed) {
-      managed_icon_ = AddChildView(std::make_unique<views::ImageView>());
-      managed_icon_->SetBorder(views::CreateEmptyBorder(
-          gfx::Insets(kToastHorizontalSpacing, kToastHorizontalSpacing,
-                      kToastHorizontalSpacing, /*right=*/0)));
-      icon_width =
-          managed_icon_->GetPreferredSize().width() + kToastHorizontalSpacing;
-    }
-
-    auto* label = AddChildView(std::make_unique<ToastOverlayLabel>(text));
-    label->SetMaximumWidth(GetMaximumSize().width() - icon_width);
-    layout->SetFlexForView(label, 1);
-
-    if (!dismiss_text.has_value())
-      return;
-
-    button_ = AddChildView(std::make_unique<PillButton>(
-        std::move(dismiss_callback),
-        dismiss_text.value().empty()
-            ? l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON)
-            : dismiss_text.value(),
-        PillButton::Type::kIconlessAccentFloating,
-        /*icon=*/nullptr));
-    button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-
-    label->SetMaximumWidth(
-        GetMaximumSize().width() - button_->GetPreferredSize().width() -
-        icon_width - kToastHorizontalSpacing * 2 - kToastHorizontalSpacing * 2);
-  }
-
-  ToastOverlayView(const ToastOverlayView&) = delete;
-  ToastOverlayView& operator=(const ToastOverlayView&) = delete;
-  ~ToastOverlayView() override = default;
-
-  views::LabelButton* button() { return button_; }
-
- private:
-  // views::View:
-  gfx::Size GetMinimumSize() const override {
-    return gfx::Size(kToastMinimumWidth, kToastHeight);
-  }
-
-  gfx::Size GetMaximumSize() const override {
-    return gfx::Size(
-        kToastMaximumWidth,
-        GetUserWorkAreaBounds(Shell::GetRootWindowForNewWindows()).height() -
-            ToastOverlay::kOffset * 2);
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    auto* color_provider = AshColorProvider::Get();
-    SetBackground(
-        views::CreateSolidBackground(color_provider->GetBaseLayerColor(
-            AshColorProvider::BaseLayerType::kTransparent80)));
-    if (managed_icon_) {
-      managed_icon_->SetImage(gfx::CreateVectorIcon(
-          kSystemMenuBusinessIcon,
-          color_provider->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)));
-    }
-  }
-
-  views::LabelButton* button_ = nullptr;
-  views::ImageView* managed_icon_ = nullptr;
-};
-
-///////////////////////////////////////////////////////////////////////////////
 //  ToastOverlay
 ToastOverlay::ToastOverlay(Delegate* delegate,
                            const std::u16string& text,
@@ -224,7 +102,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
       text_(text),
       dismiss_text_(dismiss_text),
       overlay_widget_(new views::Widget),
-      overlay_view_(new ToastOverlayView(
+      overlay_view_(new SystemToastStyle(
           base::BindRepeating(&ToastOverlay::OnButtonClicked,
                               base::Unretained(this)),
           text,
