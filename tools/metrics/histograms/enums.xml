@@ -45059,6 +45059,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Third Party Unsafe Headers"/>
 </enum>
 
+<enum name="IntentPickerDialogAction">
+  <summary>
+    Defines actions taken by the user in the Intent Picker dialog
+  </summary>
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Dialog deactivated"/>
+  <int value="3" label="Chrome selected"/>
+  <int value="4" label="Chrome selected and preferred"/>
+  <int value="5" label="ARC app selected"/>
+  <int value="6" label="ARC app selected and preferred"/>
+  <int value="7" label="PWA selected"/>
+  <int value="8" label="PWA selected and preferred"/>
+</enum>
+
 <enum name="InterceptionType">
   <int value="0" label="Not intercepted"/>
   <int value="1" label="Other"/>

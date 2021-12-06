@@ -126,6 +126,18 @@ GURL RedirectUrlIfSwa(Profile* profile,
   return url;
 }
 
+IntentHandlingMetrics::Platform GetMetricsPlatform(mojom::AppType app_type) {
+  switch (app_type) {
+    case mojom::AppType::kArc:
+      return IntentHandlingMetrics::Platform::ARC;
+    case mojom::AppType::kWeb:
+      return IntentHandlingMetrics::Platform::PWA;
+    default:
+      NOTREACHED();
+      return IntentHandlingMetrics::Platform::ARC;
+  }
+}
+
 }  // namespace
 
 // static
@@ -231,10 +243,8 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())
     web_contents->ClosePage();
 
-  IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-      GetPickerEntryType(app_type),
-      apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
-      /*should_persist=*/false);
+  IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
+      GetMetricsPlatform(app_type));
   return true;
 }
 

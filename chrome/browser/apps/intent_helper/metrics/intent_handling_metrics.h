@@ -28,6 +28,22 @@ class IntentHandlingMetrics {
     kMaxValue = kWeb,
   };
 
+  // An action taken by the user in the HTTP/HTTPS Intent Picker dialog.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IntentPickerAction {
+    kInvalid = 0,
+    kError = 1,
+    kDialogDeactivated = 2,
+    kChromeSelected = 3,
+    kChromeSelectedAndPreferred = 4,
+    kArcAppSelected = 5,
+    kArcAppSelectedAndPreferred = 6,
+    kPwaSelected = 7,
+    kPwaSelectedAndPreferred = 8,
+    kMaxValue = kPwaSelectedAndPreferred
+  };
+
   // These enums are used to define the buckets for an enumerated UMA histogram
   // and need to be synced with the ArcIntentHandlerAction enum in enums.xml.
   // This enum class should also be treated as append-only.
@@ -79,24 +95,17 @@ class IntentHandlingMetrics {
 
   IntentHandlingMetrics();
 
-  // Determines the destination of the current navigation. We know that if the
-  // |picker_action| is either ERROR or DIALOG_DEACTIVATED the navigation MUST
-  // stay in Chrome, otherwise the platform is directly encoded in the action
-  // (like ARC_APP_PRESSED).
-  static Platform GetDestinationPlatform(PickerAction picker_action);
+  // Records metrics for the outcome of a user selection in the http/https
+  // Intent Picker UI. |entry_type| is the type of the selected app,
+  // |close_reason| is the reason why the bubble closed, and |should_persist| is
+  // whether the persistence checkbox was checked.
+  static void RecordIntentPickerMetrics(PickerEntryType entry_type,
+                                        IntentPickerCloseReason close_reason,
+                                        bool should_persist);
 
-  // Converts the provided |entry_type|, |close_reason| and |should_persist|
-  // boolean to a PickerAction value for recording in UMA.
-  static PickerAction GetPickerAction(PickerEntryType entry_type,
-                                      IntentPickerCloseReason close_reason,
-                                      bool should_persist);
-
-  static void RecordIntentPickerMetrics(PickerAction action, Platform platform);
-
-  static void RecordIntentPickerUserInteractionMetrics(
-      PickerEntryType entry_type,
-      IntentPickerCloseReason close_reason,
-      bool should_persist);
+  // Records metrics for when a link is clicked which can handle a preferred
+  // app, as the result of a user previously setting a preference for that app.
+  static void RecordPreferredAppLinkClickMetrics(Platform platform);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static void RecordExternalProtocolMetrics(arc::Scheme scheme,

@@ -171,6 +171,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Apps.IntentPickerAction"
     enum="ArcIntentHandlerAction" expires_after="2022-05-21">
+  <obsolete>
+    Replaced by ChromeOS.Intents.IntentPickerAction in M98.
+  </obsolete>
   <owner>elijahtaylor@google.com</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
@@ -186,10 +189,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dominickn@chromium.org</owner>
   <owner>shihuis@google.com</owner>
   <summary>
-    Records the app platform chosen (or Chrome if the user did not choose an
-    app) when the intent picker is shown to the user on Chrome OS. The
-    destination may be specified due to the user explicit selection or a
-    previously stored preference.
+    Records the app platform shown as the result of link intent handling.
+    Recorded when the user makes a choice in the Intent Picker dialog, and when
+    the result of a previous user preference is applied during a link click.
   </summary>
 </histogram>
 
@@ -954,6 +956,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="50"/>
     <variant name="100"/>
   </token>
+</histogram>
+
+<histogram name="ChromeOS.Intents.IntentPickerAction"
+    enum="IntentPickerDialogAction" expires_after="2022-06-01">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The intent picker dialog is shown (either automatically, or though a page
+    action button) when the user navigates to a page whose URL can be handled by
+    an installed app. This metric is recorded when the dialog is closed and
+    records the user action which caused it to close.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.IsLacrosBrowser" enum="Boolean" expires_after="never">

@@ -216,12 +216,9 @@ void OnIntentPickerClosedChromeOs(
       CloseOrGoBack(web_contents);
     }
   }
-  IntentHandlingMetrics::PickerAction action =
-      IntentHandlingMetrics::GetPickerAction(entry_type, close_reason,
-                                             should_persist);
-  IntentHandlingMetrics::Platform platform =
-      IntentHandlingMetrics::GetDestinationPlatform(action);
-  IntentHandlingMetrics::RecordIntentPickerMetrics(action, platform);
+
+  IntentHandlingMetrics::RecordIntentPickerMetrics(entry_type, close_reason,
+                                                   should_persist);
 }
 
 }  // namespace apps
