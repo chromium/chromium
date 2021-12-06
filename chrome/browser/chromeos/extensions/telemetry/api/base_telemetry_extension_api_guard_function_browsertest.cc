@@ -162,7 +162,6 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
   // Make sure that current user is not a device owner.
   auto* const user_manager = GetFakeUserManager();
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager->AddUser(regular_user);
   user_manager->SetOwnerId(regular_user);
 
   CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(
