@@ -27,13 +27,12 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="M85">
-  <obsolete>
-    Expired after M85. No longer in use.
-  </obsolete>
+    enum="CaptivePortalBlockingPageEvent" expires_after="M105">
   <owner>meacer@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
   <summary>
-    User action when the user is shown a captive portal error page.
+    User action when the user is shown a captive portal error page. NOTE: Metric
+    was expired from M85 to M97.
   </summary>
 </histogram>
 
