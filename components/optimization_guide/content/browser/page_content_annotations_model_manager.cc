@@ -501,6 +501,13 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
 
   JobQueue::Pointer job_ptr = job_queue_.FirstMax();
   if (job_ptr.is_null()) {
+    // There are no more jobs to run, so unload all models.
+    if (on_demand_page_topics_model_executor_) {
+      on_demand_page_topics_model_executor_->UnloadModel();
+    }
+    if (page_visibility_model_executor_) {
+      page_visibility_model_executor_->UnloadModel();
+    }
     return;
   }
 
@@ -513,6 +520,17 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
   base::OnceClosure on_job_complete_callback = base::BindOnce(
       &PageContentAnnotationsModelManager::OnJobExecutionComplete,
       weak_ptr_factory_.GetWeakPtr());
+
+  // Reset every other model from memory so that there aren't a bunch of models
+  // all loaded at the same time.
+  if (job->type() != AnnotationType::kPageTopics &&
+      on_demand_page_topics_model_executor_) {
+    on_demand_page_topics_model_executor_->UnloadModel();
+  }
+  if (job->type() != AnnotationType::kContentVisibility &&
+      page_visibility_model_executor_) {
+    page_visibility_model_executor_->UnloadModel();
+  }
 
   if (job->type() == AnnotationType::kPageTopics) {
     if (!on_demand_page_topics_model_executor_) {

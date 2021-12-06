@@ -16,23 +16,16 @@
 namespace optimization_guide {
 namespace {
 
-class NoUnloadingTestTFLiteModelExecutor : public TestTFLiteModelExecutor {
- protected:
-  void OnExecutionComplete() override {
-    // Intentionally do nothing, overriding the something done in the
-    // superclass.
-  }
-};
-
 class NoUnloadingTestTFLiteModelHandler : public TestTFLiteModelHandler {
  public:
   NoUnloadingTestTFLiteModelHandler(
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-      : TestTFLiteModelHandler(
-            model_provider,
-            background_task_runner,
-            std::make_unique<NoUnloadingTestTFLiteModelExecutor>()) {}
+      : TestTFLiteModelHandler(model_provider,
+                               background_task_runner,
+                               std::make_unique<TestTFLiteModelExecutor>()) {
+    SetShouldUnloadModelOnComplete(false);
+  }
 };
 
 class TFLiteModelExecutorTest : public testing::Test {

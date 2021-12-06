@@ -752,6 +752,8 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
   page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
   SetupPageTopicsV2ModelExecutor();
 
+  base::HistogramTester histogram_tester;
+
   // Running the actual model can take a while.
   base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE,
                                                   base::Seconds(120));
@@ -789,6 +791,11 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
 
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_TOPICS_V2, nullptr));
+
+  // The model should have only been loaded once and then used for both jobs.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelAvailableToLoad.PageTopicsV2", true,
+      1);
 
   ASSERT_EQ(result1.size(), 1U);
   EXPECT_EQ(result1[0].input(), "input1");

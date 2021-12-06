@@ -73,6 +73,12 @@ class ScopedExecutionStatusResultRecorder {
 // input and output types. Note that callers will need to give an implementation
 // of this class to a |ModelHandler|, whereas the
 // handle is the actual class that calling code would own and call into.
+//
+// By default, the model file will be (re)loaded for every execution and then
+// unloaded from memory after every execution (e.g.: "OnComplete"). This helps
+// to keep memory usage of the browser process down, but does delay model
+// execution by the time it takes to load the model (about 50ms in practice).
+// See |SetShouldUnloadModelOnComplete| to override this behavior.
 template <class OutputType, class... InputTypes>
 class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
  public:
@@ -104,7 +110,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    ResetLoadedModel();
+    UnloadModel();
 
     model_file_path_ = file_path;
 
@@ -116,6 +122,31 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
                 optimization_target_),
         base::Histogram::kNoFlags);
     histogram->Add(true);
+  }
+
+  // Calling this method allows the default model loading/unloading behavior to
+  // be overridden. Setting this to true will cause the model to remain loaded
+  // afterwards a model execution (e.g.: "OnComplete"), until |UnloadModel| is
+  // called. False is the default behavior (see class comment).
+  void SetShouldUnloadModelOnComplete(
+      bool should_unload_model_on_complete) override {
+    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    should_unload_model_on_complete_ = should_unload_model_on_complete;
+  }
+
+  // Clears the loaded model from memory if it is loaded. Safe to call when the
+  // model is already unloaded, and becomes a no-op.
+  void UnloadModel() override {
+    TRACE_EVENT1("browser", "OptGuideModelExecutor::UnloadModel",
+                 "OptimizationTarget",
+                 optimization_guide::GetStringNameForOptimizationTarget(
+                     optimization_target_));
+    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    loaded_model_.reset();
+    model_fb_.reset();
   }
 
   // Starts the execution of the model. When complete, |ui_callback_on_complete|
@@ -189,19 +220,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     OnExecutionComplete();
   }
 
-  // Clears the loaded model from memory.
-  void ResetLoadedModel() {
-    TRACE_EVENT1("browser", "OptGuideModelExecutor::ResetLoadedModel",
-                 "OptimizationTarget",
-                 optimization_guide::GetStringNameForOptimizationTarget(
-                     optimization_target_));
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    loaded_model_.reset();
-    model_fb_.reset();
-  }
-
   // IMPORTANT: These WeakPointers must only be dereferenced on the background
   // thread.
   base::WeakPtr<TFLiteModelExecutor> GetBackgroundWeakPtr() {
@@ -226,16 +244,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
       base::MemoryMappedFile* model_file,
       ExecutionStatus* out_status) = 0;
 
-  // This method is run as a PostTask after every execution. By default, it will
-  // unload the model from memory by calling |ResetLoadedModel|, but this can be
-  // overridden in derived classes for callers who wish to manage the unloading
-  // behavior themselves.
-  virtual void OnExecutionComplete() {
-    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ResetLoadedModel();
-  }
-
  private:
   // A true return value indicates the model was loaded successfully, false
   // otherwise.
@@ -247,7 +255,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    ResetLoadedModel();
+    UnloadModel();
 
     base::UmaHistogramBoolean(
         "OptimizationGuide.ModelExecutor.ModelAvailableToLoad." +
@@ -272,8 +280,18 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
     return !!loaded_model_;
   }
 
+  void OnExecutionComplete() {
+    DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (should_unload_model_on_complete_) {
+      UnloadModel();
+    }
+  }
+
   proto::OptimizationTarget optimization_target_ =
       proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+
+  bool should_unload_model_on_complete_ = true;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 

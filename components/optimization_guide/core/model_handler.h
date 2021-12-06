@@ -85,6 +85,26 @@ class ModelHandler : public OptimizationTargetModelObserver {
             std::move(on_complete_callback), now, input...));
   }
 
+  void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ModelExecutor<OutputType,
+                           InputTypes...>::SetShouldUnloadModelOnComplete,
+            background_executor_->GetBackgroundWeakPtr(), should_auto_unload));
+  }
+
+  // Requests that the model executor unload the model from memory, if it is
+  // currently loaded.
+  void UnloadModel() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ModelExecutor<OutputType, InputTypes...>::UnloadModel,
+                       background_executor_->GetBackgroundWeakPtr()));
+  }
+
   // OptimizationTargetModelObserver:
   void OnModelUpdated(proto::OptimizationTarget optimization_target,
                       const ModelInfo& model_info) override {

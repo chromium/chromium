@@ -23,6 +23,10 @@ class TestModelExecutor
 
   void UpdateModelFile(const base::FilePath&) override {}
 
+  void UnloadModel() override {}
+
+  void SetShouldUnloadModelOnComplete(bool should_auto_unload) override {}
+
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<std::vector<float>>&)>;
   void SendForExecution(ExecutionCallback ui_callback_on_complete,

@@ -28,7 +28,9 @@ PageTopicsModelExecutor::PageTopicsModelExecutor(
     : BertModelHandler(model_provider,
                        background_task_runner,
                        proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
-                       model_metadata) {}
+                       model_metadata) {
+  SetShouldUnloadModelOnComplete(false);
+}
 PageTopicsModelExecutor::~PageTopicsModelExecutor() = default;
 
 void PageTopicsModelExecutor::ExecuteOnSingleInput(

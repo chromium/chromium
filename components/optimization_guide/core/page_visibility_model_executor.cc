@@ -17,7 +17,9 @@ PageVisibilityModelExecutor::PageVisibilityModelExecutor(
     : BertModelHandler(model_provider,
                        background_task_runner,
                        proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
-                       model_metadata) {}
+                       model_metadata) {
+  SetShouldUnloadModelOnComplete(false);
+}
 PageVisibilityModelExecutor::~PageVisibilityModelExecutor() = default;
 
 void PageVisibilityModelExecutor::ExecuteOnSingleInput(

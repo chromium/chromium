@@ -44,6 +44,13 @@ class ModelExecutor {
 
   virtual void UpdateModelFile(const base::FilePath& file_path) = 0;
 
+  virtual void UnloadModel() = 0;
+
+  // Sets whether the model file should be unloaded from memory after each
+  // execution. If set to false, use |UnloadModel| to unload the model when
+  // needed.
+  virtual void SetShouldUnloadModelOnComplete(bool should_auto_unload) = 0;
+
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
   virtual void SendForExecution(ExecutionCallback ui_callback_on_complete,
