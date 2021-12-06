@@ -145,6 +145,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void OnStopDiscovery(DiscoverySessionResultCallback callback,
                        const absl::optional<Void>& ret,
                        const absl::optional<Error>& error);
+  void OnGetBondedDevices(const absl::optional<std::vector<FlossDeviceId>>& ret,
+                          const absl::optional<Error>& error);
 
   // Announce to observers a change in the adapter state.
   void DiscoverableChanged(bool discoverable);
@@ -162,6 +164,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
 
   // Remove any active adapters.
   void RemoveAdapter();
+
+  void PopulateInitialDevices();
 
   // floss::FlossAdapterClient::Observer override.
   void AdapterDiscoveringChanged(bool state) override;

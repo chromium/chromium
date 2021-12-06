@@ -243,4 +243,24 @@ TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
   EXPECT_FALSE(device->IsConnected());
 }
 
+TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
+  InitializeAdapter();
+
+  // Before adapter is enabled, there are no known devices.
+  EXPECT_FALSE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1));
+  EXPECT_FALSE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2));
+
+  // Simulate adapter enabled event.
+  fake_floss_manager_client_->NotifyObservers(
+      base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
+        observer->AdapterEnabledChanged(/*hci=*/0, /*enabled=*/true);
+      }));
+
+  // After adapter is enabled, there are known devices.
+  EXPECT_TRUE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1) !=
+              nullptr);
+  EXPECT_TRUE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2) !=
+              nullptr);
+}
+
 }  // namespace floss

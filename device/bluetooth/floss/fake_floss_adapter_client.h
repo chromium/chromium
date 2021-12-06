@@ -17,6 +17,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   FakeFlossAdapterClient();
   ~FakeFlossAdapterClient() override;
 
+  static const char kBondedAddress1[];
+  static const char kBondedAddress2[];
   // The address of a device without Keyboard nor Display IO capability,
   // triggering Just Works pairing when used in tests.
   static const char kJustWorksAddress[];
@@ -43,6 +45,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
               const FlossDeviceId& device,
               bool accept,
               const std::vector<uint8_t>& pin) override;
+  void GetBondedDevices(
+      ResponseCallback<std::vector<FlossDeviceId>> callback) override;
 
   // Helper for posting a delayed task.
   void PostDelayedTask(base::OnceClosure callback);

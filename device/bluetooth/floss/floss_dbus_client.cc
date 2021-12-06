@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "dbus/message.h"
+#include "device/bluetooth/floss/floss_adapter_client.h"
 
 namespace floss {
 
@@ -28,6 +29,32 @@ bool ReadReturnFromResponse(dbus::MessageReader* reader, uint32_t* value) {
 template <>
 bool ReadReturnFromResponse(dbus::MessageReader* reader, std::string* value) {
   return reader->PopString(value);
+}
+
+template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader, FlossDeviceId* value) {
+  return FlossAdapterClient::ParseFlossDeviceId(reader, value);
+}
+
+// Specialization for vector of anything.
+template <typename T>
+bool ReadReturnFromResponse(dbus::MessageReader* reader,
+                            std::vector<typename T::value_type>* value) {
+  using ElemType = typename T::value_type;
+
+  dbus::MessageReader subreader(nullptr);
+  if (!reader->PopArray(&subreader))
+    return false;
+
+  while (subreader.HasMoreData()) {
+    ElemType element;
+    if (!ReadReturnFromResponse<ElemType>(&subreader, &element))
+      return false;
+
+    value->push_back(element);
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -52,6 +79,7 @@ const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
 const char kSetPairingConfirmation[] = "SetPairingConfirmation";
 const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
+const char kGetBondedDevices[] = "GetBondedDevices";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
@@ -181,6 +209,11 @@ template void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<std::string> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<std::vector<FlossDeviceId>> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 

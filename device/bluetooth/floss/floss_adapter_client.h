@@ -160,6 +160,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                           bool accept,
                           const std::vector<uint8_t>& passkey);
 
+  // Returns bonded devices.
+  virtual void GetBondedDevices(
+      ResponseCallback<std::vector<FlossDeviceId>> callback);
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 

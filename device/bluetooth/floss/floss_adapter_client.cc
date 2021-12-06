@@ -95,6 +95,12 @@ void FlossAdapterClient::SetPasskey(ResponseCallback<Void> callback,
                            accept, passkey);
 }
 
+void FlossAdapterClient::GetBondedDevices(
+    ResponseCallback<std::vector<FlossDeviceId>> callback) {
+  CallAdapterMethod0<std::vector<FlossDeviceId>>(std::move(callback),
+                                                 adapter::kGetBondedDevices);
+}
+
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const std::string& adapter_path) {

@@ -19,6 +19,8 @@ FakeFlossAdapterClient::FakeFlossAdapterClient() = default;
 
 FakeFlossAdapterClient::~FakeFlossAdapterClient() = default;
 
+const char FakeFlossAdapterClient::kBondedAddress1[] = "11:11:11:11:11:01";
+const char FakeFlossAdapterClient::kBondedAddress2[] = "11:11:11:11:11:02";
 const char FakeFlossAdapterClient::kJustWorksAddress[] = "11:22:33:44:55:66";
 const char FakeFlossAdapterClient::kKeyboardAddress[] = "aa:aa:aa:aa:aa:aa";
 const char FakeFlossAdapterClient::kPhoneAddress[] = "bb:bb:bb:bb:bb:bb";
@@ -137,6 +139,16 @@ void FakeFlossAdapterClient::SetPin(ResponseCallback<Void> callback,
 
   PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
                                  /*err=*/absl::nullopt));
+}
+
+void FakeFlossAdapterClient::GetBondedDevices(
+    ResponseCallback<std::vector<FlossDeviceId>> callback) {
+  std::vector<FlossDeviceId> known_devices;
+  known_devices.push_back(
+      FlossDeviceId({.address = kBondedAddress1, .name = ""}));
+  known_devices.push_back(
+      FlossDeviceId({.address = kBondedAddress2, .name = ""}));
+  std::move(callback).Run(known_devices, absl::nullopt);
 }
 
 }  // namespace floss

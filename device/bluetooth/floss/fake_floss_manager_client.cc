@@ -12,6 +12,13 @@ FakeFlossManagerClient::FakeFlossManagerClient() = default;
 
 FakeFlossManagerClient::~FakeFlossManagerClient() = default;
 
+void FakeFlossManagerClient::NotifyObservers(
+    const base::RepeatingCallback<void(Observer*)>& notify) const {
+  for (auto& observer : observers_) {
+    notify.Run(&observer);
+  }
+}
+
 void FakeFlossManagerClient::SetAdapterPowered(int adapter, bool powered) {
   adapter_to_powered_.emplace(adapter, powered);
 }

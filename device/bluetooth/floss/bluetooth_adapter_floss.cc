@@ -111,6 +111,12 @@ void BluetoothAdapterFloss::RemoveAdapter() {
   PresentChanged(false);
 }
 
+void BluetoothAdapterFloss::PopulateInitialDevices() {
+  FlossDBusManager::Get()->GetAdapterClient()->GetBondedDevices(
+      base::BindOnce(&BluetoothAdapterFloss::OnGetBondedDevices,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void BluetoothAdapterFloss::Init() {
   // If dbus is shutdown or ObjectManager isn't supported, we just return
   // without initializing anything.
@@ -306,6 +312,24 @@ void BluetoothAdapterFloss::OnStopDiscovery(
   std::move(callback).Run(false, UMABluetoothDiscoverySessionOutcome::SUCCESS);
 }
 
+void BluetoothAdapterFloss::OnGetBondedDevices(
+    const absl::optional<std::vector<FlossDeviceId>>& ret,
+    const absl::optional<Error>& error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Error on GetBondedDevices: " << error->name;
+    return;
+  }
+
+  if (!ret.has_value()) {
+    LOG(ERROR) << "Error on GetBondedDevices: No return value";
+    return;
+  }
+
+  for (const auto& device_id : *ret) {
+    AdapterFoundDevice(device_id);
+  }
+}
+
 // Announce to observers a change in the adapter state.
 void BluetoothAdapterFloss::DiscoverableChanged(bool discoverable) {
   NOTIMPLEMENTED();
@@ -376,6 +400,7 @@ void BluetoothAdapterFloss::AdapterEnabledChanged(int adapter, bool enabled) {
     FlossDBusManager::Get()->SwitchAdapter(FlossDBusManager::kInvalidAdapter);
   }
 
+  PopulateInitialDevices();
   NotifyAdapterPoweredChanged(enabled);
 }
 
