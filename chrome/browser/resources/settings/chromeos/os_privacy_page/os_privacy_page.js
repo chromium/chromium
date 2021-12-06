@@ -137,7 +137,8 @@ Polymer({
     isSmartPrivacyEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.getBoolean('isSmartPrivacyEnabled');
+        return loadTimeData.getBoolean('isSnoopingProtectionEnabled') ||
+            loadTimeData.getBoolean('isQuickDimEnabled');
       },
       readOnly: true,
     },

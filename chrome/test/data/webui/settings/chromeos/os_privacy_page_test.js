@@ -241,6 +241,10 @@ suite('PrivacyPageTests', function() {
   });
 
   test('Deep link to snooping protection on smart privacy page', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: true,
+    });
+
     const params = new URLSearchParams;
     params.append('settingId', '1114');
     settings.Router.getInstance().navigateTo(
@@ -259,6 +263,10 @@ suite('PrivacyPageTests', function() {
   });
 
   test('Deep link to quick dim on smart privacy page', async () => {
+    loadTimeData.overrideValues({
+      isQuickDimEnabled: true,
+    });
+
     const params = new URLSearchParams;
     params.append('settingId', '1115');
     settings.Router.getInstance().navigateTo(
@@ -330,9 +338,10 @@ suite('PrivacyPageTests', function() {
   });
 
 
-  test('Smart privacy hidden when feature disabled', async () => {
+  test('Smart privacy hidden when both features disabled', async () => {
     loadTimeData.overrideValues({
-      isSmartPrivacyEnabled: false,
+      isSnoopingProtectionEnabled: false,
+      isQuickDimEnabled: false,
     });
 
     privacyPage = document.createElement('os-settings-privacy-page');
@@ -343,9 +352,24 @@ suite('PrivacyPageTests', function() {
     assertFalse(elementExists('#smartPrivacySubpageTrigger'));
   });
 
-  test('Smart privacy shown when feature enabled', async () => {
+  test('Smart privacy shown when only quick dim enabled', async () => {
     loadTimeData.overrideValues({
-      isSmartPrivacyEnabled: true,
+      isSnoopingProtectionEnabled: false,
+      isQuickDimEnabled: true,
+    });
+
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+
+    await test_util.waitAfterNextRender(privacyPage);
+
+    assertTrue(elementExists('#smartPrivacySubpageTrigger'));
+  });
+
+  test('Smart privacy shown if only snooping protection enabled', async () => {
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: true,
+      isQuickDimEnabled: false,
     });
 
     privacyPage = document.createElement('os-settings-privacy-page');

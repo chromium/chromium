@@ -166,16 +166,12 @@ const std::vector<SearchConcept>& GetPciguardSearchConcepts() {
   return *tags;
 }
 
-bool IsSmartPrivacyEnabled() {
-  return ash::features::IsSnoopingProtectionEnabled() ||
-         ash::features::IsQuickDimEnabled();
-}
-
 const std::vector<SearchConcept>& GetSmartPrivacySearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
     std::vector<SearchConcept> init_tags;
 
-    if (IsSmartPrivacyEnabled()) {
+    if (ash::features::IsSnoopingProtectionEnabled() ||
+        ash::features::IsQuickDimEnabled()) {
       init_tags.push_back({IDS_OS_SETTINGS_TAG_SMART_PRIVACY,
                            mojom::kSmartPrivacySubpagePath,
                            mojom::SearchResultIcon::kShield,
@@ -328,7 +324,10 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("isSmartPrivacyEnabled", IsSmartPrivacyEnabled());
+  html_source->AddBoolean("isSnoopingProtectionEnabled",
+                          ash::features::IsSnoopingProtectionEnabled());
+  html_source->AddBoolean("isQuickDimEnabled",
+                          ash::features::IsQuickDimEnabled());
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);

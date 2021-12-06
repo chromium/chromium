@@ -5,6 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/lazy_load.js';
 
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -36,8 +37,12 @@ suite('SmartPrivacySubpageTests', function() {
   }
 
   setup(async () => {
-    PolymerTest.clearBody();
+    // Options aren't shown unless the snooping protection feature is enabled.
+    loadTimeData.overrideValues({
+      isSnoopingProtectionEnabled: true,
+    });
 
+    PolymerTest.clearBody();
     smartPrivacySubpage = document.createElement('settings-smart-privacy-page');
     assertTrue(!!smartPrivacySubpage);
     smartPrivacySubpage.prefs = makePrefs(false);
@@ -50,8 +55,10 @@ suite('SmartPrivacySubpageTests', function() {
   });
 
   test('Snooping radio list visibility tied to pref', async () => {
+    // The $ method won't find elements inside templates.
     /** @type {?HTMLElement} */
-    const collapse = assert(smartPrivacySubpage.$.snoopingProtectionOptions);
+    const collapse = smartPrivacySubpage.shadowRoot.querySelector(
+        '#snoopingProtectionOptions');
 
     // Default pref value is false.
     assertFalse(collapse.opened);

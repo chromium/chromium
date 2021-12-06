@@ -15,6 +15,7 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared_css.js';
 import '../../settings_vars_css.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
@@ -54,6 +55,29 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
         notify: true,
       },
 
+
+      /**
+       * Whether or not quick dim is enabled.
+       * @private {boolean}
+       */
+      isQuickDimEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isQuickDimEnabled');
+        },
+      },
+
+      /**
+       * Whether or not snooping protection is enabled.
+       * @private {boolean}
+       */
+      isSnoopingProtectionEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
+        },
+      },
+
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
        * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -67,7 +91,6 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
       },
     };
   }
-
 
   /**
    * RouteObserverBehavior

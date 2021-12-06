@@ -42,30 +42,40 @@
     $i18n{smartPrivacyDesc}
   </div>
 </div>
-<settings-toggle-button class="underbar"
-    pref="{{prefs.power.quick_dim_enabled}}"
-    id="quickDimToggle"
-    label="$i18n{smartPrivacyQuickDimTitle}"
-    sub-label="$i18n{smartPrivacyQuickDimSubtext}"
-    deep-link-focus-id$="[[Setting.kQuickDim]]">
-</settings-toggle-button>
-<settings-toggle-button
-    pref="{{prefs.ash.privacy.snooping_protection_enabled}}"
-    id="snoopingProtectionToggle"
-    label="$i18n{smartPrivacySnoopingTitle}"
-    sub-label="$i18n{smartPrivacySnoopingSubtext}"
-    deep-link-focus-id$="[[Setting.kSnoopingProtection]]">
-</settings-toggle-button>
-<iron-collapse id="snoopingProtectionOptions"
-    opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">
-  <div class="settings-box continuation embedded">
-    <cr-radio-group>
-      <cr-radio-button name="dim" class="list-item"
-          label="$i18n{smartPrivacySnoopingDim}">
-      </cr-radio-button>
-      <cr-radio-button name="icon" class="list-item"
-          label="$i18n{smartPrivacySnoopingIcon}">
-      </cr-radio-button>
-    </cr-radio-group>
-  </div>
-</iron-collapse>
+<template is="dom-if" if="[[isQuickDimEnabled_]]" restamp>
+  <settings-toggle-button
+      pref="{{prefs.power.quick_dim_enabled}}"
+      id="quickDimToggle"
+      label="$i18n{smartPrivacyQuickDimTitle}"
+      sub-label="$i18n{smartPrivacyQuickDimSubtext}"
+      deep-link-focus-id$="[[Setting.kQuickDim]]">
+  </settings-toggle-button>
+
+  <!-- Underbar is only needed if we need to separate the two
+       settings. -->
+   <template is="dom-if" if="[[isSnoopingProtectionEnabled_]]" restamp>
+     <div class="underbar"></div>
+   </template>
+</template>
+<template is="dom-if" if="[[isSnoopingProtectionEnabled_]]" restamp>
+  <settings-toggle-button
+      pref="{{prefs.ash.privacy.snooping_protection_enabled}}"
+      id="snoopingProtectionToggle"
+      label="$i18n{smartPrivacySnoopingTitle}"
+      sub-label="$i18n{smartPrivacySnoopingSubtext}"
+      deep-link-focus-id$="[[Setting.kSnoopingProtection]]">
+  </settings-toggle-button>
+  <iron-collapse id="snoopingProtectionOptions"
+      opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">
+    <div class="settings-box continuation embedded">
+      <cr-radio-group>
+        <cr-radio-button name="dim" class="list-item"
+            label="$i18n{smartPrivacySnoopingDim}">
+        </cr-radio-button>
+        <cr-radio-button name="icon" class="list-item"
+            label="$i18n{smartPrivacySnoopingIcon}">
+        </cr-radio-button>
+      </cr-radio-group>
+    </div>
+  </iron-collapse>
+</template>
