@@ -65,8 +65,7 @@ struct ProtonVersionInfo {
 };
 
 ProtonVersionInfo GetProtonVersionInfo(absl::optional<int> game_id,
-                                       Profile* const profile) {
-  std::string owner_id = ash::ProfileHelper::GetUserIdHashFromProfile(profile);
+                                       const std::string& owner_id) {
   std::vector<std::string> command = {"/usr/bin/vsh", "--owner_id=" + owner_id,
                                       "--vm_name=borealis", "--",
                                       "/usr/bin/get_proton_version.py"};
@@ -129,7 +128,7 @@ ProtonVersionInfo GetProtonVersionInfo(absl::optional<int> game_id,
 
 GURL GetSysInfoForUrlAsync(GURL url,
                            absl::optional<int> game_id,
-                           Profile* const profile) {
+                           std::string owner_id) {
   url = net::AppendQueryParameter(url, kBoardKey,
                                   base::SysInfo::HardwareModelName());
   url = net::AppendQueryParameter(
@@ -141,7 +140,7 @@ GURL GetSysInfoForUrlAsync(GURL url,
   url = net::AppendQueryParameter(url, kPlatformVersionKey,
                                   base::SysInfo::OperatingSystemVersion());
 
-  ProtonVersionInfo version_info = GetProtonVersionInfo(game_id, profile);
+  ProtonVersionInfo version_info = GetProtonVersionInfo(game_id, owner_id);
   if (!version_info.proton.empty()) {
     url =
         net::AppendQueryParameter(url, kProtonVersionKey, version_info.proton);
@@ -215,7 +214,8 @@ void FeedbackFormUrl(Profile* const profile,
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
-      base::BindOnce(&GetSysInfoForUrlAsync, url, borealis_app_id, profile),
+      base::BindOnce(&GetSysInfoForUrlAsync, url, borealis_app_id,
+                     ash::ProfileHelper::GetUserIdHashFromProfile(profile)),
       std::move(url_callback));
 }
 
