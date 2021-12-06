@@ -267,7 +267,7 @@ class GesturesPropFunctionsWrapper {
 
 extern const GesturesPropProvider kGesturePropProvider;
 
-}  // namspace ui
+}  // namespace ui
 
 // GesturesProp logging function.
 std::ostream& operator<<(std::ostream& os, const GesturesProp& prop);

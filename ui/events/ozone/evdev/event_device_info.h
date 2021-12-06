@@ -233,6 +233,6 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   InputDeviceType device_type_ = InputDeviceType::INPUT_DEVICE_UNKNOWN;
 };
 
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_INFO_H_

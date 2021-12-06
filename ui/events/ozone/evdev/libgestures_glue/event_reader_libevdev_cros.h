@@ -91,6 +91,6 @@ class EventReaderLibevdevCros : public EventConverterEvdev {
   std::unique_ptr<Delegate> delegate_;
 };
 
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_EVENT_READER_LIBEVDEV_CROS_H_

@@ -135,6 +135,6 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   static const int kMultitouchMousePixelsPerTick = 50;
 };
 
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_GESTURE_INTERPRETER_LIBEVDEV_CROS_H_

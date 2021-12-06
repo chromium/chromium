@@ -113,6 +113,6 @@ extern const DeviceCapabilities kMicrosoftBluetoothNumberPad;
 extern const DeviceCapabilities kDellLatitudeE6510Touchpad;
 extern const DeviceCapabilities kHPProBook6560bTouchpad;
 extern const DeviceCapabilities kJinlonKeyboard;
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_TEST_UTIL_H_
