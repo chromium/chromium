@@ -29,4 +29,21 @@ OptimizationGuideDecision TestOptimizationGuideDecider::CanApplyOptimization(
   return OptimizationGuideDecision::kFalse;
 }
 
+void TestOptimizationGuideDecider::CanApplyOptimizationOnDemand(
+    const std::vector<GURL>& urls,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
+    proto::RequestContext request_context,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+  for (const auto& url : urls) {
+    base::flat_map<proto::OptimizationType,
+                   OptimizationGuideDecisionWithMetadata>
+        decisions;
+    for (const auto optimization_type : optimization_types) {
+      decisions[optimization_type] = {OptimizationGuideDecision::kFalse,
+                                      /*optimization_metadata=*/{}};
+    }
+    callback.Run(url, decisions);
+  }
+}
+
 }  // namespace optimization_guide

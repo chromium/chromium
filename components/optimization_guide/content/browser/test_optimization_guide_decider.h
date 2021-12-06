@@ -31,6 +31,14 @@ class TestOptimizationGuideDecider : public OptimizationGuideDecider {
       const GURL& url,
       proto::OptimizationType optimization_type,
       OptimizationMetadata* optimization_metadata) override;
+
+ private:
+  // OptimizationGuideDecider implementation:
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      proto::RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback) override;
 };
 
 }  // namespace optimization_guide
