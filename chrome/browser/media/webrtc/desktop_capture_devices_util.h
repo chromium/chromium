@@ -25,6 +25,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     blink::mojom::MediaStreamType devices_audio_type,
     bool capture_audio,
     bool disable_local_echo,
+    bool region_capture_capable,
     bool display_notification,
     const std::u16string& application_title,
     const std::u16string& registered_extension_name);

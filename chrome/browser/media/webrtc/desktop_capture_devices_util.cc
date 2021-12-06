@@ -249,6 +249,7 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
     blink::mojom::MediaStreamType devices_audio_type,
     bool capture_audio,
     bool disable_local_echo,
+    bool region_capture_capable,
     bool display_notification,
     const std::u16string& application_title,
     const std::u16string& registered_extension_name) {
@@ -297,8 +298,9 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       if (web_contents && web_contents->GetMainFrame()) {
         capturer_id = web_contents->GetMainFrame()->GetGlobalId();
       }
-      notification_ui =
-          TabSharingUI::Create(capturer_id, media_id, application_title);
+      notification_ui = TabSharingUI::Create(
+          capturer_id, media_id, application_title, region_capture_capable,
+          /*favicons_used_for_switch_to_tab_button=*/false);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(
           GetStopSharingUIString(application_title, registered_extension_name,

@@ -41,6 +41,7 @@ class TabSharingUIViews : public TabSharingUI,
   TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
                     const content::DesktopMediaID& media_id,
                     std::u16string app_name,
+                    bool region_capture_capable,
                     bool favicons_used_for_switch_to_tab_button);
   ~TabSharingUIViews() override;
 
@@ -89,6 +90,12 @@ class TabSharingUIViews : public TabSharingUI,
  private:
   friend class TabSharingUIViewsBrowserTest;
 
+  enum class TabCaptureUpdate {
+    kCaptureAdded,
+    kCaptureRemoved,
+    kCapturedVisibilityUpdated
+  };
+
   void CreateInfobarsForAllTabs();
   void CreateInfobarForWebContents(content::WebContents* contents);
   void RemoveInfobarsForAllTabs();
@@ -114,6 +121,9 @@ class TabSharingUIViews : public TabSharingUI,
 
   void StopCaptureDueToPolicy(content::WebContents* contents);
 
+  void UpdateTabCaptureData(content::WebContents* contents,
+                            TabCaptureUpdate update);
+
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
   std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>
       same_origin_observers_;
@@ -126,6 +136,8 @@ class TabSharingUIViews : public TabSharingUI,
   raw_ptr<content::WebContents> shared_tab_;
   std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
   std::u16string shared_tab_name_;
+  const bool is_self_capture_;
+  const bool region_capture_capable_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
 

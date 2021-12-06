@@ -421,7 +421,9 @@ UserMediaRequest* UserMediaRequest::Create(
 
   return MakeGarbageCollected<UserMediaRequest>(
       context, controller, media_type, audio, video,
-      options->preferCurrentTab(), callbacks, surface);
+      options->preferCurrentTab(),
+      RuntimeEnabledFeatures::RegionCaptureEnabled(context), callbacks,
+      surface);
 }
 
 UserMediaRequest* UserMediaRequest::Create(
@@ -443,7 +445,8 @@ UserMediaRequest* UserMediaRequest::CreateForTesting(
     const MediaConstraints& video) {
   return MakeGarbageCollected<UserMediaRequest>(
       nullptr, nullptr, UserMediaRequest::MediaType::kUserMedia, audio, video,
-      /*should_prefer_current_tab=*/false, nullptr, IdentifiableSurface());
+      /*should_prefer_current_tab=*/false, /*region_capture_capable=*/false,
+      nullptr, IdentifiableSurface());
 }
 
 UserMediaRequest::UserMediaRequest(ExecutionContext* context,
@@ -452,6 +455,7 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
                                    MediaConstraints audio,
                                    MediaConstraints video,
                                    bool should_prefer_current_tab,
+                                   bool region_capture_capable,
                                    Callbacks* callbacks,
                                    IdentifiableSurface surface)
     : ExecutionContextLifecycleObserver(context),
@@ -459,6 +463,7 @@ UserMediaRequest::UserMediaRequest(ExecutionContext* context,
       audio_(audio),
       video_(video),
       should_prefer_current_tab_(should_prefer_current_tab),
+      region_capture_capable_(region_capture_capable),
       should_disable_hardware_noise_suppression_(
           RuntimeEnabledFeatures::DisableHardwareNoiseSuppressionEnabled(
               context)),

@@ -140,6 +140,7 @@ class TabSharingUIViewsBrowserTest
     tab_sharing_ui_ = TabSharingUI::Create(
         GetGlobalId(browser, capturing_tab),
         GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
+        /*region_capture_capable=*/false,
         favicons_used_for_switch_to_tab_button_);
 
     if (favicons_used_for_switch_to_tab_button_) {
@@ -541,7 +542,9 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
       ActivateTab(browser, captured_tab);
       tab_sharing_ui_views_.push_back(TabSharingUI::Create(
           GetGlobalId(browser, capturing_tab),
-          GetDesktopMediaID(browser, captured_tab), u"example-sharing.com"));
+          GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
+          /*region_capture_capable=*/false,
+          /*favicons_used_for_switch_to_tab_button=*/false));
       tab_sharing_ui_views_[tab_sharing_ui_views_.size() - 1]->OnStarted(
           base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
           std::vector<content::DesktopMediaID>{});

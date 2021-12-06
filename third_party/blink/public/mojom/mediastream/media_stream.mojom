@@ -119,6 +119,7 @@ struct StreamControls {
   bool hotword_enabled;
   bool disable_local_echo;
   bool request_pan_tilt_zoom_permission;
+  bool region_capture_capable;
 };
 
 // Per-frame renderer-side interface that receives device stopped/change

@@ -291,7 +291,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
           web_contents, url::Origin::Create(request.security_origin), &devices,
           screen_id, blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
           blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE,
-          capture_audio, request.disable_local_echo, display_notification,
+          capture_audio, request.disable_local_echo,
+          request.region_capture_capable, display_notification,
           application_title, application_title);
       DCHECK(!devices.empty());
     }
@@ -496,8 +497,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
       web_contents, url::Origin::Create(request.security_origin), &devices,
       media_id, blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE, capture_audio,
-      request.disable_local_echo, display_notification,
-      GetApplicationTitle(web_contents, extension),
+      request.disable_local_echo, request.region_capture_capable,
+      display_notification, GetApplicationTitle(web_contents, extension),
       GetApplicationTitle(web_contents, extension));
   UpdateExtensionTrusted(request, extension);
   std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
@@ -652,7 +653,8 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
         url::Origin::Create(pending_request.request.security_origin), &devices,
         media_id, pending_request.request.video_type,
         pending_request.request.audio_type, media_id.audio_share,
-        pending_request.request.disable_local_echo, display_notification,
+        pending_request.request.disable_local_echo,
+        pending_request.request.region_capture_capable, display_notification,
         GetApplicationTitle(web_contents, extension),
         GetApplicationTitle(web_contents, extension));
   }

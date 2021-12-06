@@ -407,7 +407,8 @@ void DisplayMediaAccessHandler::FinalizeResult(
         url::Origin::Create(pending_request.request.security_origin), &devices,
         media_id, pending_request.request.video_type,
         blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-        media_id.audio_share, disable_local_echo, display_notification_,
+        media_id.audio_share, disable_local_echo,
+        pending_request.request.region_capture_capable, display_notification_,
         application_title, application_title);
     UpdateTarget(pending_request.request, media_id);
   }

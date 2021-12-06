@@ -570,7 +570,8 @@ class MediaStreamManager::DeviceRequest {
         salt_and_origin.origin.GetURL(), user_gesture, request_type_,
         requested_audio_device_id, requested_video_device_id, audio_type_,
         video_type_, controls.disable_local_echo,
-        controls.request_pan_tilt_zoom_permission);
+        controls.request_pan_tilt_zoom_permission,
+        controls.region_capture_capable);
   }
 
   // Creates a tab capture specific MediaStreamRequest object that is used by
@@ -584,7 +585,8 @@ class MediaStreamManager::DeviceRequest {
         target_render_process_id, target_render_frame_id, page_request_id,
         salt_and_origin.origin.GetURL(), user_gesture, request_type_, "", "",
         audio_type_, video_type_, controls.disable_local_echo,
-        /*request_pan_tilt_zoom_permission=*/false);
+        /*request_pan_tilt_zoom_permission=*/false,
+        controls.region_capture_capable);
   }
 
   bool HasUIRequest() const { return ui_request_.get() != nullptr; }

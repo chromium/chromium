@@ -109,6 +109,10 @@ struct BLINK_COMMON_EXPORT
     return controls.request_pan_tilt_zoom_permission;
   }
 
+  static bool region_capture_capable(const blink::StreamControls& controls) {
+    return controls.region_capture_capable;
+  }
+
   static bool Read(blink::mojom::StreamControlsDataView input,
                    blink::StreamControls* out);
 };
