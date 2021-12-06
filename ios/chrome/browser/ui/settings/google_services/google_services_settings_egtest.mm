@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
@@ -89,6 +90,13 @@ void DismissSignOut() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  if ([self isRunningTest:@selector
+            (testTogglePasswordLeakCheckForSignedOutUser)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kLeakDetectionUnauthenticated);
+  }
+
   return config;
 }
 
@@ -153,8 +161,8 @@ void DismissSignOut() {
 }
 
 // Tests that password leak detection can only be toggled if Safe Browsing is
-// enabled.
-- (void)testTogglePasswordLeakCheck {
+// enabled for signed in user.
+- (void)testTogglePasswordLeakCheckForSignedInUser {
   // Ensure that Safe Browsing and password leak detection opt-outs start in
   // their default (opted-in) state.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
@@ -165,6 +173,71 @@ void DismissSignOut() {
   // Sign in.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  // Open "Google Services" settings.
+  [self openGoogleServicesSettings];
+
+  // Check that Safe Browsing is enabled, and toggle it off.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SettingsSwitchCell(
+                 kSafeBrowsingItemAccessibilityIdentifier,
+                 /*is_toggled_on=*/YES,
+                 /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Check that the password leak check toggle is both toggled off and disabled.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SettingsSwitchCell(
+                 kPasswordLeakCheckItemAccessibilityIdentifier,
+                 /*is_toggled_on=*/NO,
+                 /*enabled=*/NO)] assertWithMatcher:grey_notNil()];
+
+  // Toggle Safe Browsing on.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SettingsSwitchCell(
+                 kSafeBrowsingItemAccessibilityIdentifier,
+                 /*is_toggled_on=*/NO,
+                 /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+
+  // Check that the password leak check toggle is enabled, and toggle it off.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SettingsSwitchCell(
+                 kPasswordLeakCheckItemAccessibilityIdentifier,
+                 /*is_toggled_on=*/YES,
+                 /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Check the underlying pref value.
+  GREYAssertFalse(
+      [ChromeEarlGrey userBooleanPref:password_manager::prefs::
+                                          kPasswordLeakDetectionEnabled],
+      @"Failed to toggle-off password leak checks");
+
+  // Toggle password leak check detection back on.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SettingsSwitchCell(
+                 kPasswordLeakCheckItemAccessibilityIdentifier,
+                 /*is_toggled_on=*/NO,
+                 /*enabled=*/YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+
+  // Check the underlying pref value.
+  GREYAssertTrue(
+      [ChromeEarlGrey userBooleanPref:password_manager::prefs::
+                                          kPasswordLeakDetectionEnabled],
+      @"Failed to toggle-on password leak checks");
+}
+
+// Tests that password leak detection can only be toggled if Safe Browsing is
+// enabled for signed out user.
+- (void)testTogglePasswordLeakCheckForSignedOutUser {
+  // Ensure that Safe Browsing and password leak detection opt-outs start in
+  // their default (opted-in) state.
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
+  [ChromeEarlGrey
+      setBoolValue:YES
+       forUserPref:password_manager::prefs::kPasswordLeakDetectionEnabled];
+
   // Open "Google Services" settings.
   [self openGoogleServicesSettings];
 

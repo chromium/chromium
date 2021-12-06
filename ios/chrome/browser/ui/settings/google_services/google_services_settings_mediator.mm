@@ -150,7 +150,7 @@ bool GetStatusForSigninPolicy() {
 // The observable boolean that binds to the password leak check settings
 // state.
 @property(nonatomic, strong, readonly)
-    PrefBackedBoolean* passwordLeakCheckEnabled;
+    PrefBackedBoolean* passwordLeakCheckPreference;
 // The item related to the switch for the automatic password leak detection
 // setting.
 @property(nonatomic, strong, null_resettable)
@@ -202,11 +202,11 @@ bool GetStatusForSigninPolicy() {
         initWithPrefService:localPrefService
                    prefName:metrics::prefs::kMetricsReportingEnabled];
     _sendDataUsagePreference.observer = self;
-    _passwordLeakCheckEnabled = [[PrefBackedBoolean alloc]
+    _passwordLeakCheckPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:password_manager::prefs::
                                 kPasswordLeakDetectionEnabled];
-    _passwordLeakCheckEnabled.observer = self;
+    _passwordLeakCheckPreference.observer = self;
     _anonymizedDataCollectionPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:unified_consent::prefs::
@@ -444,7 +444,7 @@ bool GetStatusForSigninPolicy() {
     passwordLeakCheckItem.on = [self passwordLeakCheckItemOnState];
     passwordLeakCheckItem.accessibilityIdentifier =
         kPasswordLeakCheckItemAccessibilityIdentifier;
-    passwordLeakCheckItem.enabled = self.hasPrimaryIdentity;
+    passwordLeakCheckItem.enabled = [self isPasswordLeakCheckEnabled];
     _passwordLeakCheckItem = passwordLeakCheckItem;
   }
   return _passwordLeakCheckItem;
@@ -494,21 +494,30 @@ bool GetStatusForSigninPolicy() {
   return managedItem;
 }
 
+// Returns a boolean indicating whether leak detection feature is enabled.
+- (BOOL)isPasswordLeakCheckEnabled {
+  return self.hasPrimaryIdentity ||
+         base::FeatureList::IsEnabled(
+             password_manager::features::kLeakDetectionUnauthenticated);
+}
+
 // Returns a boolean indicating if the switch should appear as "On" or "Off"
 // based on the sync preference and the sign in status.
 - (BOOL)passwordLeakCheckItemOnState {
   return self.safeBrowsingPreference.value &&
-         self.passwordLeakCheckEnabled.value && self.hasPrimaryIdentity;
+         self.passwordLeakCheckPreference.value &&
+         [self isPasswordLeakCheckEnabled];
 }
 
 // Updates the detail text and on state of the leak check item based on the
 // state.
 - (void)updateLeakCheckItem {
   self.passwordLeakCheckItem.enabled =
-      self.hasPrimaryIdentity && self.safeBrowsingPreference.value;
+      self.safeBrowsingPreference.value && [self isPasswordLeakCheckEnabled];
   self.passwordLeakCheckItem.on = [self passwordLeakCheckItemOnState];
 
-  if (!self.hasPrimaryIdentity && self.passwordLeakCheckEnabled.value) {
+  if (self.passwordLeakCheckPreference.value &&
+      ![self isPasswordLeakCheckEnabled]) {
     // If the user is signed out and the sync preference is enabled, this
     // informs that it will be turned on on sign in.
     self.passwordLeakCheckItem.detailText =
@@ -586,7 +595,7 @@ bool GetStatusForSigninPolicy() {
       break;
     case PasswordLeakCheckSwitchItemType:
       // Update the pref.
-      self.passwordLeakCheckEnabled.value = value;
+      self.passwordLeakCheckPreference.value = value;
       // Update the item.
       [self updateLeakCheckItem];
       break;
