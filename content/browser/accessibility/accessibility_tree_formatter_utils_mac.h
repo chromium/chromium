@@ -9,7 +9,7 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
-#include "ui/accessibility/platform/inspect/ax_tree_indexer.h"
+#include "ui/accessibility/platform/inspect/ax_tree_indexer_mac.h"
 
 namespace ui {
 class AXPropertyNode;
@@ -19,23 +19,6 @@ class AXPropertyNode;
 namespace content {
 namespace a11y {
 
-// NSAccessibilityElement or AXUIElement accessible node comparator.
-struct NodeComparator {
-  constexpr bool operator()(const gfx::NativeViewAccessible& lhs,
-                            const gfx::NativeViewAccessible& rhs) const {
-    if (ui::IsAXUIElement(lhs)) {
-      DCHECK(ui::IsAXUIElement(rhs));
-      return CFHash(lhs) < CFHash(rhs);
-    }
-    DCHECK(ui::IsNSAccessibilityElement(lhs));
-    DCHECK(ui::IsNSAccessibilityElement(rhs));
-    return lhs < rhs;
-  }
-};
-
-using LineIndexer =
-    ui::AXTreeIndexer<ui::GetDOMId, NSArray*, ui::AXChildrenOf, NodeComparator>;
-
 // Optional tri-state id object.
 using OptionalNSObject = ui::AXOptional<id>;
 
@@ -43,14 +26,14 @@ using OptionalNSObject = ui::AXOptional<id>;
 class CONTENT_EXPORT AttributeInvoker final {
  public:
   // Generic version, all calls are executed in context of property nodes.
-  // Note: both |line_indexer| and |storage| must outlive this object.
-  AttributeInvoker(const LineIndexer* line_indexer,
+  // Note: both |indexer| and |storage| must outlive this object.
+  AttributeInvoker(const ui::AXTreeIndexerMac* indexer,
                    std::map<std::string, id>* storage);
 
   // Single target version, all calls are executed in the context of the given
   // target node.
-  // Note: |line_indexer| must outlive this object.
-  AttributeInvoker(const id node, const LineIndexer* line_indexer);
+  // Note: |indexer| must outlive this object.
+  AttributeInvoker(const id node, const ui::AXTreeIndexerMac* indexer);
 
   // Invokes an attribute matching to a property filter.
   OptionalNSObject Invoke(const ui::AXPropertyNode& property_node,
@@ -120,7 +103,7 @@ class CONTENT_EXPORT AttributeInvoker final {
 
   // Map between AXUIElement objects and their DOMIds/accessible tree
   // line numbers. Owned by the caller and outlives this object.
-  const LineIndexer* line_indexer;
+  const ui::AXTreeIndexerMac* indexer_;
 
   // Variables storage. Owned by the caller and outlives this object.
   std::map<std::string, id>* storage_;

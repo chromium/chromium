@@ -9,6 +9,7 @@
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 using ui::AXPropertyNode;
+using ui::AXTreeIndexerMac;
 
 #if !defined(MAC_OS_VERSION_12_0) || \
     MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
@@ -76,13 +77,13 @@ using ui::SetAXAttributeValueOf;
 
 // AttributeInvoker
 
-AttributeInvoker::AttributeInvoker(const LineIndexer* line_indexer,
+AttributeInvoker::AttributeInvoker(const AXTreeIndexerMac* indexer,
                                    std::map<std::string, id>* storage)
-    : node(nullptr), line_indexer(line_indexer), storage_(storage) {}
+    : node(nullptr), indexer_(indexer), storage_(storage) {}
 
 AttributeInvoker::AttributeInvoker(const id node,
-                                   const LineIndexer* line_indexer)
-    : node(node), line_indexer(line_indexer), storage_(nullptr) {}
+                                   const AXTreeIndexerMac* indexer)
+    : node(node), indexer_(indexer), storage_(nullptr) {}
 
 OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
                                           bool no_object_parse) const {
@@ -124,7 +125,7 @@ OptionalNSObject AttributeInvoker::Invoke(const AXPropertyNode& property_node,
   // a result accessible tree. The tree indexer keeps the mappings between
   // accesible elements and their DOM ids and line numbers.
   if (!target)
-    target = line_indexer->NodeBy(property_node.name_or_value);
+    target = indexer_->NodeBy(property_node.name_or_value);
 
   // Case 3: no target either indicates an error or default target (if
   // applicable) or the property node is an object or a scalar value (for
@@ -527,7 +528,7 @@ gfx::NativeViewAccessible AttributeInvoker::PropertyNodeToUIElement(
     const AXPropertyNode& uielement_node,
     bool log_failure) const {
   gfx::NativeViewAccessible uielement =
-      line_indexer->NodeBy(uielement_node.name_or_value);
+      indexer_->NodeBy(uielement_node.name_or_value);
   if (!uielement) {
     if (log_failure)
       UIELEMENT_FAIL(uielement_node,
@@ -551,7 +552,7 @@ id AttributeInvoker::DictNodeToTextMarker(const AXPropertyNode& dictnode,
   }
 
   BrowserAccessibilityCocoa* anchor_cocoa =
-      line_indexer->NodeBy(dictnode.arguments[0].name_or_value);
+      indexer_->NodeBy(dictnode.arguments[0].name_or_value);
   if (!anchor_cocoa) {
     if (log_failure)
       TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
