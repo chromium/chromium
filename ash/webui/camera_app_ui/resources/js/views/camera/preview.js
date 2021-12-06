@@ -539,6 +539,15 @@ export class Preview {
         AndroidControlAeAntibandingMode,
         'ANDROID_CONTROL_AE_ANTIBANDING_MODE_');
 
+    let sensorSensitivity = null;
+    let sensorSensitivityBoost = 100;
+    const getSensitivity = () => {
+      if (sensorSensitivity === null) {
+        return 'N/A';
+      }
+      return sensorSensitivity * sensorSensitivityBoost / 100;
+    };
+
     const tag = CameraMetadataTag;
     /** @type {!Object<string, function(!Array<number>): void>} */
     const metadataEntryHandlers = {
@@ -554,7 +563,13 @@ export class Preview {
         showValue('#preview-af-state', afStateName.get(value));
       },
       [tag.ANDROID_SENSOR_SENSITIVITY]: ([value]) => {
-        const sensitivity = value;
+        sensorSensitivity = value;
+        const sensitivity = getSensitivity();
+        showValue('#preview-sensitivity', `ISO ${sensitivity}`);
+      },
+      [tag.ANDROID_CONTROL_POST_RAW_SENSITIVITY_BOOST]: ([value]) => {
+        sensorSensitivityBoost = value;
+        const sensitivity = getSensitivity();
         showValue('#preview-sensitivity', `ISO ${sensitivity}`);
       },
       [tag.ANDROID_SENSOR_EXPOSURE_TIME]: ([value]) => {
