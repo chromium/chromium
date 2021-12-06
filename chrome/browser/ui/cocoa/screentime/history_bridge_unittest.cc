@@ -113,9 +113,8 @@ TEST_F(HistoryBridgeTest, DeleteAll) {
 TEST_F(HistoryBridgeTest, DeleteURLs) {
   const GURL kTestUrlA("https://www.chromium.org/");
   const base::Time now = base::Time::Now();
-  AddPage(kTestUrlA, now - base::TimeDelta::FromSeconds(2));
-  AddPage(GURL("https://test.chromium.org/"),
-          now - base::TimeDelta::FromSeconds(1));
+  AddPage(kTestUrlA, now - base::Seconds(2));
+  AddPage(GURL("https://test.chromium.org/"), now - base::Seconds(1));
 
   service()->DeleteURLs({kTestUrlA});
   deleter()->WaitForDelete();
@@ -125,16 +124,13 @@ TEST_F(HistoryBridgeTest, DeleteURLs) {
 
 TEST_F(HistoryBridgeTest, DeleteTimeInterval) {
   const base::Time now = base::Time::Now();
-  AddPage(GURL("https://www.chromium.org/a"),
-          now - base::TimeDelta::FromSeconds(2));
-  AddPage(GURL("https://www.chromium.org/b"),
-          now - base::TimeDelta::FromSeconds(1));
+  AddPage(GURL("https://www.chromium.org/a"), now - base::Seconds(2));
+  AddPage(GURL("https://www.chromium.org/b"), now - base::Seconds(1));
 
-  DeleteHistoryBetween(now - base::TimeDelta::FromSeconds(3), now);
+  DeleteHistoryBetween(now - base::Seconds(3), now);
   deleter()->WaitForDelete();
   EXPECT_FALSE(deleter()->deleted_all());
-  EXPECT_EQ(deleter()->deleted_interval()->first,
-            now - base::TimeDelta::FromSeconds(3));
+  EXPECT_EQ(deleter()->deleted_interval()->first, now - base::Seconds(3));
   EXPECT_EQ(deleter()->deleted_interval()->second, now);
 }
 
