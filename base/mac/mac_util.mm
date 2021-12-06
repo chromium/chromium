@@ -27,6 +27,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -155,10 +156,15 @@ CGColorSpaceRef GetSystemColorSpace() {
 }
 
 bool GetFileBackupExclusion(const FilePath& file_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   return CSBackupIsItemExcluded(FilePathToCFURL(file_path), nullptr);
 }
 
 bool SetFileBackupExclusion(const FilePath& file_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
   // When excludeByPath is true the application must be running with root
   // privileges (admin for 10.6 and earlier) but the URL does not have to
   // already exist. When excludeByPath is false the URL must already exist but
