@@ -48,6 +48,8 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
         }
       });
 
+      let timestamps = [];
+
       const encoder_init = {
         output(chunk, metadata) {
           let config = metadata.decoderConfig;
@@ -59,6 +61,12 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
           }
           decoder.decode(chunk);
           frames_encoded++;
+
+          let expected_timestamp = timestamps.shift();
+          TEST.assert(
+              chunk.timestamp == expected_timestamp,
+              `EncodedVideoChunk timestamp mismatch. Expected: ${
+                  expected_timestamp} got ${chunk.timestamp}`);
         },
         error(e) {
           errors++;
@@ -73,6 +81,7 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
       for (let i = 0; i < frames_to_encode; i++) {
         let frame = await source.getNextFrame();
         let keyframe = (i % 10 == 0);
+        timestamps.push(frame.timestamp);
         encoder.encode(frame, { keyFrame: keyframe });
         frame.close();
 
