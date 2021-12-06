@@ -50,15 +50,11 @@ std::u16string ConstructVfsFileName(const url::Origin& origin,
   return base::UTF8ToUTF16(identifier) + u"/" + name + u"#" + suffix;
 }
 
-}  // namespace
-
 class WebDatabaseHostImplTest : public ::testing::Test {
  public:
+  WebDatabaseHostImplTest() = default;
   WebDatabaseHostImplTest(const WebDatabaseHostImplTest&) = delete;
   WebDatabaseHostImplTest& operator=(const WebDatabaseHostImplTest&) = delete;
-
- protected:
-  WebDatabaseHostImplTest() = default;
   ~WebDatabaseHostImplTest() override = default;
 
   void SetUp() override {
@@ -94,6 +90,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
     RunUntilIdle();
   }
 
+ protected:
   template <typename Callable>
   void CheckUnauthorizedOrigin(const Callable& func) {
     mojo::test::BadMessageObserver bad_message_observer;
@@ -375,5 +372,7 @@ TEST_F(WebDatabaseHostImplTest, ProcessShutdown) {
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
+
+}  // namespace
 
 }  // namespace content
