@@ -20,22 +20,27 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {calculateSplices, html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BiMap} from './bimap.js';
 
-/** @type {number} */
-export const NO_SELECTION = -1;
+export const NO_SELECTION: number = -1;
 
 /**
  * HTML class name used to recognize selectable items.
- * @type {string}
  */
-const SELECTABLE_CLASS_NAME = 'selectable';
+const SELECTABLE_CLASS_NAME: string = 'selectable';
 
-/** @type {!Array<string>} */
-export const selectorNavigationKeys =
+export const selectorNavigationKeys: readonly string[] =
     Object.freeze(['ArrowUp', 'ArrowDown', 'Home', 'End']);
+
+export interface InfiniteList {
+  $: {
+    selector: IronSelectorElement,
+    container: HTMLElement,
+  };
+}
 
 export class InfiniteList extends PolymerElement {
   static get is() {
@@ -48,13 +53,11 @@ export class InfiniteList extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {number} */
       maxHeight: {
         type: Number,
         observer: 'onMaxHeightChanged_',
       },
 
-      /** @type {!Array<!Object>} */
       items: {
         type: Array,
         observer: 'onItemsChanged_',
@@ -63,13 +66,22 @@ export class InfiniteList extends PolymerElement {
     };
   }
 
+  maxHeight: number;
+  items: Array<Object>;
+  private instanceConstructors_:
+      Map<string,
+          new(args: {item: Object, index?: number}) =>
+              TemplateInstanceBase & HTMLElement>;
+  private instances_: Array<TemplateInstanceBase&HTMLElement>;
+  private selectableTypes_: Set<string>;
+  private selectableIndexToItemIndex_: BiMap<number, number>|null;
+
   constructor() {
     super();
 
     /**
      * A map of type names associated with constructors used for creating list
      * item template instances.
-     * @private {!Map<string, ?function(new:TemplateInstanceBase, !Object)>}
      */
     this.instanceConstructors_ = new Map();
 
@@ -77,25 +89,21 @@ export class InfiniteList extends PolymerElement {
      * An array of template instances each of which contain the HTMLElement
      * associated with a given rendered item from the items array. The entries
      * are ordered to match the item's index.
-     * @private {!Array<!TemplateInstanceBase>}
      */
     this.instances_ = [];
 
     /**
      * A set of class names for which the selectable style class should be
      * applied.
-     * @private {!Set<string>}
      */
     this.selectableTypes_ = new Set();
 
     /**
      * Correlates the selectable item indexes to the `items` property indexes.
-     * @private {?BiMap<number, number>}
      */
     this.selectableIndexToItemIndex_ = null;
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.ensureTemplatized_();
@@ -120,15 +128,15 @@ export class InfiniteList extends PolymerElement {
   }
 
   /**
-   * @param {string} key Keyboard event key value.
-   * @param {boolean=} focusItem Whether to focus the selected item.
+   * @param key Keyboard event key value.
+   * @param focusItem Whether to focus the selected item.
    */
-  navigate(key, focusItem) {
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+  navigate(key: string, focusItem?: boolean) {
+    const selector = this.$.selector;
 
     if ((key === 'ArrowUp' && selector.selected === 0) || key === 'End') {
       this.ensureAllDomItemsAvailable();
-      selector.selected = this.selectableIndexToItemIndex_.size() - 1;
+      selector.selected = this.selectableIndexToItemIndex_!.size() - 1;
     } else {
       switch (key) {
         case 'ArrowUp':
@@ -142,21 +150,19 @@ export class InfiniteList extends PolymerElement {
           break;
         case 'End':
           this.$.selector.selected =
-              this.selectableIndexToItemIndex_.size() - 1;
+              this.selectableIndexToItemIndex_!.size() - 1;
           break;
       }
     }
 
     if (focusItem) {
-      selector.selectedItem.focus({preventScroll: true});
+      (selector.selectedItem as HTMLElement).focus({preventScroll: true});
     }
   }
 
   ensureTemplatized_() {
     // The user provided light-dom template(s) to use when stamping DOM items.
-    const templates =
-        /** @type {!NodeList<!HTMLTemplateElement>} */ (
-            this.querySelectorAll('template'));
+    const templates = this.querySelectorAll('template');
     assert(templates.length > 0, 'At least one template must be provided');
 
     // Initialize a map of class names to template instance constructors. On
@@ -164,8 +170,8 @@ export class InfiniteList extends PolymerElement {
     // determine the correct constructor to use for rendering a given class
     // type.
     templates.forEach(template => {
-      const className = assert(template.getAttribute('data-type'));
-      if (template.hasAttribute('data-selectable')) {
+      const className = assert(template.dataset['type']!);
+      if (template.dataset['selectable'] !== undefined) {
         this.selectableTypes_.add(className);
       }
 
@@ -176,82 +182,70 @@ export class InfiniteList extends PolymerElement {
         // `selectedItem` properties, and the navigate method.
         index: this.selectableTypes_.has(className),
       };
-      this.instanceConstructors_.set(className, templatize(template, this, {
-                                       parentModel: true,
-                                       instanceProps,
-                                     }));
+      this.instanceConstructors_.set(
+          className, templatize(template, this, {
+                       parentModel: true,
+                       instanceProps,
+                     }) as {new (): TemplateInstanceBase & HTMLElement});
     });
   }
 
   /**
    * Create a DOM item and immediately insert it in the DOM tree. A reference is
    * stored in the instances_ array for future item lifecycle operations.
-   * @param {number} index
-   * @private
    */
-  createAndInsertDomItem_(index) {
+  private createAndInsertDomItem_(index: number) {
     const instance = this.createItemInstance_(index);
     this.instances_[index] = assert(instance);
     // Offset the insertion index to take into account the template elements
     // that are present in the light DOM.
     this.insertBefore(
-        instance.root, this.children[index + this.instanceConstructors_.size]);
+        instance.root, this.children[index + this.instanceConstructors_.size]!);
   }
 
-  /**
-   * @param {number} itemIndex
-   * @return {TemplateInstanceBase}
-   * @private
-   */
-  createItemInstance_(itemIndex) {
-    const item = this.items[itemIndex];
+  private createItemInstance_(itemIndex: number): TemplateInstanceBase
+      &HTMLElement {
+    const item = this.items[itemIndex]!;
     const instanceConstructor =
-        assert(this.instanceConstructors_.get(item.constructor.name));
+        assert(this.instanceConstructors_.get(item.constructor.name)!);
     const itemSelectable = this.isItemSelectable_(item);
     const args = itemSelectable ?
-        {item, index: this.selectableIndexToItemIndex_.invGet(itemIndex)} :
+        {item, index: this.selectableIndexToItemIndex_!.invGet(itemIndex)} :
         {item};
     const instance = new instanceConstructor(args);
 
     if (itemSelectable) {
-      instance.children[0].classList.add(SELECTABLE_CLASS_NAME);
+      instance.children[0]!.classList.add(SELECTABLE_CLASS_NAME);
     }
 
     return instance;
   }
 
   /**
-   * @return {number} The average DOM item height.
-   * @private
+   * @return The average DOM item height.
    */
-  domItemAverageHeight_() {
+  private domItemAverageHeight_(): number {
     // It must always be true that if this logic is invoked, there should be
     // enough DOM items rendered to estimate an item average height. This is
     // ensured by the logic that observes the items array.
     const domItemCount = assert(this.instances_.length);
-    const lastDomItem = this.lastElementChild;
+    const lastDomItem = this.lastElementChild as HTMLElement;
     return (lastDomItem.offsetTop + lastDomItem.offsetHeight) / domItemCount;
   }
 
   /**
    * Create and insert as many DOM items as necessary to ensure the selectable
    * item at the specified index is present.
-   * @param {number} selectableItemIndex
-   * @private
    */
-  ensureSelectableDomItemAvailable_(selectableItemIndex) {
-    const itemIndex = this.selectableIndexToItemIndex_.get(selectableItemIndex);
+  private ensureSelectableDomItemAvailable_(selectableItemIndex: number) {
+    const itemIndex =
+        this.selectableIndexToItemIndex_!.get(selectableItemIndex)!;
     for (let i = this.instances_.length; i < itemIndex + 1; i++) {
       this.createAndInsertDomItem_(i);
     }
   }
 
-  /**
-   * @param {number} index
-   * @return {!Element}
-   * @private
-   */
-  getDomItem_(index) {
+  private getDomItem_(index: number): HTMLElement|undefined {
     const instance = this.instances_[index];
     if (instance === undefined) {
       // TODO(crbug.com/1225247): Remove this after we root cause the issue.
@@ -261,33 +255,26 @@ export class InfiniteList extends PolymerElement {
       return undefined;
     }
 
-    return instance.children[0];
+    return instance.children[0] as HTMLElement;
   }
 
-  /**
-   * @param {number} selectableItemIndex
-   * @return {!Element}
-   * @private
-   */
-  getSelectableDomItem_(selectableItemIndex) {
+  private getSelectableDomItem_(selectableItemIndex: number): HTMLElement
+      |undefined {
     return this.getDomItem_(
-        this.selectableIndexToItemIndex_.get(selectableItemIndex));
+        this.selectableIndexToItemIndex_!.get(selectableItemIndex)!);
   }
 
   /**
-   * @return {number} The number of items required to fill the current
-   *     viewport.
+   * @return The number of items required to fill the current viewport.
    */
-  viewportItemCount_() {
+  private viewportItemCount_(): number {
     return Math.ceil(this.maxHeight / this.domItemAverageHeight_());
   }
 
   /**
-   * @param {number} height
-   * @return {boolean} Whether DOM items were created or not.
-   * @private
+   * @return Whether DOM items were created or not.
    */
-  fillViewHeight_(height) {
+  private fillViewHeight_(height: number): boolean {
     const startTime = performance.now();
 
     // Ensure we have added enough DOM items so that we are able to estimate
@@ -320,29 +307,25 @@ export class InfiniteList extends PolymerElement {
     return false;
   }
 
-  /**
-   * @param {!Object} item
-   * @return {boolean}
-   */
-  isItemSelectable_(item) {
+  private isItemSelectable_(item: Object): boolean {
     return this.selectableTypes_.has(item.constructor.name);
   }
 
   /**
-   * @return {boolean} Whether a list item is selected and focused.
-   * @private
+   * @return Whether a list item is selected and focused.
    */
-  isItemSelectedAndFocused_() {
+  private isItemSelectedAndFocused_(): boolean {
     const selectedItemIndex = this.$.selector.selected;
     if (selectedItemIndex !== undefined) {
-      const selectedItem = this.getSelectableDomItem_(selectedItemIndex);
+      const selectedItem =
+          this.getSelectableDomItem_(selectedItemIndex as number);
       if (selectedItem === undefined) {
         return false;
       }
       const deepActiveElement = getDeepActiveElement();
 
       return selectedItem === deepActiveElement ||
-          (selectedItem.shadowRoot &&
+          (!!selectedItem.shadowRoot &&
            selectedItem.shadowRoot.activeElement === deepActiveElement);
     }
 
@@ -351,17 +334,15 @@ export class InfiniteList extends PolymerElement {
 
   /**
    * Handles key events when list item elements have focus.
-   * @param {!KeyboardEvent} e
-   * @private
    */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     // Do not interfere with any parent component that manages 'shift' related
     // key events.
     if (e.shiftKey) {
       return;
     }
 
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+    const selector = this.$.selector;
     if (selector.selected === undefined) {
       // No tabs matching the search text criteria.
       return;
@@ -378,11 +359,8 @@ export class InfiniteList extends PolymerElement {
    * Ensures that when the items property changes, only a chunk of the items
    * needed to fill the current scroll position view are added to the DOM, thus
    * improving rendering performance.
-   * @param {!Array} newItems
-   * @param {!Array} oldItems
-   * @private
    */
-  onItemsChanged_(newItems, oldItems) {
+  private onItemsChanged_(newItems: Array<any>, oldItems: Array<any>) {
     if (this.instanceConstructors_.size === 0) {
       return;
     }
@@ -398,8 +376,8 @@ export class InfiniteList extends PolymerElement {
       this.selectableIndexToItemIndex_ = new BiMap();
       newItems.forEach((item, index) => {
         if (this.isItemSelectable_(item)) {
-          this.selectableIndexToItemIndex_.set(
-              this.selectableIndexToItemIndex_.size(), index);
+          this.selectableIndexToItemIndex_!.set(
+              this.selectableIndexToItemIndex_!.size(), index);
         }
       });
 
@@ -419,15 +397,14 @@ export class InfiniteList extends PolymerElement {
       // Since the new selectable items' length might be smaller than the old
       // selectable items' length, we need to check if the selected index is
       // still valid and if not adjust it.
-      const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
-      if (selector.selected >= this.selectableIndexToItemIndex_.size()) {
-        selector.selected = this.selectableIndexToItemIndex_.size() - 1;
+      const selector = this.$.selector;
+      if (selector.selected >= this.selectableIndexToItemIndex_!.size()) {
+        selector.selected = this.selectableIndexToItemIndex_!.size() - 1;
       }
 
       // Restore focus to the selected item if necessary.
       if (itemSelectedAndFocused && selector.selected !== NO_SELECTION) {
-        this.getSelectableDomItem_(/** @type {number} */ (selector.selected))
-            .focus();
+        this.getSelectableDomItem_(selector.selected as number)!.focus();
       }
     }
 
@@ -439,20 +416,15 @@ export class InfiniteList extends PolymerElement {
         new CustomEvent('viewport-filled', {bubbles: true, composed: true}));
   }
 
-  /**
-   * @param {number} height
-   * @private
-   */
-  onMaxHeightChanged_(height) {
+  private onMaxHeightChanged_(height: number) {
     this.style.maxHeight = height + 'px';
   }
 
   /**
    * Adds additional DOM items as needed to fill the view based on user scroll
    * interactions.
-   * @private
    */
-  onScroll_() {
+  private onScroll_() {
     const scrollTop = this.scrollTop;
     if (scrollTop > 0 && this.instances_.length !== this.items.length) {
       if (this.fillViewHeight_(scrollTop + this.maxHeight)) {
@@ -461,12 +433,7 @@ export class InfiniteList extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!Array} newItems
-   * @param {!Array} oldItems
-   * @private
-   */
-  updateDomItems_(newItems, oldItems) {
+  private updateDomItems_(newItems: Array<any>, oldItems: Array<any>) {
     // Identify the differences between the original and new list of items.
     // These are represented as splice objects containing removed and added
     // item information at a given index. We leverage these splices to change
@@ -487,12 +454,12 @@ export class InfiniteList extends PolymerElement {
         for (let i = splice.index; i < indexOfLastInstance; i++) {
           // If the types don't match, we need to replace the existing instance.
           if (oldItems[i].constructor !== newItems[i].constructor) {
-            this.getDomItem_(i).remove();
+            this.getDomItem_(i)!.remove();
             this.createAndInsertDomItem_(i);
             continue;
           }
 
-          this.instances_[i]['item'] = newItems[i];
+          (this.instances_[i] as unknown as {item: any}).item = newItems[i];
         }
         continue;
       }
@@ -515,24 +482,19 @@ export class InfiniteList extends PolymerElement {
     this.updateSelectableItemInstanceIndexes_();
   }
 
-  /**
-   * @param {number} index
-   * @param {number} count
-   * @private
-   */
-  removeDomItems_(index, count) {
+  private removeDomItems_(index: number, count: number) {
     this.instances_.splice(index, count).forEach(instance => {
-      this.removeChild(instance.children[0]);
+      this.removeChild(instance.children[0]!);
     });
   }
 
-  /** @private */
-  updateSelectableItemInstanceIndexes_() {
+  private updateSelectableItemInstanceIndexes_() {
     for (let itemIndex = 0; itemIndex < this.instances_.length; itemIndex++) {
       const selectableItemIndex =
-          this.selectableIndexToItemIndex_.invGet(itemIndex);
+          this.selectableIndexToItemIndex_!.invGet(itemIndex);
       if (selectableItemIndex !== undefined) {
-        this.instances_[itemIndex]['index'] = selectableItemIndex;
+        (this.instances_[itemIndex] as unknown as {index: number}).index =
+            selectableItemIndex;
       }
     }
   }
@@ -540,9 +502,8 @@ export class InfiniteList extends PolymerElement {
   /**
    * Sets the height of the component based on an estimated average DOM item
    * height and the total number of items.
-   * @private
    */
-  updateHeight_() {
+  private updateHeight_() {
     const estScrollHeight = this.items.length > 0 ?
         this.items.length * this.domItemAverageHeight_() :
         0;
@@ -555,38 +516,37 @@ export class InfiniteList extends PolymerElement {
    *
    * TODO(romanarora): Selection navigation behavior should be configurable. The
    * approach followed below might not be desired by all component users.
-   * @private
    */
-  onSelectedChanged_() {
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+  private onSelectedChanged_() {
+    const selector = this.$.selector;
     if (selector.selected === undefined) {
       return;
     }
 
-    const selectedIndex = /** @type {number} */ (selector.selected);
+    const selectedIndex = selector.selected;
     if (selectedIndex === 0) {
       this.scrollTo({top: 0, behavior: 'smooth'});
       return;
     }
 
-    if (selectedIndex === this.selectableIndexToItemIndex_.size() - 1) {
-      this.getSelectableDomItem_(selectedIndex).scrollIntoView({
-        behavior: 'smooth'
-      });
+    if (selectedIndex === this.selectableIndexToItemIndex_!.size() - 1) {
+      this.getSelectableDomItem_(selectedIndex)!.scrollIntoView(
+          {behavior: 'smooth'});
       return;
     }
 
-    const previousItem = this.getSelectableDomItem_(selector.selected - 1);
+    const previousItem =
+        this.getSelectableDomItem_((selector.selected as number) - 1)!;
     if (previousItem.offsetTop < this.scrollTop) {
       previousItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
       return;
     }
 
-    const nextItemIndex = /** @type {number} */ (selector.selected) + 1;
-    if (nextItemIndex < this.selectableIndexToItemIndex_.size()) {
+    const nextItemIndex = (selector.selected as number) + 1;
+    if (nextItemIndex < this.selectableIndexToItemIndex_!.size()) {
       this.ensureSelectableDomItemAvailable_(nextItemIndex);
 
-      const nextItem = this.getSelectableDomItem_(nextItemIndex);
+      const nextItem = this.getSelectableDomItem_(nextItemIndex)!;
       if (nextItem.offsetTop + nextItem.offsetHeight >
           this.scrollTop + this.offsetHeight) {
         nextItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
@@ -598,54 +558,45 @@ export class InfiniteList extends PolymerElement {
    * Resets the selector's selection to the undefined state. This method
    * suppresses a closure validation that would require modifying the
    * IronSelectableBehavior's annotations for the selected property.
-   * @suppress {checkTypes}
-   * @private
    */
-  resetSelected_() {
-    /** @type {!IronSelectorElement} */ (this.$.selector).selected = undefined;
+  private resetSelected_() {
+    this.$.selector.selected = undefined as unknown as string | number;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  selectableSelector_() {
+  private selectableSelector_(): string {
     return '.' + SELECTABLE_CLASS_NAME;
   }
 
-  /** @param {number} index */
-  set selected(index) {
+  set selected(index: number) {
     if (index === NO_SELECTION) {
       this.resetSelected_();
       return;
     }
 
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+    const selector = this.$.selector;
     if (index !== selector.selected) {
       assert(
-          index < this.selectableIndexToItemIndex_.size(),
+          index < this.selectableIndexToItemIndex_!.size(),
           'Selection index is out of range.');
       this.ensureSelectableDomItemAvailable_(index);
       selector.selected = index;
     }
   }
 
-  /** @return {number} The selected index or -1 if none selected. */
-  get selected() {
-    return this.$.selector.selected !== undefined ? this.$.selector.selected :
-                                                    NO_SELECTION;
+  /** @return The selected index or -1 if none selected. */
+  get selected(): number {
+    return this.$.selector.selected !== undefined ?
+        this.$.selector.selected as number :
+        NO_SELECTION;
   }
 
-  /**
-   * @return {?Object} The selected item's data, if any selected.
-   */
-  get selectedItem() {
+  get selectedItem(): Object|null {
     if (this.$.selector.selected === undefined) {
       return null;
     }
 
-    return this
-        .items[this.selectableIndexToItemIndex_.get(this.$.selector.selected)];
+    return this.items[this.selectableIndexToItemIndex_!.get(
+        this.$.selector.selected as number)!]!;
   }
 }
 

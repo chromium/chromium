@@ -15,15 +15,15 @@ import {ariaLabel, TabGroupData} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {highlightText} from './tab_search_utils.js';
 
-/**
- * @constructor
- * @extends PolymerElement
- * @implements {MouseHoverableMixinInterface}
- * @appliesMixin MouseHoverableMixin
- */
-const TabSearchGroupItemBase = MouseHoverableMixin(PolymerElement);
+const TabSearchGroupItemBase = MouseHoverableMixin(PolymerElement) as
+    {new (): PolymerElement & MouseHoverableMixinInterface};
 
-/** @polymer */
+export interface TabSearchGroupItem {
+  $: {
+    primaryText: HTMLElement,
+  };
+}
+
 export class TabSearchGroupItem extends TabSearchGroupItemBase {
   static get is() {
     return 'tab-search-group-item';
@@ -35,13 +35,9 @@ export class TabSearchGroupItem extends TabSearchGroupItemBase {
 
   static get properties() {
     return {
-      /** @type {number} */
-      id: Number,
-
-      /** @type {number} */
+      id: String,
       index: Number,
 
-      /** @type {!TabGroupData} */
       data: {
         type: Object,
         observer: 'dataChanged_',
@@ -49,34 +45,24 @@ export class TabSearchGroupItem extends TabSearchGroupItemBase {
     };
   }
 
-  /**
-   * @param {!TabGroupData} tabGroupData
-   * @return {string}
-   * @private
-   */
-  ariaLabelForText_(tabGroupData) {
+  index: string;
+  data: TabGroupData;
+
+  private ariaLabelForText_(tabGroupData: TabGroupData): string {
     return ariaLabel(tabGroupData);
   }
 
-  /**
-   * @param {!TabGroupData} data
-   * @private
-   */
-  dataChanged_(data) {
+  private dataChanged_(data: TabGroupData) {
     highlightText(
-        /** @type {!HTMLElement} */ (this.$.primaryText), data.tabGroup.title,
+        this.$.primaryText, data.tabGroup!.title,
         data.highlightRanges['tabGroup.title']);
 
     this.style.setProperty(
         '--group-dot-color',
-        `var(--tab-group-color-${colorName(data.tabGroup.color)})`);
+        `var(--tab-group-color-${colorName(data.tabGroup!.color)})`);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  tabCountText_(tabCount) {
+  private tabCountText_(tabCount: number): string {
     return loadTimeData.getStringF(
         tabCount == 1 ? 'oneTab' : 'tabCount', tabCount);
   }

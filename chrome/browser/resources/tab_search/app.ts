@@ -23,39 +23,60 @@ import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {fuzzySearch} from './fuzzy_search.js';
+import {fuzzySearch, FuzzySearchOptions} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {ariaLabel, ItemData, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+import {TabSearchSearchField} from './tab_search_search_field.js';
 import {TitleItem} from './title_item.js';
 
 // The minimum number of list items we allow viewing regardless of browser
 // height. Includes a half row that hints to the user the capability to scroll.
-/** @type {number} */
-const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT = 5.5;
+const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
+
+interface RepeaterEvent<T> extends Event {
+  model: {
+    item: T,
+    index: number,
+  };
+}
+
+interface RepeaterCustomEvent<M, P> extends CustomEvent<P> {
+  model: {
+    item: M,
+    index: number,
+  };
+}
+
+interface RepeaterKeyboardEvent<T> extends KeyboardEvent {
+  model: {
+    item: T,
+    index: number,
+  };
+}
+
+export interface TabSearchAppElement {
+  $: {
+    searchField: TabSearchSearchField,
+    tabsList: InfiniteList,
+  };
+}
 
 export class TabSearchAppElement extends PolymerElement {
   static get is() {
     return 'tab-search-app';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private {string} */
       searchText_: {
         type: String,
         value: '',
       },
 
-      /** @private {number} */
       availableHeight_: Number,
 
-      /** @private {!Array<!TabData|!TabGroupData>} */
       filteredItems_: {
         type: Array,
         value: [],
@@ -64,7 +85,6 @@ export class TabSearchAppElement extends PolymerElement {
       /**
        * Options for fuzzy search. Controls how heavily weighted fields are
        * relative to each other in the scoring via field weights.
-       * @private {!Object}
        */
       fuzzySearchOptions_: {
         type: Object,
@@ -91,7 +111,6 @@ export class TabSearchAppElement extends PolymerElement {
         },
       },
 
-      /** @private {boolean} */
       moveActiveTabToBottom_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('moveActiveTabToBottom'),
@@ -100,40 +119,36 @@ export class TabSearchAppElement extends PolymerElement {
       recentlyClosedDefaultItemDisplayCount_: {
         type: Number,
         value: () =>
-            /** @type {number} */ (
-                loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount')),
+            loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount'),
       },
 
-      /** @private */
       searchResultText_: {type: String, value: ''}
     };
   }
 
+  private searchText_: string;
+  private availableHeight_: number;
+  filteredItems_: Array<TitleItem|TabData|TabGroupData>;
+  private fuzzySearchOptions_: FuzzySearchOptions;
+  private moveActiveTabToBottom_: boolean;
+  private recentlyClosedDefaultItemDisplayCount_: number;
+  private searchResultText_: string;
+
+  private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
+  private listenerIds_: Array<number> = [];
+  private tabGroupsMap_: Map<string, TabGroup> = new Map();
+  private recentlyClosedTabGroups_: Array<TabGroupData> = [];
+  private openTabs_: Array<TabData> = [];
+  private recentlyClosedTabs_: Array<TabData> = [];
+  private windowShownTimestamp_: number = Date.now();
+  private openTabsTitleItem_: TitleItem;
+  private recentlyClosedTitleItem_: TitleItem;
+  private filteredOpenTabsCount_: number = 0;
+  private visibilityChangedListener_: () => void;
+
   constructor() {
     super();
 
-    /** @private {!TabSearchApiProxy} */
-    this.apiProxy_ = TabSearchApiProxyImpl.getInstance();
-
-    /** @private {!Array<number>} */
-    this.listenerIds_ = [];
-
-    /** @private {!Map<string, !TabGroup>} */
-    this.tabGroupsMap_ = new Map();
-
-    /** @private {!Array<TabGroupData>} */
-    this.recentlyClosedTabGroups_ = [];
-
-    /** @private {!Array<!TabData>} */
-    this.openTabs_ = [];
-
-    /** @private {!Array<!TabData>} */
-    this.recentlyClosedTabs_ = [];
-
-    /** @private {number} */
-    this.windowShownTimestamp_ = Date.now();
-
-    /** @private {!Function} */
     this.visibilityChangedListener_ = () => {
       // Refresh Tab Search's tab data when transitioning into a visible state.
       if (document.visibilityState === 'visible') {
@@ -144,19 +159,13 @@ export class TabSearchAppElement extends PolymerElement {
       }
     };
 
-    /** @private {!TitleItem} */
     this.openTabsTitleItem_ = new TitleItem(loadTimeData.getString('openTabs'));
 
-    /** @private {!TitleItem} */
     this.recentlyClosedTitleItem_ = new TitleItem(
         loadTimeData.getString('recentlyClosed'), true /*expandable*/,
         true /*expanded*/);
-
-    /** @private {number} */
-    this.filteredOpenTabsCount_ = 0;
   }
 
-  /** @override */
   ready() {
     super.ready();
 
@@ -183,7 +192,6 @@ export class TabSearchAppElement extends PolymerElement {
     });
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -192,12 +200,9 @@ export class TabSearchAppElement extends PolymerElement {
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
-        callbackRouter.tabsChanged.addListener(
-            profileData => this.tabsChanged_(profileData)),
-        callbackRouter.tabUpdated.addListener(
-            tabUpdateInfo => this.onTabUpdated_(tabUpdateInfo)),
-        callbackRouter.tabsRemoved.addListener(
-            tabsRemovedInfo => this.onTabsRemoved_(tabsRemovedInfo)));
+        callbackRouter.tabsChanged.addListener(this.tabsChanged_.bind(this)),
+        callbackRouter.tabUpdated.addListener(this.onTabUpdated_.bind(this)),
+        callbackRouter.tabsRemoved.addListener(this.onTabsRemoved_.bind(this)));
 
     // If added in a visible state update current tabs.
     if (document.visibilityState === 'visible') {
@@ -205,7 +210,6 @@ export class TabSearchAppElement extends PolymerElement {
     }
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -217,10 +221,9 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {string} name A property whose value is specified in pixels.
-   * @return {number}
+   * @param name A property whose value is specified in pixels.
    */
-  getStylePropertyPixelValue_(name) {
+  private getStylePropertyPixelValue_(name: string): number {
     const pxValue = getComputedStyle(this).getPropertyValue(name);
     assert(pxValue);
 
@@ -230,12 +233,8 @@ export class TabSearchAppElement extends PolymerElement {
   /**
    * Calculate the list's available height by subtracting the height used by
    * the search and feedback fields.
-   *
-   * @param {number} height
-   * @return {number}
-   * @private
    */
-  listMaxHeight_(height) {
+  private listMaxHeight_(height: number): number {
     return Math.max(
         height - this.$.searchField.offsetHeight,
         Math.round(
@@ -243,16 +242,14 @@ export class TabSearchAppElement extends PolymerElement {
             this.getStylePropertyPixelValue_('--mwb-item-height')));
   }
 
-  /** @private */
-  onDocumentHidden_() {
+  private onDocumentHidden_() {
     this.filteredItems_ = [];
 
     this.$.searchField.setValue('');
     this.$.searchField.getSearchInput().focus();
   }
 
-  /** @private */
-  updateTabs_() {
+  private updateTabs_() {
     const getTabsStartTimestamp = Date.now();
     this.apiProxy_.getProfileData().then(({profileData}) => {
       chrome.metricsPrivate.recordTime(
@@ -267,22 +264,18 @@ export class TabSearchAppElement extends PolymerElement {
         setTimeout(() => this.apiProxy_.showUI(), 0);
       });
 
-      this.availableHeight_ = profileData.windows.find((t) => t.active).height;
+      this.availableHeight_ = profileData.windows.find((t) => t.active)!.height;
       this.tabsChanged_(profileData);
     });
   }
 
-  /**
-   * @param {!TabUpdateInfo} tabUpdateInfo
-   * @private
-   */
-  onTabUpdated_(tabUpdateInfo) {
+  private onTabUpdated_(tabUpdateInfo: TabUpdateInfo) {
     const {tab, inActiveWindow} = tabUpdateInfo;
     const tabData = this.tabData_(
         tab, inActiveWindow, TabItemType.OPEN_TAB, this.tabGroupsMap_);
     // Replace the tab with the same tabId and trigger rerender.
     for (let i = 0; i < this.openTabs_.length; ++i) {
-      if (this.openTabs_[i].tab.tabId === tab.tabId) {
+      if (this.openTabs_[i]!.tab.tabId === tab.tabId) {
         this.openTabs_[i] = tabData;
         this.updateFilteredTabs_();
         return;
@@ -295,11 +288,7 @@ export class TabSearchAppElement extends PolymerElement {
     this.updateFilteredTabs_();
   }
 
-  /**
-   * @param {!TabsRemovedInfo} tabsRemovedInfo
-   * @private
-   */
-  onTabsRemoved_(tabsRemovedInfo) {
+  private onTabsRemoved_(tabsRemovedInfo: TabsRemovedInfo) {
     if (this.openTabs_.length === 0) {
       return;
     }
@@ -308,7 +297,7 @@ export class TabSearchAppElement extends PolymerElement {
     // Splicing in descending index order to avoid affecting preceding indices
     // that are to be removed.
     for (let i = this.openTabs_.length - 1; i >= 0; i--) {
-      if (ids.has(this.openTabs_[i].tab.tabId)) {
+      if (ids.has(this.openTabs_[i]!.tab.tabId)) {
         this.openTabs_.splice(i, 1);
       }
     }
@@ -323,32 +312,23 @@ export class TabSearchAppElement extends PolymerElement {
 
   /**
    * The seleted item's index, or -1 if no item selected.
-   * @return {number}
    */
-  getSelectedIndex() {
-    return /** @type {!InfiniteList} */ (this.$.tabsList).selected;
+  getSelectedIndex(): number {
+    return this.$.tabsList.selected;
   }
 
-  /**
-   * @param {!CustomEvent<string>} e
-   * @private
-   */
-  onSearchChanged_(e) {
+  private onSearchChanged_(e: CustomEvent<string>) {
     this.searchText_ = e.detail;
 
     this.updateFilteredTabs_();
     // Reset the selected item whenever a search query is provided.
-    /** @type {!InfiniteList} */ (this.$.tabsList).selected =
+    this.$.tabsList.selected =
         this.selectableItemCount_() > 0 ? 0 : NO_SELECTION;
 
     this.$.searchField.announce(this.getA11ySearchResultText_());
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getA11ySearchResultText_() {
+  private getA11ySearchResultText_(): string {
     // TODO(romanarora): Screen readers' list item number announcement will
     // not match as it counts the title items too. Investigate how to
     // programmatically control announcements to avoid this.
@@ -367,51 +347,43 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @returns {number} The number of selectable list items, excludes non
+   * @return The number of selectable list items, excludes non
    *     selectable items such as section title items.
-   * @private
    */
-  selectableItemCount_() {
+  private selectableItemCount_(): number {
     return this.filteredItems_.reduce((acc, item) => {
       return acc + (item instanceof TitleItem ? 0 : 1);
     }, 0);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemClick_(e) {
-    const tabItem = /** @type {!ItemData} */ (e.model.item);
-    this.tabItemAction_(tabItem, /** @type {number} */ (e.model.index));
+  private onItemClick_(e: RepeaterEvent<ItemData>) {
+    const tabItem = e.model.item;
+    this.tabItemAction_(tabItem, e.model.index);
   }
 
   /**
    * Trigger the click/press action associated with the given Tab item type.
-   * @param {!ItemData} itemData
-   * @param {number} tabIndex
-   * @throws {Error}
-   * @private
    */
-  tabItemAction_(itemData, tabIndex) {
+  private tabItemAction_(itemData: ItemData, tabIndex: number) {
     const state = this.searchText_ ? 'Filtered' : 'Unfiltered';
     let action;
     switch (itemData.type) {
       case TabItemType.OPEN_TAB:
         this.apiProxy_.switchToTab(
-            {tabId: /** @type {!TabData} */ (itemData).tab.tabId},
-            !!this.searchText_, tabIndex);
+            {tabId: (itemData as TabData).tab.tabId}, !!this.searchText_,
+            tabIndex);
         action = 'SwitchTab';
         break;
       case TabItemType.RECENTLY_CLOSED_TAB:
         this.apiProxy_.openRecentlyClosedEntry(
-            /** @type {!TabData} */ (itemData).tab.tabId, !!this.searchText_,
-            true, tabIndex - this.filteredOpenTabsCount_);
+            (itemData as TabData).tab.tabId, !!this.searchText_, true,
+            tabIndex - this.filteredOpenTabsCount_);
         action = 'OpenRecentlyClosedEntry';
         break;
       case TabItemType.RECENTLY_CLOSED_TAB_GROUP:
         this.apiProxy_.openRecentlyClosedEntry(
-            /** @type {!TabGroupData} */ (itemData).tabGroup.sessionId,
+            ((itemData as TabGroupData).tabGroup as RecentlyClosedTabGroup)
+                .sessionId,
             !!this.searchText_, false, tabIndex - this.filteredOpenTabsCount_);
         action = 'OpenRecentlyClosedEntry';
         break;
@@ -423,27 +395,17 @@ export class TabSearchAppElement extends PolymerElement {
         Math.round(Date.now() - this.windowShownTimestamp_));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemClose_(e) {
+  private onItemClose_(e: RepeaterEvent<TabData>) {
     performance.mark('tab_search:close_tab:metric_begin');
     const tabId = e.model.item.tab.tabId;
-    this.apiProxy_.closeTab(
-        tabId, !!this.searchText_,
-        /** @type {number} */ (e.model.index));
+    this.apiProxy_.closeTab(tabId, !!this.searchText_, e.model.index);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
       performance.mark('tab_search:close_tab:metric_end');
     });
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemKeyDown_(e) {
+  private onItemKeyDown_(e: RepeaterKeyboardEvent<ItemData>) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }
@@ -451,15 +413,11 @@ export class TabSearchAppElement extends PolymerElement {
     e.stopPropagation();
     e.preventDefault();
 
-    const itemData = /** @type {!ItemData} */ (e.model.item);
-    this.tabItemAction_(itemData, /** @type {number} */ (e.model.index));
+    const itemData = e.model.item;
+    this.tabItemAction_(itemData, e.model.index);
   }
 
-  /**
-   * @param {!ProfileData} profileData
-   * @private
-   */
-  tabsChanged_(profileData) {
+  private tabsChanged_(profileData: ProfileData) {
     this.tabGroupsMap_ = profileData.tabGroups.reduce((map, tabGroup) => {
       map.set(tokenToString(tabGroup.id), tabGroup);
       return map;
@@ -468,7 +426,7 @@ export class TabSearchAppElement extends PolymerElement {
         (acc, {active, tabs}) => acc.concat(tabs.map(
             tab => this.tabData_(
                 tab, active, TabItemType.OPEN_TAB, this.tabGroupsMap_))),
-        []);
+        [] as Array<TabData>);
     this.recentlyClosedTabs_ = profileData.recentlyClosedTabs.map(
         tab => this.tabData_(
             tab, false, TabItemType.RECENTLY_CLOSED_TAB, this.tabGroupsMap_));
@@ -488,34 +446,26 @@ export class TabSearchAppElement extends PolymerElement {
     // selected; else retain the currently selected index. If the list
     // shrunk above the selected index, select the last index in the list.
     // If there are no matching results, set the selected index value to none.
-    const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
+    const tabsList = this.$.tabsList;
     tabsList.selected = Math.min(
         Math.max(this.getSelectedIndex(), 0), this.selectableItemCount_() - 1);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemFocus_(e) {
+  private onItemFocus_(e: RepeaterEvent<TabData|TabGroupData>) {
     // Ensure that when a TabSearchItem receives focus, it becomes the selected
     // item in the list.
-    /** @type {!InfiniteList} */ (this.$.tabsList).selected =
-        /** @type {number} */ (e.model.index);
+    this.$.tabsList.selected = e.model.index;
   }
 
-  /**
-   * @param {CustomEvent} e
-   * @private
-   */
-  onTitleExpandChanged_(e) {
+  private onTitleExpandChanged_(
+      e: RepeaterCustomEvent<TitleItem, {value: boolean}>) {
     // Instead of relying on two-way binding to update the `expanded` property,
     // we update the value directly as the `expanded-changed` event takes place
     // before a two way bound property update and we need the TitleItem
     // instance to reflect the updated state prior to calling the
     // updateFilteredTabs_ function.
     const expanded = e.detail.value;
-    const titleItem = /** @type {TitleItem} */ (e.model.item);
+    const titleItem = e.model.item;
     titleItem.expanded = expanded;
     this.apiProxy_.saveRecentlyClosedExpandedPref(expanded);
 
@@ -523,9 +473,8 @@ export class TabSearchAppElement extends PolymerElement {
     e.stopPropagation();
   }
 
-  /** @private */
-  onSearchFocus_() {
-    const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
+  private onSearchFocus_() {
+    const tabsList = this.$.tabsList;
     if (tabsList.selected === NO_SELECTION && this.selectableItemCount_() > 0) {
       tabsList.selected = 0;
     }
@@ -533,18 +482,14 @@ export class TabSearchAppElement extends PolymerElement {
 
   /**
    * Handles key events when the search field has focus.
-   * @param {!KeyboardEvent} e
-   * @private
    */
-  onSearchKeyDown_(e) {
+  private onSearchKeyDown_(e: KeyboardEvent) {
     // In the event the search field has focus and the first item in the list is
     // selected and we receive a Shift+Tab navigation event, ensure All DOM
     // items are available so that the focus can transfer to the last item in
     // the list.
-    if (e.shiftKey && e.key === 'Tab' &&
-        /** @type {!InfiniteList} */ (this.$.tabsList).selected === 0) {
-      /** @type {!InfiniteList} */ (this.$.tabsList)
-          .ensureAllDomItemsAvailable();
+    if (e.shiftKey && e.key === 'Tab' && this.$.tabsList.selected === 0) {
+      this.$.tabsList.ensureAllDomItemsAvailable();
       return;
     }
 
@@ -560,46 +505,35 @@ export class TabSearchAppElement extends PolymerElement {
     }
 
     if (selectorNavigationKeys.includes(e.key)) {
-      /** @type {!InfiniteList} */ (this.$.tabsList).navigate(e.key);
+      this.$.tabsList.navigate(e.key);
 
       e.stopPropagation();
       e.preventDefault();
 
       // TODO(tluk): Fix this to use aria-activedescendant when it's updated to
       // work with Shadow DOM elements.
-      this.$.searchField.announce(ariaLabel(this.$.tabsList.selectedItem));
+      this.$.searchField.announce(
+          ariaLabel(this.$.tabsList.selectedItem as ItemData));
     } else if (e.key === 'Enter') {
-      const itemData = /** @type {!ItemData} */ (this.$.tabsList.selectedItem);
+      const itemData = this.$.tabsList.selectedItem as ItemData;
       this.tabItemAction_(itemData, this.getSelectedIndex());
       e.stopPropagation();
     }
   }
 
-  /** @param {string} text */
-  announceA11y_(text) {
+  announceA11y_(text: string) {
     IronA11yAnnouncer.requestAvailability();
     this.dispatchEvent(new CustomEvent(
         'iron-announce', {bubbles: true, composed: true, detail: {text}}));
   }
 
-  /**
-   * @param {!TabData} tabData
-   * @return {string}
-   * @private
-   */
-  ariaLabel_(tabData) {
+  private ariaLabel_(tabData: TabData): string {
     return ariaLabel(tabData);
   }
 
-  /**
-   * @param {!Tab|!RecentlyClosedTab} tab
-   * @param {boolean} inActiveWindow
-   * @param {!TabItemType} type
-   * @param {!Map<string, !TabGroup>} tabGroupsMap
-   * @return {!TabData}
-   * @private
-   */
-  tabData_(tab, inActiveWindow, type, tabGroupsMap) {
+  private tabData_(
+      tab: Tab|RecentlyClosedTab, inActiveWindow: boolean, type: TabItemType,
+      tabGroupsMap: Map<string, TabGroup>): TabData {
     const tabData = new TabData(tab, type);
     tabData.hostname = new URL(tab.url.url).hostname;
 
@@ -617,50 +551,46 @@ export class TabSearchAppElement extends PolymerElement {
     return tabData;
   }
 
-  /**
-   * @param {!ItemData} itemData
-   * @throws {Error}
-   * @private
-   */
-  getRecentlyClosedItemLastActiveTime_(itemData) {
+  private getRecentlyClosedItemLastActiveTime_(itemData: ItemData) {
     if (itemData.type === TabItemType.RECENTLY_CLOSED_TAB &&
         itemData instanceof TabData) {
-      return /** @type {!TabData} */ (itemData).tab.lastActiveTime;
+      return (itemData.tab as RecentlyClosedTab).lastActiveTime;
     }
 
     if (itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP &&
         itemData instanceof TabGroupData) {
-      return /** @type {!TabGroupData} */ (itemData).tabGroup.lastActiveTime;
+      return (itemData.tabGroup as RecentlyClosedTabGroup).lastActiveTime;
     }
 
     throw new Error('ItemData provided is invalid.');
   }
 
-  /** @private */
-  updateFilteredTabs_() {
+  private updateFilteredTabs_() {
     this.openTabs_.sort((a, b) => {
+      const tabA = a.tab as Tab;
+      const tabB = b.tab as Tab;
       // Move the active tab to the bottom of the list
       // because it's not likely users want to click on it.
       if (this.moveActiveTabToBottom_) {
-        if (a.inActiveWindow && a.tab.active) {
+        if (a.inActiveWindow && tabA.active) {
           return 1;
         }
-        if (b.inActiveWindow && b.tab.active) {
+        if (b.inActiveWindow && tabB.active) {
           return -1;
         }
       }
-      return (b.tab.lastActiveTimeTicks && a.tab.lastActiveTimeTicks) ?
+      return (tabB.lastActiveTimeTicks && tabA.lastActiveTimeTicks) ?
           Number(
-              b.tab.lastActiveTimeTicks.internalValue -
-              a.tab.lastActiveTimeTicks.internalValue) :
+              tabB.lastActiveTimeTicks.internalValue -
+              tabA.lastActiveTimeTicks.internalValue) :
           0;
     });
     const filteredOpenTabs =
         fuzzySearch(this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
     this.filteredOpenTabsCount_ = filteredOpenTabs.length;
 
-    const recentlyClosedItems =
-        this.recentlyClosedTabs_.concat(this.recentlyClosedTabGroups_);
+    const recentlyClosedItems: Array<TabData|TabGroupData> =
+        [...this.recentlyClosedTabs_, ...this.recentlyClosedTabGroups_];
     recentlyClosedItems.sort((a, b) => {
       const aTime = this.getRecentlyClosedItemLastActiveTime_(a);
       const bTime = this.getRecentlyClosedItemLastActiveTime_(b);
@@ -676,43 +606,51 @@ export class TabSearchAppElement extends PolymerElement {
     // when no search text has been specified. Filter out recently closed tabs
     // that belong to a recently closed tab group by default.
     const recentlyClosedTabGroupIds = this.recentlyClosedTabGroups_.reduce(
-        (acc, tabGroupData) => acc.concat(tabGroupData.tabGroup.id), []);
+        (acc, tabGroupData) => acc.concat(tabGroupData.tabGroup!.id),
+        [] as Token[]);
     if (!this.searchText_.length) {
       filteredRecentlyClosedItems =
           filteredRecentlyClosedItems
-              .filter((recentlyClosedItem) => {
+              .filter(recentlyClosedItem => {
+                if (recentlyClosedItem instanceof TabGroupData) {
+                  return true;
+                }
+
+                const recentlyClosedTab =
+                    (recentlyClosedItem as TabData).tab as RecentlyClosedTab;
                 return (
-                    recentlyClosedItem instanceof TabGroupData ||
-                    !/** @type {!RecentlyClosedTab} */ (recentlyClosedItem.tab)
-                         .groupId ||
+                    !recentlyClosedTab.groupId ||
                     !recentlyClosedTabGroupIds.some(
-                        groupId => tokenEquals(
-                            groupId, /** @type {!Token} */
-                            (        /** @type {!RecentlyClosedTab} */
-                             (recentlyClosedItem.tab).groupId))));
+                        groupId =>
+                            tokenEquals(groupId, recentlyClosedTab.groupId!)));
               })
               .slice(0, this.recentlyClosedDefaultItemDisplayCount_);
     }
 
-    this.filteredItems_ = [
-      [this.openTabsTitleItem_, filteredOpenTabs],
-      [this.recentlyClosedTitleItem_, filteredRecentlyClosedItems],
-    ].reduce((acc, [sectionTitle, sectionItems]) => {
-      if (sectionItems.length !== 0) {
-        acc.push(sectionTitle);
-        if (!sectionTitle.expandable ||
-            sectionTitle.expandable && sectionTitle.expanded) {
-          acc.push(...sectionItems);
-        }
-      }
-      return acc;
-    }, []);
+    this.filteredItems_ =
+        ([
+          [this.openTabsTitleItem_, filteredOpenTabs],
+          [this.recentlyClosedTitleItem_, filteredRecentlyClosedItems],
+        ] as Array<[TitleItem, Array<TabData|TabGroupData>]>)
+            .reduce((acc, [sectionTitle, sectionItems]) => {
+              if (sectionItems!.length !== 0) {
+                acc.push(sectionTitle);
+                if (!sectionTitle.expandable ||
+                    sectionTitle.expandable && sectionTitle.expanded) {
+                  acc.push(...sectionItems);
+                }
+              }
+              return acc;
+            }, [] as Array<TitleItem|TabData|TabGroupData>);
     this.searchResultText_ = this.getA11ySearchResultText_();
   }
 
-  /** @return {string} */
-  getSearchTextForTesting() {
+  getSearchTextForTesting(): string {
     return this.searchText_;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

@@ -20,15 +20,18 @@ import {Tab, TabGroup} from './tab_search.mojom-webui.js';
 import {highlightText} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 
-/**
- * @constructor
- * @extends PolymerElement
- * @implements {MouseHoverableMixinInterface}
- * @appliesMixin MouseHoverableMixin
- */
-const TabSearchItemBase = MouseHoverableMixin(PolymerElement);
+export interface TabSearchItem {
+  $: {
+    groupTitle: HTMLElement,
+    primaryText: HTMLElement,
+    secondaryText: HTMLElement,
+  };
+}
 
-/** @polymer */
+const TabSearchItemBase = MouseHoverableMixin(PolymerElement) as
+    {new (): PolymerElement & MouseHoverableMixinInterface};
+
+
 export class TabSearchItem extends TabSearchItemBase {
   static get is() {
     return 'tab-search-item';
@@ -40,46 +43,37 @@ export class TabSearchItem extends TabSearchItemBase {
 
   static get properties() {
     return {
-      /** @type {!TabData} */
       data: {
         type: Object,
         observer: 'dataChanged_',
       },
 
-      /** @private {boolean} */
       buttonRipples_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('useRipples'),
       },
 
-      /** @type {number} */
       index: Number,
     };
   }
 
+  data: TabData;
+  private buttonRipples_: boolean;
+  index: number;
+
   /**
-   * @param {!TabItemType} type
-   * @return {boolean} Whether a close action can be performed on the item.
+   * @return Whether a close action can be performed on the item.
    */
-  isCloseable_(type) {
+  private isCloseable_(type: TabItemType): boolean {
     return type === TabItemType.OPEN_TAB;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemClose_(e) {
+  private onItemClose_(e: Event) {
     this.dispatchEvent(new CustomEvent('close'));
     e.stopPropagation();
   }
 
-  /**
-   * @param {!Tab} tab
-   * @return {string}
-   * @private
-   */
-  faviconUrl_(tab) {
+  private faviconUrl_(tab: Tab): string {
     return tab.faviconUrl ?
         `url("${tab.faviconUrl.url}")` :
         getFaviconForPageURL(
@@ -88,56 +82,44 @@ export class TabSearchItem extends TabSearchItemBase {
 
   /**
    * Determines the display attribute value for the group SVG element.
-   * @param {!TabData} tabData
-   * @return {string}
-   * @private
    */
-  groupSvgDisplay_(tabData) {
+  private groupSvgDisplay_(tabData: TabData): string {
     return tabData.tabGroup ? 'block' : 'none';
   }
 
-  /**
-   *
-   * @param {!TabData} tabData
-   * @returns {boolean}
-   * @private
-   */
-  isOpenTabAndHasMediaAlert_(tabData) {
-    if (tabData.type != TabItemType.OPEN_TAB || !tabData.tab.alertStates ||
-        tabData.tab.alertStates.length == 0) {
+  private isOpenTabAndHasMediaAlert_(tabData: TabData): boolean {
+    if (tabData.type != TabItemType.OPEN_TAB ||
+        !(tabData.tab as Tab).alertStates ||
+        (tabData.tab as Tab).alertStates.length == 0) {
       return false;
     }
 
     /* Current UI mocks only have specs for the following media related alert
      * states. */
-    const validAlertState = (alert) => alert == TabAlertState.kMediaRecording ||
-        alert == TabAlertState.kAudioPlaying ||
-        alert == TabAlertState.kAudioMuting;
+    function validAlertState(alert: TabAlertState): boolean {
+      return alert == TabAlertState.kMediaRecording ||
+          alert == TabAlertState.kAudioPlaying ||
+          alert == TabAlertState.kAudioMuting;
+    }
 
-    return tabData.tab.alertStates.some(validAlertState);
+    return (tabData.tab as Tab).alertStates.some(validAlertState);
   }
 
   /**
    * Determines the display attribute value for the media indicator.
-   * @param {!TabData} tabData
-   * @returns {string}
-   * @private
    */
-  mediaAlertVisibility_(tabData) {
+  private mediaAlertVisibility_(tabData: TabData): string {
     return this.isOpenTabAndHasMediaAlert_(tabData) ? 'block' : 'none';
   }
 
   /**
    * Returns the correct media alert indicator class name.
-   * @param {!TabData} tabData
-   * @returns {string}
-   * @private
    */
-  getMediaAlertImageClass_(tabData) {
+  private getMediaAlertImageClass_(tabData: TabData): string {
     if (!this.isOpenTabAndHasMediaAlert_(tabData)) {
       return '';
     }
-    for (const alert of tabData.tab.alertStates) {
+    for (const alert of (tabData.tab as Tab).alertStates) {
       // Ordered in the same priority as GetTabAlertStatesForContents.
       if (alert == TabAlertState.kMediaRecording) {
         return 'media-recording';
@@ -151,29 +133,21 @@ export class TabSearchItem extends TabSearchItemBase {
     return '';
   }
 
-  /**
-   * @param {!TabData} tabData
-   * @returns {boolean}
-   * @private
-   */
-  hasTabGroupWithTitle_(tabData) {
+  private hasTabGroupWithTitle_(tabData: TabData): boolean {
     return !!(tabData.tabGroup && tabData.tabGroup.title);
   }
 
-  /**
-   * @param {!TabData} data
-   * @private
-   */
-  dataChanged_(data) {
-    [['tab.title', this.$.primaryText], ['hostname', this.$.secondaryText],
-     ['tabGroup.title', this.$.groupTitle]]
+  private dataChanged_(data: TabData) {
+    ([
+      ['tab.title', this.$.primaryText],
+      ['hostname', this.$.secondaryText],
+      ['tabGroup.title', this.$.groupTitle],
+    ] as Array<[string, HTMLElement]>)
         .forEach(([path, element]) => {
           if (element) {
             const highlightRanges =
                 data.highlightRanges ? data.highlightRanges[path] : undefined;
-            highlightText(
-                /** @type {!HTMLElement} */ (element), deepGet(data, path),
-                highlightRanges);
+            highlightText(element, deepGet(data, path), highlightRanges);
           }
         });
 
@@ -181,8 +155,7 @@ export class TabSearchItem extends TabSearchItemBase {
     let secondaryLabel = data.hostname;
     const protocol = new URL(data.tab.url.url).protocol;
     if (protocol === 'chrome:') {
-      /** @type {!HTMLElement} */ (this.$.secondaryText)
-          .prepend(document.createTextNode('chrome://'));
+      this.$.secondaryText.prepend(document.createTextNode('chrome://'));
       secondaryLabel = `chrome://${secondaryLabel}`;
     }
 
@@ -193,21 +166,11 @@ export class TabSearchItem extends TabSearchItemBase {
     }
   }
 
-  /**
-   * @param {!TabData} tabData
-   * @return {string}
-   * @private
-   */
-  ariaLabelForText_(tabData) {
+  ariaLabelForText_(tabData: TabData): string {
     return ariaLabel(tabData);
   }
 
-  /**
-   * @param {string} title
-   * @return {string}
-   * @private
-   */
-  ariaLabelForButton_(title) {
+  private ariaLabelForButton_(title: string): string {
     return `${loadTimeData.getString('closeTab')} ${title}`;
   }
 }

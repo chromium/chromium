@@ -7,21 +7,23 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrSearchFieldBehaviorInterface}
- */
 const TabSearchSearchFieldBase =
-    mixinBehaviors([ CrSearchFieldBehavior ], PolymerElement);
+    mixinBehaviors([CrSearchFieldBehavior], PolymerElement) as
+    {new (): PolymerElement & CrSearchFieldBehavior};
 
-/** @polymer */
+export interface TabSearchSearchField {
+  $: {
+    inputAnnounce: HTMLElement,
+    searchInput: HTMLInputElement,
+    searchWrapper: HTMLElement,
+  };
+}
+
 export class TabSearchSearchField extends TabSearchSearchFieldBase {
-
   static get is() {
     return 'tab-search-search-field';
   }
@@ -48,13 +50,11 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
         value: '',
       },
 
-      /** @private {string} */
       shortcut_: {
         type: String,
         value: () => loadTimeData.getString('shortcutText'),
       },
 
-      /** @private {string} */
       announceText_: {
         type: String,
         value: '',
@@ -62,18 +62,22 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
     };
   }
 
-  /** @return {!HTMLInputElement} */
-  getSearchInput() {
-    return /** @type {!HTMLInputElement} */ (this.$.searchInput);
+  autofocus: boolean;
+  searchResultText: string;
+  private shortcut_: string;
+  private announceText_: string;
+
+  getSearchInput(): HTMLInputElement {
+    return this.$.searchInput;
   }
 
   /**
    * Cause a text string to be announced by screen readers. Used for announcing
    * when the input field has focus for better compatibility with screen
    * readers.
-   * @param {string} text The text that should be announced.
+   * @param text The text that should be announced.
    */
-  announce(text) {
+  announce(text: string) {
     this.$.searchWrapper.append(
         this.$.searchWrapper.removeChild(this.$.inputAnnounce));
     if (this.announceText_ === text) {
@@ -92,14 +96,13 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
    * Clear |announceText_| when focus leaves the input field to ensure the text
    * is not re-announced when focus returns to the input field.
    */
-  onInputBlur_(text) {
+  private onInputBlur_() {
     this.announceText_ = '';
   }
 
   /**
    * Do not schedule the timer from CrSearchFieldBehavior to make search more
    * responsive.
-   * @override
    */
   onSearchTermInput() {
     this.hasSearchText = this.$.searchInput.value !== '';

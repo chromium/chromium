@@ -106,12 +106,12 @@ preprocess_if_expr("preprocess_web_components") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "app.js",
-    "infinite_list.js",
+    "app.ts",
+    "infinite_list.ts",
     "tab_group_shared_vars.ts",
-    "tab_search_item.js",
-    "tab_search_group_item.js",
-    "tab_search_search_field.js",
+    "tab_search_item.ts",
+    "tab_search_group_item.ts",
+    "tab_search_search_field.ts",
   ]
 }
 
@@ -158,12 +158,12 @@ grit("resources") {
 
 html_to_js("web_components") {
   js_files = [
-    "app.js",
-    "infinite_list.js",
+    "app.ts",
+    "infinite_list.ts",
     "tab_group_shared_vars.ts",
-    "tab_search_item.js",
-    "tab_search_group_item.js",
-    "tab_search_search_field.js",
+    "tab_search_item.ts",
+    "tab_search_group_item.ts",
+    "tab_search_search_field.ts",
   ]
 }
 
@@ -172,21 +172,21 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "app.js",
+    "app.ts",
     "bimap.ts",
     "fuse.js",
     "fuzzy_search.ts",
-    "infinite_list.js",
+    "infinite_list.ts",
     "tab_data.ts",
     "tab_group_color_helper.ts",
     "tab_group_shared_vars.ts",
     "tab_group_types.mojom-webui.js",
     "tab_search_api_proxy.ts",
-    "tab_search_group_item.js",
-    "tab_search_item.js",
+    "tab_search_group_item.ts",
+    "tab_search_item.ts",
     "tab_search.ts",
     "tab_search.mojom-webui.js",
-    "tab_search_search_field.js",
+    "tab_search_search_field.ts",
     "tab_search_utils.ts",
     "tabs.mojom-webui.js",
     "title_item.ts",
