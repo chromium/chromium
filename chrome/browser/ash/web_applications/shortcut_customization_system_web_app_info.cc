@@ -23,6 +23,12 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
   info->scope = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->title =
       l10n_util::GetStringUTF16(IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE);
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {{"app_icon_192.png", 192,
