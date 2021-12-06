@@ -168,6 +168,12 @@ void PermissionRequestManager::AddRequest(
     return;
   }
 
+  if (source_frame->IsNestedWithinFencedFrame()) {
+    request->Cancelled();
+    request->RequestFinished();
+    return;
+  }
+
   if (is_notification_prompt_cooldown_active_ &&
       request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {
     // Short-circuit by canceling rather than denying to avoid creating a large
