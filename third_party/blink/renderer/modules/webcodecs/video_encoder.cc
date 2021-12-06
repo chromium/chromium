@@ -640,6 +640,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
     // TODO(crbug.com/1195433): Once support for alpha channel encoding is
     // implemented, |force_opaque| must be set based on the VideoEncoderConfig.
     const bool can_use_gmb =
+        !disable_accelerated_frame_pool_ &&
         CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true);
     if (can_use_gmb && !accelerated_frame_pool_) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -712,35 +713,35 @@ void VideoEncoder::ProcessEncode(Request* request) {
         return;
       }
 
-      // Error occurred, fall through to error handling below.
+      // Error occurred, fall through to normal readback path below.
       blocking_request_in_progress_ = false;
-      frame.reset();
+      disable_accelerated_frame_pool_ = true;
+      accelerated_frame_pool_.reset();
+    }
+
+    auto wrapper = SharedGpuContext::ContextProviderWrapper();
+    scoped_refptr<viz::RasterContextProvider> raster_provider;
+    if (wrapper && wrapper->ContextProvider())
+      raster_provider = wrapper->ContextProvider()->RasterContextProvider();
+    if (raster_provider) {
+      auto* ri = raster_provider->RasterInterface();
+      auto* gr_context = raster_provider->GrContext();
+
+      frame = ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
+                                                     &readback_frame_pool_);
     } else {
-      auto wrapper = SharedGpuContext::ContextProviderWrapper();
-      scoped_refptr<viz::RasterContextProvider> raster_provider;
-      if (wrapper && wrapper->ContextProvider())
-        raster_provider = wrapper->ContextProvider()->RasterContextProvider();
-      if (raster_provider) {
-        auto* ri = raster_provider->RasterInterface();
-        auto* gr_context = raster_provider->GrContext();
-
-        frame = ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
-                                                       &readback_frame_pool_);
-      } else {
-        frame.reset();
-      }
+      frame.reset();
     }
+  }
 
-    if (!frame) {
-      auto status = media::Status(media::StatusCode::kEncoderFailedEncode,
-                                  "Can't readback frame textures.");
-      callback_runner_->PostTask(
-          FROM_HERE,
-          ConvertToBaseOnceCallback(CrossThreadBindOnce(
-              done_callback, WrapCrossThreadWeakPersistent(this),
-              WrapCrossThreadPersistent(request), std::move(status))));
-      return;
-    }
+  if (!frame) {
+    auto status = media::Status(media::StatusCode::kEncoderFailedEncode,
+                                "Can't readback frame textures.");
+    callback_runner_->PostTask(
+        FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                       done_callback, WrapCrossThreadWeakPersistent(this),
+                       WrapCrossThreadPersistent(request), std::move(status))));
+    return;
   }
 
   // Currently underlying encoders can't handle alpha channel, so let's

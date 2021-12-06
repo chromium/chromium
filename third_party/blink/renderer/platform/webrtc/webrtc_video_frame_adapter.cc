@@ -205,9 +205,12 @@ const base::Feature kWebRTCGpuMemoryBufferReadback {
 #endif
 };
 
-bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format) {
+bool CanUseGpuMemoryBufferReadback(
+    media::VideoPixelFormat format,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
   // GMB readback only works with NV12, so only opaque buffers can be used.
-  return (format == media::PIXEL_FORMAT_XBGR ||
+  return gpu_factories &&
+         (format == media::PIXEL_FORMAT_XBGR ||
           format == media::PIXEL_FORMAT_XRGB) &&
          base::FeatureList::IsEnabled(kWebRTCGpuMemoryBufferReadback);
 }
@@ -225,7 +228,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       raster_context_provider.get());
 
-  if (CanUseGpuMemoryBufferReadback(source_frame->format())) {
+  if (CanUseGpuMemoryBufferReadback(source_frame->format(), gpu_factories_)) {
     if (!accelerated_frame_pool_) {
       accelerated_frame_pool_ =
           media::RenderableGpuMemoryBufferVideoFramePool::Create(

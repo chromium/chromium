@@ -116,15 +116,16 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
       // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
       // format that is backing `image->GetMailboxHolder()`, or, alternatively,
       // expose an accelerated SkImage.
-      accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-          viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
-          gfx::Size(image->width(), image->height()),
-          gfx::ColorSpace::CreateSRGB(),
-          image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                   : kBottomLeft_GrSurfaceOrigin,
-          image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
-          std::move(blit_done_callback));
-      return;
+      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+              viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
+              gfx::Size(image->width(), image->height()),
+              gfx::ColorSpace::CreateSRGB(),
+              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                       : kBottomLeft_GrSurfaceOrigin,
+              image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
+              std::move(blit_done_callback))) {
+        return;
+      }
     }
     ReadYUVPixelsAsync(image, context_provider->ContextProvider(),
                        std::move(callback));

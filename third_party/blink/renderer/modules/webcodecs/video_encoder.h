@@ -120,6 +120,9 @@ class MODULES_EXPORT VideoEncoder final
   media::VideoFramePool readback_frame_pool_;
   std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
 
+  // True if an error occurs during frame pool usage.
+  bool disable_accelerated_frame_pool_ = false;
+
   // The number of encoding requests currently handled by |media_encoder_|
   // Should not exceed |kMaxActiveEncodes|.
   int active_encodes_ = 0;
