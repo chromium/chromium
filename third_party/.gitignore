@@ -37,10 +37,6 @@
 /apache-win32/bin/iconv/*.so
 /apache-win32/modules/*.so
 /apache-win32/modules/*.dll
-/apache-mac/bin/httpd
-/apache-mac/bin/openssl
-/apache-mac/lib/*.dylib
-/apache-mac/libexec/apache2/*.so
 /arcore-android-sdk/src/
 /arcore-android-sdk/test-apks/arcore/*.apk
 /asan
