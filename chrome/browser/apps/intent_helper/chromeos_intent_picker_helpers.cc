@@ -116,7 +116,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
       /*show_stay_in_chrome=*/true,
       /*show_remember_selection=*/true,
       base::BindOnce(&OnIntentPickerClosedChromeOs, web_contents,
-                     ui_auto_display_service, url));
+                     ui_auto_display_service, PickerShowState::kPopOut, url));
 }
 
 }  // namespace
@@ -150,6 +150,7 @@ bool ContainsOnlyPwasAndMacApps(const std::vector<IntentPickerAppInfo>& apps) {
 void OnIntentPickerClosedChromeOs(
     content::WebContents* web_contents,
     IntentPickerAutoDisplayService* ui_auto_display_service,
+    PickerShowState show_state,
     const GURL& url,
     const std::string& launch_name,
     PickerEntryType entry_type,
@@ -218,7 +219,7 @@ void OnIntentPickerClosedChromeOs(
   }
 
   IntentHandlingMetrics::RecordIntentPickerMetrics(entry_type, close_reason,
-                                                   should_persist);
+                                                   should_persist, show_state);
 }
 
 }  // namespace apps

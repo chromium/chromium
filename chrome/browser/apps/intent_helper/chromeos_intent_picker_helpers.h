@@ -35,6 +35,7 @@ enum class PickerShowState {
 void OnIntentPickerClosedChromeOs(
     content::WebContents* web_contents,
     IntentPickerAutoDisplayService* ui_auto_display_service,
+    PickerShowState show_state,
     const GURL& url,
     const std::string& launch_name,
     PickerEntryType entry_type,

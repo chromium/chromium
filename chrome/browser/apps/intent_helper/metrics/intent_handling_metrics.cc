@@ -7,6 +7,7 @@
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/metrics/arc_metrics_service.h"
@@ -142,12 +143,24 @@ IntentHandlingMetrics::IntentHandlingMetrics() = default;
 void IntentHandlingMetrics::RecordIntentPickerMetrics(
     PickerEntryType entry_type,
     IntentPickerCloseReason close_reason,
-    bool should_persist) {
+    bool should_persist,
+    PickerShowState show_state) {
   IntentPickerAction action =
       GetIntentPickerAction(entry_type, close_reason, should_persist);
   Platform platform = GetIntentPickerDestinationPlatform(action);
 
   UMA_HISTOGRAM_ENUMERATION("ChromeOS.Intents.IntentPickerAction", action);
+  switch (show_state) {
+    case PickerShowState::kOmnibox:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Intents.IntentPickerAction.FromOmniboxIcon", action);
+      break;
+    case PickerShowState::kPopOut:
+      UMA_HISTOGRAM_ENUMERATION(
+          "ChromeOS.Intents.IntentPickerAction.FromAutoPopOut", action);
+      break;
+  }
+
   RecordDestinationPlatformMetric(platform);
 }
 

@@ -8,6 +8,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -76,7 +77,8 @@ TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
     base::HistogramTester histogram_tester;
 
     IntentHandlingMetrics::RecordIntentPickerMetrics(
-        test.entry_type, test.close_reason, test.should_persist);
+        test.entry_type, test.close_reason, test.should_persist,
+        PickerShowState::kOmnibox);
 
     histogram_tester.ExpectBucketCount("ChromeOS.Intents.IntentPickerAction",
                                        test.expected_action, 1);
@@ -84,6 +86,36 @@ TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetrics) {
         "ChromeOS.Apps.IntentPickerDestinationPlatform", test.expected_platform,
         1);
   }
+}
+
+TEST(IntentHandlingMetricsTest, TestRecordIntentPickerMetricsWithSource) {
+  base::HistogramTester histogram_tester;
+
+  IntentHandlingMetrics::RecordIntentPickerMetrics(
+      PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP, true,
+      PickerShowState::kOmnibox);
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.IntentPickerAction",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.IntentPickerAction.FromOmniboxIcon",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      1);
+
+  IntentHandlingMetrics::RecordIntentPickerMetrics(
+      PickerEntryType::kArc, IntentPickerCloseReason::OPEN_APP, true,
+      PickerShowState::kPopOut);
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.IntentPickerAction",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      2);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Intents.IntentPickerAction.FromAutoPopOut",
+      IntentHandlingMetrics::IntentPickerAction::kArcAppSelectedAndPreferred,
+      1);
 }
 
 TEST(IntentHandlingMetricsTest, TestRecordPreferredAppLinkClickMetrics) {

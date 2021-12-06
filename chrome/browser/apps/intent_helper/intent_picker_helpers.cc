@@ -66,9 +66,9 @@ void OnIntentPickerClosed(
     IntentPickerCloseReason close_reason,
     bool should_persist) {
 #if defined(OS_CHROMEOS)
-  OnIntentPickerClosedChromeOs(web_contents, ui_auto_display_service, url,
-                               launch_name, entry_type, close_reason,
-                               should_persist);
+  OnIntentPickerClosedChromeOs(web_contents, ui_auto_display_service,
+                               PickerShowState::kOmnibox, url, launch_name,
+                               entry_type, close_reason, should_persist);
 #else
   const bool should_launch_app =
       close_reason == apps::IntentPickerCloseReason::OPEN_APP;
