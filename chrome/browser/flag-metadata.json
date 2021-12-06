@@ -353,6 +353,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "auto-framing-override",
+    "owners": [ "kamesan", "chromeos-camera-eng@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "auto-screen-brightness",
     "owners": [ "jiameng", "napper" ],
     "expiry_milestone": 90
@@ -619,7 +624,7 @@
   },
   {
     "name": "camera-app-document-manual-crop",
-    "owners": [ "inker", "chromeos-canera-eng@google.com" ],
+    "owners": [ "inker", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 99
   },
   {
@@ -3384,7 +3389,7 @@
   },
   {
     "name": "hdrnet-override",
-    "owners": [ "jcliang", "chromeos-canera-eng@google.com" ],
+    "owners": [ "jcliang", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 100
   },
   {

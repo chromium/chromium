@@ -2345,6 +2345,13 @@ const FeatureEntry::Choice kHdrNetOverrideChoices[] = {
      media::switches::kHdrNetForceEnabled},
     {"Force disabled", media::switches::kHdrNetOverride,
      media::switches::kHdrNetForceDisabled}};
+
+const FeatureEntry::Choice kAutoFramingOverrideChoices[] = {
+    {"Default", "", ""},
+    {"Force enabled", media::switches::kAutoFramingOverride,
+     media::switches::kAutoFramingForceEnabled},
+    {"Force disabled", media::switches::kAutoFramingOverride,
+     media::switches::kAutoFramingForceDisabled}};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4382,6 +4389,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"hdrnet-override", flag_descriptions::kHdrNetOverrideName,
      flag_descriptions::kHdrNetOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kHdrNetOverrideChoices)},
+    {"auto-framing-override", flag_descriptions::kAutoFramingOverrideName,
+     flag_descriptions::kAutoFramingOverrideDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kAutoFramingOverrideChoices)},
     {"camera-app-document-manual-crop",
      flag_descriptions::kCameraAppDocumentManualCropName,
      flag_descriptions::kCameraAppDocumentManualCropDescription, kOsCrOS,

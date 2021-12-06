@@ -53,6 +53,10 @@ const base::FilePath::CharType kForceEnableHdrNetPath[] =
     "/run/camera/force_enable_hdrnet";
 const base::FilePath::CharType kForceDisableHdrNetPath[] =
     "/run/camera/force_disable_hdrnet";
+const base::FilePath::CharType kForceEnableAutoFramingPath[] =
+    "/run/camera/force_enable_auto_framing";
+const base::FilePath::CharType kForceDisableAutoFramingPath[] =
+    "/run/camera/force_disable_auto_framing";
 
 std::string GenerateRandomToken() {
   char random_bytes[16];
@@ -196,10 +200,12 @@ bool CameraHalDispatcherImpl::Start(
     if (command_line->HasSwitch(media::switches::kForceControlFaceAe)) {
       if (command_line->GetSwitchValueASCII(
               media::switches::kForceControlFaceAe) == "enable") {
-        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                              base::File::FLAG_WRITE);
         file.Close();
       } else {
-        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                               base::File::FLAG_WRITE);
         file.Close();
       }
     }
@@ -220,10 +226,38 @@ bool CameraHalDispatcherImpl::Start(
       std::string value =
           command_line->GetSwitchValueASCII(switches::kHdrNetOverride);
       if (value == switches::kHdrNetForceEnabled) {
-        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                              base::File::FLAG_WRITE);
         file.Close();
       } else if (value == switches::kHdrNetForceDisabled) {
-        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                               base::File::FLAG_WRITE);
+        file.Close();
+      }
+    }
+  }
+
+  {
+    base::FilePath enable_file_path(kForceEnableAutoFramingPath);
+    base::FilePath disable_file_path(kForceDisableAutoFramingPath);
+    if (!base::DeleteFile(enable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceEnableAutoFramingPath;
+    }
+    if (!base::DeleteFile(disable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceDisableAutoFramingPath;
+    }
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(media::switches::kAutoFramingOverride)) {
+      std::string value =
+          command_line->GetSwitchValueASCII(switches::kAutoFramingOverride);
+      if (value == switches::kAutoFramingForceEnabled) {
+        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                              base::File::FLAG_WRITE);
+        file.Close();
+      } else if (value == switches::kAutoFramingForceDisabled) {
+        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                               base::File::FLAG_WRITE);
         file.Close();
       }
     }

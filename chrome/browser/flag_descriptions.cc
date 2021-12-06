@@ -4142,6 +4142,11 @@ const char kAudioUrlDescription[] =
     "Enable chrome://audio that is designed for debugging ChromeOS audio "
     "issues";
 
+const char kAutoFramingOverrideName[] = "Auto-framing control override";
+const char kAutoFramingOverrideDescription[] =
+    "Overrides the default to forcibly enable or disable the auto-framing "
+    "feature";
+
 const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
 const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "

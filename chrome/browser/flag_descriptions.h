@@ -2386,6 +2386,9 @@ extern const char kAshEnableUnifiedDesktopDescription[];
 extern const char kAudioUrlName[];
 extern const char kAudioUrlDescription[];
 
+extern const char kAutoFramingOverrideName[];
+extern const char kAutoFramingOverrideDescription[];
+
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 
