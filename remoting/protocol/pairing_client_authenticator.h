@@ -30,7 +30,7 @@ class PairingClientAuthenticator : public PairingAuthenticatorBase {
   // StartPaired() can only be used when pairing exists (i.e. client_id and
   // pairing_secret are set in the |client_auth_config|). It is used to
   // initialize the authenticator synchronously in
-  // NegotiatingClientAuthentitcator, while Start() may be executed
+  // NegotiatingClientAuthenticator, while Start() may be executed
   // asynchronously to fetch the PIN.
   void Start(State initial_state, base::OnceClosure resume_callback);
   void StartPaired(State initial_state);

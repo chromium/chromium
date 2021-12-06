@@ -571,7 +571,7 @@ TEST(JingleMessageTest, RemotingErrorCode) {
 }
 
 TEST(JingleMessageTest, AttachmentsMessage) {
-  // Ordering of the "attachments" tag and other tags are irrelevent. But the
+  // Ordering of the "attachments" tag and other tags are irrelevant. But the
   // JingleMessage implementation always puts it before other tags, so we do the
   // same thing in test cases.
   const char* kMessageWithPluginTag =

@@ -54,7 +54,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> EncodeBinaryValueToXml(
 
 // Finds tag named |qname| in base_message and decodes it from base64 and stores
 // in |data|. If the element is not present then found is set to false otherwise
-// it's set to true. If the element is there and it's content cound't be decoded
+// it's set to true. If the element is there and it's content couldn't be decoded
 // then false is returned.
 bool DecodeBinaryValueFromXml(const jingle_xmpp::XmlElement* message,
                               const jingle_xmpp::QName& qname,

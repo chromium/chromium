@@ -192,7 +192,7 @@ class WebrtcTransport : public Transport,
 
   // Returns the min (first element) and max (second element) bitrate for this
   // connection, taking into account any relay bitrate cap and client overrides.
-  // The default range is [0, default max bixrate]. Client overrides that go
+  // The default range is [0, default max bitrate]. Client overrides that go
   // beyond this bound or exceed the relay server's max bitrate will be ignored.
   std::tuple<int, int> BitratesForConnection();
 
