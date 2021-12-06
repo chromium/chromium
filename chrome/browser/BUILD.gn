@@ -3055,6 +3055,8 @@ static_library("browser") {
       "download/android/dangerous_download_dialog_bridge.h",
       "download/android/dangerous_download_infobar_delegate.cc",
       "download/android/dangerous_download_infobar_delegate.h",
+      "download/android/download_callback_validator.cc",
+      "download/android/download_callback_validator.h",
       "download/android/download_controller.cc",
       "download/android/download_controller.h",
       "download/android/download_controller_base.cc",
