@@ -54,6 +54,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.Hyperlink;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDescription;
@@ -115,8 +116,10 @@ public class PageInfoAboutThisSiteTest {
         mTestServerRule.setServerUsesHttps(true);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
 
-        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.AboutThisSite");
-        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.NoAboutThisSite");
+        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.AboutThisSiteShown");
+        RecordHistogram.forgetHistogramForTesting(
+                "Security.PageInfo.TimeOpen.AboutThisSiteNotShown");
+        RecordHistogram.forgetHistogramForTesting("WebsiteSettings.Action");
     }
 
     private void openPageInfo() {
@@ -236,10 +239,19 @@ public class PageInfoAboutThisSiteTest {
     @MediumTest
     public void testAboutThisSiteSubPageSourceClicked()
             throws ExecutionException, TimeoutException {
+        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
         mockResponse(createDescription());
         openPageInfo();
-        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "WebsiteSettings.Action", PageInfoAction.PAGE_INFO_OPENED));
 
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        assertEquals(2, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting("WebsiteSettings.Action",
+                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED));
         final CallbackHelper onTabAdded = new CallbackHelper();
         final TabModelObserver observer = new TabModelObserver() {
             @Override
@@ -254,5 +266,9 @@ public class PageInfoAboutThisSiteTest {
         onView(withText(containsString("Example Source"))).perform(click());
         onTabAdded.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
+        assertEquals(3, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting("WebsiteSettings.Action",
+                        PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
     }
 }
