@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/drag_drop/drag_drop_capture_delegate.h"
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -102,9 +101,6 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Actual implementation of |DragCancel()|. protected for testing.
   virtual void DoDragCancel(base::TimeDelta drag_cancel_animation_duration);
 
-  // Exposed for test assertions.
-  DragDropCaptureDelegate* get_capture_delegate() { return capture_delegate_; }
-
  private:
   friend class DragDropControllerTest;
   friend class DragDropControllerTestApi;
@@ -169,8 +165,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Closure for quitting nested run loop.
   base::OnceClosure quit_closure_;
 
-  // If non-null, a drag is active which required a capture window.
-  DragDropCaptureDelegate* capture_delegate_;
+  // Whether a top level drag is active which required a capture window.
+  bool using_drag_capture_ = false;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;

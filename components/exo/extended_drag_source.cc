@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/drag_drop/drag_drop_tracker.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -18,6 +19,7 @@
 #include "components/exo/surface.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -167,6 +169,51 @@ void ExtendedDragSource::Drag(Surface* dragged_surface,
       std::make_unique<DraggedWindowHolder>(dragged_surface, drag_offset, this);
 
   // Drag process will be started once OnDragStarted gets called.
+}
+
+void DispatchGestureEndToWindow(aura::Window* window) {
+  if (window && window->delegate()) {
+    ui::GestureEventDetails details(ui::ET_GESTURE_END);
+    details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+    ui::GestureEvent gesture_end(0, 0, 0, ui::EventTimeForNow(), details);
+    window->delegate()->OnGestureEvent(&gesture_end);
+  }
+}
+
+bool ExtendedDragSource::TakeCapture(
+    aura::Window* root_window,
+    aura::Window* source_window,
+    ash::ToplevelWindowDragDelegate::CancelDragDropCallback callback) {
+  if (!IsActive())
+    return false;
+
+  drag_drop_tracker_.reset(new ash::DragDropTracker(root_window, callback));
+  // We need to transfer the current gesture sequence and the GR's touch event
+  // queue to the |drag_drop_tracker_|'s capture window so that when it takes
+  // capture, it still gets a valid gesture state.
+  aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+      source_window, drag_drop_tracker_->capture_window(),
+      ui::TransferTouchesBehavior::kCancel);
+  // We also send a gesture end to the source window so it can clear state.
+  // TODO(varunjain): Remove this whole block when gesture sequence
+  // transferring is properly done in the GR (http://crbug.com/160558)
+  DispatchGestureEndToWindow(source_window);
+  drag_drop_tracker_->TakeCapture();
+  return true;
+}
+
+aura::Window* ExtendedDragSource::GetTarget(const ui::LocatedEvent& event) {
+  return drag_drop_tracker_->GetTarget(event);
+}
+
+ui::LocatedEvent* ExtendedDragSource::ConvertEvent(
+    aura::Window* target,
+    const ui::LocatedEvent& event) {
+  return drag_drop_tracker_->ConvertEvent(target, event);
+}
+
+aura::Window* ExtendedDragSource::capture_window() {
+  return drag_drop_tracker_->capture_window();
 }
 
 bool ExtendedDragSource::IsActive() const {
@@ -324,6 +371,7 @@ void ExtendedDragSource::Cleanup() {
   }
   event_blocker_.reset();
   drag_source_window_ = nullptr;
+  drag_drop_tracker_.reset();
   UnlockCursor();
 }
 

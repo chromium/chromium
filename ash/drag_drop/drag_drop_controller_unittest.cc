@@ -198,10 +198,6 @@ class TestDragDropController : public DragDropController {
                                                 allowed_operations, source);
   }
 
-  DragDropCaptureDelegate* get_capture_delegate() {
-    return DragDropController::get_capture_delegate();
-  }
-
   void DragUpdate(aura::Window* target,
                   const ui::LocatedEvent& event) override {
     DragDropController::DragUpdate(target, event);
@@ -416,6 +412,29 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
     EXPECT_TRUE(current_location_.has_value());
     current_location_.emplace(event->root_location_f());
     events_forwarded_++;
+  }
+
+  bool TakeCapture(aura::Window* root_window,
+                   aura::Window* source_window,
+                   ash::ToplevelWindowDragDelegate::CancelDragDropCallback
+                       callback) override {
+    return false;
+  }
+
+  aura::Window* GetTarget(const ui::LocatedEvent& event) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  ui::LocatedEvent* ConvertEvent(aura::Window* target,
+                                 const ui::LocatedEvent& event) override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  aura::Window* capture_window() override {
+    NOTREACHED();
+    return nullptr;
   }
 
  private:
@@ -1512,23 +1531,6 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegateWithTouch2) {
   EXPECT_TRUE(delegate.current_location().has_value());
   EXPECT_EQ(gfx::PointF(10, 10), *delegate.current_location());
   EXPECT_EQ(6, delegate.events_forwarded());
-}
-
-TEST_F(DragDropControllerTest, DragWithChromeTabDelegateTakesCapture) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebUITabStripTabDragIntegration);
-
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
-      gfx::Rect(0, 0, 100, 100)));
-
-  auto data(std::make_unique<ui::OSExchangeData>());
-  drag_drop_controller_->StartDragAndDrop(
-      std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
-      ui::DragDropTypes::DRAG_MOVE, ui::mojom::DragEventSource::kTouch);
-
-  // Should create a captue delegate which takes capture from the window.
-  EXPECT_TRUE(drag_drop_controller_->get_capture_delegate());
 }
 
 namespace {
