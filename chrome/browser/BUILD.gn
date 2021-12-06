@@ -6366,15 +6366,6 @@ static_library("browser") {
         "signin/signin_util_win.h",
       ]
     }
-
-    # TODO(https://crbug.com/1198523: Remove this once enable_dice_support is no
-    # longer defined on Lacros.
-    if (is_chromeos_lacros) {
-      sources -= [
-        "signin/signin_manager_factory.cc",
-        "signin/signin_manager_factory.h",
-      ]
-    }
   }
 
   if (enable_media_remoting) {

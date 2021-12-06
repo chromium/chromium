@@ -71,9 +71,7 @@ TEST_F(GetAllowedDomainTest, WithValidPattern) {
   EXPECT_EQ("example-1.com", GetAllowedDomain("email@example-1.com"));
 }
 
-// TODO(https://crbug.com/1198523: Remove Lacros check once Dice is no longer
-// supported on Lacros.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 

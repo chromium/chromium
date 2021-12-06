@@ -143,7 +143,6 @@
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
-#include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
 #include "chrome/browser/ui/webui/system_info_ui.h"
@@ -287,6 +286,8 @@
 
 #if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 #include "chrome/browser/ui/webui/browser_switch/browser_switch_ui.h"
+#include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/browser/ui/webui/welcome/welcome_ui.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
@@ -296,9 +297,10 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_error_ui.h"
-#include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
-#include "chrome/browser/ui/webui/welcome/helpers.h"
-#include "chrome/browser/ui/webui/welcome/welcome_ui.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS) && !defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 #endif
 
 #if defined(OS_WIN)
@@ -346,6 +348,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_reauth_ui.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -574,7 +577,7 @@ WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 template <>
 WebUIController* NewWebUI<WelcomeUI>(WebUI* web_ui, const GURL& url) {
   return new WelcomeUI(web_ui, url);
@@ -711,6 +714,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsGuestSession()) {
     return &NewWebUI<AppLauncherPageUI>;
   }
+  if (url.host_piece() == chrome::kChromeUIWelcomeHost &&
+      welcome::IsEnabled(profile)) {
+    return &NewWebUI<WelcomeUI>;
+  }
 #endif  // !defined(OS_CHROMEOS)
   if (profile->IsGuestSession() &&
       (url.host_piece() == chrome::kChromeUIAppLauncherPageHost ||
@@ -765,9 +772,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncFileSystemInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISystemInfoHost)
     return &NewWebUI<SystemInfoUI>;
-  // Inline login UI is available on all platforms except Android.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Inline login UI is available on all platforms except Android and Lacros.
   if (url.host_piece() == chrome::kChromeUIChromeSigninHost)
     return &NewWebUI<InlineLoginUI>;
+#endif
   if (base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
     if (url.host_piece() == chrome::kChromeUIAccessCodeCastHost)
       return &NewWebUI<AccessCodeCastUI>;
@@ -1035,13 +1044,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUISigninEmailConfirmationHost &&
       !profile->IsOffTheRecord())
     return &NewWebUI<SigninEmailConfirmationUI>;
-  if (url.host_piece() == chrome::kChromeUISigninReauthHost &&
-      !profile->IsOffTheRecord()) {
-    return &NewWebUI<SigninReauthUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIWelcomeHost &&
-      welcome::IsEnabled(profile))
-    return &NewWebUI<WelcomeUI>;
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -1158,6 +1160,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (url.host_piece() == chrome::kChromeUIDiceWebSigninInterceptHost)
     return &NewWebUI<DiceWebSigninInterceptUI>;
+  if (url.host_piece() == chrome::kChromeUISigninReauthHost &&
+      !profile->IsOffTheRecord()) {
+    return &NewWebUI<SigninReauthUI>;
+  }
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)

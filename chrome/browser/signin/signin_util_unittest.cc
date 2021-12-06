@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -43,6 +45,7 @@ TEST_F(SigninUtilTest, GetForceSigninPolicy) {
   EXPECT_FALSE(signin_util::IsForceSigninEnabled());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class SigninUtilEnterpriseTest : public BrowserWithTestWindowTest {
  public:
   SigninUtilEnterpriseTest()
@@ -121,3 +124,4 @@ TEST_F(SigninUtilEnterpriseTest, ProfileSeparationEnforcedByPolicy) {
   EXPECT_TRUE(signin_util::ProfileSeparationEnforcedByPolicy(
       profile.get(), "primary_account_strict"));
 }
+#endif
