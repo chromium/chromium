@@ -41,15 +41,6 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
         ->SetPortManagerForTesting(std::move(port_manager));
   }
 
-  void TearDown() override {
-    // Because SerialBlocklist is a singleton it must be cleared after tests run
-    // to prevent leakage between tests.
-    feature_list_.Reset();
-    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
-
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
   base::UnguessableToken AddPort(
       const std::string& display_name,
       const base::FilePath& path,
@@ -72,21 +63,9 @@ class SerialChooserControllerTest : public ChromeRenderViewHostTestHarness {
     return port_token;
   }
 
-  void SetDynamicBlocklist(base::StringPiece value) {
-    feature_list_.Reset();
-
-    std::map<std::string, std::string> parameters;
-    parameters[kWebSerialBlocklistAdditions.name] = std::string(value);
-    feature_list_.InitWithFeaturesAndParameters(
-        {{kWebSerialBlocklist, parameters}}, {});
-
-    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
-  }
-
   device::FakeSerialPortManager& port_manager() { return port_manager_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
 };
 
@@ -285,25 +264,38 @@ TEST_F(SerialChooserControllerTest, PortFiltered) {
   }
 }
 
-// TODO(crbug.com/1276915): Flaky on Linux TSan Tests.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_Blocklist DISABLED_Blocklist
-#else
-#define MAYBE_Blocklist Blocklist
-#endif
-TEST_F(SerialChooserControllerTest, MAYBE_Blocklist) {
-  base::HistogramTester histogram_tester;
+class SerialChooserControllerTestWithBlockedPorts
+    : public SerialChooserControllerTest {
+ public:
+  SerialChooserControllerTestWithBlockedPorts() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kWebSerialBlocklist,
+          {{kWebSerialBlocklistAdditions.name, "usb:1234:0002"}}}},
+        {});
+    // Reinitialize SerialBlocklist in case it was already initialized by
+    // another test.
+    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
+  }
 
-  // Create two ports from the same vendor with different product IDs.
+  ~SerialChooserControllerTestWithBlockedPorts() override {
+    // Clear the blocklist so that later tests are unaffected.
+    feature_list_.Reset();
+    SerialBlocklist::Get().ResetToDefaultValuesForTesting();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SerialChooserControllerTestWithBlockedPorts, Blocklist) {
+  // Create two ports from the same vendor with different product IDs. The
+  // second one is on the blocklist.
   base::UnguessableToken port_1 =
       AddPort("Test Port 1", base::FilePath(FILE_PATH_LITERAL("/dev/ttyS0")),
               0x1234, 0x0001);
   base::UnguessableToken port_2 =
       AddPort("Test Port 2", base::FilePath(FILE_PATH_LITERAL("/dev/ttyS1")),
               0x1234, 0x0002);
-
-  // Add the second port to the blocklist.
-  SetDynamicBlocklist("usb:1234:0002");
 
   std::vector<blink::mojom::SerialPortFilterPtr> filters;
   auto controller = std::make_unique<SerialChooserController>(
