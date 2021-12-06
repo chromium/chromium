@@ -182,22 +182,9 @@ void LacrosExtensionAppsController::Launch(
     return;
   }
 
-  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
-  if (launch_params->intent) {
-    intent = apps_util::ConvertCrosapiToAppServiceIntent(launch_params->intent,
-                                                         profile);
-  }
+  auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile);
+  params.app_id = extension->id();
 
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
-      extensions::ExtensionPrefs::Get(profile), extension);
-  auto params = apps::CreateAppLaunchParamsForIntent(
-      extension->id(), ui::EF_NONE, launch_params->launch_source,
-      display::kInvalidDisplayId, launch_container, std::move(intent), profile);
-  if (launch_params->intent && launch_params->intent->files.has_value()) {
-    for (const auto& file : launch_params->intent->files.value()) {
-      params.launch_files.push_back(file->file_path);
-    }
-  }
   OpenApplication(profile, std::move(params));
 
   // TODO(https://crbug.com/1225848): Store the resulting instance token, which
