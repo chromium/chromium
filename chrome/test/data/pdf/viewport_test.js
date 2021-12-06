@@ -561,7 +561,7 @@ const tests = [
     chrome.test.assertEq(0, viewport.position.y);
 
     // Pinch-zoom using gesture events.
-    const pinchCenter = {x: 35, y: 70};
+    const pinchCenter = {x: 25, y: 50};
     const scaleChange = 1.25;
     const gestureEventTarget =
         viewport.getGestureDetectorForTesting().getEventTarget();

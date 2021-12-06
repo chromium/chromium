@@ -422,20 +422,6 @@ export class Viewport {
   }
 
   /**
-   * @param {!Point} coordinateInFrame
-   * @return {!Point} Coordinate converted to plugin coordinates.
-   * @private
-   */
-  frameToPluginCoordinate_(coordinateInFrame) {
-    const containerRect =
-        this.content_.querySelector('#plugin').getBoundingClientRect();
-    return {
-      x: coordinateInFrame.x - containerRect.left,
-      y: coordinateInFrame.y - containerRect.top
-    };
-  }
-
-  /**
    * Called when the viewport should be updated.
    * @private
    */
@@ -1415,14 +1401,6 @@ export class Viewport {
    * @param {!Gesture} gesture The gesture to dispatch.
    */
   dispatchGesture(gesture) {
-    // Transform gesture coordinates to be compatible with the Pepper plugin.
-    // TODO(crbug.com/702993): Remove this after the Pepper plugin is removed.
-    const containerRect =
-        this.content_.querySelector('#plugin').getBoundingClientRect();
-    gesture.detail.center = {
-      x: gesture.detail.center.x + containerRect.left,
-      y: gesture.detail.center.y + containerRect.top,
-    };
     this.gestureDetector_.getEventTarget().dispatchEvent(
         new CustomEvent(gesture.type, {detail: gesture.detail}));
   }
@@ -1456,8 +1434,7 @@ export class Viewport {
             this.documentNeedsScrollbars(this.zoomManager_.applyBrowserZoom(
                 this.clampZoom_(this.internalZoom_ * scaleDelta)));
 
-        const centerInPlugin = this.frameToPluginCoordinate_(center);
-        this.pinchCenter_ = centerInPlugin;
+        this.pinchCenter_ = center;
 
         // If there's no horizontal scrolling, keep the content centered so
         // the user can't zoom in on the non-content area.
@@ -1477,7 +1454,7 @@ export class Viewport {
 
         this.fittingType_ = FittingType.NONE;
 
-        this.setPinchZoomInternal_(scaleDelta, centerInPlugin);
+        this.setPinchZoomInternal_(scaleDelta, center);
         this.updateViewport_();
         this.prevScale_ = /** @type {number} */ (startScaleRatio);
       });
@@ -1497,7 +1474,7 @@ export class Viewport {
         const {center, startScaleRatio} = e.detail;
         this.pinchPhase_ = PinchPhase.END;
         const scaleDelta = startScaleRatio / this.prevScale_;
-        this.pinchCenter_ = this.frameToPluginCoordinate_(center);
+        this.pinchCenter_ = center;
 
         this.setPinchZoomInternal_(scaleDelta, this.pinchCenter_);
         this.updateViewport_();
@@ -1526,8 +1503,7 @@ export class Viewport {
     window.requestAnimationFrame(() => {
       this.pinchPhase_ = PinchPhase.START;
       this.prevScale_ = 1;
-      this.oldCenterInContent_ =
-          this.pluginToContent_(this.frameToPluginCoordinate_(e.detail.center));
+      this.oldCenterInContent_ = this.pluginToContent_(e.detail.center);
 
       const needsScrollbars = this.documentNeedsScrollbars(this.getZoom());
       this.keepContentCentered_ = !needsScrollbars.horizontal;

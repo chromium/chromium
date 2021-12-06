@@ -27,22 +27,25 @@ export let PinchEventDetail;
 // touches form gestures (e.g. pinching).
 export class GestureDetector {
   /**
-   * @param {!EventTarget|!Element} element The element to monitor for touch
-   *     gestures.
+   * @param {!Element} element The element to monitor for touch gestures.
    */
   constructor(element) {
-    element.addEventListener(
+    /** @private {!Element} */
+    this.element_ = element;
+
+    this.element_.addEventListener(
         'touchstart',
         /** @type {function(!Event)} */ (this.onTouchStart_.bind(this)),
         {passive: true});
 
     const boundOnTouch =
         /** @type {function(!Event)} */ (this.onTouch_.bind(this));
-    element.addEventListener('touchmove', boundOnTouch, {passive: true});
-    element.addEventListener('touchend', boundOnTouch, {passive: true});
-    element.addEventListener('touchcancel', boundOnTouch, {passive: true});
+    this.element_.addEventListener('touchmove', boundOnTouch, {passive: true});
+    this.element_.addEventListener('touchend', boundOnTouch, {passive: true});
+    this.element_.addEventListener(
+        'touchcancel', boundOnTouch, {passive: true});
 
-    element.addEventListener(
+    this.element_.addEventListener(
         'wheel',
         /** @type {function(!Event)} */ (this.onWheel_.bind(this)),
         {passive: false});
@@ -62,6 +65,7 @@ export class GestureDetector {
      * @private {?number}
      */
     this.accumulatedWheelScale_ = null;
+
     /**
      * A timeout ID from setTimeout used for sending the pinchend event when
      * handling ctrl-wheels.
@@ -94,6 +98,13 @@ export class GestureDetector {
    * @private
    */
   notify_(type, detail) {
+    // Adjust center into element-relative coordinates.
+    const clientRect = this.element_.getBoundingClientRect();
+    detail.center = {
+      x: detail.center.x - clientRect.x,
+      y: detail.center.y - clientRect.y,
+    };
+
     this.eventTarget_.dispatchEvent(new CustomEvent(type, {detail}));
   }
 
