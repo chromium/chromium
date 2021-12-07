@@ -85,8 +85,13 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
         context_state_(context_state) {}
 
   ~AngleVulkanBacking() override {
-    if (passthrough_texture_ && !have_context())
+    if (!passthrough_texture_)
+      return;
+
+    if (!have_context() ||
+        !context_state_->MakeCurrent(/*surface=*/nullptr, /*needs_gl=*/true))
       passthrough_texture_->MarkContextLost();
+
     passthrough_texture_.reset();
   }
 
