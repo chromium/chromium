@@ -534,8 +534,7 @@ export class TabSearchAppElement extends PolymerElement {
   private tabData_(
       tab: Tab|RecentlyClosedTab, inActiveWindow: boolean, type: TabItemType,
       tabGroupsMap: Map<string, TabGroup>): TabData {
-    const tabData = new TabData(tab, type);
-    tabData.hostname = new URL(tab.url.url).hostname;
+    const tabData = new TabData(tab, type, new URL(tab.url.url).hostname);
 
     if (tab.groupId) {
       tabData.tabGroup = tabGroupsMap.get(tokenToString(tab.groupId));
