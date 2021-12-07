@@ -11,6 +11,8 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/print_settings.h"
@@ -45,6 +47,15 @@ class PrintSettings;
 // TestPrintJob can override them in tests.
 class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
  public:
+  // An observer interface implemented by classes which are interested
+  // in `PrintJob` events.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnDocDone(int job_id, PrintedDocument* document) {}
+    virtual void OnJobDone() {}
+    virtual void OnFailed() {}
+  };
+
 #if defined(OS_CHROMEOS)
   // An enumeration of components where print jobs can come from. The order of
   // these enums must match that of
@@ -137,6 +148,12 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // Posts the given task to be run.
   bool PostTask(const base::Location& from_here, base::OnceClosure task);
 
+  // Adds and removes observers for `PrintJob` events. The order in
+  // which notifications are sent to observers is undefined. Observers must be
+  // sure to remove the observer before they go away.
+  void AddObserver(Observer& observer);
+  void RemoveObserver(Observer& observer);
+
  protected:
   // Refcounted class.
   friend class base::RefCountedThreadSafe<PrintJob>;
@@ -198,6 +215,8 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
       const std::vector<uint32_t>& pages,
       uint32_t total_page_count);
 #endif  // defined(OS_WIN)
+
+  base::ObserverList<Observer> observers_;
 
   // All the UI is done in a worker thread because many Win32 print functions
   // are blocking and enters a message loop without your consent. There is one

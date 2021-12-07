@@ -87,11 +87,10 @@ using PrintSettingsCallback =
     base::OnceCallback<void(std::unique_ptr<PrinterQuery>)>;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-crosapi::mojom::PrintJobPtr PrintJobToMojom(
-    const JobEventDetails& event_details,
-    PrintJob::Source source,
-    const std::string& source_id) {
-  PrintedDocument* document = event_details.document();
+crosapi::mojom::PrintJobPtr PrintJobToMojom(int job_id,
+                                            PrintedDocument* document,
+                                            PrintJob::Source source,
+                                            const std::string& source_id) {
   std::u16string title = SimplifyDocumentTitle(document->name());
   if (title.empty()) {
     title = SimplifyDocumentTitle(
@@ -103,8 +102,7 @@ crosapi::mojom::PrintJobPtr PrintJobToMojom(
   DCHECK(duplex < 3);
   return crosapi::mojom::PrintJob::New(
       base::UTF16ToUTF8(settings.device_name()), base::UTF16ToUTF8(title),
-      event_details.job_id(), document->page_count(), source, source_id,
-      settings.color(),
+      job_id, document->page_count(), source, source_id, settings.color(),
       static_cast<crosapi::mojom::PrintJob::DuplexMode>(duplex),
       settings.requested_media().size_microns,
       settings.requested_media().vendor_id, settings.copies());
@@ -784,49 +782,34 @@ void PrintViewManagerBase::SystemDialogCancelled() {
 }
 #endif
 
-void PrintViewManagerBase::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PRINT_JOB_EVENT, type);
-  OnNotifyPrintJobEvent(*content::Details<JobEventDetails>(details).ptr());
-}
-
-void PrintViewManagerBase::OnNotifyPrintJobEvent(
-    const JobEventDetails& event_details) {
-  switch (event_details.type()) {
-    case JobEventDetails::FAILED: {
-      TerminatePrintJob(true);
-      break;
-    }
-    case JobEventDetails::DOC_DONE: {
+void PrintViewManagerBase::OnDocDone(int job_id, PrintedDocument* document) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      chromeos::LacrosService* service = chromeos::LacrosService::Get();
-      if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
-        LOG(ERROR) << "Could not report print job queued";
-      } else {
-        service->GetRemote<crosapi::mojom::LocalPrinter>()->CreatePrintJob(
-            PrintJobToMojom(event_details, print_job_->source(),
-                            print_job_->source_id()),
-            base::DoNothing());
-      }
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
+    LOG(ERROR) << "Could not report print job queued";
+  } else {
+    service->GetRemote<crosapi::mojom::LocalPrinter>()->CreatePrintJob(
+        PrintJobToMojom(job_id, document, print_job_->source(),
+                        print_job_->source_id()),
+        base::DoNothing());
+  }
 #endif
 #if defined(OS_ANDROID)
-      DCHECK_LE(number_pages(), kMaxPageCount);
-      PdfWritingDone(base::checked_cast<int>(number_pages()));
+  DCHECK_LE(number_pages(), kMaxPageCount);
+  PdfWritingDone(base::checked_cast<int>(number_pages()));
 #endif
-      break;
-    }
-    case JobEventDetails::JOB_DONE:
-      // Printing is done, we don't need it anymore.
-      // print_job_->is_job_pending() may still be true, depending on the order
-      // of object registration.
-      printing_succeeded_ = true;
-      ReleasePrintJob();
-      break;
-    default:
-      break;
-  }
+}
+
+void PrintViewManagerBase::OnJobDone() {
+  // Printing is done, we don't need it anymore.
+  // print_job_->is_job_pending() may still be true, depending on the order
+  // of object registration.
+  printing_succeeded_ = true;
+  ReleasePrintJob();
+}
+
+void PrintViewManagerBase::OnFailed() {
+  TerminatePrintJob(true);
 }
 
 bool PrintViewManagerBase::RenderAllMissingPagesNow() {
@@ -908,9 +891,8 @@ bool PrintViewManagerBase::CreateNewPrintJob(
                             : PrintJob::Source::PRINT_PREVIEW,
                         /*source_id=*/"");
 #endif
+  print_job_->AddObserver(*this);
 
-  registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                 content::Source<PrintJob>(print_job_.get()));
   printing_succeeded_ = false;
   return true;
 }
@@ -968,8 +950,8 @@ void PrintViewManagerBase::ReleasePrintJob() {
   if (rfh)
     GetPrintRenderFrame(rfh)->PrintingDone(printing_succeeded_);
 
-  registrar_.Remove(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                    content::Source<PrintJob>(print_job_.get()));
+  print_job_->RemoveObserver(*this);
+
   // Don't close the worker thread.
   print_job_ = nullptr;
 }

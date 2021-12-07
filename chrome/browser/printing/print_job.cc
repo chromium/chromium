@@ -515,6 +515,10 @@ void PrintJob::OnFailed() {
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
       content::Details<JobEventDetails>(details.get()));
+
+  for (auto& observer : observers_) {
+    observer.OnFailed();
+  }
 }
 
 void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
@@ -525,6 +529,10 @@ void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
   content::NotificationService::current()->Notify(
       chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
       content::Details<JobEventDetails>(details.get()));
+
+  for (auto& observer : observers_) {
+    observer.OnDocDone(job_id, document);
+  }
 
   // This will call `Stop()` and broadcast a `JOB_DONE` message.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -547,6 +555,10 @@ void PrintJob::OnDocumentDone() {
       chrome::NOTIFICATION_PRINT_JOB_EVENT,
       content::Source<PrintJob>(this),
       content::Details<JobEventDetails>(details.get()));
+
+  for (auto& observer : observers_) {
+    observer.OnJobDone();
+  }
 }
 
 void PrintJob::ControlledWorkerShutdown() {
@@ -601,6 +613,14 @@ void PrintJob::HoldUntilStopIsCalled() {
 
 void PrintJob::set_job_pending(bool pending) {
   is_job_pending_ = pending;
+}
+
+void PrintJob::AddObserver(Observer& observer) {
+  observers_.AddObserver(&observer);
+}
+
+void PrintJob::RemoveObserver(Observer& observer) {
+  observers_.RemoveObserver(&observer);
 }
 
 JobEventDetails::JobEventDetails(Type type,

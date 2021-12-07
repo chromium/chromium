@@ -16,13 +16,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "components/prefs/pref_member.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
@@ -35,14 +34,11 @@ class RefCountedMemory;
 
 namespace printing {
 
-class JobEventDetails;
-class PrintJob;
 class PrintQueriesQueue;
 class PrinterQuery;
 
 // Base class for managing the print commands for a WebContents.
-class PrintViewManagerBase : public content::NotificationObserver,
-                             public PrintManager {
+class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
  public:
   // An observer interface implemented by classes which are interested
   // in `PrintViewManagerBase` events.
@@ -144,6 +140,11 @@ class PrintViewManagerBase : public content::NotificationObserver,
   // returns.
   void DisconnectFromCurrentPrintJob();
 
+  // PrintJob::Observer overrides:
+  void OnDocDone(int job_id, PrintedDocument* document) override;
+  void OnJobDone() override;
+  void OnFailed() override;
+
   base::ObserverList<Observer>& GetObservers() { return observers_; }
 
   // Manages the low-level talk to the printer.
@@ -151,11 +152,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
  private:
   friend class TestPrintViewManager;
-
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
 
   // content::WebContentsObserver implementation.
   void RenderFrameHostStateChanged(
@@ -202,9 +198,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
   void ScriptedPrintReply(ScriptedPrintCallback callback,
                           int process_id,
                           mojom::PrintPagesParamsPtr params);
-
-  // Processes a NOTIFY_PRINT_JOB_EVENT notification.
-  void OnNotifyPrintJobEvent(const JobEventDetails& event_details);
 
   // Requests the RenderView to render all the missing pages for the print job.
   // No-op if no print job is pending. Returns true if at least one page has
@@ -255,8 +248,6 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
   // Notifies `rfh` about whether printing is `enabled`.
   void SendPrintingEnabled(bool enabled, content::RenderFrameHost* rfh);
-
-  content::NotificationRegistrar registrar_;
 
   // The current RFH that is printing with a system printing dialog.
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
