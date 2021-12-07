@@ -8,6 +8,12 @@
     <dimen name="quick_action_search_widget_background_radius">20dp</dimen>
     <dimen name="quick_action_search_widget_xsmall_background_radius">16dp</dimen>
 
+    <!-- Specify the reference widths of all widgets, guaranteeing that all of the
+    buttons will be visible and not truncated -->
+    <dimen name="quick_action_search_widget_medium_width">264dp</dimen>
+    <dimen name="quick_action_search_widget_small_width">312dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_width">312dp</dimen>
+
     <!-- Extra Small Widget Dimensions -->
     <dimen name="quick_action_search_widget_xsmall_height">48dp</dimen>
     <dimen name="quick_action_search_widget_xsmall_margin">8dp</dimen>

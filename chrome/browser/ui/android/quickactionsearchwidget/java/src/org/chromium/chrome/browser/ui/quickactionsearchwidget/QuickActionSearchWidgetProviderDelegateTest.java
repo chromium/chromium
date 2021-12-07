@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -37,6 +36,8 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
+import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -50,21 +51,13 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Features.EnableFeatures({ChromeFeatureList.QUICK_ACTION_SEARCH_WIDGET})
 public class QuickActionSearchWidgetProviderDelegateTest {
-    private static final class TestContext extends AdvancedMockContext {
-        public TestContext() {
-            super(InstrumentationRegistry.getInstrumentation()
-                            .getTargetContext()
-                            .getApplicationContext());
-        }
-    }
-
     @Rule
     public BaseActivityTestRule<Activity> mActivityTestRule =
             new BaseActivityTestRule<>(Activity.class);
 
     private View mWidgetView;
     private QuickActionSearchWidgetProviderDelegate mDelegate;
-    private TestContext mContext;
+    private Context mContext;
     private int mDefaultWidgetWidthDp;
     private int mXSmallWidgetMinHeightDp;
     private int mSmallWidgetMinHeightDp;
@@ -73,12 +66,13 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     @Before
     public void setUp() {
         ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
-
-        mContext = new TestContext();
+        mContext = InstrumentationRegistry.getInstrumentation()
+                           .getTargetContext()
+                           .getApplicationContext();
 
         ComponentName searchActivityComponent = new ComponentName(mContext, SearchActivity.class);
 
-        mDelegate = new QuickActionSearchWidgetProviderDelegate(searchActivityComponent,
+        mDelegate = new QuickActionSearchWidgetProviderDelegate(mContext, searchActivityComponent,
                 IntentHandler.createTrustedOpenNewTabIntent(mContext, /*incognito=*/true),
                 createDinoIntent(mContext));
 
@@ -208,7 +202,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
      */
     @Test
     @SmallTest
-    public void doVerticalWidgetResizeOfSmallWidget() {
+    public void testWidgetVerticalResizing() {
         // Validate all height pairs (exhausts the solution space).
         // This includes both reasonable and unreasonable pairs, ie. the assertion that the
         // MIN_HEIGHT <= MAX_HEIGHT does not have to hold true.
@@ -243,10 +237,213 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         };
 
         for (VerticalResizeHeightVariant variant : variants) {
-            Integer layoutRes =
-                    mDelegate.getSearchWidgetLayoutForHeight(mContext, variant.heightDp);
+            Integer layoutRes = mDelegate.getSearchWidgetVariantForHeight(variant.heightDp).layout;
             Assert.assertEquals("Unexpected layout where height=" + variant.variantName,
                     variant.layoutRes, layoutRes);
         }
+    }
+
+    @Test
+    @SmallTest
+    public void computeNumberOfButtonsToHide_mediumWidget() {
+        testComputeNumberOfButtonsToHideForVariant(mDelegate.getMediumWidgetVariantForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void computeNumberOfButtonsToHide_smallWidget() {
+        testComputeNumberOfButtonsToHideForVariant(mDelegate.getSmallWidgetVariantForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void computeNumberOfButtonsToHide_extraSmallWidget() {
+        testComputeNumberOfButtonsToHideForVariant(
+                mDelegate.getExtraSmallWidgetVariantForTesting());
+    }
+
+    private void testComputeNumberOfButtonsToHideForVariant(WidgetVariant variant) {
+        // Target area width >= reference width: widget fits fully, no buttons should be hidden.
+        Assert.assertEquals(0, variant.computeNumberOfButtonsToHide(variant.widgetWidthDp * 2));
+        Assert.assertEquals(0, variant.computeNumberOfButtonsToHide(variant.widgetWidthDp + 1));
+        Assert.assertEquals(0, variant.computeNumberOfButtonsToHide(variant.widgetWidthDp));
+
+        // Target area width < reference width:
+        Assert.assertEquals(1, variant.computeNumberOfButtonsToHide(variant.widgetWidthDp - 1));
+        Assert.assertEquals(1,
+                variant.computeNumberOfButtonsToHide(
+                        variant.widgetWidthDp - variant.buttonWidthDp));
+        Assert.assertEquals(2,
+                variant.computeNumberOfButtonsToHide(
+                        variant.widgetWidthDp - variant.buttonWidthDp - 1));
+        Assert.assertEquals(3,
+                variant.computeNumberOfButtonsToHide(
+                        variant.widgetWidthDp - variant.buttonWidthDp * 3));
+    }
+
+    @Test
+    @SmallTest
+    public void getElementSizeInDP_noMargins() {
+        Resources res = mContext.getResources();
+
+        // Convert a simple dimension into DP.
+        float expectedSizeDp =
+                res.getDimension(R.dimen.quick_action_search_widget_medium_button_width)
+                / res.getDisplayMetrics().density;
+
+        // Check that the method returns that same value after conversion.
+        Assert.assertEquals((int) expectedSizeDp,
+                WidgetVariant.getElementSizeInDP(
+                        res, R.dimen.quick_action_search_widget_medium_button_width, 0));
+    }
+
+    @Test
+    @SmallTest
+    public void getElementSizeInDP_withMargins() {
+        Resources res = mContext.getResources();
+
+        // Convert a single dimension + surrounding margins into DP.
+        float expectedSizeDp =
+                (res.getDimension(R.dimen.quick_action_search_widget_medium_button_width)
+                        + res.getDimension(
+                                  R.dimen.quick_action_search_widget_medium_button_horizontal_margin)
+                                * 2)
+                / res.getDisplayMetrics().density;
+
+        // Check that the method returns that same value after conversion.
+        Assert.assertEquals((int) expectedSizeDp,
+                WidgetVariant.getElementSizeInDP(res,
+                        R.dimen.quick_action_search_widget_medium_button_width,
+                        R.dimen.quick_action_search_widget_medium_button_horizontal_margin));
+    }
+
+    @Test
+    @SmallTest
+    public void widgetButtonSettings_hide0Buttons() {
+        // In the event the code requests K buttons to be hidden, but at least K buttons are already
+        // hidden, the code is expected to take no additional action.
+        WidgetButtonSettings settings = new WidgetButtonSettings();
+
+        // Verify that the call to hideButtons does not reveal buttons.
+        settings.hideButtons(0);
+        Assert.assertFalse(settings.voiceSearchVisible);
+        Assert.assertFalse(settings.incognitoModeVisible);
+        Assert.assertFalse(settings.googleLensVisible);
+        Assert.assertFalse(settings.dinoGameVisible);
+
+        // Retry with all buttons visible.
+        settings.voiceSearchVisible = true;
+        settings.incognitoModeVisible = true;
+        settings.googleLensVisible = true;
+        settings.dinoGameVisible = true;
+
+        // Verify that the call to hideButtons does not hide anything if not necessary.
+        settings.hideButtons(0);
+        Assert.assertTrue(settings.voiceSearchVisible);
+        Assert.assertTrue(settings.incognitoModeVisible);
+        Assert.assertTrue(settings.googleLensVisible);
+        Assert.assertTrue(settings.dinoGameVisible);
+    }
+
+    @Test
+    @SmallTest
+    public void widgetButtonSettings_hide1Button() {
+        // In the event the code requests K buttons to be hidden, but at least K buttons are already
+        // hidden, the code is expected to take no additional action.
+        WidgetButtonSettings settings = new WidgetButtonSettings();
+
+        // Mark one of the buttons as unavailable. In theory it shouldn't matter which one we pick.
+        settings.voiceSearchVisible = false;
+        settings.incognitoModeVisible = true;
+        settings.googleLensVisible = true;
+        settings.dinoGameVisible = true;
+
+        // Tell settings we need 1 button removed.
+        settings.hideButtons(1);
+        Assert.assertFalse(settings.voiceSearchVisible);
+        Assert.assertTrue(settings.incognitoModeVisible);
+        Assert.assertTrue(settings.googleLensVisible);
+        Assert.assertTrue(settings.dinoGameVisible);
+
+        // Mark the VoiceSearch button as available and try again.
+        // The logic should hide the dino game first.
+        settings.voiceSearchVisible = true;
+        settings.hideButtons(1);
+        Assert.assertTrue(settings.voiceSearchVisible);
+        Assert.assertTrue(settings.incognitoModeVisible);
+        Assert.assertTrue(settings.googleLensVisible);
+        Assert.assertFalse(settings.dinoGameVisible);
+    }
+
+    @Test
+    @SmallTest
+    public void widgetButtonSettings_hide3Button() {
+        // In the event the code requests K buttons to be hidden, but at least K buttons are already
+        // hidden, the code is expected to take no additional action.
+        WidgetButtonSettings settings = new WidgetButtonSettings();
+
+        // Mark one of the buttons as unavailable. In theory it shouldn't matter which one we pick.
+        settings.voiceSearchVisible = false;
+        settings.incognitoModeVisible = false;
+        settings.googleLensVisible = false;
+        settings.dinoGameVisible = true;
+
+        // Tell settings we need 3 buttons removed.
+        settings.hideButtons(3);
+        Assert.assertFalse(settings.voiceSearchVisible);
+        Assert.assertFalse(settings.incognitoModeVisible);
+        Assert.assertFalse(settings.googleLensVisible);
+        Assert.assertTrue(settings.dinoGameVisible);
+
+        // Mark the Incognito mode and Lens buttons as available and try again.
+        // The logic should hide the Dino game and Google Lens.
+        settings.incognitoModeVisible = true;
+        settings.googleLensVisible = true;
+        settings.hideButtons(3);
+        Assert.assertFalse(settings.voiceSearchVisible);
+        Assert.assertTrue(settings.incognitoModeVisible);
+        Assert.assertFalse(settings.googleLensVisible);
+        Assert.assertFalse(settings.dinoGameVisible);
+
+        // Finally, tell the logic that voice search is available and see that it removes the
+        // Incognito mode.
+        settings.voiceSearchVisible = true;
+        settings.hideButtons(3);
+        Assert.assertTrue(settings.voiceSearchVisible);
+        Assert.assertFalse(settings.incognitoModeVisible);
+        Assert.assertFalse(settings.googleLensVisible);
+        Assert.assertFalse(settings.dinoGameVisible);
+    }
+
+    @Test
+    @SmallTest
+    public void widgetButtonSettings_hideLotsOfButtons() {
+        // In the event the code requests K buttons to be hidden, but at least K buttons are already
+        // hidden, the code is expected to take no additional action.
+        WidgetButtonSettings settings = new WidgetButtonSettings();
+
+        // Mark one of the buttons as unavailable. In theory it shouldn't matter which one we pick.
+        settings.voiceSearchVisible = true;
+        settings.incognitoModeVisible = true;
+        settings.googleLensVisible = true;
+        settings.dinoGameVisible = true;
+
+        // Tell settings we need 4 or more buttons.
+        settings.hideButtons(4);
+        Assert.assertFalse(settings.voiceSearchVisible);
+        Assert.assertFalse(settings.incognitoModeVisible);
+        Assert.assertFalse(settings.googleLensVisible);
+        Assert.assertFalse(settings.dinoGameVisible);
+
+        // Try again with more buttons.
+        settings.voiceSearchVisible = true;
+        settings.incognitoModeVisible = true;
+        settings.googleLensVisible = true;
+        settings.dinoGameVisible = true;
+        settings.hideButtons(40);
+        Assert.assertFalse(settings.voiceSearchVisible);
+        Assert.assertFalse(settings.incognitoModeVisible);
+        Assert.assertFalse(settings.googleLensVisible);
+        Assert.assertFalse(settings.dinoGameVisible);
     }
 }

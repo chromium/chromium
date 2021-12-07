@@ -149,7 +149,7 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
         Intent dinoIntent = createDinoIntent(context);
 
         sDelegate = new QuickActionSearchWidgetProviderDelegate(
-                searchActivityComponent, trustedIncognitoIntent, dinoIntent);
+                context, searchActivityComponent, trustedIncognitoIntent, dinoIntent);
         return sDelegate;
     }
 
