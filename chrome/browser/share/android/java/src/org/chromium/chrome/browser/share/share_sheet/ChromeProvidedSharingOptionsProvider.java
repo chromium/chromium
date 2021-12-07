@@ -9,6 +9,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -262,8 +264,9 @@ public class ChromeProvidedSharingOptionsProvider {
             mOrderedFirstPartyOptions.add(createWebNotesStylizeFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createScreenshotFirstPartyOption());
+        // TODO(crbug.com/1250871): Long Screenshots on by default; supported on Android 7.0+.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
-                || enableAllUpcomingSharingFeatures) {
+                && Build.VERSION.SDK_INT >= VERSION_CODES.N) {
             mOrderedFirstPartyOptions.add(createLongScreenshotsFirstPartyOption());
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LIGHTWEIGHT_REACTIONS)

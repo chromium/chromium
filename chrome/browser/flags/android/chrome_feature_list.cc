@@ -499,7 +499,7 @@ const base::Feature kDontAutoHideBrowserControls{
     "DontAutoHideBrowserControls", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kChromeShareLongScreenshot{
-    "ChromeShareLongScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ChromeShareLongScreenshot", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kChromeSharingHub{"ChromeSharingHub",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

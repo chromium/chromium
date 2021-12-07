@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Looper;
 import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
@@ -61,6 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -306,15 +308,21 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE),
                         /*isMultiWindow=*/false);
 
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_screenshot),
-                        mActivity.getResources().getString(R.string.sharing_long_screenshot),
-                        mActivity.getResources().getString(R.string.sharing_copy_url),
-                        mActivity.getResources().getString(R.string.sharing_copy_image),
-                        mActivity.getResources().getString(
-                                R.string.send_tab_to_self_share_activity_title),
-                        mActivity.getResources().getString(R.string.qr_code_share_icon_label),
-                        mActivity.getResources().getString(R.string.sharing_save_image)));
+        // Long Screenshots is supported >= Android N (7.0).
+        List<String> expectedModels = new ArrayList<String>();
+        expectedModels.add(mActivity.getResources().getString(R.string.sharing_screenshot));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            expectedModels.add(
+                    mActivity.getResources().getString(R.string.sharing_long_screenshot));
+        }
+        expectedModels.addAll(ImmutableList.of(
+                mActivity.getResources().getString(R.string.sharing_copy_url),
+                mActivity.getResources().getString(R.string.sharing_copy_image),
+                mActivity.getResources().getString(R.string.send_tab_to_self_share_activity_title),
+                mActivity.getResources().getString(R.string.qr_code_share_icon_label),
+                mActivity.getResources().getString(R.string.sharing_save_image)));
+
+        assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
     }
 
     @Test
