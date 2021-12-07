@@ -47,7 +47,7 @@ class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool : public VideoFramePool {
   media::mojom::VideoBufferHandlePtr CloneHandleForDelivery(
       const media::VideoFrame& frame) override;
 
-  float GetUtilization() const override;
+  size_t GetNumberOfReservedFrames() const override;
 
  private:
   using PooledBuffer = base::MappedReadOnlyRegion;

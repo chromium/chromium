@@ -63,7 +63,7 @@ scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::ReserveVideoFrame(
 
   // There are no available buffers. If the pool is at max capacity, punt.
   // Otherwise, allocate a new buffer, wrap it in a VideoFrame and return it.
-  if (utilized_buffers_.size() >= capacity_) {
+  if (utilized_buffers_.size() >= capacity()) {
     return nullptr;
   }
   PooledBuffer additional =
@@ -87,10 +87,10 @@ SharedMemoryVideoFramePool::CloneHandleForDelivery(const VideoFrame& frame) {
       it->second.Duplicate());
 }
 
-float SharedMemoryVideoFramePool::GetUtilization() const {
+size_t SharedMemoryVideoFramePool::GetNumberOfReservedFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return static_cast<float>(utilized_buffers_.size()) / capacity_;
+  return utilized_buffers_.size();
 }
 
 scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::WrapBuffer(
@@ -142,7 +142,7 @@ void SharedMemoryVideoFramePool::OnFrameWrapperDestroyed(
       PooledBuffer{std::move(it->second), std::move(mapping)});
   DCHECK(available_buffers_.back().IsValid());
   utilized_buffers_.erase(it);
-  DCHECK_LE(available_buffers_.size() + utilized_buffers_.size(), capacity_);
+  DCHECK_LE(available_buffers_.size() + utilized_buffers_.size(), capacity());
 }
 
 bool SharedMemoryVideoFramePool::CanLogSharedMemoryFailure() {

@@ -24,6 +24,7 @@
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
+#include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "media/base/limits.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
@@ -58,9 +59,14 @@ constexpr gfx::Rect kMaxRect = gfx::Rect(0,
 // static
 constexpr media::VideoPixelFormat
     FrameSinkVideoCapturerImpl::kDefaultPixelFormat;
-
 // static
 constexpr gfx::ColorSpace FrameSinkVideoCapturerImpl::kDefaultColorSpace;
+// static
+constexpr int FrameSinkVideoCapturerImpl::kDesignLimitMaxFrames;
+// static
+constexpr int FrameSinkVideoCapturerImpl::kFramePoolCapacity;
+// static
+constexpr float FrameSinkVideoCapturerImpl::kTargetPipelineUtilization;
 
 FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
     FrameSinkVideoCapturerManager* frame_sink_manager,
@@ -71,7 +77,8 @@ FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
       copy_request_source_(base::UnguessableToken::Create()),
       clock_(base::DefaultTickClock::GetInstance()),
       oracle_(std::move(oracle)),
-      frame_pool_(kFramePoolCapacity),
+      frame_pool_(
+          std::make_unique<SharedMemoryVideoFramePool>(kFramePoolCapacity)),
       feedback_weak_factory_(oracle_.get()),
       log_to_webrtc_(log_to_webrtc) {
   DCHECK(frame_sink_manager_);
@@ -573,7 +580,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                          TRACE_EVENT_SCOPE_THREAD);
     frame = ResurrectFrame();
   } else {
-    frame = frame_pool_.ReserveVideoFrame(pixel_format_, capture_size);
+    frame = frame_pool_->ReserveVideoFrame(pixel_format_, capture_size);
   }
 
   // Compute the current in-flight utilization and attenuate it: The utilization
@@ -991,7 +998,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
 
   // Clone a handle to the shared memory backing the populated video frame, to
   // send to the consumer.
-  auto handle = frame_pool_.CloneHandleForDelivery(*frame);
+  auto handle = frame_pool_->CloneHandleForDelivery(*frame);
   DCHECK(handle);
   DCHECK(handle->is_read_only_shmem_region());
 

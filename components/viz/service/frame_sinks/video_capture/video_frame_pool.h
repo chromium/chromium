@@ -27,7 +27,7 @@ class VIZ_SERVICE_EXPORT VideoFramePool {
   VideoFramePool& operator=(const VideoFramePool&) = delete;
   VideoFramePool& operator=(VideoFramePool&&) = delete;
 
-  virtual ~VideoFramePool() = default;
+  virtual ~VideoFramePool();
 
   // Reserves a buffer from the pool and creates a VideoFrame backed by it.
   // When the ref-count of the returned VideoFrame goes to zero, the
@@ -47,15 +47,20 @@ class VIZ_SERVICE_EXPORT VideoFramePool {
 
   // Returns the current pool utilization, based on the number of VideoFrames
   // being held by the client.
-  virtual float GetUtilization() const = 0;
+  float GetUtilization() const;
+
+  // Returns the number of frames that are currently reserved (and thus still
+  // owned by the caller of |ReserveVideoFrame()|).
+  virtual size_t GetNumberOfReservedFrames() const = 0;
+
+  size_t capacity() const { return capacity_; }
 
  protected:
   // |capacity| is the maximum number of pooled VideoFrames; but they can be of
   // any byte size.
-  explicit VideoFramePool(int capacity) : capacity_(capacity) {
-    DCHECK_GT(capacity_, 0u);
-  }
+  explicit VideoFramePool(int capacity);
 
+ private:
   // The maximum number of buffers. However, the buffers themselves can be of
   // any byte size.
   const size_t capacity_;
