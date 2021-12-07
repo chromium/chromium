@@ -240,11 +240,11 @@ class EduAccountLoginHandlerTest : public testing::Test {
 TEST_F(EduAccountLoginHandlerTest, HandleGetParentsSuccess) {
   SetupNetwork();
   constexpr char callback_id[] = "handle-get-parents-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
 
   EXPECT_CALL(*handler(), FetchFamilyMembers());
-  handler()->HandleGetParents(&list_args);
+  handler()->HandleGetParents(list_args);
 
   EXPECT_CALL(*handler(), FetchParentImages(_, GetFakeProfileImageUrlMap()));
   // Simulate successful fetching of family members -> expect FetchParentImages
@@ -265,11 +265,11 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsSuccess) {
 TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
   SetupNetwork();
   constexpr char callback_id[] = "handle-get-parents-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
 
   EXPECT_CALL(*handler(), FetchFamilyMembers());
-  handler()->HandleGetParents(&list_args);
+  handler()->HandleGetParents(list_args);
 
   // Simulate failed fetching of family members.
   handler()->OnFailure(FamilyInfoFetcher::ErrorCode::kNetworkError);
@@ -284,14 +284,14 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
   handler()->AllowJavascriptForTesting();
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
-  list_args.Append(GetFakeParent());
-  list_args.Append(kFakeParentCredential);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
+  list_args.emplace_back(GetFakeParent());
+  list_args.emplace_back(kFakeParentCredential);
 
   EXPECT_CALL(*handler(),
               FetchAccessToken(kFakeParentGaiaId, kFakeParentCredential));
-  handler()->HandleParentSignin(&list_args);
+  handler()->HandleParentSignin(list_args);
 
   EXPECT_CALL(*handler(),
               FetchReAuthProofTokenForParent(
@@ -316,14 +316,14 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
   handler()->AllowJavascriptForTesting();
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
-  list_args.Append(GetFakeParent());
-  list_args.Append(kFakeParentCredential);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
+  list_args.emplace_back(GetFakeParent());
+  list_args.emplace_back(kFakeParentCredential);
 
   EXPECT_CALL(*handler(),
               FetchAccessToken(kFakeParentGaiaId, kFakeParentCredential));
-  handler()->HandleParentSignin(&list_args);
+  handler()->HandleParentSignin(list_args);
 
   handler()->CreateReAuthProofTokenForParent(
       kFakeParentGaiaId, kFakeParentCredential,
@@ -342,14 +342,14 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
   handler()->AllowJavascriptForTesting();
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
-  list_args.Append(GetFakeParent());
-  list_args.Append(kFakeParentCredential);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
+  list_args.emplace_back(GetFakeParent());
+  list_args.emplace_back(kFakeParentCredential);
 
   EXPECT_CALL(*handler(),
               FetchAccessToken(kFakeParentGaiaId, kFakeParentCredential));
-  handler()->HandleParentSignin(&list_args);
+  handler()->HandleParentSignin(list_args);
 
   EXPECT_CALL(*handler(),
               FetchReAuthProofTokenForParent(
@@ -407,10 +407,10 @@ TEST_F(EduAccountLoginHandlerTest, ProfileImageFetcherTest) {
 TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOffline) {
   SetupNetwork(/*network_status_online=*/false);
   constexpr char callback_id[] = "is-network-ready-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
 
-  handler()->HandleIsNetworkReady(&list_args);
+  handler()->HandleIsNetworkReady(list_args);
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id);
@@ -423,10 +423,10 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOffline) {
 TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOnline) {
   SetupNetwork(/*network_status_online=*/true);
   constexpr char callback_id[] = "is-network-ready-callback";
-  base::ListValue list_args;
-  list_args.Append(callback_id);
+  std::vector<base::Value> list_args;
+  list_args.emplace_back(callback_id);
 
-  handler()->HandleIsNetworkReady(&list_args);
+  handler()->HandleIsNetworkReady(list_args);
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id);
