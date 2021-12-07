@@ -400,10 +400,6 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     damage_rect_in_root_target_space.Intersect(root_clip_rect);
   }
 
-  // TODO(crbug.com/1257765): CHECK is temporary and is for validating whether
-  // the change in HandleSurfaceQuad() works or not. https://crrev.com/c/3220115
-  // Remove this CHECK before next branch M98 on 12/9/2021.
-  CHECK(damage_rect_in_root_target_space.size().GetCheckedArea().IsValid());
   surface_damage_rect_list_->push_back(damage_rect_in_root_target_space);
 }
 
