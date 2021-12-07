@@ -7744,6 +7744,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HeapProfiling.InProcess.Enabled" enum="BooleanEnabled"
+    expires_after="2022-12-02">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    One metric is emitted on every Chrome launch, recording whether the
+    in-process heap profiler is enabled in the browser process for this Chrome
+    session.
+  </summary>
+</histogram>
+
 <histogram name="HeapProfiling.ProfiledProcess.Type"
     enum="HeapProfilingProcessType" expires_after="2021-12-12">
   <owner>erikchen@chromium.org</owner>

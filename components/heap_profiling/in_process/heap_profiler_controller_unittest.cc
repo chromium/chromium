@@ -15,6 +15,7 @@
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -81,9 +82,14 @@ class HeapProfilerControllerTester {
 
   HeapProfilerController& controller() { return *controller_; }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
  private:
   std::unique_ptr<HeapProfilerController> controller_;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 // A callback that fails the test if any samples are received.
@@ -191,6 +197,8 @@ TEST_F(HeapProfilerControllerTest, DisableFeature) {
       version_info::Channel::STABLE, base::BindRepeating(&ExpectNoSamples),
       HeapProfilerReportingConfig{.enabled = false});
   tester.controller().Start();
+  tester.histogram_tester().ExpectUniqueSample(
+      "HeapProfiling.InProcess.Enabled", false, 1);
   AddOneSampleAndWait();
 }
 
@@ -206,6 +214,8 @@ TEST_F(HeapProfilerControllerTest, StableProbability) {
                                         base::BindRepeating(&ExpectNoSamples),
                                         feature_config);
     tester.controller().Start();
+    tester.histogram_tester().ExpectUniqueSample(
+        "HeapProfiling.InProcess.Enabled", false, 1);
     AddOneSampleAndWait();
   }
 
@@ -219,6 +229,8 @@ TEST_F(HeapProfilerControllerTest, StableProbability) {
         version_info::Channel::CANARY,
         base::BindLambdaForTesting(watch_for_sample), feature_config);
     tester.controller().Start();
+    tester.histogram_tester().ExpectUniqueSample(
+        "HeapProfiling.InProcess.Enabled", true, 1);
     AddOneSampleAndWait();
     EXPECT_TRUE(got_sample);
   }
@@ -240,6 +252,8 @@ TEST_F(HeapProfilerControllerTest, NonStableProbability) {
         version_info::Channel::STABLE,
         base::BindLambdaForTesting(watch_for_sample), feature_config);
     tester.controller().Start();
+    tester.histogram_tester().ExpectUniqueSample(
+        "HeapProfiling.InProcess.Enabled", true, 1);
     AddOneSampleAndWait();
     EXPECT_TRUE(got_sample);
   }
@@ -250,6 +264,8 @@ TEST_F(HeapProfilerControllerTest, NonStableProbability) {
                                         base::BindRepeating(&ExpectNoSamples),
                                         feature_config);
     tester.controller().Start();
+    tester.histogram_tester().ExpectUniqueSample(
+        "HeapProfiling.InProcess.Enabled", false, 1);
     AddOneSampleAndWait();
   }
 }

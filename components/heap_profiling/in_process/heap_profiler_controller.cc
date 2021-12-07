@@ -97,6 +97,8 @@ HeapProfilerController::~HeapProfilerController() {
 }
 
 void HeapProfilerController::Start() {
+  base::UmaHistogramBoolean("HeapProfiling.InProcess.Enabled",
+                            profiling_enabled_);
   if (!profiling_enabled_)
     return;
   int sampling_rate = kSamplingRate.Get();
