@@ -89,6 +89,10 @@ def main(raw_args):
       'start',
       help='Start an AVD instance with the given config.',
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  start_parser.add_argument('--wipe-data',
+                            action='store_true',
+                            default=False,
+                            help='Reset user data image for this emulator.')
   start_parser.add_argument(
       '--no-read-only',
       action='store_false',
@@ -128,6 +132,7 @@ def main(raw_args):
                window=args.emulator_window,
                writable_system=args.writable_system,
                gpu_mode=args.gpu_mode,
+               wipe_data=args.wipe_data,
                debug_tags=args.debug_tags)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0

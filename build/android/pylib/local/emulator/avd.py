@@ -537,6 +537,7 @@ class _AvdInstance(object):
             window=False,
             writable_system=False,
             gpu_mode=_DEFAULT_GPU_MODE,
+            wipe_data=False,
             debug_tags=None):
     """Starts the emulator running an instance of the given AVD."""
 
@@ -552,6 +553,8 @@ class _AvdInstance(object):
           '-no-boot-anim',
       ]
 
+      if wipe_data:
+        emulator_cmd.append('-wipe-data')
       if read_only:
         emulator_cmd.append('-read-only')
       if not snapshot_save:

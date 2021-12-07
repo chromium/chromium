@@ -135,6 +135,19 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
           --emulator-window
     ```
 
+ * `--wipe-data`
+
+    Since the prebuilt playstore images use adbkey from the GCE bots that created
+    them, they may appear to be "unauthorized" when used locally. Pass this flag
+    to reset the user data image locally to fix it after installing a prebuilt
+    image:
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_playstore_android28.textpb \
+          --wipe-data
+    ```
+
  * `--no-read-only`
 
     `avd.py` runs the emulator in read-only mode by default. To run a modifiable
@@ -151,6 +164,8 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
     `avd.py` disables the emulator log by default. When this option is used,
     emulator log will be enabled. It is useful when the emulator cannot be
     launched correctly. See `emulator -help-debug-tags` for a full list of tags.
+    Use `--debug-tags="*"` if you want to output all logs (warning: it is quite
+    verbose).
 
     ```
       $ tools/android/avd/avd.py start \
