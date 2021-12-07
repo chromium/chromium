@@ -6,8 +6,6 @@
 #define CONTENT_RENDERER_SERVICE_WORKER_NAVIGATION_PRELOAD_REQUEST_H_
 
 #include <memory>
-#include <string>
-#include <vector>
 
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -16,8 +14,9 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
-#include "url/gurl.h"
 
 namespace content {
 
@@ -34,7 +33,7 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
   NavigationPreloadRequest(
       ServiceWorkerContextClient* owner,
       int fetch_event_id,
-      const GURL& url,
+      const blink::WebURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
           preload_url_loader_client_receiver);
   ~NavigationPreloadRequest() override;
@@ -57,13 +56,13 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
 
  private:
   void MaybeReportResponseToOwner();
-  void ReportErrorToOwner(const std::string& message,
+  void ReportErrorToOwner(const blink::WebString& message,
                           blink::WebServiceWorkerError::Mode error_mode);
 
   ServiceWorkerContextClient* owner_ = nullptr;
 
   const int fetch_event_id_ = -1;
-  const GURL url_;
+  const blink::WebURL url_;
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_;
 
   std::unique_ptr<blink::WebURLResponse> response_;

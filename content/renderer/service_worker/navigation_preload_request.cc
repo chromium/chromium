@@ -18,7 +18,7 @@ namespace content {
 NavigationPreloadRequest::NavigationPreloadRequest(
     ServiceWorkerContextClient* owner,
     int fetch_event_id,
-    const GURL& url,
+    const blink::WebURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         preload_url_loader_client_receiver)
     : owner_(owner),
@@ -86,7 +86,7 @@ void NavigationPreloadRequest::OnStartLoadingResponseBody(
 void NavigationPreloadRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK) {
-    std::string message;
+    blink::WebString message;
     blink::WebServiceWorkerError::Mode error_mode =
         blink::WebServiceWorkerError::Mode::kNone;
     if (status.error_code == net::ERR_ABORTED) {
@@ -130,13 +130,13 @@ void NavigationPreloadRequest::MaybeReportResponseToOwner() {
 }
 
 void NavigationPreloadRequest::ReportErrorToOwner(
-    const std::string& message,
+    const blink::WebString& message,
     blink::WebServiceWorkerError::Mode error_mode) {
   // This will delete |this|.
   owner_->OnNavigationPreloadError(
-      fetch_event_id_, std::make_unique<blink::WebServiceWorkerError>(
-                           blink::mojom::ServiceWorkerErrorType::kNetwork,
-                           blink::WebString::FromUTF8(message), error_mode));
+      fetch_event_id_,
+      std::make_unique<blink::WebServiceWorkerError>(
+          blink::mojom::ServiceWorkerErrorType::kNetwork, message, error_mode));
 }
 
 }  // namespace content
