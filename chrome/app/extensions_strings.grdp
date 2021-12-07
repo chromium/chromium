@@ -226,6 +226,12 @@
   <message name="IDS_EXTENSIONS_ITEM_DETAILS" desc="The text on the button to show more details for a given extension.">
     Details
   </message>
+  <message name="IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button on details page. If the back button is activated, it will navigate to the previous page. This text will only be announced by screen readers and will not be visible in the UI." is_accessibility_with_no_ui="true">
+    <ph name="SUBPAGE_TITLE">$1<ex>Google Docs</ex></ph> details page back button
+  </message>
+  <message name="IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the Extensions page to navigate away from the currently displaying details page to the previous visited page. This text will only be announced by screen readers and will not be visible in the UI." is_accessibility_with_no_ui="true">
+    Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Google Docs</ex> details page</ph>.
+  </message>
   <message name="IDS_EXTENSIONS_EXTENSION_A11Y_ASSOCIATION" desc="Label used to associate an app or extension with actions a user can take. This label is for screen readers and will only be read out lout. Ex: a button labeled 'Delete' would have the description 'Related to AdBlock'. Without the added description a user on a screen reader would not have context of the extension they want to delete. Note that the action can be 'view details', 'enable', 'delete', 'errors', or something else.">
     Related to <ph name="NAME_PH">$1<ex>AdBlock</ex></ph>
   </message>

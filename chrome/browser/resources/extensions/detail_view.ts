@@ -165,6 +165,16 @@ export class ExtensionsDetailViewElement extends
     return description || fallback;
   }
 
+  private getBackButtonAriaLabel_(): string {
+    return loadTimeData.getStringF(
+        'itemDetailsBackButtonAriaLabel', this.data.name);
+  }
+
+  private getBackButtonAriaRoleDescription_(): string {
+    return loadTimeData.getStringF(
+        'itemDetailsBackButtonRoleDescription', this.data.name);
+  }
+
   private onCloseButtonTap_() {
     navigation.navigateTo({page: Page.LIST});
   }
