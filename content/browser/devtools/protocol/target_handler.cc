@@ -1286,8 +1286,10 @@ void TargetHandler::AddWorkerThrottle(
     return;
 
   if (auto_attached_sessions_.count(agent_host)) {
-    auto_attached_sessions_[agent_host]->SetWorkerThrottle(
-        std::move(throttle_handle));
+    if (auto_attached_sessions_[agent_host]->IsWaitingForDebuggerOnStart()) {
+      auto_attached_sessions_[agent_host]->SetWorkerThrottle(
+          std::move(throttle_handle));
+    }
   }
 }
 
