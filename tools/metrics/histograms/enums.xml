@@ -20698,6 +20698,7 @@ Called by update_debug_scenarios.py.-->
   <int value="50" label="syncSettings"/>
   <int value="51" label="groupAndHideIssuesByKind"/>
   <int value="52" label="cssTypeComponentLength"/>
+  <int value="53" label="preciseChanges"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
