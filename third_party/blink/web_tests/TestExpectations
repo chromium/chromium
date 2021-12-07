@@ -1358,6 +1358,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-004.html [ Pas
 virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-005.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-006.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-break/transform-008.html [ Pass ]
+virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-inline-size-multicol.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-contain/contain-size-monolithic-002.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-position/multicol/static-position/vlr-ltr-rtl-in-multicol.tentative.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-position/multicol/static-position/vlr-rtl-ltr-in-multicol.tentative.html [ Pass ]
