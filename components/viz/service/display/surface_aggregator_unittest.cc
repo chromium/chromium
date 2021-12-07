@@ -9012,6 +9012,89 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorUsageChangeFullFrameDamage) {
   }
 }
 
+// Test the Clip Rect of a non-merged pass from an embedded surface.
+TEST_F(SurfaceAggregatorValidSurfaceTest, ClipRectNonMergedPass) {
+  // A grand child surface is embedded into a child surface. This child surface
+  // is then embedded into a root surface. Make the grandchild_rect the biggest
+  // so it will be clipped after surface aggregation.
+  const gfx::Rect grandchild_rect(0, 0, 200, 200);
+  const gfx::Rect child_rect(10, 10, 150, 150);
+  const gfx::Rect root_rect(0, 0, 100, 100);
+
+  auto grandchild_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &this->manager_, kArbitraryFrameSinkId1, false);
+  TestSurfaceIdAllocator grandchild_surface_id(
+      grandchild_support->frame_sink_id());
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+
+  // The grandchild CompositorFrame contains a 200x200 surface with a 200x200
+  // SolidColorDrawQuad. This surface is embedded into a child surface, but is
+  // not allowed to merged into the root render pass of the root surface. As a
+  // result, only 90x90 of the grandchild SolidColorDrawQuad can be drawn onto
+  // the root frame. The rest will be clipped.
+  {
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(grandchild_rect)
+                               .AddSolidColorQuad(gfx::Rect(grandchild_rect),
+                                                  SK_ColorBLUE))
+            .Build();
+    grandchild_support->SubmitCompositorFrame(
+        grandchild_surface_id.local_surface_id(), std::move(frame));
+  }
+  {
+    // The grandchild surface is not allowed to merge.
+    auto frame = CompositorFrameBuilder()
+                     .AddRenderPass(RenderPassBuilder(child_rect)
+                                        .AddSurfaceQuad(
+                                            grandchild_rect,
+                                            SurfaceRange(grandchild_surface_id),
+                                            {.allow_merge = false}))
+                     .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(frame));
+  }
+
+  {
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(root_rect)
+                    .AddSurfaceQuad(child_rect, SurfaceRange(child_surface_id))
+                    .AddSolidColorQuad(gfx::Rect(root_rect), SK_ColorWHITE))
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  // Since the render pass from the grandchild surface cannot be merged,
+  // there will be total 2 render passes.
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_EQ(2u, aggregated_frame.render_pass_list.size());
+
+  // A blue SolidColorQuad in the non-root render pass.
+  auto& nonroot_render_pass = aggregated_frame.render_pass_list[0];
+  EXPECT_THAT(nonroot_render_pass->quad_list,
+              ElementsAre(IsSolidColorQuad(SK_ColorBLUE)));
+  auto* clipped_quad = nonroot_render_pass->quad_list.front();
+  EXPECT_EQ(clipped_quad->rect, grandchild_rect);
+
+  // A RenderPassDrawQuad and a SolidColorQuad in the root render pass.
+  auto& root_render_pass = aggregated_frame.render_pass_list[1];
+  EXPECT_THAT(root_render_pass->quad_list,
+              ElementsAre(IsAggregatedRenderPassQuad(),
+                          IsSolidColorQuad(SK_ColorWHITE)));
+
+  // |clip_rect| of this RenderPassDrawQuad is bounded by the child render pass
+  // output_rect (10, 10, 150, 150), which is then bounded by the root render
+  // pass output_rect (0, 0, 100, 100). The intersection of both output_rects is
+  // (10, 10, 90, 90).
+  auto* rpdq = root_render_pass->quad_list.front();
+  EXPECT_TRUE(rpdq->shared_quad_state->clip_rect);
+  EXPECT_THAT(rpdq->shared_quad_state->clip_rect,
+              testing::Optional(gfx::Rect(10, 10, 90, 90)));
+}
+
 TEST_F(SurfaceAggregatorWithResourcesTest, TransitionDirectiveFrameBehind) {
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
   SurfaceId surface_id(root_sink_->frame_sink_id(), local_surface_id);

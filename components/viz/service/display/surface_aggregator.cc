@@ -732,20 +732,18 @@ void SurfaceAggregator::EmitSurfaceContent(
       mask_filter_info.CanMergeMaskFilterInfo(*render_pass_list.back());
 
   absl::optional<gfx::Rect> quads_clip;
-  if (merge_pass || needs_surface_damage_rect_list_) {
-    // Intersect the transformed surface visible rect and the clip rect to
-    // create a smaller cliprect for the quad.
-    gfx::Rect surface_quad_clip_rect = cc::MathUtil::MapEnclosingClippedRect(
-        surface_quad_sqs->quad_to_target_transform, surface_quad_visible_rect);
-    if (surface_quad_sqs->clip_rect) {
-      surface_quad_clip_rect.Intersect(*surface_quad_sqs->clip_rect);
-    }
-
-    surface_quad_clip_rect.Intersect(source_pass.output_rect);
-
-    quads_clip =
-        CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
+  // Intersect the transformed surface visible rect and the clip rect to
+  // create a smaller cliprect for the quad.
+  gfx::Rect surface_quad_clip_rect = cc::MathUtil::MapEnclosingClippedRect(
+      surface_quad_sqs->quad_to_target_transform, surface_quad_visible_rect);
+  if (surface_quad_sqs->clip_rect) {
+    surface_quad_clip_rect.Intersect(*surface_quad_sqs->clip_rect);
   }
+
+  surface_quad_clip_rect.Intersect(source_pass.output_rect);
+
+  quads_clip =
+      CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
 
   if (needs_surface_damage_rect_list_) {
     AddSurfaceDamageToDamageList(/*default_damage_rect=*/gfx::Rect(),
@@ -840,7 +838,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         gfx::ScaleToEnclosingRect(surface_quad_sqs->visible_quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
-        clip_rect, mask_filter_info, dest_pass);
+        quads_clip, mask_filter_info, dest_pass);
 
     // At this point, we need to calculate three values in order to construct
     // the CompositorRenderPassDrawQuad:
