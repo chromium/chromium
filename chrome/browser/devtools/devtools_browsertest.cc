@@ -2914,6 +2914,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
 }
 
 // Regression test for https://crbug.com/1270184.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, NoCrashFor1270184) {
+// TODO(https://crbug.com/1277018): Fix flakyness. Test is disabled for now.
+IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_NoCrashFor1270184) {
   OpenDevToolsWindow("/devtools/regress-crbug-1270184.html", true);
 }
