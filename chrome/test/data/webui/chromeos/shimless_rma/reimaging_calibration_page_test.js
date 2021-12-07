@@ -7,12 +7,20 @@ import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingCalibrationPage} from 'chrome://shimless-rma/reimaging_calibration_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {CalibrationComponentStatus, CalibrationStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingCalibrationPageTest() {
+  /**
+   * ShimlessRma is needed to handle the 'transition-state' event used
+   * when handling calibration overall progress signals.
+   * @type {?ShimlessRma}
+   */
+  let shimless_rma_component = null;
+
   /** @type {?ReimagingCalibrationPage} */
   let component = null;
 
@@ -31,6 +39,8 @@ export function reimagingCalibrationPageTest() {
   teardown(() => {
     component.remove();
     component = null;
+    shimless_rma_component.remove();
+    shimless_rma_component = null;
     service.reset();
   });
 
@@ -40,6 +50,11 @@ export function reimagingCalibrationPageTest() {
    */
   function initializeCalibrationPage(calibrationComponents) {
     assertFalse(!!component);
+
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
+    assertTrue(!!shimless_rma_component);
+    document.body.appendChild(shimless_rma_component);
 
     // Initialize the fake data.
     service.setGetCalibrationComponentListResult(calibrationComponents);
@@ -60,6 +75,15 @@ export function reimagingCalibrationPageTest() {
         component.shadowRoot.querySelector('#componentCamera');
     assertFalse(cameraComponent.disabled);
     cameraComponent.click();
+    return flushTasks();
+  }
+
+  /** @return {!Promise} */
+  function clickRetryCalibrationButton() {
+    const retryButton =
+        component.shadowRoot.querySelector('#retryCalibrationButton');
+    assertFalse(retryButton.disabled);
+    retryButton.click();
     return flushTasks();
   }
 
@@ -91,6 +115,18 @@ export function reimagingCalibrationPageTest() {
       });
     });
     return expectedComponents;
+  }
+
+  /**
+   * @param {!Array<!CalibrationComponentStatus>} components
+   * @return {!Array<!CalibrationComponentStatus>}
+   */
+  function getAllSkippedComponentsList(components) {
+    components.forEach(component => {
+      component.status = CalibrationStatus.kCalibrationSkip;
+      component.progress = 0.0;
+    });
+    return components;
   }
 
 
@@ -142,7 +178,31 @@ export function reimagingCalibrationPageTest() {
     assertDeepEquals(expectedComponents, components);
   });
 
-  test('NextButtonTriggersCalibration', async () => {
+  test('NextButtonTriggersCalibrationComplete', async () => {
+    const resolver = new PromiseResolver();
+    await initializeCalibrationPage(fakeCalibrationComponents);
+    let expectedComponents =
+        getAllSkippedComponentsList(fakeCalibrationComponents);
+    let startCalibrationCalls = 0;
+    service.startCalibration = (components) => {
+      assertDeepEquals(expectedComponents, components);
+      startCalibrationCalls++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    let expectedResult = {foo: 'bar'};
+    let savedResult;
+    component.onNextButtonClick().then((result) => savedResult = result);
+    // Resolve to a distinct result to confirm it was not modified.
+    resolver.resolve(expectedResult);
+    await flushTasks();
+
+    assertEquals(1, startCalibrationCalls);
+    assertDeepEquals(savedResult, expectedResult);
+  });
+
+  test('RetryButtonTriggersCalibration', async () => {
     const resolver = new PromiseResolver();
     await initializeCalibrationPage(fakeCalibrationComponents);
     let expectedComponents =
@@ -154,14 +214,7 @@ export function reimagingCalibrationPageTest() {
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
-
+    await clickRetryCalibrationButton();
     assertEquals(1, startCalibrationCalls);
-    assertDeepEquals(expectedResult, savedResult);
   });
 }

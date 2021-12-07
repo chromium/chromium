@@ -2216,8 +2216,14 @@ Try tapping the mic to ask me anything.
         Write protection disable complete, you must keep the device disassembled.
       </message>
       <!-- Check calibration page -->
-      <message name="IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page shown when confirming components to calibrate.">
-        Calibrate device components
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_PAGE_TITLE" translateable="false" desc="Title for the page shown when confirming components to calibrate after calibration fails.">
+        Some components have failed to calibrate
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_INSTRUCTIONS" translateable="false" desc="The text instructions shown when confirming components to calibrate after calibration fails.">
+        You may select certain or all components to try again, or move forward without calibration.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CALIBRATION_FAILED_RETRY_BUTTON_LABEL" translateable="false" desc="The label for the button to retry calibrating.">
+        Retry calibration
       </message>
       <!-- Setup calibration page -->
       <message name="IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE" translateable="false" desc="Title for the page that displays specific instructions required for some calibration steps.">

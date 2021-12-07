@@ -201,6 +201,7 @@ js_library("reimaging_calibration_page_test") {
     "//ash/webui/shimless_rma/resources:fake_shimless_rma_service",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:reimaging_calibration_page",
+    "//ash/webui/shimless_rma/resources:shimless_rma",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

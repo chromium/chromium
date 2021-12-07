@@ -150,8 +150,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"wpDisableLeaveDisassembledText",
        IDS_SHIMLESS_RMA_WP_DISABLE_LEAVE_DISASSEMBLED_MESSAGE},
       // Check calibration page
-      {"checkCalibrationTitleText",
-       IDS_SHIMLESS_RMA_CHECK_CALIBRATION_PAGE_TITLE},
+      {"calibrationFailedTitleText",
+       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_PAGE_TITLE},
+      {"calibrationFailedInstructionsText",
+       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_INSTRUCTIONS},
+      {"calibrationFailedRetryButtonLabel",
+       IDS_SHIMLESS_RMA_CALIBRATION_FAILED_RETRY_BUTTON_LABEL},
       // Setup calibration page
       {"setupCalibrationTitleText",
        IDS_SHIMLESS_RMA_SETUP_CALIBRATION_PAGE_TITLE},

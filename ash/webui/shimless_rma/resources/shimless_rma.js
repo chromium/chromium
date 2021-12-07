@@ -150,6 +150,7 @@ const StateComponentMapping = {
     componentIs: 'reimaging-calibration-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
+    buttonNextLabelKey: 'skipButtonLabel',
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },

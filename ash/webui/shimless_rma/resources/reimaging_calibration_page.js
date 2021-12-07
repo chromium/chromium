@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './base_page.js';
@@ -132,7 +133,37 @@ export class ReimagingCalibrationPage extends ReimagingCalibrationPageBase {
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
-    return this.shimlessRmaService_.startCalibration(this.getComponentsList_());
+    return this.skipCalibration_();
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   * @private
+   */
+  skipCalibration_() {
+    const skippedComponents = this.componentCheckboxes_.map(item => {
+      return {
+        component: item.component,
+        status: CalibrationStatus.kCalibrationSkip,
+        progress: 0.0
+      };
+    });
+    return this.shimlessRmaService_.startCalibration(skippedComponents);
+  }
+
+  /** @private */
+  onRetryCalibrationButtonClicked_() {
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.startCalibration(
+                this.getComponentsList_());
+          })
+        },
+        ));
   }
 }
 
