@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/platform_options.h"
@@ -58,6 +59,22 @@ class SignalStorageConfig;
 class SegmentScoreProvider;
 class UserActionSignalHandler;
 
+// Qualifiers used to indicate service status. One or more qualifiers can
+// be used at a time.
+enum class ServiceStatus {
+  // Server not yet initialized.
+  kUninitialized = 0,
+
+  // Segmentation information DB is initialized.
+  kSegmentationInfoDbInitialized = 1,
+
+  // Signal database is initialized.
+  kSignalDbInitialized = 1 << 1,
+
+  // Signal storage config is initialized.
+  kSignalStorageConfigInitialized = 1 << 2,
+};
+
 // The internal implementation of the SegmentationPlatformService.
 class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
  public:
@@ -96,6 +113,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void GetSelectedSegment(const std::string& segmentation_key,
                           SegmentSelectionCallback callback) override;
   void EnableMetrics(bool signal_collection_allowed) override;
+  void GetServiceStatus() override;
+  void AddObserver(SegmentationPlatformService::Observer* observer) override;
+  void RemoveObserver(SegmentationPlatformService::Observer* observer) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
@@ -112,6 +132,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Executes all database maintenance tasks. This should be invoked after a
   // short amount of time has passed since initialization happened.
   void OnExecuteDatabaseMaintenanceTasks();
+
+  // Called when service status changes.
+  void OnServiceStatusChanged();
 
   raw_ptr<optimization_guide::OptimizationGuideModelProvider> model_provider_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -156,6 +179,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   absl::optional<bool> segment_info_database_initialized_;
   absl::optional<bool> signal_database_initialized_;
   absl::optional<bool> signal_storage_config_initialized_;
+
+  base::ObserverList<SegmentationPlatformService::Observer> observers_;
 
   base::WeakPtrFactory<SegmentationPlatformServiceImpl> weak_ptr_factory_{this};
 };

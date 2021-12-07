@@ -152,7 +152,6 @@ void SegmentationPlatformServiceImpl::GetSelectedSegment(
     const std::string& segmentation_key,
     SegmentSelectionCallback callback) {
   CHECK(segment_selectors_.find(segmentation_key) != segment_selectors_.end());
-
   auto& selector = segment_selectors_.at(segmentation_key);
   selector->GetSelectedSegment(std::move(callback));
 }
@@ -160,6 +159,20 @@ void SegmentationPlatformServiceImpl::GetSelectedSegment(
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {
   signal_filter_processor_->EnableMetrics(signal_collection_allowed);
+}
+
+void SegmentationPlatformServiceImpl::GetServiceStatus() {
+  OnServiceStatusChanged();
+}
+
+void SegmentationPlatformServiceImpl::AddObserver(
+    SegmentationPlatformService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SegmentationPlatformServiceImpl::RemoveObserver(
+    SegmentationPlatformService::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentInfoDatabaseInitialized(
@@ -194,6 +207,8 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
   bool init_success = segment_info_database_initialized_ &&
                       signal_database_initialized_ &&
                       signal_storage_config_initialized_;
+
+  OnServiceStatusChanged();
   if (!init_success)
     return;
 
@@ -240,6 +255,23 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
 
 void SegmentationPlatformServiceImpl::OnExecuteDatabaseMaintenanceTasks() {
   database_maintenance_->ExecuteMaintenanceTasks();
+}
+
+void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
+  int status = static_cast<int>(ServiceStatus::kUninitialized);
+  if (IsInitializationFinished()) {
+    if (segment_info_database_initialized_)
+      status |= static_cast<int>(ServiceStatus::kSegmentationInfoDbInitialized);
+    if (signal_database_initialized_)
+      status |= static_cast<int>(ServiceStatus::kSignalDbInitialized);
+    if (signal_storage_config_initialized_) {
+      status |=
+          static_cast<int>(ServiceStatus::kSignalStorageConfigInitialized);
+    }
+  }
+
+  for (Observer& obs : observers_)
+    obs.OnServiceStatusChanged(IsInitializationFinished(), status);
 }
 
 // static

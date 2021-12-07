@@ -30,6 +30,7 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
               GetSelectedSegment,
               (const std::string&, SegmentSelectionCallback));
   MOCK_METHOD(void, EnableMetrics, (bool));
+  MOCK_METHOD(void, GetServiceStatus, ());
 };
 
 class SegmentationPlatformProfileObserverTest : public testing::Test {

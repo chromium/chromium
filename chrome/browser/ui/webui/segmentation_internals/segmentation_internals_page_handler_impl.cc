@@ -7,18 +7,22 @@
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 SegmentationInternalsPageHandlerImpl::SegmentationInternalsPageHandlerImpl(
     mojo::PendingReceiver<segmentation_internals::mojom::PageHandler> receiver,
+    mojo::PendingRemote<segmentation_internals::mojom::Page> page,
     Profile* profile)
     : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
       segmentation_platform_service_(
           segmentation_platform::SegmentationPlatformServiceFactory::
-              GetForProfile(profile)) {}
+              GetForProfile(profile)) {
+  segmentation_platform_service_->AddObserver(this);
+}
 
-SegmentationInternalsPageHandlerImpl::~SegmentationInternalsPageHandlerImpl() =
-    default;
+SegmentationInternalsPageHandlerImpl::~SegmentationInternalsPageHandlerImpl() {
+  segmentation_platform_service_->RemoveObserver(this);
+}
 
 void SegmentationInternalsPageHandlerImpl::GetSegment(
     const std::string& key,
@@ -37,4 +41,14 @@ void SegmentationInternalsPageHandlerImpl::OnGetSelectedSegmentDone(
   segment_data->optimization_target =
       result.segment ? result.segment.value() : -1;
   std::move(callback).Run(std::move(segment_data));
+}
+
+void SegmentationInternalsPageHandlerImpl::GetServiceStatus() {
+  segmentation_platform_service_->GetServiceStatus();
+}
+
+void SegmentationInternalsPageHandlerImpl::OnServiceStatusChanged(
+    bool is_initialized,
+    int status_flag) {
+  page_->OnServiceStatusChanged(is_initialized, status_flag);
 }

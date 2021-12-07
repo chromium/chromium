@@ -30,6 +30,7 @@ class SegmentationInternalsUI
  private:
   // segmentation_internals::mojom::PageHandlerFactory impls.
   void CreatePageHandler(
+      mojo::PendingRemote<segmentation_internals::mojom::Page> page,
       mojo::PendingReceiver<segmentation_internals::mojom::PageHandler>
           receiver) override;
 

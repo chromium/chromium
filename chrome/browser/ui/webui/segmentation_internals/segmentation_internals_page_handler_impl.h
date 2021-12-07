@@ -10,20 +10,20 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
-namespace segmentation_platform {
-class SegmentationPlatformService;
-}
-
 class SegmentationInternalsPageHandlerImpl
-    : public segmentation_internals::mojom::PageHandler {
+    : public segmentation_internals::mojom::PageHandler,
+      public segmentation_platform::SegmentationPlatformService::Observer {
  public:
   SegmentationInternalsPageHandlerImpl(
       mojo::PendingReceiver<segmentation_internals::mojom::PageHandler>
           receiver,
+      mojo::PendingRemote<segmentation_internals::mojom::Page> page,
       Profile* profile);
   ~SegmentationInternalsPageHandlerImpl() override;
 
@@ -34,6 +34,7 @@ class SegmentationInternalsPageHandlerImpl
 
   // segmentation_internals::mojom::PageHandler:
   void GetSegment(const std::string& key, GetSegmentCallback callback) override;
+  void GetServiceStatus() override;
 
  private:
   // Called when segment result is retrieved.
@@ -41,7 +42,11 @@ class SegmentationInternalsPageHandlerImpl
       GetSegmentCallback callback,
       const segmentation_platform::SegmentSelectionResult& result);
 
+  // SegmentationPlatformService::Observer overrides.
+  void OnServiceStatusChanged(bool is_initialized, int status_flag) override;
+
   mojo::Receiver<segmentation_internals::mojom::PageHandler> receiver_;
+  mojo::Remote<segmentation_internals::mojom::Page> page_;
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service_;
 

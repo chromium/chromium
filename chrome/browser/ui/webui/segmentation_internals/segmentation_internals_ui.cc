@@ -39,11 +39,12 @@ void SegmentationInternalsUI::BindInterface(
 }
 
 void SegmentationInternalsUI::CreatePageHandler(
+    mojo::PendingRemote<segmentation_internals::mojom::Page> page,
     mojo::PendingReceiver<segmentation_internals::mojom::PageHandler>
         receiver) {
   segmentation_internals_page_handler_ =
       std::make_unique<SegmentationInternalsPageHandlerImpl>(
-          std::move(receiver), profile_);
+          std::move(receiver), std::move(page), profile_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SegmentationInternalsUI)

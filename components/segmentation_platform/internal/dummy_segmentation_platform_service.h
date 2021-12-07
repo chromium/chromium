@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DUMMY_SEGMENTATION_PLATFORM_SERVICE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DUMMY_SEGMENTATION_PLATFORM_SERVICE_H_
 
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
-
 #include <string>
+
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace segmentation_platform {
 
@@ -28,6 +28,7 @@ class DummySegmentationPlatformService : public SegmentationPlatformService {
   void GetSelectedSegment(const std::string& segmentation_key,
                           SegmentSelectionCallback callback) override;
   void EnableMetrics(bool signal_collection_allowed) override;
+  void GetServiceStatus() override;
 };
 
 }  // namespace segmentation_platform

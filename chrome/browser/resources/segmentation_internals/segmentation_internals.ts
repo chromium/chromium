@@ -17,6 +17,14 @@ function initialize() {
     $('is-ready').textContent = String(result.isReady);
     $('optimization-target').textContent = String(result.optimizationTarget);
   };
+
+  getProxy().getCallbackRouter().onServiceStatusChanged.addListener(
+      (initialized: boolean, status: number) => {
+        $('initialized').textContent = String(initialized);
+        $('service-status').textContent = String(status);
+      });
+
+  getProxy().getServiceStatus();
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
