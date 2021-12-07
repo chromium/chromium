@@ -177,7 +177,7 @@ ConnectionParams CreateSyncNodeConnectionParams(
   node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
   bool channel_ok = broker_host->SendChannel(
       node_channel.TakeRemoteEndpoint().TakePlatformHandle());
-  CHECK(channel_ok);
+  DCHECK(channel_ok);
 
   return node_connection_params;
 }
