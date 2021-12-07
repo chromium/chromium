@@ -1157,6 +1157,9 @@ void RenderWidgetHostViewAndroid::Destroy() {
   for (auto& observer : destruction_observers_)
     observer.RenderWidgetHostViewDestroyed(this);
   destruction_observers_.Clear();
+  // Call this before the derived class is destroyed so that virtual function
+  // calls back into `this` still work.
+  NotifyObserversAboutShutdown();
   RenderWidgetHostViewBase::Destroy();
   delete this;
 }

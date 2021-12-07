@@ -817,6 +817,10 @@ void RenderWidgetHostViewAura::Destroy() {
   // destructor is invoked directly from here. So all destruction/cleanup code
   // should happen there, not here.
   in_shutdown_ = true;
+  // Call this here in case any observers need access to `this` before we
+  // destruct the derived class.
+  NotifyObserversAboutShutdown();
+
   if (window_)
     delete window_;
   else
