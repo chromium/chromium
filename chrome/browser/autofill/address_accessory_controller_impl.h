@@ -70,9 +70,6 @@ class AddressAccessoryControllerImpl
   // |web_contents_|. The lazy initialization allows injecting mocks for tests.
   base::WeakPtr<ManualFillingController> GetManualFillingController();
 
-  // The tab for which this class is scoped.
-  raw_ptr<content::WebContents> web_contents_;
-
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
 

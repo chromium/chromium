@@ -182,8 +182,7 @@ class PasswordAccessoryControllerImpl
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
 
-  // The tab for which this class is scoped.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
   raw_ptr<password_manager::CredentialCache> credential_cache_ = nullptr;

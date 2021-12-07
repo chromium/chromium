@@ -87,7 +87,8 @@ class CreditCardAccessoryControllerImpl
   autofill::AutofillDriver* GetDriver();
   autofill::BrowserAutofillManager* GetManager() const;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents& GetWebContents() const;
+
   base::WeakPtr<ManualFillingController> mf_controller_;
   const raw_ptr<PersonalDataManager> personal_data_manager_;
   raw_ptr<autofill::BrowserAutofillManager> af_manager_for_testing_ = nullptr;

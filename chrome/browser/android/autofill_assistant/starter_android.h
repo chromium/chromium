@@ -119,7 +119,6 @@ class StarterAndroid : public StarterPlatformDelegate,
   void CreateJavaDependenciesIfNecessary();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<Starter> starter_;
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   base::android::ScopedJavaGlobalRef<jobject> java_dependencies_;

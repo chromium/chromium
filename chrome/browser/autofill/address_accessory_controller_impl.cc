@@ -129,7 +129,7 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
     const AccessorySheetField& selection) {
   // Since the data we fill is scoped to the profile and not to a frame, we can
   // fill the focused frame - we basically behave like a keyboard here.
-  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();
   if (!rfh)
     return;
   autofill::ContentAutofillDriver* driver =
@@ -143,7 +143,7 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
 void AddressAccessoryControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) {
   if (selected_action == AccessoryAction::MANAGE_ADDRESSES) {
-    autofill::ShowAutofillProfileSettings(web_contents_);
+    autofill::ShowAutofillProfileSettings(&GetWebContents());
     return;
   }
   NOTREACHED() << "Unhandled selected action: "
@@ -161,7 +161,7 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
   if (!personal_data_manager_) {
     personal_data_manager_ =
         autofill::PersonalDataManagerFactory::GetForProfile(
-            Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
     personal_data_manager_->AddObserver(this);
   }
   absl::optional<AccessorySheetData> data = GetSheetData();
@@ -200,14 +200,15 @@ AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
 AddressAccessoryControllerImpl::AddressAccessoryControllerImpl(
     content::WebContents* web_contents,
     base::WeakPtr<ManualFillingController> mf_controller)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<AddressAccessoryControllerImpl>(
+          *web_contents),
       mf_controller_(std::move(mf_controller)),
       personal_data_manager_(nullptr) {}
 
 base::WeakPtr<ManualFillingController>
 AddressAccessoryControllerImpl::GetManualFillingController() {
   if (!mf_controller_)
-    mf_controller_ = ManualFillingController::GetOrCreate(web_contents_);
+    mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
   DCHECK(mf_controller_);
   return mf_controller_;
 }

@@ -152,8 +152,8 @@ class AwAutofillClient : public autofill::AutofillClient,
       bool is_rtl,
       const std::vector<autofill::Suggestion>& suggestions);
 
-  // The web_contents associated with this delegate.
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents& GetWebContents() const;
+
   bool save_form_data_ = false;
   JavaObjectWeakGlobalRef java_ref_;
 

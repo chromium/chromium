@@ -81,6 +81,12 @@ class WebContentsUserData : public base::SupportsUserData::Data {
     CHECK(web_contents_);
     return *web_contents_;
   }
+  const content::WebContents& GetWebContents() const {
+    // TODO(crbug.com/1268914) : Remove when we can't call the default
+    // constructor.
+    CHECK(web_contents_);
+    return *web_contents_;
+  }
 
  private:
   // This is a pointer (rather than a reference) to ensure that go/miracleptr

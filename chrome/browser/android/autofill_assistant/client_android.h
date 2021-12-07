@@ -172,7 +172,6 @@ class ClientAndroid : public Client,
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  raw_ptr<content::WebContents> web_contents_;
   const base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

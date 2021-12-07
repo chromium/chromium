@@ -38,7 +38,7 @@ static jlong JNI_Starter_FromWebContents(
 }
 
 StarterAndroid::StarterAndroid(content::WebContents* web_contents)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<StarterAndroid>(*web_contents),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
           ChromePasswordManagerClient::FromWebContents(web_contents),
           web_contents)) {}
@@ -50,8 +50,8 @@ void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
   java_object_ = base::android::ScopedJavaGlobalRef<jobject>(jcaller);
 
   starter_ = std::make_unique<Starter>(
-      web_contents_, this, ukm::UkmRecorder::Get(),
-      RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
+      &GetWebContents(), this, ukm::UkmRecorder::Get(),
+      RuntimeManagerImpl::GetForWebContents(&GetWebContents())->GetWeakPtr(),
       base::DefaultTickClock::GetInstance());
 }
 
@@ -217,7 +217,8 @@ bool StarterAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool StarterAndroid::GetIsCustomTab() const {
-  return ui_controller_android_utils::IsCustomTab(web_contents_);
+  return ui_controller_android_utils::IsCustomTab(
+      const_cast<content::WebContents*>(&GetWebContents()));
 }
 
 bool StarterAndroid::GetIsTabCreatedByGSA() const {
@@ -259,8 +260,9 @@ void StarterAndroid::Start(
     const base::android::JavaRef<jstring>& jinitial_url) {
   DCHECK(starter_);
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, web_contents_, jexperiment_ids, jparameter_names, jparameter_values,
-      jdevice_only_parameter_names, jdevice_only_parameter_values,
+      env, &GetWebContents(), jexperiment_ids, jparameter_names,
+      jparameter_values, jdevice_only_parameter_names,
+      jdevice_only_parameter_values,
       /* onboarding_shown = */ false, /* is_direct_action = */ false,
       jinitial_url);
 
@@ -272,8 +274,8 @@ void StarterAndroid::StartRegularScript(
     std::unique_ptr<TriggerContext> trigger_context,
     const absl::optional<TriggerScriptProto>& trigger_script) {
   CreateJavaDependenciesIfNecessary();
-  ClientAndroid::CreateForWebContents(web_contents_, java_dependencies_);
-  auto* client_android = ClientAndroid::FromWebContents(web_contents_);
+  ClientAndroid::CreateForWebContents(&GetWebContents(), java_dependencies_);
+  auto* client_android = ClientAndroid::FromWebContents(&GetWebContents());
   DCHECK(client_android);
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -286,7 +288,8 @@ void StarterAndroid::StartRegularScript(
 }
 
 bool StarterAndroid::IsRegularScriptRunning() const {
-  auto* client_android = ClientAndroid::FromWebContents(web_contents_);
+  const auto* client_android =
+      ClientAndroid::FromWebContents(&GetWebContents());
   if (!client_android) {
     return false;
   }
@@ -294,7 +297,8 @@ bool StarterAndroid::IsRegularScriptRunning() const {
 }
 
 bool StarterAndroid::IsRegularScriptVisible() const {
-  auto* client_android = ClientAndroid::FromWebContents(web_contents_);
+  const auto* client_android =
+      ClientAndroid::FromWebContents(&GetWebContents());
   if (!client_android) {
     return false;
   }

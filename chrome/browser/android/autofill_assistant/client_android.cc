@@ -100,7 +100,7 @@ static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
 ClientAndroid::ClientAndroid(
     content::WebContents* web_contents,
     const base::android::JavaRef<jobject>& jdependencies)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<ClientAndroid>(*web_contents),
       jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
@@ -205,7 +205,7 @@ void ClientAndroid::TransferUITo(
 
   auto* other_web_contents =
       content::WebContents::FromJavaWebContents(jother_web_contents);
-  DCHECK_NE(other_web_contents, web_contents_);
+  DCHECK_NE(other_web_contents, GetWebContents());
 
   ClientAndroid* other_client =
       ClientAndroid::FromWebContents(other_web_contents);
@@ -248,7 +248,7 @@ void ClientAndroid::FetchWebsiteActions(
   base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   controller_->Track(
       ui_controller_android_utils::CreateTriggerContext(
-          env, web_contents_, jexperiment_ids, jparameter_names,
+          env, GetWebContents(), jexperiment_ids, jparameter_names,
           jparameter_values, /* jdevice_only_parameter_names= */
           base::android::JavaParamRef<jobjectArray>(nullptr),
           /* jdevice_only_parameter_values= */
@@ -357,7 +357,7 @@ bool ClientAndroid::PerformDirectAction(
       base::android::ConvertJavaStringToUTF8(env, jaction_name);
 
   auto trigger_context = ui_controller_android_utils::CreateTriggerContext(
-      env, web_contents_, jexperiment_ids, jparameter_names,
+      env, GetWebContents(), jexperiment_ids, jparameter_names,
       jparameter_values, /* jdevice_only_parameter_names= */
       base::android::JavaParamRef<jobjectArray>(nullptr),
       /* jdevice_only_parameter_values= */
@@ -434,7 +434,7 @@ void ClientAndroid::AttachUI(
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   if (!ui_controller_android_) {
     ui_controller_android_ = UiControllerAndroid::CreateFromWebContents(
-        web_contents_, jdependencies_, joverlay_coordinator);
+        GetWebContents(), jdependencies_, joverlay_coordinator);
     if (!ui_controller_android_) {
       // The activity is not or not yet in a mode where attaching the UI is
       // possible.
@@ -448,7 +448,7 @@ void ClientAndroid::AttachUI(
        !ui_controller_android_->IsAttachedTo(controller_.get()))) {
     if (!controller_)
       CreateController(nullptr, absl::nullopt);
-    ui_controller_android_->Attach(web_contents_, this, controller_.get());
+    ui_controller_android_->Attach(GetWebContents(), this, controller_.get());
   }
 }
 
@@ -470,7 +470,7 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 std::string ClientAndroid::GetChromeSignedInEmailAddress() const {
   CoreAccountInfo account_info =
       IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
+          Profile::FromBrowserContext(GetWebContents()->GetBrowserContext()))
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
   return account_info.email;
 }
@@ -523,8 +523,8 @@ autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
   if (!website_login_manager_) {
     website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
-        ChromePasswordManagerClient::FromWebContents(web_contents_),
-        web_contents_);
+        ChromePasswordManagerClient::FromWebContents(GetWebContents()),
+        GetWebContents());
   }
   return website_login_manager_.get();
 }
@@ -569,7 +569,11 @@ bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {
 }
 
 content::WebContents* ClientAndroid::GetWebContents() const {
-  return web_contents_;
+  // While a const_cast is not ideal. The Autofill API uses const in various
+  // spots and the content public API doesn't have const accessors. So the const
+  // cast is the lesser of two evils.
+  return const_cast<content::WebContents*>(
+      &content::WebContentsUserData<ClientAndroid>::GetWebContents());
 }
 
 void ClientAndroid::RecordDropOut(Metrics::DropOutReason reason) {
@@ -653,11 +657,12 @@ void ClientAndroid::CreateController(
         content::TtsController::GetInstance());
   }
   controller_ = std::make_unique<Controller>(
-      web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
-      RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
+      GetWebContents(), /* client= */ this,
+      base::DefaultTickClock::GetInstance(),
+      RuntimeManagerImpl::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), std::move(tts_controller), ukm::UkmRecorder::Get(),
       AnnotateDomModelServiceFactory::GetInstance()->GetForBrowserContext(
-          web_contents_->GetBrowserContext()));
+          GetWebContents()->GetBrowserContext()));
   controller_->SetStatusMessage(status_message);
   if (progress_bar_config) {
     controller_->SetStepProgressBarConfiguration(*progress_bar_config);

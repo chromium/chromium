@@ -107,11 +107,9 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   AutofillProvider() = default;
 #endif  // UNIT_TEST
 
-  content::WebContents* web_contents() { return web_contents_; }
+  content::WebContents* web_contents() { return &GetWebContents(); }
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

@@ -139,9 +139,6 @@ class ManualFillingControllerImpl
   AccessoryController* GetControllerForAction(
       autofill::AccessoryAction action) const;
 
-  // The tab for which this class is scoped.
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
-
   // This set contains sources to be shown to the user.
   base::flat_set<FillingSource> available_sources_;
 
@@ -165,7 +162,7 @@ class ManualFillingControllerImpl
   // member so the view can be created in the constructor with a fully set up
   // controller instance.
   std::unique_ptr<ManualFillingViewInterface> view_ =
-      ManualFillingViewInterface::Create(this, web_contents_);
+      ManualFillingViewInterface::Create(this, &GetWebContents());
 
   base::WeakPtrFactory<ManualFillingControllerImpl> weak_factory_{this};
 
