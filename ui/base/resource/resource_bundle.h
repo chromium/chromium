@@ -399,8 +399,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   friend class ResourceBundleTest;
   friend class ChromeBrowserMainMacBrowserTest;
 
-  class ResourceBundleImageSource;
-  friend class ResourceBundleImageSource;
+  class BitmapImageSource;
+  friend class BitmapImageSource;
+  class LottieImageSource;
+  friend class LottieImageSource;
 
   using IdToStringMap = std::unordered_map<int, std::u16string>;
 
@@ -449,6 +451,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Initializes the font description of default gfx::FontList.
   void InitDefaultFontList();
 
+  // Creates a |gfx::ImageSkia| for the given |resource_id|.
+  gfx::ImageSkia CreateImageSkia(int resource_id);
+
   // Fills the |bitmap| given the data file to look in and the |resource_id|.
   // Returns false if the resource does not exist.
   //
@@ -482,11 +487,9 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                         bool* fell_back_to_1x);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Creates the |rep| from a Lottie asset, given the |resource_id| and
-  // |scale_factor|. Returns false if the resource does not exist.
-  bool LoadLottie(int resource_id,
-                  ResourceScaleFactor scale_factor,
-                  gfx::ImageSkiaRep* rep) const;
+  // Creates the |rep| from a Lottie asset, given the |resource_id|. Returns
+  // false if the resource does not exist.
+  bool LoadLottie(int resource_id, gfx::ImageSkiaRep* rep) const;
 #endif
 
   // Returns an empty image for when a resource cannot be loaded. This is a

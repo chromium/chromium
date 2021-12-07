@@ -706,13 +706,13 @@ TEST_F(ResourceBundleImageTest, Lottie) {
 
   gfx::ImageSkia* image_skia = resource_bundle->GetImageSkiaNamed(3);
 
-  // Lottie resoruce should be 'unscaled'.
-  EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
-
   // Unscaled image should always return scale=1.
   EXPECT_EQ(1.f, image_skia->GetRepresentation(2.f).scale());
   EXPECT_EQ(1.f, image_skia->GetRepresentation(1.f).scale());
   EXPECT_EQ(1.f, image_skia->GetRepresentation(1.4f).scale());
+
+  // Lottie resource should be 'unscaled'.
+  EXPECT_TRUE(image_skia->image_reps()[0].unscaled());
 }
 #endif
 
