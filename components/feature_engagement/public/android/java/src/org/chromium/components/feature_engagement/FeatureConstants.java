@@ -18,10 +18,12 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
         FeatureConstants.ADD_TO_HOMESCREEN_MESSAGE_FEATURE,
         FeatureConstants.ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE,
+        FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
         FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
-        FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE, FeatureConstants.DOWNLOAD_PAGE_FEATURE,
-        FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE, FeatureConstants.DOWNLOAD_HOME_FEATURE,
-        FeatureConstants.DOWNLOAD_INDICATOR_FEATURE, FeatureConstants.CHROME_HOME_EXPAND_FEATURE,
+        FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
+        FeatureConstants.DOWNLOAD_PAGE_FEATURE, FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
+        FeatureConstants.DOWNLOAD_HOME_FEATURE, FeatureConstants.DOWNLOAD_INDICATOR_FEATURE,
+        FeatureConstants.CHROME_HOME_EXPAND_FEATURE,
         FeatureConstants.CHROME_HOME_PULL_TO_REFRESH_FEATURE,
         FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
         FeatureConstants.EPHEMERAL_TAB_FEATURE, FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
@@ -76,6 +78,8 @@ public @interface FeatureConstants {
     String ADD_TO_HOMESCREEN_TEXT_BUBBLE_FEATURE = "IPH_AddToHomescreenTextBubble";
     String AUTO_DARK_OPT_OUT_FEATURE = "IPH_AutoDarkOptOut";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
+    String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
+            "IPH_AutoDarkUserEducationMessageOptIn";
     String DOWNLOAD_PAGE_FEATURE = "IPH_DownloadPage";
     String DOWNLOAD_PAGE_SCREENSHOT_FEATURE = "IPH_DownloadPageScreenshot";
     String DOWNLOAD_HOME_FEATURE = "IPH_DownloadHome";

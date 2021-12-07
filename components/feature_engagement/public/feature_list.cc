@@ -23,6 +23,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAddToHomescreenTextBubbleFeature,
     &kIPHAutoDarkOptOutFeature,
     &kIPHAutoDarkUserEducationMessageFeature,
+    &kIPHAutoDarkUserEducationMessageOptInFeature,
     &kIPHDataSaverDetailFeature,
     &kIPHDataSaverMilestonePromoFeature,
     &kIPHDataSaverPreviewFeature,

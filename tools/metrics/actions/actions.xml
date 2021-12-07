@@ -31407,6 +31407,8 @@ should be able to be added at any place in this file.
   <suffix name="AutoDarkOptOut" label="For AutoDarkOptOut dialog feature."/>
   <suffix name="AutoDarkUserEducationMessage"
       label="For AutoDarkUserEducationMessage feature."/>
+  <suffix name="AutoDarkUserEducationMessageOptIn"
+      label="For AutoDarkUserEducationMessageOptIn feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
   <suffix name="Bookmark" label="For Bookmark feature."/>
   <suffix name="BottomToolbarTip" label="For BottomToolbarTip feature."/>

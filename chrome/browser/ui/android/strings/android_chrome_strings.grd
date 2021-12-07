@@ -5356,6 +5356,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_AUTO_DARK_MESSAGE_TITLE" desc="Message shown that informs the user auto darkening of website contents has been enabled.">
         Dark theme for sites is on in Chrome
       </message>
+      <message name="IDS_AUTO_DARK_MESSAGE_OPT_IN_TITLE" desc="Title of message shown that informs the user that auto darkening of website contents can be enabled.">
+        Dark theme for sites is available
+      </message>
+      <message name="IDS_AUTO_DARK_MESSAGE_OPT_IN_BODY" desc="Body of message shown that informs the user that auto darkening of website contents can be enabled.">
+        You can turn it on or off in settings
+      </message>
       <message name="IDS_AUTO_DARK_MESSAGE_BUTTON" desc="The label for the button to enter theme settings.">
         Open settings
       </message>

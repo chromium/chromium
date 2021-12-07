@@ -43,8 +43,11 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutoDarkOptOut"
       summary="educating users about disabling auto dark feature globally"/>
   <variant name="IPH_AutoDarkUserEducationMessage"
-      summary="message educating users about adding disabling auto dark web
-               contents feature globally"/>
+      summary="message educating users about disabling auto dark web contents
+               feature globally"/>
+  <variant name="IPH_AutoDarkUserEducationMessageOptIn"
+      summary="message educating users about enabling auto dark web contents
+               feature globally"/>
   <variant name="IPH_BadgedReadingList" summary="badged reading list"/>
   <variant name="IPH_Bookmark" summary="bookmark"/>
   <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
