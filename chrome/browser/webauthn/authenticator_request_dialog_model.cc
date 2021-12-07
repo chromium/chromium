@@ -728,7 +728,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
   }
 }
 
-void AuthenticatorRequestDialogModel::StartGuidedFlowForOtherPhone(
+void AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone(
     size_t mechanism_index) {
   current_mechanism_ = mechanism_index;
   EnsureBleAdapterIsPoweredAndContinueWithStep(Step::kCableV2QRCode);
@@ -848,7 +848,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   };
 
   const auto kCable = AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy;
-  bool include_other_phone_mechanism = false;
+  bool include_add_phone_option = false;
 
   if (cable_ui_type_) {
     switch (*cable_ui_type_) {
@@ -856,7 +856,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) &&
             base::Contains(transport_availability_.available_transports,
                            kCable)) {
-          include_other_phone_mechanism = true;
+          include_add_phone_option = true;
         }
         break;
 
@@ -884,6 +884,17 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
         break;
       }
     }
+  }
+
+  if (include_add_phone_option) {
+    const std::u16string label =
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
+    mechanisms_.emplace_back(
+        Mechanism::AddPhone(), label, label, &kQrcodeGeneratorIcon,
+        base::BindRepeating(
+            &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
+            base::Unretained(this), mechanisms_.size()),
+        /*is_priority=*/false);
   }
 
   for (const auto transport : transports_to_list_if_active) {
@@ -932,19 +943,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
                               base::Unretained(this), phone_name,
                               mechanisms_.size()),
           /*priority=*/false);
-    }
-
-    if (include_other_phone_mechanism) {
-      // TODO(agl): i18n once final strings are ready.
-      const std::u16string label =
-          paired_phones_.empty() ? u"Your phone" : u"Another phone";
-
-      mechanisms_.emplace_back(
-          Mechanism::OtherPhone(), label, label, GetTransportIcon(kCable),
-          base::BindRepeating(
-              &AuthenticatorRequestDialogModel::StartGuidedFlowForOtherPhone,
-              base::Unretained(this), mechanisms_.size()),
-          /*is_priority=*/false);
     }
   }
 

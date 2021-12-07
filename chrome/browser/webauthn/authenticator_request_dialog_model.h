@@ -158,9 +158,9 @@ class AuthenticatorRequestDialogModel {
     using WindowsAPI = base::StrongAlias<class WindowsAPITag,
                                          bool /* unused, but cannot be void */>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using OtherPhone = base::StrongAlias<class OtherPhoneTag,
-                                         bool /* unused, but cannot be void */>;
-    using Type = absl::variant<Transport, WindowsAPI, Phone, OtherPhone>;
+    using AddPhone = base::StrongAlias<class AddPhoneTag,
+                                       bool /* unused, but cannot be void */>;
+    using Type = absl::variant<Transport, WindowsAPI, Phone, AddPhone>;
 
     Mechanism(Type type,
               std::u16string name,
@@ -577,7 +577,7 @@ class AuthenticatorRequestDialogModel {
                                    size_t mechanism_index);
 
   // Starts the flow for adding an unlisted phone by showing a QR code.
-  void StartGuidedFlowForOtherPhone(size_t mechanism_index);
+  void StartGuidedFlowForAddPhone(size_t mechanism_index);
 
   // Displays a resident-key warning if needed and then calls
   // |HideDialogAndDispatchToNativeWindowsApi|.
