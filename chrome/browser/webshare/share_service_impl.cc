@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/bad_message.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
@@ -52,6 +53,15 @@ void ShareServiceImpl::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ShareService> receiver) {
   DCHECK(render_frame_host);
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    // The renderer should have checked and disallowed the request for fenced
+    // frames in NavigatorShare and thrown a DOMException. Ignore the request
+    // and mark it as bad if it didn't happen for some reason.
+    bad_message::ReceivedBadMessage(render_frame_host->GetProcess(),
+                                    bad_message::SSI_CREATE_FENCED_FRAME);
+    return;
+  }
+
   new ShareServiceImpl(render_frame_host, std::move(receiver));
 }
 

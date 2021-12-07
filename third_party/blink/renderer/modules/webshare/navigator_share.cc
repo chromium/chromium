@@ -247,6 +247,13 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     return ScriptPromise();
   }
 
+  if (window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Web Share is not allowed in a fenced frame tree.");
+    return ScriptPromise();
+  }
+
   KURL url;
   if (!CanShareInternal(*window, *data, url, &exception_state)) {
     DCHECK(exception_state.HadException());

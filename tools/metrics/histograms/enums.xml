@@ -7985,6 +7985,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="6" label="MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS"/>
   <int value="7" label="PVM_SCRIPTED_PRINT_FENCED_FRAME"/>
   <int value="8" label="PVMB_SCRIPTED_PRINT_FENCED_FRAME"/>
+  <int value="9" label="SSI_CREATE_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonContent">

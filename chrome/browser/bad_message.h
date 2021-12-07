@@ -30,6 +30,7 @@ enum BadMessageReason {
   MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS = 6,
   PVM_SCRIPTED_PRINT_FENCED_FRAME = 7,
   PVMB_SCRIPTED_PRINT_FENCED_FRAME = 8,
+  SSI_CREATE_FENCED_FRAME = 9,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

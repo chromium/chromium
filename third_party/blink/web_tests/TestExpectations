@@ -7117,6 +7117,7 @@ crbug.com/1243568 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-d
 # Gesture of WPT Test Driver doesn't work well in MPArch Fenced Frame on some Mac try bots.
 crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/pointer-lock.https.html [ Timeout Pass ]
 crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/web-bluetooth.https.html [ Timeout Pass ]
+crbug.com/1275997 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/web-share.https.html [ Timeout Pass ]
 
 # Sheriff 2021-10-15, 2021-12-07
 crbug.com/1256763 [ Win ] virtual/gpu-rasterization/images/color-profile-image-pseudo-content.html [ Failure Pass ]

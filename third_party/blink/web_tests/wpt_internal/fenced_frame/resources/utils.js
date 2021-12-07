@@ -67,6 +67,7 @@ const KEYS = {
   "permission.geolocation"                      : "00000000-0000-0000-0000-000000000020",
 
   "presentation.receiver"                       : "00000000-0000-0000-0000-000000000021",
+
   "background-sync"                             : "00000000-0000-0000-0000-000000000022",
 
   "prerender READY"                             : "00000000-0000-0000-0000-000000000023",
@@ -81,6 +82,8 @@ const KEYS = {
   "bluetooth.requestDevice"                     : "00000000-0000-0000-0000-000000000029",
 
   "usb.requestDevice"                           : "00000000-0000-0000-0000-00000000002A",
+
+  "navigator.share"                             : "00000000-0000-0000-0000-00000000002B",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
