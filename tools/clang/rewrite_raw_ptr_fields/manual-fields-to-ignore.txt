@@ -216,9 +216,6 @@ device::RSAPublicKey::ExtractFromCOSEKey(int32_t, base::span<const uint8_t>, con
 gfx::ScopedNSGraphicsContextSaveGState::context_
 base::mac::ScopedNSAutoreleasePool::autorelease_pool_
 
-# Populated manually - incompatibility with NO_STACK_PROTECTOR being investigated at https://crbug.com/1274129
-content::ContentMainRunnerImpl::delegate_
-
 #######
 # BackupRefPtr-specific sections
 #######

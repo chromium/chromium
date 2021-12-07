@@ -78,7 +78,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   bool completed_basic_startup_ = false;
 
   // The delegate will outlive this object.
-  ContentMainDelegate* delegate_ = nullptr;
+  raw_ptr<ContentMainDelegate> delegate_ = nullptr;
 
   std::unique_ptr<base::AtExitManager> exit_manager_;
 
