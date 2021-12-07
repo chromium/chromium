@@ -31,8 +31,8 @@ bool ShouldShowPromo(Profile* profile) {
   // primary profile.
   Profile* original_profile = profile->GetOriginalProfile();
 
-  // Don't show for supervised profiles.
-  if (original_profile->IsSupervised())
+  // Don't show for supervised child profiles.
+  if (original_profile->IsChild())
     return false;
 
   // Don't show if sign-in is not allowed.

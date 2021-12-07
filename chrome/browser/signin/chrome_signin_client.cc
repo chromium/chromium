@@ -196,7 +196,7 @@ void ChromeSigninClient::PreSignOut(
       signout_source_metric == signin_metrics::SIGNOUT_PREF_CHANGED ||
       user_declines_sync_after_consenting_to_management;
   if (signin_util::IsForceSigninEnabled() && !profile_->IsSystemProfile() &&
-      !profile_->IsGuestSession() && !profile_->IsSupervised() &&
+      !profile_->IsGuestSession() && !profile_->IsChild() &&
       !keep_window_opened) {
     if (signout_source_metric ==
         signin_metrics::SIGNIN_PREF_CHANGED_DURING_SIGNIN) {
