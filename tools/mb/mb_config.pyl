@@ -221,8 +221,8 @@
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
-      'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on',
-      'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on',
+      'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
+      'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none',
 
       'Dawn Win10 x86 Builder': 'dawn_tests_release_bot_dcheck_always_on_x86',
       'Dawn Win10 x64 Builder': 'dawn_tests_release_bot_dcheck_always_on',
@@ -971,7 +971,7 @@
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
-      'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot',
+      'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_alloc_none',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot',
@@ -2134,6 +2134,9 @@
     # while we investigate a crash in the mac AMD shader compiler.
     'dawn_tests_release_trybot_alloc_none': [
       'dawn_tests', 'release_trybot', 'padisabled',
+    ],
+    'dawn_tests_release_bot_dcheck_always_on_alloc_none': [
+      'dawn_tests', 'release_trybot_minimal_symbols', 'padisabled',
     ],
 
     'dawn_tests_release_trybot_x86': [

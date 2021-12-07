@@ -46,6 +46,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
+      "use_allocator": "none",
       "use_dawn": true,
       "use_goma": true
     }
