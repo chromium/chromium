@@ -4881,6 +4881,12 @@ others/histograms.xml -->
   </int>
 </enum>
 
+<enum name="AsyncTaskStatus">
+  <int value="0" label="PENDING">AsyncTask was not started when waited on.</int>
+  <int value="1" label="RUNNING">AsyncTask was running when waited on.</int>
+  <int value="2" label="FINISHED">AsyncTask is done.</int>
+</enum>
+
 <enum name="AttachmentServicesResult">
   <int value="0" label="Succeeded with MOTW"/>
   <int value="1" label="Succeeded without MOTW"/>

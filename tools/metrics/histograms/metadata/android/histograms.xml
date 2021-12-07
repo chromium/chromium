@@ -1738,6 +1738,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Jank.AsyncTaskGetOnUiThreadStatus"
+    enum="AsyncTaskStatus" expires_after="2022-05-10">
+  <owner>smaier@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <summary>
+    The status of an AsyncTask when get() is called on the UI thread. This is
+    only recorded if the AsyncTask isn't immediately available.
+
+    Seeing the distribution of PENDING vs RUNNING tasks will give us a better
+    idea for how to approach these hangs.
+  </summary>
+</histogram>
+
 <histogram name="Android.Jank.FrameDuration{Scenario}" units="ms"
     expires_after="2022-03-31">
   <owner>salg@google.com</owner>
