@@ -14,6 +14,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <memory>
+
 #include "chrome/browser/ash/android_sms/fake_android_sms_app_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #endif
@@ -58,20 +60,19 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
 TEST_F(PushMessagingNotificationManagerTest,
        SkipEnforceUserVisibleOnlyRequirementsForAndroidMessages) {
   GURL app_url("https://example.com/test/");
-  auto* fake_android_sms_app_manager =
-      new ash::android_sms::FakeAndroidSmsAppManager();
+  auto fake_android_sms_app_manager =
+      std::make_unique<ash::android_sms::FakeAndroidSmsAppManager>();
   fake_android_sms_app_manager->SetInstalledAppUrl(app_url);
 
-  chromeos::multidevice_setup::FakeMultiDeviceSetupClient*
-      fake_multidevice_setup_client =
-          new chromeos::multidevice_setup::FakeMultiDeviceSetupClient();
+  auto fake_multidevice_setup_client = std::make_unique<
+      chromeos::multidevice_setup::FakeMultiDeviceSetupClient>();
   fake_multidevice_setup_client->SetFeatureState(
       chromeos::multidevice_setup::mojom::Feature::kMessages,
       chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser);
 
   PushMessagingNotificationManager manager(profile());
-  manager.SetTestMultiDeviceSetupClient(fake_multidevice_setup_client);
-  manager.SetTestAndroidSmsAppManager(fake_android_sms_app_manager);
+  manager.SetTestMultiDeviceSetupClient(fake_multidevice_setup_client.get());
+  manager.SetTestAndroidSmsAppManager(fake_android_sms_app_manager.get());
 
   bool was_called = false;
   manager.EnforceUserVisibleOnlyRequirements(
