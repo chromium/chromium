@@ -30,9 +30,11 @@
 #endif
 #if defined(OS_MAC)
 #include <malloc/malloc.h>
+
 #include "base/allocator/allocator_interception_mac.h"
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
+#include "base/mac/mac_util.h"
 #include "base/process/memory_unittest_mac.h"
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -207,6 +209,11 @@ TEST_F(OutOfMemoryDeathTest, NewArray) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Malloc) {
+#if defined(OS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // The libc symbols are not intercepted on 10.11, on purpose.
+  if (base::mac::IsOS10_11())
+    return;
+#endif
   if (ShouldSkipTest()) {
     return;
   }
@@ -217,6 +224,11 @@ TEST_F(OutOfMemoryDeathTest, Malloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Realloc) {
+#if defined(OS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // The libc symbols are not intercepted on 10.11, on purpose.
+  if (base::mac::IsOS10_11())
+    return;
+#endif
   if (ShouldSkipTest()) {
     return;
   }
@@ -227,6 +239,11 @@ TEST_F(OutOfMemoryDeathTest, Realloc) {
 }
 
 TEST_F(OutOfMemoryDeathTest, Calloc) {
+#if defined(OS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // The libc symbols are not intercepted on 10.11, on purpose.
+  if (base::mac::IsOS10_11())
+    return;
+#endif
   if (ShouldSkipTest()) {
     return;
   }
@@ -389,6 +406,12 @@ TEST_F(OutOfMemoryDeathTest, ViaSharedLibraries) {
 // Android doesn't implement posix_memalign().
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
 TEST_F(OutOfMemoryDeathTest, Posix_memalign) {
+#if defined(OS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // The libc symbols are not intercepted on 10.11, on purpose.
+  if (base::mac::IsOS10_11())
+    return;
+#endif
+
   // Grab the return value of posix_memalign to silence a compiler warning
   // about unused return values. We don't actually care about the return
   // value, since we're asserting death.

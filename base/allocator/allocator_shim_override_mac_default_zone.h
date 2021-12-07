@@ -12,6 +12,7 @@
 #endif
 
 #include <string.h>
+#include <sys/utsname.h>
 
 #include "base/allocator/early_zone_registration_mac.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -293,6 +294,33 @@ void InitializeZone() {
   g_mac_malloc_zone.claimed_address = nullptr;
 }
 
+bool IsMacOS10_11() {
+  // Detection below is inspired by base/mac/mac_util.h, which we cannot use
+  // directly as it:
+  // 1. Allocates by itself.
+  // 2. Uses static local variables, which can cause issues on macOS.
+  //
+  // Strictly speaking, this code can allocate, but this is still a delicate
+  // phase, since this is executing from a static initializer, very very
+  // early. Since we only need to detect the major Darwin release, there is no
+  // need to depend on external code.
+  struct utsname uname_info;
+  if (uname(&uname_info) != 0) {
+    RAW_LOG(ERROR, "uname");
+    // In case of error, don't crash, assume that it's not macOS 10.11, since
+    // it's a small fraction of usage.
+    return false;
+  }
+
+  if (strcmp(uname_info.sysname, "Darwin") != 0) {
+    RAW_LOG(ERROR, "unexpected uname sysname ");
+    return false;
+  }
+
+  // macOS 10.11.x matches Darwin 15.x
+  return strncmp(uname_info.release, "15.", 3) == 0;
+}
+
 // Replaces the default malloc zone with our own malloc zone backed by
 // PartitionAlloc.  Since we'd like to make as much code as possible to use our
 // own memory allocator (and reduce bugs caused by mixed use of the system
@@ -322,13 +350,40 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   // Create our own malloc zone.
   InitializeZone();
 
+  // Don't promote the new zone to be the default one. Note that this zone is
+  // still registered, and is still expected to be heavily used, as we
+  // override operator new/delete and friends. So almost all C++ allocations
+  // will end up using PartitionAlloc, but not e.g. third-party allocations,
+  // and allocations from the system frameworks.
+  //
+  // This is the motivation: there are instances where CoreFoundation
+  // allocates memory with the first zone, but then uses the *initial* zone to
+  // free() it. This ends up passing a pointer allocated with PartitionAlloc
+  // to macOS's free(), which is not prepared to handle it.
+  //
+  // This is not the right behavior: most allocations should not target a zone
+  // directly, and instead rely on dispatching to the right zone in
+  // free(). And if code is targeting a specific zone, they should always
+  // match. In PartitionAlloc we handle the case of free()-ing allocations
+  // that we didn't make, but macOS's free() does not check.
+  //
+  // For more details, see crbug.com/1268776.
+  //
+  // TODO(lizeb): Re-enable on macOS 10.11.
+  bool do_not_promote_to_default = IsMacOS10_11();
+
+  // Early registration path.
   malloc_zone_t* system_default_zone = GetDefaultMallocZone();
   if (strcmp(system_default_zone->zone_name,
              partition_alloc::kDelegatingZoneName) == 0) {
+    malloc_zone_register(&g_mac_malloc_zone);
+
+    if (do_not_promote_to_default)
+      return;
+
     // The first zone is our zone, we can unregister it, replacing it with the
     // new one. This relies on a precise zone setup, done in
     // |EarlyMallocZoneRegistration()|.
-    malloc_zone_register(&g_mac_malloc_zone);
     malloc_zone_unregister(system_default_zone);
     return;
   }
@@ -337,14 +392,17 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   // or fine if the current process is not hosting multiple threads.
   //
   // This path is fine for e.g. most unit tests.
-  //
+  malloc_zone_register(&g_mac_malloc_zone);
+
+  if (do_not_promote_to_default)
+    return;
+
   // Make our own zone the default zone.
   //
   // Put our own zone at the last position, so that it promotes to the default
   // zone.  The implementation logic of malloc_zone_unregister is:
   //   zone_table.swap(unregistered_zone, last_zone);
   //   zone_table.shrink_size_by_1();
-  malloc_zone_register(&g_mac_malloc_zone);
   malloc_zone_unregister(system_default_zone);
   // Between malloc_zone_unregister(system_default_zone) (above) and
   // malloc_zone_register(system_default_zone) (below), i.e. while absence of
