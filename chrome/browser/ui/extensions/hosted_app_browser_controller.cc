@@ -235,14 +235,14 @@ void HostedAppBrowserController::LoadAppIcon(
     bool allow_placeholder_icon) const {
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->LoadIcon(apps::AppType::kExtension, GetExtension()->id(),
+        ->LoadIcon(apps::AppType::kChromeApp, GetExtension()->id(),
                    apps::IconType::kStandard,
                    extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
                    base::BindOnce(&HostedAppBrowserController::OnLoadIcon,
                                   weak_ptr_factory_.GetWeakPtr()));
   } else {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->LoadIcon(apps::mojom::AppType::kExtension, GetExtension()->id(),
+        ->LoadIcon(apps::mojom::AppType::kChromeApp, GetExtension()->id(),
                    apps::mojom::IconType::kStandard,
                    extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
                    apps::MojomIconValueToIconValueCallback(

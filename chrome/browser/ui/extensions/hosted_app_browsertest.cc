@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
 
   EXPECT_TRUE(app_service_test().AreIconImageEqual(
       app_service_test().LoadAppIconBlocking(
-          apps::mojom::AppType::kExtension, app_id_,
+          apps::mojom::AppType::kChromeApp, app_id_,
           extension_misc::EXTENSION_ICON_SMALL),
       views::GetImageSkiaFromImageModel(
           app_browser_->app_controller()->GetWindowAppIcon(), nullptr)));

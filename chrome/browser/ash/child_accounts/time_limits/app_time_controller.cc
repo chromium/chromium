@@ -162,7 +162,7 @@ std::string GetNotificationIdFor(const std::string& app_name,
 }
 
 bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
-  if (app_id.app_type() != apps::mojom::AppType::kExtension &&
+  if (app_id.app_type() != apps::mojom::AppType::kChromeApp &&
       app_id.app_type() != apps::mojom::AppType::kWeb) {
     return false;
   }

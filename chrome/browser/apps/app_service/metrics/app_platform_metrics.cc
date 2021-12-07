@@ -110,7 +110,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kBuiltIn;
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return apps::IsBrowser(window) ? apps::AppTypeNameV2::kChromeAppTab
                                      : apps::AppTypeNameV2::kChromeAppWindow;
     case apps::mojom::AppType::kWeb: {
@@ -155,7 +155,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kBuiltIn;
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return container == apps::mojom::LaunchContainer::kLaunchContainerWindow
                  ? apps::AppTypeNameV2::kChromeAppWindow
                  : apps::AppTypeNameV2::kChromeAppTab;
@@ -645,7 +645,7 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
     // The browser window is activated, start calculating the browser window
     // running time.
     // TODO(crbug.com/1251501): Handle lacros window.
-    SetWindowActivated(apps::mojom::AppType::kExtension,
+    SetWindowActivated(apps::mojom::AppType::kChromeApp,
                        AppTypeName::kChromeBrowser,
                        AppTypeNameV2::kChromeBrowser,
                        extension_misc::kChromeAppId, browser_id);
@@ -978,7 +978,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
 
   switch (app_type) {
     case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
       break;
     case apps::mojom::AppType::kArc:

@@ -170,7 +170,7 @@ EnumTraits<crosapi::mojom::AppType, apps::mojom::AppType>::ToMojom(
       return crosapi::mojom::AppType::kStandaloneBrowserExtension;
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kStandaloneBrowser:

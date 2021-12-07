@@ -268,7 +268,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
   // Creates a new builder, destroying any existing one.
   void CreateBuilder() {
     AppServiceAppModelBuilderTest::CreateBuilder(false /*guest_mode*/);
-    RemoveApps(apps::mojom::AppType::kExtension, testing_profile(),
+    RemoveApps(apps::mojom::AppType::kChromeApp, testing_profile(),
                model_updater_.get());
   }
 

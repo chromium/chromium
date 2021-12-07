@@ -75,7 +75,7 @@ export class BrowserProxy {
             'pjkljhegncpnkkknowihdijeoejaedia',
             {
               title: 'Chrome App',
-              type: AppType.kExtension,
+              type: AppType.kChromeApp,
               description: 'A Chrome App installed from the Chrome Web Store.',
             },
             ),
@@ -90,7 +90,7 @@ export class BrowserProxy {
             'pjkljhegncpnkkknbcohdijeoejaedia',
             {
               title: 'Chrome App, OEM installed',
-              type: AppType.kExtension,
+              type: AppType.kChromeApp,
               description: 'A Chrome App installed by an OEM.',
               installReason: InstallReason.kOem,
             },

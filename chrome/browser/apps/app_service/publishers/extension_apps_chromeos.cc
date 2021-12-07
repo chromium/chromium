@@ -265,7 +265,7 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
 
   constexpr bool kPaused = true;
   PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
-                             apps::mojom::AppType::kExtension, app_id, kPaused),
+                             apps::mojom::AppType::kChromeApp, app_id, kPaused),
                          subscribers());
 
   if (!instance_registry_->ContainsAppId(app_id)) {
@@ -285,7 +285,7 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
 
   constexpr bool kPaused = false;
   PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
-                             apps::mojom::AppType::kExtension, app_id, kPaused),
+                             apps::mojom::AppType::kChromeApp, app_id, kPaused),
                          subscribers());
 
   ash::app_time::AppTimeLimitInterface* app_time =
@@ -547,7 +547,7 @@ void ExtensionAppsChromeOs::OnNotificationClosed(
 
   for (const auto& app_id : app_ids) {
     PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
-                               apps::mojom::AppType::kExtension, app_id),
+                               apps::mojom::AppType::kChromeApp, app_id),
                            subscribers());
   }
 }
@@ -567,7 +567,7 @@ bool ExtensionAppsChromeOs::MaybeAddNotification(
 
   app_notifications_.AddNotification(app_id, notification_id);
   PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
-                             apps::mojom::AppType::kExtension, app_id),
+                             apps::mojom::AppType::kChromeApp, app_id),
                          subscribers());
   return true;
 }
@@ -629,7 +629,7 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
   }
 
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kExtension;
+  app->app_type = apps::mojom::AppType::kChromeApp;
   app->app_id = app_id;
   SetShowInFields(app, extension);
   PublisherBase::Publish(std::move(app), subscribers());
@@ -838,13 +838,13 @@ void ExtensionAppsChromeOs::SetIconEffect(const std::string& app_id) {
   }
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = apps::mojom::AppType::kChromeApp;
   mojom_app->app_id = app_id;
   mojom_app->icon_key = icon_key_factory().MakeIconKey(
       GetIconEffects(extension, paused_apps_.IsPaused(app_id)));
   PublisherBase::Publish(std::move(mojom_app), subscribers());
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kExtension, app_id);
+  std::unique_ptr<App> app = std::make_unique<App>(AppType::kChromeApp, app_id);
   app->icon_key = std::move(*icon_key_factory().CreateIconKey(
       GetIconEffects(extension, paused_apps_.IsPaused(app_id))));
   AppPublisher::Publish(std::move(app));

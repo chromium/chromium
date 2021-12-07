@@ -351,7 +351,7 @@ void UpdateAppRegistryCache(Profile* profile,
                             apps::mojom::OptionalBool show_in_shelf) {
   std::vector<apps::mojom::AppPtr> apps;
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kExtension;
+  app->app_type = apps::mojom::AppType::kChromeApp;
   app->app_id = app_id;
 
   if (block)
@@ -371,7 +371,7 @@ void UpdateAppRegistryCache(Profile* profile,
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+      .OnApps(std::move(apps), apps::mojom::AppType::kChromeApp,
               false /* should_notify_initialized */);
 }
 
@@ -5094,13 +5094,13 @@ TEST_P(ChromeShelfControllerTest, DoNotShowInShelf) {
   // Set App1.show_in_shelf to false.
   std::vector<apps::mojom::AppPtr> apps;
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kExtension;
+  app->app_type = apps::mojom::AppType::kChromeApp;
   app->app_id = extension1_->id();
   app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+      .OnApps(std::move(apps), apps::mojom::AppType::kChromeApp,
               false /* should_notify_initialized */);
 
   InitShelfController();

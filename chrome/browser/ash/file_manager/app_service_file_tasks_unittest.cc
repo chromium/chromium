@@ -188,7 +188,7 @@ class AppServiceFileTasksTest : public testing::Test {
     auto filters =
         apps_util::CreateChromeAppIntentFilters(baz_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppId, std::move(filters),
-                                apps::mojom::AppType::kExtension,
+                                apps::mojom::AppType::kChromeApp,
                                 apps::mojom::OptionalBool::kTrue);
   }
 
@@ -261,7 +261,7 @@ class AppServiceFileTasksTest : public testing::Test {
     auto filters =
         apps_util::CreateChromeAppIntentFilters(foo_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppWithVerbsId, std::move(filters),
-                                apps::mojom::AppType::kExtension,
+                                apps::mojom::AppType::kChromeApp,
                                 apps::mojom::OptionalBool::kTrue);
   }
 
@@ -291,7 +291,7 @@ class AppServiceFileTasksTest : public testing::Test {
     auto filters =
         apps_util::CreateExtensionIntentFilters(fbh_app.Build().get());
     AddFakeAppWithIntentFilters(kExtensionId, std::move(filters),
-                                apps::mojom::AppType::kExtension,
+                                apps::mojom::AppType::kChromeApp,
                                 apps::mojom::OptionalBool::kTrue);
   }
 

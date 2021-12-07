@@ -705,7 +705,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
 
   // Report activity for two different apps.
   const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
   const Time start_time = Time::Now();
   const base::TimeDelta app1_interval = base::Minutes(1);
   const base::TimeDelta app2_interval = base::Minutes(2);
@@ -762,7 +762,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   status_collector_->OnSubmittedSuccessfully();
 
   const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
   const base::TimeDelta app1_interval = base::Minutes(1);
   const base::TimeDelta app2_interval = base::Minutes(2);
 
@@ -808,7 +808,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
 
   // Report activity for two different apps.
   const ash::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
-  const ash::app_time::AppId app2(apps::mojom::AppType::kExtension, "app2");
+  const ash::app_time::AppId app2(apps::mojom::AppType::kChromeApp, "app2");
   const base::TimeDelta app1_interval = base::Seconds(1);
   const base::TimeDelta app2_interval = base::Seconds(2);
   SimulateAppActivity(app1, app1_interval);

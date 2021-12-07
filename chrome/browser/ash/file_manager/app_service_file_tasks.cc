@@ -61,7 +61,7 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kStandaloneBrowserExtension:
       // Chrome apps and Extensions both get called file_handler, even though
       // extensions really have file_browser_handler. It doesn't matter anymore
@@ -174,7 +174,7 @@ void FindAppServiceTasks(Profile* profile,
     if (!(app_type == apps::mojom::AppType::kArc ||
           app_type == apps::mojom::AppType::kWeb ||
           app_type == apps::mojom::AppType::kSystemWeb ||
-          app_type == apps::mojom::AppType::kExtension ||
+          app_type == apps::mojom::AppType::kChromeApp ||
           app_type == apps::mojom::AppType::kStandaloneBrowserExtension))
       continue;
 
@@ -208,7 +208,7 @@ void FindAppServiceTasks(Profile* profile,
         continue;
     }
 
-    if (app_type == apps::mojom::AppType::kExtension) {
+    if (app_type == apps::mojom::AppType::kChromeApp) {
       if (profile->IsOffTheRecord() &&
           !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
         continue;

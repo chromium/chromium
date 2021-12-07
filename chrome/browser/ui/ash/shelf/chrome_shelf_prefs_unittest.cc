@@ -106,7 +106,7 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
     return app_type_map_[app_id];
   }
   bool IsAshExtensionApp(const std::string& app_id) override {
-    return app_type_map_[app_id] == apps::mojom::AppType::kExtension;
+    return app_type_map_[app_id] == apps::mojom::AppType::kChromeApp;
   }
   bool IsAshKeepListApp(const std::string& app_id) override { return false; }
 
@@ -240,7 +240,7 @@ TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
   syncable_service_.item_map_[kNeitherId] = MakeSyncItem(kNeitherId, ordinal3);
 
   shelf_prefs_->app_type_map_[kAshChromeAppId] =
-      apps::mojom::AppType::kExtension;
+      apps::mojom::AppType::kChromeApp;
   shelf_prefs_->app_type_map_[kLacrosChromeAppIdWithUsualPrefix] =
       apps::mojom::AppType::kStandaloneBrowserExtension;
 

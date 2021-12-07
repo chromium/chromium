@@ -216,7 +216,7 @@ ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
           ->AppRegistryCache();
   const apps::mojom::AppType app_type = app_registry_cache.GetAppType(app_id);
   if (app_id != extension_misc::kChromeAppId &&
-      (app_type == apps::mojom::AppType::kExtension ||
+      (app_type == apps::mojom::AppType::kChromeApp ||
        app_type == apps::mojom::AppType::kWeb)) {
     // If these values are not present, we will not be able to restore the
     // application. See http://crbug.com/1232520 for more information.

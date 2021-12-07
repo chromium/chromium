@@ -49,7 +49,7 @@ UninstallDialog::UninstallDialog(Profile* profile,
       mojom_icon_key->icon_effects = static_cast<apps::IconEffects>(
           mojom_icon_key->icon_effects | apps::IconEffects::kResizeAndPad);
       break;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
       UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource",
                                 extensions::UNINSTALL_SOURCE_APP_LIST,
@@ -86,7 +86,7 @@ UninstallDialog::~UninstallDialog() = default;
 void UninstallDialog::OnDialogClosed(bool uninstall,
                                      bool clear_site_data,
                                      bool report_abuse) {
-  if (!uninstall && (app_type_ == apps::mojom::AppType::kExtension ||
+  if (!uninstall && (app_type_ == apps::mojom::AppType::kChromeApp ||
                      app_type_ == apps::mojom::AppType::kWeb)) {
     ExtensionAppsChromeOs::RecordUninstallCanceledAction(profile_, app_id_);
   }

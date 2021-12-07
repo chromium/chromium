@@ -84,7 +84,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
       SetResultType(ResultType::kInternalApp);
       apps::RecordBuiltInAppSearchResult(app_id);
       break;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       // TODO(crbug.com/826982): why do we pass the URL and not the app_id??
       // Can we replace this by the simpler "set_id(app_id)", and therefore
       // pull that out of the switch?
@@ -131,7 +131,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::PLUGIN_VM_APP;
     case apps::mojom::AppType::kCrostini:
       return ash::CROSTINI_APP;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
     case apps::mojom::AppType::kStandaloneBrowserExtension:
@@ -185,7 +185,7 @@ void AppServiceAppResult::Launch(int event_flags,
         if (update.AppType() == apps::mojom::AppType::kCrostini ||
             update.AppType() == apps::mojom::AppType::kWeb ||
             update.AppType() == apps::mojom::AppType::kSystemWeb ||
-            (update.AppType() == apps::mojom::AppType::kExtension &&
+            (update.AppType() == apps::mojom::AppType::kChromeApp &&
              update.IsPlatformApp() == apps::mojom::OptionalBool::kFalse)) {
           is_active_app = true;
         }

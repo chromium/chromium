@@ -37,7 +37,7 @@ namespace {
 
 const AppId kApp1(apps::mojom::AppType::kArc, "1");
 const AppId kApp2(apps::mojom::AppType::kWeb, "3");
-const AppId kGoogleSlidesApp(apps::mojom::AppType::kExtension,
+const AppId kGoogleSlidesApp(apps::mojom::AppType::kChromeApp,
                              extension_misc::kGoogleSlidesAppId);
 
 class AppTimeNotificationDelegateMock : public AppTimeNotificationDelegate {

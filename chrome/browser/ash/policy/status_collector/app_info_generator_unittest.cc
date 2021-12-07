@@ -296,7 +296,7 @@ TEST_F(AppInfoGeneratorTest, GenerateInventoryList) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
-          apps::mojom::AppType::kExtension);
+          apps::mojom::AppType::kChromeApp);
   PushApp("c", "ThirdApp", apps::mojom::Readiness::kUninstalledByUser, "",
           apps::mojom::AppType::kCrostini);
 
@@ -650,7 +650,7 @@ TEST_F(AppInfoGeneratorTest, OnLoginRemoveOldUsage) {
   PushApp("a", "FirstApp", apps::mojom::Readiness::kDisabledByPolicy, "1.1",
           apps::mojom::AppType::kArc);
   PushApp("b", "SecondApp", apps::mojom::Readiness::kReady, "1.2",
-          apps::mojom::AppType::kExtension);
+          apps::mojom::AppType::kChromeApp);
   auto max_days_past = base::Days(
       1);  // Exclude all past usage except for UTC today and yesterday.
   auto generator = GetGenerator(max_days_past);

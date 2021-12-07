@@ -330,9 +330,9 @@ class DeskSyncBridgeTest : public testing::Test {
         MakeApp(kTestPwaAppId, "Test PWA App", apps::mojom::AppType::kWeb));
     // chromeAppId returns kExtension in the real Apps cache.
     deltas.push_back(MakeApp(extension_misc::kChromeAppId, "Chrome Browser",
-                             apps::mojom::AppType::kExtension));
+                             apps::mojom::AppType::kChromeApp));
     deltas.push_back(MakeApp(kTestChromeAppId, "Test Chrome App",
-                             apps::mojom::AppType::kExtension));
+                             apps::mojom::AppType::kChromeApp));
 
     cache_->OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                    false /* should_notify_initialized */);

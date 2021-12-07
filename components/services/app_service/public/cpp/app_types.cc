@@ -38,8 +38,8 @@ AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type) {
       return AppType::kBuiltIn;
     case apps::mojom::AppType::kCrostini:
       return AppType::kCrostini;
-    case apps::mojom::AppType::kExtension:
-      return AppType::kExtension;
+    case apps::mojom::AppType::kChromeApp:
+      return AppType::kChromeApp;
     case apps::mojom::AppType::kWeb:
       return AppType::kWeb;
     case apps::mojom::AppType::kMacOs:

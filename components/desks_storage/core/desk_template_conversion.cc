@@ -369,7 +369,7 @@ std::string GetAppTypeForJson(apps::AppRegistryCache* apps_cache,
     case apps::mojom::AppType::kWeb:
       return app_id == extension_misc::kChromeAppId ? kAppTypeBrowser
                                                     : kAppTypeProgressiveWeb;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return kAppTypeChrome;
     default:
       // Default to browser if unsupported, this shouldn't be captured and

@@ -36,7 +36,7 @@ apps::AppTypeName GetHistogrameAppType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeName::kUnknown;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return apps::AppTypeName::kChromeApp;
     case apps::mojom::AppType::kWeb:
       return apps::AppTypeName::kWeb;
@@ -161,7 +161,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // restoration could be delayed, so return to preserve the restore data
       // for ARC apps.
       return;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
       if (ShouldLaunchSystemWebAppOrChromeApp(app_id, it->second))
@@ -191,7 +191,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
   if (!launcher)
     return;
 
-  if (app_type == apps::mojom::AppType::kExtension)
+  if (app_type == apps::mojom::AppType::kChromeApp)
     OnExtensionLaunching(app_id);
 
   for (const auto& it : launch_list) {

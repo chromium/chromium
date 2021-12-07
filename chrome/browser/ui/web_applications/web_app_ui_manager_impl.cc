@@ -294,7 +294,7 @@ void WebAppUiManagerImpl::OnShortcutLocationGathered(
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   const bool is_extension = proxy->AppRegistryCache().GetAppType(from_app) ==
-                            apps::mojom::AppType::kExtension;
+                            apps::mojom::AppType::kChromeApp;
   if (is_extension) {
     WaitForExtensionShortcutsDeleted(
         from_app,

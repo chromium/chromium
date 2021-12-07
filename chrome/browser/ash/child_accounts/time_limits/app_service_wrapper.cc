@@ -332,7 +332,7 @@ bool AppServiceWrapper::ShouldIncludeApp(const AppId& app_id) const {
   if (IsHiddenArcApp(app_id))
     return false;
 
-  if (app_id.app_type() == apps::mojom::AppType::kExtension) {
+  if (app_id.app_type() == apps::mojom::AppType::kChromeApp) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
             app_id.app_id(),

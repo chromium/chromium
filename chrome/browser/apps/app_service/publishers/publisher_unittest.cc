@@ -298,17 +298,17 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
-  VerifyApp(AppType::kExtension, store->id(), store->name(), Readiness::kReady);
+  VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady);
 
-  // Uninstall the extension.
+  // Uninstall the Chrome app.
   service_->UninstallExtension(
       store->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  VerifyApp(AppType::kExtension, store->id(), store->name(),
+  VerifyApp(AppType::kChromeApp, store->id(), store->name(),
             Readiness::kUninstalledByUser);
 
-  // Reinstall the extension.
+  // Reinstall the Chrome app.
   service_->AddExtension(store.get());
-  VerifyApp(AppType::kExtension, store->id(), store->name(), Readiness::kReady);
+  VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady);
 }
 
 TEST_F(PublisherTest, WebAppsOnApps) {

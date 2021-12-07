@@ -132,14 +132,14 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     std::vector<apps::mojom::AppPtr> apps;
     auto app = apps::mojom::App::New();
     app->app_id = "invalid-chrome-app";
-    app->app_type = apps::mojom::AppType::kExtension;
+    app->app_type = apps::mojom::AppType::kChromeApp;
     app->handles_intents = apps::mojom::OptionalBool::kTrue;
     app->readiness = apps::mojom::Readiness::kReady;
     app->intent_filters =
         apps_util::CreateChromeAppIntentFilters(extension.get());
     apps.push_back(std::move(app));
     app_service_proxy_->AppRegistryCache().OnApps(
-        std::move(apps), apps::mojom::AppType::kExtension,
+        std::move(apps), apps::mojom::AppType::kChromeApp,
         /*should_notify_initialized=*/false);
     app_service_test_.WaitForAppService();
   }

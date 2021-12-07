@@ -93,9 +93,9 @@ class DeskTemplateConversionTest : public testing::Test {
                              apps::mojom::AppType::kWeb));
     // chromeAppId returns kExtension in the real Apps cache.
     deltas.push_back(MakeApp(extension_misc::kChromeAppId, "Chrome Browser",
-                             apps::mojom::AppType::kExtension));
+                             apps::mojom::AppType::kChromeApp));
     deltas.push_back(MakeApp(kChromeAppId.c_str(), "Test Chrome App",
-                             apps::mojom::AppType::kExtension));
+                             apps::mojom::AppType::kChromeApp));
 
     cache_->OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                    /*should_notify_initialized=*/false);

@@ -70,7 +70,7 @@ const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
       return kBuiltInAppsCountHistogramName;
     case apps::mojom::AppType::kCrostini:
       return kCrostiniAppsCountHistogramName;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return kExtensionAppsCountHistogramName;
     case apps::mojom::AppType::kWeb:
       return kWebAppsCountHistogramName;

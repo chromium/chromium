@@ -169,7 +169,7 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   // Construct an App with only the information required to identify an
   // uninstallation.
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = apps::mojom::AppType::kChromeApp;
   mojom_app->app_id = extension->id();
   mojom_app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
                              ? apps::mojom::Readiness::kUninstalledByMigration
@@ -179,7 +179,7 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
   std::unique_ptr<App> app =
-      std::make_unique<App>(AppType::kExtension, extension->id());
+      std::make_unique<App>(AppType::kChromeApp, extension->id());
   app->readiness = reason == extensions::UNINSTALL_REASON_MIGRATED
                        ? Readiness::kUninstalledByMigration
                        : Readiness::kUninstalledByUser;
@@ -211,7 +211,7 @@ std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
     const extensions::Extension* extension,
     Readiness readiness) {
   std::unique_ptr<App> app = AppPublisher::MakeApp(
-      AppType::kExtension, extension->id(), readiness, extension->name());
+      AppType::kChromeApp, extension->id(), readiness, extension->name());
   app->short_name = extension->short_name();
   app->description = extension->description();
   app->version = extension->GetVersionForDisplay();
@@ -225,7 +225,7 @@ apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
     apps::mojom::Readiness readiness) {
   auto install_reason = GetInstallReason(profile_, extension);
   apps::mojom::AppPtr app =
-      PublisherBase::MakeApp(apps::mojom::AppType::kExtension, extension->id(),
+      PublisherBase::MakeApp(apps::mojom::AppType::kChromeApp, extension->id(),
                              readiness, extension->name(), install_reason);
 
   app->short_name = extension->short_name();
@@ -336,14 +336,14 @@ ExtensionAppsBase::CallbackWrapper::~CallbackWrapper() {
 }
 
 void ExtensionAppsBase::Initialize() {
-  RegisterPublisher(AppType::kExtension);
+  RegisterPublisher(AppType::kChromeApp);
 
   prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
   registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
 
   DCHECK(profile_);
   PublisherBase::Initialize(proxy()->AppService(),
-                            apps::mojom::AppType::kExtension);
+                            apps::mojom::AppType::kChromeApp);
 
   // Publish apps after all extensions have been loaded, to include all apps
   // including the disabled apps.
@@ -423,7 +423,7 @@ void ExtensionAppsBase::Connect(
   }
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kExtension,
+  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kChromeApp,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
 }
@@ -622,7 +622,7 @@ void ExtensionAppsBase::OnExtensionLastLaunchTimeChanged(
   }
 
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kExtension;
+  app->app_type = apps::mojom::AppType::kChromeApp;
   app->app_id = extension->id();
   app->last_launch_time = last_launch_time;
 
@@ -643,7 +643,7 @@ void ExtensionAppsBase::OnExtensionLoaded(
   }
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = apps::mojom::AppType::kChromeApp;
   mojom_app->app_id = extension->id();
   mojom_app->readiness = apps::mojom::Readiness::kReady;
   mojom_app->name = extension->name();
@@ -690,13 +690,13 @@ void ExtensionAppsBase::OnExtensionUnloaded(
   }
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kExtension;
+  mojom_app->app_type = apps::mojom::AppType::kChromeApp;
   mojom_app->app_id = extension->id();
   mojom_app->readiness = mojom_readiness;
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
   std::unique_ptr<App> app = AppPublisher::MakeApp(
-      AppType::kExtension, extension->id(), readiness, extension->name());
+      AppType::kChromeApp, extension->id(), readiness, extension->name());
   AppPublisher::Publish(std::move(app));
 }
 

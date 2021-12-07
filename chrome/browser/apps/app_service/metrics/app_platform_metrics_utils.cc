@@ -172,7 +172,7 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return apps::AppTypeName::kBuiltIn;
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeName::kCrostini;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return IsBrowser(window) ? apps::AppTypeName::kChromeBrowser
                                : apps::AppTypeName::kChromeApp;
     case apps::mojom::AppType::kWeb:
@@ -211,7 +211,7 @@ bool ShouldRecordUkmForAppTypeName(AppType app_type) {
   switch (app_type) {
     case AppType::kArc:
     case AppType::kBuiltIn:
-    case AppType::kExtension:
+    case AppType::kChromeApp:
     case AppType::kWeb:
     case AppType::kSystemWeb:
     case AppType::kCrostini:
@@ -261,7 +261,7 @@ AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kBuiltIn;
     case apps::mojom::AppType::kCrostini:
       return apps::AppTypeName::kCrostini;
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return GetAppTypeNameForChromeApp(profile, app_id, container);
     case apps::mojom::AppType::kWeb:
       return GetAppTypeNameForWebApp(profile, app_id, container);

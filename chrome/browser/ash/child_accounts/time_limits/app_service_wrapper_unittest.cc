@@ -148,7 +148,7 @@ class AppServiceWrapperTest : public ::testing::Test {
       return;
     }
 
-    if (app_id.app_type() == apps::mojom::AppType::kExtension) {
+    if (app_id.app_type() == apps::mojom::AppType::kChromeApp) {
       scoped_refptr<extensions::Extension> ext = CreateExtension(
           app_id.app_id(), app_name, url.value(), false /*is_bookmark_app*/);
       extension_service_->AddExtension(ext.get());
@@ -198,7 +198,7 @@ class AppServiceWrapperTest : public ::testing::Test {
       return;
     }
 
-    if (app_id.app_type() == apps::mojom::AppType::kExtension ||
+    if (app_id.app_type() == apps::mojom::AppType::kChromeApp ||
         app_id.app_type() == apps::mojom::AppType::kWeb) {
       extension_service_->UnloadExtension(
           app_id.app_id(), extensions::UnloadedExtensionReason::UNINSTALL);
@@ -227,7 +227,7 @@ class AppServiceWrapperTest : public ::testing::Test {
       return;
     }
 
-    if (app_id.app_type() == apps::mojom::AppType::kExtension ||
+    if (app_id.app_type() == apps::mojom::AppType::kChromeApp ||
         app_id.app_type() == apps::mojom::AppType::kWeb) {
       if (disabled) {
         extension_service_->DisableExtension(
@@ -259,7 +259,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 TEST_F(AppServiceWrapperTest, GetInstalledApps) {
   // Chrome is the only 'preinstalled' app.
   const AppId chrome =
-      AppId(apps::mojom::AppType::kExtension, extension_misc::kChromeAppId);
+      AppId(apps::mojom::AppType::kChromeApp, extension_misc::kChromeAppId);
   std::vector<AppId> installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_EQ(1u, installed_apps.size());
   EXPECT_TRUE(base::Contains(installed_apps, chrome));
@@ -272,7 +272,7 @@ TEST_F(AppServiceWrapperTest, GetInstalledApps) {
   // Add extension app. It will be ignored, because PATL does not support
   // extensions (with exception of Chrome) now.
   const AppId app2(
-      apps::mojom::AppType::kExtension,
+      apps::mojom::AppType::kChromeApp,
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kExtensionAppUrl)));
 
   EXPECT_CALL(test_listener(), OnAppInstalled(app2)).Times(1);
@@ -295,7 +295,7 @@ TEST_F(AppServiceWrapperTest, GetInstalledApps) {
 }
 
 TEST_F(AppServiceWrapperTest, GetAppName) {
-  const AppId chrome(apps::mojom::AppType::kExtension,
+  const AppId chrome(apps::mojom::AppType::kChromeApp,
                      extension_misc::kChromeAppId);
   EXPECT_EQ(kExtensionNameChrome, tested_wrapper().GetAppName(chrome));
 
@@ -304,7 +304,7 @@ TEST_F(AppServiceWrapperTest, GetAppName) {
   SimulateAppInstalled(app1, kArcApp1);
 
   const AppId app2(
-      apps::mojom::AppType::kExtension,
+      apps::mojom::AppType::kChromeApp,
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kExtensionAppUrl)));
 
   EXPECT_CALL(test_listener(), OnAppInstalled(app2)).Times(1);
@@ -423,13 +423,13 @@ TEST_F(AppServiceWrapperTest, WebAppDisabled) {
 
 // PATL v1 does not support 'extensions' other than Chrome.
 TEST_F(AppServiceWrapperTest, IgnoreOtherExtensions) {
-  const AppId chrome(apps::mojom::AppType::kExtension,
+  const AppId chrome(apps::mojom::AppType::kChromeApp,
                      extension_misc::kChromeAppId);
   std::vector<AppId> installed_apps = tested_wrapper().GetInstalledApps();
   EXPECT_TRUE(base::Contains(installed_apps, chrome));
 
   const AppId app1(
-      apps::mojom::AppType::kExtension,
+      apps::mojom::AppType::kChromeApp,
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kExtensionAppUrl)));
   EXPECT_CALL(test_listener(), OnAppInstalled(app1)).Times(1);
   SimulateAppInstalled(app1, kExtensionNameA, kExtensionAppUrl);

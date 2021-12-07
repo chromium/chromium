@@ -108,7 +108,7 @@ Polymer({
     switch (selectedAppType) {
       case (AppType.kWeb):
         return 'pwa-detail-view';
-      case (AppType.kExtension):
+      case (AppType.kChromeApp):
       case (AppType.kStandaloneBrowser):
       case (AppType.kStandaloneBrowserExtension):
         // TODO(https://crbug.com/1225848): Figure out appropriate behavior for

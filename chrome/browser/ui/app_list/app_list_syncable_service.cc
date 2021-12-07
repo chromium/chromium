@@ -124,7 +124,7 @@ bool AppIsDefault(Profile* profile, const std::string& id) {
 
 void SetAppIsDefaultForTest(Profile* profile, const std::string& id) {
   apps::mojom::AppPtr delta = apps::mojom::App::New();
-  delta->app_type = apps::mojom::AppType::kExtension;
+  delta->app_type = apps::mojom::AppType::kChromeApp;
   delta->app_id = id;
   delta->install_reason = apps::mojom::InstallReason::kDefault;
 
@@ -133,7 +133,7 @@ void SetAppIsDefaultForTest(Profile* profile, const std::string& id) {
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
-      .OnApps(std::move(deltas), apps::mojom::AppType::kExtension,
+      .OnApps(std::move(deltas), apps::mojom::AppType::kChromeApp,
               false /* should_notify_initialized */);
 }
 

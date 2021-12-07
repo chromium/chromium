@@ -239,7 +239,7 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
       }
       return ShelfContextMenu::IsCommandIdChecked(command_id);
     }
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       if (command_id >= ash::LAUNCH_TYPE_PINNED_TAB &&
           command_id <= ash::LAUNCH_TYPE_WINDOW) {
         return GetExtensionLaunchType() ==
@@ -293,7 +293,7 @@ void AppServiceShelfContextMenu::OnGetMenuModel(
   // The special rule to ensure that FilesManager's first menu item is "New
   // window".
   const bool build_extension_menu_before_pin =
-      (app_type_ == apps::mojom::AppType::kExtension &&
+      (app_type_ == apps::mojom::AppType::kChromeApp &&
        item().id.app_id == extension_misc::kFilesManagerAppId);
 
   if (build_extension_menu_before_pin)
@@ -477,7 +477,7 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
       }
       return;
     }
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       SetExtensionLaunchType(command_id);
       return;
     case apps::mojom::AppType::kArc:
@@ -567,7 +567,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
     }
     case apps::mojom::AppType::kCrostini:
     case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
     case apps::mojom::AppType::kStandaloneBrowserExtension:

@@ -369,7 +369,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       // kChromeAppId.
       break;
     }
-    case apps::mojom::AppType::kExtension: {
+    case apps::mojom::AppType::kChromeApp: {
       // Chrome extension backed app, Chrome Apps
       ChromeApp* chrome_app_window =
           out_app->mutable_app()->mutable_chrome_app();
@@ -458,7 +458,7 @@ void FillWorkspaceDeskSpecifics(
       const int window_id = window_id_to_launch_info.first;
       const app_restore::AppRestoreData* app_restore_data =
           window_id_to_launch_info.second.get();
-      // The apps cache returns kExtension for browser windows, therefore we
+      // The apps cache returns kChromeApp for browser windows, therefore we
       // short circuit the cache retrieval if we get the browser ID.
       const apps::mojom::AppType app_type =
           app_id == extension_misc::kChromeAppId

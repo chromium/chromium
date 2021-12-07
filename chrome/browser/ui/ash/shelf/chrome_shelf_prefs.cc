@@ -674,7 +674,7 @@ std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
   // If removing the prefix turns this into an ash chrome app, then we must
   // remove the prefix.
   type = GetAppType(prefix_removed);
-  if (type == apps::mojom::AppType::kExtension) {
+  if (type == apps::mojom::AppType::kChromeApp) {
     return prefix_removed;
   }
 

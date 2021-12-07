@@ -94,7 +94,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
   // restore file.
   if (SessionID::IsValidValue(params.restore_id)) {
     RecordAppLaunchMetrics(
-        profile_, apps::mojom::AppType::kExtension, params.app_id,
+        profile_, apps::mojom::AppType::kChromeApp, params.app_id,
         apps::mojom::LaunchSource::kFromFullRestore, params.container);
 
     AppLaunchParams params_for_restore(params.app_id, params.container,
@@ -110,7 +110,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     full_restore::SaveAppLaunchInfo(profile_->GetPath(),
                                     std::move(launch_info));
   } else {
-    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kExtension,
+    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kChromeApp,
                            params.app_id, params.launch_source,
                            params.container);
   }

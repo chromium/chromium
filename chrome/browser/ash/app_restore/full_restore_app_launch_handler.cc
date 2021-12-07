@@ -125,7 +125,7 @@ void FullRestoreAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
 
 void FullRestoreAppLaunchHandler::OnAppTypeInitialized(
     apps::mojom::AppType app_type) {
-  if (app_type == apps::mojom::AppType::kExtension) {
+  if (app_type == apps::mojom::AppType::kChromeApp) {
     are_chrome_apps_initialized_ = true;
     return;
   }

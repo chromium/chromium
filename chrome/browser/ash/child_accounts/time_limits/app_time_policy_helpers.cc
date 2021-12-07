@@ -40,7 +40,7 @@ apps::mojom::AppType PolicyStringToAppType(const std::string& app_type) {
   if (app_type == "CROSTINI")
     return apps::mojom::AppType::kCrostini;
   if (app_type == "EXTENSION")
-    return apps::mojom::AppType::kExtension;
+    return apps::mojom::AppType::kChromeApp;
   if (app_type == "PLUGIN-VM")
     return apps::mojom::AppType::kPluginVm;
   if (app_type == "WEB")
@@ -60,7 +60,7 @@ std::string AppTypeToPolicyString(apps::mojom::AppType app_type) {
       return "BUILT-IN";
     case apps::mojom::AppType::kCrostini:
       return "CROSTINI";
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
       return "EXTENSION";
     case apps::mojom::AppType::kPluginVm:
       return "PLUGIN-VM";

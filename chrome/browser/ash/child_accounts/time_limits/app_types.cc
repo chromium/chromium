@@ -22,7 +22,7 @@ std::string AppTypeToString(apps::mojom::AppType app_type) {
       return "Arc";
     case apps::mojom::AppType::kWeb:
       return "Web";
-    case apps::mojom::AppType::kExtension:
+    case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kStandaloneBrowserExtension:
       return "Extension";
     case apps::mojom::AppType::kBuiltIn:

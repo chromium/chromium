@@ -120,7 +120,7 @@ enum AppType {
   kArc,                   // Android app.
   kBuiltIn,               // Built-in app.
   kCrostini,              // Linux (via Crostini) app.
-  kExtension,             // Extension-backed app.
+  kChromeApp,             // Chrome app.
   kWeb,                   // Web app.
   kMacOs,                 // Mac OS app.
   kPluginVm,              // Plugin VM app, see go/pluginvm.

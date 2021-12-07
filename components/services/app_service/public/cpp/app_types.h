@@ -19,7 +19,7 @@ enum class AppType {
   kArc = 1,                // Android app.
   kBuiltIn = 2,            // Built-in app.
   kCrostini = 3,           // Linux (via Crostini) app.
-  kExtension = 4,          // Extension-backed app.
+  kChromeApp = 4,          // Chrome app.
   kWeb = 5,                // Web app.
   kMacOs = 6,              // Mac OS app.
   kPluginVm = 7,           // Plugin VM app, see go/pluginvm.

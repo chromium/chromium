@@ -779,7 +779,7 @@ TEST_F(AppPlatformMetricsServiceTest, InstallApps) {
 }
 
 TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
 
@@ -1036,7 +1036,7 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
 // and an ARC app in one day.
 TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentrage) {
   // Launch a browser window.
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
@@ -1099,7 +1099,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
   ModifyInstance(app_id, window.get(), kInactiveInstanceState);
 
   // Create a browser window
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
@@ -1138,7 +1138,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
   // Create a browser window.
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
@@ -1168,7 +1168,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   // Create a browser window.
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser1 = CreateBrowserWithAuraWindow1();
@@ -1215,7 +1215,7 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
 TEST_F(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowswer) {
   // Create a browser window.
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
@@ -1288,7 +1288,7 @@ TEST_F(AppPlatformMetricsServiceTest,
 TEST_F(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppOpenInTabWithActivatedBrowser) {
   // Create a browser window.
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
@@ -1379,7 +1379,7 @@ TEST_F(AppPlatformMetricsServiceTest,
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
   // Create a browser window.
-  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kExtension,
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
                 "Chrome", apps::mojom::Readiness::kReady,
                 apps::mojom::InstallSource::kSystem);
   std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();

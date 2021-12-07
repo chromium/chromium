@@ -161,7 +161,7 @@ class FamilyUserAppMetricsTest
                              apps::mojom::AppType::kCrostini));
     deltas.push_back(MakeApp(/*app_id=*/"e", /*app_name=*/"extension",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kExtension));
+                             apps::mojom::AppType::kChromeApp));
     deltas.push_back(MakeApp(/*app_id=*/"w", /*app_name=*/"web",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kWeb));
@@ -306,7 +306,7 @@ TEST_P(FamilyUserAppMetricsTest, FastForwardOneDay) {
   const apps::mojom::AppType fresh_app_types[7] = {
       apps::mojom::AppType::kUnknown,   apps::mojom::AppType::kArc,
       apps::mojom::AppType::kBuiltIn,   apps::mojom::AppType::kCrostini,
-      apps::mojom::AppType::kExtension, apps::mojom::AppType::kWeb,
+      apps::mojom::AppType::kChromeApp, apps::mojom::AppType::kWeb,
       apps::mojom::AppType::kBorealis,
   };
   // Launched over 28 days ago and dropped from the count.
