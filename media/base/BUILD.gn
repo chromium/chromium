@@ -293,7 +293,6 @@ source_set("base") {
     "subsample_entry.h",
     "supported_types.cc",
     "supported_types.h",
-    "supported_types.h",
     "supported_video_decoder_config.cc",
     "supported_video_decoder_config.h",
     "svc_scalability_mode.cc",
