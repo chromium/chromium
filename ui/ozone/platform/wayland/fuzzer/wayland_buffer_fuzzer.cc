@@ -214,6 +214,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                               mock_params->buffer_resource());
     }
+    SyncServer(&server, &env.task_environment);
   } else {
     // If the |manager_host| fires the terminate gpu callback, we need to set
     // the callback again.
