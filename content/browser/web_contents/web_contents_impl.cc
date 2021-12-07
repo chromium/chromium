@@ -4392,10 +4392,12 @@ void WebContentsImpl::GetNFC(
 
 void WebContentsImpl::SendScreenRects() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SendScreenRects");
-  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
-    if (node->current_frame_host()->is_local_root())
-      node->current_frame_host()->GetRenderWidgetHost()->SendScreenRects();
-  }
+  GetMainFrame()->ForEachRenderFrameHost(
+      base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
+        if (render_frame_host->is_local_root()) {
+          render_frame_host->GetRenderWidgetHost()->SendScreenRects();
+        }
+      }));
 }
 
 TextInputManager* WebContentsImpl::GetTextInputManager() {
