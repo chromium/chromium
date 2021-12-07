@@ -109,9 +109,16 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     if (shadow_offset.IsZero() && !shadow_blur && !shadow_spread)
       continue;
 
-    const Color& shadow_color = shadow.GetColor().Resolve(
+    Color resolved_shadow_color = shadow.GetColor().Resolve(
         style.VisitedDependentColor(GetCSSPropertyColor()),
         style.UsedColorScheme());
+    // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
+    // looper used for shadows so we need to apply dark mode to the color here.
+    const Color& shadow_color =
+        style.ForceDark() ? context.GetDarkModeFilter()->InvertColorIfNeeded(
+                                resolved_shadow_color.Rgb(),
+                                DarkModeFilter::ElementRole::kBackground)
+                          : resolved_shadow_color;
 
     gfx::RectF fill_rect = border.Rect();
     fill_rect.Outset(shadow_spread);
@@ -253,17 +260,23 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     if (!shadow.X() && !shadow.Y() && !shadow.Blur() && !shadow.Spread())
       continue;
 
-    const Color& shadow_color = shadow.GetColor().Resolve(
+    Color resolved_shadow_color = shadow.GetColor().Resolve(
         style.VisitedDependentColor(GetCSSPropertyColor()),
         style.UsedColorScheme());
-
-    AutoDarkMode auto_dark_mode(
-        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+    // DarkModeFilter::ApplyToFlagsIfNeeded does not apply dark mode to the draw
+    // looper used for shadows so we need to apply dark mode to the color here.
+    const Color& shadow_color =
+        style.ForceDark() ? context.GetDarkModeFilter()->InvertColorIfNeeded(
+                                resolved_shadow_color.Rgb(),
+                                DarkModeFilter::ElementRole::kBackground)
+                          : resolved_shadow_color;
 
     gfx::RectF inner_rect = bounds.Rect();
     inner_rect.Inset(shadow.Spread());
     if (inner_rect.IsEmpty()) {
-      context.FillRoundedRect(bounds, shadow_color, auto_dark_mode);
+      // |AutoDarkMode::Disabled()| is used because |shadow_color| has already
+      // been adjusted for dark mode.
+      context.FillRoundedRect(bounds, shadow_color, AutoDarkMode::Disabled());
       continue;
     }
     AdjustInnerRectForSideClipping(inner_rect, shadow, sides_to_include);
@@ -287,8 +300,10 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
     Color fill_color(shadow_color.Red(), shadow_color.Green(),
                      shadow_color.Blue());
     gfx::RectF outer_rect = AreaCastingShadowInHole(bounds.Rect(), shadow);
+    // |AutoDarkMode::Disabled()| is used because |fill_color(shadow_color)| has
+    // already been adjusted for dark mode.
     context.FillRectWithRoundedHole(outer_rect, inner_rounded_rect, fill_color,
-                                    auto_dark_mode);
+                                    AutoDarkMode::Disabled());
   }
 }
 
