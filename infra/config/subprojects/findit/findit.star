@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "goma", "os")
+load("//lib/builders.star", "builder", "defaults", "goma")
 load("//lib/ci.star", "rbe_instance", "rbe_jobs")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
@@ -59,34 +59,4 @@ builder(
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,
-)
-
-# Dimensionless trybot for findit.
-#
-# Findit will add appropriate dimensions and properties as needed based on
-# the waterfall builder being analyzed.
-#
-# TODO(robertocn): Remove _variable trybot builders from "try" bucket
-#   after they have been configured to use this generic builder, as well as
-#   the findit 'mixin'.
-builder(
-    name = "findit_variable",
-    # Findit app specifies these for each build it schedules. The reason why
-    # we specify them here is to pass validation of the buildbucket config.
-    # Also, to illustrate the typical use case of this bucket.
-    executable = "recipe:findit/chromium/compile",
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
-)
-
-builder(
-    name = "linux_chromium_bot_db_exporter",
-    executable = "recipe:findit/chromium/export_bot_db",
-    os = os.LINUX_XENIAL_OR_BIONIC_SWITCH_TO_DEFAULT,
-    properties = {
-        "gs_bucket": "findit-for-me",
-        "gs_object": "bot_db.json",
-    },
-    schedule = "0 0,6,12,18 * * *",
 )
