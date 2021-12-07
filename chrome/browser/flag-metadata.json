@@ -4757,7 +4757,7 @@
     "name": "restore-session-from-cache",
     "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
     // Needed for manual testing of native session restore flow on iOS.
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "restrict-gamepad-access",
