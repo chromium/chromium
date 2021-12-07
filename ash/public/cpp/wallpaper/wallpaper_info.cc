@@ -43,12 +43,26 @@ WallpaperInfo::WallpaperInfo(WallpaperInfo&& other) = default;
 WallpaperInfo& WallpaperInfo::operator=(WallpaperInfo&& other) = default;
 
 bool WallpaperInfo::operator==(const WallpaperInfo& other) const {
-  // |asset_id| is skipped on purpose in favor of |unit_id| as wallpapers can
-  // vary across devices due to their color mode.
-  return (location == other.location) && (layout == other.layout) &&
-         (type == other.type) && (collection_id == other.collection_id) &&
-         (unit_id == other.unit_id) &&
-         (std::equal(variants.begin(), variants.end(), other.variants.begin()));
+  // |asset_id| and |location| are skipped on purpose in favor of |unit_id| as
+  // online wallpapers can vary across devices due to their color mode. Other
+  // wallpaper types still require location to be equal.
+  switch (type) {
+    case WallpaperType::kOnline:
+    case WallpaperType::kDaily:
+      return type == other.type && layout == other.layout &&
+             collection_id == other.collection_id && unit_id == other.unit_id &&
+             (std::equal(variants.begin(), variants.end(),
+                         other.variants.begin()));
+    case WallpaperType::kCustomized:
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      return type == other.type && layout == other.layout &&
+             location == other.location;
+  }
 }
 
 bool WallpaperInfo::operator!=(const WallpaperInfo& other) const {
