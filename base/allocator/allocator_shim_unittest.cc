@@ -40,10 +40,6 @@
 #include <unistd.h>
 #endif
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 #if defined(LIBC_GLIBC)
 extern "C" void* __libc_memalign(size_t align, size_t s);
 #endif
@@ -341,12 +337,6 @@ AllocatorDispatch g_mock_dispatch = {
 };
 
 TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
-#if defined(OS_MAC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // The libc symbols are not intercepted on 10.11, on purpose.
-  if (base::mac::IsOS10_11())
-    return;
-#endif
-
   InsertAllocatorDispatch(&g_mock_dispatch);
 
   void* alloc_ptr = malloc(19);

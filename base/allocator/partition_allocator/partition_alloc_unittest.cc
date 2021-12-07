@@ -50,6 +50,8 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_APPLE)
 #include <OpenCL/opencl.h>
+
+#include <base/mac/mac_util.h>
 #endif
 
 #define EXPECT_PEQ(ptr1, ptr2) \
@@ -4045,6 +4047,11 @@ class ScopedOpenCLNoOpKernel {
 // is incorrectly passed by CoreFoundation to the previous default zone,
 // causing crashes. This is intended to detect these issues coming back.
 TEST_F(PartitionAllocTest, OpenCL) {
+  // Skip on 10.11, as it fails there.
+  // TODO(crbug.com/1268776): Make it pass on macOS 10.11.
+  if (base::mac::IsOS10_11())
+    return;
+
   ScopedOpenCLNoOpKernel kernel;
   kernel.SetUp();
 #if !defined(ARCH_CPU_ARM64)
