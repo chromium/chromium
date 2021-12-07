@@ -66,6 +66,10 @@ constexpr int kActionButtonRightMargin = 8;
 constexpr int kPrimaryTextHeight = 20;
 constexpr int kAnswerCardDetailsLineHeight = 18;
 
+constexpr int kAnswerCardCardBackgroundCornerRadius = 12;
+constexpr int kAnswerCardFocusBarOffset = 24;
+constexpr int kAnswerCardFocusBarHeight = 32;
+
 // Corner radius for downloaded image icons.
 constexpr int kImageIconCornerRadius = 4;
 
@@ -510,15 +514,27 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   gfx::Rect content_rect(rect);
 
-  // Possibly call FillRect a second time (these colours are partially
-  // transparent, so the previous FillRect is not redundant).
   if (selected() && !actions_view()->HasSelectedAction()) {
-    // Fill search result view row item.
-    canvas->FillRect(
-        content_rect,
-        AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
-    PaintFocusBar(canvas, GetContentsBounds().origin(),
-                  /*height=*/GetContentsBounds().height());
+    switch (view_type_) {
+      case SearchResultViewType::kDefault:
+      case SearchResultViewType::kClassic:
+        canvas->FillRect(
+            content_rect,
+            AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
+        PaintFocusBar(canvas, GetContentsBounds().origin(),
+                      /*height=*/GetContentsBounds().height());
+        break;
+      case SearchResultViewType::kAnswerCard: {
+        cc::PaintFlags flags;
+        flags.setAntiAlias(true);
+        flags.setColor(
+            AppListColorProvider::Get()->GetSearchResultViewHighlightColor());
+        canvas->DrawRoundRect(content_rect,
+                              kAnswerCardCardBackgroundCornerRadius, flags);
+        PaintFocusBar(canvas, gfx::Point(0, kAnswerCardFocusBarOffset),
+                      kAnswerCardFocusBarHeight);
+      } break;
+    }
   }
 }
 
