@@ -7,6 +7,8 @@
 
 #import "ios/web/web_state/web_state_impl.h"
 
+@class CRWNavigationItemStorage;
+
 namespace web {
 
 // Object storing the information needed to realize a WebState.
@@ -45,6 +47,9 @@ class WebStateImpl::SerializedData {
 
   // WebState:
   BrowserState* GetBrowserState() const;
+  const std::u16string& GetTitle() const;
+  const GURL& GetVisibleURL() const;
+  const GURL& GetLastCommittedURL() const;
 
  private:
   // Returns a reference to the owning WebState WebStateObserverList.
@@ -59,6 +64,10 @@ class WebStateImpl::SerializedData {
   ScriptCommandCallbackMap& script_command_callbacks() {
     return owner_->script_command_callbacks_;
   }
+
+  // Returns the CRWNavigationItemStorage* corresponding to the last committed
+  // navigation item from the serialized state. May return nil.
+  CRWNavigationItemStorage* GetLastCommittedItem() const;
 
   // Owner. Never null. Owns this object.
   WebStateImpl* owner_ = nullptr;

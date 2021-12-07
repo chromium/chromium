@@ -439,8 +439,7 @@ bool WebStateImpl::ContentIsHTML() const {
 }
 
 const std::u16string& WebStateImpl::GetTitle() const {
-  static const std::u16string kEmptyString16;
-  return LIKELY(pimpl_) ? pimpl_->GetTitle() : kEmptyString16;
+  return LIKELY(pimpl_) ? pimpl_->GetTitle() : saved_->GetTitle();
 }
 
 bool WebStateImpl::IsLoading() const {
@@ -468,11 +467,12 @@ bool WebStateImpl::IsBeingDestroyed() const {
 }
 
 const GURL& WebStateImpl::GetVisibleURL() const {
-  return LIKELY(pimpl_) ? pimpl_->GetVisibleURL() : GURL::EmptyGURL();
+  return LIKELY(pimpl_) ? pimpl_->GetVisibleURL() : saved_->GetVisibleURL();
 }
 
 const GURL& WebStateImpl::GetLastCommittedURL() const {
-  return LIKELY(pimpl_) ? pimpl_->GetLastCommittedURL() : GURL::EmptyGURL();
+  return LIKELY(pimpl_) ? pimpl_->GetLastCommittedURL()
+                        : saved_->GetLastCommittedURL();
 }
 
 GURL WebStateImpl::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {

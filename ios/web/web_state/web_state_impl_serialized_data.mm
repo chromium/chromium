@@ -8,6 +8,10 @@
 #error "This file requires ARC support."
 #endif
 
+#import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {
@@ -17,7 +21,19 @@ WebStateImpl::SerializedData::SerializedData(WebStateImpl* owner,
                                              CRWSessionStorage* session_storage)
     : owner_(owner),
       create_params_(create_params),
-      session_storage_(session_storage) {}
+      session_storage_(session_storage) {
+  DCHECK(owner_);
+  DCHECK(session_storage_);
+
+  // Restore the serializable user data as user code may depend on accessing
+  // on those values on a unrealized WebState (e.g. it can be used to store
+  // a unique identifier used to access the tab snapshot). Remove once the
+  // tab identifier is managed by WebState directly, see crbug.com/1276776.
+  if (session_storage_.userData) {
+    SerializableUserDataManager::FromWebState(owner_)->AddSerializableUserData(
+        session_storage_.userData);
+  }
+}
 
 WebStateImpl::SerializedData::~SerializedData() = default;
 
@@ -35,11 +51,66 @@ WebState::CreateParams WebStateImpl::SerializedData::GetCreateParams() const {
 }
 
 CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
+  // If a SerializableUserDataManager is attached to the WebState, the user
+  // may have changed its content. Thus, update the serializable user data
+  // if needed. Use a const pointer to the WebState to avoid creating the
+  // manager if it does not exists yet.
+  const SerializableUserDataManager* user_data_manager =
+      SerializableUserDataManager::FromWebState(
+          const_cast<const WebStateImpl*>(owner_));
+
+  if (user_data_manager) {
+    std::unique_ptr<SerializableUserData> user_data =
+        user_data_manager->CreateSerializableUserData();
+    [session_storage_ setSerializableUserData:std::move(user_data)];
+  }
+
   return session_storage_;
 }
 
 BrowserState* WebStateImpl::SerializedData::GetBrowserState() const {
   return create_params_.browser_state;
+}
+
+const std::u16string& WebStateImpl::SerializedData::GetTitle() const {
+  static const std::u16string kEmptyString16;
+  CRWNavigationItemStorage* item = GetLastCommittedItem();
+  return item ? item.title : kEmptyString16;
+}
+
+const GURL& WebStateImpl::SerializedData::GetVisibleURL() const {
+  // A restored WebState has no pending item. Thus the visible item is the
+  // last committed item. This means that GetVisibleURL() must return the
+  // same URL as GetLastCommittedURL().
+  return GetLastCommittedURL();
+}
+
+const GURL& WebStateImpl::SerializedData::GetLastCommittedURL() const {
+  CRWNavigationItemStorage* item = GetLastCommittedItem();
+  return item ? item.virtualURL : GURL::EmptyGURL();
+}
+
+// TODO(crbug.com/1264451): this private method allow to implement `GetTitle()`
+// and `GetLastCommittedURL()` without duplicating code. As of today, the title
+// and URL for the WebState are not saved directly, so this method access them
+// via the serialized NavigationManager state. This will be removed once the
+// format of the WebState serialization is changed to directly saved the title
+// and URL. This implementation allow to test unrealized WebState before the
+// new format is used. This slightly break encapsulation, but this is a private
+// method of a private class and the file format is quite stable, so this seem
+// reasonable as a temporary solution.
+CRWNavigationItemStorage* WebStateImpl::SerializedData::GetLastCommittedItem()
+    const {
+  const NSInteger index = session_storage_.lastCommittedItemIndex;
+  if (index < 0)
+    return nil;
+
+  const NSUInteger uindex = static_cast<NSUInteger>(index);
+  if (session_storage_.itemStorages.count <= uindex) {
+    return nil;
+  }
+
+  return session_storage_.itemStorages[uindex];
 }
 
 }  // namespace web
