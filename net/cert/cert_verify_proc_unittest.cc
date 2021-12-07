@@ -35,6 +35,7 @@
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/signature_algorithm.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/ocsp_revocation_status.h"
 #include "net/cert/pem.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
@@ -4140,6 +4141,137 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // Should succeed due to soft-fail revocation checking.
   EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
+// Tests that an EV cert verification with successful online OCSP revocation
+// checks is marked as CERT_STATUS_IS_EV.
+TEST_P(CertVerifyProcInternalWithNetFetchingTest,
+       EVOnlineOCSPRevocationCheckingGood) {
+  if (!SupportsEV()) {
+    LOG(INFO) << "Skipping test as EV verification is not yet supported";
+    return;
+  }
+
+  const char kEVTestCertPolicy[] = "1.2.3.4";
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kEVTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::GOOD,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+
+  EmbeddedTestServer ocsp_test_server(EmbeddedTestServer::TYPE_HTTPS);
+  ocsp_test_server.SetSSLConfig(cert_config);
+  EXPECT_TRUE(ocsp_test_server.Start());
+
+  scoped_refptr<X509Certificate> root =
+      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+  ASSERT_TRUE(root.get());
+
+  scoped_refptr<X509Certificate> chain = ocsp_test_server.GetCertificate();
+  ASSERT_TRUE(chain.get());
+
+  // Consider the root of the test chain a valid EV root for the test policy.
+  ScopedTestEVPolicy scoped_test_ev_policy(
+      EVRootCAMetadata::GetInstance(),
+      X509Certificate::CalculateFingerprint256(root->cert_buffer()),
+      kEVTestCertPolicy);
+
+  CertVerifyResult verify_result;
+  int flags = 0;
+  int error =
+      Verify(chain.get(), ocsp_test_server.host_port_pair().host(), flags,
+             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
+  EXPECT_THAT(error, IsOk());
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
+// Tests that an EV cert verification with that could not retrieve online OCSP
+// revocation information is verified but not marked as CERT_STATUS_IS_EV.
+TEST_P(CertVerifyProcInternalWithNetFetchingTest,
+       EVOnlineOCSPRevocationCheckingSoftFail) {
+  if (!SupportsEV()) {
+    LOG(INFO) << "Skipping test as EV verification is not yet supported";
+    return;
+  }
+
+  const char kEVTestCertPolicy[] = "1.2.3.4";
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kEVTestCertPolicy};
+  // Retrieving OCSP status returns an error.
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      EmbeddedTestServer::OCSPConfig::ResponseType::kInternalError);
+
+  EmbeddedTestServer ocsp_test_server(EmbeddedTestServer::TYPE_HTTPS);
+  ocsp_test_server.SetSSLConfig(cert_config);
+  EXPECT_TRUE(ocsp_test_server.Start());
+
+  scoped_refptr<X509Certificate> root =
+      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+  ASSERT_TRUE(root.get());
+
+  scoped_refptr<X509Certificate> chain = ocsp_test_server.GetCertificate();
+  ASSERT_TRUE(chain.get());
+
+  // Consider the root of the test chain a valid EV root for the test policy.
+  ScopedTestEVPolicy scoped_test_ev_policy(
+      EVRootCAMetadata::GetInstance(),
+      X509Certificate::CalculateFingerprint256(root->cert_buffer()),
+      kEVTestCertPolicy);
+
+  CertVerifyResult verify_result;
+  int flags = 0;
+  int error =
+      Verify(chain.get(), ocsp_test_server.host_port_pair().host(), flags,
+             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
+  EXPECT_THAT(error, IsOk());
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
+}
+
+// Tests that an EV cert verification with online OCSP returning affirmatively
+// revoked is not marked as CERT_STATUS_IS_EV. On some platforms verification
+// will fail with ERR_CERT_REVOKED.
+TEST_P(CertVerifyProcInternalWithNetFetchingTest,
+       EVOnlineOCSPRevocationCheckingRevoked) {
+  if (!SupportsEV()) {
+    LOG(INFO) << "Skipping test as EV verification is not yet supported";
+    return;
+  }
+
+  const char kEVTestCertPolicy[] = "1.2.3.4";
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.policy_oids = {kEVTestCertPolicy};
+  cert_config.ocsp_config = EmbeddedTestServer::OCSPConfig(
+      {{OCSPRevocationStatus::REVOKED,
+        EmbeddedTestServer::OCSPConfig::SingleResponse::Date::kValid}});
+
+  EmbeddedTestServer ocsp_test_server(EmbeddedTestServer::TYPE_HTTPS);
+  ocsp_test_server.SetSSLConfig(cert_config);
+  EXPECT_TRUE(ocsp_test_server.Start());
+
+  scoped_refptr<X509Certificate> root =
+      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
+  ASSERT_TRUE(root.get());
+
+  scoped_refptr<X509Certificate> chain = ocsp_test_server.GetCertificate();
+  ASSERT_TRUE(chain.get());
+
+  // Consider the root of the test chain a valid EV root for the test policy.
+  ScopedTestEVPolicy scoped_test_ev_policy(
+      EVRootCAMetadata::GetInstance(),
+      X509Certificate::CalculateFingerprint256(root->cert_buffer()),
+      kEVTestCertPolicy);
+
+  CertVerifyResult verify_result;
+  int flags = 0;
+  int error =
+      Verify(chain.get(), ocsp_test_server.host_port_pair().host(), flags,
+             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
+  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN)
+    EXPECT_THAT(error, IsOk());
+  else
+    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_EV);
 }
 
 TEST(CertVerifyProcTest, RejectsMD2) {
