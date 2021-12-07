@@ -32,6 +32,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/scoped_display_for_new_windows.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -207,6 +208,9 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
                << " Not launching.";
     return nullptr;
   }
+
+  // Place new windows on the specified display.
+  display::ScopedDisplayForNewWindows scoped_display(params.display_id);
 
   Browser* browser =
       system_app->LaunchAndNavigateSystemWebApp(profile, provider, url, params);
