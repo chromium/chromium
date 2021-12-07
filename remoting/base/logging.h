@@ -6,6 +6,11 @@
 #define REMOTING_BASE_LOGGING_H_
 
 #include "base/logging.h"
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include <guiddef.h>
+#endif
 
 namespace remoting {
 
@@ -16,6 +21,21 @@ namespace remoting {
 // console.
 #define HOST_LOG LOG(INFO)
 #define HOST_DLOG DLOG(INFO)
+
+#if defined(OS_WIN)
+// {2db51ca1-4fd8-4b88-b5a2-fb8606b66b02}
+constexpr GUID kRemotingHostLogProviderGuid = {
+    0x2db51ca1,
+    0x4fd8,
+    0x4b88,
+    {0xb5, 0xa2, 0xfb, 0x86, 0x06, 0xb6, 0x6b, 0x02}};
+#endif
+
+// Initializes host logging.
+void InitHostLogging();
+
+// Common initialization for all platforms, called by InitHostLogging().
+void InitHostLoggingCommon();
 
 }  // namespace remoting
 

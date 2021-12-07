@@ -8,7 +8,7 @@
 #include <list>
 #include <memory>
 
-#include "remoting/host/screen_resolution.h"
+#include "remoting/host/base/screen_resolution.h"
 
 namespace remoting {
 

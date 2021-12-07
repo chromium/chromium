@@ -26,7 +26,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/switches.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/win/wts_session_change_observer.h"
 
 namespace remoting {

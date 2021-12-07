@@ -39,9 +39,8 @@ source_set("main") {
     ":webauthn",
     "//base",
     "//mojo/core/embedder:embedder",
-    "//remoting/host:base",
     "//remoting/host:chromoting_host_services_client",
-    "//remoting/host:logging",
+    "//remoting/host/base",
     "//remoting/host/native_messaging",
   ]
 }

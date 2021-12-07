@@ -16,9 +16,9 @@
 #include "base/process/launch.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "remoting/host/host_exit_codes.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/ipc_constants.h"
-#include "remoting/host/switches.h"
 
 #if defined(OS_WIN)
 #include "remoting/host/win/evaluate_3d_display_mode.h"

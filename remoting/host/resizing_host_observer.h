@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "remoting/host/screen_controls.h"
-#include "remoting/host/screen_resolution.h"
+#include "remoting/host/base/screen_controls.h"
+#include "remoting/host/base/screen_resolution.h"
 
 namespace base {
 class TickClock;

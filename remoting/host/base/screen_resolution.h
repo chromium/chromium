@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_SCREEN_RESOLUTION_H_
-#define REMOTING_HOST_SCREEN_RESOLUTION_H_
+#ifndef REMOTING_HOST_BASE_SCREEN_RESOLUTION_H_
+#define REMOTING_HOST_BASE_SCREEN_RESOLUTION_H_
 
 #include "base/compiler_specific.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -40,4 +40,4 @@ class ScreenResolution {
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_SCREEN_RESOLUTION_H_
+#endif  // REMOTING_HOST_BASE_SCREEN_RESOLUTION_H_

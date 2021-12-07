@@ -64,6 +64,7 @@ static_library("signaling") {
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//services/network/public/cpp:cpp",
   ]

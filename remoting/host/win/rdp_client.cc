@@ -19,7 +19,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/typed_buffer.h"
-#include "remoting/host/screen_resolution.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/win/rdp_client_window.h"
 
 namespace remoting {

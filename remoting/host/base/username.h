@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_USERNAME_H_
-#define REMOTING_HOST_USERNAME_H_
+#ifndef REMOTING_HOST_BASE_USERNAME_H_
+#define REMOTING_HOST_BASE_USERNAME_H_
 
 #include <string>
 
@@ -15,4 +15,4 @@ std::string GetUsername();
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_USERNAME_H_
+#endif  // REMOTING_HOST_BASE_USERNAME_H_

@@ -6,7 +6,7 @@
 #define REMOTING_HOST_IPC_SCREEN_CONTROLS_H_
 
 #include "base/memory/ref_counted.h"
-#include "remoting/host/screen_controls.h"
+#include "remoting/host/base/screen_controls.h"
 
 namespace remoting {
 

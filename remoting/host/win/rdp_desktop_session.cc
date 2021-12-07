@@ -8,7 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/host/screen_resolution.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/win/chromoting_module.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 

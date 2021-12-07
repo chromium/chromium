@@ -97,6 +97,7 @@ if (remoting_use_x11) {
     deps = [
       "//base",
       "//remoting/base",
+      "//remoting/base:logging",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
   }

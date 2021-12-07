@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/screen_resolution.h"
+#include "remoting/host/base/screen_resolution.h"
 
 #include <stdint.h>
 
@@ -15,13 +15,11 @@ namespace remoting {
 
 ScreenResolution::ScreenResolution()
     : dimensions_(webrtc::DesktopSize(0, 0)),
-      dpi_(webrtc::DesktopVector(0, 0)) {
-}
+      dpi_(webrtc::DesktopVector(0, 0)) {}
 
 ScreenResolution::ScreenResolution(const webrtc::DesktopSize& dimensions,
                                    const webrtc::DesktopVector& dpi)
-    : dimensions_(dimensions),
-      dpi_(dpi) {
+    : dimensions_(dimensions), dpi_(dpi) {
   // Check that dimensions are not negative.
   DCHECK(!dimensions.is_empty() || dimensions.equals(webrtc::DesktopSize()));
   DCHECK_GE(dpi.x(), 0);

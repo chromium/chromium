@@ -14,7 +14,7 @@
 #include "base/win/event_trace_consumer.h"
 #include "base/win/event_trace_controller.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/host/logging.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/win/etw_trace_controller.h"
 #include "remoting/host/win/event_trace_data.h"
 #include "remoting/host/win/host_event_logger.h"

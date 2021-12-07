@@ -13,11 +13,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/base/screen_controls.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/input_injector.h"
-#include "remoting/host/screen_controls.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 
 namespace remoting {

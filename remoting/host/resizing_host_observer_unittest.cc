@@ -13,8 +13,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_resizer.h"
-#include "remoting/host/screen_resolution.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 

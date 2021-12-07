@@ -16,6 +16,7 @@
 #include "ipc/ipc_sender.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
+#include "remoting/host/base/screen_controls.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_session.h"
@@ -24,7 +25,6 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
-#include "remoting/host/screen_controls.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 

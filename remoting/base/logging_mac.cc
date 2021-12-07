@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/logging.h"
+#include "remoting/base/logging.h"
 
 #include <asl.h>
 #include <stddef.h>
@@ -21,26 +21,21 @@ const char kChromotingLoggingFacility[] = "org.chromium.chromoting";
 
 // Define a scoper for objects allocated by asl_new.
 struct ScopedAslMsgTraits {
-  static aslmsg InvalidValue() {
-    return nullptr;
-  }
-  static void Free(aslmsg msg) {
-    asl_free(msg);
-  }
+  static aslmsg InvalidValue() { return nullptr; }
+  static void Free(aslmsg msg) { asl_free(msg); }
 };
 typedef base::ScopedGeneric<aslmsg, ScopedAslMsgTraits> ScopedAslMsg;
 
 // Logging message handler that writes to syslog.
 // The log can be obtained by running the following in a terminal:
 // syslog -k Facility org.chromium.chromoting
-bool LogMessageToAsl(
-    logging::LogSeverity severity,
-    const char* file,
-    int line,
-    size_t message_start,
-    const std::string& message) {
+bool LogMessageToAsl(logging::LogSeverity severity,
+                     const char* file,
+                     int line,
+                     size_t message_start,
+                     const std::string& message) {
   int level;
-  switch(severity) {
+  switch (severity) {
     case logging::LOG_INFO:
       level = ASL_LEVEL_NOTICE;
       break;

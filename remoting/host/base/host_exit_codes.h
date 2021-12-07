@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_HOST_EXIT_CODES_H_
-#define REMOTING_HOST_HOST_EXIT_CODES_H_
+#ifndef REMOTING_HOST_BASE_HOST_EXIT_CODES_H_
+#define REMOTING_HOST_BASE_HOST_EXIT_CODES_H_
 
 namespace remoting {
 
@@ -43,4 +43,4 @@ const char* ExitCodeToStringUnchecked(int exit_code);
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_HOST_EXIT_CODES_H_
+#endif  // REMOTING_HOST_BASE_HOST_EXIT_CODES_H_

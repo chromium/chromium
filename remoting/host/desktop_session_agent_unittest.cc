@@ -19,10 +19,10 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/fake_desktop_environment.h"
-#include "remoting/host/screen_resolution.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {

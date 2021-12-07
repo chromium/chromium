@@ -19,15 +19,15 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/base/host_settings.h"
+#include "remoting/base/logging.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/host_exit_codes.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
-#include "remoting/host/logging.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/resources.h"
-#include "remoting/host/switches.h"
 #include "remoting/host/usage_stats_consent.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -49,8 +49,6 @@
 #include <windows.h>
 
 #include <commctrl.h>
-
-#include "remoting/host/switches.h"
 #endif  // defined(OS_WIN)
 
 namespace remoting {

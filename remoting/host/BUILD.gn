@@ -47,33 +47,11 @@ process_version("remoting_version") {
 }
 
 source_set("host") {
-  public_deps = [ ":common" ]
-  deps = [ "//remoting/host/file_transfer" ]
-}
-
-source_set("logging") {
-  sources = [
-    "logging.cc",
-    "logging.h",
+  public_deps = [
+    ":common",
+    "//remoting/host/base",
   ]
-
-  if (is_linux || is_chromeos) {
-    sources += [ "logging_linux.cc" ]
-  }
-
-  if (is_mac) {
-    sources += [ "logging_mac.cc" ]
-  }
-
-  if (is_win) {
-    sources += [ "logging_win.cc" ]
-  }
-
-  if (remoting_webrtc_verbose_logging) {
-    defines = [ "WEBRTC_VERBOSE_LOGGING" ]
-  }
-
-  deps = [ "//base" ]
+  deps = [ "//remoting/host/file_transfer" ]
 }
 
 source_set("host_main_headers") {
@@ -99,10 +77,7 @@ source_set("host_main_headers") {
 }
 
 source_set("common_headers") {
-  visibility = [
-    ":base",
-    "//remoting/host/security_key:security_key",
-  ]
+  visibility = [ "//remoting/host/*" ]
   sources = [
     "action_executor.h",
     "audio_capturer.h",
@@ -117,8 +92,6 @@ source_set("common_headers") {
     "evaluate_capability.h",
     "input_injector.h",
     "sas_injector.h",
-    "screen_controls.h",
-    "screen_resolution.h",
     "worker_process_ipc_delegate.h",
   ]
   if (!is_chromeos_ash) {
@@ -127,28 +100,8 @@ source_set("common_headers") {
   deps = [
     "//ipc",
     "//remoting/base",
+    "//remoting/host/base",
     "//remoting/protocol",
-  ]
-}
-
-source_set("base") {
-  sources = [
-    "host_exit_codes.cc",
-    "host_exit_codes.h",
-    "switches.cc",
-    "switches.h",
-    "username.cc",
-    "username.h",
-  ]
-  deps = [
-    ":common_headers",
-    ":logging",
-    "//base",
-    "//remoting/base",
-  ]
-  public_deps = [
-    ":common_headers",
-    ":logging",
   ]
 }
 
@@ -195,9 +148,9 @@ source_set("clipboard") {
   sources = [ "clipboard.h" ]
 
   deps = [
-    ":base",
     "//base",
     "//remoting/base:base",
+    "//remoting/host/base",
     "//remoting/proto",
     "//remoting/protocol",
   ]
@@ -390,7 +343,6 @@ static_library("common") {
     "remoting_register_support_host_request.h",
     "resizing_host_observer.cc",
     "resizing_host_observer.h",
-    "screen_resolution.cc",
     "server_log_entry_host.cc",
     "server_log_entry_host.h",
     "shutdown_watchdog.cc",
@@ -423,7 +375,6 @@ static_library("common") {
   defines = [ "WEBRTC_CHROMIUM_BUILD" ]
 
   deps = [
-    ":base",
     ":client_session_control",
     ":clipboard",
     ":host_main_headers",
@@ -466,8 +417,10 @@ static_library("common") {
   ]
 
   public_deps = [
+    ":common_headers",
     ":host_extension",
     "//ipc",
+    "//remoting/host/base",
     "//remoting/proto",
     "//remoting/proto/remoting/v1:directory_proto",
   ]
@@ -590,8 +543,8 @@ static_library("common") {
     ]
 
     deps += [
-      ":base",
       ":remoting_version",
+      "//remoting/host/base",
       "//remoting/host/mac:permission_checking",
       "//ui/events:events",
     ]
@@ -658,10 +611,10 @@ static_library("test_support") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
-    ":base",
     ":chromoting_host_services_client",
     ":client_session_control",
     "//remoting/codec:encoder",
+    "//remoting/host/base",
     "//remoting/host/file_transfer:common",
     "//remoting/host/mojom",
     "//remoting/host/remote_open_url:common",
@@ -725,7 +678,6 @@ source_set("unit_tests") {
     "remoting_register_support_host_request_unittest.cc",
     "resizing_host_observer_unittest.cc",
     "resources_unittest.cc",
-    "screen_resolution_unittest.cc",
     "server_log_entry_host_unittest.cc",
     "setup/me2me_native_messaging_host_unittest.cc",
     "setup/pin_validator_unittest.cc",
@@ -743,7 +695,6 @@ source_set("unit_tests") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
-    ":base",
     ":client_session_control",
     ":common",
     ":resources",
@@ -752,6 +703,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//net:test_support",
     "//remoting/codec:encoder",
+    "//remoting/host/base",
     "//remoting/host/file_transfer:unit_tests",
     "//remoting/host/input_monitor:input_monitor",
     "//remoting/host/it2me:common",
@@ -941,7 +893,6 @@ if (enable_me2me_host) {
     ]
 
     deps = [
-      ":base",
       ":settings",
       "//base",
       "//base:i18n",
@@ -953,6 +904,7 @@ if (enable_me2me_host) {
       "//remoting/base",
       "//remoting/base:authorization",
       "//remoting/host",
+      "//remoting/host/base",
       "//remoting/host/mojom",
       "//remoting/host/security_key:security_key",
       "//remoting/proto",
@@ -997,7 +949,6 @@ if (enable_me2me_host) {
     ]
     sources = [ "host_main.cc" ]
     deps = [
-      ":base",
       ":common",
       ":host_main_headers",
       ":remoting_me2me_host_static",
@@ -1006,6 +957,7 @@ if (enable_me2me_host) {
       "//base:debugging_buildflags",
       "//mojo/core/embedder:embedder",
       "//remoting/base:breakpad",
+      "//remoting/host/base",
       "//remoting/host/setup:common",
     ]
   }

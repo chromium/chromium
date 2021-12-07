@@ -11,6 +11,8 @@
 
 #include "net/base/ip_endpoint.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/base/screen_controls.h"
+#include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/client_session.h"
@@ -21,8 +23,6 @@
 #include "remoting/host/input_injector.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
-#include "remoting/host/screen_controls.h"
-#include "remoting/host/screen_resolution.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"

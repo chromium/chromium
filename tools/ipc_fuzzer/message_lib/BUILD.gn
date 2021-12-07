@@ -33,7 +33,7 @@ static_library("ipc_message_lib") {
   if (is_win) {
     public_deps += [ "//chrome/chrome_elf:test_stubs" ]
   }
-  deps = [ "//remoting/host:base" ]
+  deps = [ "//remoting/host/base" ]
   sources = [
     "all_messages.h",
     "message_cracker.h",

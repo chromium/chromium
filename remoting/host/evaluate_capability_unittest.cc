@@ -5,7 +5,7 @@
 #include "remoting/host/evaluate_capability.h"
 
 #include "base/strings/string_util.h"
-#include "remoting/host/switches.h"
+#include "remoting/host/base/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
