@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
+#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -62,16 +63,6 @@ void InvokeCallbackOnChanges(
   std::move(notifying_callback).Run(std::move(changes));
   if (completion_callback)
     std::move(completion_callback).Run(!is_change_empty);
-}
-
-PasswordStoreChangeList JoinPasswordStoreChanges(
-    std::vector<PasswordStoreChangeList> changes) {
-  PasswordStoreChangeList joined_changes;
-  for (auto changes_list : changes) {
-    std::move(changes_list.begin(), changes_list.end(),
-              std::back_inserter(joined_changes));
-  }
-  return joined_changes;
 }
 
 LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {

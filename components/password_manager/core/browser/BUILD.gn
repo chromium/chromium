@@ -190,6 +190,8 @@ static_library("browser") {
     "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
+    "password_store_util.cc",
+    "password_store_util.h",
     "password_sync_util.cc",
     "password_sync_util.h",
     "password_ui_utils.cc",

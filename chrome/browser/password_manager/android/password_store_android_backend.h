@@ -190,20 +190,6 @@ class PasswordStoreAndroidBackend
       PasswordStoreChangeListReply reply,
       LoginsResultOrError result);
 
-  // Removes the next login in |logins_to_delete| queue.
-  void RemoveNextLogin(
-      std::queue<PasswordForm> logins_to_remove,
-      AccumulatedPasswordStoreChangeListReply logins_removed_callback,
-      std::unique_ptr<PasswordStoreChangeList> accumulated_changelist);
-
-  // Accumulates store changes in |accumulated_changelist| and triggers
-  // removal of the next login in |logins_to_remove|.
-  void AccumulateStoreChangesAndContinueRemovingLogins(
-      std::queue<PasswordForm> logins_to_remove,
-      AccumulatedPasswordStoreChangeListReply logins_removed_callback,
-      std::unique_ptr<PasswordStoreChangeList> accumulated_changelist,
-      PasswordStoreChangeList changelist);
-
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;
 

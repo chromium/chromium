@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -20,6 +21,7 @@
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -41,12 +43,6 @@ std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
         std::make_unique<PasswordForm>(std::move(password)));
   }
   return password_ptrs;
-}
-
-void InvokeReplyWithAccumulatedChanges(
-    PasswordStoreChangeListReply reply,
-    std::unique_ptr<PasswordStoreChangeList> changelist) {
-  std::move(reply).Run(std::move(*changelist));
 }
 
 }  // namespace
@@ -272,56 +268,29 @@ void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
   }
 
   LoginsResult logins = std::move(absl::get<LoginsResult>(result));
-  std::queue<PasswordForm> logins_to_remove;
+  std::vector<PasswordForm> logins_to_remove;
   for (const auto& login : logins) {
     if (login->date_created >= delete_begin &&
         login->date_created < delete_end && url_filter.Run(login->url)) {
-      logins_to_remove.push(std::move(*login));
+      logins_to_remove.push_back(std::move(*login));
     }
   }
 
-  // Start removing logins one by one and invoke |reply| when all
-  // |logins_to_remove| are removed.
-  RemoveNextLogin(
-      logins_to_remove,
-      base::BindOnce(&InvokeReplyWithAccumulatedChanges, std::move(reply)),
-      std::make_unique<PasswordStoreChangeList>());
-}
+  auto barrier_callback = base::BarrierCallback<PasswordStoreChangeList>(
+      logins_to_remove.size(),
+      base::BindOnce(&JoinPasswordStoreChanges).Then(std::move(reply)));
 
-void PasswordStoreAndroidBackend::RemoveNextLogin(
-    std::queue<PasswordForm> logins_to_remove,
-    AccumulatedPasswordStoreChangeListReply logins_removed_callback,
-    std::unique_ptr<PasswordStoreChangeList> accumulated_changelist) {
-  if (logins_to_remove.empty()) {
-    std::move(logins_removed_callback).Run(std::move(accumulated_changelist));
-    return;
+  // Create and run the callback chain that removes the logins.
+  base::RepeatingClosure callbacks_chain = base::DoNothing();
+
+  for (const auto& login : logins_to_remove) {
+    callbacks_chain =
+        base::BindRepeating(&PasswordStoreAndroidBackend::RemoveLoginAsync,
+                            weak_ptr_factory_.GetWeakPtr(), std::move(login),
+                            barrier_callback.Then(std::move(callbacks_chain)));
   }
 
-  PasswordForm login_to_remove = std::move(logins_to_remove.front());
-  logins_to_remove.pop();
-
-  RemoveLoginAsync(
-      login_to_remove,
-      base::BindOnce(&PasswordStoreAndroidBackend::
-                         AccumulateStoreChangesAndContinueRemovingLogins,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(logins_to_remove),
-                     std::move(logins_removed_callback),
-                     std::move(accumulated_changelist)));
-}
-
-void PasswordStoreAndroidBackend::
-    AccumulateStoreChangesAndContinueRemovingLogins(
-        std::queue<PasswordForm> logins_to_remove,
-        AccumulatedPasswordStoreChangeListReply logins_removed_callback,
-        std::unique_ptr<PasswordStoreChangeList> accumulated_changelist,
-        PasswordStoreChangeList changelist) {
-  // Add the last changes to the accumulated changelist.
-  base::ranges::copy(changelist, std::back_inserter(*accumulated_changelist));
-
-  RemoveNextLogin(std::move(logins_to_remove),
-                  std::move(logins_removed_callback),
-                  std::move(accumulated_changelist));
+  std::move(callbacks_chain).Run();
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeAsync(
