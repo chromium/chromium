@@ -143,15 +143,12 @@ size_t AvatarMenu::GetActiveProfileIndex() {
 
 std::u16string AvatarMenu::GetSupervisedUserInformation() const {
   // |browser_| can be NULL in unit_tests.
-  if (browser_ && browser_->profile()->IsSupervised()) {
+  if (browser_ && browser_->profile()->IsChild()) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(browser_->profile());
     std::u16string custodian =
         base::UTF8ToUTF16(service->GetCustodianEmailAddress());
-    if (browser_->profile()->IsLegacySupervised())
-      return l10n_util::GetStringFUTF16(IDS_LEGACY_SUPERVISED_USER_INFO,
-                                        custodian);
     std::u16string second_custodian =
         base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
     if (second_custodian.empty()) {

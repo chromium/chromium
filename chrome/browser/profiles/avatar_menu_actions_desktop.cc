@@ -48,7 +48,7 @@ void AvatarMenuActionsDesktop::EditProfile(Profile* profile) {
 
 bool AvatarMenuActionsDesktop::ShouldShowAddNewProfileLink() const {
   // |browser_| can be NULL in unit_tests.
-  if (browser_ && browser_->profile()->IsSupervised())
+  if (browser_ && browser_->profile()->IsChild())
     return false;
   return true;
 }
