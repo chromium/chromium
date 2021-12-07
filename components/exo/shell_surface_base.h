@@ -345,6 +345,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   int container_;
   gfx::Rect geometry_;
   gfx::Rect pending_geometry_;
+  gfx::Size initial_size_;
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;
   absl::optional<gfx::Rect> shadow_bounds_;

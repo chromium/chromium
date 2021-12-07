@@ -780,7 +780,7 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   shell_surface->SetGeometry(geometry);
 
   // Commit without contents should result in a configure callback with empty
-  // suggested size as a mechanims to ask the client size itself.
+  // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
   EXPECT_TRUE(suggested_size.IsEmpty());
 
@@ -853,7 +853,7 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
   shell_surface->SetGeometry(geometry);
 
   // Commit without contents should result in a configure callback with empty
-  // suggested size as a mechanims to ask the client size itself.
+  // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
   EXPECT_TRUE(suggested_size.IsEmpty());
 
@@ -863,13 +863,62 @@ TEST_F(ShellSurfaceTest, CreateMinimizedWindow) {
   shell_surface->Minimize();
   shell_surface->AcknowledgeConfigure(0);
   // Commit without contents should result in a configure callback with empty
-  // suggested size as a mechanims to ask the client size itself.
+  // suggested size as a mechanisms to ask the client size itself.
   surface->Commit();
 
   EXPECT_TRUE(shell_surface->GetWidget());
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
   EXPECT_TRUE(suggested_size.IsEmpty());
   EXPECT_EQ(geometry.size(), shell_surface->CalculatePreferredSize());
+}
+
+TEST_F(ShellSurfaceTest, CreateMaximizedWindowWithRestoreBounds) {
+  // Must be before shell_surface so it outlives it, for shell_surface's
+  // destructor calls Configure() referencing these 4 variables.
+  gfx::Size suggested_size;
+  chromeos::WindowStateType has_state_type = chromeos::WindowStateType::kNormal;
+  bool is_resizing = false;
+  bool is_active = false;
+  gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+
+  shell_surface->set_configure_callback(base::BindRepeating(
+      &Configure, base::Unretained(&suggested_size),
+      base::Unretained(&has_state_type), base::Unretained(&is_resizing),
+      base::Unretained(&is_active)));
+
+  gfx::Rect geometry(0, 0, 1, 1);
+  shell_surface->SetGeometry(geometry);
+  shell_surface->Maximize();
+
+  // Commit without contents should result in a configure callback with empty
+  // suggested size as a mechanisms to ask the client size itself.
+  surface->Attach(buffer.get());
+  surface->Commit();
+  shell_surface->AcknowledgeConfigure(0);
+
+  gfx::Rect geometry_full(0, 0, 100, 100);
+  shell_surface->SetGeometry(geometry_full);
+
+  surface->Commit();
+  shell_surface->AcknowledgeConfigure(1);
+
+  EXPECT_TRUE(shell_surface->GetWidget());
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+  EXPECT_EQ(geometry_full.size(), shell_surface->CalculatePreferredSize());
+
+  auto* window_state =
+      ash::WindowState::Get(shell_surface->GetWidget()->GetNativeWindow());
+
+  EXPECT_TRUE(window_state->HasRestoreBounds());
+
+  auto bounds = window_state->GetRestoreBoundsInParent();
+  EXPECT_EQ(geometry.width(), bounds.width());
+  EXPECT_EQ(geometry.height(), bounds.height());
 }
 
 TEST_F(ShellSurfaceTest, ToggleFullscreen) {

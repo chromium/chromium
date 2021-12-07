@@ -658,7 +658,9 @@ void ShellSurfaceBase::SetGeometry(const gfx::Rect& geometry) {
     DLOG(WARNING) << "Surface geometry must be non-empty";
     return;
   }
-
+  if (!widget_) {
+    initial_size_ = gfx::Size(geometry.width(), geometry.height());
+  }
   pending_geometry_ = geometry;
 }
 
@@ -1283,6 +1285,15 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   window->AddObserver(this);
   ash::WindowState* window_state = ash::WindowState::Get(window);
   InitializeWindowState(window_state);
+  // TODO(1261321): correct the initial origin once lacros can communicate
+  // it instead of centering.
+  if (show_state == ui::SHOW_STATE_MAXIMIZED) {
+    gfx::Rect screen_size = display::Screen::GetScreen()
+                                ->GetDisplayNearestWindow(window)
+                                .work_area();
+    screen_size.ClampToCenteredSize(initial_size_);
+    window_state->SetRestoreBoundsInParent(screen_size);
+  }
 
   SetShellUseImmersiveForFullscreen(window, immersive_implied_by_fullscreen_);
 
