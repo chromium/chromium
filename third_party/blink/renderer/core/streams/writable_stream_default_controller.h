@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class AbortSignal;
 class ExceptionState;
 class QueueWithSizes;
 class ScriptState;
@@ -108,6 +109,9 @@ class CORE_EXPORT WritableStreamDefaultController final
                             WritableStreamDefaultController*,
                             v8::Local<v8::Value> error);
 
+  // IDL attributes
+  AbortSignal* signal() const { return signal_; }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -141,6 +145,7 @@ class CORE_EXPORT WritableStreamDefaultController final
   // stored-as-is, and the `"close"` marker in the queue is represented by an
   // empty queue together with the |close_queued_| flag being set.
   Member<QueueWithSizes> queue_;
+  Member<AbortSignal> signal_;
   bool close_queued_ = false;
   bool started_ = false;
   double strategy_high_water_mark_ = 0.0;

@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/queue_with_sizes.h"
@@ -103,36 +105,40 @@ void WritableStreamDefaultController::SetUp(
   // Step not needed because queue is initialised during construction.
   //  5. Perform ! ResetQueue(controller).
 
-  //  6. Set controller.[[started]] to false.
+  //  6. Set controller.[[signal]] to a new AbortSignal.
+  controller->signal_ =
+      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+
+  //  7. Set controller.[[started]] to false.
   controller->started_ = false;
 
-  //  7. Set controller.[[strategySizeAlgorithm]] to sizeAlgorithm.
+  //  8. Set controller.[[strategySizeAlgorithm]] to sizeAlgorithm.
   controller->strategy_size_algorithm_ = size_algorithm;
 
-  //  8. Set controller.[[strategyHWM]] to highWaterMark.
+  //  9. Set controller.[[strategyHWM]] to highWaterMark.
   controller->strategy_high_water_mark_ = high_water_mark;
 
-  //  9. Set controller.[[writeAlgorithm]] to writeAlgorithm.
+  // 10. Set controller.[[writeAlgorithm]] to writeAlgorithm.
   controller->write_algorithm_ = write_algorithm;
 
-  // 10. Set controller.[[closeAlgorithm]] to closeAlgorithm.
+  // 11. Set controller.[[closeAlgorithm]] to closeAlgorithm.
   controller->close_algorithm_ = close_algorithm;
 
-  // 11. Set controller.[[abortAlgorithm]] to abortAlgorithm.
+  // 12. Set controller.[[abortAlgorithm]] to abortAlgorithm.
   controller->abort_algorithm_ = abort_algorithm;
 
-  // 12. Let backpressure be !
+  // 13. Let backpressure be !
   //     WritableStreamDefaultControllerGetBackpressure(controller).
   const bool backpressure = GetBackpressure(controller);
 
-  // 13. Perform ! WritableStreamUpdateBackpressure(stream, backpressure).
+  // 14. Perform ! WritableStreamUpdateBackpressure(stream, backpressure).
   WritableStream::UpdateBackpressure(script_state, stream, backpressure);
 
-  // 14. Let startResult be the result of performing startAlgorithm. (This may
+  // 15. Let startResult be the result of performing startAlgorithm. (This may
   //     throw an exception.)
   // In this implementation, start_algorithm returns a Promise when it doesn't
   // throw.
-  // 15. Let startPromise be a promise resolved with startResult.
+  // 16. Let startPromise be a promise resolved with startResult.
   v8::Local<v8::Promise> start_promise;
   if (!start_algorithm->Run(script_state, exception_state)
            .ToLocal(&start_promise)) {
@@ -152,7 +158,7 @@ void WritableStreamDefaultController::SetUp(
         : PromiseHandler(script_state), stream_(stream) {}
 
     void CallWithLocal(v8::Local<v8::Value>) override {
-      // 16. Upon fulfillment of startPromise
+      // 17. Upon fulfillment of startPromise
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
       CHECK(state == WritableStream::kWritable ||
@@ -183,7 +189,7 @@ void WritableStreamDefaultController::SetUp(
         : PromiseHandler(script_state), stream_(stream) {}
 
     void CallWithLocal(v8::Local<v8::Value> r) override {
-      // 17. Upon rejection of startPromise with reason r,
+      // 18. Upon rejection of startPromise with reason r,
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
       CHECK(state == WritableStream::kWritable ||
@@ -401,6 +407,7 @@ void WritableStreamDefaultController::Trace(Visitor* visitor) const {
   visitor->Trace(close_algorithm_);
   visitor->Trace(controlled_writable_stream_);
   visitor->Trace(queue_);
+  visitor->Trace(signal_);
   visitor->Trace(strategy_size_algorithm_);
   visitor->Trace(write_algorithm_);
   ScriptWrappable::Trace(visitor);

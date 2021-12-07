@@ -128,7 +128,15 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
   DCHECK(!reason.IsEmpty());
   if (aborted())
     return;
-  abort_reason_ = reason;
+  if (reason.IsUndefined()) {
+    abort_reason_ = ScriptValue(
+        script_state->GetIsolate(),
+        V8ThrowDOMException::CreateOrEmpty(
+            script_state->GetIsolate(), DOMExceptionCode::kAbortError,
+            "signal is aborted with undefined reason"));
+  } else {
+    abort_reason_ = reason;
+  }
   for (Algorithm* algorithm : abort_algorithms_) {
     algorithm->Run();
   }

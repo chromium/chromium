@@ -2934,6 +2934,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getWriter
 [Worker] interface WritableStreamDefaultController
 [Worker]     attribute @@toStringTag
+[Worker]     getter signal
 [Worker]     method constructor
 [Worker]     method error
 [Worker] interface WritableStreamDefaultWriter
