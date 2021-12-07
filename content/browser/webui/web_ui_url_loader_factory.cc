@@ -11,10 +11,12 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_internals_url_loader.h"
@@ -65,6 +67,7 @@ void ReadData(
     scoped_refptr<URLDataSourceImpl> data_source,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     absl::optional<net::HttpByteRange> requested_range,
+    base::ElapsedTimer url_request_elapsed_timer,
     scoped_refptr<base::RefCountedMemory> bytes) {
   TRACE_EVENT0("ui", "WebUIURLLoader::ReadData");
   if (!bytes) {
@@ -149,6 +152,9 @@ void ReadData(
   status.encoded_body_length = output_size;
   status.decoded_body_length = output_size;
   client->OnComplete(status);
+
+  UMA_HISTOGRAM_TIMES("WebUI.WebUIURLLoaderFactory.URLRequestLoadTime",
+                      url_request_elapsed_timer.Elapsed());
 }
 
 void DataAvailable(
@@ -158,6 +164,7 @@ void DataAvailable(
     scoped_refptr<URLDataSourceImpl> source,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     absl::optional<net::HttpByteRange> requested_range,
+    base::ElapsedTimer url_request_elapsed_timer,
     scoped_refptr<base::RefCountedMemory> bytes) {
   TRACE_EVENT0("ui", "WebUIURLLoader::DataAvailable");
   // Since the bytes are from the memory mapped resource file, copying the
@@ -169,7 +176,8 @@ void DataAvailable(
       ->PostTask(FROM_HERE,
                  base::BindOnce(ReadData, std::move(headers), replacements,
                                 replace_in_js, source, std::move(client_remote),
-                                std::move(requested_range), bytes));
+                                std::move(requested_range),
+                                std::move(url_request_elapsed_timer), bytes));
 }
 
 void StartURLLoader(
@@ -177,6 +185,8 @@ void StartURLLoader(
     int frame_tree_node_id,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     BrowserContext* browser_context) {
+  base::ElapsedTimer url_request_elapsed_timer;
+
   // NOTE: this duplicates code in URLDataManagerBackend::StartRequest.
   if (!URLDataManagerBackend::CheckURLIsValid(request.url)) {
     CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
@@ -249,7 +259,8 @@ void StartURLLoader(
   // owned by |source| keep a reference to it in the callback.
   URLDataSource::GotDataCallback data_available_callback = base::BindOnce(
       DataAvailable, std::move(resource_response), replacements, replace_in_js,
-      base::RetainedRef(source), std::move(client_remote), std::move(range));
+      base::RetainedRef(source), std::move(client_remote), std::move(range),
+      std::move(url_request_elapsed_timer));
 
   source->source()->StartDataRequest(request.url, std::move(wc_getter),
                                      std::move(data_available_callback));

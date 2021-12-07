@@ -18091,6 +18091,18 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebUI.WebUIURLLoaderFactory.URLRequestLoadTime" units="ms"
+    expires_after="2022-06-01">
+  <owner>dpapad@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The elapsed time for URL requests made through the WebUIURLLoaderFactory.
+    The reported duration is the time spent in the browser process from the
+    reception of the mojo request up to the content delivery through mojo call.
+  </summary>
+</histogram>
+
 <histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
     expires_after="2022-04-24">
   <owner>collinbaker@chromium.org</owner>
