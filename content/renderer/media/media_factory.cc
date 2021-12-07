@@ -693,6 +693,7 @@ MediaFactory::CreateRendererFactorySelector(
       // already a base factory type set. Instead manually set the new base
       // factory type with SetBaseRendererType.
       factory_selector->SetBaseRendererType(RendererType::kMediaFoundation);
+      is_base_renderer_factory_set = true;
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
