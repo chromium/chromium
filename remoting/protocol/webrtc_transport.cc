@@ -872,7 +872,7 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
     return;
 
   if (!success) {
-    LOG(ERROR) << "Failed to set local description: " << error;
+    LOG(ERROR) << "Failed to set remote description: " << error;
     Close(CHANNEL_CONNECTION_ERROR);
     return;
   }
