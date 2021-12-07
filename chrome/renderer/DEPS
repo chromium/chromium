@@ -28,7 +28,7 @@ include_rules = [
   "+components/feed/feed_feature_list.h",
   "+components/grit",
   "+components/guest_view/renderer",
-  "+components/history_clusters/core/memories_features.h",
+  "+components/history_clusters/core/features.h",
   "+components/metrics/child_call_stack_profile_collector.h",
   "+components/nacl/common",
   "+components/nacl/renderer",

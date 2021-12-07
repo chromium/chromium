@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_FEATURES_H_
-#define COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_FEATURES_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_FEATURES_H_
+#define COMPONENTS_HISTORY_CLUSTERS_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -12,6 +12,19 @@
 namespace history_clusters {
 
 // Params & helpers functions
+
+// Returns true if Journeys in the Chrome History WebUI is enabled.
+bool IsJourneysEnabled(const std::string& application_locale);
+
+// A comma (or colon) separated list of allowed locales and languages for which
+// Journeys is enabled. If this string is empty, any application locale or
+// language is allowed. If this string is non-empty, then the either the user's
+// system locale or primary language subtag must match one of the elements for
+// Journeys to be enabled.
+//
+// For example, "en,zh-TW" would mark English language users from any country,
+// and Chinese language users from Taiwan as on the allowlist.
+extern const base::FeatureParam<std::string> kLocaleOrLanguageAllowlist;
 
 // The max number of visits to use for each clustering iteration. This limits
 // the number of visits sent to the clustering backend per batch.
@@ -52,7 +65,8 @@ extern const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold;
 
 // Features
 
-// Enables Journeys in the Chrome History WebUI.
+// Enables Journeys in the Chrome History WebUI. This flag shouldn't be checked
+// directly. Instead use `IsJourneysEnabled()` for the system language filter.
 extern const base::Feature kJourneys;
 
 // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
@@ -72,10 +86,10 @@ extern const base::Feature kUserVisibleDebug;
 // enabled for all users shortly. This just provides a killswitch.
 
 // This flag is to enable us to turn on persisting context annotations WITHOUT
-// exposing the Memories UI in general. If EITHER this flag or `kMemories` is
+// exposing the Memories UI in general. If EITHER this flag or `kJourneys` is
 // enabled, users will have context annotations persisted into their History DB.
 extern const base::Feature kPersistContextAnnotationsInHistoryDb;
 
 }  // namespace history_clusters
 
-#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_MEMORIES_FEATURES_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_FEATURES_H_

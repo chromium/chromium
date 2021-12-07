@@ -20,6 +20,8 @@ buildflag_header("history_clusters_buildflags") {
 static_library("core") {
   sources = [
     "clustering_backend.h",
+    "features.cc",
+    "features.h",
     "history_clusters_db_tasks.cc",
     "history_clusters_db_tasks.h",
     "history_clusters_prefs.cc",
@@ -28,8 +30,6 @@ static_library("core") {
     "history_clusters_service.h",
     "history_clusters_types.cc",
     "history_clusters_types.h",
-    "memories_features.cc",
-    "memories_features.h",
   ]
   if (build_with_on_device_clustering_backend) {
     sources += [
@@ -82,6 +82,7 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "features_unittest.cc",
     "history_clusters_db_tasks_unittest.cc",
     "history_clusters_service_unittest.cc",
   ]

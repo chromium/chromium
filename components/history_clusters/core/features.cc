@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/features.h"
 
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
 
@@ -19,6 +24,27 @@ constexpr auto enabled_by_default_desktop_only =
 #endif
 
 }  // namespace
+
+bool IsJourneysEnabled(const std::string& locale) {
+  if (!base::FeatureList::IsEnabled(kJourneys))
+    return false;
+
+  // Allow comma and colon as delimiters to the language list.
+  auto allowlist =
+      base::SplitString(kLocaleOrLanguageAllowlist.Get(),
+                        ",:", base::WhitespaceHandling::TRIM_WHITESPACE,
+                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  if (allowlist.empty())
+    return true;
+
+  // Allow any exact locale matches, and also allow any users where the primary
+  // language subtag, e.g. "en" from "en-US" to match any element of the list.
+  return base::Contains(allowlist, locale) ||
+         base::Contains(allowlist, l10n_util::GetLanguage(locale));
+}
+
+const base::FeatureParam<std::string> kLocaleOrLanguageAllowlist{
+    &kJourneys, "JourneysLocaleOrLanguageAllowlist", ""};
 
 const base::FeatureParam<int> kMaxVisitsToCluster{
     &kJourneys, "JourneysMaxVisitsToCluster", 1000};
