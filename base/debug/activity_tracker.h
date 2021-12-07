@@ -31,6 +31,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_local.h"
+#include "build/build_config.h"
 
 namespace base {
 

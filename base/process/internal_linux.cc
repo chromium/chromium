@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 // Not defined on AIX by default.
 #if defined(OS_AIX)
