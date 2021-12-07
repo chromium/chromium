@@ -54,13 +54,14 @@ src/demo/file_depth_2/in_single_child_dir/r.spec.ts
 src/stress/listing.ts
 src/stress/adapter/device_allocation.ts
 src/webgpu/constants.ts
+src/webgpu/util/conversion.ts
+src/webgpu/shader/execution/builtin/builtin.ts
 src/webgpu/util/math.ts
 src/webgpu/util/unions.ts
 src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
 src/webgpu/capability_info.ts
 src/webgpu/util/buffer.ts
-src/webgpu/util/conversion.ts
 src/webgpu/util/check_contents.ts
 src/webgpu/util/command_buffer_maker.ts
 src/webgpu/util/device_pool.ts
@@ -247,7 +248,6 @@ src/webgpu/shader/values.ts
 src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
-src/webgpu/shader/execution/builtin/builtin.ts
 src/webgpu/shader/execution/builtin/abs.spec.ts
 src/webgpu/shader/execution/builtin/all.spec.ts
 src/webgpu/shader/execution/builtin/any.spec.ts
