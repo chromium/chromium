@@ -70,7 +70,7 @@ component("wm") {
     "//skia",
     "//ui/aura",
     "//ui/base",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/compositor",
@@ -104,7 +104,7 @@ static_library("test_support") {
     "test/wm_test_helper.h",
   ]
 
-  public_deps = [ "//ui/base/cursor:cursor_base" ]
+  public_deps = [ "//ui/base/cursor" ]
 
   deps = [
     ":wm",
@@ -148,7 +148,7 @@ test("wm_unittests") {
     "//testing/gtest",
     "//ui/aura:test_support",
     "//ui/base:test_support",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/compositor:test_support",

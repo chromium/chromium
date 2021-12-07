@@ -15,7 +15,7 @@
 namespace ui {
 
 // Ref-counted cursor that supports both default and custom cursors.
-class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) Cursor {
+class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
  public:
   Cursor();
   Cursor(mojom::CursorType type);

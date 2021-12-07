@@ -30,7 +30,7 @@ source_set("chromeos") {
     "//skia",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/aura",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/compositor",
     "//ui/events",
     "//ui/views",

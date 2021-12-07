@@ -195,6 +195,7 @@ source_set("app_shell_lib") {
     ]
     deps += [
       "//ui/aura/cursor",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/platform_window",
       "//ui/wm",

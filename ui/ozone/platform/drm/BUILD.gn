@@ -131,7 +131,7 @@ source_set("gbm") {
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/display",

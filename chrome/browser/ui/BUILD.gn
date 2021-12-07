@@ -4905,7 +4905,7 @@ static_library("ui") {
           "views/chrome_browser_main_extra_parts_views_linux.h",
         ]
         deps += [
-          "//ui/base/cursor:cursor_base",
+          "//ui/base/cursor",
           "//ui/ozone",
         ]
 
@@ -5027,6 +5027,7 @@ static_library("ui") {
       "//extensions/common:mojom",
       "//extensions/components/native_app_window",
       "//extensions/strings",
+      "//ui/base/cursor",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/apps/platform_apps",

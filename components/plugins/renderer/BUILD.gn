@@ -19,7 +19,7 @@ static_library("renderer") {
     ]
   }
 
-  public_deps = [ "//ui/base/cursor:cursor_base" ]
+  public_deps = [ "//ui/base/cursor" ]
 
   deps = [
     "//content/public/child",

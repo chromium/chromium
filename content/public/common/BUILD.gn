@@ -238,7 +238,6 @@ source_set("common_sources") {
     "//third_party/icu",
     "//ui/accessibility",
     "//ui/base",
-    "//ui/base/cursor:cursor_base",
     "//ui/gfx",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",

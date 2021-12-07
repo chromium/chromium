@@ -19,7 +19,7 @@ component("platform_window") {
 
   defines = [ "IS_PLATFORM_WINDOW_IMPL" ]
 
-  public_deps = [ "//ui/base/cursor:cursor_base" ]
+  public_deps = []
 
   deps = [
     "//base",

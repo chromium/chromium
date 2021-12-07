@@ -495,7 +495,7 @@ component("base") {
 
   if (is_win) {
     public_deps += [
-      "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type_shared",
     ]
     deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
@@ -1111,7 +1111,7 @@ test("ui_base_unittests") {
       "win/win_cursor_factory_unittest.cc",
     ]
     deps += [
-      "//ui/base/cursor:cursor_base",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type_shared",
     ]
   }

@@ -16,6 +16,7 @@ static_library("image_editor") {
     "//base",
     "//components/lens:lens",
     "//content/public/browser",
+    "//ui/base/cursor",
     "//ui/snapshot",
     "//ui/views",
   ]
@@ -31,5 +32,8 @@ static_library("image_editor") {
     ]
   }
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//ui/base/cursor/mojom:cursor_type_shared",
+  ]
 }

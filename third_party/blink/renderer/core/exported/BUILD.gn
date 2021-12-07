@@ -98,7 +98,7 @@ blink_core_sources("exported") {
     "//build:chromeos_buildflags",
     "//third_party/blink/renderer/core:core_generated",
     "//third_party/blink/renderer/core/probe",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_blink",
   ]
 

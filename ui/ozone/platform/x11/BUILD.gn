@@ -54,7 +54,7 @@ source_set("x11") {
     "//ui/base:buildflags",
     "//ui/base:data_exchange",
     "//ui/base/clipboard:clipboard_types",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/ime",
     "//ui/base/x",
     "//ui/base/x:gl",

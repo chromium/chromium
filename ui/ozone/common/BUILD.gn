@@ -28,7 +28,7 @@ source_set("common") {
   public_deps = [
     "//base",
     "//skia",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/gfx/geometry",
     "//ui/ozone:ozone_base",
@@ -59,7 +59,7 @@ source_set("unittests") {
     ":common",
     "//build:chromeos_buildflags",
     "//testing/gtest",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_shared",
   ]
 }

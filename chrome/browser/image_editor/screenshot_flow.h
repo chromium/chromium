@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event.h"

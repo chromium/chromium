@@ -146,6 +146,7 @@ static_library("devtools") {
       "//skia",
       "//third_party/icu",
       "//third_party/leveldatabase",
+      "//ui/base/cursor",
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/shell_dialogs",
     ]

@@ -67,7 +67,7 @@ component("x") {
   defines = [ "IS_UI_BASE_X_IMPL" ]
 
   public_deps = [
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor:theme_manager",
     "//ui/base/cursor/mojom:cursor_type_shared",
   ]
@@ -165,7 +165,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_shared",
     "//ui/gfx/geometry",
     "//ui/gfx/x",

@@ -170,7 +170,7 @@ source_set("common") {
     "//third_party/blink/public/common",
     "//ui/accessibility",
     "//ui/accessibility/mojom",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/events/ipc",
   ]
   deps = [

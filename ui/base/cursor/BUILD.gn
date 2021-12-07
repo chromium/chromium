@@ -4,9 +4,7 @@
 
 import("//build/config/ui.gni")
 
-# This component was split from :cursor to allow Blink to depend on it without
-# bringing all of //ui/base/cursor.
-component("cursor_base") {
+component("cursor") {
   output_name = "ui_base_cursor_base"
   sources = [
     "cursor.cc",
@@ -16,7 +14,7 @@ component("cursor_base") {
     "cursor_size.h",
     "platform_cursor.h",
   ]
-  defines = [ "IS_UI_BASE_CURSOR_BASE_IMPL" ]
+  defines = [ "IS_UI_BASE_CURSOR_IMPL" ]
   public_deps = [
     "//base",
     "//skia",
@@ -45,7 +43,7 @@ source_set("unittests") {
   if (!is_ios) {
     sources += [ "cursor_unittest.cc" ]
     deps += [
-      ":cursor_base",
+      ":cursor",
       "//skia",
       "//testing/gtest",
       "//ui/base/cursor/mojom:cursor_type_shared",

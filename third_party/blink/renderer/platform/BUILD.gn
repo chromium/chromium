@@ -1670,6 +1670,7 @@ component("platform") {
     "//third_party/blink/renderer/platform/scheduler",
     "//third_party/fdlibm",
     "//third_party/pffft:pffft",
+    "//ui/base/cursor",
     "//ui/gfx",
   ]
   deps = [
@@ -1716,7 +1717,6 @@ component("platform") {
     "//third_party/one_euro_filter",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/zlib/google:compression_utils",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/prediction",
     "//ui/events/ipc",

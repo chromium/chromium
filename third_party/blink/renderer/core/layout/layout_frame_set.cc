@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
 #include "third_party/blink/renderer/platform/cursors.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "ui/base/cursor/cursor.h"
 
 namespace blink {
 
