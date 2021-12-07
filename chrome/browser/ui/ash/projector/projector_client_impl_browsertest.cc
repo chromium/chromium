@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -128,6 +129,30 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   ASSERT_TRUE(tab);
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
+  auto* profile = browser()->profile();
+  web_app::WebAppProvider::GetForTest(profile)
+      ->system_web_app_manager()
+      .InstallSystemAppsForTesting();
+
+  client()->OpenProjectorApp();
+  web_app::FlushSystemWebAppLaunchesForTesting(profile);
+
+  // Verify that Projector App is opened.
+  Browser* app_browser =
+      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  ASSERT_TRUE(app_browser);
+  content::WebContents* tab =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
+            content::PAGE_TYPE_NORMAL);
+
+  client()->MinimizeProjectorApp();
+  // Verify that Projector App is minimized.
+  EXPECT_TRUE(app_browser->window()->IsMinimized());
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, GetDriveFsMountPointPath) {

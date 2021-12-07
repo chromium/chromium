@@ -32,6 +32,7 @@ class ASH_EXPORT MockProjectorClient : public ProjectorClient {
   MOCK_METHOD0(ShowSelfieCam, void());
   MOCK_METHOD0(CloseSelfieCam, void());
   MOCK_CONST_METHOD0(OpenProjectorApp, void());
+  MOCK_CONST_METHOD0(MinimizeProjectorApp, void());
   MOCK_CONST_METHOD1(OnNewScreencastPreconditionChanged, void(bool));
 
   bool IsSelfieCamVisible() const override;

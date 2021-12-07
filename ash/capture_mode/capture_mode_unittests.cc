@@ -4794,6 +4794,7 @@ class ProjectorCaptureModeIntegrationTests
     auto* projector_session = ProjectorSession::Get();
     EXPECT_FALSE(projector_session->is_active());
     auto* projector_controller = ProjectorController::Get();
+    EXPECT_CALL(projector_client_, MinimizeProjectorApp());
     projector_controller->StartProjectorSession("projector_data");
     EXPECT_TRUE(projector_session->is_active());
   }

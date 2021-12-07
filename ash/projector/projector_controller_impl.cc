@@ -89,6 +89,7 @@ void ProjectorControllerImpl::StartProjectorSession(
     controller->Start(CaptureModeEntryType::kProjector);
     if (controller->IsActive()) {
       projector_session_->Start(storage_dir);
+      client_->MinimizeProjectorApp();
     }
   }
 }

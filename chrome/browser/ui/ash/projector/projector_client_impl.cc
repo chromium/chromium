@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -162,6 +163,14 @@ bool ProjectorClientImpl::IsDriveFsMounted() const {
 void ProjectorClientImpl::OpenProjectorApp() const {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PROJECTOR);
+}
+
+void ProjectorClientImpl::MinimizeProjectorApp() const {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  auto* browser =
+      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  if (browser)
+    browser->window()->Minimize();
 }
 
 void ProjectorClientImpl::OnNewScreencastPreconditionChanged(

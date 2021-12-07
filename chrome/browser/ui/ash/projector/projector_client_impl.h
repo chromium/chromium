@@ -47,6 +47,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   bool IsDriveFsMounted() const override;
   void OpenProjectorApp() const override;
+  void MinimizeProjectorApp() const override;
   void OnNewScreencastPreconditionChanged(bool can_start) const override;
 
   // SpeechRecognizerDelegate:
