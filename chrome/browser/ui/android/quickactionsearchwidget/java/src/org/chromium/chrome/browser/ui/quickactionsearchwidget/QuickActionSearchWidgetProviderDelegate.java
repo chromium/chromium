@@ -5,15 +5,16 @@
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
 import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
@@ -29,12 +30,10 @@ public class QuickActionSearchWidgetProviderDelegate {
     private final Intent mStartDinoGameIntent;
 
     /**
-     * Constructor for the {@link QuickActionSearchWidgetProviderDelegate}
-     *
-     * @param widgetType
      * @param searchActivityComponent Component linking to SearchActivity where all Search related
-     *          events will be propagated.
-     * @param startIncognitoIntent A trusted intent starting a new Incognito tab.
+     *         events will be propagated.
+     * @param startIncognitoTabIntent A trusted intent starting a new Incognito tab.
+     * @param startDinoGameIntent A trusted intent starting the Dino game.
      */
     public QuickActionSearchWidgetProviderDelegate(@NonNull ComponentName searchActivityComponent,
             @NonNull Intent startIncognitoTabIntent, @NonNull Intent startDinoGameIntent) {
@@ -44,18 +43,79 @@ public class QuickActionSearchWidgetProviderDelegate {
     }
 
     /**
-     * Creates a {@link RemoteViews} to be assigned to a widget in {@link
-     * QuickActionSearchWidgetProviderDelegate#updateWidget(AppWidgetManager, int, RemoteViews)}. In
-     * this function, the appropriate {@link PendingIntent} is assigned to each tap target on the
+     * Create {@link RemoteViews} for the Dino widget.
+     *
+     * @param context Current context.
+     * @param prefs Structure describing current preferences and feature availability.
+     * @return RemoteViews to be installed on the Dino widget.
+     */
+    public @NonNull RemoteViews createDinoWidgetRemoteViews(
+            @NonNull Context context, @NonNull SearchActivityPreferences prefs) {
+        return createWidgetRemoteViews(
+                context, prefs, R.layout.quick_action_search_widget_dino_layout);
+    }
+
+    /**
+     * Create configuration aware {@link RemoteViews} for the Search widget.
+     *
+     * The returned RemoteViews are adjusted to fit given space, and respond to
+     * screen orientation changes.
+     *
+     * @param context Current context.
+     * @param prefs Structure describing current preferences and feature availability.
+     * @param portraitModeWidthDp Width of the widget area in portrait mode.
+     * @param portraitModeHeightDp Height of the widget area in portrait mode.
+     * @param landscapeModeWidthDp Width of the widget area in landscape mode.
+     * @param landscapeModeHeightDp Height of the widget area in landscape mode.
+     * @return RemoteViews to be installed on the Search widget.
+     */
+    public @NonNull RemoteViews createSearchWidgetRemoteViews(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, int portraitModeWidthDp,
+            int portraitModeHeightDp, int landscapeModeWidthDp, int landscapeModeHeightDp) {
+        return new RemoteViews(
+                createWidgetRemoteViews(context, prefs,
+                        getSearchWidgetLayoutForHeight(context, landscapeModeHeightDp)),
+                createWidgetRemoteViews(context, prefs,
+                        getSearchWidgetLayoutForHeight(context, portraitModeHeightDp)));
+    }
+
+    /**
+     * Given height, identify the layout that will fit in the space.
+     *
+     * @param context Current context.
+     * @param heightDp Are height in distance points.
+     * @return Widget LayoutRes appropriate for the supplied height.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public @LayoutRes int getSearchWidgetLayoutForHeight(Context context, int heightDp) {
+        Resources res = context.getResources();
+        float density = res.getDisplayMetrics().density;
+
+        float smallWidgetMinHeightDp =
+                res.getDimension(R.dimen.quick_action_search_widget_small_height) / density;
+        float mediumWidgetMinHeightDp =
+                res.getDimension(R.dimen.quick_action_search_widget_medium_height) / density;
+
+        if (heightDp < smallWidgetMinHeightDp) {
+            return R.layout.quick_action_search_widget_xsmall_layout;
+        } else if (heightDp < mediumWidgetMinHeightDp) {
+            return R.layout.quick_action_search_widget_small_layout;
+        }
+        return R.layout.quick_action_search_widget_medium_layout;
+    }
+
+    /**
+     * Create a {@link RemoteViews} from supplied layoutRes.
+     * In this function, the appropriate {@link PendingIntent} is assigned to each tap target on the
      * widget.
      *
      * @param context The {@link Context} from which the widget is being updated.
-     * @param layoutRes The Layout to inflate.
      * @param prefs Structure describing current preferences and feature availability.
+     * @param layoutRes The Layout to inflate.
      * @return Widget RemoteViews structure describing layout and content of the widget.
      */
-    public RemoteViews createWidgetRemoteViews(@NonNull Context context, @LayoutRes int layoutRes,
-            @NonNull SearchActivityPreferences prefs) {
+    public RemoteViews createWidgetRemoteViews(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, @LayoutRes int layoutRes) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutRes);
 
         // Search Bar Intent

@@ -9,14 +9,17 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.LayoutRes;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +65,10 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     private View mWidgetView;
     private QuickActionSearchWidgetProviderDelegate mDelegate;
     private TestContext mContext;
+    private int mDefaultWidgetWidthDp;
+    private int mXSmallWidgetMinHeightDp;
+    private int mSmallWidgetMinHeightDp;
+    private int mMediumWidgetMinHeightDp;
 
     @Before
     public void setUp() {
@@ -74,6 +81,22 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         mDelegate = new QuickActionSearchWidgetProviderDelegate(searchActivityComponent,
                 IntentHandler.createTrustedOpenNewTabIntent(mContext, /*incognito=*/true),
                 createDinoIntent(mContext));
+
+        Resources res = mContext.getResources();
+        float density = res.getDisplayMetrics().density;
+
+        // Depend on device-supplied defaults to test also on different form factors.
+        // The computation below infers the size specific to a particular device running tests.
+        mXSmallWidgetMinHeightDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_xsmall_height)
+                        / density);
+        mSmallWidgetMinHeightDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_small_height) / density);
+        mMediumWidgetMinHeightDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_medium_height)
+                        / density);
+        mDefaultWidgetWidthDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_width) / density);
 
         setUpViews();
     }
@@ -134,9 +157,17 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         AppWidgetManager widgetManager = AppWidgetManager.getInstance(mContext);
         SearchActivityPreferences prefs =
                 new SearchActivityPreferences("EngineName", "http://engine", true, true, true);
+
+        Resources res = mContext.getResources();
+        float density = res.getDisplayMetrics().density;
+
         mWidgetView = mDelegate
-                              .createWidgetRemoteViews(mContext,
-                                      R.layout.quick_action_search_widget_medium_layout, prefs)
+                              .createSearchWidgetRemoteViews(mContext, prefs,
+                                      // Simulate optimally sized rectangular screen:
+                                      // Portrait mode dimensions:
+                                      mDefaultWidgetWidthDp, mMediumWidgetMinHeightDp,
+                                      // Landscape mode dimensions:
+                                      mDefaultWidgetWidthDp, mMediumWidgetMinHeightDp)
                               .apply(mContext, null);
     }
 
@@ -154,5 +185,68 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         IntentUtils.addTrustedIntentExtras(intent);
 
         return intent;
+    }
+
+    static class VerticalResizeHeightVariant {
+        /** Reported widget height (in distance point) for this variant. */
+        public final int heightDp;
+        /** String representation (for human readable logs). */
+        public final String variantName;
+        /** Expected Layout Resource ID for that height. */
+        public final Integer layoutRes;
+
+        VerticalResizeHeightVariant(int heightDp, String variantName, @LayoutRes int layoutRes) {
+            this.heightDp = heightDp;
+            this.variantName = variantName;
+            this.layoutRes = layoutRes;
+        }
+    }
+
+    /**
+     * Test that the same delegate is used for all small size widgets.
+     * This takes under consideration the fact that "dipi" and "dpi" dimensions are different
+     */
+    @Test
+    @SmallTest
+    public void doVerticalWidgetResizeOfSmallWidget() {
+        // Validate all height pairs (exhausts the solution space).
+        // This includes both reasonable and unreasonable pairs, ie. the assertion that the
+        // MIN_HEIGHT <= MAX_HEIGHT does not have to hold true.
+        // We want to be thorough and test both the lower and the upper boundary against what we
+        // expect to be returned.
+        VerticalResizeHeightVariant[] variants = new VerticalResizeHeightVariant[] {
+                // The following 2 variants "should never happen" and technically violate any
+                // assumptions that could be made about Android widget sizing, but we keep these to
+                // verify that we're not doing anything unexpected / bad, like crashing.
+                new VerticalResizeHeightVariant(0, //
+                        "zero", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mXSmallWidgetMinHeightDp - 1,
+                        "XSmallMinHeightDp - 1", R.layout.quick_action_search_widget_xsmall_layout),
+
+                // The following variants test every valid variant at its boundaries.
+                new VerticalResizeHeightVariant(mXSmallWidgetMinHeightDp, //
+                        "XSmallMinHeightDp", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mXSmallWidgetMinHeightDp + 1,
+                        "XSmallMinHeightDp + 1", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mSmallWidgetMinHeightDp - 1, //
+                        "SmallMinHeightDp - 1", R.layout.quick_action_search_widget_xsmall_layout),
+                new VerticalResizeHeightVariant(mSmallWidgetMinHeightDp, //
+                        "SmallMinHeightDp", R.layout.quick_action_search_widget_small_layout),
+                new VerticalResizeHeightVariant(mSmallWidgetMinHeightDp + 1, //
+                        "SmallMinHeightDp + 1", R.layout.quick_action_search_widget_small_layout),
+                new VerticalResizeHeightVariant(mMediumWidgetMinHeightDp - 1,
+                        "MediumMinHeightDp - 1", R.layout.quick_action_search_widget_small_layout),
+                new VerticalResizeHeightVariant(mMediumWidgetMinHeightDp, //
+                        "MediumMinHeightDp", R.layout.quick_action_search_widget_medium_layout),
+                new VerticalResizeHeightVariant(mMediumWidgetMinHeightDp + 1,
+                        "MediumMinHeightDp + 1", R.layout.quick_action_search_widget_medium_layout),
+        };
+
+        for (VerticalResizeHeightVariant variant : variants) {
+            Integer layoutRes =
+                    mDelegate.getSearchWidgetLayoutForHeight(mContext, variant.heightDp);
+            Assert.assertEquals("Unexpected layout where height=" + variant.variantName,
+                    variant.layoutRes, layoutRes);
+        }
     }
 }

@@ -12,11 +12,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.widget.RemoteViews;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -26,7 +23,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -50,41 +46,36 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             extends QuickActionSearchWidgetProvider {
         @Override
         @NonNull
-        Pair<Integer, Integer> getOrientationSpecificLayoutRes(
-                Context context, AppWidgetManager manager, int widgetId) {
+        RemoteViews getRemoteViews(@NonNull Context context,
+                @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
+                int widgetId) {
             Bundle options = manager.getAppWidgetOptions(widgetId);
-
-            return new Pair<>(getLayoutForHeight(context,
-                                      options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)),
-                    getLayoutForHeight(
-                            context, options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)));
+            return getDelegate().createSearchWidgetRemoteViews(context, prefs,
+                    getPortraitModeTargetAreaWidth(options),
+                    getPortraitModeTargetAreaHeight(options),
+                    getLandscapeModeTargetAreaWidth(options),
+                    getLandscapeModeTargetAreaHeight(options));
         }
+    }
 
-        /**
-         * Given height, identify the WidgetProviderDelegate maintaining widgets that will fit in
-         * the space.
-         *
-         * @param context Current context.
-         * @param heightDp Are height in distance points.
-         * @return Widget LayoutRes appropriate for the supplied height.
-         */
-        private @LayoutRes int getLayoutForHeight(Context context, int heightDp) {
-            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-            float smallWidgetMinHeightDp = context.getResources().getDimension(
-                                                   R.dimen.quick_action_search_widget_small_height)
-                    / displayMetrics.density;
-            float mediumWidgetMinHeightDp =
-                    context.getResources().getDimension(
-                            R.dimen.quick_action_search_widget_medium_height)
-                    / displayMetrics.density;
+    /** Returns the widget area width in portrait orientation (dp). */
+    private static int getPortraitModeTargetAreaWidth(Bundle options) {
+        return options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+    }
 
-            if (heightDp < smallWidgetMinHeightDp) {
-                return R.layout.quick_action_search_widget_xsmall_layout;
-            } else if (heightDp < mediumWidgetMinHeightDp) {
-                return R.layout.quick_action_search_widget_small_layout;
-            }
-            return R.layout.quick_action_search_widget_medium_layout;
-        }
+    /** Returns the widget area height in portrait orientation (dp). */
+    private static int getPortraitModeTargetAreaHeight(Bundle options) {
+        return options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
+    }
+
+    /** Returns the widget area width in landscape orientation (dp). */
+    private static int getLandscapeModeTargetAreaWidth(Bundle options) {
+        return options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
+    }
+
+    /** Returns the widget area height in landscape orientation (dp). */
+    private static int getLandscapeModeTargetAreaHeight(Bundle options) {
+        return options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
     }
 
     /**
@@ -95,10 +86,10 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             extends QuickActionSearchWidgetProvider {
         @Override
         @NonNull
-        Pair<Integer, Integer> getOrientationSpecificLayoutRes(
-                Context context, AppWidgetManager manager, int widgetId) {
-            return new Pair<>(R.layout.quick_action_search_widget_dino_layout,
-                    R.layout.quick_action_search_widget_dino_layout);
+        RemoteViews getRemoteViews(@NonNull Context context,
+                @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
+                int widgetId) {
+            return getDelegate().createDinoWidgetRemoteViews(context, prefs);
         }
     }
 
@@ -135,14 +126,8 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
 
         for (int index = 0; index < widgetIds.length; index++) {
             int widgetId = widgetIds[index];
-            Pair<Integer, Integer> layouts =
-                    getOrientationSpecificLayoutRes(context, manager, widgetId);
-
-            manager.updateAppWidget(widgetId,
-                    new RemoteViews(getDelegate().createWidgetRemoteViews(
-                                            context, layouts.first, preferences),
-                            getDelegate().createWidgetRemoteViews(
-                                    context, layouts.second, preferences)));
+            manager.updateAppWidget(
+                    widgetId, getRemoteViews(context, preferences, manager, widgetId));
         }
     }
 
@@ -202,8 +187,9 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
      * @param widgetId The widget to get the delegate for.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    abstract Pair<Integer, Integer> getOrientationSpecificLayoutRes(
-            Context context, AppWidgetManager manager, int widgetId);
+    abstract @NonNull RemoteViews getRemoteViews(@NonNull Context context,
+            @NonNull SearchActivityPreferences prefs, @NonNull AppWidgetManager manager,
+            int widgetId);
 
     /**
      * This function initializes the QuickActionSearchWidgetProvider component. Namely, this
