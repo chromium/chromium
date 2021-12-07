@@ -151,7 +151,9 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   base::RecordAction(base::UserMetricsAction("Extensions.Toolbar.MenuOpened"));
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)) {
-    menu = ExtensionsTabbedMenuView::ShowBubble(this, button_type_);
+    menu = ExtensionsTabbedMenuView::ShowBubble(
+        this, browser_, extensions_container_, button_type_,
+        extensions_container_->CanShowIconInToolbar());
   } else {
     menu = ExtensionsMenuView::ShowBubble(
         this, browser_, extensions_container_,

@@ -226,6 +226,11 @@ ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
   return controller;
 }
 
+const std::string& ToolbarActionsModel::GetExtensionName(
+    const ActionId& action_id) const {
+  return extension_registry_->enabled_extensions().GetByID(action_id)->name();
+}
+
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
   return base::Contains(pinned_action_ids_, action_id);
 }
