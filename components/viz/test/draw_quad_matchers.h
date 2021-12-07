@@ -27,20 +27,35 @@
 
 namespace viz {
 
-// Produces a matcher that matches a SolidColorDrawQuad.
+// Provides human readable quad material names for gtest/gmock.
+void PrintTo(DrawQuad::Material material, ::std::ostream* os);
+
+// Matches a SolidColorDrawQuad.
 testing::Matcher<const DrawQuad*> IsSolidColorQuad();
 
-// Produces a matcher that matches a SolidColorDrawQuad with |expected_color|.
+// Matches a SolidColorDrawQuad with |expected_color|.
 testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor expected_color);
 
-// Produces a matcher that matches a TextureDrawQuad.
+// Matches a TextureDrawQuad.
 testing::Matcher<const DrawQuad*> IsTextureQuad();
 
-// Produces a matcher that matches a YuvVideoDrawQuad.
+// Matches a YuvVideoDrawQuad.
 testing::Matcher<const DrawQuad*> IsYuvVideoQuad();
 
-// Produces a matcher that matches a AggregatedRenderPassQuad.
+// Matches a SurfaceDrawQuad.
+testing::Matcher<const DrawQuad*> IsSurfaceQuad();
+
+// Matches an AggregatedRenderPassQuad.
 testing::Matcher<const DrawQuad*> IsAggregatedRenderPassQuad();
+
+// Matches a DrawQuad with expected DrawQuad::rect.
+testing::Matcher<const DrawQuad*> HasRect(const gfx::Rect& rect);
+
+// Matches a DrawQuad with expected DrawQuad::visible_rect.
+testing::Matcher<const DrawQuad*> HasVisibleRect(const gfx::Rect& visible_rect);
+
+// Matches a DrawQuad with expected SharedQuadState::quad_to_target_transform.
+testing::Matcher<const DrawQuad*> HasTransform(const gfx::Transform& transform);
 
 }  // namespace viz
 

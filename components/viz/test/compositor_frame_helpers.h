@@ -16,6 +16,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/latency/latency_info.h"
 
 namespace viz {
@@ -46,7 +47,7 @@ struct TextureQuadParams {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
   SkColor background_color = SK_ColorGREEN;
-  float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
+  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool flipped = false;
   bool nearest_neighbor = false;
   bool secure_output_only = false;
@@ -149,6 +150,14 @@ class RenderPassBuilder {
   // Sets SharedQuadState::clip_rect for the last quad.
   RenderPassBuilder& SetQuadClipRect(absl::optional<gfx::Rect> clip_rect);
 
+  // Sets SharedQuadState::blend_mode for the last quad.
+  RenderPassBuilder& SetBlendMode(SkBlendMode blend_mode);
+
+  // Sets SharedQuadState::mask_filter_info and
+  // SharedQuadState::is_fast_rounded_corner for the last quad.
+  RenderPassBuilder& SetMaskFilter(const gfx::MaskFilterInfo& mask_filter_info,
+                                   bool is_fast_rounded_corner);
+
  private:
   // Appends and returns a new SharedQuadState for quad.
   SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,
@@ -234,6 +243,10 @@ CompositorRenderPassList CopyRenderPasses(
 // Creates a CompositorFrame that has a render pass with 20x20 output_rect and
 // empty damage_rect. This CompositorFrame is valid and can be sent over IPC.
 CompositorFrame MakeDefaultCompositorFrame();
+
+// Creates a CompositorFrame with provided render pass.
+CompositorFrame MakeCompositorFrame(
+    std::unique_ptr<CompositorRenderPass> render_pass);
 
 // Creates a CompositorFrame with provided list of render passes.
 CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list);

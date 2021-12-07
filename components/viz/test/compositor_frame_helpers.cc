@@ -229,6 +229,20 @@ RenderPassBuilder& RenderPassBuilder::SetQuadClipRect(
   return *this;
 }
 
+RenderPassBuilder& RenderPassBuilder::SetBlendMode(SkBlendMode blend_mode) {
+  GetLastQuadSharedQuadState()->blend_mode = blend_mode;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetMaskFilter(
+    const gfx::MaskFilterInfo& mask_filter_info,
+    bool is_fast_rounded_corner) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->mask_filter_info = mask_filter_info;
+  sqs->is_fast_rounded_corner = is_fast_rounded_corner;
+  return *this;
+}
+
 SharedQuadState* RenderPassBuilder::AppendDefaultSharedQuadState(
     const gfx::Rect rect,
     const gfx::Rect visible_rect) {
@@ -410,6 +424,11 @@ CompositorRenderPassList CopyRenderPasses(
 
 CompositorFrame MakeDefaultCompositorFrame() {
   return CompositorFrameBuilder().AddDefaultRenderPass().Build();
+}
+
+CompositorFrame MakeCompositorFrame(
+    std::unique_ptr<CompositorRenderPass> render_pass) {
+  return CompositorFrameBuilder().AddRenderPass(std::move(render_pass)).Build();
 }
 
 CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list) {
