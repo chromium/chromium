@@ -6,7 +6,18 @@
  * @fileoverview Utility functions to be used in trusted code.
  */
 
-import {WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+
+import {WallpaperImage, WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
+
+export function isWallpaperImage(obj: any): obj is WallpaperImage {
+  return typeof obj?.assetId === 'bigint';
+}
+
+export function isFilePath(obj: any): obj is FilePath {
+  return typeof obj?.path === 'string' && obj.path;
+}
+
 /**
  * Convert a string layout value to the corresponding enum.
  */

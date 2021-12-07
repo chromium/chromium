@@ -198,14 +198,14 @@ export function endSelectImageAction(
 
 export type SetCollectionsAction = Action&{
   name: ActionName.SET_COLLECTIONS;
-  collections: WallpaperCollection[];
+  collections: WallpaperCollection[]|null;
 };
 
 /**
  * Set the collections. May be called with null if an error occurred.
  */
-export function setCollectionsAction(collections: WallpaperCollection[]):
-    SetCollectionsAction {
+export function setCollectionsAction(collections: WallpaperCollection[]|
+                                     null): SetCollectionsAction {
   return {
     name: ActionName.SET_COLLECTIONS,
     collections,
@@ -285,7 +285,7 @@ export function setGooglePhotosPhotosAction(photos: unknown[]|
 export type SetImagesForCollectionAction = Action&{
   name: ActionName.SET_IMAGES_FOR_COLLECTION;
   collectionId: string;
-  images: WallpaperImage[];
+  images: WallpaperImage[]|null;
 };
 
 /**
@@ -294,7 +294,7 @@ export type SetImagesForCollectionAction = Action&{
  */
 export function setImagesForCollectionAction(
     collectionId: string,
-    images: WallpaperImage[]): SetImagesForCollectionAction {
+    images: WallpaperImage[]|null): SetImagesForCollectionAction {
   return {
     collectionId,
     images,
@@ -322,13 +322,12 @@ export function setLocalImageDataAction(
 
 export type SetLocalImagesAction = Action&{
   name: ActionName.SET_LOCAL_IMAGES;
-  images: FilePath[];
+  images: FilePath[]|null;
 };
 
-/**
- * Set the list of local images.
- */
-export function setLocalImagesAction(images: FilePath[]): SetLocalImagesAction {
+/** Set the list of local images. */
+export function setLocalImagesAction(images: FilePath[]|
+                                     null): SetLocalImagesAction {
   return {
     images,
     name: ActionName.SET_LOCAL_IMAGES,
