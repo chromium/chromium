@@ -212,7 +212,14 @@ class PartitionAllocTest : public testing::Test {
   void SetUp() override {
     PartitionAllocGlobalInit(HandleOOM);
     allocator.init({
+#if !BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+      // AlignedAllocFlags() can't be called when BRP is in the "before
+      // allocation" mode, because this mode adds extras before the allocation.
+      // Extras after the allocation are ok.
+      PartitionOptions::AlignedAlloc::kAllowed,
+#else
       PartitionOptions::AlignedAlloc::kDisallowed,
+#endif
           PartitionOptions::ThreadCache::kDisabled,
           PartitionOptions::Quarantine::kDisallowed,
           PartitionOptions::Cookie::kAllowed,
@@ -1067,7 +1074,10 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 TEST_F(PartitionAllocTest, IsValidPtrDelta) {
-  const size_t kSizes[] = {base::kAlignment + kExtraAllocSize,
+  const size_t kMinReasonableTestSize =
+      base::bits::AlignUp(kExtraAllocSize + 1, base::kAlignment);
+  ASSERT_GT(kMinReasonableTestSize, kExtraAllocSize);
+  const size_t kSizes[] = {kMinReasonableTestSize,
                            256,
                            SystemPageSize(),
                            PartitionPageSize(),
@@ -2943,20 +2953,11 @@ TEST_F(PartitionAllocTest, Alignment) {
     // All powers of two are bucket sizes, meaning that all power of two
     // allocations smaller than a page will be aligned on the allocation size.
     size_t expected_alignment = size;
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-    // When BackupRefPtr is enabled, kInSlotRefCountBufferSize is added before
-    // rounding up the allocation size, making the raw size not a power of two.
-    // The returned pointer points after the ref-count (except when
-    // PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, but even then the size increase
-    // by kInSlotRefCountBufferSize will cause non-1st allocations to be
-    // misaligned).
-    expected_alignment =
-        std::min({expected_alignment, kInSlotRefCountBufferSize});
-#endif
     for (int index = 0; index < 3; index++) {
       void* ptr = allocator.root()->Alloc(requested_size, "");
       allocated_ptrs.push_back(ptr);
-      EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) % expected_alignment)
+      EXPECT_EQ(0u, (reinterpret_cast<uintptr_t>(ptr) - kPointerOffset) %
+                        expected_alignment)
           << (index + 1) << "-th allocation of size=" << size;
     }
   }
@@ -3046,11 +3047,9 @@ TEST_F(PartitionAllocTest, AlignedAllocations) {
          alignment <<= 1) {
       VerifyAlignment(aligned_allocator.root(), alloc_size, alignment);
 
-      // AlignedAllocFlags() can't be called on regular allocator, if there are
-      // extras before the allocation. Extras after the allocation are ok
-      // (PUT_REF_COUNT_IN_PREVIOUS_SLOT) and this is what's being tested here.
-#if !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) || \
-                        BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT))
+      // Verify alignment on the regular allocator only when BRP is off, or when
+      // it's on in the "previous slot" mode. See the comment in SetUp().
+#if !BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
       VerifyAlignment(allocator.root(), alloc_size, alignment);
 #endif
     }
