@@ -9,6 +9,7 @@
 #include "base/android/linker/modern_linker_jni.h"
 
 #include <dlfcn.h>
+#include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -38,10 +39,6 @@ extern "C" {
 void* android_dlopen_ext(const char*, int, const android_dlextinfo*)
     __attribute__((weak_import));
 
-// This function is exported by the dynamic linker but never declared in any
-// official header for some architecture/version combinations.
-int dl_iterate_phdr(int (*cb)(dl_phdr_info* info, size_t size, void* data),
-                    void* data) __attribute__((weak_import));
 }  // extern "C"
 
 namespace chromium_android_linker {
@@ -238,35 +235,54 @@ void NativeLibInfo::CloseRelroFd() {
   relro_fd_ = kInvalidFd;
 }
 
-// static
-int NativeLibInfo::VisitLibraryPhdrs(dl_phdr_info* info,
-                                     size_t size UNUSED,
-                                     void* lib_info) {
-  auto* out_lib_info = reinterpret_cast<NativeLibInfo*>(lib_info);
-  ElfW(Addr) lookup_address =
-      static_cast<ElfW(Addr)>(out_lib_info->load_address());
+bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
+  LOG_INFO("Called for 0x%" PRIxPTR, load_address_);
 
-  // Use max and min vaddr to compute the library's load size.
+  // Check that an ELF library starts at the |load_address_|.
+  if (memcmp(reinterpret_cast<void*>(load_address_), ELFMAG, SELFMAG) != 0) {
+    LOG_ERROR("Wrong magic number");
+    return false;
+  }
+  auto class_type = *reinterpret_cast<uint8_t*>(load_address_ + EI_CLASS);
+  if (class_type == ELFCLASS32) {
+    LOG_INFO("ELFCLASS32");
+  } else if (class_type == ELFCLASS64) {
+    LOG_INFO("ELFCLASS64");
+  } else {
+    LOG_ERROR("Could not determine ELF class");
+    return false;
+  }
+
+  // Sanitycheck PAGE_SIZE before use.
+  int page_size = sysconf(_SC_PAGESIZE);
+  if (page_size != PAGE_SIZE)
+    abort();
+
+  // Compute the ranges of PT_LOAD segments and the PT_GNU_RELRO. It is possible
+  // to reach for the same information by iterating over all loaded libraries
+  // and their program headers using dl_iterate_phdr(3). Instead here the
+  // iteration goes through the array |e_phoff[e_phnum]| to avoid acquisition of
+  // the global lock in Bionic (dlfcn.cpp).
+  //
+  // The code relies on (1) having RELRO in the PT_GNU_RELRO segment, and (2)
+  // the fact that the address *range* occupied by the library is the minimal
+  // address range containing all of the PT_LOAD and PT_GNU_RELRO segments.
+  // This is a contract between the static linker and the dynamic linker which
+  // seems unlikely to get broken. It might break though as a result of
+  // post-processing the DSO, which has historically happened for a few
+  // occasions (eliminating the unwind tables and splitting the library into
+  // DFMs).
   auto min_vaddr = std::numeric_limits<ElfW(Addr)>::max();
+  auto min_relro_vaddr = min_vaddr;
   ElfW(Addr) max_vaddr = 0;
-  ElfW(Addr) min_relro_vaddr = ~0;
   ElfW(Addr) max_relro_vaddr = 0;
-
-  bool is_matching = false;
-  for (int i = 0; i < info->dlpi_phnum; ++i) {
-    const ElfW(Phdr)* phdr = &info->dlpi_phdr[i];
+  const auto* ehdr = reinterpret_cast<const ElfW(Ehdr)*>(load_address_);
+  const auto* phdrs =
+      reinterpret_cast<const ElfW(Phdr)*>(load_address_ + ehdr->e_phoff);
+  for (int i = 0; i < ehdr->e_phnum; i++) {
+    const ElfW(Phdr)* phdr = &phdrs[i];
     switch (phdr->p_type) {
       case PT_LOAD:
-        // See if this segment's load address matches the value passed to
-        // android_dlopen_ext as |extinfo.reserved_addr|.
-        //
-        // Here and below, the virtual address in memory is computed by
-        //     address == info->dlpi_addr + program_header->p_vaddr
-        // that is, the p_vaddr fields is relative to the object base address.
-        // See dl_iterate_phdr(3) for details.
-        if (lookup_address == info->dlpi_addr + phdr->p_vaddr)
-          is_matching = true;
-
         if (phdr->p_vaddr < min_vaddr)
           min_vaddr = phdr->p_vaddr;
         if (phdr->p_vaddr + phdr->p_memsz > max_vaddr)
@@ -291,34 +307,10 @@ int NativeLibInfo::VisitLibraryPhdrs(dl_phdr_info* info,
     }
   }
 
-  // Fill out size and relro information if there was a match.
-  if (is_matching) {
-    int page_size = sysconf(_SC_PAGESIZE);
-    if (page_size != PAGE_SIZE)
-      abort();
-
-    out_lib_info->load_size_ = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
-    out_lib_info->relro_size_ =
-        PAGE_END(max_relro_vaddr) - PAGE_START(min_relro_vaddr);
-    out_lib_info->relro_start_ = info->dlpi_addr + PAGE_START(min_relro_vaddr);
-
-    return true;
-  }
-
-  return false;
-}
-
-bool NativeLibInfo::FindRelroAndLibraryRangesInElf() {
-  LOG_INFO("Called for 0x%" PRIxPTR, load_address_);
-  if (!dl_iterate_phdr) {
-    LOG_ERROR("No dl_iterate_phdr() found");
-    return false;
-  }
-  int status = dl_iterate_phdr(&VisitLibraryPhdrs, this);
-  if (!status) {
-    LOG_ERROR("Failed to find library at address 0x%" PRIxPTR, load_address_);
-    return false;
-  }
+  // Fill out size and RELRO information.
+  load_size_ = PAGE_END(max_vaddr) - PAGE_START(min_vaddr);
+  relro_size_ = PAGE_END(max_relro_vaddr) - PAGE_START(min_relro_vaddr);
+  relro_start_ = load_address_ + PAGE_START(min_relro_vaddr);
   return true;
 }
 
