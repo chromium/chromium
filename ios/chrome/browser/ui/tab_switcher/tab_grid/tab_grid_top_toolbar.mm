@@ -227,8 +227,8 @@ const int kSearchBarTrailingSpace = 20;
   if (![self shouldUseCompactLayout:traitCollection])
     widthModifier = kTabGridSearchBarNonCompactWidthRatioModifier;
 
-  float cancelWidth = [_selectAllButton.title sizeWithAttributes:nil].width;
-  float barWidth =
+  CGFloat cancelWidth = [_selectAllButton.title sizeWithAttributes:nil].width;
+  CGFloat barWidth =
       (self.bounds.size.width - kSearchBarTrailingSpace - cancelWidth) *
       kTabGridSearchBarWidthRatio * widthModifier;
   // Update the search bar size based on the container size.
@@ -249,10 +249,13 @@ const int kSearchBarTrailingSpace = 20;
   UIBarButtonItem* trailingButton = _doneButton;
   _selectionModeFixedSpace.width = 0;
   if ([self shouldUseCompactLayout:traitCollection]) {
-    if (IsTabsSearchEnabled() && _mode == TabGridModeNormal)
+    if (IsTabsSearchEnabled() && _mode == TabGridModeNormal &&
+        _page != TabGridPageRemoteTabs) {
       _leadingButton = _searchButton;
-    else
+    } else {
       _leadingButton = _spaceItem;
+    }
+
     if (_mode == TabGridModeSelection) {
       // In the selection mode, Done button is much smaller than SelectAll
       // we need to calculate the difference on the width and use it as a
@@ -296,7 +299,8 @@ const int kSearchBarTrailingSpace = 20;
     _leadingButton = _selectAllButton;
   }
 
-  if (IsTabsSearchEnabled() && _mode == TabGridModeNormal) {
+  if (IsTabsSearchEnabled() && _mode == TabGridModeNormal &&
+      _page != TabGridPageRemoteTabs) {
     [self setItems:@[
       _leadingButton, _iconButtonAdditionalSpaceItem, _searchButton, _spaceItem,
       centralItem, _spaceItem, trailingButton
