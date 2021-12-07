@@ -11,7 +11,6 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {dismissErrorAction} from './personalization_actions.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
-/** @polymer */
 export class PersonalizationToastElement extends WithPersonalizationStore {
   static get is() {
     return 'personalization-toast';
@@ -23,23 +22,15 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      /**
-       * @type {?string}
-       * @private
-       */
       error_: {
         type: String,
         value: null,
       },
 
-      /** @private */
       isLoading_: {
         type: Boolean,
       },
 
-      /**
-       * @private
-       */
       showError_: {
         type: Boolean,
         computed: 'computeShowError_(error_, isLoading_)',
@@ -47,7 +38,10 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
     };
   }
 
-  /** @override */
+  private error_: string;
+  private isLoading_: boolean;
+  private showError_: boolean;
+
   connectedCallback() {
     super.connectedCallback();
     this.watch('error_', state => state.error);
@@ -57,19 +51,11 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
             state.loading.refreshWallpaper);
   }
 
-  /** @private */
-  onDismissClicked_() {
+  private onDismissClicked_() {
     this.dispatch(dismissErrorAction());
   }
 
-  /**
-   * Show error when there is an error message and the app is not loading.
-   * @param {?string} error
-   * @param {boolean} loading
-   * @return {boolean}
-   * @private
-   */
-  computeShowError_(error, loading) {
+  private computeShowError_(error: string|null, loading: boolean): boolean {
     return !!error && !loading;
   }
 }

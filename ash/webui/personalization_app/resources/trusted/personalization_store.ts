@@ -107,7 +107,7 @@ const PersonalizationStoreClientImpl: PersonalizationStoreClient&
 
 export const WithPersonalizationStore: {
   new (): PolymerElement&I18nBehavior&IronResizableBehavior&
-  PersonalizationStoreClient&Pick<StoreClientInterface, 'dispatch'>
+  PersonalizationStoreClient&StoreClientInterface
 } =
     mixinBehaviors(
         [

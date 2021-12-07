@@ -14,14 +14,23 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../common/styles.js';
+
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {isNonEmptyArray} from '../common/utils.js';
+
+import {WallpaperCollection} from './personalization_app.mojom-webui.js';
 import {Paths} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {isNonEmptyString} from './utils.js';
 
+/** Event interface for dom-repeat. */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    index: number,
+  };
+}
 
-/** @polymer */
 export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   static get is() {
     return 'personalization-breadcrumb';
@@ -54,34 +63,23 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         type: String,
       },
 
-      /**
-       * @type {Array<string>}
-       * @private
-       */
       breadcrumbs_: {
         type: Array,
         computed:
             'computeBreadcrumbs_(path, collections_, collectionId, googlePhotosAlbums_, googlePhotosAlbumId)',
       },
 
-      /**
-       * @private
-       * @type {?Array<!WallpaperCollection>}
-       */
       collections_: {
         type: Array,
       },
 
       /**
        * The list of Google Photos albums.
-       * @type {?Array<WallpaperCollection>}
-       * @private
        */
       googlePhotosAlbums_: {
         type: Array,
       },
 
-      /** @private */
       showBackButton_: {
         type: Boolean,
         computed: 'computeShowBackButton_(path)',
@@ -89,7 +87,14 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     };
   }
 
-  /** @override */
+  collectionId: string;
+  googlePhotosAlbumId: string;
+  path: string;
+  private breadcrumbs_: string[];
+  private collections_: WallpaperCollection[]|null;
+  private googlePhotosAlbums_: WallpaperCollection[]|null;
+  private showBackButton_: boolean;
+
   connectedCallback() {
     super.connectedCallback();
     this.watch('collections_', state => state.backdrop.collections);
@@ -97,18 +102,10 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     this.updateFromStore();
   }
 
-  /**
-   * @param {string} path
-   * @param {?Array<!WallpaperCollection>} collections
-   * @param {string} collectionId
-   * @param {?Array<WallpaperCollection>} googlePhotosAlbums
-   * @param {?string} googlePhotosAlbumId
-   * @return {Array<string>}
-   * @private
-   */
-  computeBreadcrumbs_(
-      path, collections, collectionId, googlePhotosAlbums,
-      googlePhotosAlbumId) {
+  private computeBreadcrumbs_(
+      path: string, collections: WallpaperCollection[]|null,
+      collectionId: string, googlePhotosAlbums: WallpaperCollection[]|null,
+      googlePhotosAlbumId: string|null): string[] {
     const breadcrumbs = [this.i18n('title')];
 
     switch (path) {
@@ -141,30 +138,19 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
     return breadcrumbs;
   }
 
-  /**
-   * @private
-   * @param {string} path
-   * @returns {boolean}
-   */
-  computeShowBackButton_(path) {
+  private computeShowBackButton_(path: string): boolean {
     return path !== Paths.Collections;
   }
 
-  /**
-   * @private
-   * @return {string}
-   */
-  getBackButtonAriaLabel_() {
+  private getBackButtonAriaLabel_(): string {
     return this.i18n('back', this.i18n('title'));
   }
 
-  /** @private */
-  onBackClick_() {
+  private onBackClick_() {
     window.history.back();
   }
 
-  /** @private */
-  onBreadcrumbClick_(e) {
+  private onBreadcrumbClick_(e: RepeaterEvent) {
     const index = e.model.index;
     const delta = this.breadcrumbs_.length - index - 1;
     if (delta > 0) {
