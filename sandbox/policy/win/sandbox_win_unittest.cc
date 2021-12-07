@@ -43,11 +43,6 @@ namespace sandbox {
 namespace policy {
 
 namespace {
-constexpr char kAppContainerId[] = "SandboxWinTest";
-constexpr wchar_t kPackageSid[] =
-    L"S-1-15-2-1505217662-1870513255-555216753-1864132992-3842232122-"
-    L"1807018979-869957911";
-
 class TestTargetPolicy : public TargetPolicy {
  public:
   void AddRef() override {}
@@ -199,9 +194,14 @@ class SandboxWinTest : public ::testing::Test {
                         &command_line);
     }
 
+    std::string appcontainer_id =
+        testing::UnitTest::GetInstance()->current_test_info()->test_case_name();
+    appcontainer_id += ".";
+    appcontainer_id +=
+        testing::UnitTest::GetInstance()->current_test_info()->name();
     TestTargetPolicy policy;
     ResultCode result = SandboxWin::AddAppContainerProfileToPolicy(
-        command_line, sandbox_type, kAppContainerId, &policy);
+        command_line, sandbox_type, appcontainer_id, &policy);
     if (result == SBOX_ALL_OK)
       *profile = policy.GetAppContainerBase();
     return result;
@@ -246,8 +246,9 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
       command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
   ASSERT_EQ(SBOX_ALL_OK, result);
   ASSERT_NE(nullptr, profile);
-  absl::optional<base::win::Sid> package_sid =
-      base::win::Sid::FromSddlString(kPackageSid);
+  absl::optional<base::win::Sid> package_sid = base::win::Sid::FromSddlString(
+      L"S-1-15-2-2402834154-1919024995-1520873375-1190013510-771931769-"
+      L"834570634-3212001585");
   ASSERT_TRUE(package_sid);
   EXPECT_EQ(package_sid, profile->GetPackageSid());
   EXPECT_TRUE(profile->GetEnableLowPrivilegeAppContainer());
