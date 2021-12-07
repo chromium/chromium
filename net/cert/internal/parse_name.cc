@@ -281,7 +281,7 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
   } else if (type == TypeOrganizationUnitNameOid()) {
     type_string = "OU";
   } else if (type == TypeGivenNameOid()) {
-    type_string = "GN";
+    type_string = "givenName";
   } else if (type == TypeEmailAddressOid()) {
     type_string = "emailAddress";
   } else {

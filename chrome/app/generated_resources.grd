@@ -3218,7 +3218,7 @@ are declared in tools/grit/grit_rule.gni.
           UID
         </message>
         <message translateable="false" name="IDS_CERT_OID_PKCS9_EMAIL_ADDRESS" desc="">
-          E
+          emailAddress
         </message>
         <message translateable="false" name="IDS_CERT_OID_BUSINESS_CATEGORY" desc="">
           businessCategory
