@@ -645,9 +645,10 @@ void BlobRegistryImpl::URLStoreForOrigin(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   Delegate* delegate = receivers_.current_context().get();
   DCHECK(delegate);
-  if (!origin.opaque() && !delegate->CanCommitURL(origin.GetURL())) {
+  if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
     mojo::ReportBadMessage(
-        "Non committable origin passed to BlobRegistryImpl::URLStoreForOrigin");
+        "Cannot access data for origin passed to "
+        "BlobRegistryImpl::URLStoreForOrigin");
   }
   auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<BlobURLStoreImpl>(origin, url_registry_),

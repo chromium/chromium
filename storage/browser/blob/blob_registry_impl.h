@@ -14,6 +14,7 @@
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
+#include "url/origin.h"
 
 namespace storage {
 
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     virtual ~Delegate() {}
     virtual bool CanReadFile(const base::FilePath& file) = 0;
     virtual bool CanReadFileSystemFile(const FileSystemURL& url) = 0;
-    virtual bool CanCommitURL(const GURL& url) = 0;
+    virtual bool CanAccessDataForOrigin(const url::Origin& origin) = 0;
   };
 
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,
