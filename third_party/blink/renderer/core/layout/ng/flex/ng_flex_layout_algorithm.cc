@@ -448,9 +448,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned() && !IsResumingLayout(BreakToken())) {
-      // TODO(almaher): OOF elements that are found after an item that fragments
-      // will likely have the wrong static position. Might need to handle OOFs
-      // at a later point in time.
+      // TODO(almaher): OOF static position and alignment when fragmenting. The
+      // static position may get adjusted once the final container block-size is
+      // known. However, we would want to use the total block-size rather than
+      // the block-size of the first fragment.
       HandleOutOfFlowPositioned(child);
       continue;
     }
