@@ -8270,6 +8270,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
   <int value="255" label="RFPH_FOCUSED_FENCED_FRAME"/>
   <int value="256" label="WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME"/>
+  <int value="257" label="RFH_FENCED_FRAME_MOJO_WHEN_DISABLED"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -184,7 +184,8 @@ class DeclarativeNetRequestBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
-         blink::features::kAdInterestGroupAPI, blink::features::kFledge},
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         blink::features::kFencedFrames},
         /*disabled_features=*/
         {});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
