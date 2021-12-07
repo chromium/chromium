@@ -73,7 +73,7 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
   speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-      weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetPrimaryUserProfile(),
+      weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
       GetLocale(), /*recognition_mode_ime=*/false,
       /*enable_formatting=*/true);
 }
@@ -85,7 +85,7 @@ void ProjectorClientImpl::StopSpeechRecognition() {
 
 void ProjectorClientImpl::ShowSelfieCam() {
   selfie_cam_bubble_manager_.Show(
-      ProfileManager::GetPrimaryUserProfile(),
+      ProfileManager::GetActiveUserProfile(),
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
 }
 
@@ -139,7 +139,7 @@ bool ProjectorClientImpl::GetDriveFsMountPointPath(
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          ProfileManager::GetPrimaryUserProfile());
+          ProfileManager::GetActiveUserProfile());
   *result = integration_service->GetMountPointPath();
   return true;
 }
@@ -154,14 +154,14 @@ bool ProjectorClientImpl::IsDriveFsMounted() const {
     return true;
   }
 
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* profile = ProfileManager::GetActiveUserProfile();
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return integration_service && integration_service->IsMounted();
 }
 
 void ProjectorClientImpl::OpenProjectorApp() const {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* profile = ProfileManager::GetActiveUserProfile();
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PROJECTOR);
 }
 

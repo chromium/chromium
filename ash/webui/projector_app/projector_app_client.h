@@ -78,7 +78,7 @@ class ProjectorAppClient {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns the IdentityManager for the primary user profile.
+  // Returns the IdentityManager for the active user profile.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
 
   // Returns the URLLoaderFactory for the primary user profile.

@@ -77,15 +77,13 @@ void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
 }
 
 signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   return IdentityManagerFactory::GetForProfile(profile);
 }
 
 network::mojom::URLLoaderFactory*
 ProjectorAppClientImpl::GetUrlLoaderFactory() {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
+  Profile* profile = ProfileManager::GetActiveUserProfile();
   return profile->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       .get();

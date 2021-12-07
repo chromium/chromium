@@ -35,13 +35,13 @@ bool IsWebmOrProjectorFile(const base::FilePath& path) {
          path.MatchesExtension(GetMetadataFileExtension());
 }
 
-drive::DriveIntegrationService* GetDriveIntegrationServiceForPrimaryProfile() {
+drive::DriveIntegrationService* GetDriveIntegrationServiceForActiveProfile() {
   return drive::DriveIntegrationServiceFactory::FindForProfile(
-      ProfileManager::GetPrimaryUserProfile());
+      ProfileManager::GetActiveUserProfile());
 }
 
-drivefs::DriveFsHost* GetDriveFsHostForPrimaryProfile() {
-  auto* drivefs_integration = GetDriveIntegrationServiceForPrimaryProfile();
+drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
+  auto* drivefs_integration = GetDriveIntegrationServiceForActiveProfile();
   return drivefs_integration ? drivefs_integration->GetDriveFsHost() : nullptr;
 }
 
@@ -132,7 +132,7 @@ PendingSreencastManager::~PendingSreencastManager() {
       session_manager::SessionManager::Get();
   if (session_manager) {
     session_manager->RemoveObserver(this);
-    auto* drivefs_host = GetDriveFsHostForPrimaryProfile();
+    auto* drivefs_host = GetDriveFsHostForActiveProfile();
     if (drivefs_host)
       drivefs_host->RemoveObserver(this);
   }
@@ -173,7 +173,7 @@ void PendingSreencastManager::OnSyncingStatusUpdate(
       base::BindOnce(
           ProcessAndGenerateNewScreencasts,
           std::move(pending_webm_or_projector_files),
-          GetDriveIntegrationServiceForPrimaryProfile()->GetMountPointPath()),
+          GetDriveIntegrationServiceForActiveProfile()->GetMountPointPath()),
       base::BindOnce(
           &PendingSreencastManager::OnProcessAndGenerateNewScreencastsFinished,
           weak_ptr_factory_.GetWeakPtr()));
@@ -185,11 +185,9 @@ void PendingSreencastManager::OnError(const drivefs::mojom::DriveError& error) {
 }
 
 void PendingSreencastManager::OnUserSessionStarted(bool is_primary_user) {
-  if (!is_primary_user)
-    return;
-  auto* drivefs_host = GetDriveFsHostForPrimaryProfile();
+  auto* drivefs_host = GetDriveFsHostForActiveProfile();
   if (drivefs_host)
-    GetDriveFsHostForPrimaryProfile()->AddObserver(this);
+    GetDriveFsHostForActiveProfile()->AddObserver(this);
 }
 
 const std::set<ash::PendingScreencast>&

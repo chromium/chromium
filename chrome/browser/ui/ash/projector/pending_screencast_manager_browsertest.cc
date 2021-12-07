@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -62,7 +63,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  protected:
   virtual drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
-    if (!ProfileHelper::IsPrimaryProfile(profile))
+    // Ignore non-regular profile.
+    if (!ProfileHelper::IsRegularProfile(profile))
       return nullptr;
 
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -81,7 +83,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
 
     drive::DriveIntegrationService* service =
         drive::DriveIntegrationServiceFactory::FindForProfile(
-            ProfileManager::GetPrimaryUserProfile());
+            browser()->profile());
     EXPECT_TRUE(service->IsMounted());
     EXPECT_TRUE(base::PathExists(service->GetMountPointPath()));
 
