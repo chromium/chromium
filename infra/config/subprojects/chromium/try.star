@@ -1643,7 +1643,6 @@ try_.chromium_mac_builder(
 
 try_.chromium_mac_orchestrator_pair(
     name = "mac-rel-orchestrator",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     use_clang_coverage = True,
     orchestrator_cores = 2,
@@ -1657,7 +1656,6 @@ try_.chromium_mac_orchestrator_pair(
 
 try_.chromium_mac_orchestrator_pair(
     name = "mac11-arm64-rel",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     orchestrator_cores = 2,
     orchestrator_tryjob = try_.job(
