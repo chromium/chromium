@@ -403,6 +403,47 @@ class CONTENT_EXPORT StoragePartitionImpl
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
 
+  class URLLoaderNetworkContext {
+   public:
+    enum class Type {
+      // A network context for a RenderFrameHost.
+      kRenderFrameHostContext,
+      // A network context for a navigation request or a service worker.
+      kNavigationRequestContext,
+    };
+
+    ~URLLoaderNetworkContext();
+
+    // Creates a URLLoaderNetworkContext for the render frame host.
+    static URLLoaderNetworkContext CreateForRenderFrameHost(
+        GlobalRenderFrameHostId global_render_frame_host_id);
+
+    // Creates a URLLoaderNetworkContext for the navigation request.
+    static URLLoaderNetworkContext CreateForNavigation(int frame_tree_node_id);
+
+    // Returns true if `type` is `kNavigationRequestContext`.
+    bool IsNavigationRequestContext();
+
+    Type type() const { return type_; }
+
+    GlobalRenderFrameHostId render_frame_host_id() const {
+      return render_frame_host_id_;
+    }
+
+    int frame_tree_node_id() const { return frame_tree_node_id_; }
+
+   private:
+    URLLoaderNetworkContext(URLLoaderNetworkContext::Type type,
+                            GlobalRenderFrameHostId global_render_frame_host_id,
+                            int frame_tree_node_id);
+
+    Type type_;
+    // Used for kRenderFrameHostContext.
+    GlobalRenderFrameHostId render_frame_host_id_;
+    // Used for kNavigationRequestContext.
+    int frame_tree_node_id_;
+  };
+
  private:
   class DataDeletionHelper;
   class QuotaManagedDataDeletionHelper;
@@ -649,10 +690,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::UniqueReceiverSet<network::mojom::CookieAccessObserver>
       service_worker_cookie_observers_;
 
-  struct URLLoaderNetworkContext {
-    int process_id;
-    int routing_id;
-  };
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver,
                     URLLoaderNetworkContext>
       url_loader_network_observers_;

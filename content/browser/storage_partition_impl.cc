@@ -140,6 +140,8 @@ namespace content {
 
 namespace {
 
+using Type = StoragePartitionImpl::URLLoaderNetworkContext::Type;
+
 const storage::QuotaSettings* g_test_quota_settings;
 
 // Timeout after which the
@@ -420,11 +422,19 @@ BrowserContext* GetBrowserContextFromStoragePartition(
   return weak_partition_ptr ? weak_partition_ptr->browser_context() : nullptr;
 }
 
-WebContents* GetWebContents(int process_id, int routing_id) {
-  if (process_id != network::mojom::kBrowserProcessId) {
-    return WebContentsImpl::FromRenderFrameHostID(process_id, routing_id);
+// Returns the WebContents corresponding to `context`.
+WebContents* GetWebContents(
+    StoragePartitionImpl::URLLoaderNetworkContext context) {
+  switch (context.type()) {
+    case Type::kRenderFrameHostContext: {
+      return WebContents::FromRenderFrameHost(
+          RenderFrameHostImpl::FromID(context.render_frame_host_id()));
+    }
+    case Type::kNavigationRequestContext:
+      return WebContents::FromFrameTreeNodeId(context.frame_tree_node_id());
   }
-  return WebContents::FromFrameTreeNodeId(routing_id);
+  NOTREACHED();
+  return nullptr;
 }
 
 // LoginHandlerDelegate manages HTTP auth. It is self-owning and deletes itself
@@ -548,11 +558,13 @@ void OnAuthRequiredContinuation(
 }
 
 // Returns true if the request is the primary main frame navigation.
-bool IsPrimaryMainFrameRequest(int process_id, int routing_id) {
-  if (process_id != network::mojom::kBrowserProcessId)
+bool IsPrimaryMainFrameRequest(
+    StoragePartitionImpl::URLLoaderNetworkContext context) {
+  if (!context.IsNavigationRequestContext())
     return false;
 
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(routing_id);
+  auto* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(context.frame_tree_node_id());
   // TODO(1254377): Consider replacing FrameTree::Type with the type on the
   // FrameTreeNode.
   return frame_tree_node && frame_tree_node->IsMainFrame() &&
@@ -1723,8 +1735,8 @@ void StoragePartitionImpl::OnAuthRequired(
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder) {
-  int process_id = url_loader_network_observers_.current_context().process_id;
-  int routing_id = url_loader_network_observers_.current_context().routing_id;
+  URLLoaderNetworkContext context =
+      url_loader_network_observers_.current_context();
   absl::optional<bool> is_primary_main_frame;
 
   if (window_id) {
@@ -1744,8 +1756,8 @@ void StoragePartitionImpl::OnAuthRequired(
           // the navigation commit has already started.
           GlobalRenderFrameHostId render_frame_host_id =
               container_host->GetRenderFrameHostId();
-          process_id = render_frame_host_id.child_id;
-          routing_id = render_frame_host_id.frame_routing_id;
+          context = URLLoaderNetworkContext::CreateForRenderFrameHost(
+              render_frame_host_id);
 
           // TODO(crbug.com/963748, crbug.com/1251596): `is_primary_main_frame`
           // should be false because only the request for a sub resource
@@ -1757,13 +1769,13 @@ void StoragePartitionImpl::OnAuthRequired(
                 render_frame_host_impl->IsInPrimaryMainFrame();
           }
         } else {
-          // Overwrite the process_id and routing_id; set `process_id` to
-          // kBrowserProcessId which indicates that `routing_id` is actually a
+          // Overwrite the context; set `type` to kNavigationRequestContext
+          // which indicates that `frame_tree_node_id` is actually a
           // FrameTreeNode ID.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
-          process_id = network::mojom::kBrowserProcessId;
-          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation(
-              base::PassKey<StoragePartitionImpl>());
+          context = URLLoaderNetworkContext::CreateForNavigation(
+              container_host->GetFrameTreeNodeIdForOngoingNavigation(
+                  base::PassKey<StoragePartitionImpl>()));
         }
       }
     }
@@ -1772,21 +1784,32 @@ void StoragePartitionImpl::OnAuthRequired(
   // If the request is for a prerendering page, prerendering should be cancelled
   // because the embedder may show UI for auth requests, and it's unsuitable for
   // a hidden page.
-  if (process_id == network::mojom::kBrowserProcessId) {
-    if (CancelIfPrerendering(routing_id,
+  if (context.IsNavigationRequestContext()) {
+    if (CancelIfPrerendering(context.frame_tree_node_id(),
                              PrerenderHost::FinalStatus::kLoginAuthRequested)) {
       return;
     }
   } else if (CancelIfPrerendering(
-                 GlobalRenderFrameHostId(process_id, routing_id),
+                 context.render_frame_host_id(),
                  PrerenderHost::FinalStatus::kLoginAuthRequested)) {
     return;
   }
 
   if (!is_primary_main_frame.has_value())
-    is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
-  auto web_contents_getter =
-      base::BindRepeating(GetWebContents, process_id, routing_id);
+    is_primary_main_frame = IsPrimaryMainFrameRequest(context);
+  auto web_contents_getter = base::BindRepeating(GetWebContents, context);
+  int process_id;
+  switch (context.type()) {
+    case URLLoaderNetworkContext::Type::kRenderFrameHostContext:
+      process_id = context.render_frame_host_id().child_id;
+      break;
+    case URLLoaderNetworkContext::Type::kNavigationRequestContext:
+      process_id = network::mojom::kBrowserProcessId;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
   OnAuthRequiredContinuation(
       process_id, request_id, url, *is_primary_main_frame, first_auth_attempt,
       auth_info, head_headers, std::move(auth_challenge_responder),
@@ -1798,8 +1821,8 @@ void StoragePartitionImpl::OnCertificateRequested(
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder) {
-  int process_id = url_loader_network_observers_.current_context().process_id;
-  int routing_id = url_loader_network_observers_.current_context().routing_id;
+  URLLoaderNetworkContext context =
+      url_loader_network_observers_.current_context();
 
   if (window_id) {
     // Use `window_id` if it is provided, because this request was sent by a
@@ -1818,17 +1841,17 @@ void StoragePartitionImpl::OnCertificateRequested(
           // the navigation commit has already started.
           GlobalRenderFrameHostId render_frame_host_id =
               container_host->GetRenderFrameHostId();
-          process_id = render_frame_host_id.child_id;
-          routing_id = render_frame_host_id.frame_routing_id;
+          context = URLLoaderNetworkContext::CreateForRenderFrameHost(
+              render_frame_host_id);
         } else {
           // Overwrite the render_frame_host_id; set
           // `render_frame_host_id.child_id` to kBrowserProcessId which
           // indicates that `render_frame_host_id.frame_routing_id` is actually
           // a FrameTreeNode ID.
           // TODO(https://crbug.com/1239554): Optimize locating logic.
-          process_id = network::mojom::kBrowserProcessId;
-          routing_id = container_host->GetFrameTreeNodeIdForOngoingNavigation(
-              base::PassKey<StoragePartitionImpl>());
+          context = URLLoaderNetworkContext::CreateForNavigation(
+              container_host->GetFrameTreeNodeIdForOngoingNavigation(
+                  base::PassKey<StoragePartitionImpl>()));
         }
       }
     }
@@ -1837,21 +1860,21 @@ void StoragePartitionImpl::OnCertificateRequested(
   // If the request is for a prerendering page, prerendering should be cancelled
   // because the embedder may show a dialog and ask users to select client
   // certificates, and it's unsuitable for a hidden page.
-  if (process_id == network::mojom::kBrowserProcessId) {
+  if (context.IsNavigationRequestContext()) {
     if (CancelIfPrerendering(
-            routing_id, PrerenderHost::FinalStatus::kClientCertRequested)) {
+            context.frame_tree_node_id(),
+            PrerenderHost::FinalStatus::kClientCertRequested)) {
       CallCancelRequest(std::move(cert_responder));
       return;
     }
   } else if (CancelIfPrerendering(
-                 GlobalRenderFrameHostId(process_id, routing_id),
+                 context.render_frame_host_id(),
                  PrerenderHost::FinalStatus::kClientCertRequested)) {
     CallCancelRequest(std::move(cert_responder));
     return;
   }
 
-  auto web_contents_getter =
-      base::BindRepeating(GetWebContents, process_id, routing_id);
+  auto web_contents_getter = base::BindRepeating(GetWebContents, context);
   OnCertificateRequestedContinuation(cert_info, std::move(cert_responder),
                                      std::move(web_contents_getter));
 }
@@ -1862,10 +1885,10 @@ void StoragePartitionImpl::OnSSLCertificateError(
     const net::SSLInfo& ssl_info,
     bool fatal,
     OnSSLCertificateErrorCallback response) {
-  int process_id = url_loader_network_observers_.current_context().process_id;
-  int routing_id = url_loader_network_observers_.current_context().routing_id;
+  URLLoaderNetworkContext context =
+      url_loader_network_observers_.current_context();
 
-  if (process_id == network::mojom::kBrowserProcessId) {
+  if (context.IsNavigationRequestContext()) {
     // The remote end of this URLLoaderNetworkServiceObserver pipe was created
     // for NavigationRequest, see
     // `CreateURLLoaderNetworkObserverForNavigationRequest`.
@@ -1874,7 +1897,8 @@ void StoragePartitionImpl::OnSSLCertificateError(
     // prerendering page, because prerendering pages are invisble and browser
     // cannot show errors on invisible pages.
     if (CancelIfPrerendering(
-            routing_id, PrerenderHost::FinalStatus::kSslCertificateError)) {
+            context.frame_tree_node_id(),
+            PrerenderHost::FinalStatus::kSslCertificateError)) {
       std::move(response).Run(net_error);
       return;
     }
@@ -1886,7 +1910,7 @@ void StoragePartitionImpl::OnSSLCertificateError(
     // prerendering page, because prerendering pages are invisble and browser
     // cannot show errors on invisible pages.
     if (CancelIfPrerendering(
-            GlobalRenderFrameHostId(process_id, routing_id),
+            context.render_frame_host_id(),
             PrerenderHost::FinalStatus::kSslCertificateError)) {
       std::move(response).Run(net_error);
       return;
@@ -1895,20 +1919,17 @@ void StoragePartitionImpl::OnSSLCertificateError(
 
   SSLErrorDelegate* delegate =
       new SSLErrorDelegate(std::move(response));  // deletes self
-  bool is_primary_main_frame_request =
-      IsPrimaryMainFrameRequest(process_id, routing_id);
+  bool is_primary_main_frame_request = IsPrimaryMainFrameRequest(context);
   SSLManager::OnSSLCertificateError(
       delegate->GetWeakPtr(), is_primary_main_frame_request, url,
-      GetWebContents(process_id, routing_id), net_error, ssl_info, fatal);
+      GetWebContents(context), net_error, ssl_info, fatal);
 }
 
 void StoragePartitionImpl::OnLoadingStateUpdate(
     network::mojom::LoadInfoPtr info,
     OnLoadingStateUpdateCallback callback) {
-  int process_id = url_loader_network_observers_.current_context().process_id;
-  int routing_id = url_loader_network_observers_.current_context().routing_id;
-
-  auto* web_contents = GetWebContents(process_id, routing_id);
+  auto* web_contents =
+      GetWebContents(url_loader_network_observers_.current_context());
   if (web_contents) {
     static_cast<WebContentsImpl*>(web_contents)
         ->LoadStateChanged(std::move(info));
@@ -1920,11 +1941,14 @@ void StoragePartitionImpl::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {
-  int process_id = url_loader_network_observers_.current_context().process_id;
-  int routing_id = url_loader_network_observers_.current_context().routing_id;
+  URLLoaderNetworkContext context =
+      url_loader_network_observers_.current_context();
+  // It can pass empty GlobalRenderFrameHostId() when the context type is
+  // `kNavigationRequestContext`.
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
-      process_id, routing_id, network_traffic_annotation_id_hash, recv_bytes,
-      sent_bytes);
+      context.render_frame_host_id().child_id,
+      context.render_frame_host_id().frame_routing_id,
+      network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
 }
 
 void StoragePartitionImpl::Clone(
@@ -1940,7 +1964,9 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForFrame(int process_id,
                                                              int routing_id) {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
-      this, remote.InitWithNewPipeAndPassReceiver(), {process_id, routing_id});
+      this, remote.InitWithNewPipeAndPassReceiver(),
+      URLLoaderNetworkContext::CreateForRenderFrameHost(
+          GlobalRenderFrameHostId(process_id, routing_id)));
   return remote;
 }
 
@@ -1950,7 +1976,7 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
-      {network::mojom::kBrowserProcessId, frame_tree_id});
+      URLLoaderNetworkContext::CreateForNavigation(frame_tree_id));
   return remote;
 }
 
@@ -1959,7 +1985,8 @@ StoragePartitionImpl::CreateAuthCertObserverForServiceWorker() {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
   url_loader_network_observers_.Add(
       this, remote.InitWithNewPipeAndPassReceiver(),
-      {network::mojom::kBrowserProcessId, RenderFrameHost::kNoFrameTreeNodeId});
+      URLLoaderNetworkContext::CreateForNavigation(
+          RenderFrameHost::kNoFrameTreeNodeId));
   return remote;
 }
 
@@ -2010,12 +2037,10 @@ void StoragePartitionImpl::OnClearSiteData(const GURL& url,
                                            int load_flags,
                                            OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
-  int process_id = url_loader_network_observers_.current_context().process_id;
-  int routing_id = url_loader_network_observers_.current_context().routing_id;
   auto browser_context_getter = base::BindRepeating(
       GetBrowserContextFromStoragePartition, weak_factory_.GetWeakPtr());
-  auto web_contents_getter =
-      base::BindRepeating(GetWebContents, process_id, routing_id);
+  auto web_contents_getter = base::BindRepeating(
+      GetWebContents, url_loader_network_observers_.current_context());
   ClearSiteDataHandler::HandleHeader(browser_context_getter,
                                      web_contents_getter, url, header_value,
                                      load_flags, std::move(callback));
@@ -2888,6 +2913,38 @@ void StoragePartitionImpl::
         &StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError,
         weak_factory_.GetWeakPtr()));
   }
+}
+
+StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
+    URLLoaderNetworkContext::Type type,
+    GlobalRenderFrameHostId render_frame_host_id,
+    int frame_tree_node_id)
+    : type_(type),
+      render_frame_host_id_(render_frame_host_id),
+      frame_tree_node_id_(frame_tree_node_id) {}
+
+StoragePartitionImpl::URLLoaderNetworkContext::~URLLoaderNetworkContext() =
+    default;
+
+StoragePartitionImpl::URLLoaderNetworkContext
+StoragePartitionImpl::URLLoaderNetworkContext::CreateForRenderFrameHost(
+    GlobalRenderFrameHostId render_frame_host_id) {
+  return URLLoaderNetworkContext(
+      URLLoaderNetworkContext::Type::kRenderFrameHostContext,
+      render_frame_host_id, MSG_ROUTING_NONE);
+}
+
+StoragePartitionImpl::URLLoaderNetworkContext
+StoragePartitionImpl::URLLoaderNetworkContext::CreateForNavigation(
+    int frame_tree_node_id) {
+  return URLLoaderNetworkContext(
+      URLLoaderNetworkContext::Type::kNavigationRequestContext,
+      GlobalRenderFrameHostId(), frame_tree_node_id);
+}
+
+bool StoragePartitionImpl::URLLoaderNetworkContext::
+    IsNavigationRequestContext() {
+  return type_ == URLLoaderNetworkContext::Type::kNavigationRequestContext;
 }
 
 }  // namespace content
