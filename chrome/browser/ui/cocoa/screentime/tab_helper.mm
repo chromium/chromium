@@ -47,11 +47,10 @@ TabHelper::~TabHelper() = default;
 
 void TabHelper::PrimaryPageChanged(content::Page& page) {
   content::RenderFrameHost& rfh = page.GetMainDocument();
-  // TODO(ellyjones): Some defensive programming around chrome:// URLs would
-  // probably be a good idea here. It's not unimaginable that ScreenTime would
-  // misbehave and end up occluding those URLs, which would be very bad.
-  page_controller_->PageURLChangedTo(
-      URLForReporting(rfh.GetLastCommittedURL()));
+  const GURL& url = rfh.GetLastCommittedURL();
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
+  page_controller_->PageURLChangedTo(URLForReporting(url));
 }
 
 std::unique_ptr<WebpageController> TabHelper::MakeWebpageController() {

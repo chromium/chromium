@@ -68,4 +68,26 @@ TEST_F(ScreentimeTabHelperTest, OnlyOriginsAreReported) {
             GURL("https://test.chromium.org/"));
 }
 
+TEST_F(ScreentimeTabHelperTest, OnlyHttpHttpsSchemesReported) {
+  auto contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  auto helper = std::make_unique<TabHelper>(contents.get());
+
+  FakeWebpageController* controller = static_cast<FakeWebpageController*>(
+      helper->page_controller_for_testing());
+
+  auto* tester = content::WebContentsTester::For(contents.get());
+  tester->NavigateAndCommit(GURL("https://www.chromium.org/abc"));
+  tester->NavigateAndCommit(GURL("http://test.chromium.org/def"));
+  tester->NavigateAndCommit(GURL("chrome://version"));
+  tester->NavigateAndCommit(GURL("mailto:hello@example.com"));
+
+  EXPECT_EQ(controller->visited_urls_for_testing().size(), 2u);
+
+  EXPECT_EQ(controller->visited_urls_for_testing()[0],
+            GURL("https://www.chromium.org/"));
+  EXPECT_EQ(controller->visited_urls_for_testing()[1],
+            GURL("http://test.chromium.org/"));
+}
+
 }  // namespace screentime
