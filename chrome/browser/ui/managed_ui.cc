@@ -72,7 +72,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
     return false;
 
   // Don't show the UI for Unicorn accounts.
-  if (profile->IsSupervised())
+  if (profile->IsChild())
     return false;
 #endif
 

@@ -116,6 +116,6 @@ void ThemeServiceAuraLinux::FixInconsistentPreferencesIfNeeded() {
 // static
 bool ThemeServiceAuraLinux::ShouldUseSystemThemeForProfile(
     const Profile* profile) {
-  return !profile || (!profile->IsSupervised() &&
+  return !profile || (!profile->IsChild() &&
                       profile->GetPrefs()->GetBoolean(prefs::kUsesSystemTheme));
 }

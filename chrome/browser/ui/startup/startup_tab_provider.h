@@ -106,7 +106,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
     bool has_seen_welcome_page = false;
     bool is_signin_allowed = false;
     bool is_signed_in = false;
-    bool is_supervised_user = false;
+    bool is_child_account = false;
     bool is_force_signin_enabled = false;
   };
 

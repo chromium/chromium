@@ -528,7 +528,7 @@ void SessionControllerClientImpl::OnLoginUserProfilePrepared(Profile* profile) {
   const User* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
 
-  if (profile->IsSupervised()) {
+  if (profile->IsChild()) {
     // There can be only one supervised user per session.
     DCHECK(!supervised_user_profile_);
     supervised_user_profile_ = profile;

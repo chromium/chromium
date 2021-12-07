@@ -122,7 +122,7 @@ void TabContentsSyncedTabDelegate::GetSerializedNavigationAtIndex(
 
 bool TabContentsSyncedTabDelegate::ProfileIsSupervised() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-      ->IsSupervised();
+      ->IsChild();
 }
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*

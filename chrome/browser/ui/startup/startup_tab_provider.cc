@@ -124,7 +124,7 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
     standard_params.is_signed_in =
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
-  standard_params.is_supervised_user = profile->IsSupervised();
+  standard_params.is_child_account = profile->IsChild();
   standard_params.is_force_signin_enabled = signin_util::IsForceSigninEnabled();
 
   return GetStandardOnboardingTabsForState(standard_params);
@@ -143,8 +143,7 @@ StartupTabs StartupTabProviderImpl::GetWelcomeBackTabs(
   }
   if (browser_creator->welcome_back_page() &&
       CanShowWelcome(SyncServiceFactory::IsSyncAllowed(profile),
-                     profile->IsSupervised(),
-                     signin_util::IsForceSigninEnabled())) {
+                     profile->IsChild(), signin_util::IsForceSigninEnabled())) {
     tabs.emplace_back(GetWelcomePageUrl(false));
   }
   return tabs;
@@ -267,9 +266,9 @@ StartupTabs StartupTabProviderImpl::GetNewFeaturesTabs(
 
 // static
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
-                                            bool is_supervised_user,
+                                            bool is_child_account,
                                             bool is_force_signin_enabled) {
-  return is_signin_allowed && !is_supervised_user && !is_force_signin_enabled;
+  return is_signin_allowed && !is_child_account && !is_force_signin_enabled;
 }
 
 // static
@@ -283,7 +282,7 @@ bool StartupTabProviderImpl::ShouldShowWelcomeForOnboarding(
 StartupTabs StartupTabProviderImpl::GetStandardOnboardingTabsForState(
     const StandardOnboardingTabsParams& params) {
   StartupTabs tabs;
-  if (CanShowWelcome(params.is_signin_allowed, params.is_supervised_user,
+  if (CanShowWelcome(params.is_signin_allowed, params.is_child_account,
                      params.is_force_signin_enabled) &&
       ShouldShowWelcomeForOnboarding(params.has_seen_welcome_page,
                                      params.is_signed_in)) {

@@ -86,7 +86,7 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_Negative) {
     StandardOnboardingTabsParams standard_params;
     standard_params.is_first_run = true;
     standard_params.is_signin_allowed = true;
-    standard_params.is_supervised_user = true;
+    standard_params.is_child_account = true;
     StartupTabs output =
         StartupTabProviderImpl::GetStandardOnboardingTabsForState(
             standard_params);
