@@ -17,6 +17,7 @@
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
+#include "headless/app/headless_shell_switches.h"
 #include "headless/public/headless_shell.h"
 #include "ui/gfx/switches.h"
 
@@ -120,7 +121,7 @@ int ChromeMain(int argc, const char** argv) {
   base::CommandLine::Init(params.argc, params.argv);
 #endif  // defined(OS_WIN)
   base::CommandLine::Init(0, nullptr);
-  const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
+  base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   ALLOW_UNUSED_LOCAL(command_line);
 
 #if defined(OS_WIN)
@@ -147,8 +148,12 @@ int ChromeMain(int argc, const char** argv) {
   } else {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
-    if (command_line->HasSwitch(switches::kHeadless))
+    if (command_line->HasSwitch(switches::kHeadless)) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
+#endif
       return headless::HeadlessShellMain(std::move(params));
+    }
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
   }

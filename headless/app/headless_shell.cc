@@ -711,14 +711,6 @@ int HeadlessShellMain(int argc, const char** argv) {
   if (!ValidateCommandLine(command_line))
     return EXIT_FAILURE;
 
-// Crash reporting in headless mode is enabled by default in official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  builder.SetCrashReporterEnabled(true);
-  base::FilePath dumps_path;
-  base::PathService::Get(base::DIR_TEMP, &dumps_path);
-  builder.SetCrashDumpsDir(dumps_path);
-#endif
-
 #if defined(OS_MAC)
   command_line.AppendSwitch(os_crypt::switches::kUseMockKeychain);
 #endif

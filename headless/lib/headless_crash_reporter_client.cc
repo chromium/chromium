@@ -60,6 +60,7 @@ bool HeadlessCrashReporterClient::GetCrashDumpLocation(
 ) {
   base::FilePath crash_directory = crash_dumps_dir_;
   if (crash_directory.empty() &&
+      !base::PathService::Get(base::DIR_TEMP, &crash_directory) &&
       !base::PathService::Get(base::DIR_MODULE, &crash_directory)) {
     return false;
   }

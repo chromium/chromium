@@ -839,6 +839,7 @@ if (is_win) {
     sources = [
       "app/headless_shell.cc",
       "app/headless_shell.h",
+      "app/headless_shell_switches.h",
       "lib/browser/headless_content_browser_client.cc",
       "lib/browser/headless_content_browser_client.h",
       "public/headless_shell.h",
@@ -869,6 +870,7 @@ static_library("headless_shell_lib") {
   sources = [
     "app/headless_shell.cc",
     "app/headless_shell.h",
+    "app/headless_shell_switches.h",
     "public/headless_shell.h",
   ]
   defines = []

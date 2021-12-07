@@ -38,6 +38,7 @@ include_rules = [
   "+content/public/browser/browser_main_runner.h",
   "+content/public/common",
   "+extensions/common/constants.h",
+  "+headless/app/headless_shell_switches.h",
   "+headless/public",
   "+media/base/media_switches.h",
   "+native_client/src/trusted/service_runtime/osx",
