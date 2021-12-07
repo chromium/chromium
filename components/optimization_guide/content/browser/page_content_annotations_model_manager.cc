@@ -475,6 +475,16 @@ void PageContentAnnotationsModelManager::
   out_content_annotations->categories = final_categories;
 }
 
+absl::optional<ModelInfo>
+PageContentAnnotationsModelManager::GetModelInfoForType(
+    AnnotationType type) const {
+  if (type == AnnotationType::kPageTopics &&
+      on_demand_page_topics_model_executor_) {
+    return on_demand_page_topics_model_executor_->GetModelInfo();
+  }
+  return absl::nullopt;
+}
+
 void PageContentAnnotationsModelManager::Annotate(
     BatchAnnotationCallback callback,
     const std::vector<std::string>& inputs,

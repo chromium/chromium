@@ -124,6 +124,16 @@ void PageContentAnnotationsService::BatchAnnotate(
   annotator_->Annotate(std::move(callback), inputs, annotation_type);
 }
 
+absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
+    AnnotationType type) const {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  DCHECK(model_manager_);
+  return model_manager_->GetModelInfoForType(type);
+#else
+  return absl::nullopt;
+#endif
+}
+
 void PageContentAnnotationsService::ExtractRelatedSearches(
     const HistoryVisit& visit,
     content::WebContents* web_contents) {
@@ -231,15 +241,6 @@ void PageContentAnnotationsService::OnURLQueried(
   }
   LogPageContentAnnotationsStorageStatus(
       did_store_content_annotations ? kSuccess : kSpecificVisitForUrlNotFound);
-}
-
-absl::optional<int64_t>
-PageContentAnnotationsService::GetPageTopicsModelVersion() const {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  return model_manager_->GetPageTopicsModelVersion();
-#else
-  return absl::nullopt;
-#endif
 }
 
 void PageContentAnnotationsService::GetMetadataForEntityId(

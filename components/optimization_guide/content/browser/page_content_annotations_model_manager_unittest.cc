@@ -156,16 +156,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void SetupPageTopicsV2ModelExecutor() {
-    model_manager()->SetUpPageTopicsV2Model(model_observer_tracker());
-    // If the feature flag is disabled, the executor won't have been created so
-    // skip everything else.
-    if (!model_manager()->on_demand_page_topics_model_executor_)
-      return;
-
-    proto::Any any_metadata;
-    any_metadata.set_type_url(
-        "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  proto::PageTopicsModelMetadata MakeValidPageTopicsModelMetadata() const {
     proto::PageTopicsModelMetadata page_topics_model_metadata;
     page_topics_model_metadata.set_version(123);
     page_topics_model_metadata.add_supported_output(
@@ -177,8 +168,21 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     page_topics_model_metadata.mutable_output_postprocessing_params()
         ->mutable_category_params()
         ->set_min_category_weight(0);
+    return page_topics_model_metadata;
+  }
 
-    page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
+  void SetupPageTopicsV2ModelExecutor() {
+    model_manager()->SetUpPageTopicsV2Model(model_observer_tracker());
+    // If the feature flag is disabled, the executor won't have been created so
+    // skip everything else.
+    if (!model_manager()->on_demand_page_topics_model_executor_)
+      return;
+
+    proto::Any any_metadata;
+    any_metadata.set_type_url(
+        "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+    MakeValidPageTopicsModelMetadata().SerializeToString(
+        any_metadata.mutable_value());
 
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
@@ -744,12 +748,6 @@ TEST_F(PageContentAnnotationsModelManagerTest,
 }
 
 TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
-  proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-  proto::PageTopicsModelMetadata page_topics_model_metadata;
-  page_topics_model_metadata.set_version(123);
-  page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
   SetupPageTopicsV2ModelExecutor();
 
   base::HistogramTester histogram_tester;
@@ -809,6 +807,31 @@ TEST_F(PageContentAnnotationsModelManagerTest, BatchAnnotate_CalledTwice) {
   EXPECT_NE(result2[0].topics(), absl::nullopt);
   EXPECT_EQ(result2[0].entities(), absl::nullopt);
   EXPECT_EQ(result2[0].visibility_score(), absl::nullopt);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {
+  EXPECT_FALSE(
+      model_manager()->GetModelInfoForType(AnnotationType::kPageTopics));
+  EXPECT_FALSE(
+      model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
+
+  SetupPageTopicsV2ModelExecutor();
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  proto::PageTopicsModelMetadata page_topics_model_metadata;
+  page_topics_model_metadata.set_version(123);
+  page_topics_model_metadata.mutable_output_postprocessing_params()
+      ->mutable_visibility_params()
+      ->set_category_name("DO NOT EVALUATE");
+  page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
+  SendPageVisibilityModelToExecutor(any_metadata);
+
+  EXPECT_TRUE(
+      model_manager()->GetModelInfoForType(AnnotationType::kPageTopics));
+  EXPECT_FALSE(
+      model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
 }
 
 class PageContentAnnotationsModelManagerEntitiesOnlyTest

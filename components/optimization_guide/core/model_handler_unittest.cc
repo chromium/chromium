@@ -142,6 +142,7 @@ TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
       proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
       /*model_metadata=*/absl::nullopt);
   EXPECT_TRUE(model_handler()->ModelAvailable());
+  EXPECT_TRUE(model_handler()->GetModelInfo());
 
   EXPECT_FALSE(model_handler()
                    ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>()
@@ -165,6 +166,7 @@ TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
       model_handler()->ParsedSupportedFeaturesForLoadedModel<proto::Duration>();
   ASSERT_TRUE(supported_features_for_loaded_model.has_value());
   EXPECT_EQ(123, supported_features_for_loaded_model->seconds());
+  EXPECT_TRUE(model_handler()->GetModelInfo());
 }
 
 TEST_F(ModelHandlerTest, Execute) {

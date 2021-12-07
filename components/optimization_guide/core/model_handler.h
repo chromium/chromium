@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
@@ -113,7 +114,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
     if (optimization_target_ != optimization_target)
       return;
 
-    supported_features_for_loaded_model_ = model_info.GetModelMetadata();
+    model_info_ = model_info;
     model_available_ = true;
 
     background_task_runner_->PostTask(
@@ -130,17 +131,22 @@ class ModelHandler : public OptimizationTargetModelObserver {
     return model_available_;
   }
 
-  // Validates that |supported_features_for_loaded_model_| is of the same type
-  // and is parseable as |T|. Will return metadata if all checks pass.
+  absl::optional<ModelInfo> GetModelInfo() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return model_info_;
+  }
+
+  // Validates that the model info's metadata is of the same type and is
+  // parseable as |T|. Will return metadata if all checks pass.
   template <
       class T,
       class = typename std::enable_if<
           std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
   absl::optional<T> ParsedSupportedFeaturesForLoadedModel() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!supported_features_for_loaded_model_)
+    if (!model_info_ || !model_info_->GetModelMetadata())
       return absl::nullopt;
-    return ParsedAnyMetadata<T>(*supported_features_for_loaded_model_);
+    return ParsedAnyMetadata<T>(*model_info_->GetModelMetadata());
   }
 
  private:
@@ -185,8 +191,7 @@ class ModelHandler : public OptimizationTargetModelObserver {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // Set in |OnModelUpdated|.
-  absl::optional<proto::Any> supported_features_for_loaded_model_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<ModelInfo> model_info_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set in |OnModelUpdated|.
   bool model_available_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

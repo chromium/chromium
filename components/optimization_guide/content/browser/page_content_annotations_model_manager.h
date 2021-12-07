@@ -9,6 +9,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/bert_model_handler.h"
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/core/page_topics_model_executor.h"
@@ -54,6 +55,11 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
+
+  // Returns the model info associated with the given AnnotationType, if it is
+  // available and loaded.
+  // TODO(crbug/1249632): Add support for more than just page topics.
+  absl::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
 
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |absl::nullopt| if no model is being

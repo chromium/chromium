@@ -302,17 +302,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
       1);
 #endif
 
-  PageContentAnnotationsService* service =
-      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  absl::optional<int64_t> model_version = service->GetPageTopicsModelVersion();
-  EXPECT_TRUE(model_version.has_value());
-  EXPECT_EQ(123, *model_version);
-#else
-  EXPECT_FALSE(service->GetPageTopicsModelVersion().has_value());
-#endif
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   RetryForHistogramUntilCountReached(

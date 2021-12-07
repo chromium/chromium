@@ -23,6 +23,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
+#include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "url/gurl.h"
@@ -79,10 +80,9 @@ class PageContentAnnotationsService : public KeyedService,
   // test_page_content_annotator.h for an implementation designed for testing.
   void OverridePageContentAnnotatorForTesting(PageContentAnnotator* annotator);
 
-  // Returns the version of the page topics model that is currently being used
-  // to annotate page content. Will return |absl::nullopt| if no model is being
-  // used to annotate page topics for received page content.
-  absl::optional<int64_t> GetPageTopicsModelVersion() const;
+  // Returns the model info for the given annotation type, if the model file is
+  // available.
+  absl::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
 
   // EntityMetadataProvider:
   void GetMetadataForEntityId(
