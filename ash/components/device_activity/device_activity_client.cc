@@ -8,6 +8,7 @@
 #include "ash/components/device_activity/fresnel_service.pb.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
@@ -80,8 +81,11 @@ constexpr psm_rlwe::RlweUseCase kDailyPsmUseCase =
 // TODO(https://crbug.com/1262187): This window identifier will need to support
 // more use cases in the future. Currently it only supports the kCrosDaily use
 // case.
-std::string GenerateWindowIdentifier(base::Time ts) {
-  return base::UTF16ToUTF8(base::TimeFormatWithPattern(ts, "yyyyMMdd"));
+std::string GenerateUTCWindowIdentifier(base::Time ts) {
+  base::Time::Exploded exploded;
+  ts.UTCExplode(&exploded);
+  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
+                            exploded.day_of_month);
 }
 
 // Calculates an HMAC of |message| using |key|, encoded as a hexadecimal string.
@@ -133,8 +137,8 @@ absl::optional<psm_rlwe::RlwePlaintextId> GeneratePsmIdentifier(
 // support kCrosMonthly and kCrosAllTime use cases.
 bool IsDailyDeviceActivePingRequired(base::Time prev_ping_ts,
                                      base::Time new_ping_ts) {
-  std::string prev_ping_ts_period = GenerateWindowIdentifier(prev_ping_ts);
-  std::string new_ping_ts_period = GenerateWindowIdentifier(new_ping_ts);
+  std::string prev_ping_ts_period = GenerateUTCWindowIdentifier(prev_ping_ts);
+  std::string new_ping_ts_period = GenerateUTCWindowIdentifier(new_ping_ts);
 
   return prev_ping_ts < new_ping_ts &&
          prev_ping_ts_period != new_ping_ts_period;
@@ -229,6 +233,12 @@ void DeviceActivityClient::TransitionOutOfIdle() {
     return;
   }
 
+  // Check the last recorded daily ping timestamp in local state prefs.
+  // This variable has the default Unix Epoch value if the device is
+  // new, powerwashed, recovered, or a RMA device.
+  base::Time last_recorded_daily_ping_time =
+      local_state_->GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
+
   // The network is connected and the client |state_| is kIdle.
   last_transition_out_of_idle_time_ = base::Time::Now();
 
@@ -236,12 +246,10 @@ void DeviceActivityClient::TransitionOutOfIdle() {
   // within the given use case window.
   // TODO(https://crbug.com/1262187): Remove hardcoded use case when adding
   // support for additional use cases (i.e MONTHLY, ALL_TIME, etc.).
-  if (IsDailyDeviceActivePingRequired(
-          local_state_->GetTime(
-              prefs::kDeviceActiveLastKnownDailyPingTimestamp),
-          last_transition_out_of_idle_time_)) {
+  if (IsDailyDeviceActivePingRequired(last_recorded_daily_ping_time,
+                                      last_transition_out_of_idle_time_)) {
     current_day_window_id_ =
-        GenerateWindowIdentifier(last_transition_out_of_idle_time_);
+        GenerateUTCWindowIdentifier(last_transition_out_of_idle_time_);
     current_day_psm_id_ = GeneratePsmIdentifier(
         psm_device_active_secret_, psm_rlwe::RlweUseCase_Name(kDailyPsmUseCase),
         current_day_window_id_.value());
