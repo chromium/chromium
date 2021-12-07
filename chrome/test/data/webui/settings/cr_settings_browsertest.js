@@ -82,6 +82,17 @@ TEST_F('CrSettingsBasicPageTest', 'All', function() {
   runMochaSuite('SettingsBasicPage');
 });
 
+var CrSettingsBasicPageRedesignTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrSettingsBasicPageRedesignTest', 'All', function() {
+  runMochaSuite('SettingsBasicPageRedesign');
+});
+
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrSettingsLanguagesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
