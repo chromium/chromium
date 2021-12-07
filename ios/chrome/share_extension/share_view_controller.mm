@@ -174,12 +174,16 @@ const CGFloat kMediumAlpha = 0.5;
       [UIAlertController alertControllerWithTitle:errorMessage
                                           message:[_shareURL absoluteString]
                                    preferredStyle:UIAlertControllerStyleAlert];
-  UIAlertAction* defaultAction =
-      [UIAlertAction actionWithTitle:okButton
-                               style:UIAlertActionStyleDefault
-                             handler:^(UIAlertAction* action) {
-                               [self dismissAndReturnItem:nil];
-                             }];
+  UIAlertAction* defaultAction = [UIAlertAction
+      actionWithTitle:okButton
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                NSError* unsupportedURLError =
+                    [NSError errorWithDomain:NSURLErrorDomain
+                                        code:NSURLErrorUnsupportedURL
+                                    userInfo:nil];
+                [self dismissAndReturnItem:nil error:unsupportedURLError];
+              }];
   [alert addAction:defaultAction];
   [self presentViewController:alert animated:YES completion:nil];
 }
@@ -264,7 +268,7 @@ const CGFloat kMediumAlpha = 0.5;
   }
 }
 
-- (void)dismissAndReturnItem:(NSExtensionItem*)item {
+- (void)dismissAndReturnItem:(NSExtensionItem*)item error:(NSError*)error {
   // Set the Y placement constraints so the whole extension slides out of the
   // screen.
   // The direction (up or down) is relative to the output (cancel or submit).
@@ -284,8 +288,12 @@ const CGFloat kMediumAlpha = 0.5;
       }
       completion:^(BOOL finished) {
         NSArray* returnItem = item ? @[ item ] : @[];
-        [self.extensionContext completeRequestReturningItems:returnItem
-                                           completionHandler:nil];
+        if (error) {
+          [self.extensionContext cancelRequestWithError:error];
+        } else {
+          [self.extensionContext completeRequestReturningItems:returnItem
+                                             completionHandler:nil];
+        }
       }];
 }
 
@@ -351,13 +359,20 @@ const CGFloat kMediumAlpha = 0.5;
 #pragma mark - ShareExtensionViewActionTarget
 
 - (void)shareExtensionViewDidSelectCancel:(id)sender {
-  [self queueActionItemURL:nil
-                     title:nil
-                    action:app_group::READING_LIST_ITEM  // Ignored
-                    cancel:YES
-                completion:^{
-                  [self dismissAndReturnItem:nil];
-                }];
+  [self
+      queueActionItemURL:nil
+                   title:nil
+                  action:app_group::READING_LIST_ITEM  // Ignored
+                  cancel:YES
+              completion:^{
+                [self
+                    dismissAndReturnItem:nil
+                                   error:
+                                       [NSError
+                                           errorWithDomain:NSCocoaErrorDomain
+                                                      code:NSUserCancelledError
+                                                  userInfo:nil]];
+              }];
 }
 
 - (void)shareExtensionViewDidSelectAddToReadingList:(id)sender {
@@ -366,7 +381,7 @@ const CGFloat kMediumAlpha = 0.5;
                     action:app_group::READING_LIST_ITEM
                     cancel:NO
                 completion:^{
-                  [self dismissAndReturnItem:self->_shareItem];
+                  [self dismissAndReturnItem:self->_shareItem error:nil];
                 }];
 }
 
@@ -376,7 +391,7 @@ const CGFloat kMediumAlpha = 0.5;
                     action:app_group::BOOKMARK_ITEM
                     cancel:NO
                 completion:^{
-                  [self dismissAndReturnItem:self->_shareItem];
+                  [self dismissAndReturnItem:self->_shareItem error:nil];
                 }];
 }
 
@@ -400,7 +415,7 @@ const CGFloat kMediumAlpha = 0.5;
                     action:app_group::OPEN_IN_CHROME_ITEM
                     cancel:NO
                 completion:^{
-                  [self dismissAndReturnItem:self->_shareItem];
+                  [self dismissAndReturnItem:self->_shareItem error:nil];
                 }];
 }
 

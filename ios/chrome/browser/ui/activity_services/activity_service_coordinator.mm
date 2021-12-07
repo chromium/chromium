@@ -156,8 +156,10 @@
                                       activityType:activityType
                                          completed:completed];
 
-    // Signal the presentation provider that our scenario is over.
-    [strongSelf.presentationProvider activityServiceDidEndPresenting];
+    if (completed) {
+      // Signal the presentation provider that our scenario is over.
+      [strongSelf.presentationProvider activityServiceDidEndPresenting];
+    }
   }];
 
   [self.baseViewController presentViewController:self.viewController
