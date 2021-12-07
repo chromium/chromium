@@ -547,14 +547,6 @@ CA_NAME="req_ca_dn" \
     -out ../certificates/post_june_2016.pem \
     -config ca.cnf
 
-# Includes the TLS feature extension
-openssl req -x509 -newkey rsa:2048 \
-  -keyout out/tls_feature_extension.key \
-  -out ../certificates/tls_feature_extension.pem \
-  -days 365 \
-  -extensions req_extensions_with_tls_feature \
-  -nodes -config ee.cnf
-
 # Includes the canSignHttpExchangesDraft extension
 openssl req -x509 -newkey rsa:2048 \
   -keyout out/can_sign_http_exchanges_draft_extension.key \
