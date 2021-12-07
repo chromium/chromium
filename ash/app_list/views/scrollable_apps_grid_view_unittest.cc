@@ -91,8 +91,7 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void DeleteApps(int n) {
     AppListItemList* item_list = app_list_test_model_->top_level_item_list();
     for (int i = 0; i < n; i++) {
-      app_list_test_model_->DeleteItem(item_list->item_at(0)->id(),
-                                       /*can_clean_folder=*/false);
+      app_list_test_model_->DeleteItem(item_list->item_at(0)->id());
     }
   }
 

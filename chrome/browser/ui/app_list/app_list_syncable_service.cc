@@ -231,8 +231,7 @@ bool IsSystemCreatedSyncFolder(
     const AppListSyncableService::SyncItem& folder_item) {
   if (folder_item.item_type != sync_pb::AppListSpecifics::TYPE_FOLDER)
     return false;
-  return (folder_item.item_id == ash::kOemFolderId ||
-          folder_item.item_id == ash::kCrostiniFolderId);
+  return folder_item.is_persistent_folder;
 }
 
 // Updates `target` if `target` is different from a valid new value. Returns
@@ -674,9 +673,10 @@ void AppListSyncableService::CleanUpSingleItemSyncFolder() {
   std::vector<std::string> ids_to_be_deleted;
   for (auto iter = sync_items_.begin(); iter != sync_items_.end();) {
     SyncItem* sync_item = (iter++)->second.get();
-    if (RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(sync_item)) {
+    const std::string id = sync_item->item_id;
+    if (RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(id)) {
       // Remember the id of the folder item to be deleted.
-      ids_to_be_deleted.push_back(sync_item->item_id);
+      ids_to_be_deleted.push_back(id);
     }
   }
 
@@ -707,7 +707,14 @@ AppListSyncableService::GetOnlyChildOfUserCreatedFolder(SyncItem* sync_item) {
 }
 
 bool AppListSyncableService::RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
-    SyncItem* sync_item) {
+    const std::string& item_id) {
+  if (ash::features::IsProductivityLauncherEnabled())
+    return false;
+
+  SyncItem* sync_item = FindSyncItem(item_id);
+  if (!sync_item)
+    return false;
+
   SyncItem* child_item = GetOnlyChildOfUserCreatedFolder(sync_item);
   if (!child_item)
     return false;
@@ -923,7 +930,7 @@ void AppListSyncableService::UpdateSyncItem(const ChromeAppListItem* app_item) {
     return;
   }
   std::string app_item_folder_id = app_item->folder_id();
-  std::string sync_item_orignial_parent_id = sync_item->parent_id;
+  std::string sync_item_original_parent_id = sync_item->parent_id;
   bool changed = UpdateSyncItemFromAppItem(app_item, sync_item);
   if (!changed) {
     DVLOG(2) << this << " - Update: SYNC NO CHANGE: " << sync_item->ToString();
@@ -935,10 +942,10 @@ void AppListSyncableService::UpdateSyncItem(const ChromeAppListItem* app_item) {
   // If the |app_item| is moved out from a user created folder, check if
   // its original folder becomes a single sync item folder. Clean it up if
   // it does.
-  if (!sync_item_orignial_parent_id.empty() &&
-      app_item_folder_id != sync_item_orignial_parent_id) {
-    SyncItem* original_folder_item = FindSyncItem(sync_item_orignial_parent_id);
-    RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(original_folder_item);
+  if (!sync_item_original_parent_id.empty() &&
+      app_item_folder_id != sync_item_original_parent_id) {
+    RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
+        sync_item_original_parent_id);
   }
 
   PruneRedundantPageBreakItems();
@@ -999,16 +1006,17 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
   return app_item->item_ordinal.CreateAfter();
 }
 
-void AppListSyncableService::RemoveItem(const std::string& id) {
-  RemoveSyncItem(id);
-  model_updater_->RemoveItem(id, /*is_uninstall=*/false);
-  PruneEmptySyncFolders();
-  PruneRedundantPageBreakItems();
-}
+void AppListSyncableService::RemoveItem(const std::string& id,
+                                        bool is_uninstall) {
+  SyncItem* item = FindSyncItem(id);
+  const std::string parent_id = item ? item->parent_id : std::string();
 
-void AppListSyncableService::RemoveUninstalledItem(const std::string& id) {
   RemoveSyncItem(id);
-  model_updater_->RemoveItem(id, /*is_uninstall=*/true);
+  model_updater_->RemoveItem(id, is_uninstall);
+
+  if (is_uninstall && !parent_id.empty())
+    RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(parent_id);
+
   PruneEmptySyncFolders();
   PruneRedundantPageBreakItems();
 }
@@ -1725,6 +1733,14 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
         SetIconColorIfChanged(app_item->icon_color(), &sync_item->item_color);
   }
 
+  if (sync_item->is_persistent_folder != app_item->is_persistent()) {
+    DCHECK(!sync_item->is_persistent_folder);
+    sync_item->is_persistent_folder = app_item->is_persistent();
+    // Do not mark the item as changed - the persistent value is not expected to
+    // be persisted to local state, nor synced. Also, it's expected to be set as
+    // part of folder item creation flow, so no further processing should be
+    // necessary.
+  }
   return changed;
 }
 

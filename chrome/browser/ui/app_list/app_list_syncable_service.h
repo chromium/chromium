@@ -70,6 +70,13 @@ class AppListSyncableService : public syncer::SyncableService,
     syncer::StringOrdinal item_pin_ordinal;
     ash::IconColor item_color;
 
+    // Indicates whether the item represents a persistent folder - i.e. a folder
+    // that was not created explicitly by a user, and which should not be
+    // removed if it's left with a single child.
+    // Unlike other properties, this value is not persisted to local state, nor
+    // synced. It reflects the associated ChromeAppListItem state.
+    bool is_persistent_folder = false;
+
     std::string ToString() const;
   };
 
@@ -131,11 +138,9 @@ class AppListSyncableService : public syncer::SyncableService,
   // updates the existing sync item instead.
   void AddItem(std::unique_ptr<ChromeAppListItem> app_item);
 
-  // Removes sync item matching |id|.
-  void RemoveItem(const std::string& id);
-
-  // Removes sync item matching |id| after item uninstall.
-  void RemoveUninstalledItem(const std::string& id);
+  // Removes sync item matching |id|. |is_uninstall| indicates whether the item
+  // was removed due to an app uninstall.
+  void RemoveItem(const std::string& id, bool is_uninstall);
 
   // Returns the default position for the OEM folder.
   syncer::StringOrdinal GetDefaultOemFolderPosition() const;
@@ -346,7 +351,8 @@ class AppListSyncableService : public syncer::SyncableService,
   // child item in it, the child item will be removed out of the folder and
   // place at the same location of its original folder.
   // Otherwise, return false, no change will be made.
-  bool RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(SyncItem* sync_item);
+  bool RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
+      const std::string& item_id);
 
   // Returns true if extension service is ready.
   bool IsExtensionServiceReady() const;

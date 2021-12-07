@@ -826,7 +826,7 @@ TEST_F(AppListSyncableServiceTest, PruneEmptySyncFolder) {
   ASSERT_TRUE(GetSyncItem(kItemId2));
 
   // Remove one of the child item, the folder still has one item in it.
-  app_list_syncable_service()->RemoveItem(kItemId1);
+  app_list_syncable_service()->RemoveItem(kItemId1, /*is_uninstall=*/false);
   content::RunAllTasksUntilIdle();
 
   ASSERT_TRUE(GetSyncItem(kFolderItemId));
@@ -834,7 +834,7 @@ TEST_F(AppListSyncableServiceTest, PruneEmptySyncFolder) {
   ASSERT_TRUE(GetSyncItem(kItemId2));
 
   // Remove the other child item, the empty folder should be removed as well.
-  app_list_syncable_service()->RemoveItem(kItemId2);
+  app_list_syncable_service()->RemoveItem(kItemId2, /*is_uninstall=*/false);
   content::RunAllTasksUntilIdle();
 
   ASSERT_FALSE(GetSyncItem(kFolderItemId));
@@ -1099,7 +1099,7 @@ TEST_F(AppListSyncableServiceTest, PruneRedundantPageBreakItems) {
   ASSERT_TRUE(GetSyncItem(kPageBreakItemId5));
 
   // Remove a item, which triggers removing redundant "page break" items.
-  app_list_syncable_service()->RemoveItem(kItemId1);
+  app_list_syncable_service()->RemoveItem(kItemId1, /*is_uninstall=*/false);
   content::RunAllTasksUntilIdle();
 
   ASSERT_FALSE(GetSyncItem(kPageBreakItemId1));
@@ -1838,14 +1838,34 @@ TEST_F(ProductivityLauncherAppListSyncableServiceTest,
   GetModelUpdater()->model_for_test()->MoveItemToRootAt(item_6,
                                                         target_position);
 
+  EXPECT_EQ(GetNamesOfSortedItemsPerPageFromSyncableService(),
+            std::vector<std::vector<std::string>>(
+                {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16",
+                  "Item 15", "Item 14", "Item 13", "Item 12", "Item 11",
+                  "Item 10", "Item 9",  "Item 8",  "Item 7",  "",
+                  "Item 4",  "Item 3",  "Item 2",  "Item 6",  "Item 1"},
+                 {"Item 0"}}));
+
+  // Move item 5 out of folder to the second page, and verify the item on the
+  // second page fills the empty space left by the folder removal.
+  // Note that when productivity launcher is enabled, single item folders are
+  // allowed, so Item 5 is expected to still be in the folder at this point.
+  ash::AppListItem* item_5 = FindItemForApp(initial_apps[5].get());
+  ASSERT_TRUE(item_5);
+
+  ash::AppListItem* item_0 = FindItemForApp(initial_apps[0].get());
+  ASSERT_TRUE(item_0);
+  GetModelUpdater()->model_for_test()->MoveItemToRootAt(
+      item_5, item_0->position().CreateAfter());
+
   EXPECT_EQ(
       GetNamesOfSortedItemsPerPageFromSyncableService(),
       std::vector<std::vector<std::string>>(
           {{"Item 20", "Item 19", "Item 18", "Item 17", "Item 16", "Item 15",
             "Item 14", "Item 13", "Item 12", "Item 11", "Item 10", "Item 9",
-            "Item 8",  "Item 7",  "",        "Item 5",  "Item 4",  "Item 3",
-            "Item 2",  "Item 6",  "Item 1"},
-           {"Item 0"}}));
+            "Item 8",  "Item 7",  "",        "Item 4",  "Item 3",  "Item 2",
+            "Item 6",  "Item 1",  "Item 0"},
+           {"Item 5"}}));
 }
 
 TEST_F(ProductivityLauncherAppListSyncableServiceTest,

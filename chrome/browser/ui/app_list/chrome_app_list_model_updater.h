@@ -176,6 +176,10 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // Commits item positions under the temporary sort.
   void CommitTemporaryPositions();
 
+  // If folder with the provided ID has a single child, it reparents the child
+  // to the root app list.
+  void ClearFolderIfItHasSingleChild(const std::string& folder_id);
+
   // Indicates the profile that the model updater is associated with.
   Profile* const profile_ = nullptr;
 

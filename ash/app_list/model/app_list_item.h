@@ -91,6 +91,10 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // a folder), or nullptr if the item was not found or this is not a container.
   virtual AppListItem* FindChildItem(const std::string& id);
 
+  // Returns the child item at the provided index in the child item list.
+  // Returns nullptr for non-folder items.
+  virtual AppListItem* GetChildItemAt(size_t index);
+
   // Returns the number of child items if it has any (e.g. is a folder) or 0.
   virtual size_t ChildItemCount() const;
 

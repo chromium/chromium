@@ -259,14 +259,19 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
   std::string id_copy = id;
 
   // The item matched by `id` may be unavailable on the local device.
-  if (!FindItem(id_copy))
+  ash::AppListItem* item = model_.FindItem(id_copy);
+  if (!item)
     return;
+  const std::string parent_id = item->folder_id();
 
   item_manager_->RemoveChromeItem(id_copy);
 
-  // Clean the parent folder if any, when item is deleted due to app
-  // uninstallation rather than sync.
-  model_.DeleteItem(id_copy, is_uninstall);
+  model_.DeleteItem(id_copy);
+
+  if (!parent_id.empty() && is_uninstall &&
+      !ash::features::IsProductivityLauncherEnabled()) {
+    ClearFolderIfItHasSingleChild(parent_id);
+  }
 
   if (is_uninstall) {
     // When item deletion is triggered by local app uninstallation instead of
@@ -752,10 +757,16 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
       }
     }
 
+    const std::string old_folder_id = item->folder_id();
     std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
     data->folder_id = folder_id;
     data->position = target_position;
     model_.SetItemMetadata(id, std::move(data));
+
+    if (!old_folder_id.empty() &&
+        !ash::features::IsProductivityLauncherEnabled()) {
+      ClearFolderIfItHasSingleChild(old_folder_id);
+    }
   }
 
   // When user moves a local item to a folder, the user is believed to accept
@@ -794,10 +805,16 @@ void ChromeAppListModelUpdater::RequestMoveItemToRoot(
   if (!item)
     return;
 
+  const std::string old_parent = item->folder_id();
+  DCHECK(!old_parent.empty());
+
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   data->folder_id = "";
   data->position = target_position;
   model_.SetItemMetadata(id, std::move(data));
+
+  if (!ash::features::IsProductivityLauncherEnabled())
+    ClearFolderIfItHasSingleChild(old_parent);
 
   sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
       GetTopLevelItemIds(), /*reset_page_breaks=*/false);
@@ -997,5 +1014,19 @@ void ChromeAppListModelUpdater::CommitTemporaryPositions() {
     // Propagate the item position update.
     MaybeNotifyObserversOfItemChange(id_item_pair.second.get(),
                                      ItemChangeType::kUpdate);
+  }
+}
+
+void ChromeAppListModelUpdater::ClearFolderIfItHasSingleChild(
+    const std::string& folder_id) {
+  ash::AppListFolderItem* folder = model_.FindFolderItem(folder_id);
+  if (folder && folder->ShouldAutoRemove() && folder->ChildItemCount() == 1) {
+    ash::AppListItem* single_child = folder->GetChildItemAt(0);
+    const std::string item_id = single_child->id();
+    std::unique_ptr<ash::AppListItemMetadata> metadata =
+        single_child->CloneMetadata();
+    metadata->folder_id = "";
+    metadata->position = folder->position();
+    model_.SetItemMetadata(item_id, std::move(metadata));
   }
 }

@@ -109,6 +109,10 @@ AppListItem* AppListItem::FindChildItem(const std::string& id) {
   return nullptr;
 }
 
+AppListItem* AppListItem::GetChildItemAt(size_t index) {
+  return nullptr;
+}
+
 size_t AppListItem::ChildItemCount() const {
   return 0;
 }

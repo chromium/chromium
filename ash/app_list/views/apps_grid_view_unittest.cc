@@ -842,8 +842,7 @@ TEST_P(AppsGridViewClamshellTest, RemoveSelectedLastApp) {
 
   AppListItemView* last_view = GetItemViewInTopLevelGrid(kLastItemIndex);
   apps_grid_view_->SetSelectedView(last_view);
-  model_->DeleteItem(model_->GetItemName(kLastItemIndex),
-                     /*can_clean_folder=*/false);
+  model_->DeleteItem(model_->GetItemName(kLastItemIndex));
 
   EXPECT_FALSE(apps_grid_view_->IsSelectedView(last_view));
 
@@ -1235,8 +1234,7 @@ TEST_P(AppsGridViewClamshellTest, RemoveItemsInFolderShouldUpdateBounds) {
 
   // Remove one item from the folder with 4 items. The bound should stay the
   // same as there are still two rows in the folder view.
-  model_->DeleteItem(folder_2->item_list()->item_at(0)->id(),
-                     /*can_clean_folder=*/false);
+  model_->DeleteItem(folder_2->item_list()->item_at(0)->id());
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
@@ -1244,8 +1242,7 @@ TEST_P(AppsGridViewClamshellTest, RemoveItemsInFolderShouldUpdateBounds) {
 
   // Remove another item from the folder. The bound should update and become the
   // folder view with one row.
-  model_->DeleteItem(folder_2->item_list()->item_at(0)->id(),
-                     /*can_clean_folder=*/false);
+  model_->DeleteItem(folder_2->item_list()->item_at(0)->id());
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
@@ -2036,7 +2033,7 @@ TEST_P(AppsGridViewDragTest, MouseDragWithDeleteItemKeepsOrder) {
   gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
 
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
-  model_->DeleteItem(model_->GetItemName(2), /*can_clean_folder=*/false);
+  model_->DeleteItem(model_->GetItemName(2));
   EndDrag(apps_grid_view_, false /*cancel*/);
 
   EXPECT_EQ(std::string("Item 0,Item 1"), model_->GetModelContent());
@@ -2838,13 +2835,15 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
 }
 
 // Verify the dragged item's focus after the item is dragged from a folder with
-// two items.
+// a single items.
 TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   // Creates a folder item with two items.
   model_->CreateAndPopulateFolderWithApps(2);
   model_->PopulateApps(1);
   test_api_->Update();
 
+  // Leave the dragged item as a single folder child.
+  model_->DeleteItem("Item 1");
   // One folder and one app. Therefore the top level view count is 2.
   EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
 
@@ -2874,14 +2873,13 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   BoundsChangeCounter counter(GetItemViewInTopLevelGrid(1));
   EndDrag(folder_apps_grid_view(), /*cancel=*/false);
 
-  // The folder should be deleted. The first item should be Item 1, the second
-  // item should be Item 2 and the last item should be Item 0.
-  EXPECT_EQ(3, apps_grid_view_->view_model()->view_size());
-  EXPECT_EQ("Item 1", GetItemViewInTopLevelGrid(0)->item()->id());
-  EXPECT_EQ("Item 2", GetItemViewInTopLevelGrid(1)->item()->id());
-  EXPECT_EQ("Item 0", GetItemViewInTopLevelGrid(2)->item()->id());
+  // The folder should be deleted. The first item should be Item 2, the second
+  // item should be Item 0.
+  EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
+  EXPECT_EQ("Item 2", GetItemViewInTopLevelGrid(0)->item()->id());
+  EXPECT_EQ("Item 0", GetItemViewInTopLevelGrid(1)->item()->id());
 
-  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(2);
+  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(1);
   if (features::IsProductivityLauncherEnabled()) {
     // Verify that Item 2's bounds do not change after calling `EndDrag()`.
     EXPECT_EQ(0, counter.bounds_change_count());

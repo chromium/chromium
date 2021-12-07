@@ -1946,7 +1946,6 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
   {
     ScopedModelUpdate update(this);
     model_->MoveItemToRootAt(item, target_position);
-    RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
   }
 }
 
@@ -1977,37 +1976,10 @@ bool AppsGridView::ReparentItemToAnotherFolder(AppListItem* item,
       LOG(ERROR) << "Unable to reparent to item id: " << target_item->id();
       return false;
     }
-    RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
   }
 
   RecordAppMovingTypeMetrics(kMoveIntoAnotherFolder);
   return true;
-}
-
-// After moving the re-parenting item out of the folder, if there is only 1 item
-// left, remove the last item out of the folder, delete the folder and insert it
-// to the data model at the same position. Make the same change to view_model_
-// accordingly.
-void AppsGridView::RemoveLastItemFromReparentItemFolderIfNecessary(
-    const std::string& source_folder_id) {
-  // This function should be called along with other model updates, such as
-  // moving an item out of the parent folder.
-  DCHECK(updating_model_);
-
-  AppListFolderItem* source_folder =
-      static_cast<AppListFolderItem*>(item_list_->FindItem(source_folder_id));
-  if (!source_folder || (source_folder && !source_folder->ShouldAutoRemove()))
-    return;
-
-  // For single-app folders (which can exist for system-managed folders, see
-  // crbug.com/925052) there will not be a "last item" so we can ignore the
-  // rest.
-  if (!source_folder || source_folder->item_list()->item_count() != 1)
-    return;
-
-  // Now make the data change to remove the folder item in model.
-  AppListItem* last_item = source_folder->item_list()->item_at(0);
-  model_->MoveItemToRootAt(last_item, source_folder->position());
 }
 
 void AppsGridView::CancelContextMenusOnCurrentPage() {

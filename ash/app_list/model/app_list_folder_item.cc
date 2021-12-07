@@ -59,6 +59,10 @@ AppListItem* AppListFolderItem::FindChildItem(const std::string& id) {
   return item_list_->FindItem(id);
 }
 
+AppListItem* AppListFolderItem::GetChildItemAt(size_t index) {
+  return item_list_->item_at(index);
+}
+
 size_t AppListFolderItem::ChildItemCount() const {
   return item_list_->item_count();
 }

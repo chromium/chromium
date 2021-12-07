@@ -617,12 +617,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool ReparentItemToAnotherFolder(AppListItem* item_view,
                                    const GridIndex& target);
 
-  // If there is only 1 item left in the source folder after reparenting an item
-  // from it, updates data model to remove last item from the source folder and
-  // remove the source folder.
-  void RemoveLastItemFromReparentItemFolderIfNecessary(
-      const std::string& source_folder_id);
-
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
   // view structure as well and deletes it.
   void DeleteItemViewAtIndex(int index);

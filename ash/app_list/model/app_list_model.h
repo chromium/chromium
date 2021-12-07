@@ -114,9 +114,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   void SetItemName(AppListItem* item, const std::string& name);
 
   // Deletes the item matching |id| from |top_level_item_list_| or from the
-  // appropriate folder. If `can_clean_folder` is true, the deleted item's
-  // parent folder could be removed as well.
-  void DeleteItem(const std::string& id, bool can_clean_folder);
+  // appropriate folder.
+  void DeleteItem(const std::string& id);
 
   // Creates and adds an empty folder item with the provided ID.
   void AddFolderItemForTest(const std::string& folder_id);

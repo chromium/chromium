@@ -243,7 +243,7 @@ void AppListModel::SetItemName(AppListItem* item, const std::string& name) {
     observer.OnAppListItemUpdated(item);
 }
 
-void AppListModel::DeleteItem(const std::string& id, bool can_clean_folder) {
+void AppListModel::DeleteItem(const std::string& id) {
   AppListItem* item = FindItem(id);
   if (!item)
     return;
@@ -265,17 +265,6 @@ void AppListModel::DeleteItem(const std::string& id, bool can_clean_folder) {
   // Destroy `item`.
   ReparentOrDeleteItemInFolder(item,
                                /*destination_folder_id=*/absl::nullopt);
-
-  if (!can_clean_folder)
-    return;
-
-  AppListFolderItem* folder = FindFolderItem(copied_folder_id);
-  if (folder && folder->ShouldAutoRemove() &&
-      folder->item_list()->item_count() == 1) {
-    // If the parent folder should be removed, reparent the last child first.
-    AppListItem* last_item = folder->item_list()->item_at(0);
-    MoveItemToRootAt(last_item, folder->position());
-  }
 }
 
 void AppListModel::AddFolderItemForTest(const std::string& folder_id) {
@@ -411,7 +400,7 @@ void AppListModel::DeleteFolderIfEmpty(const std::string& folder_id) {
 
   DVLOG(2) << "Deleting empty folder: " << folder->ToDebugString();
   std::string copy_id = folder->id();
-  DeleteItem(copy_id, /*can_clean_folder=*/false);
+  DeleteItem(copy_id);
 }
 
 void AppListModel::SetRootItemPosition(

@@ -64,13 +64,13 @@ void AppListModelBuilder::InsertApp(std::unique_ptr<ChromeAppListItem> app) {
 
 void AppListModelBuilder::RemoveApp(const std::string& id,
                                     bool unsynced_change) {
+  // The parameter `is_uninstall` is true because the item is removed due to
+  // local app uninstallation rather than sync.
   if (!unsynced_change && service_) {
-    service_->RemoveUninstalledItem(id);
+    service_->RemoveItem(id, /*is_unistall=*/true);
     return;
   }
 
-  // The parameter `is_uninstall` is true because the item is removed due to
-  // local app uninstallation rather than sync.
   model_updater_->RemoveItem(id, /*is_uninstall=*/true);
 }
 

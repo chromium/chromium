@@ -74,6 +74,7 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // AppListItem overrides:
   const char* GetItemType() const override;
   AppListItem* FindChildItem(const std::string& id) override;
+  AppListItem* GetChildItemAt(size_t index) override;
   size_t ChildItemCount() const override;
 
   // AppListConfigProvider::Observer override:

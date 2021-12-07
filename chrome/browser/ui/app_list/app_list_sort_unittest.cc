@@ -855,7 +855,7 @@ TEST_P(TemporaryAppListSortLocalUninstallationTest, Basics) {
   // Trigger item removal from the local device by app list syncable service or
   // the model updater depending on the test param.
   if (uninstall_through_service_) {
-    app_list_syncable_service()->RemoveUninstalledItem(kItemId4);
+    app_list_syncable_service()->RemoveItem(kItemId4, /*is_uninstall=*/true);
   } else {
     // Default apps uninstallation could bypass app list syncable service.
     // Therefore remove the item through `model_updater` to verify this

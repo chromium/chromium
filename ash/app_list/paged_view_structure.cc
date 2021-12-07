@@ -145,7 +145,7 @@ void PagedViewStructure::SaveToMetadata() {
 
         // Do not increase |item_index| after this call because it modifies
         // |item_list|.
-        model->DeleteItem(item->id(), /*can_clean_folder=*/false);
+        model->DeleteItem(item->id());
         item_list->AddObserver(apps_grid_view_);
         continue;
       }

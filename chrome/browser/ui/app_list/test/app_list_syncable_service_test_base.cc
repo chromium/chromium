@@ -40,8 +40,7 @@ void AppListSyncableServiceTestBase::RemoveAllExistingItems() {
 
   AppListModelUpdater* model_updater = GetModelUpdater();
   for (std::string& id : existing_item_ids) {
-    app_list_syncable_service()->RemoveItem(id);
-    model_updater->RemoveItem(id, /*is_uninstall=*/true);
+    app_list_syncable_service()->RemoveItem(id, /*is_uninstall=*/true);
   }
 
   // Delete all default page breaks.

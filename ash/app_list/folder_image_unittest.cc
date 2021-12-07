@@ -147,7 +147,7 @@ TEST_P(FolderImageTest, UpdateListTest) {
   EXPECT_TRUE(ImagesAreEqual(icon3, folder_image_->icon()));
 
   // Delete an item. Ensure that the observer fired and the icon changed.
-  app_list_model_->DeleteItem("app2", /*can_clean_folder=*/false);
+  app_list_model_->DeleteItem("app2");
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   gfx::ImageSkia icon4 = folder_image_->icon();
@@ -167,8 +167,8 @@ TEST_P(FolderImageTest, UpdateItemTest) {
 }
 
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithSingleItem) {
-  app_list_model_->DeleteItem("app2", /*can_clean_folder=*/false);
-  app_list_model_->DeleteItem("app3", /*can_clean_folder=*/false);
+  app_list_model_->DeleteItem("app2");
+  app_list_model_->DeleteItem("app3");
   const AppListConfig* config =
       AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
   ASSERT_TRUE(config);
@@ -198,7 +198,7 @@ TEST_P(FolderImageTest, GetTargetIconRectInFolderWithSingleItem) {
 }
 
 TEST_P(FolderImageTest, GetTargetIconRectInFolderWithTwoItems) {
-  app_list_model_->DeleteItem("app3", /*can_clean_folder=*/false);
+  app_list_model_->DeleteItem("app3");
   const AppListConfig* config =
       AppListConfigProvider::Get().GetConfigForType(GetParam(), false);
   ASSERT_TRUE(config);

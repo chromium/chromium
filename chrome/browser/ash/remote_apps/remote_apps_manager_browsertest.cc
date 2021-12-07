@@ -459,6 +459,39 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
   EXPECT_EQ(std::string(), item2->folder_id());
 }
 
+// Verifies that folders are not removed after user moves all but single item
+// from them.
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
+                       DontRemoveSingleItemFolders) {
+  // Folder has id kId1.
+  manager_->AddFolder("folder_name", /*add_to_front=*/false);
+
+  // App has id kId2.
+  AddAppAndWaitForIconChange(kId2, "name", kId1, GURL("icon_url"),
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
+  // App has id kId3.
+  AddAppAndWaitForIconChange(kId3, "name2", kId1, GURL("icon_url2"),
+                             CreateTestIcon(32, SK_ColorBLUE),
+                             /*add_to_front=*/false);
+
+  ash::AppListItem* folder_item = GetAppListItem(kId1);
+  EXPECT_EQ(2u, folder_item->ChildItemCount());
+  EXPECT_TRUE(folder_item->FindChildItem(kId2));
+  EXPECT_TRUE(folder_item->FindChildItem(kId3));
+
+  // Move kId2 item to root app list.
+  ash::AppListItem* item1 = GetAppListItem(kId2);
+  ASSERT_TRUE(item1);
+  ash::AppListModelProvider::Get()->model()->MoveItemToRootAt(
+      item1, folder_item->position().CreateBefore());
+
+  ASSERT_EQ(folder_item, GetAppListItem(kId1));
+  EXPECT_EQ(1u, folder_item->ChildItemCount());
+  EXPECT_FALSE(folder_item->FindChildItem(kId2));
+  EXPECT_TRUE(folder_item->FindChildItem(kId3));
+}
+
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {
   // Folder has id kId1.
   manager_->AddFolder("folder_name", /*add_to_front=*/false);

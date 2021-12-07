@@ -787,7 +787,7 @@ class CrostiniAppTest : public AppServiceAppModelBuilderTest {
           id == crostini::kCrostiniTerminalSystemAppId) {
         continue;
       }
-      sync_service_->RemoveItem(id);
+      sync_service_->RemoveItem(id, /*is_uninstall=*/false);
     }
   }
 
