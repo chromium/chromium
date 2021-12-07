@@ -768,7 +768,7 @@ html5lib/generated/run-tests24-write.html
 html/details_summary/details-clone.html
 html/details_summary/details-element-render-inline-crash.html
 html/details_summary/details-summary-document-child.html
-html/dialog/inert-label-focus.html
+external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-label-focus.html
 html/grouping_content/figure-element.html
 html/marquee/marquee-inside-template-tag-crash.html
 html/sections/article-element.html
