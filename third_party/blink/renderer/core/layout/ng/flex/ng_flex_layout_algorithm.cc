@@ -52,10 +52,10 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
                  child_percentage_size_,
                  &Node().GetDocument()),
       layout_info_for_devtools_(layout_info_for_devtools) {
-  // TODO(almaher): Support multi-line and row fragmentation.
+  // TODO(almaher): Support multi-line fragmentation.
   involved_in_block_fragmentation_ =
       InvolvedInBlockFragmentation(container_builder_) &&
-      !is_horizontal_flow_ && !algorithm_.IsMultiline();
+      !algorithm_.IsMultiline();
 }
 
 bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
@@ -1190,7 +1190,10 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     // A child break in a parallel flow doesn't affect whether we should
     // break here or not.
-    if (container_builder_.HasInflowChildBreakInside()) {
+    // TODO(almaher): Once we add support for row break tokens, set
+    // |has_inflow_child_break_inside_| to false when adding item break tokens.
+    if (container_builder_.HasInflowChildBreakInside() &&
+        !is_horizontal_flow_) {
       // But if the break happened in the same flow, we'll now just finish
       // layout of the fragment. No more siblings should be processed.
       break;
