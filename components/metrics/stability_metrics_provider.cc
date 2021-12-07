@@ -58,8 +58,6 @@ StabilityMetricsProvider::~StabilityMetricsProvider() = default;
 // static
 void StabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityCrashCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityIncompleteSessionEndCount, 0);
-  registry->RegisterBooleanPref(prefs::kStabilitySessionEndCompleted, true);
   registry->RegisterIntegerPref(prefs::kStabilityLaunchCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentFilesCount,
                                 0);
@@ -86,9 +84,7 @@ void StabilityMetricsProvider::Init() {
 
 void StabilityMetricsProvider::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityCrashCount, 0);
-  local_state_->SetInteger(prefs::kStabilityIncompleteSessionEndCount, 0);
   local_state_->SetInteger(prefs::kStabilityLaunchCount, 0);
-  local_state_->SetBoolean(prefs::kStabilitySessionEndCompleted, true);
 
   // The 0 is a valid value for the below prefs, clears pref instead
   // of setting to default value.
@@ -120,11 +116,6 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
   }
 #endif
 
-  if (GetAndClearPrefValue(prefs::kStabilityIncompleteSessionEndCount,
-                           &pref_value))
-    stability->set_incomplete_shutdown_count(pref_value);
-
-
   if (local_state_->HasPrefPath(prefs::kStabilityFileMetricsUnsentFilesCount)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100(
         "Stability.Internals.FileMetricsProvider.BrowserMetrics."
@@ -150,21 +141,6 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
                                        pref_value);
   }
 #endif
-}
-
-
-void StabilityMetricsProvider::CheckLastSessionEndCompleted() {
-  if (!local_state_->GetBoolean(prefs::kStabilitySessionEndCompleted)) {
-    IncrementPrefValue(prefs::kStabilityIncompleteSessionEndCount);
-    StabilityMetricsHelper::RecordStabilityEvent(
-        StabilityEventType::kIncompleteShutdown);
-    // This is marked false when we get a WM_ENDSESSION.
-    MarkSessionEndCompleted(true);
-  }
-}
-
-void StabilityMetricsProvider::MarkSessionEndCompleted(bool end_completed) {
-  local_state_->SetBoolean(prefs::kStabilitySessionEndCompleted, end_completed);
 }
 
 void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {

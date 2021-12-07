@@ -621,7 +621,6 @@ void MetricsService::InitializeMetricsState() {
 
   // Notify stability metrics providers about the launch.
   provider.LogLaunch();
-  provider.CheckLastSessionEndCompleted();
 
   // Call GetUptimes() for the first time, thus allowing all later calls
   // to record incremental uptimes accurately.
@@ -1028,7 +1027,6 @@ void MetricsService::PrepareProviderMetricsTask() {
 void MetricsService::LogCleanShutdown(bool end_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_manager_->LogHasSessionShutdownCleanly(true);
-  StabilityMetricsProvider(local_state_).MarkSessionEndCompleted(end_completed);
 }
 
 void MetricsService::UpdateLastLiveTimestampTask() {

@@ -163,10 +163,6 @@ const char kStabilityGmsCoreVersion[] =
 const char kStabilityGpuCrashCount[] =
     "user_experience_metrics.stability.gpu_crash_count";
 
-// Number of times the session end did not complete.
-const char kStabilityIncompleteSessionEndCount[] =
-    "user_experience_metrics.stability.incomplete_session_end_count";
-
 // Number of times the application was launched since last report.
 const char kStabilityLaunchCount[] =
     "user_experience_metrics.stability.launch_count";
@@ -200,11 +196,6 @@ const char kStabilitySavedSystemProfile[] =
 // SHA-1 hash of the serialized UMA system profile proto (hex encoded).
 const char kStabilitySavedSystemProfileHash[] =
     "user_experience_metrics.stability.saved_system_profile_hash";
-
-// False if we received a session end and either we crashed during processing
-// the session end or ran out of time and windows terminated us.
-const char kStabilitySessionEndCompleted[] =
-    "user_experience_metrics.stability.session_end_completed";
 
 // Build time, in seconds since an epoch, which is used to assure that stability
 // metrics reported reflect stability of the same build.

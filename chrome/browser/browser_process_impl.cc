@@ -622,9 +622,11 @@ void BrowserProcessImpl::EndSession() {
   if (metrics) {
     metrics->RecordStartOfSessionEnd();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // MetricsService lazily writes to prefs, force it to write now.
-    // On ChromeOS, chrome gets killed when hangs, so no need to
-    // commit metrics::prefs::kStabilitySessionEndCompleted change immediately.
+    // The MetricsService may update Local State prefs in memory without
+    // writing the updated prefs to disk, so schedule a Local State write now.
+    //
+    // Do not schedule a write on ChromeOS because writing to disk multiple
+    // times during shutdown was causing shutdown problems. See crbug/302578.
     local_state_->CommitPendingWrite(base::OnceClosure(),
                                      rundown_counter->GetRundownClosure());
 #endif

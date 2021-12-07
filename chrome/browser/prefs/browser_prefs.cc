@@ -676,6 +676,10 @@ const char kAvailabilityProberTLSCanaryCheck[] =
     "Availability.Prober.cache.IsolatedPrerenderTLSCanaryCheck";
 const char kAvailabilityProberDNSCanaryCheck[] =
     "Availability.Prober.cache.IsolatedPrerenderDNSCanaryCheck";
+const char kStabilityIncompleteSessionEndCount[] =
+    "user_experience_metrics.stability.incomplete_session_end_count";
+const char kStabilitySessionEndCompleted[] =
+    "user_experience_metrics.stability.session_end_completed";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -717,6 +721,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kPrivacyBudgetActiveSurfaces, std::string());
   registry->RegisterStringPref(kPrivacyBudgetRetiredSurfaces, std::string());
   registry->RegisterUint64Pref(kPrivacyBudgetSeed, 0u);
+
+  registry->RegisterIntegerPref(kStabilityIncompleteSessionEndCount, 0);
+  registry->RegisterBooleanPref(kStabilitySessionEndCompleted, true);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1455,7 +1462,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-
   // Added 12/2020.
   local_state->ClearPref(kFirstRunTrialGroup);
   local_state->ClearPref(kLocalSearchServiceSyncMetricsDailySample);
@@ -1499,6 +1505,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 10/2021.
   local_state->ClearPref(kTabStripStackedLayout);
+
+  // Added 12/2021.
+  local_state->ClearPref(kStabilityIncompleteSessionEndCount);
+  local_state->ClearPref(kStabilitySessionEndCompleted);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

@@ -29,9 +29,6 @@ class StabilityMetricsProvider : public MetricsProvider {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  void CheckLastSessionEndCompleted();
-  void MarkSessionEndCompleted(bool end_completed);
-
   void LogCrash(base::Time last_live_timestamp);
   void LogLaunch();
 
