@@ -505,6 +505,7 @@ void ImageLoader::DoUpdateFromElement(
       resource_request.SetKeepalive(true);
       resource_request.SetRequestContext(
           mojom::blink::RequestContextType::PING);
+      UseCounter::Count(document, WebFeature::kImageLoadAtDismissalEvent);
     }
 
     // Plug-ins should not load via service workers as plug-ins may have their
