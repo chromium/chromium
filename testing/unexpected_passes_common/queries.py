@@ -235,8 +235,20 @@ class BigQueryQuerier(object):
             'results do not apply to any expectations for this suite.', builder)
       return results, None
 
-    expectation_files = self._GetRelevantExpectationFilesForQueryResult(
-        query_results[0])
+    # It's possible that a builder runs multiple versions of a test with
+    # different expectation files for each version. So, find a result for each
+    # unique step and get the expectation files from all of them.
+    results_for_each_step = {}
+    for qr in query_results:
+      step_name = qr['step_name']
+      if step_name not in results_for_each_step:
+        results_for_each_step[step_name] = qr
+
+    expectation_files = []
+    for qr in results_for_each_step.values():
+      expectation_files.extend(
+          self._GetRelevantExpectationFilesForQueryResult(qr))
+    expectation_files = list(set(expectation_files))
 
     for r in query_results:
       if self._ShouldSkipOverResult(r):

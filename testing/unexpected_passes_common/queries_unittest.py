@@ -132,6 +132,59 @@ class QueryBuilderUnittest(unittest.TestCase):
                           '1234'))
     self.assertEqual(expectation_files, ['foo_expectations'])
 
+  def testValidResultsMultipleSteps(self):
+    """Tests functionality when results from multiple steps are present."""
+
+    def SideEffect(result):
+      if result['step_name'] == 'a step name':
+        return ['foo_expectations']
+      elif result['step_name'] == 'another step name':
+        return ['bar_expectations']
+      raise RuntimeError('Unknown step %s' % result['step_name'])
+
+    self._relevant_file_mock.side_effect = SideEffect
+    query_results = [
+        {
+            'id': 'build-1234',
+            'test_id': 'ninja://:blink_web_tests/some/test/with.test_name',
+            'status': 'FAIL',
+            'typ_expectations': [
+                'Failure',
+            ],
+            'typ_tags': [
+                'linux',
+                'release',
+            ],
+            'step_name': 'a step name',
+        },
+        {
+            'id': 'build-1234',
+            'test_id': 'ninja://:blink_web_tests/some/test/with.test_name',
+            'status': 'FAIL',
+            'typ_expectations': [
+                'Crash',
+            ],
+            'typ_tags': [
+                'linux',
+                'debug',
+            ],
+            'step_name': 'another step name',
+        },
+    ]
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        stdout=json.dumps(query_results))
+    results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+    self.assertEqual(len(results), 2)
+    self.assertIn(
+        data_types.Result('test_name', ['linux', 'release'], 'Failure',
+                          'a step name', '1234'), results)
+    self.assertIn(
+        data_types.Result('test_name', ['linux', 'debug'], 'Failure',
+                          'another step name', '1234'), results)
+    self.assertEqual(len(expectation_files), 2)
+    self.assertEqual(set(expectation_files),
+                     set(['foo_expectations', 'bar_expectations']))
+
   def testFilterInsertion(self):
     """Tests that test filters are properly inserted into the query."""
     with mock.patch.object(
