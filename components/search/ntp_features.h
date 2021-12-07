@@ -34,6 +34,7 @@ extern const base::Feature kNtpRecipeTasksModule;
 extern const base::Feature kNtpShoppingTasksModule;
 extern const base::Feature kNtpChromeCartModule;
 extern const base::Feature kNtpModulesRedesigned;
+extern const base::Feature kNtpModulesRedesignedLayout;
 extern const base::Feature kNtpDriveModule;
 extern const base::Feature kNtpPhotosModule;
 extern const base::Feature kNtpSafeBrowsingModule;

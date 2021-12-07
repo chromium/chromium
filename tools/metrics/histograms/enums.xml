@@ -49453,6 +49453,7 @@ from previous Chrome versions.
   <int value="-1718074215" label="HomepageSettingsUIConversion:enabled"/>
   <int value="-1716654100" label="tab-capture-downscale-quality"/>
   <int value="-1716140224" label="EnableEmbeddedAssistantUI:disabled"/>
+  <int value="-1715642957" label="NtpModulesRedesignedLayout:enabled"/>
   <int value="-1715180530"
       label="OmniboxUIExperimentShowSuffixOnAllSearchSuggestions:disabled"/>
   <int value="-1714128884" label="disable-launcher-search-provider-api"/>
@@ -49880,6 +49881,7 @@ from previous Chrome versions.
   <int value="-1416610483" label="WallpaperPerDesk:enabled"/>
   <int value="-1416184931" label="TranslateRankerEnforcement:enabled"/>
   <int value="-1415244717" label="CrostiniVirtualKeyboardSupport:disabled"/>
+  <int value="-1414531531" label="NtpModulesRedesignedLayout:disabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
   <int value="-1411003295" label="disable-encrypted-media"/>

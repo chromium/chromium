@@ -89,6 +89,11 @@ const base::Feature kNtpChromeCartModule{"NtpChromeCartModule",
 const base::Feature kNtpModulesRedesigned{"NtpModulesRedesigned",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, a different module layout where modules are organized in rows and
+// columns will be shown.
+const base::Feature kNtpModulesRedesignedLayout{
+    "NtpModulesRedesignedLayout", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, Google Drive module will be shown.
 const base::Feature kNtpDriveModule{"NtpDriveModule",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

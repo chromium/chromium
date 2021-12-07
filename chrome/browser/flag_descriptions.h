@@ -2159,6 +2159,9 @@ extern const char kNtpModulesDragAndDropDescription[];
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 
+extern const char kNtpModulesRedesignedLayoutName[];
+extern const char kNtpModulesRedesignedLayoutDescription[];
+
 extern const char kNtpRealboxPedalsName[];
 extern const char kNtpRealboxPedalsDescription[];
 

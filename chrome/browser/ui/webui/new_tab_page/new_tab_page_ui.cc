@@ -308,6 +308,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesRedesignedEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned));
+  source->AddBoolean(
+      "modulesRedesignedLayoutEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesignedLayout));
 
   RealboxHandler::SetupWebUIDataSource(source);
 

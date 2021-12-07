@@ -4015,6 +4015,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "ntp-modules-redesigned-layout",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "ntp-photos-module",
     "owners": [ "jerem", "tiborg" ],
     "expiry_milestone": 100

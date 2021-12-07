@@ -5003,6 +5003,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpModulesRedesignedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesigned)},
 
+    {"ntp-modules-redesigned-layout",
+     flag_descriptions::kNtpModulesRedesignedLayoutName,
+     flag_descriptions::kNtpModulesRedesignedLayoutDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesignedLayout)},
+
     {"ntp-realbox-pedals", flag_descriptions::kNtpRealboxPedalsName,
      flag_descriptions::kNtpRealboxPedalsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kNtpRealboxPedals)},

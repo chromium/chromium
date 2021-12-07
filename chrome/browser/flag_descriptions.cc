@@ -3745,6 +3745,10 @@ const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
 const char kNtpModulesRedesignedDescription[] =
     "Shows the redesigned modules on the New Tab Page.";
 
+const char kNtpModulesRedesignedLayoutName[] = "Ntp Modules Redesigned Layout";
+const char kNtpModulesRedesignedLayoutDescription[] =
+    "Changes the layout of modules on New Tab Page";
+
 const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";
