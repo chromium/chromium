@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/formats/hls/types.h"
+#include "media/formats/hls/parse_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -10,7 +11,8 @@ namespace hls {
 
 TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
   auto const error_test = [](base::StringPiece input) {
-    auto result = types::ParseDecimalInteger(input);
+    auto result =
+        types::ParseDecimalInteger(SourceString::CreateForTesting(1, 1, input));
     EXPECT_TRUE(result.has_error());
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseDecimalInteger);
@@ -18,7 +20,8 @@ TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
 
   auto const ok_test = [](base::StringPiece input,
                           types::DecimalInteger expected) {
-    auto result = types::ParseDecimalInteger(input);
+    auto result =
+        types::ParseDecimalInteger(SourceString::CreateForTesting(1, 1, input));
     EXPECT_TRUE(result.has_value());
     auto value = std::move(result).value();
     EXPECT_EQ(value, expected);
@@ -58,7 +61,8 @@ TEST(HlsFormatParserTest, ParseDecimalIntegerTest) {
 
 TEST(HlsFormatParserTest, ParseDecimalFloatingPointTest) {
   auto const error_test = [](base::StringPiece input) {
-    auto result = types::ParseDecimalFloatingPoint(input);
+    auto result = types::ParseDecimalFloatingPoint(
+        SourceString::CreateForTesting(1, 1, input));
     EXPECT_TRUE(result.has_error());
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(),
@@ -67,7 +71,8 @@ TEST(HlsFormatParserTest, ParseDecimalFloatingPointTest) {
 
   auto const ok_test = [](base::StringPiece input,
                           types::DecimalFloatingPoint expected) {
-    auto result = types::ParseDecimalFloatingPoint(input);
+    auto result = types::ParseDecimalFloatingPoint(
+        SourceString::CreateForTesting(1, 1, input));
     EXPECT_TRUE(result.has_value());
     auto value = std::move(result).value();
     EXPECT_DOUBLE_EQ(value, expected);
@@ -104,7 +109,8 @@ TEST(HlsFormatParserTest, ParseDecimalFloatingPointTest) {
 
 TEST(HlsFormatParserTest, ParseSignedDecimalFloatingPointTest) {
   auto const error_test = [](base::StringPiece input) {
-    auto result = types::ParseSignedDecimalFloatingPoint(input);
+    auto result = types::ParseSignedDecimalFloatingPoint(
+        SourceString::CreateForTesting(1, 1, input));
     EXPECT_TRUE(result.has_error());
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(),
@@ -113,7 +119,8 @@ TEST(HlsFormatParserTest, ParseSignedDecimalFloatingPointTest) {
 
   auto const ok_test = [](base::StringPiece input,
                           types::SignedDecimalFloatingPoint expected) {
-    auto result = types::ParseSignedDecimalFloatingPoint(input);
+    auto result = types::ParseSignedDecimalFloatingPoint(
+        SourceString::CreateForTesting(1, 1, input));
     EXPECT_TRUE(result.has_value());
     auto value = std::move(result).value();
     EXPECT_DOUBLE_EQ(value, expected);

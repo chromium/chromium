@@ -8,14 +8,17 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/formats/hls/parse_context.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace media {
 namespace hls {
 namespace types {
 
-ParseStatus::Or<DecimalInteger> ParseDecimalInteger(base::StringPiece str) {
+ParseStatus::Or<DecimalInteger> ParseDecimalInteger(SourceString source_str) {
   static const base::NoDestructor<re2::RE2> decimal_integer_regex("\\d{1,20}");
+
+  const auto str = source_str.Str();
 
   // Check that the set of characters is allowed: 0-9
   // NOTE: It may be useful to split this into a separate function which
@@ -35,9 +38,9 @@ ParseStatus::Or<DecimalInteger> ParseDecimalInteger(base::StringPiece str) {
 }
 
 ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
-    base::StringPiece str) {
+    SourceString source_str) {
   // Utilize signed parsing function
-  auto result = ParseSignedDecimalFloatingPoint(str);
+  auto result = ParseSignedDecimalFloatingPoint(source_str);
   if (result.has_error()) {
     return ParseStatusCode::kFailedToParseDecimalFloatingPoint;
   }
@@ -52,11 +55,13 @@ ParseStatus::Or<DecimalFloatingPoint> ParseDecimalFloatingPoint(
 }
 
 ParseStatus::Or<SignedDecimalFloatingPoint> ParseSignedDecimalFloatingPoint(
-    base::StringPiece str) {
+    SourceString source_str) {
   // Accept no decimal point, decimal point with leading digits, trailing
   // digits, or both
   static const base::NoDestructor<re2::RE2> decimal_floating_point_regex(
       "-?(\\d+|\\d+\\.|\\.\\d+|\\d+\\.\\d+)");
+
+  const auto str = source_str.Str();
 
   // Check that the set of characters is allowed: - . 0-9
   // `base::StringToDouble` is not as strict as the HLS spec

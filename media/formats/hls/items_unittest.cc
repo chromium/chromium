@@ -14,14 +14,20 @@ namespace {
 
 using LineResult = GetNextLineItemResult;
 
+void CheckSourceString(SourceString expected, SourceString actual) {
+  EXPECT_EQ(expected.Line(), actual.Line());
+  EXPECT_EQ(expected.Column(), actual.Column());
+  EXPECT_EQ(expected.Str(), actual.Str());
+}
+
 // Calls `GetNextLineItem` for each expectation, and verifies that the result
 // matches.
 template <typename T>
 void RunTest(base::StringPiece manifest, const T& expectations) {
-  size_t line_number = 1;
+  auto line_iter = SourceLineIterator(manifest);
 
   for (auto expectation : expectations) {
-    auto result = GetNextLineItem(&manifest, &line_number);
+    auto result = GetNextLineItem(&line_iter);
 
     if (expectation.has_value()) {
       auto expected_value = std::move(expectation).value();
@@ -34,13 +40,11 @@ void RunTest(base::StringPiece manifest, const T& expectations) {
       if (auto* expected_tag = absl::get_if<TagItem>(&expected_value)) {
         auto tag = absl::get<TagItem>(std::move(value));
         EXPECT_EQ(expected_tag->kind, tag.kind);
-        EXPECT_EQ(expected_tag->line_number, tag.line_number);
-        EXPECT_EQ(expected_tag->content, tag.content);
+        CheckSourceString(expected_tag->content, tag.content);
       } else {
         auto expected_uri = absl::get<UriItem>(std::move(expected_value));
         auto uri = absl::get<UriItem>(std::move(value));
-        EXPECT_EQ(expected_uri.line_number, uri.line_number);
-        EXPECT_EQ(expected_uri.text, uri.text);
+        CheckSourceString(expected_uri.content, uri.content);
       }
     } else {
       EXPECT_TRUE(result.has_error());
@@ -49,6 +53,21 @@ void RunTest(base::StringPiece manifest, const T& expectations) {
       EXPECT_EQ(error.code(), expected_error.code());
     }
   }
+}
+
+ParseStatus::Or<LineResult> ExpectTag(TagKind kind,
+                                      size_t line,
+                                      size_t col,
+                                      base::StringPiece content) {
+  return LineResult(
+      TagItem(kind, SourceString::CreateForTesting(line, col, content)));
+}
+
+ParseStatus::Or<LineResult> ExpectUri(size_t line,
+                                      size_t col,
+                                      base::StringPiece content) {
+  return LineResult(
+      UriItem(SourceString::CreateForTesting(line, col, content)));
 }
 
 }  // namespace
@@ -74,23 +93,25 @@ TEST(HlsFormatParserTest, GetNextLineItemTest1) {
       "#EXTINF:1234,\t\n";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
-      LineResult(TagItem(TagKind::kM3u, 1, "")),
+      ExpectTag(TagKind::kM3u, 1, 8, ""),
       // Unknown tag content should be entire line following "#EXT"
-      LineResult(TagItem(TagKind::kUnknown, 5, "asdf")),
+      ExpectTag(TagKind::kUnknown, 5, 5, "asdf"),
+
       // Lines without leading # should be considered URIs
-      LineResult(UriItem(7, "EXTM3U")),
-      LineResult(UriItem(10, "http://www.example.com")),
-      LineResult(UriItem(11, "../media.m3u8")),
-      LineResult(UriItem(12, "foobar.jpg")),
+      ExpectUri(7, 1, "EXTM3U"), ExpectUri(10, 1, "http://www.example.com"),
+      ExpectUri(11, 1, "../media.m3u8"), ExpectUri(12, 1, "foobar.jpg"),
+
       // Whitespace is not allowed here, but that's not this function's
       // responsibility.
-      LineResult(UriItem(13, " video about food.mov")),
+      ExpectUri(13, 1, " video about food.mov"),
+
       // Variable substitution is not this function's responsibility.
-      LineResult(UriItem(14, "uri_with_{$variable}.mov")),
-      LineResult(TagItem(TagKind::kXVersion, 15, "7")),
-      LineResult(TagItem(TagKind::kXVersion, 16, "")),
-      LineResult(TagItem(TagKind::kInf, 17, "1234,\t")),
-      ParseStatusCode::kReachedEOF, ParseStatusCode::kReachedEOF};
+      ExpectUri(14, 1, "uri_with_{$variable}.mov"),
+
+      ExpectTag(TagKind::kXVersion, 15, 16, "7"),
+      ExpectTag(TagKind::kXVersion, 16, 16, ""),
+      ExpectTag(TagKind::kInf, 17, 9, "1234,\t"), ParseStatusCode::kReachedEOF,
+      ParseStatusCode::kReachedEOF};
 
   RunTest(kManifest, kExpectations);
 }
@@ -102,7 +123,7 @@ TEST(HlsFormatParserTest, GetNextLineItemTest2) {
       "#EXT-X-VERSION:3\n";
 
   const ParseStatus::Or<LineResult> kExpectations[] = {
-      LineResult(TagItem(TagKind::kM3u, 1, "")), ParseStatusCode::kInvalidEOL,
+      ExpectTag(TagKind::kM3u, 1, 8, ""), ParseStatusCode::kInvalidEOL,
       ParseStatusCode::kInvalidEOL};
 
   RunTest(kManifest, kExpectations);

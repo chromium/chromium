@@ -6,11 +6,13 @@
 #define MEDIA_FORMATS_HLS_TYPES_H_
 
 #include <cstdint>
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/parse_status.h"
 
 namespace media {
 namespace hls {
+
+struct SourceString;
+
 namespace types {
 
 // Data-types used in HLS, as described by the spec
@@ -19,13 +21,13 @@ using DecimalFloatingPoint = double;
 using SignedDecimalFloatingPoint = double;
 
 ParseStatus::Or<DecimalInteger> MEDIA_EXPORT
-ParseDecimalInteger(base::StringPiece str);
+ParseDecimalInteger(SourceString source_str);
 
 ParseStatus::Or<DecimalFloatingPoint> MEDIA_EXPORT
-ParseDecimalFloatingPoint(base::StringPiece str);
+ParseDecimalFloatingPoint(SourceString source_str);
 
 ParseStatus::Or<SignedDecimalFloatingPoint> MEDIA_EXPORT
-ParseSignedDecimalFloatingPoint(base::StringPiece str);
+ParseSignedDecimalFloatingPoint(SourceString source_str);
 
 }  // namespace types
 }  // namespace hls

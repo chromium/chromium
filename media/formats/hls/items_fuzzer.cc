@@ -17,59 +17,62 @@ bool IsSubstring(base::StringPiece sub, base::StringPiece base) {
          base.data() + base.size() >= sub.data() + sub.size();
 }
 
+media::hls::SourceString GetItemContent(media::hls::TagItem tag) {
+  // Ensure the tag kind returned was valid
+  CHECK(tag.kind >= media::hls::TagKind::kUnknown &&
+        tag.kind <= media::hls::TagKind::kMaxValue);
+
+  return tag.content;
+}
+
+media::hls::SourceString GetItemContent(media::hls::UriItem uri) {
+  return uri.content;
+}
+
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create a StringPiece from the given input
-  base::StringPiece manifest(reinterpret_cast<const char*>(data), size);
-  size_t line_number = 1;
+  const base::StringPiece manifest(reinterpret_cast<const char*>(data), size);
+  media::hls::SourceLineIterator iterator{manifest};
 
   while (true) {
-    const auto old_manifest = manifest;
-    const auto old_line_number = line_number;
-    auto result = media::hls::GetNextLineItem(&manifest, &line_number);
+    const auto prev_iterator = iterator;
+    auto result = media::hls::GetNextLineItem(&iterator);
 
     if (result.has_error()) {
       // Ensure that this was an error this function is expected to return
       CHECK(result.code() == media::hls::ParseStatusCode::kReachedEOF ||
             result.code() == media::hls::ParseStatusCode::kInvalidEOL);
 
-      // Ensure that `manifest` is still a substring of the original manifest
-      CHECK(IsSubstring(manifest, old_manifest));
+      // Ensure that `manifest` is still a substring of the previous manifest
+      CHECK(IsSubstring(iterator.SourceForTesting(),
+                        prev_iterator.SourceForTesting()));
+      CHECK(iterator.CurrentLineForTesting() >=
+            prev_iterator.CurrentLineForTesting());
       break;
     }
 
     auto value = std::move(result).value();
-    base::StringPiece item_content;
-    size_t item_line_number;
-    static_assert(
-        absl::variant_size<media::hls::GetNextLineItemResult>::value == 2, "");
-    if (auto* tag = absl::get_if<media::hls::TagItem>(&value)) {
-      item_content = tag->content;
-      item_line_number = tag->line_number;
-
-      // Ensure the tag kind returned was valid
-      CHECK(tag->kind >= media::hls::TagKind::kUnknown &&
-            tag->kind <= media::hls::TagKind::kMaxValue);
-    } else {
-      auto uri = absl::get<media::hls::UriItem>(std::move(value));
-      item_content = uri.text;
-      item_line_number = uri.line_number;
-    }
+    auto content = absl::visit([](auto x) { return GetItemContent(x); }, value);
 
     // Ensure that the line number associated with this item is between the
     // original line number and the updated line number
-    CHECK(item_line_number >= old_line_number &&
-          item_line_number < line_number);
+    CHECK(content.Line() >= prev_iterator.CurrentLineForTesting() &&
+          content.Line() < iterator.CurrentLineForTesting());
 
-    // Ensure that `item_content` is a substring of the original manifest
-    CHECK(IsSubstring(item_content, old_manifest));
+    // Ensure that the content associated with this item is a substring of the
+    // previous iterator
+    CHECK(IsSubstring(content.Str(), prev_iterator.SourceForTesting()));
 
-    // Ensure that `manifest` is a substring of the original manifest
-    CHECK(IsSubstring(manifest, old_manifest));
+    // Ensure that the updated iterator contains a substring of the previous
+    // iterator
+    CHECK(IsSubstring(iterator.SourceForTesting(),
+                      prev_iterator.SourceForTesting()));
 
-    // Ensure that `item_content` is NOT a substring of the updated manifest
-    CHECK(!IsSubstring(item_content, manifest));
+    // Ensure that the content associated with this item is NOT a substring of
+    // the updated iterator
+    CHECK(!IsSubstring(content.Str(), iterator.SourceForTesting()));
   }
 
   return 0;

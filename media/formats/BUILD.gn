@@ -186,6 +186,8 @@ source_set("formats") {
   sources += [
     "hls/items.cc",
     "hls/items.h",
+    "hls/parse_context.cc",
+    "hls/parse_context.h",
     "hls/parse_status.h",
     "hls/types.cc",
     "hls/types.h",

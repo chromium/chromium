@@ -6,8 +6,8 @@
 #define MEDIA_FORMATS_HLS_ITEMS_H_
 
 #include <cstddef>
-#include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
+#include "media/formats/hls/parse_context.h"
 #include "media/formats/hls/parse_status.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -30,7 +30,7 @@ enum class TagKind {
 // a comment.
 struct MEDIA_EXPORT TagItem {
   // TODO(crbug.com/1275317): These constructors should be removed
-  TagItem(TagKind, size_t line_number, base::StringPiece content);
+  TagItem(TagKind, SourceString content);
   ~TagItem();
   TagItem(const TagItem&);
   TagItem(TagItem&&);
@@ -38,36 +38,30 @@ struct MEDIA_EXPORT TagItem {
   TagItem& operator=(TagItem&&);
 
   TagKind kind;
-  size_t line_number;
 
-  // The content of the tag. This does not include the tag prefix or line
-  // ending.
-  base::StringPiece content;
+  // The content of the tag, not including the tag type prefix.
+  SourceString content;
 };
 
 // A URI. This may be a URI line or a URI appearing within a tag.
 struct MEDIA_EXPORT UriItem {
   // TODO(crbug.com/1275317): These constructors should be removed
-  UriItem(size_t line_number, base::StringPiece text);
+  explicit UriItem(SourceString content);
   ~UriItem();
   UriItem(const UriItem&);
   UriItem(UriItem&&);
   UriItem& operator=(const UriItem&);
   UriItem& operator=(UriItem&&);
 
-  size_t line_number;
-  base::StringPiece text;
+  SourceString content;
 };
 
 using GetNextLineItemResult = absl::variant<TagItem, UriItem>;
 
-// Returns the next line-level item from the source text. Verifies that line
-// endings are respected, and advances `src` and `line_number` to the following
-// line. If no further items could be retrieved, returns
-// `ParseStatusCode::kReachedEOF`.
+// Returns the next line-level item from the source text. Automatically skips
+// empty lines.
 MEDIA_EXPORT ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
-    base::StringPiece* src,
-    size_t* line_number);
+    SourceLineIterator* src);
 
 }  // namespace hls
 }  // namespace media
