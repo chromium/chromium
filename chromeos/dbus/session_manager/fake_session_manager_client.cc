@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -625,15 +624,10 @@ void FakeSessionManagerClient::SetFeatureFlagsForUser(
 
 void FakeSessionManagerClient::GetServerBackedStateKeys(
     StateKeysCallback callback) {
-  if (state_keys_handling_ == ServerBackedStateKeysHandling::kNoResponse) {
-    return;
-  }
-  if (state_keys_handling_ ==
-      ServerBackedStateKeysHandling::kForceNotAvailable) {
+  if (force_state_keys_missing_) {
     PostReply(FROM_HERE, std::move(callback), std::vector<std::string>());
     return;
   }
-  DCHECK_EQ(state_keys_handling_, ServerBackedStateKeysHandling::kRegular);
 
   if (policy_storage_ == PolicyStorageType::kOnDisk) {
     base::FilePath owner_key_path;
