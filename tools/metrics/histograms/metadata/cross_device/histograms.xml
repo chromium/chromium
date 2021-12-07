@@ -1120,7 +1120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn" enum="EasyUnlockAuthEvent"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1367,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="InstantTethering.ConnectionToHostResult.SuccessRate.Background"
     enum="InstantTethering_ConnectionToHostResult_SuccessRate"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1445,7 +1445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.KeepAliveTickle.Result" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1498,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstantTethering.Performance.ConnectToHotspotDuration"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1820,7 +1820,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionMedium"
-    enum="SecureChannelNearbyConnectionMedium" expires_after="2022-04-03">
+    enum="SecureChannelNearbyConnectionMedium" expires_after="2022-06-05">
   <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1932,7 +1932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
-    enum="BooleanSuccess" expires_after="2022-04-03">
+    enum="BooleanSuccess" expires_after="2022-06-05">
   <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2173,7 +2173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2239,7 +2239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.FindAndConnectToHostResult.Unlock"
-    enum="SmartLockFindAndConnectToHostResult" expires_after="2022-04-03">
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2270,7 +2270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.GetRemoteStatus.Unlock" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2326,7 +2326,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
 
   <owner>hansberry@chromium.org</owner>
@@ -2350,7 +2350,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
 
   <owner>hansberry@chromium.org</owner>

@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.AddressResolutionResult" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>skau@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppAttributesSuccess" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>skau@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>

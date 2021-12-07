@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Cr50.RlzOfBoardIdMismatch" enum="Cr50CrosRlzCodes"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>vbendeb@chromium.org</owner>
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1286,7 +1286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TimeToTakeOwnership" units="ms"
-    expires_after="2022-04-04">
+    expires_after="2022-06-05">
   <owner>yich@google.com</owner>
   <owner>cylai@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
