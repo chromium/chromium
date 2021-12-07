@@ -243,30 +243,6 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Adds an account to the fake AccountManagerFacade, if the {@link FakeAccountInfoService} is
-     * set up, add the corresponding {@link AccountInfo} to the {@link FakeAccountInfoService}.
-     * @return The CoreAccountInfo for the account added.
-     */
-    private CoreAccountInfo addAccount(Account account) {
-        if (mFakeAccountInfoService != null) {
-            return addAccountWithNameAndAvatar(account.name);
-        } else {
-            mFakeAccountManagerFacade.addAccount(account);
-            return toCoreAccountInfo(account.name);
-        }
-    }
-
-    /**
-     * Adds an account to the fake AccountManagerFacade and the corresponding {@link AccountInfo}
-     * with name and avatar to {@link FakeAccountInfoService}.
-     */
-    private CoreAccountInfo addAccountWithNameAndAvatar(String email) {
-        assert mFakeAccountInfoService != null;
-        final String baseEmail = email.split("@", 2)[0];
-        return addAccount(email, baseEmail + ".full", baseEmail + ".given", createAvatar());
-    }
-
-    /**
      * Returns an avatar image created from test resource.
      */
     private static Bitmap createAvatar() {

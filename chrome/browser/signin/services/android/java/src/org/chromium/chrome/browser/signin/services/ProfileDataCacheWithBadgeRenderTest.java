@@ -5,10 +5,6 @@
 package org.chromium.chrome.browser.signin.services;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -17,7 +13,6 @@ import android.widget.ImageView;
 import androidx.annotation.DrawableRes;
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,8 +53,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() {
-        mAccountManagerTestRule.addAccount(
-                TEST_ACCOUNT_NAME, "Full Name", "Given Name", createAvatar());
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_NAME);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Activity activity = getActivity();
@@ -151,25 +145,5 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase
             mImageView.setImageDrawable(
                     mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
         });
-    }
-
-    /**
-     * Creates a simple dummy bitmap to use as the avatar picture.
-     */
-    private Bitmap createAvatar() {
-        final int avatarSize =
-                getActivity().getResources().getDimensionPixelSize(R.dimen.user_picture_size);
-        Assert.assertTrue("avatarSize must not be 0", avatarSize > 0);
-        Bitmap result = Bitmap.createBitmap(avatarSize, avatarSize, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        canvas.drawColor(Color.RED);
-
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-
-        paint.setColor(Color.BLUE);
-        canvas.drawCircle(0, 0, avatarSize, paint);
-
-        return result;
     }
 }

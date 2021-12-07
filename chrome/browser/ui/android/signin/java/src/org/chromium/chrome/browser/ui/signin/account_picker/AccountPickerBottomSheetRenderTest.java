@@ -177,8 +177,8 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForWebSigninEntryPoint(boolean nightModeEnabled)
             throws IOException {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
         buildAndShowCollapsedBottomSheet();
         expandBottomSheet();
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
@@ -191,8 +191,8 @@ public class AccountPickerBottomSheetRenderTest {
     public void testExpandedSheetViewForSendTabToSelfEntryPoint(boolean nightModeEnabled)
             throws IOException {
         mAccountPickerDelegate.setSendTabToSelfEntryPoint();
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
         buildAndShowCollapsedBottomSheet();
         expandBottomSheet();
         mRenderTestRule.render(
@@ -204,7 +204,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSignInInProgressView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndCheckSigninInProgressView();
     }
@@ -215,7 +215,7 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
             throws IOException {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
@@ -229,7 +229,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
@@ -242,7 +242,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         mAccountPickerDelegate.setError(State.INVALID_GAIA_CREDENTIALS);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
