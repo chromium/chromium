@@ -37,6 +37,12 @@ const char* LatencyToUmaSuffix(media::AudioLatency::LatencyType latency) {
   }
 }
 
+const char* DeviceIdToUmaSuffix(const std::string& device_id) {
+  if (device_id == "")
+    return ".Default";
+  return ".NonDefault";
+}
+
 // Do not change: used for UMA reporting, matches
 // AudioOutputDeviceMixerStreamStatus from enums.xml.
 enum class TrackError {
@@ -332,8 +338,11 @@ class OutputDeviceMixerImpl::MixableOutputStream final
 // playback starts, and destroyed when it ends.
 class OutputDeviceMixerImpl::MixingStats {
  public:
-  MixingStats(int active_track_count, int listener_count)
-      : active_track_count_(active_track_count),
+  MixingStats(const std::string& device_id,
+              int active_track_count,
+              int listener_count)
+      : suffix_(DeviceIdToUmaSuffix(device_id)),
+        active_track_count_(active_track_count),
         listener_count_(listener_count),
         start_(base::TimeTicks::Now()) {
     DCHECK_GT(active_track_count, 0);
@@ -346,18 +355,9 @@ class OutputDeviceMixerImpl::MixingStats {
     }
 
     DCHECK(!start_.is_null());
-    base::UmaHistogramLongTimes("Media.Audio.OutputDeviceMixer.MixingDuration",
-                                base::TimeTicks::Now() - start_);
-
-    constexpr int kMaxActiveStreamCount = 50;
-    constexpr int kMaxListeners = 20;
-
-    base::UmaHistogramExactLinear(
-        "Media.Audio.OutputDeviceMixer.MaxMixedStreamCount",
-        active_track_count_.GetMax(), kMaxActiveStreamCount);
-    base::UmaHistogramExactLinear(
-        "Media.Audio.OutputDeviceMixer.MaxListenerCount",
-        listener_count_.GetMax(), kMaxListeners);
+    base::TimeDelta duration = base::TimeTicks::Now() - start_;
+    LogPerDeviceUma(duration, suffix_);
+    LogPerDeviceUma(duration, "");  // Combined.
   }
 
   void AddListener() { listener_count_.Increment(); }
@@ -412,6 +412,24 @@ class OutputDeviceMixerImpl::MixingStats {
     noop_mixing_start_ = base::TimeTicks();
   }
 
+  void LogPerDeviceUma(base::TimeDelta duration, const char* suffix) {
+    constexpr int kMaxActiveStreamCount = 50;
+    constexpr int kMaxListeners = 20;
+
+    base::UmaHistogramLongTimes(
+        base::StrCat({"Media.Audio.OutputDeviceMixer.MixingDuration", suffix}),
+        duration);
+    base::UmaHistogramExactLinear(
+        base::StrCat(
+            {"Media.Audio.OutputDeviceMixer.MaxMixedStreamCount", suffix}),
+        active_track_count_.GetMax(), kMaxActiveStreamCount);
+    base::UmaHistogramExactLinear(
+        base::StrCat(
+            {"Media.Audio.OutputDeviceMixer.MaxListenerCount", suffix}),
+        listener_count_.GetMax(), kMaxListeners);
+  }
+
+  const char* const suffix_;
   MaxTracker active_track_count_;
   MaxTracker listener_count_;
   const base::TimeTicks start_;
@@ -768,7 +786,7 @@ void OutputDeviceMixerImpl::StartMixingGraphPlayback() {
 
   DCHECK(!mixing_stats_);
   mixing_stats_ = std::make_unique<MixingStats>(
-      active_tracks_.size(), TS_UNCHECKED_READ(listeners_).size());
+      device_id(), active_tracks_.size(), TS_UNCHECKED_READ(listeners_).size());
 
   for (MixTrack* mix_track : active_tracks_)
     mix_track->StartProvidingAudioToMixingGraph();

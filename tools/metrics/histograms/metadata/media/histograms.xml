@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.OutputDeviceMixer.MaxListenerCount"
+<histogram name="Media.Audio.OutputDeviceMixer.MaxListenerCount{Device}"
     units="listeners" expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -677,9 +677,14 @@ chromium-metrics-reviews@google.com.
     mixed playback. Recoreded when mixing stops (i.e. when all reference signal
     listeners are gone.)
   </summary>
+  <token key="Device">
+    <variant name="" summary="All"/>
+    <variant name=".Default" summary="Default device mixer"/>
+    <variant name=".NonDefault" summary="Non-default device mixer"/>
+  </token>
 </histogram>
 
-<histogram name="Media.Audio.OutputDeviceMixer.MaxMixedStreamCount"
+<histogram name="Media.Audio.OutputDeviceMixer.MaxMixedStreamCount{Device}"
     units="streams" expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -687,6 +692,11 @@ chromium-metrics-reviews@google.com.
     Maximum number of output streams mixed simlutaniously by OutputDeviceMixer.
     Recoreded when mixing stops (when all reference signal listeners are gone).
   </summary>
+  <token key="Device">
+    <variant name="" summary="All"/>
+    <variant name=".Default" summary="Default device mixer"/>
+    <variant name=".NonDefault" summary="Non-default device mixer"/>
+  </token>
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.MixedPlaybackStatus"
@@ -699,8 +709,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.OutputDeviceMixer.MixingDuration" units="ms"
-    expires_after="2022-10-04">
+<histogram name="Media.Audio.OutputDeviceMixer.MixingDuration{Device}"
+    units="ms" expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <summary>
@@ -711,6 +721,11 @@ chromium-metrics-reviews@google.com.
     may include intervals recorded by
     Media.Audio.OutputDeviceMixer.NoopMixingDuration histogram.
   </summary>
+  <token key="Device">
+    <variant name="" summary="All"/>
+    <variant name=".Default" summary="Default device mixer"/>
+    <variant name=".NonDefault" summary="Non-default device mixer"/>
+  </token>
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.NoopMixingDuration" units="ms"
