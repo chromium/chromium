@@ -317,7 +317,6 @@ ui::EventDispatchDetails TouchExplorationController::InSingleTapPressed(
   if (type == ui::ET_TOUCH_RELEASED || type == ui::ET_TOUCH_CANCELLED) {
     if (current_touch_ids_.size() == 0 &&
         event.pointer_details().id == initial_press_->pointer_details().id) {
-      MaybeSendSimulatedTapInLiftActivationBounds(event, continuation);
       SET_STATE(SINGLE_TAP_RELEASED);
     } else if (current_touch_ids_.size() == 0) {
       SET_STATE(NO_FINGERS_DOWN);
