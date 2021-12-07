@@ -232,11 +232,6 @@ uint32_t GetLoaderChunkSize() {
   return base::saturated_cast<uint32_t>(kLoaderChunkSize.Get());
 }
 
-// Enable recording UMAs for network activities which can wake-up radio on
-// Android.
-const base::Feature kRecordRadioWakeupTrigger{
-    "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Check disk cache to see if the queued requests (especially those don't need
 // validation) have already been cached. If yes, start them as they may not
 // contend for network.

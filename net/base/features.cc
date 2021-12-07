@@ -257,5 +257,8 @@ const base::Feature kExtraCookieValidityChecks{
 const base::Feature kFirstPartySetsV2ComponentFormat{
     "FirstPartySetsV2ComponentFormat", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kRecordRadioWakeupTrigger{
+    "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net

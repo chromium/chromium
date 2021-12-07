@@ -95,6 +95,7 @@
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
+#include "net/base/features.h"
 #include "services/network/radio_monitor_android.h"
 #endif
 
@@ -710,7 +711,7 @@ URLLoader::URLLoader(
   }
 
 #if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger)) {
+  if (base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger)) {
     RadioMonitorAndroid::GetInstance().MaybeRecordURLLoader(request,
                                                             traffic_annotation);
   }

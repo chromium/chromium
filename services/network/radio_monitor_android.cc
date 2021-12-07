@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 
@@ -34,7 +34,8 @@ RadioMonitorAndroid::RadioMonitorAndroid() = default;
 void RadioMonitorAndroid::MaybeRecordURLLoader(
     const ResourceRequest& request,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
+  DCHECK(
+      base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger));
   if (!ShouldRecordRadioWakeupTrigger())
     return;
 
@@ -58,7 +59,8 @@ void RadioMonitorAndroid::MaybeRecordURLLoader(
 
 void RadioMonitorAndroid::MaybeRecordResolveHost(
     const mojom::ResolveHostParametersPtr& parameters) {
-  DCHECK(base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger));
+  DCHECK(
+      base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger));
   if (!ShouldRecordRadioWakeupTrigger())
     return;
 

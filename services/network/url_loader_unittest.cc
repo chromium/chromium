@@ -588,7 +588,7 @@ class URLLoaderTest : public testing::Test {
 
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAcceptCHFrame,
-                              features::kRecordRadioWakeupTrigger},
+                              net::features::kRecordRadioWakeupTrigger},
         /*disabled_features=*/{});
   }
   ~URLLoaderTest() override {

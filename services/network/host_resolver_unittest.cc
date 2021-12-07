@@ -45,7 +45,7 @@
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "services/network/public/cpp/features.h"
+#include "net/base/features.h"
 #include "services/network/radio_monitor_android.h"
 #endif
 
@@ -1579,7 +1579,7 @@ class HostResolverRecordRadioWakeupTest : public HostResolverTest {
  public:
   HostResolverRecordRadioWakeupTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kRecordRadioWakeupTrigger);
+        net::features::kRecordRadioWakeupTrigger);
   }
 
  private:

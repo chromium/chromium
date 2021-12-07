@@ -385,6 +385,10 @@ NET_EXPORT extern const base::Feature kExtraCookieValidityChecks;
 // First-Party Sets component.
 NET_EXPORT extern const base::Feature kFirstPartySetsV2ComponentFormat;
 
+// Enable recording UMAs for network activities which can wake-up radio on
+// Android.
+NET_EXPORT extern const base::Feature kRecordRadioWakeupTrigger;
+
 }  // namespace features
 }  // namespace net
 

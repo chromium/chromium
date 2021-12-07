@@ -90,9 +90,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kRecordRadioWakeupTrigger;
-
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCheckCacheForQueuedRequests;
 
 COMPONENT_EXPORT(NETWORK_CPP)
