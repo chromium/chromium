@@ -2879,6 +2879,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.SeccompStatus.Syscall" enum="AndroidSeccompStatus"
     expires_after="M99">
+  <obsolete>
+    Recording code deleted on 2015-04-22.
+  </obsolete>
   <owner>rsesek@chromium.org</owner>
   <summary>
     Reports the level of kernel support for the seccomp-bpf sandbox using the
