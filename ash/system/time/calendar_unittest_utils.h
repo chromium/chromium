@@ -14,6 +14,10 @@ namespace ash {
 
 namespace calendar_test_utils {
 
+// A duration to let the animation finish and pass the cool down duration in
+// tests.
+constexpr base::TimeDelta kAnimationSettleDownDuration = base::Seconds(3);
+
 // Creates a `google_apis::calendar::CalendarEvent` for testing.
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* id,
