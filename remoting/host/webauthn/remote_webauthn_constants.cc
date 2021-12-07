@@ -7,7 +7,11 @@
 namespace remoting {
 
 const char kRemoteWebAuthnDataChannelName[] = "remote-webauthn";
+
 const char kIsUvpaaMessageType[] = "isUvpaa";
+const char kGetRemoteStateMessageType[] = "getRemoteState";
+
 const char kIsUvpaaResponseIsAvailableKey[] = "isAvailable";
+const char kGetRemoteStateResponseIsRemotedKey[] = "isRemoted";
 
 }  // namespace remoting

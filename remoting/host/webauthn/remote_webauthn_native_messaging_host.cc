@@ -9,12 +9,14 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
+#include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 
 namespace remoting {
 
@@ -44,6 +46,8 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
     ProcessHello(std::move(response));
   } else if (type == kIsUvpaaMessageType) {
     ProcessIsUvpaa(request, std::move(response));
+  } else if (type == kGetRemoteStateMessageType) {
+    ProcessGetRemoteState(std::move(response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
   }
@@ -90,17 +94,77 @@ void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
                      base::Unretained(this), std::move(response)));
 }
 
+void RemoteWebAuthnNativeMessagingHost::ProcessGetRemoteState(
+    base::Value response) {
+  // GetRemoteState request: {id: string, type: 'getRemoteState'}
+  // GetRemoteState response: {id: string, type: 'getRemoteStateResponse'}
+
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // We query and report the remote state one at a time to prevent race
+  // conditions caused by multiple requests coming in while there is already a
+  // pending request (e.g. WebAuthn channel connected and AttachToDesktop on
+  // Windows).
+  get_remote_state_responses_.push(std::move(response));
+  if (get_remote_state_responses_.size() == 1) {
+    QueryNextRemoteState();
+  }
+  // Otherwise it means there is already a pending remote state request.
+}
+
+void RemoteWebAuthnNativeMessagingHost::OnQueryVersionResult(uint32_t version) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  SendNextRemoteState(true);
+}
+
 void RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   // TODO(yuweih): Feed pending callbacks with error responses.
   remote_.reset();
+  if (!get_remote_state_responses_.empty()) {
+    SendNextRemoteState(false);
+  }
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(base::Value response,
                                                           bool is_available) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
   response.SetBoolKey(kIsUvpaaResponseIsAvailableKey, is_available);
   SendMessageToClient(std::move(response));
+}
+
+void RemoteWebAuthnNativeMessagingHost::QueryNextRemoteState() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (!EnsureIpcConnection()) {
+    SendNextRemoteState(false);
+    return;
+  }
+
+  // QueryVersion() is simply used to determine if the receiving end actually
+  // accepts the connection. If it doesn't, then the callback will be silently
+  // dropped, and OnIpcDisconnected() will be called instead.
+  remote_.QueryVersion(
+      base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnQueryVersionResult,
+                     base::Unretained(this)));
+}
+
+void RemoteWebAuthnNativeMessagingHost::SendNextRemoteState(bool is_remoted) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(!get_remote_state_responses_.empty());
+
+  auto response = std::move(get_remote_state_responses_.front());
+  get_remote_state_responses_.pop();
+  DCHECK(response.is_dict());
+
+  response.SetBoolKey(kGetRemoteStateResponseIsRemotedKey, is_remoted);
+  SendMessageToClient(std::move(response));
+  if (!get_remote_state_responses_.empty()) {
+    QueryNextRemoteState();
+  }
 }
 
 bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
