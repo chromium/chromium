@@ -156,7 +156,8 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   bool Update() override;
   bool IsSnappedToPixelGridInTarget() override;
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   // Request a mapping from SharedBitmapId to SharedMemory be registered via the
   // LayerTreeFrameSink with the display compositor. Once this mapping is

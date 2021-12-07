@@ -99,9 +99,11 @@ bool UIResourceLayer::HasDrawableContent() const {
   return resource_id_ && Layer::HasDrawableContent();
 }
 
-void UIResourceLayer::PushPropertiesTo(LayerImpl* layer,
-                                       const CommitState& commit_state) {
-  Layer::PushPropertiesTo(layer, commit_state);
+void UIResourceLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
   TRACE_EVENT0("cc", "UIResourceLayer::PushPropertiesTo");
   UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
 

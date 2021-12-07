@@ -60,8 +60,9 @@ bool FakePaintedScrollbarLayer::Update() {
 
 void FakePaintedScrollbarLayer::PushPropertiesTo(
     LayerImpl* layer,
-    const CommitState& commit_state) {
-  PaintedScrollbarLayer::PushPropertiesTo(layer, commit_state);
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  PaintedScrollbarLayer::PushPropertiesTo(layer, commit_state, unsafe_state);
   ++push_properties_count_;
 }
 

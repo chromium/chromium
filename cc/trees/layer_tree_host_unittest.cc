@@ -1026,6 +1026,17 @@ class LayerTreeHostTestPushNodeOwnerToNodeIdMap : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void WillCommit(const CommitState&) override {
+    root_transform_index_ = root_->transform_tree_index();
+    child_transform_index_ = child_->transform_tree_index();
+    root_effect_index_ = root_->effect_tree_index();
+    child_effect_index_ = child_->effect_tree_index();
+    root_clip_index_ = root_->clip_tree_index();
+    child_clip_index_ = child_->clip_tree_index();
+    root_scroll_index_ = root_->scroll_tree_index();
+    child_scroll_index_ = child_->scroll_tree_index();
+  }
+
   void DidCommit() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
@@ -1052,21 +1063,21 @@ class LayerTreeHostTestPushNodeOwnerToNodeIdMap : public LayerTreeHostTest {
   void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
     PropertyTrees* property_trees = impl->sync_tree()->property_trees();
     const TransformNode* root_transform_node =
-        property_trees->transform_tree.Node(root_->transform_tree_index());
+        property_trees->transform_tree.Node(root_transform_index_);
     const TransformNode* child_transform_node =
-        property_trees->transform_tree.Node(child_->transform_tree_index());
+        property_trees->transform_tree.Node(child_transform_index_);
     const EffectNode* root_effect_node =
-        property_trees->effect_tree.Node(root_->effect_tree_index());
+        property_trees->effect_tree.Node(root_effect_index_);
     const EffectNode* child_effect_node =
-        property_trees->effect_tree.Node(child_->effect_tree_index());
+        property_trees->effect_tree.Node(child_effect_index_);
     const ClipNode* root_clip_node =
-        property_trees->clip_tree.Node(root_->clip_tree_index());
+        property_trees->clip_tree.Node(root_clip_index_);
     const ClipNode* child_clip_node =
-        property_trees->clip_tree.Node(child_->clip_tree_index());
+        property_trees->clip_tree.Node(child_clip_index_);
     const ScrollNode* root_scroll_node =
-        property_trees->scroll_tree.Node(root_->scroll_tree_index());
+        property_trees->scroll_tree.Node(root_scroll_index_);
     const ScrollNode* child_scroll_node =
-        property_trees->scroll_tree.Node(child_->scroll_tree_index());
+        property_trees->scroll_tree.Node(child_scroll_index_);
     switch (impl->sync_tree()->source_frame_number()) {
       case 0:
         // root_ should create transform, scroll and effect tree nodes but not
@@ -1112,6 +1123,14 @@ class LayerTreeHostTestPushNodeOwnerToNodeIdMap : public LayerTreeHostTest {
  private:
   scoped_refptr<Layer> root_;
   scoped_refptr<Layer> child_;
+  int root_transform_index_ = TransformTree::kInvalidNodeId;
+  int child_transform_index_ = TransformTree::kInvalidNodeId;
+  int root_effect_index_ = EffectTree::kInvalidNodeId;
+  int child_effect_index_ = EffectTree::kInvalidNodeId;
+  int root_clip_index_ = ClipTree::kInvalidNodeId;
+  int child_clip_index_ = ClipTree::kInvalidNodeId;
+  int root_scroll_index_ = ScrollTree::kInvalidNodeId;
+  int child_scroll_index_ = ScrollTree::kInvalidNodeId;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestPushNodeOwnerToNodeIdMap);
@@ -2040,9 +2059,14 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void WillCommit(const CommitState&) override {
+    root_effect_tree_index_ =
+        layer_tree_host()->root_layer()->effect_tree_index();
+  }
+
   void DidCommit() override {
     EffectTree& effect_tree = layer_tree_host()->property_trees()->effect_tree;
-    EffectNode* node = effect_tree.Node(root_->effect_tree_index());
+    EffectNode* node = effect_tree.Node(root_effect_tree_index_);
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         node->opacity = 0.5f;
@@ -2078,7 +2102,7 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
   void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
     EffectTree& effect_tree = impl->sync_tree()->property_trees()->effect_tree;
     LayerImpl* root = impl->sync_tree()->root_layer();
-    EffectNode* node = effect_tree.Node(root->effect_tree_index());
+    EffectNode* node = effect_tree.Node(root_effect_tree_index_);
     switch (impl->sync_tree()->source_frame_number()) {
       case 0:
         impl->sync_tree()->SetOpacityMutated(root->element_id(), 0.75f);
@@ -2126,6 +2150,7 @@ class LayerTreeHostTestEffectTreeSync : public LayerTreeHostTest {
 
  private:
   scoped_refptr<Layer> root_;
+  int root_effect_tree_index_ = EffectTree::kInvalidNodeId;
   FilterOperations blur_filter_;
   FilterOperations brightness_filter_;
   FilterOperations sepia_filter_;
@@ -2149,10 +2174,14 @@ class LayerTreeHostTestTransformTreeSync : public LayerTreeHostTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void WillCommit(const CommitState&) override {
+    transform_tree_index_ = layer_->transform_tree_index();
+  }
+
   void DidCommit() override {
     TransformTree& transform_tree =
         layer_tree_host()->property_trees()->transform_tree;
-    TransformNode* node = transform_tree.Node(layer_->transform_tree_index());
+    TransformNode* node = transform_tree.Node(transform_tree_index_);
     gfx::Transform rotate10;
     rotate10.Rotate(10.f);
     switch (layer_tree_host()->SourceFrameNumber()) {
@@ -2209,6 +2238,7 @@ class LayerTreeHostTestTransformTreeSync : public LayerTreeHostTest {
 
  private:
   scoped_refptr<Layer> layer_;
+  int transform_tree_index_ = TransformTree::kInvalidNodeId;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTransformTreeSync);

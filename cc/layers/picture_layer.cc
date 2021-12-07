@@ -51,14 +51,16 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
   return PictureLayerImpl::Create(tree_impl, id());
 }
 
-void PictureLayer::PushPropertiesTo(LayerImpl* base_layer,
-                                    const CommitState& commit_state) {
+void PictureLayer::PushPropertiesTo(
+    LayerImpl* base_layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
 
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
-  Layer::PushPropertiesTo(base_layer, commit_state);
+  Layer::PushPropertiesTo(base_layer, commit_state, unsafe_state);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "PictureLayer::PushPropertiesTo");
   DropRecordingSourceContentIfInvalid(

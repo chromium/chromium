@@ -64,8 +64,9 @@ bool PaintedOverlayScrollbarLayer::OpacityCanAnimateOnImplThread() const {
 
 void PaintedOverlayScrollbarLayer::PushPropertiesTo(
     LayerImpl* layer,
-    const CommitState& commit_state) {
-  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state);
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state, unsafe_state);
 
   PaintedOverlayScrollbarLayerImpl* scrollbar_layer =
       static_cast<PaintedOverlayScrollbarLayerImpl*>(layer);

@@ -54,6 +54,7 @@ class LayerTreeImpl;
 class PictureLayer;
 
 struct CommitState;
+struct ThreadUnsafeCommitState;
 
 // For tracing and debugging. The info will be attached to this layer's tracing
 // output.
@@ -131,6 +132,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
   // The list of children of this layer.
   const LayerList& children() const { return inputs_.children; }
+
+  bool IsAttached() const { return layer_tree_host_; }
 
   // Gets the LayerTreeHost that this layer is attached to, or null if not.
   // A layer is attached to a LayerTreeHost if it or an ancestor layer is set as
@@ -572,6 +575,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   int effect_tree_index() const;
   int scroll_tree_index() const;
 
+  bool transform_tree_index_is_valid(const PropertyTrees&) const;
+  bool clip_tree_index_is_valid(const PropertyTrees&) const;
+  bool effect_tree_index_is_valid(const PropertyTrees&) const;
+  bool scroll_tree_index_is_valid(const PropertyTrees&) const;
+
   // While all layers have an index into the transform tree, this value
   // indicates whether the transform tree node was created for this layer.
   void SetHasTransformNode(bool val) { has_transform_node_ = val; }
@@ -644,7 +652,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // CreateLayerImpl(), so can be safely down-casted if the subclass uses a
   // different type for the compositor thread.
   virtual void PushPropertiesTo(LayerImpl* layer,
-                                const CommitState& commit_state);
+                                const CommitState& commit_state,
+                                const ThreadUnsafeCommitState& unsafe_state);
 
   // Internal method to be overridden by Layer subclasses that need to do work
   // during a main frame. The method should compute any state that will need to
@@ -854,6 +863,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void UpdatePropertyTreeScrollOffset();
 
   void SetMirrorCount(int mirror_count);
+
+  int transform_tree_index(const PropertyTrees&) const;
+  int clip_tree_index(const PropertyTrees&) const;
+  int effect_tree_index(const PropertyTrees&) const;
+  int scroll_tree_index(const PropertyTrees&) const;
 
   // Encapsulates all data, callbacks or interfaces received from the embedder.
   struct Inputs {

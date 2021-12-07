@@ -26,7 +26,8 @@ class CC_EXPORT MirrorLayer : public Layer {
   // Layer overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
 
  protected:

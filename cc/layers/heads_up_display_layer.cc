@@ -91,9 +91,11 @@ void HeadsUpDisplayLayer::UpdateWebVitalMetrics(
   web_vital_metrics_ = std::move(web_vital_metrics);
 }
 
-void HeadsUpDisplayLayer::PushPropertiesTo(LayerImpl* layer,
-                                           const CommitState& commit_state) {
-  Layer::PushPropertiesTo(layer, commit_state);
+void HeadsUpDisplayLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
   TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
   HeadsUpDisplayLayerImpl* layer_impl =
       static_cast<HeadsUpDisplayLayerImpl*>(layer);

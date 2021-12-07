@@ -76,7 +76,8 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   // layer_tree_host_->ActivateCommitState() and the second argument would come
   // from layer_tree_host_->active_commit_state(); we use pending_commit_state()
   // just to keep the test code simple.
-  layer->PushPropertiesTo(layer_impl.get(), *host->GetPendingCommitState());
+  layer->PushPropertiesTo(layer_impl.get(), *host->GetPendingCommitState(),
+                          host->GetThreadUnsafeCommitState());
   EXPECT_FALSE(layer_impl->CanHaveTilings());
   EXPECT_TRUE(layer_impl->bounds() == gfx::Size(0, 0));
   EXPECT_EQ(gfx::Size(), layer_impl->raster_source()->GetSize());
@@ -117,7 +118,8 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState());
+  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                          host->GetThreadUnsafeCommitState());
 
   EXPECT_EQ(invalidation_bounds,
             layer_impl->GetPendingInvalidation()->bounds());
@@ -157,7 +159,8 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1));
   FakePictureLayerImpl* layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState());
+  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                          host->GetThreadUnsafeCommitState());
 
   EXPECT_EQ(gfx::Rect(), layer_impl->GetPendingInvalidation()->bounds());
 }
@@ -204,9 +207,10 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   SetupRootProperties(layer_impl);
   UpdateDrawProperties(host_impl.pending_tree());
 
+  const auto& unsafe_state = host->GetThreadUnsafeCommitState();
   std::unique_ptr<CommitState> commit_state =
       host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
-  layer->PushPropertiesTo(layer_impl, *commit_state);
+  layer->PushPropertiesTo(layer_impl, *commit_state, unsafe_state);
   host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_EQ(2, host->SourceFrameNumber());
@@ -225,7 +229,8 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   // We should now have invalid contents and should therefore clear the
   // recording source.
-  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState());
+  layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState(),
+                          host->GetThreadUnsafeCommitState());
   UpdateDrawProperties(host_impl.pending_tree());
 
   host_impl.ActivateSyncTree();

@@ -65,9 +65,11 @@ void NinePatchLayer::SetLayerOcclusion(const gfx::Rect& occlusion) {
   SetNeedsCommit();
 }
 
-void NinePatchLayer::PushPropertiesTo(LayerImpl* layer,
-                                      const CommitState& commit_state) {
-  UIResourceLayer::PushPropertiesTo(layer, commit_state);
+void NinePatchLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  UIResourceLayer::PushPropertiesTo(layer, commit_state, unsafe_state);
   TRACE_EVENT0("cc", "NinePatchLayer::PushPropertiesTo");
   NinePatchLayerImpl* layer_impl = static_cast<NinePatchLayerImpl*>(layer);
 

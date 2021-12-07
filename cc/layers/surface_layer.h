@@ -65,7 +65,8 @@ class CC_EXPORT SurfaceLayer : public Layer {
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   const viz::SurfaceId& surface_id() const { return surface_range_.end(); }
 

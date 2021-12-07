@@ -80,8 +80,9 @@ class MockLayer : public Layer {
   }
 
   void PushPropertiesTo(LayerImpl* layer_impl,
-                        const CommitState& commit_state) override {
-    Layer::PushPropertiesTo(layer_impl, commit_state);
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override {
+    Layer::PushPropertiesTo(layer_impl, commit_state, unsafe_state);
 
     MockLayerImpl* mock_layer_impl = static_cast<MockLayerImpl*>(layer_impl);
     mock_layer_impl->SetLayerImplDestructionList(layer_impl_destruction_list_);

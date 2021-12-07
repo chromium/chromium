@@ -1184,13 +1184,23 @@ void Layer::SetTransformTreeIndex(int index) {
   SetNeedsPushProperties();
 }
 
-int Layer::transform_tree_index() const {
-  if (!layer_tree_host_ ||
-      layer_tree_host_->property_trees()->sequence_number !=
-          property_tree_sequence_number_) {
+int Layer::transform_tree_index(const PropertyTrees& property_trees) const {
+  if (property_trees.sequence_number != property_tree_sequence_number_) {
     return TransformTree::kInvalidNodeId;
   }
   return transform_tree_index_;
+}
+
+bool Layer::transform_tree_index_is_valid(
+    const PropertyTrees& property_trees) const {
+  return transform_tree_index_ != TransformTree::kInvalidNodeId &&
+         property_trees.sequence_number == property_tree_sequence_number_;
+}
+
+int Layer::transform_tree_index() const {
+  if (!IsAttached())
+    return TransformTree::kInvalidNodeId;
+  return transform_tree_index(*layer_tree_host()->property_trees());
 }
 
 void Layer::SetClipTreeIndex(int index) {
@@ -1201,13 +1211,23 @@ void Layer::SetClipTreeIndex(int index) {
   SetNeedsPushProperties();
 }
 
-int Layer::clip_tree_index() const {
-  if (!layer_tree_host_ ||
-      layer_tree_host_->property_trees()->sequence_number !=
-          property_tree_sequence_number_) {
+int Layer::clip_tree_index(const PropertyTrees& property_trees) const {
+  if (property_trees.sequence_number != property_tree_sequence_number_) {
     return ClipTree::kInvalidNodeId;
   }
   return clip_tree_index_;
+}
+
+bool Layer::clip_tree_index_is_valid(
+    const PropertyTrees& property_trees) const {
+  return clip_tree_index_ != ClipTree::kInvalidNodeId &&
+         property_trees.sequence_number == property_tree_sequence_number_;
+}
+
+int Layer::clip_tree_index() const {
+  if (!IsAttached())
+    return ClipTree::kInvalidNodeId;
+  return clip_tree_index(*layer_tree_host()->property_trees());
 }
 
 void Layer::SetEffectTreeIndex(int index) {
@@ -1218,13 +1238,23 @@ void Layer::SetEffectTreeIndex(int index) {
   SetNeedsPushProperties();
 }
 
-int Layer::effect_tree_index() const {
-  if (!layer_tree_host_ ||
-      layer_tree_host_->property_trees()->sequence_number !=
-          property_tree_sequence_number_) {
+int Layer::effect_tree_index(const PropertyTrees& property_trees) const {
+  if (property_trees.sequence_number != property_tree_sequence_number_) {
     return EffectTree::kInvalidNodeId;
   }
   return effect_tree_index_;
+}
+
+bool Layer::effect_tree_index_is_valid(
+    const PropertyTrees& property_trees) const {
+  return effect_tree_index_ != EffectTree::kInvalidNodeId &&
+         property_trees.sequence_number == property_tree_sequence_number_;
+}
+
+int Layer::effect_tree_index() const {
+  if (!IsAttached())
+    return EffectTree::kInvalidNodeId;
+  return effect_tree_index(*layer_tree_host()->property_trees());
 }
 
 void Layer::SetScrollTreeIndex(int index) {
@@ -1235,13 +1265,23 @@ void Layer::SetScrollTreeIndex(int index) {
   SetNeedsPushProperties();
 }
 
-int Layer::scroll_tree_index() const {
-  if (!layer_tree_host_ ||
-      layer_tree_host_->property_trees()->sequence_number !=
-          property_tree_sequence_number_) {
+int Layer::scroll_tree_index(const PropertyTrees& property_trees) const {
+  if (property_trees.sequence_number != property_tree_sequence_number_) {
     return ScrollTree::kInvalidNodeId;
   }
   return scroll_tree_index_;
+}
+
+bool Layer::scroll_tree_index_is_valid(
+    const PropertyTrees& property_trees) const {
+  return scroll_tree_index_ != ScrollTree::kInvalidNodeId &&
+         property_trees.sequence_number == property_tree_sequence_number_;
+}
+
+int Layer::scroll_tree_index() const {
+  if (!IsAttached())
+    return ScrollTree::kInvalidNodeId;
+  return scroll_tree_index(*layer_tree_host()->property_trees());
 }
 
 void Layer::SetOffsetToTransformParent(gfx::Vector2dF offset) {
@@ -1350,10 +1390,13 @@ bool Layer::IsSnappedToPixelGridInTarget() {
 }
 
 void Layer::PushPropertiesTo(LayerImpl* layer,
-                             const CommitState& commit_state) {
+                             const CommitState& commit_state,
+                             const ThreadUnsafeCommitState& unsafe_state) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "Layer::PushPropertiesTo");
   DCHECK(layer_tree_host_);
+
+  const PropertyTrees& property_trees = unsafe_state.property_trees;
 
   // The element id should be set first because other setters may
   // depend on it. Referencing element id on a layer is
@@ -1364,10 +1407,10 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->SetSafeOpaqueBackgroundColor(
       SafeOpaqueBackgroundColor(commit_state.background_color));
   layer->SetBounds(inputs_.bounds);
-  layer->SetTransformTreeIndex(transform_tree_index());
-  layer->SetEffectTreeIndex(effect_tree_index());
-  layer->SetClipTreeIndex(clip_tree_index());
-  layer->SetScrollTreeIndex(scroll_tree_index());
+  layer->SetTransformTreeIndex(transform_tree_index(property_trees));
+  layer->SetEffectTreeIndex(effect_tree_index(property_trees));
+  layer->SetClipTreeIndex(clip_tree_index(property_trees));
+  layer->SetScrollTreeIndex(scroll_tree_index(property_trees));
   layer->SetOffsetToTransformParent(offset_to_transform_parent_);
   layer->SetDrawsContent(DrawsContent());
   layer->SetHitTestable(HitTestable());
@@ -1394,7 +1437,7 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   // the pending tree will clobber any impl-side scrolling occuring on the
   // active tree. To do so, avoid scrolling the pending tree along with it
   // instead of trying to undo that scrolling later.
-  if (layer_tree_host_->mutator_host()->ScrollOffsetAnimationWasInterrupted(
+  if (unsafe_state.mutator_host->ScrollOffsetAnimationWasInterrupted(
           element_id())) {
     PropertyTrees* trees = layer->layer_tree_impl()->property_trees();
     trees->scroll_tree.SetScrollOffsetClobberActiveValue(layer->element_id());

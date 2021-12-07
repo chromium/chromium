@@ -3717,7 +3717,9 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   layer->PushPropertiesTo(
       layer->CreateLayerImpl(host_impl.active_tree()).get(),
       *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-           .pending_commit_state());
+           .pending_commit_state(),
+      const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+          .thread_unsafe_commit_state());
   Update(artifact2);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));
@@ -3742,7 +3744,9 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   layer->PushPropertiesTo(
       layer->CreateLayerImpl(host_impl.active_tree()).get(),
       *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-           .pending_commit_state());
+           .pending_commit_state(),
+      const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
+          .thread_unsafe_commit_state());
   Update(artifact3);
   ASSERT_EQ(1u, LayerCount());
   ASSERT_EQ(layer, LayerAt(0));

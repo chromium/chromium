@@ -37,7 +37,8 @@ class CC_EXPORT HeadsUpDisplayLayer : public Layer {
 
   // Layer overrides.
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
  protected:
   HeadsUpDisplayLayer();

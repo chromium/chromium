@@ -155,9 +155,11 @@ void SurfaceLayer::SetLayerTreeHost(LayerTreeHost* host) {
     layer_tree_host()->AddSurfaceRange(surface_range_);
 }
 
-void SurfaceLayer::PushPropertiesTo(LayerImpl* layer,
-                                    const CommitState& commit_state) {
-  Layer::PushPropertiesTo(layer, commit_state);
+void SurfaceLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
+  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
   TRACE_EVENT0("cc", "SurfaceLayer::PushPropertiesTo");
   SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(layer);
   layer_impl->SetRange(surface_range_, std::move(deadline_in_frames_));

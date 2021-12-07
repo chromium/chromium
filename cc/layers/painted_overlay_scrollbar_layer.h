@@ -37,7 +37,8 @@ class CC_EXPORT PaintedOverlayScrollbarLayer : public ScrollbarLayerBase {
   bool Update() override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   ScrollbarLayerType GetScrollbarLayerType() const override;
 

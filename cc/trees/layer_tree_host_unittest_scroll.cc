@@ -1484,6 +1484,7 @@ class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
     CreateTransformNode(scroller_.get());
     CreateScrollNode(scroller_.get(),
                      layer_tree_host()->root_layer()->bounds());
+    scroll_tree_index_ = scroller_->scroll_tree_index();
     layer_tree_host()->root_layer()->AddChild(scroller_.get());
   }
 
@@ -1496,7 +1497,7 @@ class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
     ++cur_step_;
 
     ScrollTree& scroll_tree = layer_tree_host()->property_trees()->scroll_tree;
-    ScrollNode* scroll_node = scroll_tree.Node(scroller_->scroll_tree_index());
+    ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index_);
     switch (cur_step_) {
       case 1:
         // Set max_scroll_offset = (100, 100).
@@ -1522,7 +1523,7 @@ class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
 
     ScrollTree& scroll_tree =
         impl->active_tree()->property_trees()->scroll_tree;
-    ScrollNode* scroll_node = scroll_tree.Node(scroller_->scroll_tree_index());
+    ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index_);
 
     ScrollStateData scroll_state_data;
     scroll_state_data.is_beginning = true;
@@ -1572,6 +1573,7 @@ class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
 
  private:
   int cur_step_ = 0;
+  int scroll_tree_index_ = ScrollTree::kInvalidNodeId;
   scoped_refptr<Layer> scroller_;
 };
 
@@ -1652,14 +1654,14 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
     CreateTransformNode(scroller_.get());
     CreateScrollNode(scroller_.get(),
                      layer_tree_host()->root_layer()->bounds());
+    scroll_tree_index_ = scroller_->scroll_tree_index();
     layer_tree_host()->root_layer()->AddChild(scroller_.get());
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
     ScrollTree& scroll_tree =
         impl->active_tree()->property_trees()->scroll_tree;
-    ScrollNode* scroller_scroll_node =
-        scroll_tree.Node(scroller_->scroll_tree_index());
+    ScrollNode* scroller_scroll_node = scroll_tree.Node(scroll_tree_index_);
 
     ScrollStateData scroll_state_data;
     scroll_state_data.is_beginning = true;
@@ -1720,6 +1722,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
 
  private:
   scoped_refptr<Layer> scroller_;
+  int scroll_tree_index_ = ScrollTree::kInvalidNodeId;
 };
 
 // This test is flaky in the single threaded configuration, only on the
@@ -2679,13 +2682,18 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
+  void WillCommit(const CommitState&) override {
+    middle_scrollable_scroll_tree_index_ =
+        middle_scrollable_->scroll_tree_index();
+  }
+
   void CommitCompleteOnThread(LayerTreeHostImpl* impl) override {
     if (TestEnded())
       return;
 
     ScrollNode* scroll_node =
         impl->active_tree()->property_trees()->scroll_tree.Node(
-            middle_scrollable_->scroll_tree_index());
+            middle_scrollable_scroll_tree_index_);
 
     // The top-left hit should immediately hit the top layer's non-fast region.
     {
@@ -2756,6 +2764,7 @@ class NonScrollingNonFastScrollableRegion : public LayerTreeHostScrollTest {
   scoped_refptr<Layer> bottom_;
   scoped_refptr<Layer> middle_scrollable_;
   scoped_refptr<Layer> top_;
+  int middle_scrollable_scroll_tree_index_ = ScrollTree::kInvalidNodeId;
 };
 
 SINGLE_THREAD_TEST_F(NonScrollingNonFastScrollableRegion);
@@ -2785,6 +2794,10 @@ class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
     layer_tree_host()->root_layer()->AddChild(layer_);
   }
 
+  void WillCommit(const CommitState&) override {
+    scroll_tree_index_ = layer_->scroll_tree_index();
+  }
+
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
     if (is_done_)
       return;
@@ -2802,8 +2815,7 @@ class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
           ui::ScrollInputType::kTouchscreen);
 
       ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
-      ASSERT_EQ(layer_->scroll_tree_index(),
-                impl->CurrentlyScrollingNode()->id);
+      ASSERT_EQ(scroll_tree_index_, impl->CurrentlyScrollingNode()->id);
 
       impl->GetInputHandler().ScrollUpdate(
           UpdateState(gfx::Point(), gfx::Vector2dF(0, 10)).get());
@@ -2819,6 +2831,7 @@ class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
  private:
   bool is_done_ = false;
   scoped_refptr<Layer> layer_;
+  int scroll_tree_index_ = ScrollTree::kInvalidNodeId;
   FakeContentLayerClient client_;
   base::test::ScopedFeatureList scoped_feature_list;
 };
