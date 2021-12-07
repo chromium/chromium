@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/render_frame_observer.h"

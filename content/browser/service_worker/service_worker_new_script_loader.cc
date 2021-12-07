@@ -19,7 +19,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/common/content_features.h"
 #include "net/base/ip_endpoint.h"

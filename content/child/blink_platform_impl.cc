@@ -34,7 +34,6 @@
 #include "content/app/resources/grit/content_resources.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/child_process.mojom.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"

@@ -133,8 +133,6 @@ source_set("common") {
     "process_visibility_tracker.h",
     "pseudonymization_salt.cc",
     "pseudonymization_salt.h",
-    "service_worker/service_worker_utils.cc",
-    "service_worker/service_worker_utils.h",
     "set_process_title.cc",
     "set_process_title.h",
     "shared_file_util.cc",

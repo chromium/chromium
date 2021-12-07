@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
 #include "services/network/public/cpp/net_adapters.h"

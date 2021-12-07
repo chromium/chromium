@@ -2,7 +2,6 @@
 [content/browser/service_worker]: /content/browser/service_worker
 [content/renderer/service_worker]: /content/renderer/service_worker
 [content/renderer/service_worker]: /content/renderer/service_worker
-[content/common/service_worker]: /content/common/service_worker
 [disk_cache]: /net/disk_cache/README.md
 [embedded_worker.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/embedded_worker.mojom
 [service_worker_container.mojom]: https://codesearch.chromium.org/chromium/src/third_party/blink/public/mojom/service_worker/service_worker_container.mojom
@@ -333,7 +332,6 @@ it can again dispatch fetch events to it.
   these host objects.
 - [content/renderer/service_worker]: Renderer process code. This should move to
   third_party/blink per [Onion Soup].
-- [content/common/service_worker]: Common process code.
 - [third_party/blink/common/service_worker]: Common process code. Contains the
   implementation of [third_party/blink/public/common/service_worker].
 - [third_party/blink/public/common/service_worker]: Header files for common

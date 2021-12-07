@@ -10,7 +10,6 @@
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

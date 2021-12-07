@@ -3,7 +3,6 @@
 # This file also covers ownership of the following:
 #   //chrome/browser/chrome_service_worker_browsertest.cc
 #   //content/browser/resources/service_worker/
-#   //content/common/service_worker/
 #   //content/renderer/service_worker/
 #   //third_party/blink/common/service_worker/
 #   //third_party/blink/public/common/service_worker/
