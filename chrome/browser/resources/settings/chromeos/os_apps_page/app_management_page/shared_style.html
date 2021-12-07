@@ -36,9 +36,7 @@
     }
 
     .permission-section-header {
-      line-height: 20px;
-      padding-bottom: 12px;
-      padding-top: 24px;
+      line-height: 48px;
     }
 
     .clickable {
@@ -126,6 +124,23 @@
 
     .indented-permission-block {
       padding-inline-start: 36px;
+    }
+
+    .info-text-row {
+      display: flex;
+      flex: 0 0 var(--info-text-row-height);
+    }
+
+    #info-icon {
+      float: inline-block;
+      height: var(--help-icon-size);
+      padding-inline-end: var(--help-icon-padding);
+      width: var(--help-icon-size);
+    }
+
+    #info-text {
+      float: inline-block;
+      overflow-wrap: break-word;
     }
   </style>
 </template>

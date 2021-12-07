@@ -3,10 +3,11 @@
     align-items: center;
     display: flex;
     flex-direction: row;
+    height: var(--info-text-row-height);
   }
 
-  #info-icon {
-    padding-inline-end: var(--help-icon-padding);
+  #supported-links-option {
+    height: 48px;
   }
 </style>
 <div class="permission-section-header">
@@ -16,11 +17,12 @@
   </localized-link>
 </div>
 <template is="dom-if" if="[[disabled_]]">
-  <div id="explanation-text">
+  <span class="info-text-row">
     <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
-    <localized-link localized-string="[[getDisabledExplanation_(app)]]">
+    <localized-link id="info-string"
+      localized-string="[[getDisabledExplanation_(app)]]">
     </localized-link>
-  </div>
+</span>
 </template>
 <div class="list-frame">
   <cr-radio-group id="radio-group"
