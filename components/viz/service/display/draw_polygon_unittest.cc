@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <utility>
 #include <vector>
@@ -598,6 +599,95 @@ TEST(DrawPolygonSplitTest, DoubleSplit) {
   for (auto vertex : saved_back_polygon_vertices) {
     EXPECT_TRUE(base::Contains(second_front_polygon->points(), vertex) ||
                 base::Contains(second_back_polygon->points(), vertex));
+  }
+}
+
+// This test was derived from crbug.com/1264787.
+TEST(DrawPolygonSplitTest, SplitNoNaNs) {
+  std::vector<gfx::Point3F> vertices_a;
+  vertices_a.emplace_back(-438777.031f, -999211.938f, 782768.312f);
+  vertices_a.emplace_back(733.815186f, 168.424362f, -133.606277f);
+  vertices_a.emplace_back(829.194641f, 173.089539f, -80.6844864f);
+  vertices_a.emplace_back(-237207.141f, -999021.0f, 904761.812f);
+  std::vector<gfx::Point3F> vertices_b;
+  vertices_b.emplace_back(1068.28625f, 184.783997f, 51.9764748f);
+  vertices_b.emplace_back(733.815247f, 168.424393f, -133.606277f);
+  vertices_b.emplace_back(567.472534f, 456.538422f, -133.606277f);
+  vertices_b.emplace_back(817.688904f, 618.831238f, 51.9764748f);
+
+  CREATE_NEW_DRAW_POLYGON_PTR(splitting_polygon, vertices_a,
+                              gfx::Vector3dF(0, 0, 0), 0);
+  CREATE_NEW_DRAW_POLYGON_PTR(split_polygon, vertices_b,
+                              gfx::Vector3dF(0, 0, 0), 1);
+
+  splitting_polygon->RecomputeNormalForTesting();
+  split_polygon->RecomputeNormalForTesting();
+
+  std::unique_ptr<DrawPolygon> front_polygon;
+  std::unique_ptr<DrawPolygon> back_polygon;
+  bool is_coplanar;
+
+  splitting_polygon->SplitPolygon(std::move(split_polygon), &front_polygon,
+                                  &back_polygon, &is_coplanar);
+
+  EXPECT_FALSE(is_coplanar);
+  EXPECT_TRUE(front_polygon != nullptr);
+  EXPECT_TRUE(back_polygon != nullptr);
+
+  for (auto point : front_polygon->points()) {
+    EXPECT_TRUE(std::isfinite(point.x()));
+    EXPECT_TRUE(std::isfinite(point.y()));
+    EXPECT_TRUE(std::isfinite(point.z()));
+  }
+
+  for (auto point : back_polygon->points()) {
+    EXPECT_TRUE(std::isfinite(point.x()));
+    EXPECT_TRUE(std::isfinite(point.y()));
+    EXPECT_TRUE(std::isfinite(point.z()));
+  }
+}
+
+// This test was derived from crbug.com/1264787.
+TEST(DrawPolygonSplitTest, SplitNoInfs) {
+  // clang-format off
+  gfx::RectF rect_a(0, 0, 1140, 418);
+  gfx::Transform transform_a(
+      1.39069271, -0.131110176, 0.5, -503.545319,
+      1.00984585, -0.273445308, -0.866025388, -828.169128,
+      -0.722961724, 0.690888107, 4.23046966e-17, 570.098511,
+      0.00144592347, -0.0013817763, -8.46093968e-20, -0.140197217);
+  gfx::RectF rect_b(430, 0, 560, 454);
+  gfx::Transform transform_b(
+      0.131110176, -0.5, 1.39069271, 952.04541,
+      0.273445308, 0.866025388, 1.00984585, 52.3442955,
+      -0.690888107, 0, -0.722961724, 429.901398,
+      0.0013817763, 0, 0.00144592347, 0.140197009);
+  // clang-format on
+
+  CREATE_NEW_DRAW_POLYGON_PTR(splitting_polygon, rect_a, transform_a, 0);
+  CREATE_NEW_DRAW_POLYGON_PTR(split_polygon, rect_b, transform_b, 1);
+
+  std::unique_ptr<DrawPolygon> front_polygon;
+  std::unique_ptr<DrawPolygon> back_polygon;
+  bool is_coplanar;
+
+  splitting_polygon->SplitPolygon(std::move(split_polygon), &front_polygon,
+                                  &back_polygon, &is_coplanar);
+
+  EXPECT_FALSE(is_coplanar);
+  EXPECT_TRUE(front_polygon != nullptr);
+  EXPECT_TRUE(back_polygon != nullptr);
+
+  for (auto point : front_polygon->points()) {
+    EXPECT_TRUE(std::isfinite(point.x()));
+    EXPECT_TRUE(std::isfinite(point.y()));
+    EXPECT_TRUE(std::isfinite(point.z()));
+  }
+
+  for (auto point : back_polygon->points()) {
+    EXPECT_TRUE(std::isfinite(point.x()));
+    EXPECT_TRUE(std::isfinite(point.y()));
+    EXPECT_TRUE(std::isfinite(point.z()));
   }
 }
 
