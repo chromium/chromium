@@ -377,16 +377,17 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
 
 // Test with the feature to send preflights (unenforced) enabled, and insecure
 // private network subresource requests blocked.
-class PrivateNetworkAccessBrowserTestSendPreflights
+class PrivateNetworkAccessBrowserTestNoPreflights
     : public PrivateNetworkAccessBrowserTestBase {
  public:
-  PrivateNetworkAccessBrowserTestSendPreflights()
+  PrivateNetworkAccessBrowserTestNoPreflights()
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
-                features::kPrivateNetworkAccessSendPreflights,
             },
-            {}) {}
+            {
+                features::kPrivateNetworkAccessSendPreflights,
+            }) {}
 };
 
 // Test with the feature to send preflights (enforced) enabled, and insecure
@@ -2168,7 +2169,7 @@ IN_PROC_BROWSER_TEST_F(
 // network request policy used by RenderFrameHostImpl is to warn about requests
 // from non-secure contexts.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       PrivateNetworkPolicyIsWarnByDefault) {
+                       PrivateNetworkPolicyIsPreflightWarnByDefault) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2177,7 +2178,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
 }
 
 // This test verifies that with the blocking feature disabled, the private
@@ -2193,7 +2194,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
 }
 
 // This test verifies that by default, the private network request policy used
@@ -2215,8 +2216,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
 // contexts in the `private` address space.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsAllowByDefaultForInsecurePrivate) {
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    PrivateNetworkPolicyIsPreflightWarnByDefaultForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2225,7 +2227,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
 }
 
 // This test verifies that when the right feature is enabled, the private
@@ -2279,7 +2281,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromUnknown,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from secure
 // contexts.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        PrivateNetworkPolicyIsAllowByDefaultForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2289,12 +2291,12 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 // This test verifies that when sending preflights is enabled, the private
 // network request policy for secure contexts is `kPreflightWarn`.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        PrivateNetworkPolicyIsPreflightWarnForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2312,7 +2314,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
 // space is `kPreflightWarn`.
 // This checks that as long as the "block from insecure private" feature flag
 // is not enabled, we will send preflights for these requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        PrivateNetworkPolicyIsPreflightWarnForInsecurePrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
@@ -2327,7 +2329,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
 
 // This test verifies that blocking insecure private network requests from the
 // `kPublic` address space takes precedence over sending preflight requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        PrivateNetworkPolicyIsBlockForInsecurePublic) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
@@ -2602,7 +2604,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - from a secure page served from a public IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        FromSecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2617,7 +2619,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - to a local IP address
 //  - for which the target server does not respond OK to the preflight request
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePublicToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
@@ -2648,7 +2650,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  - from a secure page served from a private IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        FromSecurePrivateToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
 
@@ -2663,7 +2665,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - to a local IP address
 //  - for which the target server does not respond OK to the preflight request
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePrivateToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePrivateURL(kDefaultPath)));
 
@@ -2694,7 +2696,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  - from a secure page served from a local IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
                        FromSecureLocalToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -2708,7 +2710,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 //  - from a secure page served from a local IP address
 //  - to a local IP address
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecureLocalToLocalIsNotBlocked) {
   EXPECT_TRUE(NavigateToURL(shell(), SecureLocalURL(kDefaultPath)));
 
@@ -2738,7 +2740,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 //  - to a local IP address
 //  - for which the target server responds OK to the preflight request
 // are not blocked.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
                        FromSecurePublicToLocalPreflightOK) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
