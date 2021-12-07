@@ -19,6 +19,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -360,7 +361,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
-  profile()->SetSupervisedUserId("supervised");
+  profile()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
   // Block access to foo.com in the URL filter.
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile());
