@@ -90,6 +90,9 @@ def _is_log_disqualified(log):
 
 def _escape_c_string(s):
   def _escape_char(c):
+    if ord(c) == 0:
+      raise ValueError(
+          'String with NUL character cannot be converted to C string')
     if 32 <= ord(c) <= 126 and c not in '\\"':
       return c
     else:
@@ -98,7 +101,7 @@ def _escape_c_string(s):
   return "".join(_escape_char(c) for c in s)
 
 
-def _to_loginfo_struct(log):
+def _to_loginfo_struct(log, index):
   """Converts the given log to a CTLogInfo initialization code."""
   log_key = base64.b64decode(log["key"])
   split_hex_key = _split_and_hexify_binary_data(log_key)
@@ -106,13 +109,21 @@ def _to_loginfo_struct(log):
   s += "\n     ".join(split_hex_key)
   s += ',\n     %d' % (len(log_key))
   s += ',\n     "%s"' % (_escape_c_string(log["description"]))
+  s += ',\n     "'
+  if "current_operator" in log:
+    s += (_escape_c_string(log["current_operator"]))
+  s += '",\n     '
+  if "previous_operators" in log:
+    s += 'kPreviousOperators%d, %d' % (index, len(log["previous_operators"]))
+  else:
+    s += 'nullptr, 0'
   s += '}'
   return s
 
 
 def _get_log_definitions(logs):
   """Returns a list of strings, each is a CTLogInfo definition."""
-  return [_to_loginfo_struct(log) for log in logs]
+  return [_to_loginfo_struct(log, index) for index, log in enumerate(logs)]
 
 
 def _timestamp_to_timedelta_since_unixepoch(timestamp):
@@ -123,12 +134,12 @@ def _timestamp_to_timedelta_since_unixepoch(timestamp):
   return (dt - unix_epoch).total_seconds()
 
 
-def _to_disqualified_loginfo_struct(log):
+def _to_disqualified_loginfo_struct(log, index):
   log_id = base64.b64decode(log["log_id"])
   s = "    {"
   s += "\n     ".join(_split_and_hexify_binary_data(log_id))
   s += ",\n"
-  s += _to_loginfo_struct(log)
+  s += _to_loginfo_struct(log, index)
   s += ",\n"
   s += '     base::Seconds(%d)' % (
       _timestamp_to_timedelta_since_unixepoch(
@@ -137,9 +148,10 @@ def _to_disqualified_loginfo_struct(log):
   return s
 
 
-def _get_disqualified_log_definitions(logs):
+def _get_disqualified_log_definitions(logs, starting_index):
   """Returns a list of DisqualifiedCTLogInfo definitions."""
-  return [_to_disqualified_loginfo_struct(log) for log in logs]
+  return [_to_disqualified_loginfo_struct(log, starting_index + index)
+          for index, log in enumerate(logs)]
 
 
 def _sorted_disqualified_logs(all_logs):
@@ -147,11 +159,48 @@ def _sorted_disqualified_logs(all_logs):
                 key = lambda l: base64.b64decode(l["log_id"]))
 
 
+def _to_previous_operators_struct(log, index):
+  s = ""
+  if "previous_operators" in log:
+    s += 'const PreviousOperatorEntry kPreviousOperators%d[] = {' % index
+    for operator_switch in sorted(log["previous_operators"], key=lambda x:
+                                  _timestamp_to_timedelta_since_unixepoch(
+                                      x["end_time"])):
+      s += '\n        {"%s", ' % (_escape_c_string(operator_switch["name"]))
+      s += 'base::Seconds(%d)},' % _timestamp_to_timedelta_since_unixepoch(
+          operator_switch["end_time"])
+    s += '};\n'
+  return s
+
+
+def _get_previous_operators(logs, starting_index):
+  prev_operators = []
+  for index, log in enumerate(logs):
+    operators = _to_previous_operators_struct(log, starting_index + index)
+    prev_operators.append(operators)
+  return prev_operators
+
+
 def _write_qualifying_logs_loginfo(f, qualifying_logs):
   f.write("// The set of all presently-qualifying CT logs.\n")
   f.write("const CTLogInfo kCTLogList[] = {\n")
   f.write(",\n".join(_get_log_definitions(qualifying_logs)))
   f.write("\n};\n\n")
+
+
+def _write_previous_operator_info(f, qualifying_logs, disqualified_logs):
+  f.write("// Previous operators for presently-qualifying CT logs.\n")
+  prev_operators = _get_previous_operators(qualifying_logs, 0)
+  for operator in prev_operators:
+    f.write(operator)
+  f.write("\n")
+  f.write("// Previous operators for disqualified CT logs.\n")
+  prev_operators = _get_previous_operators(disqualified_logs,
+                                           len(qualifying_logs))
+  for operator in prev_operators:
+    f.write(operator)
+  f.write("\n")
+
 
 
 def _is_log_once_or_currently_qualified(log):
@@ -166,6 +215,7 @@ def _generate_log_list_timestamp(timestamp):
       _timestamp_to_timedelta_since_unixepoch(timestamp))
   return s
 
+
 def generate_cpp_file(input_file, f):
   """Generate a header file of known logs to be included by Chromium."""
   json_log_list = json.load(input_file)
@@ -177,13 +227,19 @@ def generate_cpp_file(input_file, f):
   for operator in logs_by_operator:
     for log in operator["logs"]:
       if _is_log_once_or_currently_qualified(log):
+        log["current_operator"] = operator["name"]
         logs.append(log)
 
   # Write the timestamp value.
   f.write(_generate_log_list_timestamp(json_log_list["log_list_timestamp"]))
 
-  # Write the list of currently-qualifying logs.
+  # Get the lists of currently-qualifying and disqualified logs.
   qualifying_logs = [log for log in logs if not _is_log_disqualified(log)]
+  sorted_disqualified_logs = _sorted_disqualified_logs(logs)
+
+  # Write previous operator information.
+  _write_previous_operator_info(f, qualifying_logs, sorted_disqualified_logs)
+  # Write the list of currently-qualifying logs.
   _write_qualifying_logs_loginfo(f, qualifying_logs)
 
   # Write the IDs of all CT Logs operated by Google
@@ -195,7 +251,8 @@ def generate_cpp_file(input_file, f):
   f.write("// The set of all disqualified logs, sorted by |log_id|.\n")
   f.write("constexpr DisqualifiedCTLogInfo kDisqualifiedCTLogList[] = {\n")
   f.write(",\n".join(
-      _get_disqualified_log_definitions(_sorted_disqualified_logs(logs))))
+      _get_disqualified_log_definitions(sorted_disqualified_logs,
+                                        len(qualifying_logs))))
   f.write("\n};\n")
 
 
