@@ -1515,7 +1515,7 @@
             {
               "cpu": "x86-64",
               "gpu": "1002:6821-4.0.20-3.2.8",
-              "os": "Mac-10.13.3",
+              "os": "Mac-11.6.1",
               "pool": "chrome.tests.perf",
               "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_APPLE SSD SM0512G"
             }
