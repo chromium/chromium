@@ -176,13 +176,13 @@ std::vector<WEBAUTHN_CREDENTIAL> ToWinCredentialVector(
     const std::vector<PublicKeyCredentialDescriptor>* credentials) {
   std::vector<WEBAUTHN_CREDENTIAL> result;
   for (const auto& credential : *credentials) {
-    if (credential.credential_type() != CredentialType::kPublicKey) {
+    if (credential.credential_type != CredentialType::kPublicKey) {
       continue;
     }
     result.push_back(WEBAUTHN_CREDENTIAL{
         WEBAUTHN_CREDENTIAL_CURRENT_VERSION,
-        base::checked_cast<DWORD>(credential.id().size()),
-        const_cast<unsigned char*>(credential.id().data()),
+        base::checked_cast<DWORD>(credential.id.size()),
+        const_cast<unsigned char*>(credential.id.data()),
         WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
     });
   }
@@ -193,15 +193,15 @@ std::vector<WEBAUTHN_CREDENTIAL_EX> ToWinCredentialExVector(
     const std::vector<PublicKeyCredentialDescriptor>* credentials) {
   std::vector<WEBAUTHN_CREDENTIAL_EX> result;
   for (const auto& credential : *credentials) {
-    if (credential.credential_type() != CredentialType::kPublicKey) {
+    if (credential.credential_type != CredentialType::kPublicKey) {
       continue;
     }
-    result.push_back(WEBAUTHN_CREDENTIAL_EX{
-        WEBAUTHN_CREDENTIAL_EX_CURRENT_VERSION,
-        base::checked_cast<DWORD>(credential.id().size()),
-        const_cast<unsigned char*>(credential.id().data()),
-        WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
-        ToWinTransportsMask(credential.transports())});
+    result.push_back(
+        WEBAUTHN_CREDENTIAL_EX{WEBAUTHN_CREDENTIAL_EX_CURRENT_VERSION,
+                               base::checked_cast<DWORD>(credential.id.size()),
+                               const_cast<unsigned char*>(credential.id.data()),
+                               WEBAUTHN_CREDENTIAL_TYPE_PUBLIC_KEY,
+                               ToWinTransportsMask(credential.transports)});
   }
   return result;
 }
@@ -222,7 +222,7 @@ CtapDeviceResponseCode WinErrorNameToCtapDeviceResponseCode(
           {u"InvalidStateError",
            CtapDeviceResponseCode::kCtap2ErrCredentialExcluded},
           {u"ConstraintError",
-           CtapDeviceResponseCode::kCtap2ErrOperationDenied},
+           CtapDeviceResponseCode ::kCtap2ErrOperationDenied},
           {u"NotSupportedError",
            CtapDeviceResponseCode::kCtap2ErrOperationDenied},
           {u"NotAllowedError",

@@ -648,7 +648,7 @@ TEST(CTAPResponseTest, TestParseSignResponseData) {
       test_data::kApplicationParameter, GetTestSignResponse(),
       GetTestCredentialRawIdBytes());
   ASSERT_TRUE(response);
-  EXPECT_EQ(GetTestCredentialRawIdBytes(), response->credential->id());
+  EXPECT_EQ(GetTestCredentialRawIdBytes(), response->credential->id);
   EXPECT_THAT(
       response->authenticator_data.SerializeToByteArray(),
       ::testing::ElementsAreArray(test_data::kTestSignAuthenticatorData));

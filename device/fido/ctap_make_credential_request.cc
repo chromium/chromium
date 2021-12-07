@@ -354,10 +354,10 @@ MakeCredentialOptions::MakeCredentialOptions(const MakeCredentialOptions&) =
 MakeCredentialOptions::MakeCredentialOptions(
     const AuthenticatorSelectionCriteria& authenticator_selection_criteria)
     : authenticator_attachment(
-          authenticator_selection_criteria.authenticator_attachment()),
-      resident_key(authenticator_selection_criteria.resident_key()),
+          authenticator_selection_criteria.authenticator_attachment),
+      resident_key(authenticator_selection_criteria.resident_key),
       user_verification(
-          authenticator_selection_criteria.user_verification_requirement()) {}
+          authenticator_selection_criteria.user_verification_requirement) {}
 MakeCredentialOptions::MakeCredentialOptions(MakeCredentialOptions&&) = default;
 MakeCredentialOptions& MakeCredentialOptions::operator=(
     const MakeCredentialOptions&) = default;

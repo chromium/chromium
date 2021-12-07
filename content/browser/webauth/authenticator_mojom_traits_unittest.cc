@@ -84,17 +84,15 @@ TEST(AuthenticatorMojomTraitsTest, SerializeCredentialDescriptors) {
       PublicKeyCredentialDescriptor(CredentialType::kPublicKey, kDescriptorId),
       PublicKeyCredentialDescriptor(CredentialType::kPublicKey, kDescriptorId),
       PublicKeyCredentialDescriptor(CredentialType::kPublicKey, kDescriptorId)};
-  success_cases[1].GetTransportsForTesting().emplace(
-      FidoTransportProtocol::kInternal);
-  success_cases[2].GetTransportsForTesting().emplace(
-      FidoTransportProtocol::kInternal);
-  success_cases[2].GetTransportsForTesting().emplace(
+  success_cases[1].transports.emplace(FidoTransportProtocol::kInternal);
+  success_cases[2].transports.emplace(FidoTransportProtocol::kInternal);
+  success_cases[2].transports.emplace(
       FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  success_cases[2].GetTransportsForTesting().emplace(
+  success_cases[2].transports.emplace(
       FidoTransportProtocol::kNearFieldCommunication);
-  success_cases[2].GetTransportsForTesting().emplace(
+  success_cases[2].transports.emplace(
       FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
-  success_cases[2].GetTransportsForTesting().emplace(
+  success_cases[2].transports.emplace(
       FidoTransportProtocol::kBluetoothLowEnergy);
 
   AssertSerializeAndDeserializeSucceeds<

@@ -130,9 +130,9 @@ TEST_F(VirtualCtap2DeviceTest, ParseGetAssertionRequestForVirtualCtapKey) {
   EXPECT_FALSE(request->user_presence_required);
   ASSERT_EQ(2u, request->allow_list.size());
 
-  EXPECT_THAT(request->allow_list.at(0).id(),
+  EXPECT_THAT(request->allow_list.at(0).id,
               ::testing::ElementsAreArray(kAllowedCredentialOne));
-  EXPECT_THAT(request->allow_list.at(1).id(),
+  EXPECT_THAT(request->allow_list.at(1).id,
               ::testing::ElementsAreArray(kAllowedCredentialTwo));
 }
 

@@ -68,18 +68,18 @@ struct BLINK_COMMON_EXPORT
                  device::PublicKeyCredentialDescriptor> {
   static device::CredentialType type(
       const device::PublicKeyCredentialDescriptor& in) {
-    return in.credential_type();
+    return in.credential_type;
   }
 
   static const std::vector<uint8_t>& id(
       const device::PublicKeyCredentialDescriptor& in) {
-    return in.id();
+    return in.id;
   }
 
   static const std::vector<device::FidoTransportProtocol> transports(
       const device::PublicKeyCredentialDescriptor& in) {
     std::vector<device::FidoTransportProtocol> protocols;
-    for (const auto& protocol : in.transports()) {
+    for (const auto& protocol : in.transports) {
       protocols.push_back(protocol);
     }
     return protocols;
@@ -130,17 +130,17 @@ struct BLINK_COMMON_EXPORT
                  device::AuthenticatorSelectionCriteria> {
   static device::AuthenticatorAttachment authenticator_attachment(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.authenticator_attachment();
+    return in.authenticator_attachment;
   }
 
   static device::ResidentKeyRequirement resident_key(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.resident_key();
+    return in.resident_key;
   }
 
   static device::UserVerificationRequirement user_verification(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.user_verification_requirement();
+    return in.user_verification_requirement;
   }
 
   static bool Read(blink::mojom::AuthenticatorSelectionCriteriaDataView data,

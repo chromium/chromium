@@ -289,11 +289,11 @@ TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
     const std::vector<PublicKeyCredentialDescriptor>& descriptors) const {
   std::set<std::vector<uint8_t>> credential_ids;
   for (const auto& descriptor : descriptors) {
-    if (descriptor.credential_type() == CredentialType::kPublicKey &&
-        (descriptor.transports().empty() ||
-         base::Contains(descriptor.transports(),
+    if (descriptor.credential_type == CredentialType::kPublicKey &&
+        (descriptor.transports.empty() ||
+         base::Contains(descriptor.transports,
                         FidoTransportProtocol::kInternal))) {
-      credential_ids.insert(descriptor.id());
+      credential_ids.insert(descriptor.id);
     }
   }
   if (credential_ids.empty()) {

@@ -349,7 +349,7 @@ TEST_F(FidoGetAssertionHandlerTest, ValidEmptyCredential) {
   ASSERT_EQ(1u, response->size());
   EXPECT_TRUE(response.value()[0].credential);
   EXPECT_THAT(
-      response.value()[0].credential->id(),
+      response.value()[0].credential->id,
       ::testing::ElementsAreArray(test_data::kTestGetAssertionCredentialId));
 }
 

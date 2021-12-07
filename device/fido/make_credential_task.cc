@@ -391,7 +391,7 @@ FilterAndBatchCredentialDescriptors(
 
   for (const PublicKeyCredentialDescriptor& credential : in) {
     if (0 < max_credential_id_length &&
-        max_credential_id_length < credential.id().size()) {
+        max_credential_id_length < credential.id.size()) {
       continue;
     }
     if (result.back().size() == max_credential_count_in_list) {

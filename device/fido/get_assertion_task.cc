@@ -43,7 +43,7 @@ bool SetResponseCredential(
     if (!allow_list.empty() &&
         std::none_of(allow_list.cbegin(), allow_list.cend(),
                      [&response](const auto& credential) {
-                       return credential.id() == response->credential->id();
+                       return credential.id == response->credential->id;
                      })) {
       return false;
     }
@@ -332,7 +332,7 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         *response_data->credential;
     request.allow_list = {matching_credential};
     MaybeSetPRFParameters(
-        &request, GetPRFInputForCredential(options_, matching_credential.id()));
+        &request, GetPRFInputForCredential(options_, matching_credential.id));
 
     sign_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapGetAssertionRequest, AuthenticatorGetAssertionResponse>>(

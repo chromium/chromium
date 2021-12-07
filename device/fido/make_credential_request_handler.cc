@@ -436,10 +436,10 @@ void MakeCredentialRequestHandler::DispatchRequest(
             fido_filter::Operation::MAKE_CREDENTIAL, request_.rp.id,
             authenticator_name,
             std::pair<fido_filter::IDType, base::span<const uint8_t>>(
-                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+                fido_filter::IDType::CREDENTIAL_ID, cred.id)) ==
         fido_filter::Action::BLOCK) {
       FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
-                      << " for credential ID " << base::HexEncode(cred.id());
+                      << " for credential ID " << base::HexEncode(cred.id);
       return;
     }
   }

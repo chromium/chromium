@@ -75,7 +75,7 @@ TEST_F(U2fSignOperationTest, SignSuccess) {
             sign_callback_receiver().status());
   EXPECT_THAT(sign_callback_receiver().value()->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
-  EXPECT_THAT(sign_callback_receiver().value()->credential->id(),
+  EXPECT_THAT(sign_callback_receiver().value()->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -139,7 +139,7 @@ TEST_F(U2fSignOperationTest, DelayedSuccess) {
             sign_callback_receiver().status());
   EXPECT_THAT(sign_callback_receiver().value()->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
-  EXPECT_THAT(sign_callback_receiver().value()->credential->id(),
+  EXPECT_THAT(sign_callback_receiver().value()->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -174,7 +174,7 @@ TEST_F(U2fSignOperationTest, MultipleHandles) {
             sign_callback_receiver().status());
   EXPECT_THAT(sign_callback_receiver().value()->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
-  EXPECT_THAT(sign_callback_receiver().value()->credential->id(),
+  EXPECT_THAT(sign_callback_receiver().value()->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -207,7 +207,7 @@ TEST_F(U2fSignOperationTest, MultipleHandlesLengthError) {
             sign_callback_receiver().status());
   EXPECT_THAT(sign_callback_receiver().value()->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
-  EXPECT_THAT(sign_callback_receiver().value()->credential->id(),
+  EXPECT_THAT(sign_callback_receiver().value()->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
 }
 
@@ -350,7 +350,7 @@ TEST_F(U2fSignOperationTest, AlternativeApplicationParameter) {
   const auto& response_value = sign_callback_receiver().value();
   EXPECT_THAT(response_value->signature,
               ::testing::ElementsAreArray(test_data::kU2fSignature));
-  EXPECT_THAT(response_value->credential->id(),
+  EXPECT_THAT(response_value->credential->id,
               ::testing::ElementsAreArray(test_data::kU2fSignKeyHandle));
   EXPECT_THAT(response_value->authenticator_data.application_parameter(),
               ::testing::ElementsAreArray(base::span<const uint8_t, 32>(

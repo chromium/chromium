@@ -492,8 +492,7 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
   for (const auto& response : *responses) {
     for (const auto& credential : response.credentials) {
       base::DictionaryValue credential_value;
-      std::string credential_id =
-          base::HexEncode(credential.credential_id.id());
+      std::string credential_id = base::HexEncode(credential.credential_id.id);
       if (credential_id.empty()) {
         NOTREACHED();
         continue;

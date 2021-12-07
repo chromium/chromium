@@ -83,7 +83,7 @@ void TestCreditCardFIDOAuthenticator::MakeCredential(
 
 std::vector<uint8_t> TestCreditCardFIDOAuthenticator::GetCredentialId() {
   DCHECK(!request_options_->allow_credentials.empty());
-  return request_options_->allow_credentials.front().id();
+  return request_options_->allow_credentials.front().id;
 }
 
 std::vector<uint8_t> TestCreditCardFIDOAuthenticator::GetChallenge() {

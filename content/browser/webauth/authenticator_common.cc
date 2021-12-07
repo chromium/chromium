@@ -775,7 +775,7 @@ void AuthenticatorCommon::MakeCredential(
       // UV_REQUIRED only makes sense if UV is required overall.
       (options->protection_policy ==
            blink::mojom::ProtectionPolicy::UV_REQUIRED &&
-       authenticator_selection_criteria.user_verification_requirement() !=
+       authenticator_selection_criteria.user_verification_requirement !=
            device::UserVerificationRequirement::kRequired)) {
     CompleteMakeCredentialRequest(
         blink::mojom::AuthenticatorStatus::PROTECTION_POLICY_INCONSISTENT);
@@ -1767,7 +1767,7 @@ AuthenticatorCommon::CreateGetAssertionResponse(
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json_.begin(),
                                        client_data_json_.end());
-  common_info->raw_id = response_data.credential->id();
+  common_info->raw_id = response_data.credential->id;
   common_info->id = Base64UrlEncode(common_info->raw_id);
   response->info = std::move(common_info);
   response->info->authenticator_data =

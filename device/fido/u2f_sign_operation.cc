@@ -195,7 +195,7 @@ void U2fSignOperation::OnEnrollmentResponseReceived(
 
 const std::vector<uint8_t>& U2fSignOperation::key_handle() const {
   DCHECK_LT(current_key_handle_index_, request().allow_list.size());
-  return request().allow_list.at(current_key_handle_index_).id();
+  return request().allow_list.at(current_key_handle_index_).id;
 }
 
 }  // namespace device

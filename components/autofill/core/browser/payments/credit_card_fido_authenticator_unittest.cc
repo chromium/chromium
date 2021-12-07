@@ -353,7 +353,7 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseRequestOptions) {
   EXPECT_EQ(kTestChallenge, BytesToBase64(request_options_ptr->challenge));
   EXPECT_EQ(kTestRelyingPartyId, request_options_ptr->relying_party_id);
   EXPECT_EQ(kTestCredentialId,
-            BytesToBase64(request_options_ptr->allow_credentials.front().id()));
+            BytesToBase64(request_options_ptr->allow_credentials.front().id));
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseAssertionResponse) {
@@ -383,12 +383,12 @@ TEST_F(CreditCardFIDOAuthenticatorTest, ParseCreationOptions) {
   EXPECT_EQ(kTestRelyingPartyId, creation_options_ptr->relying_party.id);
 
   // Ensure only platform authenticators are allowed.
-  EXPECT_EQ(AuthenticatorAttachment::kPlatform,
-            creation_options_ptr->authenticator_selection
-                ->authenticator_attachment());
+  EXPECT_EQ(
+      AuthenticatorAttachment::kPlatform,
+      creation_options_ptr->authenticator_selection->authenticator_attachment);
   EXPECT_EQ(UserVerificationRequirement::kRequired,
             creation_options_ptr->authenticator_selection
-                ->user_verification_requirement());
+                ->user_verification_requirement);
 }
 
 TEST_F(CreditCardFIDOAuthenticatorTest, ParseAttestationResponse) {

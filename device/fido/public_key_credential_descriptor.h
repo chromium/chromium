@@ -43,24 +43,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialDescriptor {
   bool operator==(const PublicKeyCredentialDescriptor& other) const;
   ~PublicKeyCredentialDescriptor();
 
-  CredentialType credential_type() const { return credential_type_; }
-  const std::vector<uint8_t>& id() const { return id_; }
-  const base::flat_set<FidoTransportProtocol>& transports() const {
-    return transports_;
-  }
-
-  void SetCredentialTypeForTesting(CredentialType type) {
-    credential_type_ = type;
-  }
-  std::vector<uint8_t>& GetIdForTesting() { return id_; }
-  base::flat_set<FidoTransportProtocol>& GetTransportsForTesting() {
-    return transports_;
-  }
-
- private:
-  CredentialType credential_type_;
-  std::vector<uint8_t> id_;
-  base::flat_set<FidoTransportProtocol> transports_;
+  CredentialType credential_type;
+  std::vector<uint8_t> id;
+  base::flat_set<FidoTransportProtocol> transports;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

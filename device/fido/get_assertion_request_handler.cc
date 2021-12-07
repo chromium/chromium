@@ -212,11 +212,11 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
 
   base::flat_set<FidoTransportProtocol> transports;
   for (const auto& credential : allowed_list) {
-    if (credential.transports().empty()) {
+    if (credential.transports.empty()) {
       return kAllTransports;
     }
-    transports.insert(credential.transports().begin(),
-                      credential.transports().end());
+    transports.insert(credential.transports.begin(),
+                      credential.transports.end());
   }
 
   if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
@@ -345,10 +345,10 @@ void GetAssertionRequestHandler::DispatchRequest(
             fido_filter::Operation::GET_ASSERTION, request_.rp_id,
             authenticator_name,
             std::pair<fido_filter::IDType, base::span<const uint8_t>>(
-                fido_filter::IDType::CREDENTIAL_ID, cred.id())) ==
+                fido_filter::IDType::CREDENTIAL_ID, cred.id)) ==
         fido_filter::Action::BLOCK) {
       FIDO_LOG(DEBUG) << "Filtered request to device " << authenticator_name
-                      << " for credential ID " << base::HexEncode(cred.id());
+                      << " for credential ID " << base::HexEncode(cred.id);
       return;
     }
   }

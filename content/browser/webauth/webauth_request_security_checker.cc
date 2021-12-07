@@ -215,8 +215,8 @@ bool WebAuthRequestSecurityChecker::
   auto credential_descriptor_compare_without_transport =
       [](const device::PublicKeyCredentialDescriptor& a,
          const device::PublicKeyCredentialDescriptor& b) {
-        return a.credential_type() < b.credential_type() ||
-               (a.credential_type() == b.credential_type() && a.id() < b.id());
+        return a.credential_type < b.credential_type ||
+               (a.credential_type == b.credential_type && a.id < b.id);
       };
   std::set<device::PublicKeyCredentialDescriptor,
            decltype(credential_descriptor_compare_without_transport)>
@@ -231,15 +231,15 @@ bool WebAuthRequestSecurityChecker::
       // transport list means _any_ transport, so the union should still be
       // empty.
       base::flat_set<device::FidoTransportProtocol> merged_transports;
-      if (!it->transports().empty() &&
-          !credential_descriptor.transports().empty()) {
+      if (!it->transports.empty() &&
+          !credential_descriptor.transports.empty()) {
         base::ranges::set_union(
-            it->transports(), credential_descriptor.transports(),
+            it->transports, credential_descriptor.transports,
             std::inserter(merged_transports, merged_transports.begin()));
       }
       unique_credential_descriptors.erase(it);
       unique_credential_descriptors.insert(
-          {credential_descriptor.credential_type(), credential_descriptor.id(),
+          {credential_descriptor.credential_type, credential_descriptor.id,
            std::move(merged_transports)});
     }
   }

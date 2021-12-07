@@ -31,33 +31,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
   bool operator==(const AuthenticatorSelectionCriteria& other) const;
   ~AuthenticatorSelectionCriteria();
 
-  AuthenticatorAttachment authenticator_attachment() const {
-    return authenticator_attachment_;
-  }
-
-  ResidentKeyRequirement resident_key() const { return resident_key_; }
-
-  UserVerificationRequirement user_verification_requirement() const {
-    return user_verification_requirement_;
-  }
-
-  void SetAuthenticatorAttachmentForTesting(
-      AuthenticatorAttachment attachment) {
-    authenticator_attachment_ = attachment;
-  }
-  void SetResidentKeyForTesting(ResidentKeyRequirement resident_key) {
-    resident_key_ = resident_key;
-  }
-  void SetUserVerificationRequirementForTesting(
-      UserVerificationRequirement uv) {
-    user_verification_requirement_ = uv;
-  }
-
- private:
-  AuthenticatorAttachment authenticator_attachment_ =
+  AuthenticatorAttachment authenticator_attachment =
       AuthenticatorAttachment::kAny;
-  ResidentKeyRequirement resident_key_ = ResidentKeyRequirement::kDiscouraged;
-  UserVerificationRequirement user_verification_requirement_ =
+  ResidentKeyRequirement resident_key = ResidentKeyRequirement::kDiscouraged;
+  UserVerificationRequirement user_verification_requirement =
       UserVerificationRequirement::kPreferred;
 };
 
