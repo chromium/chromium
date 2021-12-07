@@ -2709,7 +2709,7 @@
           ],
       },
       # TODO(crbug.com/1131588) Tests are flaky only on CQ.
-      'Mac10.15 Tests': {
+      'Mac11 Tests': {
         'precommit_args': [
             '--gtest_filter=-*',
           ],
@@ -2837,12 +2837,6 @@
           '--jobs=1',
         ],
       },
-      # TODO crbug.com/1277277: Remove when dcheck is fixed
-      'Mac11 Tests': {
-        'args': [
-        '--gtest_filter=-benchmarks.benchmark_smoke_unittest.load_tests.<locals>.BenchmarkSmokeTest.memory.desktop:benchmarks.system_health_smoke_test._GenerateSmokeTestCase.<locals>.SystemHealthBenchmarkSmokeTest.system_health.memory_desktop/*',
-        ],
-      },
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--jobs=1',
@@ -2894,6 +2888,8 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.15 Tests',
+      # TODO crbug.com/1277277
+      'Mac11 Tests',
       'Mac10.15 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
