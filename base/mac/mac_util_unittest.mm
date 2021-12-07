@@ -17,7 +17,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -93,48 +92,6 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
     EXPECT_STREQ(valid_inputs[i].expected_out,
         out.value().c_str()) << "loop: " << i;
   }
-}
-
-TEST_F(MacUtilTest, TestExcludeFileFromBackups_Persists) {
-  // The file must already exist in order to set its exclusion property.
-  ScopedTempDir temp_dir_;
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
-  constexpr char placeholder_data[] = "All your base are belong to us!";
-  // Dump something real into the file.
-  ASSERT_EQ(checked_cast<int>(base::size(placeholder_data)),
-            WriteFile(excluded_file_path, placeholder_data,
-                      base::size(placeholder_data)));
-  // Initial state should be non-excluded.
-  EXPECT_FALSE(GetFileBackupExclusion(excluded_file_path));
-  // Exclude the file.
-  ASSERT_TRUE(SetFileBackupExclusion(excluded_file_path));
-  EXPECT_TRUE(GetFileBackupExclusion(excluded_file_path));
-}
-
-TEST_F(MacUtilTest, TestExcludeFileFromBackups_NotByPath) {
-  ScopedTempDir temp_dir_;
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
-  base::ScopedCFTypeRef<CFURLRef> excluded_url =
-      base::mac::FilePathToCFURL(excluded_file_path);
-
-  constexpr char placeholder_data[] = "All your base are belong to us!";
-  ASSERT_EQ(checked_cast<int>(base::size(placeholder_data)),
-            WriteFile(excluded_file_path, placeholder_data,
-                      base::size(placeholder_data)));
-
-  ASSERT_TRUE(SetFileBackupExclusion(excluded_file_path));
-  EXPECT_TRUE(GetFileBackupExclusion(excluded_file_path))
-      << "Backup exclusion persists as long as the file exists";
-
-  // Re-create the file.
-  ASSERT_TRUE(DeleteFile(excluded_file_path));
-  ASSERT_EQ(checked_cast<int>(base::size(placeholder_data)),
-            WriteFile(excluded_file_path, placeholder_data,
-                      base::size(placeholder_data)));
-  EXPECT_FALSE(GetFileBackupExclusion(excluded_file_path))
-      << "Re-created file should not be excluded from backup";
 }
 
 TEST_F(MacUtilTest, NSObjectRetainRelease) {

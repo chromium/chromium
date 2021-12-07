@@ -17,8 +17,8 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
+#if defined(OS_APPLE)
+#include "base/mac/backup_util.h"
 #endif
 
 #if defined(OS_FUCHSIA)
@@ -192,8 +192,8 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
   // NOTE(shess): Any early exit from here needs to call xClose() on
   // |wrapped_file|.
 
-#if defined(OS_MAC)
-  // When opening journal files, propagate time-machine exclusion from db.
+#if defined(OS_APPLE)
+  // When opening journal files, propagate backup exclusion from db.
   static int kJournalFlags =
       SQLITE_OPEN_MAIN_JOURNAL | SQLITE_OPEN_TEMP_JOURNAL |
       SQLITE_OPEN_SUBJOURNAL | SQLITE_OPEN_MASTER_JOURNAL;
@@ -204,9 +204,8 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
     size_t dash_index = file_name_string_piece.rfind('-');
     if (dash_index != base::StringPiece::npos) {
       base::StringPiece db_name(file_name, dash_index);
-      if (base::mac::GetFileBackupExclusion(base::FilePath(db_name))) {
-        base::mac::SetFileBackupExclusion(
-            base::FilePath(file_name_string_piece));
+      if (base::mac::GetBackupExclusion(base::FilePath(db_name))) {
+        base::mac::SetBackupExclusion(base::FilePath(file_name_string_piece));
       }
     }
   }

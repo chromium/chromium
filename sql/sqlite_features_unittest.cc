@@ -21,8 +21,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
+#if defined(OS_APPLE)
+#include "base/mac/backup_util.h"
 #endif
 
 // Test that certain features are/are-not enabled in our SQLite.
@@ -292,9 +292,9 @@ TEST_F(SQLiteFeaturesTest, CachedRegexp) {
   EXPECT_EQ(7, s.ColumnInt(0));
 }
 
-#if defined(OS_MAC)
-// If a database file is marked to be excluded from Time Machine, verify that
-// journal files are also excluded.
+#if defined(OS_APPLE)
+// If a database file is marked to be excluded from backups, verify that journal
+// files are also excluded.
 TEST_F(SQLiteFeaturesTest, TimeMachine) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE t (id INTEGER PRIMARY KEY)"));
   db_.Close();
@@ -304,19 +304,19 @@ TEST_F(SQLiteFeaturesTest, TimeMachine) {
   ASSERT_TRUE(base::PathExists(journal_path));
 
   // Not excluded to start.
-  EXPECT_FALSE(base::mac::GetFileBackupExclusion(db_path_));
-  EXPECT_FALSE(base::mac::GetFileBackupExclusion(journal_path));
+  EXPECT_FALSE(base::mac::GetBackupExclusion(db_path_));
+  EXPECT_FALSE(base::mac::GetBackupExclusion(journal_path));
 
   // Exclude the main database file.
-  EXPECT_TRUE(base::mac::SetFileBackupExclusion(db_path_));
+  EXPECT_TRUE(base::mac::SetBackupExclusion(db_path_));
 
-  EXPECT_TRUE(base::mac::GetFileBackupExclusion(db_path_));
-  EXPECT_FALSE(base::mac::GetFileBackupExclusion(journal_path));
+  EXPECT_TRUE(base::mac::GetBackupExclusion(db_path_));
+  EXPECT_FALSE(base::mac::GetBackupExclusion(journal_path));
 
   EXPECT_TRUE(db_.Open(db_path_));
   ASSERT_TRUE(db_.Execute("INSERT INTO t VALUES (1)"));
-  EXPECT_TRUE(base::mac::GetFileBackupExclusion(db_path_));
-  EXPECT_TRUE(base::mac::GetFileBackupExclusion(journal_path));
+  EXPECT_TRUE(base::mac::GetBackupExclusion(db_path_));
+  EXPECT_TRUE(base::mac::GetBackupExclusion(journal_path));
 
   // TODO(shess): In WAL mode this will touch -wal and -shm files.  -shm files
   // could be always excluded.

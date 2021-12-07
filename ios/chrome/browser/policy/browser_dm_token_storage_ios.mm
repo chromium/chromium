@@ -11,6 +11,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/hash/sha1.h"
 #include "base/ios/device_util.h"
+#include "base/mac/backup_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -18,7 +19,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "ios/chrome/browser/file_metadata_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,7 +63,7 @@ bool StoreDMTokenInDirAppDataDir(const std::string& token,
     return false;
   }
 
-  SetSkipSystemBackupAttributeToItem(token_file_path, true);
+  base::mac::SetBackupExclusion(token_file_path);
   return true;
 }
 

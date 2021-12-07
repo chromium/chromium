@@ -42,8 +42,6 @@ source_set("browser") {
     "chrome_root_coordinator.mm",
     "chrome_url_util.h",
     "chrome_url_util.mm",
-    "file_metadata_util.h",
-    "file_metadata_util.mm",
     "install_time_util.h",
     "install_time_util.mm",
     "installation_notifier.h",

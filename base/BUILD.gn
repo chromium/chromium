@@ -1170,6 +1170,8 @@ component("base") {
       "files/file_util_mac.mm",
       "mac/authorization_util.h",
       "mac/authorization_util.mm",
+      "mac/backup_util.h",
+      "mac/backup_util.mm",
       "mac/bundle_locations.h",
       "mac/bundle_locations.mm",
       "mac/call_with_eh_frame.cc",
@@ -2203,6 +2205,8 @@ component("base") {
       "file_version_info_mac.h",
       "file_version_info_mac.mm",
       "files/file_util_mac.mm",
+      "mac/backup_util.h",
+      "mac/backup_util.mm",
       "mac/bundle_locations.h",
       "mac/bundle_locations.mm",
       "mac/call_with_eh_frame.cc",
@@ -3424,6 +3428,7 @@ test("base_unittests") {
       "allocator/allocator_interception_mac_unittest.mm",
       "allocator/malloc_zone_functions_mac_unittest.cc",
       "enterprise_util_mac_unittest.mm",
+      "mac/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
       "mac/call_with_eh_frame_unittest.mm",
       "mac/dispatch_source_mach_unittest.cc",
@@ -3579,6 +3584,7 @@ test("base_unittests") {
 
     sources += [
       # Pull in specific Mac files for iOS.
+      "mac/backup_util_unittest.mm",
       "mac/bind_objc_block_unittest.mm",
       "mac/foundation_util_unittest.mm",
       "mac/objc_release_properties_unittest.mm",

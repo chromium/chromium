@@ -31,13 +31,6 @@ BASE_EXPORT CGColorSpaceRef GetGenericRGBColorSpace();
 // is a static value; do not release it!
 BASE_EXPORT CGColorSpaceRef GetSystemColorSpace();
 
-// Returns true if the file at |file_path| is excluded from Time Machine
-// backups.
-BASE_EXPORT bool GetFileBackupExclusion(const FilePath& file_path);
-
-// Excludes the file given by |file_path| from Time Machine backups.
-BASE_EXPORT bool SetFileBackupExclusion(const FilePath& file_path);
-
 // Checks if the current application is set as a Login Item, so it will launch
 // on Login. If a non-NULL pointer to is_hidden is passed, the Login Item also
 // is queried for the 'hide on launch' flag.

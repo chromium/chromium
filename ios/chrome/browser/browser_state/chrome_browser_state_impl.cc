@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/mac/backup_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -28,7 +29,6 @@
 #include "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
 #include "ios/chrome/browser/chrome_constants.h"
 #include "ios/chrome/browser/chrome_paths_internal.h"
-#include "ios/chrome/browser/file_metadata_util.h"
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/browser_state_policy_connector.h"
@@ -63,7 +63,7 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // stash state directory cannot easily be done at that point.
   if (!base::PathExists(otr_path) && !base::CreateDirectory(otr_path))
     return false;
-  SetSkipSystemBackupAttributeToItem(otr_path, true);
+  base::mac::SetBackupExclusion(otr_path);
   if (!base::PathExists(cache_path) && !base::CreateDirectory(cache_path))
     return false;
   return true;

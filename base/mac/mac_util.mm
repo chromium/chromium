@@ -155,33 +155,6 @@ CGColorSpaceRef GetSystemColorSpace() {
   return g_system_color_space;
 }
 
-bool GetFileBackupExclusion(const FilePath& file_path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  return CSBackupIsItemExcluded(FilePathToCFURL(file_path), nullptr);
-}
-
-bool SetFileBackupExclusion(const FilePath& file_path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  // When excludeByPath is true the application must be running with root
-  // privileges (admin for 10.6 and earlier) but the URL does not have to
-  // already exist. When excludeByPath is false the URL must already exist but
-  // can be used in non-root (or admin as above) mode. We use false so that
-  // non-root (or admin) users don't get their TimeMachine drive filled up with
-  // unnecessary backups.
-  OSStatus os_err = CSBackupSetItemExcluded(FilePathToCFURL(file_path),
-                                            /*exclude=*/TRUE,
-                                            /*excludeByPath=*/FALSE);
-  if (os_err != noErr) {
-    OSSTATUS_DLOG(WARNING, os_err)
-        << "Failed to set backup exclusion for file '"
-        << file_path.value().c_str() << "'";
-  }
-  return os_err == noErr;
-}
-
 bool CheckLoginItemStatus(bool* is_hidden) {
   LoginItemsFileList login_items;
   if (!login_items.Initialize())

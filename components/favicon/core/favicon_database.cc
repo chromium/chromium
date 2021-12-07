@@ -29,8 +29,8 @@
 #include "sql/transaction.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
+#if defined(OS_APPLE)
+#include "base/mac/backup_util.h"
 #endif
 
 namespace favicon {
@@ -1080,9 +1080,9 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
     // TODO(shess): Failing Begin() implies that something serious is
     // wrong with the database.  Raze() may be in order.
 
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   // Exclude the favicons file from backups.
-  base::mac::SetFileBackupExclusion(db_name);
+  base::mac::SetBackupExclusion(db_name);
 #endif
 
   // thumbnails table has been obsolete for a long time, remove any detritus.
