@@ -273,6 +273,8 @@ extern const base::Feature
     kHoldingSpaceInProgressDownloadsNotificationSuppression;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHoldingSpaceIncognitoProfileIntegration;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVirtualKeyboardDarkMode;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeMozcProto;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;

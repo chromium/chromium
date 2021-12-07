@@ -61,6 +61,7 @@ class TestObserver : public StubInputMethodEngineObserver {
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
+  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,

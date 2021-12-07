@@ -720,6 +720,10 @@ const base::Feature kHoldingSpaceIncognitoProfileIntegration{
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable dark mode support for the Chrome OS virtual keyboard.
+const base::Feature kVirtualKeyboardDarkMode{"VirtualKeyboardDarkMode",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable MOZC IME to use protobuf as interactive message format.
 const base::Feature kImeMozcProto{"ImeMozcProto",
                                   base::FEATURE_ENABLED_BY_DEFAULT};

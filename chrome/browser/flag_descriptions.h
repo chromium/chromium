@@ -2785,6 +2785,9 @@ extern const char kImeAssistMultiWordLacrosSupportDescription[];
 extern const char kImeAssistPersonalInfoName[];
 extern const char kImeAssistPersonalInfoDescription[];
 
+extern const char kVirtualKeyboardDarkModeName[];
+extern const char kVirtualKeyboardDarkModeDescription[];
+
 extern const char kImeEmojiSuggestAdditionName[];
 extern const char kImeEmojiSuggestAdditionDescription[];
 

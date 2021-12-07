@@ -49006,6 +49006,7 @@ from previous Chrome versions.
   <int value="-2033136855" label="MessagesForAndroidPasswords:disabled"/>
   <int value="-2030217301" label="password-export:disabled"/>
   <int value="-2029912304" label="StaleWhileRevalidate2:enabled"/>
+  <int value="-2028336995" label="VirtualKeyboardDarkMode:disabled"/>
   <int value="-2028232016" label="spurious-power-button-lid-angle-change"/>
   <int value="-2028202891"
       label="AutofillEnableFixedPaymentsBubbleLogging:disabled"/>
@@ -50317,6 +50318,7 @@ from previous Chrome versions.
   <int value="-1104914981" label="frame-throttle-fps"/>
   <int value="-1104746914" label="CrostiniVirtualKeyboardSupport:enabled"/>
   <int value="-1104609838" label="UserMediaCaptureOnFocus:enabled"/>
+  <int value="-1103400515" label="VirtualKeyboardDarkMode:enabled"/>
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
   <int value="-1103099187" label="NotificationStackingBarRedesign:disabled"/>
   <int value="-1102212525" label="enable-tcp-fastopen"/>
