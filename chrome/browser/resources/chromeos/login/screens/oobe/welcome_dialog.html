@@ -51,7 +51,7 @@
       }
       :host-context([orientation=vertical]) #content {
         grid-template-columns: auto;
-        grid-template-rows: auto auto auto;
+        grid-template-rows: min-content auto min-content;
       }
       :host-context([orientation=horizontal]) #content {
         grid-template-columns: auto minmax(0, 1fr);
@@ -90,10 +90,9 @@
         min-width: 0;
       }
       :host-context([orientation=vertical]) #welcomeAnimationSlot {
-        align-self: end;
         grid-column: 1 / span 1;
         grid-row: 2 / span 1;
-        justify-self: stretch;
+        place-self: stretch;
       }
       :host-context([orientation=horizontal]) #welcomeAnimationSlot {
         align-self: stretch;
