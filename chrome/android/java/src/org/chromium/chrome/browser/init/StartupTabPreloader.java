@@ -170,7 +170,13 @@ public class StartupTabPreloader implements ProfileManager.Observer, DestroyObse
 
         String suffix = ".NoLoad";
         if (preloadWasViable()) {
-            if (mTab != null) {
+            // Check whether the tab match decision has yet occurred. It is still pending if (1) the
+            // preloaded tab is non-null, or (2) in the case where preloading is disabled by
+            // feature, the stored state used to calculate whether the preload would have matched is
+            // non-null.
+            boolean tabMatchStillPending =
+                    mTab != null || mUrlForPreloadPreventedOnlyByFeature != null;
+            if (tabMatchStillPending) {
                 suffix = ".LoadPreMatch";
             } else if (tabMatchWasViable()) {
                 suffix = ".LoadAndMatch";
