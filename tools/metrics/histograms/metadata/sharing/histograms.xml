@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendAckMessageResult" enum="SharingSendMessageResult"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 
@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 

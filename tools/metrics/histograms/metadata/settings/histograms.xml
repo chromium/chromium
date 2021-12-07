@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.SafeBrowsingResult"
-    enum="SafetyCheckSafeBrowsingStatus" expires_after="2022-04-03">
+    enum="SafetyCheckSafeBrowsingStatus" expires_after="2022-06-05">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check Safe Browsing check.</summary>

@@ -837,7 +837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DarkTheme.ThemeSettingsEntry"
-    enum="AndroidThemeSettingsEntry" expires_after="2022-04-01">
+    enum="AndroidThemeSettingsEntry" expires_after="2022-06-05">
   <owner>nemco@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -1648,7 +1648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InstantApps.ShouldShowBanner" enum="InstantAppsBanner"
-    expires_after="2022-01-31">
+    expires_after="2022-06-05">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -2251,7 +2251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>ender@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -2742,7 +2742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.Changed" enum="SiteLayout"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.PasswordStoreSites.InitializedBeforeQuery"
-    enum="Boolean" expires_after="2022-04-03">
+    enum="Boolean" expires_after="2022-06-05">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

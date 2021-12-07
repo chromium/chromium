@@ -499,7 +499,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Full.Sweep.Cpp" units="ms" expires_after="M100">
+<histogram name="V8.GC.Cycle.Full.Sweep.Cpp" units="ms"
+    expires_after="2022-06-05">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -841,7 +842,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundSweeping" units="ms" expires_after="2022-04-01">
+<histogram name="V8.GCBackgroundSweeping" units="ms" expires_after="2022-06-05">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -936,7 +937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCFinalizeMC.Prologue" units="ms"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1017,7 +1018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingFinalize" units="ms"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in finalizing incremental marking.</summary>
@@ -1086,14 +1087,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCScavenger" units="ms" expires_after="2022-04-01">
+<histogram name="V8.GCScavenger" units="ms" expires_after="2022-06-05">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in scavenging phase of GC.</summary>
 </histogram>
 
 <histogram name="V8.GCScavenger.ScavengeMain" units="ms"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1103,7 +1104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCScavenger.ScavengeRoots" units="ms"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in scavenging the roots during a V8 scavenge.</summary>
@@ -1119,14 +1120,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCScavengeReason" enum="GarbageCollectionReason"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason a scavenge garbage collection was started in V8.</summary>
 </histogram>
 
 <histogram name="V8.GCScavengerForeground" units="ms"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1328,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeConcurrentTotalTime" units="microseconds"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>bmeurer@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1352,7 +1353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeFinalize" units="microseconds"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -1416,7 +1417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeNonConcurrentTotalTime"
-    units="microseconds" expires_after="2022-03-31">
+    units="microseconds" expires_after="2022-06-05">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
@@ -1429,7 +1430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizePrepare" units="microseconds"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -1441,7 +1442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalBackground" units="microseconds"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -1453,7 +1454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalForeground" units="microseconds"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
@@ -1465,7 +1466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalTime" units="microseconds"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>neis@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>

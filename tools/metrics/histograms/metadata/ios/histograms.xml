@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-04-03">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-05">
   <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
@@ -367,7 +367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-04-03">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-05">
   <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
@@ -377,7 +377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-04-03">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-05">
   <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
@@ -944,7 +944,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NTP.Impression" enum="IOSNTPImpression"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>gambard@chromium.org</owner>
   <summary>
     The type of NTP impressions on iOS, split by type of suggestions shown
@@ -1420,7 +1420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WidgetKit.Action" enum="IOSWidgetKitAction"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>javierrobles@chromium.org</owner>
   <owner>muradyan@google.com</owner>
   <summary>

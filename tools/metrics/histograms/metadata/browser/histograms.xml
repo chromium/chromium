@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Capture.NumberOfFramesCaptured"
-    units="units" expires_after="2022-04-03">
+    units="units" expires_after="2022-06-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Capture.Success" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -370,7 +370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Capture.TotalCaptureDuration" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.ExitCause"
-    enum="TabbedPaintPreviewExitCause" expires_after="2022-04-03">
+    enum="TabbedPaintPreviewExitCause" expires_after="2022-06-05">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -630,7 +630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3"
-    units="janks" expires_after="2022-04-03">
+    units="janks" expires_after="2022-06-05">
 <!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
 
   <owner>etienneb@chromium.org</owner>
@@ -1162,7 +1162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserSwitcher.AlternativeBrowser" enum="BrowserType"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1219,7 +1219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserSwitcher.DecisionTime" units="ms"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CreditCardUploadFeedback"
-    enum="AutofillCreditCardUploadFeedback" expires_after="2022-03-01">
+    enum="AutofillCreditCardUploadFeedback" expires_after="2022-06-05">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2710,7 +2710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2721,7 +2721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNameWasEdited" enum="Boolean"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2926,7 +2926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata"
-    units="units" expires_after="2022-04-01">
+    units="units" expires_after="2022-06-05">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3486,7 +3486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCard.MetadataSynced" enum="BooleanExists"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.Build" enum="BooleanSuccess"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Database.ExpiredNotificationCount"
-    units="notifications" expires_after="2022-04-03">
+    units="notifications" expires_after="2022-06-05">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -634,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationDisplayResult"
-    enum="PersistentNotificationDisplayResult" expires_after="2022-04-03">
+    enum="PersistentNotificationDisplayResult" expires_after="2022-06-05">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -654,7 +654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationClickResult"
-    enum="PlatformNotificationStatus" expires_after="2022-04-03">
+    enum="PlatformNotificationStatus" expires_after="2022-06-05">
   <owner>peter@chromium.org</owner>
   <owner>deepak.m1@samsung.com</owner>
   <summary>

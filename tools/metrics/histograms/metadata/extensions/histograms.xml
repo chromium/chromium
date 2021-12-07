@@ -1544,7 +1544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledCreationStage"
-    enum="ExtensionInstallCreationStage" expires_after="2022-04-03">
+    enum="ExtensionInstallCreationStage" expires_after="2022-06-05">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1602,7 +1602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureManifestInvalidAppStatusError"
-    enum="ManifestInvalidAppStatusError" expires_after="2022-04-03">
+    enum="ManifestInvalidAppStatusError" expires_after="2022-06-05">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1668,7 +1668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureSandboxUnpackFailureReason2"
-    enum="ExtensionUnpackFailureReason" expires_after="2022-04-03">
+    enum="ExtensionUnpackFailureReason" expires_after="2022-06-05">
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -1754,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsCWS"
     enum="IsForceInstalledExtensionFailedWithCrxHeaderInvalidFromCWSBoolean"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1768,7 +1768,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
-    enum="BooleanCacheHit" expires_after="2022-04-03">
+    enum="BooleanCacheHit" expires_after="2022-06-05">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -2640,7 +2640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.InstallPrompt.Type2"
-    enum="ExtensionInstallPromptType" expires_after="2022-04-03">
+    enum="ExtensionInstallPromptType" expires_after="2022-06-05">
   <owner>meacer@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
@@ -3484,7 +3484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ProcessManagerStartupHostsTime2" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

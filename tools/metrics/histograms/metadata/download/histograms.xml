@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.InsecureBlocking.Totals"
-    enum="InsecureDownloadSecurityStatus" expires_after="2022-03-27">
+    enum="InsecureDownloadSecurityStatus" expires_after="2022-06-05">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadedFileAction" enum="DownloadedFileAction"
-    expires_after="2022-03-20">
+    expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -411,7 +411,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileInBackground"
-    enum="DownloadFileInBackground" expires_after="2022-03-20">
+    enum="DownloadFileInBackground" expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileResult" enum="DownloadFileResult"
-    expires_after="2022-03-20">
+    expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUI" enum="DownloadFileUI"
-    expires_after="2022-03-20">
+    expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadFileUIGoogleDrive"
-    enum="DownloadFileUIGoogleDrive" expires_after="2022-03-20">
+    enum="DownloadFileUIGoogleDrive" expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -455,7 +455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadMimeType" enum="DownloadMimeTypeResult"
-    expires_after="2022-03-20">
+    expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.IOSDownloadPassKitResult"
-    enum="DownloadPassKitResult" expires_after="2022-03-20">
+    enum="DownloadPassKitResult" expires_after="2022-06-05">
   <owner>sdefresne@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
@@ -538,7 +538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.Later.UI.DialogChoice"
-    enum="DownloadLaterDialogChoice" expires_after="2022-04-03">
+    enum="DownloadLaterDialogChoice" expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="DownloadDialogSource" -->
 
   <owner>xingliu@chromium.org</owner>
@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.MixedContentDialog.Events"
-    enum="MixedContentDownloadDialogEvent" expires_after="2022-03-31">
+    enum="MixedContentDownloadDialogEvent" expires_after="2022-06-05">
   <owner>qinmin@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
@@ -593,7 +593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Mobile.DangerousDownloadInfobarEvent"
-    enum="DangerousDownloadInfobarEvent" expires_after="2022-03-31">
+    enum="DangerousDownloadInfobarEvent" expires_after="2022-06-05">
   <owner>qinmin@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <summary>
@@ -1301,7 +1301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Start.PerProfileType" enum="BrowserProfileType"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>

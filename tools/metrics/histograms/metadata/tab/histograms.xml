@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.NewTab" enum="NewTabType" expires_after="2022-04-03">
+<histogram name="Tab.NewTab" enum="NewTabType" expires_after="2022-06-05">
   <owner>tbergquist@chromium.org</owner>
   <owner>bsep@chromium.org</owner>
   <summary>
@@ -485,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.StateAtRendererTermination" enum="TabForegroundState"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>gambard@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>connily@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -652,7 +652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SessionsPerGroup" units="sessions"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -2302,7 +2302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.NumTabsClosedPerInstance" units="tabs"
-    expires_after="2022-03-27">
+    expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -2315,7 +2315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.NumTabsOnOpen" units="tabs"
-    expires_after="2022-03-27">
+    expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -2353,7 +2353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.PageHandlerConstructionDelay" units="ms"
-    expires_after="2022-03-27">
+    expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.WebUI.TabListDataReceived" units="ms"
-    expires_after="2022-03-27">
+    expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
@@ -2561,7 +2561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.WindowDisplayedDuration3" units="ms"
-    expires_after="2022-03-27">
+    expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -2603,7 +2603,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.WindowTimeToShowUncachedWebView" units="ms"
-    expires_after="2022-03-27">
+    expires_after="2022-06-05">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>

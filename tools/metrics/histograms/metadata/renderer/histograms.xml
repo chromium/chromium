@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>

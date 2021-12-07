@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.AsyncTargeting.ResponseTime" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>sadrul@chromium.org</owner>
   <owner>event-targeting@chromium.org</owner>
   <summary>
@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>nzolghadr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.HitTest" units="microseconds"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.HitTestRecursive" units="microseconds"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -1329,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollJank" enum="Boolean"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>

@@ -303,7 +303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.CookiesToCopy" units="count"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
@@ -361,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
@@ -430,7 +430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.SpareRenderer.CountStartedOnSRP" units="count"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>

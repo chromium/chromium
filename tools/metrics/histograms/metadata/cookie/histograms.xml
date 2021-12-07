@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SamePartyCookieSameSiteAttributeValue"
-    enum="CookieSameSiteString" expires_after="2022-04-03">
+    enum="CookieSameSiteString" expires_after="2022-06-05">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -694,7 +694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SamePartyReadIncluded.InclusionUnderSameSite"
-    enum="BooleanIncluded" expires_after="2022-04-03">
+    enum="BooleanIncluded" expires_after="2022-06-05">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -715,7 +715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SamePartyReadIncluded.PartyContextSize"
-    units="registrable domains" expires_after="2022-04-03">
+    units="registrable domains" expires_after="2022-06-05">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -752,7 +752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SamePartySetIncluded.PartyContextSize"
-    units="registrable domains" expires_after="2022-04-03">
+    units="registrable domains" expires_after="2022-06-05">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -1069,7 +1069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.TruncatingCharacterInCookieString"
-    enum="TruncatingCharacterInCookieStringType" expires_after="2022-03-31">
+    enum="TruncatingCharacterInCookieStringType" expires_after="2022-06-05">
   <owner>bingler@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <summary>

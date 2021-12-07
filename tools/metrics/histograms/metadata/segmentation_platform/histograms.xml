@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2022-05-15">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-06-05">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

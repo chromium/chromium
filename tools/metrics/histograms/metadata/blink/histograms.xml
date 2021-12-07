@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.CreateImageBitmapSource"
-    enum="CanvasCreateImageBitmapSource" expires_after="2022-04-04">
+    enum="CanvasCreateImageBitmapSource" expires_after="2022-06-05">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
@@ -450,14 +450,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.ResourceProviderIsAccelerated"
-    enum="BooleanHardwareAccelerated" expires_after="2022-04-04">
+    enum="BooleanHardwareAccelerated" expires_after="2022-06-05">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>Logs if the canvas resource provider is accelerated or not.</summary>
 </histogram>
 
 <histogram name="Blink.Canvas.ResourceProviderType"
-    enum="CanvasResourceProviderType" expires_after="2022-04-04">
+    enum="CanvasResourceProviderType" expires_after="2022-06-05">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>Records the type of resource provider used for a canvas.</summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.SqrtNumberOfPixels" units="sqrt(pixels)"
-    expires_after="2022-04-04">
+    expires_after="2022-06-05">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -1028,7 +1028,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DarkMode.ApplyToImageOnMainThread" units="microseconds"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -1450,7 +1450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
-    units="microseconds" expires_after="2022-04-03">
+    units="microseconds" expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2604,7 +2604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.OffscreenCanvas.NewOffscreenCanvas" enum="Boolean"
-    expires_after="2022-04-04">
+    expires_after="2022-06-05">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -2623,7 +2623,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.OffscreenCanvas.TransferControlToOffscreen"
-    enum="BooleanSuccess" expires_after="2022-04-04">
+    enum="BooleanSuccess" expires_after="2022-06-05">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>Records a call to transfer a canvas offscreen.</summary>
@@ -2986,7 +2986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Sms.Receive.CrossDeviceFailure"
-    enum="WebOTPCrossDeviceFailure" expires_after="2022-04-03">
+    enum="WebOTPCrossDeviceFailure" expires_after="2022-06-05">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity@google.com</owner>
   <summary>
@@ -3142,7 +3142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -3259,7 +3259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.Header"
-    enum="DocumentPolicyFeature" expires_after="2022-03-31">
+    enum="DocumentPolicyFeature" expires_after="2022-06-05">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>

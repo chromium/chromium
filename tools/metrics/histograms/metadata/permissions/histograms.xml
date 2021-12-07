@@ -1009,7 +1009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.OriginsEngaged" units="units"
-    expires_after="2022-03-12">
+    expires_after="2022-06-05">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -1057,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>estark@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>
@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.Discoverability.Action"
-    enum="WebsiteSettingsDiscoverabilityAction" expires_after="2022-04-03">
+    enum="WebsiteSettingsDiscoverabilityAction" expires_after="2022-06-05">
   <owner>eokoyomon@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <summary>

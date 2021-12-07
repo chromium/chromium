@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Resources.Bytes.Ads2" units="KB"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -522,7 +522,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe"
-    units="scorex10" expires_after="2022-03-06">
+    units="scorex10" expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
@@ -618,7 +618,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToFirstContentfulPaint.Subframe"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -634,7 +634,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToFirstContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -671,7 +671,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe.FullNavigation"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -1222,7 +1222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Bytes.Network" units="KB"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>jkarlin@chromium.org</owner>
   <summary>
     The number of prefiltered (e.g., compressed) response body KiloBytes loaded
@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.CommitSentToFirstSubresourceLoadStart"
-    units="ms" expires_after="2022-04-05">
+    units="ms" expires_after="2022-06-05">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1687,7 +1687,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.NavigationToFirstSubresourceLoadStart"
-    units="ms" expires_after="2022-04-05">
+    units="ms" expires_after="2022-06-05">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1711,7 +1711,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.TotalSubresourceLoadTimeAtFirstContentfulPaint"
-    units="ms" expires_after="2022-04-05">
+    units="ms" expires_after="2022-06-05">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1799,7 +1799,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PaintTiming.NavigationToFirstEligibleToPaint"
-    units="ms" expires_after="2022-04-06">
+    units="ms" expires_after="2022-06-05">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1834,7 +1834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.TotalForegroundDuration" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-06-05">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2870,7 +2870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2896,7 +2896,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2908,7 +2908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"
-    units="ms" expires_after="2022-04-03">
+    units="ms" expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -2951,7 +2951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.ParseTiming.ParseBlockedOnScriptLoad" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>gayane@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>

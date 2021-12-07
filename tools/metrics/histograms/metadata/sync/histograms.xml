@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkGUIDSource2" enum="BookmarkGUIDSource"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkModelMerger.ReachableInputUpdates"
-    units="bookmarks" expires_after="2022-04-03">
+    units="bookmarks" expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.BookmarkSpecificsExcludingFoldersContainFavicon"
-    enum="Boolean" expires_after="2022-04-03">
+    enum="Boolean" expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -868,7 +868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeBlockedDueToUndecryptableUpdate"
-    enum="SyncModelTypes" expires_after="2022-04-03">
+    enum="SyncModelTypes" expires_after="2022-06-05">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1016,7 +1016,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeInitialUpdateReceived" enum="SyncModelTypes"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1498,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ProblematicServerSideBookmarksDuringMerge"
-    enum="RemoteBookmarkUpdateError" expires_after="2022-04-03">
+    enum="RemoteBookmarkUpdateError" expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1656,7 +1656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.StopSource" enum="SyncStopSource"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1728,7 +1728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncEverything2" enum="Boolean"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1741,7 +1741,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncStoppedReported" enum="Boolean"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1754,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncStoppedURLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-03">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-06-05">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>

@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.Interaction" enum="SafetyTipInteraction"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -1063,7 +1063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsPasswordFormSubmittedInDedicatedProcess"
-    enum="SiteIsolationIsDedicatedProcess" expires_after="2022-04-03">
+    enum="SiteIsolationIsDedicatedProcess" expires_after="2022-06-05">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -1185,7 +1185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedOAuthSites.Size" units="origins"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1197,7 +1197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2022-04-03">
+    units="origins" expires_after="2022-06-05">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2022-04-03">
+    units="origins" expires_after="2022-06-05">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

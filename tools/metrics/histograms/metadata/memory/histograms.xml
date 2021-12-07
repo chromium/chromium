@@ -1101,7 +1101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Experimental.Renderer.HighestPrivateMemoryFootprint"
-    units="MB" expires_after="2022-04-03">
+    units="MB" expires_after="2022-06-05">
   <owner>tasak@google.com</owner>
   <owner>bartekn@google.com</owner>
   <summary>
@@ -1628,7 +1628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint3"
-    units="KB" expires_after="2022-04-03">
+    units="KB" expires_after="2022-06-05">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1691,7 +1691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.NetworkService.PrivateMemoryFootprint" units="MiB"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -2545,7 +2545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RendererProcessCount" units="processes"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -2695,7 +2695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Total.RendererPrivateMemoryFootprint" units="MB"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>tommckee@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of all renderer processes.

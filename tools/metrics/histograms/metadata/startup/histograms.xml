@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>yfriedman@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <summary>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>yashard@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
-    units="ms" expires_after="2022-02-20">
+    units="ms" expires_after="2022-06-05">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.BringToForegroundReason"
-    enum="BooleanBringToForegroundReason" expires_after="2022-04-03">
+    enum="BooleanBringToForegroundReason" expires_after="2022-06-05">
   <owner>peter@chromium.org</owner>
   <summary>
     Records the cause, each time Chrome is brought to the foreground. Currently
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartFromApps"
-    enum="MobileSessionCallerApp" expires_after="2022-04-03">
+    enum="MobileSessionCallerApp" expires_after="2022-06-05">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The calling application (if any).</summary>

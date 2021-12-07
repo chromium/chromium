@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.GotVariationsFileContents"
-    enum="BooleanSuccess" expires_after="2022-04-03">
+    enum="BooleanSuccess" expires_after="2022-06-05">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.WritePrefsTime"
-    units="microseconds" expires_after="2022-04-03">
+    units="microseconds" expires_after="2022-06-05">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>

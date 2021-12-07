@@ -1027,7 +1027,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.Macros.DocumentSize" units="KB"
-    expires_after="2022-04-01">
+    expires_after="2022-06-05">
   <owner>anise@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1727,7 +1727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="SafeBrowsing.Settings.UserAction"
-    enum="SafeBrowsingSettingsUserAction" expires_after="2022-04-03">
+    enum="SafeBrowsingSettingsUserAction" expires_after="2022-06-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2301,7 +2301,7 @@ security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-03">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-06-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2326,7 +2326,7 @@ risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.ResponseSizeKB" units="KB"
-    expires_after="2022-04-03">
+    expires_after="2022-06-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

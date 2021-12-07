@@ -396,7 +396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.UnknownPpdColorModel" enum="Boolean"
-    expires_after="2022-03-31">
+    expires_after="2022-06-05">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered"
-    enum="BooleanFound" expires_after="2022-03-31">
+    enum="BooleanFound" expires_after="2022-06-05">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

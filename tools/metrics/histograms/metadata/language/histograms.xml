@@ -281,7 +281,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.IsLocaleUpdated"
-    enum="LanguageUsage.UI.Android.LocaleUpdateStatus" expires_after="M100">
+    enum="LanguageUsage.UI.Android.LocaleUpdateStatus"
+    expires_after="2022-06-05">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
