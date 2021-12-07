@@ -522,6 +522,10 @@ const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
 const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables skipping of network screen.
+const base::Feature kEnableOobeNetworkScreenSkip{
+    "EnableOobeNetworkScreenSkip", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables toggling Pciguard settings through Settings UI.
 const base::Feature kEnablePciguardUi{"EnablePciguardUi",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1689,6 +1693,10 @@ bool IsOobeChromeVoxHintEnabled() {
 
 bool IsOobePolymer3Enabled() {
   return base::FeatureList::IsEnabled(kEnableOobePolymer3);
+}
+
+bool IsOobeNetworkScreenSkipEnabled() {
+  return base::FeatureList::IsEnabled(kEnableOobeNetworkScreenSkip);
 }
 
 bool IsOobeConsolidatedConsentEnabled() {

@@ -32,7 +32,8 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
     OFFLINE_DEMO_SETUP,
     BACK_REGULAR,
     BACK_DEMO,
-    BACK_OS_INSTALL
+    BACK_OS_INSTALL,
+    NOT_APPLICABLE
   };
 
   static std::string GetResultString(Result result);
@@ -69,6 +70,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   FRIEND_TEST_ALL_PREFIXES(NetworkScreenUnitTest, ContinuesOnlyOnce);
 
   // BaseScreen:
+  bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
@@ -134,6 +136,9 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // True if the user pressed the continue button in the UI.
   // Indicates that we should proceed with OOBE as soon as we are connected.
   bool continue_pressed_ = false;
+
+  // Indicates whether screen has been shown already or not.
+  bool first_time_shown_ = true;
 
   // Timer for connection timeout.
   base::OneShotTimer connection_timer_;

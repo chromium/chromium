@@ -50,6 +50,9 @@ class NetworkScreenUnitTest : public testing::Test {
                             base::Unretained(this)));
     mock_network_state_helper_ = new login::MockNetworkStateHelper();
     network_screen_->SetNetworkStateHelperForTest(mock_network_state_helper_);
+    EXPECT_CALL(*mock_network_state_helper_, IsConnectedToEthernet())
+        .Times(AnyNumber())
+        .WillRepeatedly((Return(false)));
   }
 
   void TearDown() override {

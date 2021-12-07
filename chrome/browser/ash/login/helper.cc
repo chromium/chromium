@@ -94,6 +94,13 @@ bool NetworkStateHelper::IsConnected() const {
          nullptr;
 }
 
+bool NetworkStateHelper::IsConnectedToEthernet() const {
+  chromeos::NetworkStateHandler* nsh =
+      chromeos::NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectedNetworkByType(
+             chromeos::NetworkTypePattern::Ethernet()) != nullptr;
+}
+
 bool NetworkStateHelper::IsConnecting() const {
   chromeos::NetworkStateHandler* nsh =
       chromeos::NetworkHandler::Get()->network_state_handler();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/network_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -42,6 +43,8 @@ std::string NetworkScreen::GetResultString(Result result) {
     case Result::BACK_DEMO:
     case Result::BACK_OS_INSTALL:
       return "Back";
+    case Result::NOT_APPLICABLE:
+      return BaseScreen::kNotApplicable;
   }
 }
 
@@ -69,6 +72,20 @@ void NetworkScreen::OnViewDestroyed(NetworkScreenView* view) {
     // this as a NetworkStateHandler observer when the view is destroyed.
     UnsubscribeNetworkNotification();
   }
+}
+
+bool NetworkScreen::MaybeSkip(WizardContext* context) {
+  if (!first_time_shown_)
+    return false;
+  first_time_shown_ = false;
+
+  if (features::IsOobeNetworkScreenSkipEnabled() &&
+      network_state_helper_->IsConnectedToEthernet()) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  return false;
 }
 
 void NetworkScreen::ShowImpl() {

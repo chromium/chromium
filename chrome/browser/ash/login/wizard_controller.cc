@@ -1284,6 +1284,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
 
   switch (result) {
     case NetworkScreen::Result::CONNECTED_REGULAR:
+    case NetworkScreen::Result::NOT_APPLICABLE:
       DCHECK(!demo_setup_controller_);
       ShowEulaScreen();
       break;
