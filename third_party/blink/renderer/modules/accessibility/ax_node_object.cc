@@ -3438,7 +3438,8 @@ String AXNodeObject::TextFromDescendants(
     // accessible name of object inside hidden subtrees (for example, if
     // aria-labelledby points to an object that's hidden).
     if (child->AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kHidden) ||
-        child->IsHiddenForTextAlternativeCalculation()) {
+        child->IsHiddenForTextAlternativeCalculation(
+            aria_label_or_description_root)) {
       continue;
     }
 

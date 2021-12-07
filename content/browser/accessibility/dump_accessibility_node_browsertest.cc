@@ -941,6 +941,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyHiddenDifferentVisibilityTypes) {
+  RunAccNameTest(FILE_PATH_LITERAL(
+      "name-text-labelledby-hidden-different-visibility-types.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyHiddenMultipleLevels) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-text-labelledby-hidden-multiple-levels.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameTextLabelledbyHiddenWithHiddenChild) {
   RunAccNameTest(
       FILE_PATH_LITERAL("name-text-labelledby-hidden-with-hidden-child.html"));

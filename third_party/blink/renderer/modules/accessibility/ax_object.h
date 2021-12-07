@@ -1303,7 +1303,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Blink-internal DOM Node ID. Currently used for PDF exporting.
   int GetDOMNodeId() const;
 
-  bool IsHiddenForTextAlternativeCalculation() const;
+  bool IsHiddenForTextAlternativeCalculation(
+      const AXObject* aria_label_or_description_root) const;
 
   // What should the role be assuming an ARIA role is not present?
   virtual ax::mojom::blink::Role NativeRoleIgnoringAria() const = 0;
