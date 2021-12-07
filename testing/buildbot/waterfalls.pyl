@@ -5057,6 +5057,15 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         },
       },
+      'Mac11 Tests (dbg)': {
+        'mixins': [
+            'mac_11_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests',
+          'isolated_scripts': 'chromium_dbg_isolated_scripts',
+        },
+      },
       'ios-device': {
         'additional_compile_targets': [
           'all',
