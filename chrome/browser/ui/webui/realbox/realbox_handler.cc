@@ -242,13 +242,13 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
               match.action->GetVectorIcon()));
     }
     mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
-        match, match.contents, has_action, line,
+        match, match.contents, line, 0,
         GetAdditionalA11yMessage(match,
                                  RealboxHandler::FocusState::kFocusedMatch));
 
     mojom_match->remove_button_a11y_label =
         AutocompleteMatchType::ToAccessibilityLabel(
-            match, match.contents, false, line,
+            match, match.contents, line, 0,
             GetAdditionalA11yMessage(
                 match,
                 RealboxHandler::FocusState::kFocusedButtonRemoveSuggestion));
