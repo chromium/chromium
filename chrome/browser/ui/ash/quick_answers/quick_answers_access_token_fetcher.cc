@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_browser_client_impl.h"
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_access_token_fetcher.h"
 
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -27,11 +27,11 @@ constexpr base::TimeDelta kMaxTokenRefreshDelay = base::Milliseconds(60 * 1000);
 
 }  // namespace
 
-QuickAnswersBrowserClientImpl::QuickAnswersBrowserClientImpl() = default;
+QuickAnswersAccessTokenFetcher::QuickAnswersAccessTokenFetcher() = default;
 
-QuickAnswersBrowserClientImpl::~QuickAnswersBrowserClientImpl() = default;
+QuickAnswersAccessTokenFetcher::~QuickAnswersAccessTokenFetcher() = default;
 
-void QuickAnswersBrowserClientImpl::RequestAccessToken(
+void QuickAnswersAccessTokenFetcher::RequestAccessToken(
     AccessTokenCallback callback) {
   if (!access_token_.empty()) {
     // Return the token if there is enough time to use the access token when
@@ -54,7 +54,7 @@ void QuickAnswersBrowserClientImpl::RequestAccessToken(
   RefreshAccessToken();
 }
 
-void QuickAnswersBrowserClientImpl::RefreshAccessToken() {
+void QuickAnswersAccessTokenFetcher::RefreshAccessToken() {
   auto* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
 
@@ -70,12 +70,12 @@ void QuickAnswersBrowserClientImpl::RefreshAccessToken() {
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_info.account_id, /*oauth_consumer_name=*/"cros_quick_answers",
       scopes,
-      base::BindOnce(&QuickAnswersBrowserClientImpl::OnAccessTokenRefreshed,
+      base::BindOnce(&QuickAnswersAccessTokenFetcher::OnAccessTokenRefreshed,
                      weak_factory_.GetWeakPtr()),
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
-void QuickAnswersBrowserClientImpl::OnAccessTokenRefreshed(
+void QuickAnswersAccessTokenFetcher::OnAccessTokenRefreshed(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   // It's safe to delete AccessTokenFetcher from inside its own callback.
@@ -93,7 +93,7 @@ void QuickAnswersBrowserClientImpl::OnAccessTokenRefreshed(
   NotifyAccessTokenRefreshed();
 }
 
-void QuickAnswersBrowserClientImpl::RetryRefreshAccessToken() {
+void QuickAnswersAccessTokenFetcher::RetryRefreshAccessToken() {
   base::TimeDelta backoff_delay =
       std::min(kMinTokenRefreshDelay *
                    (1 << (token_refresh_error_backoff_factor_ - 1)),
@@ -105,11 +105,11 @@ void QuickAnswersBrowserClientImpl::RetryRefreshAccessToken() {
 
   token_refresh_timer_.Start(
       FROM_HERE, backoff_delay,
-      base::BindOnce(&QuickAnswersBrowserClientImpl::RefreshAccessToken,
+      base::BindOnce(&QuickAnswersAccessTokenFetcher::RefreshAccessToken,
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuickAnswersBrowserClientImpl::NotifyAccessTokenRefreshed() {
+void QuickAnswersAccessTokenFetcher::NotifyAccessTokenRefreshed() {
   std::vector<AccessTokenCallback> callbacks;
   callbacks.swap(callbacks_);
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ui/ash/quick_answers/quick_answers_access_token_fetcher.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
@@ -23,6 +24,9 @@ class QuickAnswersUiController;
 class QuickAnswersControllerImpl : public QuickAnswersController,
                                    public quick_answers::QuickAnswersDelegate {
  public:
+  using AccessTokenCallback =
+      base::OnceCallback<void(const std::string& access_token)>;
+
   QuickAnswersControllerImpl();
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;
   QuickAnswersControllerImpl& operator=(const QuickAnswersControllerImpl&) =
@@ -57,6 +61,7 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   void OnNetworkError() override;
   void OnRequestPreprocessFinished(
       const quick_answers::QuickAnswersRequest& processed_request) override;
+  void RequestAccessToken(AccessTokenCallback callback) override;
 
   // Retry sending quick answers request to backend.
   void OnRetryQuickAnswersRequest();
@@ -104,6 +109,9 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   QuickAnswersStateController quick_answers_state_controller_;
 
   std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
+
+  std::unique_ptr<QuickAnswersAccessTokenFetcher>
+      quick_answers_access_token_fetcher_;
 
   // The last received QuickAnswer from client.
   std::unique_ptr<quick_answers::QuickAnswer> quick_answer_;

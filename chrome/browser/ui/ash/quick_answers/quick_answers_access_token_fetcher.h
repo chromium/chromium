@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_BROWSER_CLIENT_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_BROWSER_CLIENT_IMPL_H_
+#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
+#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
 
 #include <string>
 #include <vector>
@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_browser_client.h"
 
 class GoogleServiceAuthError;
 
@@ -20,22 +19,22 @@ class AccessTokenFetcher;
 struct AccessTokenInfo;
 }  // namespace signin
 
-// A client class which provides browser access to quick answers.
-class QuickAnswersBrowserClientImpl : public ash::QuickAnswersBrowserClient {
+// A helper class which provide access token for quick answers.
+class QuickAnswersAccessTokenFetcher {
  public:
   using AccessTokenCallback =
       base::OnceCallback<void(const std::string& access_token)>;
 
-  QuickAnswersBrowserClientImpl();
+  QuickAnswersAccessTokenFetcher();
 
-  QuickAnswersBrowserClientImpl(const QuickAnswersBrowserClientImpl&) = delete;
-  QuickAnswersBrowserClientImpl& operator=(
-      const QuickAnswersBrowserClientImpl&) = delete;
+  QuickAnswersAccessTokenFetcher(const QuickAnswersAccessTokenFetcher&) =
+      delete;
+  QuickAnswersAccessTokenFetcher& operator=(
+      const QuickAnswersAccessTokenFetcher&) = delete;
 
-  ~QuickAnswersBrowserClientImpl() override;
+  ~QuickAnswersAccessTokenFetcher();
 
-  // ash::QuickAnswersBrowserClient:
-  void RequestAccessToken(AccessTokenCallback callback) override;
+  void RequestAccessToken(AccessTokenCallback callback);
 
  private:
   void RefreshAccessToken();
@@ -59,7 +58,7 @@ class QuickAnswersBrowserClientImpl : public ash::QuickAnswersBrowserClient {
 
   std::vector<AccessTokenCallback> callbacks_;
 
-  base::WeakPtrFactory<QuickAnswersBrowserClientImpl> weak_factory_{this};
+  base::WeakPtrFactory<QuickAnswersAccessTokenFetcher> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_BROWSER_CLIENT_IMPL_H_
+#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_

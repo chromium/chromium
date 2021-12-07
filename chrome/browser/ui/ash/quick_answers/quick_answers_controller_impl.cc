@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -69,7 +67,9 @@ namespace ash {
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl()
     : quick_answers_ui_controller_(
-          std::make_unique<QuickAnswersUiController>(this)) {}
+          std::make_unique<QuickAnswersUiController>(this)),
+      quick_answers_access_token_fetcher_(
+          std::make_unique<QuickAnswersAccessTokenFetcher>()) {}
 
 QuickAnswersControllerImpl::~QuickAnswersControllerImpl() = default;
 
@@ -219,6 +219,11 @@ void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
   title_ = processed_request.preprocessed_output.intent_info.intent_text;
 
   HandleQuickAnswerRequest(processed_request);
+}
+
+void QuickAnswersControllerImpl::RequestAccessToken(
+    AccessTokenCallback callback) {
+  quick_answers_access_token_fetcher_->RequestAccessToken(std::move(callback));
 }
 
 void QuickAnswersControllerImpl::OnRetryQuickAnswersRequest() {

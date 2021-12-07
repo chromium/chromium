@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_browser_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
@@ -146,9 +145,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // Needed by AmbientController in ash.
   if (chromeos::features::IsAmbientModeEnabled())
     ambient_client_ = std::make_unique<AmbientClientImpl>();
-
-  quick_answers_browser_client_ =
-      std::make_unique<QuickAnswersBrowserClientImpl>();
 
   ash_shell_init_ = std::make_unique<AshShellInit>();
 

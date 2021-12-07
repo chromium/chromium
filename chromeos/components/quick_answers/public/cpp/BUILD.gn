@@ -4,8 +4,6 @@
 
 source_set("cpp") {
   sources = [
-    "controller/quick_answers_browser_client.cc",
-    "controller/quick_answers_browser_client.h",
     "controller/quick_answers_controller.cc",
     "controller/quick_answers_controller.h",
     "quick_answers_state.cc",

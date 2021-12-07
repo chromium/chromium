@@ -30,6 +30,9 @@ class ResultLoader {
   // A delegate interface for the ResultLoader.
   class ResultLoaderDelegate {
    public:
+    using AccessTokenCallback =
+        base::OnceCallback<void(const std::string& access_token)>;
+
     ResultLoaderDelegate(const ResultLoaderDelegate&) = delete;
     ResultLoaderDelegate& operator=(const ResultLoaderDelegate&) = delete;
 
@@ -40,6 +43,9 @@ class ResultLoader {
     // be |nullptr| if no answer found for the selected content.
     virtual void OnQuickAnswerReceived(
         std::unique_ptr<QuickAnswer> quick_answer) {}
+
+    // Request for the access token associated with the active user's profile.
+    virtual void RequestAccessToken(AccessTokenCallback callback) {}
 
    protected:
     ResultLoaderDelegate() = default;
@@ -86,6 +92,8 @@ class ResultLoader {
   virtual void ProcessResponse(const PreprocessedOutput& preprocessed_output,
                                std::unique_ptr<std::string> response_body,
                                ResponseParserCallback complete_callback) = 0;
+
+  ResultLoaderDelegate* delegate() const { return delegate_; }
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

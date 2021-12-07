@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_browser_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
@@ -70,7 +69,7 @@ TranslationResultLoader::~TranslationResultLoader() = default;
 void TranslationResultLoader::BuildRequest(
     const PreprocessedOutput& preprocessed_output,
     BuildRequestCallback callback) const {
-  ash::QuickAnswersBrowserClient::Get()->RequestAccessToken(base::BindOnce(
+  delegate()->RequestAccessToken(base::BindOnce(
       &TranslationResultLoader::OnRequestAccessTokenComplete,
       base::Unretained(this), preprocessed_output, std::move(callback)));
 }
