@@ -4,24 +4,28 @@
 
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 bool ColorSpaceNameIsValid(const String& color_space_name,
                            ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::CanvasColorManagementV2Enabled()) {
-    // The enum value 'rec2020' is not valid unless CanvasColorManagementV2 is
-    // enabled.
-    if (color_space_name == kRec2020CanvasColorSpaceName) {
-      exception_state.ThrowTypeError(
-          "The provided value '" + color_space_name +
-          "' is not a valid enum value of the type PredefinedColorSpace.");
-      return false;
-    }
+  bool color_space_name_valid = true;
+  if (color_space_name == "rec2020") {
+    color_space_name_valid =
+        RuntimeEnabledFeatures::CanvasColorManagementV2Enabled();
+  } else if (color_space_name == "rec2100-hlg" ||
+             color_space_name == "rec2100-pq" ||
+             color_space_name == "srgb-linear") {
+    color_space_name_valid = RuntimeEnabledFeatures::CanvasHDREnabled();
   }
-  return true;
+  if (color_space_name_valid)
+    return true;
+
+  exception_state.ThrowTypeError(
+      "The provided value '" + color_space_name +
+      "' is not a valid enum value of the type PredefinedColorSpace.");
+  return false;
 }  // namespace blink
 
 }  // namespace blink

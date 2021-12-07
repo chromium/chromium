@@ -352,6 +352,10 @@
       status: "experimental",
     },
     {
+      name: "CanvasHDR",
+      status: "experimental",
+    },
+    {
       name: "CanvasImageSmoothing",
       status: "experimental",
     },
