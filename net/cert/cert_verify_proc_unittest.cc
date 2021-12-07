@@ -2055,7 +2055,7 @@ TEST_P(CertVerifyProcInternalTest, VerifyReturnChainFiltersUnrelatedCerts) {
   scoped_refptr<X509Certificate> unrelated_certificate =
       ImportCertFromFile(certs_dir, "duplicate_cn_1.pem");
   scoped_refptr<X509Certificate> unrelated_certificate2 =
-      ImportCertFromFile(certs_dir, "aia-cert.pem");
+      ImportCertFromFile(certs_dir, "google.single.pem");
   ASSERT_NE(static_cast<X509Certificate*>(nullptr),
             unrelated_certificate.get());
   ASSERT_NE(static_cast<X509Certificate*>(nullptr),

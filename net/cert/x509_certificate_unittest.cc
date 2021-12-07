@@ -903,7 +903,7 @@ TEST(X509CertificateTest, IsSelfSigned) {
   EXPECT_FALSE(X509Certificate::IsSelfSigned(cert->cert_buffer()));
 
   scoped_refptr<X509Certificate> self_signed(
-      ImportCertFromFile(certs_dir, "aia-root.pem"));
+      ImportCertFromFile(certs_dir, "root_ca_cert.pem"));
   ASSERT_NE(static_cast<X509Certificate*>(nullptr), self_signed.get());
   EXPECT_TRUE(X509Certificate::IsSelfSigned(self_signed->cert_buffer()));
 

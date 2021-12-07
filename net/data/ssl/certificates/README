@@ -321,17 +321,6 @@ unit tests.
      both the cert and a private key, since there are multiple ways to import
      certificates into NSS.
 
-===== From net/data/ssl/scripts/generate-aia-certs.sh
-- aia-cert.pem
-- aia-intermediate.der
-- aia-root.pem
-     A certificate chain which we use to ensure AIA fetching works correctly
-     when using NSS to verify certificates (which uses our HTTP stack).
-     aia-cert.pem has a caIssuers that points to "aia-test.invalid" as the URL
-     containing the intermediate, which can be served via a URLRequestFilter.
-     aia-intermediate.der is stored in DER form for convenience, since that is
-     the form expected of certificates discovered via AIA.
-
 ===== From net/data/ssl/scripts/generate-self-signed-certs.sh
 - self-signed-invalid-name.pem
 - self-signed-invalid-sig.pem
