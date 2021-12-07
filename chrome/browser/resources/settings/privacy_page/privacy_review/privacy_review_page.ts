@@ -138,6 +138,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   /** RouteObserverBehavior */
   currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.PRIVACY_REVIEW) {
+      // Set the pref that the user has viewed the Privacy guide.
+      this.setPrefValue('privacy_guide.viewed', true);
+
       this.updateStateFromQueryParameters_();
     }
   }

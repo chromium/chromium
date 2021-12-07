@@ -1203,6 +1203,7 @@ extern const char kLensRegionSearchEnabled[];
 #endif
 
 extern const char kPrivacyReviewShowWelcomeCard[];
+extern const char kPrivacyGuideViewed[];
 
 extern const char kCorsNonWildcardRequestHeadersSupport[];
 

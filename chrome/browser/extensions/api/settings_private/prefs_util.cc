@@ -275,6 +275,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Privacy Review
   (*s_allowlist)[::prefs::kPrivacyReviewShowWelcomeCard] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[::prefs::kPrivacyGuideViewed] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Privacy Sandbox page
   (*s_allowlist)[::prefs::kPrivacySandboxApisEnabled] =
