@@ -1183,6 +1183,7 @@ void GuestOsRegistryService::InvokeActiveIconCallbacks(
   for (auto& callback : callbacks) {
     std::move(callback).Run(icon_content);
   }
+  active_icon_requests_.erase(key);
 }
 
 void GuestOsRegistryService::OnSvgIconTranscoded(std::string app_id,
