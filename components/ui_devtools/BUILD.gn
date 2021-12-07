@@ -90,6 +90,7 @@ component("ui_devtools") {
   defines = [ "UI_DEVTOOLS_IMPLEMENTATION" ]
 
   deps = [
+    ":features",
     ":protocol_generated_sources",
     "//base",
     "//mojo/public/cpp/bindings",
@@ -107,6 +108,19 @@ component("ui_devtools") {
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
   ]
+}
+
+component("features") {
+  output_name = "ui_devtools_features"
+
+  defines = [ "IS_UI_DEVTOOLS_FEATURES_IMPL" ]
+
+  sources = [
+    "ui_devtools_features.cc",
+    "ui_devtools_features.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 static_library("test_support") {
