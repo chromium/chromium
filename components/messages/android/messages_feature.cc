@@ -38,7 +38,7 @@ const base::Feature kMessagesForAndroidPopupBlocked{
     "MessagesForAndroidPopupBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidReaderMode{
-    "MessagesForAndroidReaderMode", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidReaderMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidSafetyTip{
     "MessagesForAndroidSafetyTip", base::FEATURE_ENABLED_BY_DEFAULT};
