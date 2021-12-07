@@ -754,6 +754,7 @@
     },
     'chromeos_net': {
       'filepath': 'ash/system/network/|'\
+                  'chromeos/dbus/shill/|'\
                   'chromeos/network/|'\
                   'chromeos/services/network_config/|'\
                   'chrome/browser/ash/net/|'\
@@ -2380,10 +2381,15 @@
                        'tbarzic+watch@chromium.org'],
     'chromeos_media_app': ['cros-essential-apps-dev-watch@chromium.org'],
     'chromeos_net': ['azeemarshad+watch-network@chromium.org',
-                     'benchan+watch-network@chromium.org',
+                     'chadduffin+watch-network@chromium.org',
                      'ejcaruso+watch-network@chromium.org',
+                     'gordonseto+watch-network@google.com',
+                     'hsuregan+watch-network@chromium.org',
+                     'jiajunz+watch-network@google.com',
                      'jonmann+watch-network@chromium.org',
-                     'stevenjb+watch-network@chromium.org'],
+                     'khorimoto+watch-network@chromium.org',
+                     'stevenjb+watch-network@chromium.org',
+                     'tjohnsonkanu+watch-network@google.com'],
     'chromeos_tast_control': ['chromeos-engprod+watch@google.com',
                               'bpastene+watch@chromium.org',
                               'chrome-os-gardeners+watch@google.com'],
