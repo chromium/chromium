@@ -259,24 +259,24 @@ export class ShimlessRma extends ShimlessRmaBase {
 
       /**
        * Used to disable all buttons while waiting for long running mojo API
-       * calls to complete.
+       * calls to complete. Also controls the busy state overlay.
        * TODO(gavindodd): Handle disabling per page buttons.
        * @protected
        */
       allButtonsDisabled_: {
         type: Boolean,
         value: true,
+        reflectToAttribute: true,
       },
 
       /**
-       * True when the Next button is clicked and the page is waiting for the
-       * response from the RMAD service.
+       * After the next button is clicked, true until the next state is
+       * processed.
        * @protected
        */
-      waitingForNextResponse_: {
+      nextButtonClicked_: {
         type: Boolean,
         value: false,
-        reflectToAttribute: true,
       },
     };
   }
@@ -302,6 +302,11 @@ export class ShimlessRma extends ShimlessRmaBase {
      * @private {?Function}
      */
     this.transitionState_ = (e) => {
+      // If already in a busy state, ignore requests.
+      if (this.allButtonsDisabled_) {
+        return;
+      }
+
       this.allButtonsDisabled_ = true;
       e.detail().then((stateResult) => this.processStateResult_(stateResult));
     };
@@ -406,6 +411,7 @@ export class ShimlessRma extends ShimlessRmaBase {
   showState_(state, canCancel, canGoBack) {
     const pageInfo = StateComponentMapping[state];
     assert(pageInfo);
+    this.nextButtonClicked_ = false;
     this.allButtonsDisabled_ = false;
     pageInfo.buttonCancel =
         canCancel ? ButtonState.VISIBLE : ButtonState.HIDDEN;
@@ -503,16 +509,15 @@ export class ShimlessRma extends ShimlessRmaBase {
         typeof page.onNextButtonClick === 'function',
         'onNextButtonClick not a function for ' +
             this.currentPage_.componentIs);
+    this.nextButtonClicked_ = true;
     this.allButtonsDisabled_ = true;
-    this.waitingForNextResponse_ = true;
     page.onNextButtonClick()
         .then((stateResult) => {
-          this.waitingForNextResponse_ = false;
           this.processStateResult_(stateResult);
         })
         // TODO(gavindodd): Better error handling.
         .catch((err) => {
-          this.waitingForNextResponse_ = false;
+          this.nextButtonClicked_ = false;
           this.allButtonsDisabled_ = false;
         });
   }

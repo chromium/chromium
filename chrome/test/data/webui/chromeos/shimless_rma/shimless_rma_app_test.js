@@ -248,4 +248,27 @@ export function shimlessRMAAppTest() {
         'Error: kReimagingUsbInvalidImage(23)',
         suppressedErrorMessage(component));
   });
+
+  test('BusyStateButtonSpinners', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-landing-page');
+    assertTrue(!!initialPage);
+
+    const resolver = new PromiseResolver();
+    initialPage.onNextButtonClick = () => resolver.promise;
+
+    const nextButtonSpinner =
+        component.shadowRoot.querySelector('#nextButtonSpinner');
+    assertTrue(nextButtonSpinner.hidden);
+
+    await clickNext();
+    assertFalse(nextButtonSpinner.hidden);
+
+    resolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    await flushTasks();
+
+    assertTrue(nextButtonSpinner.hidden);
+  });
 }

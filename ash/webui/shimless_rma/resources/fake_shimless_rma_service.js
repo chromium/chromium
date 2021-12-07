@@ -162,7 +162,8 @@ export class FakeShimlessRmaService {
       this.setFakePrevState_(
           state.state, state.canCancel, state.canGoBack, state.error);
     }
-    return this.methods_.resolveMethod('transitionPreviousState');
+    return this.methods_.resolveMethodWithDelay(
+        'transitionPreviousState', this.resolveMethodDelayMs_);
   }
 
   /**

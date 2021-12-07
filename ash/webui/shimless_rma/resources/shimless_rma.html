@@ -3,10 +3,6 @@
     padding: 50px;
   }
 
-  :host([waiting-for-next-response_]) #shimlessRMAContainer {
-    opacity: .4;
-  }
-
   .shimless-footer {
     text-align: right;
     margin-top: 10px;
@@ -30,18 +26,33 @@
     margin-right: 5px;
   }
 
-  #busyIcon {
+  .busy-icon {
     height: 20px;
     width: 20px;
   }
 
-  #busyIcon,
-  #nextButtonCaret {
+  #nextButtonCaret,
+  #nextButtonSpinner {
     margin-inline-start: 5px;
+  }
+
+  #busyStateOverlay {
+    background-color: white;
+    display: none;
+    height: 100vh;
+    opacity: .4;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+  }
+
+  :host([all-buttons-disabled_]) #busyStateOverlay {
+    display: block;
   }
 </style>
 
 <div id="shimlessRMAContainer">
+  <div id="busyStateOverlay"></div>
   <div class="shimless-header">
     <cr-button
       id="back" on-click="onBackButtonClicked_"
@@ -65,10 +76,10 @@
       <span id="nextButtonLabel">
         [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
       </span>
-      <paper-spinner-lite id="busyIcon" hidden$="[[!waitingForNextResponse_]]"
-        active>
+      <paper-spinner-lite id="nextButtonSpinner" class="busy-icon"
+          hidden$="[[!nextButtonClicked_]]" active>
       </paper-spinner-lite>
-      <span id="nextButtonCaret" hidden$="[[waitingForNextResponse_]]">
+      <span id="nextButtonCaret" hidden$="[[nextButtonClicked_]]">
         &#62;
       </span>
     </cr-button>
