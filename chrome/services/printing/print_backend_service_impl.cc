@@ -368,16 +368,6 @@ void PrintBackendServiceImpl::StartPrinting(
     return;
   }
 
-  // Save all the document settings for use through the print job, until the
-  // time that this document can complete printing.  Track the order of
-  // received documents with position in `documents_`.
-  auto document = base::MakeRefCounted<PrintedDocument>(
-      std::make_unique<PrintSettings>(settings), document_name,
-      document_cookie);
-  documents_.push_back(
-      std::make_unique<PrintBackendServiceImpl::DocumentContainer>(
-          document, target_type, std::move(callback)));
-
 #if defined(OS_CHROMEOS) && defined(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
   if (connection_pool) {
@@ -393,6 +383,16 @@ void PrintBackendServiceImpl::StartPrinting(
     }
   }
 #endif
+
+  // Save all the document settings for use through the print job, until the
+  // time that this document can complete printing.  Track the order of
+  // received documents with position in `documents_`.
+  auto document = base::MakeRefCounted<PrintedDocument>(
+      std::make_unique<PrintSettings>(settings), document_name,
+      document_cookie);
+  documents_.push_back(
+      std::make_unique<PrintBackendServiceImpl::DocumentContainer>(
+          document, target_type, std::move(callback)));
 
   // Safe to use `base::Unretained(this)` because `this` outlives the callback.
   // The entire service process goes away when `this` lifetime expires.
