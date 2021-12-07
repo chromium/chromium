@@ -2539,6 +2539,9 @@ void StyleEngine::UpdateStyleRecalcRoot(ContainerNode* ancestor,
     ancestor = nullptr;
     dirty_node = document_;
   }
+#if DCHECK_IS_ON()
+  DCHECK(!dirty_node || DisplayLockUtilities::AssertStyleAllowed(*dirty_node));
+#endif
   style_recalc_root_.Update(ancestor, dirty_node);
 }
 
@@ -2551,8 +2554,11 @@ void StyleEngine::UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor,
     DCHECK(allow_mark_for_reattach_from_rebuild_layout_tree_);
     return;
   }
+#if DCHECK_IS_ON()
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(dirty_node);
+  DCHECK(DisplayLockUtilities::AssertStyleAllowed(*dirty_node));
+#endif
   layout_tree_rebuild_root_.Update(ancestor, dirty_node);
 }
 

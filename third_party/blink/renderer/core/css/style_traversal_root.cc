@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/style_traversal_root.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 
@@ -12,12 +11,9 @@ namespace blink {
 
 void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
                                 Node* dirty_node) {
-#if DCHECK_IS_ON()
   DCHECK(dirty_node);
   DCHECK(dirty_node->isConnected());
-  DCHECK(DisplayLockUtilities::AssertStyleAllowed(*dirty_node));
   AssertRootNodeInvariants();
-#endif
 
   if (!common_ancestor) {
     // This is either first dirty node in which case we are using it as a
