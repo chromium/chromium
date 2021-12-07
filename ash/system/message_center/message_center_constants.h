@@ -28,7 +28,7 @@ constexpr int kMessageCenterBottomPadding = 8;
 constexpr int kMessageListNotificationSpacing = 2;
 
 constexpr int kNotificationBarVerticalPadding = 8;
-constexpr int kNotificationBarHorizontalPadding = 16;
+constexpr int kNotificationBarHorizontalPadding = 10;
 
 // Constants for `ash_notification_view`.
 
@@ -44,8 +44,8 @@ constexpr gfx::Size kNotificationExpandButtonLabelSize(8, 16);
 constexpr gfx::Size kNotificationExpandButtonSize(24, 24);
 constexpr gfx::Size kNotificationExpandButtonWithLabelSize(40, 24);
 
-constexpr gfx::Insets kAppIconViewExpandedPadding(2, 0, 0, 0);
-constexpr gfx::Insets kAppIconViewCollapsedPadding(6, 0, 0, 0);
+constexpr gfx::Insets kAppIconExpandButtonExpandedPadding(2, 0, 0, 0);
+constexpr gfx::Insets kAppIconExpandButtonCollapsedPadding(12, 0, 0, 0);
 
 constexpr gfx::Insets kControlButtonsContainerExpandedPadding(6, 0, 2, 0);
 constexpr gfx::Insets kControlButtonsContainerCollapsedPadding(2, 0, 0, 0);

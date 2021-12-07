@@ -20,6 +20,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/button_test_api.h"
 
 using message_center::Notification;
@@ -175,6 +176,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
   AshNotificationExpandButton* expand_button() {
     return notification_view_->expand_button_;
+  }
+  views::FlexLayoutView* expand_button_container() {
+    return notification_view_->expand_button_container_;
   }
   views::View* inline_settings_row() {
     return notification_view()->inline_settings_row();
@@ -488,6 +492,30 @@ TEST_F(AshNotificationViewTest, SnoozeButtonVisibility) {
 
   // Snooze button should be visible if notification does use it.
   EXPECT_TRUE(snooze_button()->GetVisible());
+}
+
+TEST_F(AshNotificationViewTest, AppIconAndExpandButtonAlignment) {
+  auto notification = CreateTestNotification();
+  notification_view()->UpdateWithNotification(*notification);
+
+  // Make sure that app icon and expand button is vertically aligned in
+  // collapsed mode. Also, the padding of them should be the same.
+  notification_view()->SetExpanded(false);
+  EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
+            expand_button_container()->GetBoundsInScreen().y());
+  EXPECT_EQ(app_icon_view()->GetContentsBounds().y(),
+            expand_button_container()->GetInteriorMargin().top());
+
+  // Make sure that app icon, expand button, and also header row is vertically
+  // aligned in collapsed mode. Also check the padding for app icon and expand
+  // button again.
+  notification_view()->SetExpanded(true);
+  EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
+            expand_button_container()->GetBoundsInScreen().y());
+  EXPECT_EQ(app_icon_view()->GetBoundsInScreen().y(),
+            header_row()->GetBoundsInScreen().y());
+  EXPECT_EQ(app_icon_view()->GetContentsBounds().y(),
+            expand_button_container()->GetInteriorMargin().top());
 }
 
 }  // namespace ash

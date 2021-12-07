@@ -28,6 +28,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -103,10 +104,14 @@ constexpr double kAppIconLightnessInLightMode = 0.4;
 
 // Configure the style for labels in notification view. `is_color_primary`
 // indicates if the color of the text is primary or secondary text color.
-void ConfigureLabelStyle(views::Label* label, int size, bool is_color_primary) {
+void ConfigureLabelStyle(
+    views::Label* label,
+    int size,
+    bool is_color_primary,
+    gfx::Font::Weight font_weight = gfx::Font::Weight::NORMAL) {
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, size,
-                                   gfx::Font::Weight::MEDIUM));
+  label->SetFontList(
+      gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, size, font_weight));
   auto layer_type =
       is_color_primary
           ? ash::AshColorProvider::ContentLayerType::kTextColorPrimary
@@ -189,7 +194,7 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
                       /*is_color_primary=*/false);
   message_center_utils::InitLayerForAnimations(timestamp_in_collapsed_view_);
   ConfigureLabelStyle(title_view_, kTitleLabelSize,
-                      /*is_color_primary=*/true);
+                      /*is_color_primary=*/true, gfx::Font::Weight::MEDIUM);
 }
 
 AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
@@ -289,6 +294,7 @@ AshNotificationView::AshNotificationView(
                   .AddChild(CreateRightContentBuilder())
                   .AddChild(
                       views::Builder<views::FlexLayoutView>()
+                          .CopyAddressTo(&expand_button_container_)
                           .SetOrientation(views::LayoutOrientation::kHorizontal)
                           .AddChild(
                               views::Builder<AshNotificationExpandButton>()
@@ -298,9 +304,7 @@ AshNotificationView::AshNotificationView(
                                       base::Unretained(this)))
                                   .SetProperty(
                                       views::kCrossAxisAlignmentKey,
-                                      IsExpanded()
-                                          ? views::LayoutAlignment::kStart
-                                          : views::LayoutAlignment::kCenter))));
+                                      views::LayoutAlignment::kStart))));
 
   // Main right view contains all the views besides control buttons and
   // icon.
@@ -574,9 +578,6 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
           expanded ? kControlButtonsContainerExpandedPadding
                    : kControlButtonsContainerCollapsedPadding);
 
-  app_icon_view_->SetBorder(views::CreateEmptyBorder(
-      expanded ? kAppIconViewExpandedPadding : kAppIconViewCollapsedPadding));
-
   bool is_single_expanded_notification =
       !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
   header_row()->SetVisible(is_grouped_parent_view_ ||
@@ -598,9 +599,15 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
                                                 !is_grouped_parent_view_);
   }
 
-  expand_button_->SetProperty(views::kCrossAxisAlignmentKey,
-                              expanded ? views::LayoutAlignment::kStart
-                                       : views::LayoutAlignment::kCenter);
+  // Custom padding for app icon and expand button. These 2 views should always
+  // use the same padding value so that they are vertical aligned.
+  app_icon_view_->SetBorder(views::CreateEmptyBorder(
+      expanded ? kAppIconExpandButtonExpandedPadding
+               : kAppIconExpandButtonCollapsedPadding));
+  expand_button_container_->SetInteriorMargin(
+      expanded ? kAppIconExpandButtonExpandedPadding
+               : kAppIconExpandButtonCollapsedPadding);
+
   expand_button_->SetExpanded(expanded);
 
   static_cast<views::BoxLayout*>(

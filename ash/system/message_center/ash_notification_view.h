@@ -18,6 +18,7 @@ class Notification;
 
 namespace views {
 class BoxLayout;
+class FlexLayoutView;
 class ImageButton;
 class LabelButton;
 class View;
@@ -162,6 +163,7 @@ class ASH_EXPORT AshNotificationView
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   AshNotificationExpandButton* expand_button_ = nullptr;
+  views::FlexLayoutView* expand_button_container_ = nullptr;
   views::View* control_buttons_container_ = nullptr;
   views::View* left_content_ = nullptr;
   views::Label* message_view_in_expanded_state_ = nullptr;
