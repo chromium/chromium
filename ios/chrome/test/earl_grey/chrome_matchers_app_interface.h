@@ -125,6 +125,11 @@
 // Matcher for Tools menu button.
 + (id<GREYMatcher>)toolsMenuButton;
 
+// Matcher for the New Tab button, which can be long-pressed for a menu.
+// (This method can't be named +newTabButton, because starting a class method
+// with 'new' implicitly treats it as a constructor).
++ (id<GREYMatcher>)openNewTabButton;
+
 // Matcher for the Share... button.
 + (id<GREYMatcher>)shareButton;
 
@@ -333,6 +338,12 @@
 
 // Returns matcher for the NTP view when the user is in incognito mode.
 + (id<GREYMatcher>)ntpIncognitoView;
+
+// Returns matcher for the NTP Feed menu button which enables the feed.
++ (id<GREYMatcher>)ntpFeedMenuEnableButton;
+
+// Returns matcher for the NTP Feed menu button which disables the feed.
++ (id<GREYMatcher>)ntpFeedMenuDisableButton;
 
 // Returns matcher for the warning message while filling in payment requests.
 + (id<GREYMatcher>)warningMessageView;
