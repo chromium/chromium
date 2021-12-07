@@ -168,7 +168,7 @@ bool HTMLSelectElement::ValueMissing() const {
 
   int first_selection_index = selectedIndex();
 
-  // If a non-placeholer label option is selected (firstSelectionIndex > 0),
+  // If a non-placeholder label option is selected (firstSelectionIndex > 0),
   // it's not value-missing.
   return first_selection_index < 0 ||
          (!first_selection_index && HasPlaceholderLabelOption());

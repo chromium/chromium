@@ -47,6 +47,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   // For use in the implementation of HTMLOptionElement.
   void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
   void OptionElementChildrenChanged(const HTMLOptionElement& option);
+  void OptionElementValueChanged(const HTMLOptionElement& option);
 
   PartType AssignedPartType(Node* node) const;
 

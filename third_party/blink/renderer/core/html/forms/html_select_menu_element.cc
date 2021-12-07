@@ -659,6 +659,7 @@ void HTMLSelectMenuElement::OptionPartInserted(
   if (!selected_option_ || new_option_part->Selected()) {
     SetSelectedOption(new_option_part);
   }
+  SetNeedsValidityCheck();
 }
 
 void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
@@ -681,6 +682,7 @@ void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
     auto* first_option_part = FirstOptionPart();
     SetSelectedOption(first_option_part);
   }
+  SetNeedsValidityCheck();
 }
 
 HTMLOptionElement* HTMLSelectMenuElement::FirstOptionPart() const {
@@ -733,13 +735,25 @@ void HTMLSelectMenuElement::SetSelectedOption(
     selected_option_->SetSelectedState(true);
 
   UpdateSelectedValuePartContents();
+  SetNeedsValidityCheck();
   NotifyFormStateChanged();
 }
 
 void HTMLSelectMenuElement::OptionElementChildrenChanged(
     const HTMLOptionElement& option) {
-  if (selected_option_ == &option)
+  if (selected_option_ == &option) {
+    SetNeedsValidityCheck();
+    NotifyFormStateChanged();
     UpdateSelectedValuePartContents();
+  }
+}
+
+void HTMLSelectMenuElement::OptionElementValueChanged(
+    const HTMLOptionElement& option) {
+  if (selected_option_ == &option) {
+    SetNeedsValidityCheck();
+    NotifyFormStateChanged();
+  }
 }
 
 void HTMLSelectMenuElement::SelectNextOption() {
@@ -894,10 +908,10 @@ bool HTMLSelectMenuElement::ValueMissing() const {
     return false;
 
   if (auto* selected_option = SelectedOption()) {
-    // If a non-placeholer label option is selected, it's not value-missing.
-    // TODO(crbug.com/1121840) Sync APIs shouldn't rely on async computed
-    // option_parts_
-    return option_parts_.size() == 1 && selected_option->value().IsEmpty();
+    // If a non-placeholder label option is selected, it's not value-missing.
+    // https://html.spec.whatwg.org/multipage/form-elements.html#placeholder-label-option
+    return selected_option == FirstOptionPart() &&
+           selected_option->value().IsEmpty();
   }
 
   return true;

@@ -32,8 +32,36 @@ test(() => {
 
   let emptyOption = document.createElement('option');
   selectMenu.appendChild(emptyOption);
-  // TODO(crbug.com/1121840) Sync APIs shouldn't rely on async computed option_parts_
-  // assert_true(selectMenu.checkValidity(), "An empty non-placeholder option should be a valid choice.");
+  assert_false(selectMenu.checkValidity(), "A selected placeholder option should invalidate the selectmenu even if there are multiple options.");
+  emptyOption.selected = true;
+  assert_true(selectMenu.checkValidity(), "An empty non-placeholder option should be a valid choice.");
+
+  let filledOption = document.createElement('option');
+  filledOption.value = "test";
+  selectMenu.appendChild(filledOption);
+  filledOption.selected = true;
+  assert_equals(selectMenu.value, "test", "The non-empty value should be set.");
+  assert_true(selectMenu.checkValidity(), "A non-empty non-placeholder option should be a valid choice.");
+
+  selectMenu.removeChild(option);
+  selectMenu.appendChild(emptyOption);
+  emptyOption.selected = true;
+  assert_equals(selectMenu.value, "", "The empty value should be set.");
+  assert_true(selectMenu.checkValidity(), "Only the first option can be seen as a placeholder.");
+
+  selectMenu.removeChild(filledOption);
+  assert_false(selectMenu.checkValidity(), "A selected placeholder option should invalidate the selectmenu.");
+
+  emptyOption.value = "test2";
+  assert_equals(selectMenu.value, "test2");
+  assert_true(selectMenu.checkValidity(), "A non-empty option value should be a valid choice.");
+
+  emptyOption.removeAttribute("value");
+  assert_equals(selectMenu.value, "");
+  assert_false(selectMenu.checkValidity());
+  emptyOption.innerText = "test";
+  assert_equals(selectMenu.value, "test");
+  assert_true(selectMenu.checkValidity(), "A non-empty option should be a valid choice.");
 
   const selectMenu1 = document.getElementById('selectmenu1');
   assert_equals(selectMenu1.value, "one");
