@@ -33,7 +33,7 @@ namespace chromeos {
 namespace {
 
 constexpr int kBluetoothPairingDialogHeight = 375;
-constexpr int kBluetoothPairingDialogHeightWithFlag = 408;
+constexpr int kBluetoothPairingDialogHeightWithFlag = 424;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
