@@ -1353,13 +1353,15 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation_of_main_frame,
-    LifecycleStateImpl lifecycle_state)
+    LifecycleStateImpl lifecycle_state,
+    scoped_refptr<BrowsingContextState> browsing_context_state)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
       agent_scheduling_group_(site_instance_->GetAgentSchedulingGroup()),
       frame_tree_(frame_tree),
       frame_tree_node_(frame_tree_node),
+      browsing_context_state_(std::move(browsing_context_state)),
       parent_(frame_tree_node_->parent()),
       depth_(parent_ ? parent_->GetFrameDepth() + 1 : 0),
       last_committed_site_info_(site_instance_->GetBrowserContext()),
@@ -12631,6 +12633,25 @@ bool RenderFrameHostImpl::DocumentUsedWebOTP() {
 void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
   frame_tree_node_ = &frame_tree_node;
   SetFrameTree(*frame_tree_node_->frame_tree());
+  // Setting the FrameTreeNode is only done for FrameTree/FrameTreeNode swaps
+  // in MPArch (specifically prerender activation). This is to ensure that
+  // fields such as proxies and ReplicationState are copied over correctly. In
+  // the new functionality for swapping BrowsingContext on cross
+  // BrowsingInstance navigations, the BrowsingContextState is the only field
+  // that will need to be swapped.
+  switch (features::GetBrowsingContextMode()) {
+    case (features::BrowsingContextStateImplementationType::
+              kLegacyOneToOneWithFrameTreeNode):
+      browsing_context_state_ =
+          frame_tree_node_->render_manager()->browsing_context_state();
+      break;
+    case (features::BrowsingContextStateImplementationType::
+              kSwapForCrossBrowsingInstanceNavigations):
+      // TODO(crbug.com/1270671): implement functionality for swapping on cross
+      // browsing instance navigations as needed. This will likely be removed
+      // once BrowsingContextState is decoupled from FrameTreeNode.
+      break;
+  }
 }
 
 void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {

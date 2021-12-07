@@ -43,6 +43,7 @@
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_access_report_manager.h"
 #include "content/browser/renderer_host/keep_alive_handle_factory.h"
@@ -195,6 +196,7 @@ class DocumentServiceBase;
 }  // namespace internal
 
 class AgentSchedulingGroupHost;
+class BrowsingContextState;
 class CodeCacheHostImpl;
 class CrossOriginEmbedderPolicyReporter;
 class CrossOriginOpenerPolicyAccessReportManager;
@@ -2405,6 +2407,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // should be sandboxed / should have an opaque origin instead).
   void SetOriginDependentStateOfNewFrame(const url::Origin& new_frame_creator);
 
+  // Returns the BrowsingContextState associated with this RenderFrameHostImpl.
+  // See class comments in BrowsingContextState for a more detailed description.
+  scoped_refptr<BrowsingContextState>& browsing_context_state() {
+    return browsing_context_state_;
+  }
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -2414,16 +2422,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // into WebContentsObserver::FrameDetached for now.
   // |lifecycle_state_| can either be kSpeculative, kPrerendering, or kActive
   // during RenderFrameHostImpl creation.
-  RenderFrameHostImpl(SiteInstance* site_instance,
-                      scoped_refptr<RenderViewHostImpl> render_view_host,
-                      RenderFrameHostDelegate* delegate,
-                      FrameTree* frame_tree,
-                      FrameTreeNode* frame_tree_node,
-                      int32_t routing_id,
-                      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
-                      const blink::LocalFrameToken& frame_token,
-                      bool renderer_initiated_creation_of_main_frame,
-                      LifecycleStateImpl lifecycle_state);
+  RenderFrameHostImpl(
+      SiteInstance* site_instance,
+      scoped_refptr<RenderViewHostImpl> render_view_host,
+      RenderFrameHostDelegate* delegate,
+      FrameTree* frame_tree,
+      FrameTreeNode* frame_tree_node,
+      int32_t routing_id,
+      mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
+      const blink::LocalFrameToken& frame_token,
+      bool renderer_initiated_creation_of_main_frame,
+      LifecycleStateImpl lifecycle_state,
+      scoped_refptr<BrowsingContextState> browsing_context_state);
 
   // The SendCommit* functions below are wrappers for commit calls
   // made to mojom::NavigationClient.
@@ -3293,6 +3303,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The FrameTreeNode which this RenderFrameHostImpl is hosted in.
   raw_ptr<FrameTreeNode> frame_tree_node_ = nullptr;
+
+  // Stores all of the state related to each browsing context +
+  // BrowsingInstance. This includes proxy hosts, and replication state, and
+  // will help facilitate the full removal of references to frame_tree_ and
+  // frame_tree_node_ (per crbug.com/1179502).
+  // TODO(crbug.com/1270671): make this field const when legacy mode is removed.
+  scoped_refptr<BrowsingContextState> browsing_context_state_;
 
   // The immediate children of this specific frame.
   std::vector<std::unique_ptr<FrameTreeNode>> children_;

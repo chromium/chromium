@@ -294,7 +294,9 @@ void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
 
 RenderFrameHostManager::RenderFrameHostManager(FrameTreeNode* frame_tree_node,
                                                Delegate* delegate)
-    : frame_tree_node_(frame_tree_node), delegate_(delegate) {
+    : frame_tree_node_(frame_tree_node),
+      delegate_(delegate),
+      browsing_context_state_(base::MakeRefCounted<BrowsingContextState>()) {
   DCHECK(frame_tree_node_);
 }
 
@@ -318,7 +320,7 @@ void RenderFrameHostManager::InitRoot(SiteInstance* site_instance,
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
-      renderer_initiated_creation));
+      renderer_initiated_creation, browsing_context_state_));
 
   // Creating a main RenderFrameHost also creates a new Page, so notify the
   // delegate about this.
@@ -334,7 +336,8 @@ void RenderFrameHostManager::InitChild(
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitChild, site_instance, frame_routing_id,
       std::move(frame_remote), frame_token,
-      /*renderer_initiated_creation=*/false));
+      /*renderer_initiated_creation=*/false,
+      base::MakeRefCounted<BrowsingContextState>()));
 }
 
 RenderWidgetHostViewBase* RenderFrameHostManager::GetRenderWidgetHostView()
@@ -2624,7 +2627,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
     int32_t frame_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
-    bool renderer_initiated_creation) {
+    bool renderer_initiated_creation,
+    scoped_refptr<BrowsingContextState> browsing_context_state) {
   FrameTree* frame_tree = frame_tree_node_->frame_tree();
 
   // Only the kInitChild case passes in a frame routing id.
@@ -2694,7 +2698,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
       site_instance, std::move(render_view_host),
       frame_tree->render_frame_delegate(), frame_tree, frame_tree_node_,
       frame_routing_id, std::move(frame_remote), frame_token,
-      renderer_initiated_creation, lifecycle_state);
+      renderer_initiated_creation, lifecycle_state,
+      std::move(browsing_context_state));
 }
 
 bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
@@ -2756,12 +2761,28 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
          render_frame_host_->must_be_replaced() ||
          ShouldCreateNewHostForSameSiteSubframe());
 
+  scoped_refptr<BrowsingContextState> browsing_context_state;
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kLegacyOneToOneWithFrameTreeNode) {
+    browsing_context_state = browsing_context_state_;
+  } else {
+    // For speculative frame hosts, we will need to create a new
+    // BrowsingContextState when we have a cross-BrowsingInstance navigation,
+    // as the browsing context + BrowsingInstance combination changes.
+    browsing_context_state =
+        render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(instance)
+            ? render_frame_host_->browsing_context_state()
+            : base::MakeRefCounted<BrowsingContextState>();
+  }
+
   std::unique_ptr<RenderFrameHostImpl> new_render_frame_host =
       CreateRenderFrameHost(CreateFrameCase::kCreateSpeculative, instance,
                             /*frame_routing_id=*/MSG_ROUTING_NONE,
                             mojo::PendingAssociatedRemote<mojom::Frame>(),
                             blink::LocalFrameToken(),
-                            /*renderer_initiated_creation=*/false);
+                            /*renderer_initiated_creation=*/false,
+                            browsing_context_state);
   DCHECK_EQ(new_render_frame_host->GetSiteInstance(), instance);
 
   // Prevent the process from exiting while we're trying to navigate in it.

@@ -17,6 +17,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/browser/site_instance_group.h"
@@ -574,6 +575,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   // FrameTree immediately after this call.
   std::unique_ptr<StoredPage> TakePrerenderedPage();
 
+  const scoped_refptr<BrowsingContextState>& browsing_context_state() {
+    return browsing_context_state_;
+  }
+
  private:
   friend class NavigatorTest;
   friend class RenderFrameHostManagerTest;
@@ -831,7 +836,8 @@ class CONTENT_EXPORT RenderFrameHostManager
       int32_t frame_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       const blink::LocalFrameToken& frame_token,
-      bool renderer_initiated_creation);
+      bool renderer_initiated_creation,
+      scoped_refptr<BrowsingContextState> browsing_context_state);
 
   // Create and initialize a speculative RenderFrameHost for an ongoing
   // navigation. It might be destroyed and re-created later if the navigation is
@@ -948,6 +954,16 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Proxy hosts, indexed by SiteInstanceGroup ID.
   RenderFrameProxyHostMap proxy_hosts_;
+
+  // Temporarily store BrowsingContextState here while it is 1:1 with
+  // FrameTreeNode and RenderFrameHostManager so we can do an in-place migration
+  // before starting to create a new BrowsingContextState for
+  // cross-BrowsingInstance navigations after transitioning the code to get the
+  // appropriate BrowsingContextState from RenderFrameHost or
+  // RenderFrameProxyHost.
+  // TODO(crbug.com/1270671): remove once legacy mode is removed. This work is
+  // intended to be deprecated quickly.
+  const scoped_refptr<BrowsingContextState> browsing_context_state_;
 
   // A set of RenderFrameHosts waiting to shut down after swapping out.
   using RFHPendingDeleteSet =
