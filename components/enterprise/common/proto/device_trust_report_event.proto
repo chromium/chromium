@@ -25,13 +25,7 @@ message DeviceTrustReportEvent {
   // Because this field is used rarely, it is given a tag number
   // outside the 1-byte tag range (tags 1-15).
   message Credential {
-    // The format of the credential field.
-    enum CredentialFormat {
-      INVALID = 0;
-      // EC P-256 public key in a DER SubjectPublicKeyInfo.
-      EC_NID_X9_62_PRIME256V1_PUBLIC_DER = 1;
-    }
-    optional CredentialFormat format = 1;  // Required.
+    reserved 1;
 
     // The credential used by the server to attest future reports.
     optional bytes credential = 2;  // Required.
