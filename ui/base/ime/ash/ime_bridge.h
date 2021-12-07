@@ -64,9 +64,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   void AddObserver(ui::IMEBridgeObserver* observer);
   void RemoveObserver(ui::IMEBridgeObserver* observer);
 
-  // Switches the engine handler upon top level window focus change.
-  void MaybeSwitchEngine();
-
   // Returns current CandidateWindowHandler. This function returns nullptr if
   // current candidate window is not ready to use.
   ash::IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() const;

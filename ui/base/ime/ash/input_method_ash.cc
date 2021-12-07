@@ -306,7 +306,6 @@ void InputMethodAsh::OnFocus() {
   ui::IMEBridge* bridge = ui::IMEBridge::Get();
   if (bridge) {
     bridge->SetInputContextHandler(this);
-    bridge->MaybeSwitchEngine();
   }
 }
 

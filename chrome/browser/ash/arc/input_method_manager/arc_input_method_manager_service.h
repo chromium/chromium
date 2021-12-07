@@ -92,7 +92,6 @@ class ArcInputMethodManagerService
                           bool show_message) override;
 
   // ui::IMEBridgeObserver overrides:
-  void OnRequestSwitchEngine() override {}
   void OnInputContextHandlerChanged() override;
 
   // Called when a11y keyboard option changed and disables ARC IME while a11y

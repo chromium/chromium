@@ -54,11 +54,6 @@ void IMEBridge::RemoveObserver(ui::IMEBridgeObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void IMEBridge::MaybeSwitchEngine() {
-  for (auto& observer : observers_)
-    observer.OnRequestSwitchEngine();
-}
-
 void IMEBridge::SetCandidateWindowHandler(
     ash::IMECandidateWindowHandlerInterface* handler) {
   candidate_window_handler_ = handler;
