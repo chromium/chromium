@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/ui/browser.h"
@@ -93,12 +94,27 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   // Fetch the Blink.UseCounter.Features histogram in every renderer process
   // until reaching, but not exceeding, |expected_count|.
   void CheckCounter(WebFeature feature, int expected_count) {
+    CheckFeatureBucketCount("Blink.UseCounter.Features", feature,
+                            expected_count);
+  }
+
+  // Fetch the Blink.UseCounter.MainFrame.Features histogram in every renderer
+  // process until reaching, but not exceeding, |expected_count|.
+  void CheckCounterMainFrame(WebFeature feature, int expected_count) {
+    CheckFeatureBucketCount("Blink.UseCounter.MainFrame.Features", feature,
+                            expected_count);
+  }
+
+  // Fetch the |histogram|'s |feature| in every renderer process until reaching,
+  // but not exceeding, |expected_count|.
+  void CheckFeatureBucketCount(base::StringPiece histogram,
+                               WebFeature feature,
+                               int expected_count) {
     while (true) {
       content::FetchHistogramsFromChildProcesses();
       metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-      int count =
-          histogram_.GetBucketCount("Blink.UseCounter.Features", feature);
+      int count = histogram_.GetBucketCount(histogram, feature);
       CHECK_LE(count, expected_count);
       if (count == expected_count)
         return;
@@ -1154,6 +1170,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 0);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
                0);
+
+  CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyCredentialless,
+                        1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1168,6 +1187,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 0);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
                0);
+
+  CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1268,6 +1289,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 1);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+  CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyCredentialless,
+                        0);
+  CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1286,6 +1310,9 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 1);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+  CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyCredentialless,
+                        1);
+  CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
 }
 
 class ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker
