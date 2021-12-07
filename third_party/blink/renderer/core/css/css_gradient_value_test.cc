@@ -5,7 +5,13 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gradient.h"
 
 namespace blink {
 
@@ -57,6 +63,30 @@ TEST(CSSGradientValueTest, RadialGradient_Equals) {
   EXPECT_FALSE(
       CompareGradients("radial-gradient(100px 150px at 100px 60px, blue, red)",
                        "radial-gradient(100px at 100px 60px, blue, red)"));
+}
+
+TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
+      std::make_unique<DummyPageHolder>();
+  Document& document = dummy_page_holder->GetDocument();
+  CSSToLengthConversionData conversion_data;
+
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kBackgroundImage,
+      "-webkit-repeating-radial-gradient(center, deeppink -7%, gray "
+      "3.40282e+38%)",
+      StrictCSSParserContext(SecureContextMode::kInsecureContext));
+
+  auto* value_list = DynamicTo<CSSValueList>(value);
+  ASSERT_TRUE(value_list);
+
+  auto* radial =
+      DynamicTo<cssvalue::CSSRadialGradientValue>(value_list->Last());
+  ASSERT_TRUE(radial);
+
+  // This should not fail any DCHECKs.
+  radial->CreateGradient(conversion_data, gfx::SizeF(800, 200), document,
+                         document.ComputedStyleRef());
 }
 
 }  // namespace

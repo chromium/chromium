@@ -482,8 +482,8 @@ void AdjustGradientRadiiForOffsetRange(CSSGradientValue::GradientDesc& desc,
   DCHECK_LE(first_offset, last_offset);
 
   // Radial offsets are relative to the [0 , endRadius] segment.
-  float adjusted_r0 = desc.r1 * first_offset;
-  float adjusted_r1 = desc.r1 * last_offset;
+  float adjusted_r0 = ClampTo<float>(desc.r1 * first_offset);
+  float adjusted_r1 = ClampTo<float>(desc.r1 * last_offset);
   DCHECK_LE(adjusted_r0, adjusted_r1);
   // Unlike linear gradients (where we can adjust the points arbitrarily),
   // we cannot let our radii turn negative here.

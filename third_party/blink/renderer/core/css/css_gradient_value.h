@@ -190,7 +190,7 @@ class CSSLinearGradientValue final : public CSSGradientValue {
   Member<const CSSPrimitiveValue> angle_;
 };
 
-class CSSRadialGradientValue final : public CSSGradientValue {
+class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
  public:
   CSSRadialGradientValue(const CSSValue* first_x,
                          const CSSValue* first_y,
