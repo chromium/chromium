@@ -328,23 +328,6 @@ policies on the target process for enforcing security characteristics.
   [here](https://docs.google.com/document/d/1gJDlk-9xkh6_8M_awrczWCaUuyr0Zd2TKjNBCiPO_G4)
   for more details.
 
-#### App Container (low box token):
-
-* &gt;= Win8
-* In Windows this is implemented at the kernel level by a Low Box token which is
-  a stripped version of a normal token with limited privilege (normally just
-  `SeChangeNotifyPrivilege` and `SeIncreaseWorkingSetPrivilege`), running at Low
-  integrity level and an array of "Capabilities" which can be mapped to
-  allow/deny what the process is allowed to do (see
-  [MSDN](https://msdn.microsoft.com/en-us/library/windows/apps/hh464936.aspx)
-  for a high level description). The capability most interesting from a sandbox
-  perspective is denying is access to the network, as it turns out network
-  checks are enforced if the token is a Low Box token and the `INTERNET_CLIENT`
-  Capability is not present.
-* The sandbox therefore takes the existing restricted token and adds the Low Box
-  attributes, without granting any Capabilities, so as to gain the additional
-  protection of no network access from the sandboxed process.
-
 #### Disable Extension Points (legacy hooking):
 
 * &gt;= Win8
@@ -405,6 +388,65 @@ policies on the target process for enforcing security characteristics.
   See also:
 [ticket](https://bugs.chromium.org/p/project-zero/issues/detail?id=213&redir=1),
 [Project Zero blog](http://googleprojectzero.blogspot.co.uk/2015/05/in-console-able.html).
+
+### App Container (low box token):
+
+* In Windows this is implemented at the kernel level by a Low Box token which is
+  a stripped version of a normal token with limited privilege (normally just
+  `SeChangeNotifyPrivilege` and `SeIncreaseWorkingSetPrivilege`), running at Low
+  integrity level and an array of "Capabilities" which can be mapped to
+  allow/deny what the process is allowed to do (see
+  [MSDN](https://msdn.microsoft.com/en-us/library/windows/apps/hh464936.aspx)
+  for a high level description). The capability most interesting from a sandbox
+  perspective is denying is access to the network, as it turns out network
+  checks are enforced if the token is a Low Box token and the `INTERNET_CLIENT`
+  Capability is not present.
+* The sandbox therefore takes the existing restricted token and adds the Low Box
+  attributes, without granting any Capabilities, so as to gain the additional
+  protection of no network access from the sandboxed process.
+
+### Less Privileged App Container (LPAC)
+
+* An extension of the App Container (see above) available on later versions of
+  Windows 10 (RS2 and greater), the Less Privileged App Container (LPAC) runs
+  at a lower privilege level than normal App Container, with access granted by
+  default to only those kernel, filesystem and registry objects marked with the
+  `ALL RESTRICTED APPLICATION PACKAGES` or a specific package SID. This is
+  opposed to App Container which uses `ALL APPLICATION PACKAGES`.
+* A key characteristic of the LPAC is that specific named capabilities can be
+  added such as those based on well known SIDs (defined in
+  [`base/win/sid.h`](https://cs.chromium.org/chromium/src/base/win/sid.h)) or
+  via 'named capabilities' resolved through call to
+  [DeriveCapabilitySidsFromName](https://docs.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-derivecapabilitysidsfromname)
+  which are not really strictly defined anywhere but can be found in various
+  [places](https://social.technet.microsoft.com/Forums/scriptcenter/en-US/3e7d85e3-d0e1-4e79-8141-0bbf8faf3644/windows-10-anniversary-update-the-case-of-the-mysterious-account-sid-causing-the-flood-of-dcom?forum=win10itprosetup)
+  and include capabilities such as:
+  * `lpacCom`
+  * `registryRead`
+  * `lpacWebPlatform`
+  * `lpacClipboard`
+  * etc...
+ * Each LPAC process can have a process-specific SID created for it and this
+   can be used to protect files specific to that particular sandbox, and there
+   can be multiple different overlapping sets of access rights depending on
+   the interactions between services running in different sandboxes.
+
+#### LPAC File System Permissions
+ * Importantly, all locations in the filesystem and registry that the LPAC
+   process will access during its lifetime need to have the right ACLs on
+   them. `registryRead` is important for registry read access, and Windows
+   system files have `ALL RESTRICTED APPLICATION PACKAGES` ACE on them already,
+   but other files that the sandbox process needs access to including the
+   binaries (e.g. chrome.exe, chrome.dll) and also any data files need ACLs to
+   be laid down. This is typically done by the installer, and also done
+   automatically for tests. However, if the LPAC sandbox is to be used in other
+   environments then these filesystem permissions need to be manually laid down
+   using `icacls`, the installer, or a similar tool. An example of a ACE that
+   could be used can be found in
+   [`testing/scripts/common.py`](https://cs.chromium.org/chromium/src/testing/scripts/common.py)
+   however in high security environments a more restrictive SID should be used
+   such as one from the
+   [installer](https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/setup/install_worker.cc;l=74).
 
 ### Other caveats
 
