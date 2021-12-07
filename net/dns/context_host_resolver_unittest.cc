@@ -205,7 +205,6 @@ TEST_F(ContextHostResolverTest, DestroyRequest) {
       resolver->CreateRequest(HostPortPair("example.com", 100),
                               NetworkIsolationKey(), NetLogWithSource(),
                               absl::nullopt);
-  EXPECT_EQ(1u, resolver->GetNumActiveRequestsForTesting());
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -218,7 +217,6 @@ TEST_F(ContextHostResolverTest, DestroyRequest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(rv, test::IsError(ERR_IO_PENDING));
   EXPECT_FALSE(callback.have_result());
-  EXPECT_EQ(0u, resolver->GetNumActiveRequestsForTesting());
 }
 
 TEST_F(ContextHostResolverTest, DohProbeRequest) {
@@ -373,28 +371,6 @@ TEST_F(ContextHostResolverTest, DestroyResolver_CompletedRequests) {
               testing::ElementsAre(kEndpoint));
 }
 
-TEST_F(ContextHostResolverTest, DestroyResolver_DohProbeRequest) {
-  // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
-  MockDnsClientRuleList rules;
-  SetMockDnsRules(std::move(rules));
-
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
-  auto resolver = std::make_unique<ContextHostResolver>(
-      manager_.get(), std::move(resolve_context));
-
-  std::unique_ptr<HostResolver::ProbeRequest> request =
-      resolver->CreateDohProbeRequest();
-
-  request->Start();
-  ASSERT_TRUE(dns_client_->factory()->doh_probes_running());
-
-  resolver.reset();
-
-  EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
-}
-
 // Test a request created before resolver destruction but not yet started.
 TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartRequest) {
   // Set up delayed result for "example.com".
@@ -423,7 +399,8 @@ TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartRequest) {
   int rv = request->Start(callback.callback());
 
   EXPECT_THAT(callback.GetResult(rv), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(ERR_FAILED));
+  EXPECT_THAT(request->GetResolveErrorInfo().error,
+              test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_FALSE(request->GetAddressResults());
 }
 
@@ -443,7 +420,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartDohProbeRequest) {
 
   resolver = nullptr;
 
-  EXPECT_THAT(request->Start(), test::IsError(ERR_FAILED));
+  EXPECT_THAT(request->Start(), test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 }
 
@@ -481,28 +458,6 @@ TEST_F(ContextHostResolverTest, OnShutdown_PendingRequest) {
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(rv, test::IsError(ERR_IO_PENDING));
   EXPECT_FALSE(callback.have_result());
-}
-
-TEST_F(ContextHostResolverTest, OnShutdown_DohProbeRequest) {
-  // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
-  MockDnsClientRuleList rules;
-  SetMockDnsRules(std::move(rules));
-
-  URLRequestContext context;
-  auto resolve_context =
-      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
-  auto resolver = std::make_unique<ContextHostResolver>(
-      manager_.get(), std::move(resolve_context));
-
-  std::unique_ptr<HostResolver::ProbeRequest> request =
-      resolver->CreateDohProbeRequest();
-
-  request->Start();
-  ASSERT_TRUE(dns_client_->factory()->doh_probes_running());
-
-  resolver->OnShutdown();
-
-  EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 }
 
 TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
@@ -561,11 +516,11 @@ TEST_F(ContextHostResolverTest, OnShutdown_SubsequentRequests) {
   TestCompletionCallback callback2;
   int rv2 = request2->Start(callback2.callback());
 
-  EXPECT_THAT(callback1.GetResult(rv1), test::IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(callback1.GetResult(rv1), test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_THAT(request1->GetResolveErrorInfo().error,
               test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_FALSE(request1->GetAddressResults());
-  EXPECT_THAT(callback2.GetResult(rv2), test::IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(callback2.GetResult(rv2), test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_THAT(request2->GetResolveErrorInfo().error,
               test::IsError(ERR_CONTEXT_SHUT_DOWN));
   EXPECT_FALSE(request2->GetAddressResults());

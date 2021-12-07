@@ -82,24 +82,9 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   void SetProcParamsForTesting(const ProcTaskParams& proc_params);
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
-  size_t GetNumActiveRequestsForTesting() const {
-    return handed_out_requests_.size();
-  }
-
  private:
-  class WrappedRequest;
-  class WrappedResolveHostRequest;
-  class WrappedProbeRequest;
-
   const raw_ptr<HostResolverManager> manager_;
   std::unique_ptr<HostResolverManager> owned_manager_;
-
-  // Requests are expected to clear themselves from this set on destruction or
-  // cancellation.  Requests in an early shutdown state (from
-  // HostResolver::OnShutdown()) are still in this set, so they can be notified
-  // on resolver destruction.
-  std::unordered_set<WrappedRequest*> handed_out_requests_;
-
   std::unique_ptr<ResolveContext> resolve_context_;
 
   // If true, the context is shutting down. Subsequent request Start() calls

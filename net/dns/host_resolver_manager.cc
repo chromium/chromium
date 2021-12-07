@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
@@ -27,6 +28,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -54,12 +56,15 @@
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_interfaces.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/prioritized_dispatcher.h"
 #include "net/base/request_priority.h"
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
@@ -637,14 +642,14 @@ bool ResolveLocalHostname(base::StringPiece host, AddressList* address_list) {
 // cancellation is initiated by the Job (OnJobCancelled) vs by the end user
 // (~RequestImpl).
 class HostResolverManager::RequestImpl
-    : public CancellableResolveHostRequest,
+    : public HostResolver::ResolveHostRequest,
       public base::LinkNode<HostResolverManager::RequestImpl> {
  public:
   RequestImpl(NetLogWithSource source_net_log,
               absl::variant<url::SchemeHostPort, HostPortPair> request_host,
               NetworkIsolationKey network_isolation_key,
               absl::optional<ResolveHostParameters> optional_parameters,
-              ResolveContext* resolve_context,
+              base::WeakPtr<ResolveContext> resolve_context,
               HostCache* host_cache,
               base::WeakPtr<HostResolverManager> resolver,
               const base::TickClock* tick_clock)
@@ -657,25 +662,20 @@ class HostResolverManager::RequestImpl
                 : NetworkIsolationKey()),
         parameters_(optional_parameters ? std::move(optional_parameters).value()
                                         : ResolveHostParameters()),
-        resolve_context_(resolve_context->AsSafeRef()),
+        resolve_context_(std::move(resolve_context)),
         host_cache_(host_cache),
         host_resolver_flags_(
             HostResolver::ParametersToHostResolverFlags(parameters_)),
         priority_(parameters_.initial_priority),
         job_(nullptr),
-        resolver_(resolver),
+        resolver_(std::move(resolver)),
         complete_(false),
         tick_clock_(tick_clock) {}
 
   RequestImpl(const RequestImpl&) = delete;
   RequestImpl& operator=(const RequestImpl&) = delete;
 
-  ~RequestImpl() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    Cancel();
-  }
-
-  void Cancel() override;
+  ~RequestImpl() override;
 
   int Start(CompletionOnceCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -686,6 +686,13 @@ class HostResolverManager::RequestImpl
     DCHECK(!callback_);
     // Parent HostResolver must still be alive to call Start().
     DCHECK(resolver_);
+
+    if (!resolve_context_) {
+      complete_ = true;
+      resolver_ = nullptr;
+      set_error_info(ERR_CONTEXT_SHUT_DOWN, false);
+      return ERR_NAME_NOT_RESOLVED;
+    }
 
     LogStartRequest();
     int rv = resolver_->Resolve(this);
@@ -843,7 +850,7 @@ class HostResolverManager::RequestImpl
 
   const ResolveHostParameters& parameters() const { return parameters_; }
 
-  ResolveContext* resolve_context() const { return &*resolve_context_; }
+  ResolveContext* resolve_context() const { return resolve_context_.get(); }
 
   HostCache* host_cache() const { return host_cache_; }
 
@@ -918,7 +925,7 @@ class HostResolverManager::RequestImpl
   const absl::variant<url::SchemeHostPort, HostPortPair> request_host_;
   const NetworkIsolationKey network_isolation_key_;
   ResolveHostParameters parameters_;
-  base::SafeRef<ResolveContext> resolve_context_;
+  base::WeakPtr<ResolveContext> resolve_context_;
   const raw_ptr<HostCache> host_cache_;
   const HostResolverFlags host_resolver_flags_;
 
@@ -944,32 +951,30 @@ class HostResolverManager::RequestImpl
 };
 
 class HostResolverManager::ProbeRequestImpl
-    : public CancellableProbeRequest,
+    : public HostResolver::ProbeRequest,
       public ResolveContext::DohStatusObserver {
  public:
-  ProbeRequestImpl(ResolveContext* context,
+  ProbeRequestImpl(base::WeakPtr<ResolveContext> context,
                    base::WeakPtr<HostResolverManager> resolver)
-      : context_(context->AsSafeRef()), resolver_(resolver) {}
+      : context_(std::move(context)), resolver_(std::move(resolver)) {}
 
   ProbeRequestImpl(const ProbeRequestImpl&) = delete;
   ProbeRequestImpl& operator=(const ProbeRequestImpl&) = delete;
 
-  ~ProbeRequestImpl() override { Cancel(); }
-
-  void Cancel() override {
-    runner_.reset();
-
-    if (context_.has_value())
-      context_.value()->UnregisterDohStatusObserver(this);
-    context_.reset();
+  ~ProbeRequestImpl() override {
+    // Ensure that observers are deregistered to avoid wasting memory.
+    if (context_)
+      context_->UnregisterDohStatusObserver(this);
   }
 
   int Start() override {
     DCHECK(resolver_);
-    DCHECK(context_.has_value());
     DCHECK(!runner_);
 
-    context_.value()->RegisterDohStatusObserver(this);
+    if (!context_)
+      return ERR_CONTEXT_SHUT_DOWN;
+
+    context_->RegisterDohStatusObserver(this);
 
     StartRunner(false /* network_change */);
     return ERR_IO_PENDING;
@@ -992,8 +997,11 @@ class HostResolverManager::ProbeRequestImpl
     DCHECK(resolver_);
     DCHECK(!resolver_->invalidation_in_progress_);
 
+    if (!context_)
+      return;  // Reachable if the context ends before a posted task runs.
+
     if (!runner_)
-      runner_ = resolver_->CreateDohProbeRunner(&*context_.value());
+      runner_ = resolver_->CreateDohProbeRunner(context_.get());
     if (runner_)
       runner_->Start(network_change);
   }
@@ -1005,9 +1013,7 @@ class HostResolverManager::ProbeRequestImpl
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
 
-  // nullopt after cancellation, but otherwise expected to contain a still-valid
-  // ResolveContext reference.
-  absl::optional<base::SafeRef<ResolveContext>> context_;
+  base::WeakPtr<ResolveContext> context_;
 
   std::unique_ptr<DnsProbeRunner> runner_;
   base::WeakPtr<HostResolverManager> resolver_;
@@ -1999,10 +2005,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         proc_task_runner_(std::move(proc_task_runner)),
         had_non_speculative_request_(false),
         num_occupied_job_slots_(0),
-        dispatcher_(nullptr),
+        dispatched_(false),
         dns_task_error_(OK),
         tick_clock_(tick_clock),
-        start_time_(base::TimeTicks()),
         net_log_(
             NetLogWithSource::Make(source_net_log.net_log(),
                                    NetLogSourceType::HOST_RESOLVER_IMPL_JOB)) {
@@ -2014,16 +2019,16 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
   ~Job() override {
-    if (is_running()) {
-      // |resolver_| was destroyed with this Job still in flight.
-      // Clean-up, record in the log, but don't run any callbacks.
-      proc_task_ = nullptr;
-      // Clean up now for nice NetLog.
-      KillDnsTask();
+    bool was_queued = is_queued();
+    bool was_running = is_running();
+    // Clean up now for nice NetLog.
+    Finish();
+    if (was_running) {
+      // This Job was destroyed while still in flight.
       net_log_.EndEventWithNetErrorCode(
           NetLogEventType::HOST_RESOLVER_MANAGER_JOB, ERR_ABORTED);
-    } else if (is_queued()) {
-      // |resolver_| was destroyed without running this Job.
+    } else if (was_queued) {
+      // Job was cancelled before it could run.
       // TODO(szym): is there any benefit in having this distinction?
       net_log_.AddEvent(NetLogEventType::CANCELLED);
       net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB);
@@ -2043,11 +2048,11 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void Schedule(bool at_head) {
     DCHECK(!is_queued());
     PrioritizedDispatcher::Handle handle;
-    DCHECK(dispatcher_);
+    DCHECK(dispatched_);
     if (!at_head) {
-      handle = dispatcher_->Add(this, priority());
+      handle = resolver_->dispatcher_->Add(this, priority());
     } else {
-      handle = dispatcher_->AddAtHead(this, priority());
+      handle = resolver_->dispatcher_->AddAtHead(this, priority());
     }
     // The dispatcher could have started |this| in the above call to Add, which
     // could have called Schedule again. In that case |handle| will be null,
@@ -2245,17 +2250,18 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     TaskType next_task = tasks_.front();
 
     // Schedule insecure DnsTasks and ProcTasks with the dispatcher.
-    if (!dispatcher_ &&
+    if (!dispatched_ &&
         (next_task == TaskType::DNS || next_task == TaskType::PROC ||
          next_task == TaskType::MDNS)) {
-      dispatcher_ = resolver_->dispatcher_.get();
+      dispatched_ = true;
       job_running_ = false;
       Schedule(false);
       DCHECK(is_running() || is_queued());
 
       // Check for queue overflow.
-      if (dispatcher_->num_queued_jobs() > resolver_->max_queued_jobs_) {
-        Job* evicted = static_cast<Job*>(dispatcher_->EvictOldestLowest());
+      PrioritizedDispatcher& dispatcher = *resolver_->dispatcher_;
+      if (dispatcher.num_queued_jobs() > resolver_->max_queued_jobs_) {
+        Job* evicted = static_cast<Job*>(dispatcher.EvictOldestLowest());
         DCHECK(evicted);
         evicted->OnEvicted();
       }
@@ -2310,9 +2316,35 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     return dict;
   }
 
+  void Finish() {
+    if (is_running()) {
+      // Clean up but don't run any callbacks.
+      proc_task_ = nullptr;
+      KillDnsTask();
+      mdns_task_ = nullptr;
+      job_running_ = false;
+
+      if (dispatched_) {
+        // Job should only ever occupy one slot after any tasks that may have
+        // required additional slots, e.g. DnsTask, have been killed, and
+        // additional slots are expected to be vacated as part of killing the
+        // task.
+        DCHECK_EQ(1, num_occupied_job_slots_);
+        if (resolver_)
+          resolver_->dispatcher_->OnJobFinished();
+        num_occupied_job_slots_ = 0;
+      }
+    } else if (is_queued()) {
+      DCHECK(dispatched_);
+      if (resolver_)
+        resolver_->dispatcher_->Cancel(handle_);
+      handle_.Reset();
+    }
+  }
+
   void KillDnsTask() {
     if (dns_task_) {
-      if (dispatcher_) {
+      if (dispatched_) {
         while (num_occupied_job_slots_ > 1 || is_queued()) {
           ReduceByOneJobSlot();
         }
@@ -2327,12 +2359,14 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // so signals it is complete.
   void ReduceByOneJobSlot() {
     DCHECK_GE(num_occupied_job_slots_, 1);
-    DCHECK(dispatcher_);
+    DCHECK(dispatched_);
     if (is_queued()) {
-      dispatcher_->Cancel(handle_);
+      if (resolver_)
+        resolver_->dispatcher_->Cancel(handle_);
       handle_.Reset();
     } else if (num_occupied_job_slots_ > 1) {
-      dispatcher_->OnJobFinished();
+      if (resolver_)
+        resolver_->dispatcher_->OnJobFinished();
       --num_occupied_job_slots_;
     } else {
       NOTREACHED();
@@ -2340,8 +2374,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
   void UpdatePriority() {
-    if (is_queued() && dispatcher_)
-      handle_ = dispatcher_->ChangePriority(handle_, priority());
+    if (is_queued())
+      handle_ = resolver_->dispatcher_->ChangePriority(handle_, priority());
   }
 
   // PrioritizedDispatcher::Job:
@@ -2351,10 +2385,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     if (num_occupied_job_slots_ >= 2) {
       if (!dns_task_) {
-        dispatcher_->OnJobFinished();
+        resolver_->dispatcher_->OnJobFinished();
         return;
       }
-      DCHECK(dns_task_);
       StartNextDnsTransaction();
       if (dns_task_->needs_another_transaction()) {
         Schedule(true);
@@ -2373,7 +2406,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // ThreadPool threads low, we will need to use an "inner"
   // PrioritizedDispatcher with tighter limits.
   void StartProcTask() {
-    DCHECK(dispatcher_);
+    DCHECK(dispatched_);
     DCHECK_EQ(1, num_occupied_job_slots_);
     DCHECK(IsAddressType(key_.query_type));
 
@@ -2440,8 +2473,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
   void StartDnsTask(bool secure) {
-    DCHECK_EQ(secure, !dispatcher_);
-    DCHECK_EQ(dispatcher_ ? 1 : 0, num_occupied_job_slots_);
+    DCHECK_EQ(secure, !dispatched_);
+    DCHECK_EQ(dispatched_ ? 1 : 0, num_occupied_job_slots_);
     DCHECK(!resolver_->HaveTestProcOverride());
     // Need to create the task even if we're going to post a failure instead of
     // running it, as a "started" job needs a task to be properly cleaned up.
@@ -2461,9 +2494,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
   void StartNextDnsTransaction() {
-    DCHECK_EQ(dns_task_->secure(), !dispatcher_);
-    DCHECK(!dispatcher_ || num_occupied_job_slots_ >= 1);
     DCHECK(dns_task_);
+    DCHECK_EQ(dns_task_->secure(), !dispatched_);
+    DCHECK(!dispatched_ || num_occupied_job_slots_ >= 1);
     DCHECK(dns_task_->needs_another_transaction());
     dns_task_->StartNextTransaction();
   }
@@ -2553,7 +2586,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK_LE(2, dns_task_->num_needed_transactions());
     DCHECK_EQ(dns_task_->needs_another_transaction(), is_queued());
 
-    if (dispatcher_) {
+    if (dispatched_) {
       // We already have a job slot at the dispatcher, so if the next
       // transaction hasn't started, reuse it now instead of waiting in the
       // queue for another slot.
@@ -2564,7 +2597,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       } else {
         dns_task_->StartNextTransaction();
         if (!dns_task_->needs_another_transaction() && is_queued()) {
-          dispatcher_->Cancel(handle_);
+          resolver_->dispatcher_->Cancel(handle_);
           handle_.Reset();
         }
       }
@@ -2713,26 +2746,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     if (self_iterator_)
       self_deleter = resolver_->RemoveJob(self_iterator_.value());
 
-    if (is_running()) {
-      proc_task_ = nullptr;
-      KillDnsTask();
-      mdns_task_ = nullptr;
-      job_running_ = false;
-
-      if (dispatcher_) {
-        // Job should only ever occupy one slot after any tasks that may have
-        // required additional slots, e.g. DnsTask, have been killed, and
-        // additional slots are expected to be vacated as part of killing the
-        // task.
-        DCHECK_EQ(1, num_occupied_job_slots_);
-        // Signal dispatcher that a slot has opened.
-        dispatcher_->OnJobFinished();
-      }
-    } else if (is_queued()) {
-      DCHECK(dispatcher_);
-      dispatcher_->Cancel(handle_);
-      handle_.Reset();
-    }
+    Finish();
 
     if (num_active_requests() == 0) {
       net_log_.AddEvent(NetLogEventType::CANCELLED);
@@ -2847,9 +2861,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // the job is not registered with any dispatcher.
   int num_occupied_job_slots_;
 
-  // The dispatcher with which this Job is currently registered. Is nullptr if
-  // not registered with any dispatcher.
-  raw_ptr<PrioritizedDispatcher> dispatcher_;
+  // True once this Job has been sent to `resolver_->dispatcher_`.
+  bool dispatched_;
 
   // Result of DnsTask.
   int dns_task_error_;
@@ -2953,7 +2966,7 @@ HostResolverManager::~HostResolverManager() {
     system_dns_config_notifier_->RemoveObserver(this);
 }
 
-std::unique_ptr<HostResolverManager::CancellableResolveHostRequest>
+std::unique_ptr<HostResolver::ResolveHostRequest>
 HostResolverManager::CreateRequest(
     absl::variant<url::SchemeHostPort, HostPortPair> host,
     NetworkIsolationKey network_isolation_key,
@@ -2970,15 +2983,15 @@ HostResolverManager::CreateRequest(
 
   return std::make_unique<RequestImpl>(
       std::move(net_log), std::move(host), std::move(network_isolation_key),
-      std::move(optional_parameters), resolve_context, host_cache,
+      std::move(optional_parameters), resolve_context->GetWeakPtr(), host_cache,
       weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }
 
-std::unique_ptr<HostResolverManager::CancellableProbeRequest>
+std::unique_ptr<HostResolver::ProbeRequest>
 HostResolverManager::CreateDohProbeRequest(ResolveContext* context) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  return std::make_unique<ProbeRequestImpl>(context,
+  return std::make_unique<ProbeRequestImpl>(context->GetWeakPtr(),
                                             weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -3080,6 +3093,9 @@ void HostResolverManager::RegisterResolveContext(ResolveContext* context) {
 void HostResolverManager::DeregisterResolveContext(
     const ResolveContext* context) {
   registered_contexts_.RemoveObserver(context);
+
+  // Destroy Jobs when their context is closed.
+  RemoveAllJobs(context);
 }
 
 void HostResolverManager::SetTickClockForTesting(
@@ -3764,6 +3780,17 @@ void HostResolverManager::RunLoopbackProbeJob() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
+  for (auto it = jobs_.begin(); it != jobs_.end();) {
+    const JobKey& key = it->first;
+    if (&*key.resolve_context == context) {
+      RemoveJob(it++);
+    } else {
+      ++it;
+    }
+  }
+}
+
 void HostResolverManager::AbortAllJobs(bool in_progress_only) {
   // In Abort, a Request callback could spawn new Jobs with matching keys, so
   // first collect and remove all running jobs from |jobs_|.
@@ -3968,6 +3995,8 @@ void HostResolverManager::InvalidateCaches(bool network_change) {
 
 std::unique_ptr<DnsProbeRunner> HostResolverManager::CreateDohProbeRunner(
     ResolveContext* resolve_context) {
+  DCHECK(resolve_context);
+  DCHECK(registered_contexts_.HasObserver(resolve_context));
   if (!dns_client_->CanUseSecureDnsTransactions())
     return nullptr;
 
@@ -3975,15 +4004,12 @@ std::unique_ptr<DnsProbeRunner> HostResolverManager::CreateDohProbeRunner(
       resolve_context);
 }
 
-void HostResolverManager::RequestImpl::Cancel() {
+HostResolverManager::RequestImpl::~RequestImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!job_)
     return;
 
   job_->CancelRequest(this);
-  job_ = nullptr;
-  callback_.Reset();
-
   LogCancelRequest();
 }
 

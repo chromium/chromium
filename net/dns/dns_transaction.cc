@@ -902,16 +902,17 @@ const net::BackoffEntry::Policy kProbeBackoffPolicy = {
 // servers to determine availability.
 //
 // Expected to be contained in request classes owned externally to HostResolver,
-// so no assumptions are made regarding cancellation compared to the DnsSession.
-// Instead, uses WeakPtrs to gracefully clean itself up and stop probing after
-// session destruction.
+// so no assumptions are made regarding cancellation compared to the DnsSession
+// or ResolveContext. Instead, uses WeakPtrs to gracefully clean itself up and
+// stop probing after session or context destruction.
 class DnsOverHttpsProbeRunner : public DnsProbeRunner {
  public:
   DnsOverHttpsProbeRunner(base::WeakPtr<DnsSession> session,
-                          ResolveContext* context)
-      : session_(std::move(session)), context_(context->AsSafeRef()) {
+                          base::WeakPtr<ResolveContext> context)
+      : session_(session), context_(context) {
     DCHECK(session_);
     DCHECK(!session_->config().dns_over_https_servers.empty());
+    DCHECK(context_);
 
     DNSDomainFromDot(kDoHProbeHostname, &formatted_probe_hostname_);
 
@@ -925,6 +926,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
   void Start(bool network_change) override {
     DCHECK(session_);
+    DCHECK(context_);
 
     // Start probe sequences for any servers where it is not currently running.
     for (size_t i = 0; i < session_->config().dns_over_https_servers.size();
@@ -963,8 +965,9 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::WeakPtr<ProbeStats> probe_stats,
                      bool network_change,
                      base::TimeTicks sequence_start_time) {
-    // If the DnsSession has been destroyed, no reason to continue probing.
-    if (!session_) {
+    // If the DnsSession or ResolveContext has been destroyed, no reason to
+    // continue probing.
+    if (!session_ || !context_) {
       probe_stats_list_.clear();
       return;
     }
@@ -1018,7 +1021,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::TimeTicks query_start_time,
                      int rv) {
     bool success = false;
-    if (rv == OK && probe_stats && session_) {
+    if (rv == OK && probe_stats && session_ && context_) {
       // Check that the response parses properly before considering it a
       // success.
       DCHECK_LT(attempt_number, probe_stats->probe_attempts.size());
@@ -1060,7 +1063,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
   }
 
   base::WeakPtr<DnsSession> session_;
-  base::SafeRef<ResolveContext> context_;
+  base::WeakPtr<ResolveContext> context_;
   std::string formatted_probe_hostname_;
 
   // List of ProbeStats, one for each DoH server, indexed by the DoH server
@@ -1708,8 +1711,8 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
       ResolveContext* resolve_context) override {
-    return std::make_unique<DnsOverHttpsProbeRunner>(session_->GetWeakPtr(),
-                                                     resolve_context);
+    return std::make_unique<DnsOverHttpsProbeRunner>(
+        session_->GetWeakPtr(), resolve_context->GetWeakPtr());
   }
 
   void AddEDNSOption(const OptRecordRdata::Opt& opt) override {

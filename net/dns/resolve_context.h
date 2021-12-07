@@ -177,8 +177,12 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // (alternative service info if it supports QUIC, for instance).
   const IsolationInfo& isolation_info() const { return isolation_info_; }
 
-  base::SafeRef<ResolveContext> AsSafeRef() const {
+  base::SafeRef<ResolveContext> AsSafeRef() {
     return weak_ptr_factory_.GetSafeRef();
+  }
+
+  base::WeakPtr<ResolveContext> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -256,8 +260,10 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // Current maximum server fallback period. Updated on connection change.
   base::TimeDelta max_fallback_period_;
 
+  // All DohStatusObservers only hold a WeakPtr<ResolveContext>, so there's no
+  // need for check_empty to be true.
   base::ObserverList<DohStatusObserver,
-                     true /* check_empty */,
+                     false /* check_empty */,
                      false /* allow_reentrancy */>
       doh_status_observers_;
 

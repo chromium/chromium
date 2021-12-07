@@ -5,6 +5,7 @@
 #include "net/dns/host_resolver_manager.h"
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <string>
 #include <tuple>
@@ -283,15 +284,13 @@ class ResolveHostResponseHelper {
 
   ResolveHostResponseHelper() = default;
   explicit ResolveHostResponseHelper(
-      std::unique_ptr<HostResolverManager::CancellableResolveHostRequest>
-          request)
+      std::unique_ptr<HostResolver::ResolveHostRequest> request)
       : request_(std::move(request)) {
     top_level_result_error_ = request_->Start(base::BindOnce(
         &ResolveHostResponseHelper::OnComplete, base::Unretained(this)));
   }
   ResolveHostResponseHelper(
-      std::unique_ptr<HostResolverManager::CancellableResolveHostRequest>
-          request,
+      std::unique_ptr<HostResolver::ResolveHostRequest> request,
       Callback custom_callback)
       : request_(std::move(request)) {
     top_level_result_error_ = request_->Start(
@@ -316,9 +315,7 @@ class ResolveHostResponseHelper {
     return request_->GetResolveErrorInfo().error;
   }
 
-  HostResolverManager::CancellableResolveHostRequest* request() {
-    return request_.get();
-  }
+  HostResolver::ResolveHostRequest* request() { return request_.get(); }
 
   void CancelRequest() {
     DCHECK(request_);
@@ -344,7 +341,7 @@ class ResolveHostResponseHelper {
     DCHECK(complete());
   }
 
-  std::unique_ptr<HostResolverManager::CancellableResolveHostRequest> request_;
+  std::unique_ptr<HostResolver::ResolveHostRequest> request_;
   int top_level_result_error_ = ERR_IO_PENDING;
   base::RunLoop run_loop_;
 };
@@ -5647,61 +5644,6 @@ TEST_F(HostResolverManagerDnsTest, DeleteWithCompletedRequests) {
   DestroyResolver();
 
   // Completed requests should be unaffected by manager destruction.
-  EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
-              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
-                                            CreateExpected("::1", 80)));
-  EXPECT_THAT(
-      response.request()->GetEndpointResults(),
-      testing::Optional(testing::ElementsAre(
-          ExpectEndpointResult(testing::UnorderedElementsAre(
-              CreateExpected("::1", 80), CreateExpected("127.0.0.1", 80))))));
-}
-
-TEST_F(HostResolverManagerDnsTest, ExplicitCancel) {
-  ChangeDnsConfig(CreateValidDnsConfig());
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair("4slow_4ok", 80), NetworkIsolationKey(), NetLogWithSource(),
-      absl::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
-
-  response.request()->Cancel();
-  dns_client_->CompleteDelayedTransactions();
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(response.complete());
-}
-
-TEST_F(HostResolverManagerDnsTest, ExplicitCancel_AfterManagerDestruction) {
-  ChangeDnsConfig(CreateValidDnsConfig());
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair("4slow_4ok", 80), NetworkIsolationKey(), NetLogWithSource(),
-      absl::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
-
-  DestroyResolver();
-  response.request()->Cancel();
-}
-
-TEST_F(HostResolverManagerDnsTest, ExplicitCancel_Completed) {
-  ChangeDnsConfig(CreateValidDnsConfig());
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair("ok", 80), NetworkIsolationKey(), NetLogWithSource(),
-      absl::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
-
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
-              testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
-                                            CreateExpected("::1", 80)));
-  EXPECT_THAT(
-      response.request()->GetEndpointResults(),
-      testing::Optional(testing::ElementsAre(
-          ExpectEndpointResult(testing::UnorderedElementsAre(
-              CreateExpected("::1", 80), CreateExpected("127.0.0.1", 80))))));
-
-  response.request()->Cancel();
-
-  // Completed requests should be unaffected by cancellation.
   EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
               testing::UnorderedElementsAre(CreateExpected("127.0.0.1", 80),
                                             CreateExpected("::1", 80)));
@@ -13757,7 +13699,7 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequest) {
 
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
+  std::unique_ptr<HostResolver::ProbeRequest> request =
       resolver_->CreateDohProbeRequest(resolve_context_.get());
   EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
 
@@ -13768,47 +13710,10 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequest) {
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 }
 
-TEST_F(HostResolverManagerDnsTest, DohProbeRequest_ExplicitCancel) {
-  ChangeDnsConfig(CreateValidDnsConfig());
-
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
-      resolver_->CreateDohProbeRequest(resolve_context_.get());
-  EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
-  ASSERT_TRUE(dns_client_->factory()->doh_probes_running());
-
-  request->Cancel();
-
-  EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
-}
-
-TEST_F(HostResolverManagerDnsTest, DohProbeRequest_ExplicitCancel_NotStarted) {
-  ChangeDnsConfig(CreateValidDnsConfig());
-
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
-      resolver_->CreateDohProbeRequest(resolve_context_.get());
-
-  request->Cancel();
-
-  EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
-}
-
-TEST_F(HostResolverManagerDnsTest,
-       DohProbeRequest_ExplicitCancel_AfterManagerDestruction) {
-  ChangeDnsConfig(CreateValidDnsConfig());
-
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
-      resolver_->CreateDohProbeRequest(resolve_context_.get());
-  EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
-  ASSERT_TRUE(dns_client_->factory()->doh_probes_running());
-
-  DestroyResolver();
-  request->Cancel();
-}
-
 TEST_F(HostResolverManagerDnsTest, DohProbeRequest_BeforeConfig) {
   InvalidateDnsConfig();
 
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
+  std::unique_ptr<HostResolver::ProbeRequest> request =
       resolver_->CreateDohProbeRequest(resolve_context_.get());
   EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
@@ -13820,27 +13725,13 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequest_BeforeConfig) {
 TEST_F(HostResolverManagerDnsTest, DohProbeRequest_InvalidateConfig) {
   ChangeDnsConfig(CreateValidDnsConfig());
 
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
+  std::unique_ptr<HostResolver::ProbeRequest> request =
       resolver_->CreateDohProbeRequest(resolve_context_.get());
   EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(dns_client_->factory()->doh_probes_running());
 
   InvalidateDnsConfig();
 
-  EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
-}
-
-TEST_F(HostResolverManagerDnsTest, DohProbeRequest_CancelBeforeConfig) {
-  InvalidateDnsConfig();
-
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
-      resolver_->CreateDohProbeRequest(resolve_context_.get());
-  EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
-  EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
-
-  request->Cancel();
-
-  ChangeDnsConfig(CreateValidDnsConfig());
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 }
 
@@ -13852,7 +13743,7 @@ TEST_F(HostResolverManagerDnsTest, DohProbeRequest_RestartOnConnectionChange) {
       NetworkChangeNotifier::CONNECTION_NONE);
   ChangeDnsConfig(CreateValidDnsConfig());
 
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request =
+  std::unique_ptr<HostResolver::ProbeRequest> request =
       resolver_->CreateDohProbeRequest(resolve_context_.get());
   EXPECT_THAT(request->Start(), IsError(ERR_IO_PENDING));
   EXPECT_TRUE(dns_client_->factory()->doh_probes_running());
@@ -13870,10 +13761,10 @@ TEST_F(HostResolverManagerDnsTest, MultipleDohProbeRequests) {
 
   EXPECT_FALSE(dns_client_->factory()->doh_probes_running());
 
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request1 =
+  std::unique_ptr<HostResolver::ProbeRequest> request1 =
       resolver_->CreateDohProbeRequest(resolve_context_.get());
   EXPECT_THAT(request1->Start(), IsError(ERR_IO_PENDING));
-  std::unique_ptr<HostResolverManager::CancellableProbeRequest> request2 =
+  std::unique_ptr<HostResolver::ProbeRequest> request2 =
       resolver_->CreateDohProbeRequest(resolve_context_.get());
   EXPECT_THAT(request2->Start(), IsError(ERR_IO_PENDING));
 
