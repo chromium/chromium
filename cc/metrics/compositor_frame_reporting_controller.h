@@ -83,10 +83,11 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void AddActiveTracker(FrameSequenceTrackerType type);
   void RemoveActiveTracker(FrameSequenceTrackerType type);
-  void SetScrollingThread(FrameSequenceMetrics::ThreadType thread);
+  void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
-  void SetThreadAffectsSmoothness(FrameSequenceMetrics::ThreadType thread_type,
-                                  bool affects_smoothness);
+  void SetThreadAffectsSmoothness(
+      FrameInfo::SmoothEffectDrivingThread thread_type,
+      bool affects_smoothness);
   bool is_main_thread_driving_smoothness() const {
     return is_main_thread_driving_smoothness_;
   }
@@ -164,8 +165,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool next_activate_has_invalidation_ = false;
   ActiveTrackers active_trackers_;
-  FrameSequenceMetrics::ThreadType scrolling_thread_ =
-      FrameSequenceMetrics::ThreadType::kUnknown;
+  FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
+      FrameInfo::SmoothEffectDrivingThread::kUnknown;
 
   bool is_compositor_thread_driving_smoothness_ = false;
   bool is_main_thread_driving_smoothness_ = false;
@@ -195,8 +196,8 @@ class CC_EXPORT CompositorFrameReportingController {
   // created with the correct state.
   struct {
     viz::BeginFrameArgs args;
-    FrameSequenceMetrics::ThreadType scrolling_thread =
-        FrameSequenceMetrics::ThreadType::kUnknown;
+    FrameInfo::SmoothEffectDrivingThread scrolling_thread =
+        FrameInfo::SmoothEffectDrivingThread::kUnknown;
     ActiveTrackers active_trackers;
     CompositorFrameReporter::SmoothThread smooth_thread =
         CompositorFrameReporter::SmoothThread::kSmoothNone;

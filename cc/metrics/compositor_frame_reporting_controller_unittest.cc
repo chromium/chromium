@@ -1692,7 +1692,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        SkippedFramesFromDisplayCompositorHaveSmoothThread) {
-  auto thread_type_compositor = FrameSequenceMetrics::ThreadType::kCompositor;
+  auto thread_type_compositor =
+      FrameInfo::SmoothEffectDrivingThread::kCompositor;
   reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
                                                    true);
   dropped_counter_.OnFcpReceived();
@@ -1832,7 +1833,7 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        NewMainThreadUpdateNotReportedAsDropped) {
-  auto thread_type_main = FrameSequenceMetrics::ThreadType::kMain;
+  auto thread_type_main = FrameInfo::SmoothEffectDrivingThread::kMain;
   reporting_controller_.SetThreadAffectsSmoothness(thread_type_main,
                                                    /*affects_smoothness=*/true);
   dropped_counter_.OnFcpReceived();

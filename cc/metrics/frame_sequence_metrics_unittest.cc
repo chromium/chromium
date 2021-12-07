@@ -39,14 +39,14 @@ TEST(FrameSequenceMetricsTest, MergeMetrics) {
 #if DCHECK_IS_ON()
 TEST(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
   FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll, nullptr);
-  first.SetScrollingThread(FrameSequenceMetrics::ThreadType::kCompositor);
+  first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   first.impl_throughput().frames_expected = 20;
   first.impl_throughput().frames_produced = 10;
   first.impl_throughput().frames_ontime = 10;
 
   auto second = std::make_unique<FrameSequenceMetrics>(
       FrameSequenceTrackerType::kTouchScroll, nullptr);
-  second->SetScrollingThread(FrameSequenceMetrics::ThreadType::kMain);
+  second->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
   second->main_throughput().frames_expected = 50;
   second->main_throughput().frames_produced = 10;
   second->main_throughput().frames_ontime = 10;
@@ -212,7 +212,7 @@ TEST(FrameSequenceMetricsTest, ScrollingThreadMetricsReportedForInteractions) {
     base::HistogramTester histograms;
     auto metrics = setup();
     EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-    metrics->SetScrollingThread(FrameSequenceMetrics::ThreadType::kMain);
+    metrics->SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kMain);
     metrics->ReportMetrics();
     histograms.ExpectTotalCount(metric, 1u);
     EXPECT_THAT(histograms.GetAllSamples(metric),
@@ -224,7 +224,8 @@ TEST(FrameSequenceMetricsTest, ScrollingThreadMetricsReportedForInteractions) {
     base::HistogramTester histograms;
     auto metrics = setup();
     EXPECT_TRUE(metrics->HasEnoughDataForReporting());
-    metrics->SetScrollingThread(FrameSequenceMetrics::ThreadType::kCompositor);
+    metrics->SetScrollingThread(
+        FrameInfo::SmoothEffectDrivingThread::kCompositor);
     metrics->ReportMetrics();
     histograms.ExpectTotalCount(metric, 1u);
     EXPECT_THAT(histograms.GetAllSamples(metric),

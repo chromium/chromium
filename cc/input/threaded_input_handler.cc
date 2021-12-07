@@ -559,14 +559,14 @@ void ThreadedInputHandler::RecordScrollBegin(
   // Otherwise, the compositor-thread is the 'scrolling thread'.
   // TODO(crbug.com/1060712): We should also count 'main thread' as the
   // 'scrolling thread' if the layer being scrolled has scroll-event handlers.
-  FrameSequenceMetrics::ThreadType scrolling_thread;
+  FrameInfo::SmoothEffectDrivingThread scrolling_thread;
   switch (scroll_start_state) {
     case ScrollBeginThreadState::kScrollingOnCompositor:
-      scrolling_thread = FrameSequenceMetrics::ThreadType::kCompositor;
+      scrolling_thread = FrameInfo::SmoothEffectDrivingThread::kCompositor;
       break;
     case ScrollBeginThreadState::kScrollingOnMain:
     case ScrollBeginThreadState::kScrollingOnCompositorBlockedOnMain:
-      scrolling_thread = FrameSequenceMetrics::ThreadType::kMain;
+      scrolling_thread = FrameInfo::SmoothEffectDrivingThread::kMain;
       break;
   }
   compositor_delegate_.GetImplDeprecated().frame_trackers().StartScrollSequence(

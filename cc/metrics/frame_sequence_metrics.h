@@ -72,29 +72,28 @@ class CC_EXPORT FrameSequenceMetrics {
   FrameSequenceMetrics(const FrameSequenceMetrics&) = delete;
   FrameSequenceMetrics& operator=(const FrameSequenceMetrics&) = delete;
 
-  // TODO(sad): Replace all usage of |ThreadType| with the new type.
-  using ThreadType = FrameInfo::SmoothEffectDrivingThread;
-
   struct ThroughputData {
     static std::unique_ptr<base::trace_event::TracedValue> ToTracedValue(
         const ThroughputData& impl,
         const ThroughputData& main,
-        ThreadType effective_thred);
+        FrameInfo::SmoothEffectDrivingThread effective_thred);
 
-    static bool CanReportHistogram(FrameSequenceMetrics* metrics,
-                                   ThreadType thread_type,
-                                   const ThroughputData& data);
+    static bool CanReportHistogram(
+        FrameSequenceMetrics* metrics,
+        FrameInfo::SmoothEffectDrivingThread thread_type,
+        const ThroughputData& data);
 
     // Returns the dropped throughput in percent
-    static int ReportDroppedFramePercentHistogram(FrameSequenceMetrics* metrics,
-                                                  ThreadType thread_type,
-                                                  int metric_index,
-                                                  const ThroughputData& data);
+    static int ReportDroppedFramePercentHistogram(
+        FrameSequenceMetrics* metrics,
+        FrameInfo::SmoothEffectDrivingThread thread_type,
+        int metric_index,
+        const ThroughputData& data);
 
     // Returns the missed deadline throughput in percent
     static int ReportMissedDeadlineFramePercentHistogram(
         FrameSequenceMetrics* metrics,
-        ThreadType thread_type,
+        FrameInfo::SmoothEffectDrivingThread thread_type,
         int metric_index,
         const ThroughputData& data);
 
@@ -144,7 +143,7 @@ class CC_EXPORT FrameSequenceMetrics {
 #endif
   };
 
-  void SetScrollingThread(ThreadType thread);
+  void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
   struct CustomReportData {
     uint32_t frames_expected = 0;
@@ -157,7 +156,7 @@ class CC_EXPORT FrameSequenceMetrics {
 
   // Returns the 'effective thread' for the metrics (i.e. the thread most
   // relevant for this metric).
-  ThreadType GetEffectiveThread() const;
+  FrameInfo::SmoothEffectDrivingThread GetEffectiveThread() const;
 
   void Merge(std::unique_ptr<FrameSequenceMetrics> metrics);
   bool HasEnoughDataForReporting() const;
@@ -183,17 +182,18 @@ class CC_EXPORT FrameSequenceMetrics {
   void AdoptTrace(FrameSequenceMetrics* adopt_from);
   void AdvanceTrace(base::TimeTicks timestamp);
 
-  void ComputeJank(FrameSequenceMetrics::ThreadType thread_type,
+  void ComputeJank(FrameInfo::SmoothEffectDrivingThread thread_type,
                    uint32_t frame_token,
                    base::TimeTicks presentation_time,
                    base::TimeDelta frame_interval);
 
-  void NotifySubmitForJankReporter(FrameSequenceMetrics::ThreadType thread_type,
-                                   uint32_t frame_token,
-                                   uint32_t sequence_number);
+  void NotifySubmitForJankReporter(
+      FrameInfo::SmoothEffectDrivingThread thread_type,
+      uint32_t frame_token,
+      uint32_t sequence_number);
 
   void NotifyNoUpdateForJankReporter(
-      FrameSequenceMetrics::ThreadType thread_type,
+      FrameInfo::SmoothEffectDrivingThread thread_type,
       uint32_t sequence_number,
       base::TimeDelta frame_interval);
 
@@ -220,7 +220,8 @@ class CC_EXPORT FrameSequenceMetrics {
   ThroughputData impl_throughput_;
   ThroughputData main_throughput_;
 
-  ThreadType scrolling_thread_ = ThreadType::kUnknown;
+  FrameInfo::SmoothEffectDrivingThread scrolling_thread_ =
+      FrameInfo::SmoothEffectDrivingThread::kUnknown;
 
   // Tracks the number of produced frames that had some amount of
   // checkerboarding, and how many frames showed such checkerboarded frames.
@@ -233,12 +234,12 @@ class CC_EXPORT FrameSequenceMetrics {
 };
 
 bool ShouldReportForAnimation(FrameSequenceTrackerType sequence_type,
-                              FrameSequenceMetrics::ThreadType thread_type);
+                              FrameInfo::SmoothEffectDrivingThread thread_type);
 
 bool ShouldReportForInteraction(
     FrameSequenceTrackerType sequence_type,
-    FrameSequenceMetrics::ThreadType reporting_thread_type,
-    FrameSequenceMetrics::ThreadType metrics_effective_thread_type);
+    FrameInfo::SmoothEffectDrivingThread reporting_thread_type,
+    FrameInfo::SmoothEffectDrivingThread metrics_effective_thread_type);
 
 }  // namespace cc
 

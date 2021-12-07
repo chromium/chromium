@@ -55,7 +55,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   FrameSequenceTracker* StartSequence(FrameSequenceTrackerType type);
   FrameSequenceTracker* StartScrollSequence(
       FrameSequenceTrackerType type,
-      FrameSequenceMetrics::ThreadType scrolling_thread);
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread);
 
   // Schedules |tracker| for destruction. This is preferred instead of outright
   // desrtruction of the tracker, since this ensures that the actual tracker
@@ -125,7 +125,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
 
   FrameSequenceTracker* StartSequenceInternal(
       FrameSequenceTrackerType type,
-      FrameSequenceMetrics::ThreadType scrolling_thread);
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread);
 
   void RecreateTrackers(const viz::BeginFrameArgs& args);
   // Destroy the trackers that are ready to be terminated.
@@ -153,7 +153,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
 
   // The callsite can use the type to manipulate the tracker.
   base::flat_map<
-      std::pair<FrameSequenceTrackerType, FrameSequenceMetrics::ThreadType>,
+      std::pair<FrameSequenceTrackerType, FrameInfo::SmoothEffectDrivingThread>,
       std::unique_ptr<FrameSequenceTracker>>
       frame_trackers_;
 
@@ -170,7 +170,7 @@ class CC_EXPORT FrameSequenceTrackerCollection {
       compositor_frame_reporting_controller_;
 
   base::flat_map<
-      std::pair<FrameSequenceTrackerType, FrameSequenceMetrics::ThreadType>,
+      std::pair<FrameSequenceTrackerType, FrameInfo::SmoothEffectDrivingThread>,
       std::unique_ptr<FrameSequenceMetrics>>
       accumulated_metrics_;
 

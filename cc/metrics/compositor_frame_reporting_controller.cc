@@ -562,19 +562,19 @@ void CompositorFrameReportingController::RemoveActiveTracker(
 }
 
 void CompositorFrameReportingController::SetScrollingThread(
-    FrameSequenceMetrics::ThreadType thread) {
+    FrameInfo::SmoothEffectDrivingThread thread) {
   scrolling_thread_ = thread;
 }
 
 void CompositorFrameReportingController::SetThreadAffectsSmoothness(
-    FrameSequenceMetrics::ThreadType thread_type,
+    FrameInfo::SmoothEffectDrivingThread thread_type,
     bool affects_smoothness) {
   auto current_smooth_thread = GetSmoothThread();
 
-  if (thread_type == FrameSequenceMetrics::ThreadType::kCompositor) {
+  if (thread_type == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     is_compositor_thread_driving_smoothness_ = affects_smoothness;
   } else {
-    DCHECK_EQ(thread_type, FrameSequenceMetrics::ThreadType::kMain);
+    DCHECK_EQ(thread_type, FrameInfo::SmoothEffectDrivingThread::kMain);
     is_main_thread_driving_smoothness_ = affects_smoothness;
   }
 
@@ -727,7 +727,7 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, should_report_metrics_,
         GetSmoothThreadAtTime(timestamp),
-        FrameSequenceMetrics::ThreadType::kUnknown, layer_tree_host_id_,
+        FrameInfo::SmoothEffectDrivingThread::kUnknown, layer_tree_host_id_,
         global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,

@@ -471,7 +471,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   if (is_ui) {
     dropped_frame_counter_.EnableReporForUI();
     compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
-        FrameSequenceMetrics::ThreadType::kMain, true);
+        FrameInfo::SmoothEffectDrivingThread::kMain, true);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

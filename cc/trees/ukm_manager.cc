@@ -98,11 +98,11 @@ void UkmManager::RecordRenderingUkm() {
 
 void UkmManager::RecordThroughputUKM(
     FrameSequenceTrackerType tracker_type,
-    FrameSequenceMetrics::ThreadType thread_type,
+    FrameInfo::SmoothEffectDrivingThread thread_type,
     int64_t throughput) const {
   ukm::builders::Graphics_Smoothness_PercentDroppedFrames builder(source_id_);
   switch (thread_type) {
-    case FrameSequenceMetrics::ThreadType::kMain: {
+    case FrameInfo::SmoothEffectDrivingThread::kMain: {
       switch (tracker_type) {
 #define CASE_FOR_MAIN_THREAD_TRACKER(name)    \
   case FrameSequenceTrackerType::k##name:     \
@@ -127,7 +127,7 @@ void UkmManager::RecordThroughputUKM(
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kCompositor: {
+    case FrameInfo::SmoothEffectDrivingThread::kCompositor: {
       switch (tracker_type) {
 #define CASE_FOR_COMPOSITOR_THREAD_TRACKER(name)    \
   case FrameSequenceTrackerType::k##name:           \
@@ -149,7 +149,7 @@ void UkmManager::RecordThroughputUKM(
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kUnknown:
+    case FrameInfo::SmoothEffectDrivingThread::kUnknown:
       NOTREACHED();
       break;
   }

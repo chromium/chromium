@@ -111,7 +111,7 @@ class CompositorFrameReporterTest : public testing::Test {
         ActiveTrackers(), viz::BeginFrameArgs(),
         /*should_report_metrics=*/true,
         CompositorFrameReporter::SmoothThread::kSmoothBoth,
-        FrameSequenceMetrics::ThreadType::kUnknown,
+        FrameInfo::SmoothEffectDrivingThread::kUnknown,
         /*layer_tree_host_id=*/1, trackers);
     reporter->set_tick_clock(&test_tick_clock_);
     return reporter;
