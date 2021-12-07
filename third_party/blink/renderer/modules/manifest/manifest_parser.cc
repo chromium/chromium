@@ -164,6 +164,8 @@ bool ManifestParser::Parse() {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableIsolatedStorage)) {
     manifest_->isolated_storage = ParseIsolatedStorage(root_object.get());
+    manifest_->permissions_policy =
+        ParseIsolatedAppPermissions(root_object.get());
   }
 
   manifest_->launch_handler = ParseLaunchHandler(root_object.get());
@@ -1464,6 +1466,84 @@ bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
     return false;
   }
   return is_storage_isolated;
+}
+
+Vector<mojom::blink::ManifestPermissionsPolicyDeclarationPtr>
+ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
+  Vector<mojom::blink::ManifestPermissionsPolicyDeclarationPtr> out;
+
+  JSONValue* json_value = object->Get("permissions_policy");
+  if (!json_value)
+    return out;
+
+  JSONObject* permissions_dict = object->GetJSONObject("permissions_policy");
+  if (!permissions_dict) {
+    AddErrorInfo(
+        "property 'permissions_policy' ignored, type object expected.");
+    return out;
+  }
+
+  for (wtf_size_t i = 0; i < permissions_dict->size(); ++i) {
+    const JSONObject::Entry& entry = permissions_dict->at(i);
+    String feature(entry.first);
+
+    JSONArray* origin_allowlist = JSONArray::Cast(entry.second);
+    if (!origin_allowlist) {
+      AddErrorInfo("permission '" + feature +
+                   "' ignored, invalid allowlist: type array expected.");
+      continue;
+    }
+
+    Vector<String> allowlist = ParseOriginAllowlist(origin_allowlist, feature);
+    if (!allowlist.size())
+      continue;
+    out.push_back(mojom::blink::ManifestPermissionsPolicyDeclaration::New(
+        feature, allowlist));
+  }
+  return out;
+}
+
+Vector<String> ManifestParser::ParseOriginAllowlist(
+    const JSONArray* json_allowlist,
+    const String& feature) {
+  Vector<String> out;
+  for (wtf_size_t i = 0; i < json_allowlist->size(); ++i) {
+    JSONValue* json_value = json_allowlist->at(i);
+    if (!json_value) {
+      AddErrorInfo(
+          "permissions_policy entry ignored, required property 'origin' is "
+          "invalid.");
+      return Vector<String>();
+    }
+
+    String origin_string;
+    if (!json_value->AsString(&origin_string) || origin_string.IsNull()) {
+      AddErrorInfo(
+          "permissions_policy entry ignored, required property 'origin' "
+          "contains "
+          "an invalid element: type string expected.");
+      return Vector<String>();
+    }
+
+    if (!origin_string.length()) {
+      AddErrorInfo(
+          "permissions_policy entry ignored, required property 'origin' is "
+          "contains an empty string.");
+      return Vector<String>();
+    }
+
+    if (origin_string.length() > kMaxOriginLength) {
+      AddErrorInfo(
+          "permissions_policy entry ignored, 'origin' exceeds maximum "
+          "character length "
+          "of " +
+          String::Number(kMaxOriginLength) + " .");
+      return Vector<String>();
+    }
+    out.push_back(origin_string);
+  }
+
+  return out;
 }
 
 mojom::blink::ManifestLaunchHandlerPtr ManifestParser::ParseLaunchHandler(

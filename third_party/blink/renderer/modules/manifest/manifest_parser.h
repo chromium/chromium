@@ -430,6 +430,12 @@ class MODULES_EXPORT ManifestParser {
   // Returns true iff the field could be parsed as the boolean true.
   bool ParseIsolatedStorage(const JSONObject* object);
 
+  // Parses the 'permissions_policy' field of the manifest.
+  Vector<mojom::blink::ManifestPermissionsPolicyDeclarationPtr>
+  ParseIsolatedAppPermissions(const JSONObject* object);
+  Vector<String> ParseOriginAllowlist(const JSONArray* allowlist,
+                                      const String& feature);
+
   // Parses the 'launch_handler' field of the manifest as defined in:
   // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
   // Returns default values if parsing fails.

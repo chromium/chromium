@@ -99,6 +99,8 @@ struct Manifest {
   // https://github.com/robbiemc/pwa-isolated-storage/blob/main/explainer.md
   bool isolated_storage;
 
+  array<ManifestPermissionsPolicyDeclaration> permissions_policy;
+
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:
   // https://github.com/WICG/sw-launch/blob/main/launch_handler.md
@@ -308,6 +310,14 @@ struct ManifestUserPreferenceOverrides {
 
   bool has_background_color;
   uint32 background_color;
+};
+
+// Used by Isolated Apps to declare a permissions policy.
+// TODO(crbug.com/1275708): Add a link to the explainer when it becomes
+// available.
+struct ManifestPermissionsPolicyDeclaration {
+  string feature;
+  array<string> allowlist;
 };
 
 // Debug information for a parsed manifest.

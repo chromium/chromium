@@ -4710,6 +4710,114 @@ TEST_F(ManifestParserTest, StorageIsolationBadScope) {
   }
 }
 
+TEST_F(ManifestParserTest, PermissionsPolicy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableIsolatedStorage);
+  {
+    auto& manifest = ParseManifest(
+        R"({ "permissions_policy": {
+                "geolocation": ["https://example.com"],
+                "microphone": ["https://example.com"]
+        }})");
+    EXPECT_EQ(0u, GetErrorCount());
+    EXPECT_EQ(2u, manifest->permissions_policy.size());
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyEmptyOrigin) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableIsolatedStorage);
+  {
+    auto& manifest = ParseManifest(
+        R"({ "permissions_policy": {
+                "geolocation": ["https://example.com"],
+                "microphone": [""],
+                "midi": []
+        }})");
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(1u, manifest->permissions_policy.size());
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyAsArray) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableIsolatedStorage);
+  {
+    auto& manifest = ParseManifest(
+        R"({ "permissions_policy": [
+          {"geolocation": ["https://example.com"]},
+          {"microphone": [""]},
+          {"midi": []}
+        ]})");
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->permissions_policy.size());
+    EXPECT_EQ("property 'permissions_policy' ignored, type object expected.",
+              errors()[0]);
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyInvalidType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableIsolatedStorage);
+  {
+    auto& manifest = ParseManifest(R"({ "permissions_policy": true})");
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->permissions_policy.size());
+    EXPECT_EQ("property 'permissions_policy' ignored, type object expected.",
+              errors()[0]);
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyInvalidAllowlistType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableIsolatedStorage);
+  {
+    auto& manifest = ParseManifest(
+        R"({ "permissions_policy": {
+            "geolocation": ["https://example.com"],
+            "microphone": 0,
+            "midi": true
+          }})");
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ(1u, manifest->permissions_policy.size());
+    EXPECT_EQ(
+        "permission 'microphone' ignored, invalid allowlist: type array "
+        "expected.",
+        errors()[0]);
+    EXPECT_EQ(
+        "permission 'midi' ignored, invalid allowlist: type array expected.",
+        errors()[1]);
+  }
+}
+
+TEST_F(ManifestParserTest, PermissionsPolicyInvalidAllowlistEntry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kWebAppEnableIsolatedStorage);
+  {
+    auto& manifest = ParseManifest(
+        R"({ "permissions_policy": {
+            "geolocation": ["https://example.com", null],
+            "microphone": ["https://example.com", {}]
+          }})");
+    EXPECT_EQ(2u, GetErrorCount());
+    EXPECT_EQ(0u, manifest->permissions_policy.size());
+    EXPECT_EQ(
+        "permissions_policy entry ignored, required property 'origin' contains "
+        "an invalid element: type string expected.",
+        errors()[0]);
+    EXPECT_EQ(
+        "permissions_policy entry ignored, required property 'origin' contains "
+        "an invalid element: type string expected.",
+        errors()[1]);
+  }
+}
+
 TEST_F(ManifestParserTest, CaptureLinksParseRules) {
   {
     ScopedWebAppLinkCapturingForTest feature(false);
