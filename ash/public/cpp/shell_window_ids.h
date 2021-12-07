@@ -209,6 +209,11 @@ enum NonContainerWindowId {
   // window (if one exists).
   kShellWindowId_CaptureModeFolderSelectionDialogOwner,
 
+  // The window that shows the "Save Desk as Template" button below the Virtual
+  // Desks bar. There's only one such window on each display when overview mode
+  // is active.
+  kShellWindowId_SaveDeskAsTemplateWindow,
+
   // The window that shows the Desks Templates grid in overview.
   kShellWindowId_DesksTemplatesGridWindow,
 };

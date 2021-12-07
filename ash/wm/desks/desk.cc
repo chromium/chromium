@@ -77,9 +77,12 @@ void UpdateBackdropController(aura::Window* desk_container) {
 bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
   // The desks bar widget is an activatable window placed in the active desk's
   // container, therefore it should be allowed to move outside of its desk when
-  // its desk is removed.
-  if (window->GetId() == kShellWindowId_DesksBarWindow)
+  // its desk is removed. The save desk as template widget is not activatable
+  // but should also be moved to the next active desk.
+  if (window->GetId() == kShellWindowId_DesksBarWindow ||
+      window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow) {
     return true;
+  }
 
   // We never move transient descendants directly, this is taken care of by
   // `wm::TransientWindowManager::OnWindowHierarchyChanged()`.

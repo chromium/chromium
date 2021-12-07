@@ -1275,12 +1275,43 @@ TEST_F(DesksTemplatesTest, LaunchTemplateWithMinimizedOverviewWindow) {
   EXPECT_FALSE(InOverviewSession());
 }
 
+// Tests that there is no crash if we launch a template after deleting the
+// active desk. Regression test for https://crbug.com/1277203.
+TEST_F(DesksTemplatesTest, LaunchTemplateAfterClosingActiveDesk) {
+  auto* desks_controller = DesksController::Get();
+  while (desks_controller->CanCreateDesks())
+    desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+
+  // One window is needed to save a template.
+  auto window = CreateAppWindow();
+
+  // Open overview and save a template. This will also take us to the desks
+  // templates grid view.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  // Remove the active desk. This caused a crash prior because the "Save desk as
+  // a template" button was not moved when the active desk was removed.
+  RemoveDesk(desks_controller->active_desk());
+
+  // Click on the grid item to launch the template. We should exit overview and
+  // there should be no crash.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
+  // Launching a template fetches it from the desk model asynchronously. Make
+  // sure the async call is done before waiting.
+  WaitForDesksTemplatesUI();
+  waiter.Wait();
+
+  EXPECT_FALSE(InOverviewSession());
+}
+
 // Tests that if we open the desks templates grid a second time during an
 // overview session, we can still see the template items. Opening a second time
 // can be done after deleting all the templates from the first open. Regression
 // test for https://crbug.com/1275179.
 TEST_F(DesksTemplatesTest, TemplatesAreVisibleAfterSecondSave) {
-  // Create a test minimized window.
+  // One window is needed to save a template.
   auto window = CreateAppWindow();
 
   // Open overview and save a template.

@@ -291,12 +291,19 @@ std::unique_ptr<views::Widget> SaveDeskAsTemplateWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "SaveDeskAsTemplateWidget";
   params.accept_events = true;
+  // This widget is hidden during window dragging, but will become visible on
+  // mouse/touch release. Place it in the active desk container so it remains
+  // beneath the dragged window when it is animating back to the overview grid.
   params.parent = desks_util::GetActiveDeskContainerForRoot(root_window);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
 
   auto widget = std::make_unique<views::Widget>();
   widget->set_focus_on_creation(false);
   widget->Init(std::move(params));
+
+  aura::Window* window = widget->GetNativeWindow();
+  window->parent()->StackChildAtBottom(window);
+  window->SetId(kShellWindowId_SaveDeskAsTemplateWindow);
   return widget;
 }
 
