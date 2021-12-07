@@ -332,7 +332,10 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // When dealing with an unowned form, we keep track of the unowned fields
   // the user has modified so we can determine when submission occurs.
+  // An additional sufficient condition for the form submission detection is
+  // that the form has been autofilled.
   std::set<FieldRendererId> formless_elements_user_edited_;
+  bool formless_elements_were_autofilled_ = false;
 
   // The form user interacted, it is used if last_interacted_form_ or formless
   // form can't be converted to FormData at the time of form submission.
