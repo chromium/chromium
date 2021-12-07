@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "extensions/browser/extension_registry.h"
-#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keymap.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -241,9 +240,6 @@ void InputImeAPI::Shutdown() {
   InputImeEventRouterFactory::GetInstance()->RemoveProfile(
       Profile::FromBrowserContext(browser_context_));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
-  if (observer_ && ui::IMEBridge::Get()) {
-    ui::IMEBridge::Get()->RemoveObserver(observer_.get());
-  }
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<InputImeAPI>>::

@@ -26,7 +26,6 @@
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
-#include "ui/base/ime/ash/ime_bridge_observer.h"
 #include "ui/base/ime/ash/ime_engine_handler_interface.h"
 #include "ui/base/ime/text_input_flags.h"
 
@@ -142,8 +141,6 @@ class InputImeAPI : public BrowserContextKeyedAPI,
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  std::unique_ptr<ui::IMEBridgeObserver> observer_;
 };
 
 template <>
