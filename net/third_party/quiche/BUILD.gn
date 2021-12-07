@@ -299,7 +299,6 @@ source_set("quiche") {
     "src/quic/core/crypto/quic_hkdf.h",
     "src/quic/core/crypto/quic_random.cc",
     "src/quic/core/crypto/quic_random.h",
-    "src/quic/core/crypto/server_proof_verifier.h",
     "src/quic/core/crypto/tls_client_connection.cc",
     "src/quic/core/crypto/tls_client_connection.h",
     "src/quic/core/crypto/tls_connection.cc",
