@@ -3392,7 +3392,11 @@ enum WebFeature {
   kCSSMediaListUnknown = 4083,
   kCSSOMMediaConditionUnknown = 4084,
   kDocumentDomainSettingWithoutOriginAgentClusterHeader = 4085,
-
+  kCrossOriginEmbedderPolicyCredentiallessReportOnly = 4086,
+  kCrossOriginEmbedderPolicyRequireCorpReportOnly = 4087,
+  kCoopAndCoepIsolatedReportOnly = 4088,
+  kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly = 4089,
+  kCrossOriginOpenerPolicySameOriginReportOnly = 4090,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

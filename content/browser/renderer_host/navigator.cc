@@ -62,49 +62,94 @@ namespace content {
 
 namespace {
 
+using WebFeature = blink::mojom::WebFeature;
+using CrossOriginOpenerPolicyValue =
+    network::mojom::CrossOriginOpenerPolicyValue;
+using CrossOriginEmbedderPolicyValue =
+    network::mojom::CrossOriginEmbedderPolicyValue;
+
+// Map Cross-Origin-Opener-Policy header value to its corresponding WebFeature.
+absl::optional<WebFeature> FeatureCoop(CrossOriginOpenerPolicyValue value) {
+  switch (value) {
+    case CrossOriginOpenerPolicyValue::kUnsafeNone:
+      return absl::nullopt;
+    case CrossOriginOpenerPolicyValue::kSameOrigin:
+      return WebFeature::kCrossOriginOpenerPolicySameOrigin;
+    case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+      return WebFeature::kCrossOriginOpenerPolicySameOriginAllowPopups;
+    case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+      return WebFeature::kCoopAndCoepIsolated;
+  }
+}
+
+// Map Cross-Origin-Opener-Policy-Report-Only header value to its corresponding
+// WebFeature.
+absl::optional<WebFeature> FeatureCoopRO(CrossOriginOpenerPolicyValue value) {
+  switch (value) {
+    case CrossOriginOpenerPolicyValue::kUnsafeNone:
+      return absl::nullopt;
+    case CrossOriginOpenerPolicyValue::kSameOrigin:
+      return WebFeature::kCrossOriginOpenerPolicySameOriginReportOnly;
+    case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+      return WebFeature::
+          kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly;
+    case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
+      return WebFeature::kCoopAndCoepIsolatedReportOnly;
+  }
+}
+
+// Map Cross-Origin-Embedder-Policy header value to its
+// corresponding WebFeature.
+absl::optional<WebFeature> FeatureCoep(CrossOriginEmbedderPolicyValue value) {
+  switch (value) {
+    case CrossOriginEmbedderPolicyValue::kNone:
+      return absl::nullopt;
+    case CrossOriginEmbedderPolicyValue::kCredentialless:
+      return WebFeature::kCrossOriginEmbedderPolicyCredentialless;
+    case CrossOriginEmbedderPolicyValue::kRequireCorp:
+      return WebFeature::kCrossOriginEmbedderPolicyRequireCorp;
+  }
+}
+
+// Map Cross-Origin-Embedder-Policy-Report-Only header value to its
+// corresponding WebFeature.
+absl::optional<WebFeature> FeatureCoepRO(CrossOriginEmbedderPolicyValue value) {
+  switch (value) {
+    case CrossOriginEmbedderPolicyValue::kNone:
+      return absl::nullopt;
+    case CrossOriginEmbedderPolicyValue::kCredentialless:
+      return WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly;
+    case CrossOriginEmbedderPolicyValue::kRequireCorp:
+      return WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly;
+  }
+}
+
 // TODO(titouan): Move the feature computation logic into `NavigationRequest`,
 // and use `NavigationRequest::TakeWebFeatureToLog()` to record them later.
 void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
                                       bool has_embedding_control,
                                       bool is_error_page) {
   ContentBrowserClient* client = GetContentClient()->browser();
-  if (rfh->cross_origin_opener_policy().value ==
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicySameOrigin);
-  }
-  if (rfh->cross_origin_opener_policy().value ==
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::
-                 kCrossOriginOpenerPolicySameOriginAllowPopups);
+
+  auto log = [&](absl::optional<WebFeature> feature) {
+    if (feature)
+      client->LogWebFeatureForCurrentPage(rfh, feature.value());
+  };
+
+  // [COOP]
+  if (rfh->IsInPrimaryMainFrame()) {
+    log(FeatureCoop(rfh->cross_origin_opener_policy().value));
+    log(FeatureCoopRO(rfh->cross_origin_opener_policy().report_only_value));
+
+    if (rfh->cross_origin_opener_policy().reporting_endpoint ||
+        rfh->cross_origin_opener_policy().report_only_reporting_endpoint) {
+      log(WebFeature::kCrossOriginOpenerPolicyReporting);
+    }
   }
 
-  switch (rfh->cross_origin_embedder_policy().value) {
-    case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
-      break;
-    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
-      client->LogWebFeatureForCurrentPage(
-          rfh,
-          blink::mojom::WebFeature::kCrossOriginEmbedderPolicyCredentialless);
-      break;
-    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
-      client->LogWebFeatureForCurrentPage(
-          rfh, blink::mojom::WebFeature::kCrossOriginEmbedderPolicyRequireCorp);
-      break;
-  }
-
-  if (rfh->cross_origin_opener_policy().value ==
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCoopAndCoepIsolated);
-  }
-
-  if (rfh->cross_origin_opener_policy().reporting_endpoint ||
-      rfh->cross_origin_opener_policy().report_only_reporting_endpoint) {
-    client->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kCrossOriginOpenerPolicyReporting);
-  }
+  // [COEP]
+  log(FeatureCoep(rfh->cross_origin_embedder_policy().value));
+  log(FeatureCoepRO(rfh->cross_origin_embedder_policy().report_only_value));
 
   // Record iframes embedded in cross-origin contexts without a CSP
   // frame-ancestor directive.
@@ -121,9 +166,7 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
 
   if (is_embedded_in_cross_origin_context && !has_embedding_control &&
       !is_error_page) {
-    client->LogWebFeatureForCurrentPage(
-        rfh,
-        blink::mojom::WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
+    log(WebFeature::kCrossOriginSubframeWithoutEmbeddingControl);
     RenderFrameHostImpl* main_frame = rfh->GetMainFrame();
     ukm::builders::CrossOriginSubframeWithoutEmbeddingControl(
         main_frame->GetPageUkmSourceId())

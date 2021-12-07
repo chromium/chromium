@@ -34066,7 +34066,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2497" label="V8FunctionTokenOffsetTooLongForToString"/>
   <int value="2498" label="ServiceWorkerImportScriptNotInstalled"/>
   <int value="2499" label="NestedDedicatedWorker"/>
-  <int value="2500" label="ClientHintsMetaAcceptCHLifetime"/>
+  <int value="2500" label="OBSOLETE_ClientHintsMetaAcceptCHLifetime"/>
   <int value="2501" label="OBSOLETE_DOMNodeRemovedEventDelayed"/>
   <int value="2502"
       label="OBSOLETE_DOMNodeRemovedEventHandlerAccessDetachingNode"/>
@@ -35748,6 +35748,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4084" label="CSSOMMediaConditionUnknown"/>
   <int value="4085"
       label="DocumentDomainSettingWithoutOriginAgentClusterHeader"/>
+  <int value="4086" label="CrossOriginEmbedderPolicyCredentiallessReportOnly"/>
+  <int value="4087" label="CrossOriginEmbedderPolicyRequireCorpReportOnly"/>
+  <int value="4088" label="CoopAndCoepIsolatedReportOnly"/>
+  <int value="4089"
+      label="CrossOriginOpenerPolicySameOriginAllowPopupsReportOnly"/>
+  <int value="4090" label="CrossOriginOpenerPolicySameOriginReportOnly"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

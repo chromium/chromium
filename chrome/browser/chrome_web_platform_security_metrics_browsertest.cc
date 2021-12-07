@@ -1135,8 +1135,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                    "/set-header?"
                                    "Cross-Origin-Embedder-Policy: unsafe-none");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
+               0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1146,8 +1149,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                             "/set-header?"
                             "Cross-Origin-Embedder-Policy: credentialless");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 1);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
+               0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1157,8 +1163,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                             "/set-header?"
                             "Cross-Origin-Embedder-Policy: require-corp");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
+               0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1168,8 +1177,11 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
       "/set-header?"
       "Cross-Origin-Embedder-Policy-Report-Only: credentialless");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
+               1);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1177,10 +1189,66 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   GURL url = https_server().GetURL(
       "a.com",
       "/set-header?"
-      "Cross-Origin-Embedder-Policy-Report-Only: credentialless");
+      "Cross-Origin-Embedder-Policy-Report-Only: require-corp");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
-  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 0);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorpReportOnly, 1);
+  CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentiallessReportOnly,
+               0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoopAndCoepIsolatedMainFrame) {
+  GURL url =
+      https_server().GetURL("a.com",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: credentialless&"
+                            "Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCoopAndCoepIsolated, 1);
+  CheckCounter(WebFeature::kCoopAndCoepIsolatedReportOnly, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoopAndCoepIsolatedEnforcedReportOnlyMainFrame) {
+  GURL url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy: credentialless&"
+      "Cross-Origin-Embedder-Policy-Report-Only: credentialless&"
+      "Cross-Origin-Opener-Policy: same-origin&"
+      "Cross-Origin-Opener-Policy-Report-Only: same-origin");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCoopAndCoepIsolated, 1);
+  CheckCounter(WebFeature::kCoopAndCoepIsolatedReportOnly, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoopAndCoepIsolatedMainFrameReportOnly) {
+  GURL url = https_server().GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Embedder-Policy: credentialless&"
+      "Cross-Origin-Opener-Policy-Report-Only: same-origin");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
+  CheckCounter(WebFeature::kCoopAndCoepIsolated, 0);
+  CheckCounter(WebFeature::kCoopAndCoepIsolatedReportOnly, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoopAndCoepIsolatedIframe) {
+  GURL main_url = https_server().GetURL("a.com", "/set-header?");
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  GURL child_url =
+      https_server().GetURL("a.com",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: credentialless&"
+                            "Cross-Origin-Opener-Policy: same-origin");
+  LoadIFrame(child_url);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  CheckCounter(WebFeature::kCoopAndCoepIsolated, 0);
+  CheckCounter(WebFeature::kCoopAndCoepIsolatedReportOnly, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1283,13 +1351,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
-// - CrossOriginOpenerPolicySameOrigin
-// - CrossOriginOpenerPolicySameOriginAllowPopups
-// - CoopAndCoepIsolated
+// [ ] CrossOriginOpenerPolicySameOrigin
+// [ ] CrossOriginOpenerPolicySameOriginAllowPopups
+// [X] CoopAndCoepIsolated
 //
 // Added by:
 // https://chromium-review.googlesource.com/c/chromium/src/+/2122140
-//
-// In particular, it would be interesting knowing what happens with iframes?
-// Are CoopCoepOriginIsolated nested document counted as CoopAndCoepIsolated?
-// Not doing it would underestimate the usage metric.
