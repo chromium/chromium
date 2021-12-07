@@ -9,7 +9,7 @@ group("resources") {
   deps = [
     ":legacy_password_breach_illustration",
     ":password_breach_illustration",
-    ":passwords_logo",
+    ":passwords_logo_colored",
   ]
 }
 
@@ -23,11 +23,13 @@ imageset("password_breach_illustration") {
   ]
 }
 
-imageset("passwords_logo") {
+imageset("passwords_logo_colored") {
   sources = [
-    "passwords_logo.imageset/Contents.json",
-    "passwords_logo.imageset/passwords_logo@2x.png",
-    "passwords_logo.imageset/passwords_logo@3x.png",
+    "passwords_logo_colored.imageset/Contents.json",
+    "passwords_logo_colored.imageset/passwords_logo_colored@2x.png",
+    "passwords_logo_colored.imageset/passwords_logo_colored@3x.png",
+    "passwords_logo_colored.imageset/passwords_logo_colored_dark@2x.png",
+    "passwords_logo_colored.imageset/passwords_logo_colored_dark@3x.png",
   ]
 }
 

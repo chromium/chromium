@@ -40,7 +40,7 @@ constexpr CGFloat kLogoWidth = 180;
     self.pinSpecificContentAboveButton = YES;
 
     UIImageView* imageView = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"passwords_logo"]];
+        initWithImage:[UIImage imageNamed:@"passwords_logo_colored"]];
     imageView.contentMode = UIViewContentModeScaleAspectFit;
     imageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.specificContentView addSubview:imageView];
