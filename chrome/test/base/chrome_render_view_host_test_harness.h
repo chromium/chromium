@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/test_renderer_host.h"
 

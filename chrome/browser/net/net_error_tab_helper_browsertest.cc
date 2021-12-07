@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/net_error_diagnostics_dialog.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
