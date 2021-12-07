@@ -80,6 +80,19 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
       }
     }
 
+    if (options_.Has(FileSystemOperation::CopyOrMoveOption::
+                         kRemovePartiallyCopiedFilesOnError) &&
+        error != base::File::FILE_OK &&
+        error != base::File::FILE_ERROR_NOT_A_FILE) {
+      // On error, remove the destination file.
+      operation_runner_->Remove(
+          dest_url_, /*recursive=*/false,
+          base::BindOnce(&CopyOrMoveImpl::DidRemoveDestOnError,
+                         weak_factory_.GetWeakPtr(), error,
+                         std::move(callback)));
+      return;
+    }
+
     // The callback should be called in case of copy or error. The callback is
     // null if the operation type is OPERATION_MOVE (implemented as copy +
     // delete) and no error occurred.
@@ -124,6 +137,22 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
     std::move(callback).Run(error);
   }
 
+  void DidRemoveDestOnError(
+      base::File::Error prior_error,
+      CopyOrMoveOperationDelegate::StatusCallback callback,
+      base::File::Error error) {
+    if (error != base::File::FILE_OK) {
+      VLOG(1) << "Error removing destination file after copy error or "
+                 "cancellation: "
+              << error;
+    }
+    // The callback is null if the operation type is OPERATION_MOVE (implemented
+    // as copy + delete) and no error occurred.
+    if (!callback.is_null()) {
+      std::move(callback).Run(prior_error);
+    }
+  }
+
   const raw_ptr<FileSystemOperationRunner> operation_runner_;
   const CopyOrMoveOperationDelegate::OperationType operation_type_;
   const FileSystemURL src_url_;
@@ -132,6 +161,7 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
 
  private:
   const FileSystemOperation::CopyOrMoveProgressCallback progress_callback_;
+  base::WeakPtrFactory<CopyOrMoveImpl> weak_factory_{this};
 };
 
 namespace {
