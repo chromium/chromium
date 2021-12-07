@@ -86,13 +86,6 @@ const base::Feature kPwaUpdateDialogForNameAndIcon{
 #endif
 };
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables taking snapshots of the user data directory after a major
-// milestone update and restoring them after a version rollback.
-const base::Feature kUserDataSnapshot{"UserDataSnapshot",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Gates sandboxed iframe navigation toward external protocol behind any of:
 // - allow-popups
 // - allow-top-navigation

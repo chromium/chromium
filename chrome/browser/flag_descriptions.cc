@@ -5372,13 +5372,6 @@ const char kDynamicTcmallocDescription[] =
 #endif  // BUILDFLAG(USE_TCMALLOC)
 #endif  // #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-const char kUserDataSnapshotName[] = "Enable user data snapshots";
-const char kUserDataSnapshotDescription[] =
-    "Enables taking snapshots of the user data directory after a Chrome "
-    "update and restoring them after a version rollback.";
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
 const char kWebShareName[] = "Web Share";
 const char kWebShareDescription[] =

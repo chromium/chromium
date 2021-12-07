@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/enterprise_util.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,7 +24,6 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/downgrade/downgrade_utils.h"
 #include "chrome/browser/downgrade/snapshot_manager.h"
@@ -154,15 +152,11 @@ void DeleteMovedUserData(const base::FilePath& user_data_dir,
 }
 
 bool UserDataSnapshotEnabled() {
-  if (g_snapshots_enabled_for_testing)
-    return true;
-  bool is_enterprise_managed =
+  return g_snapshots_enabled_for_testing ||
 #if defined(OS_WIN) || defined(OS_MAC)
-      base::IsMachineExternallyManaged() ||
+         base::IsMachineExternallyManaged() ||
 #endif
-      policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
-  return is_enterprise_managed &&
-         base::FeatureList::IsEnabled(features::kUserDataSnapshot);
+         policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid();
 }
 
 #if defined(OS_WIN)

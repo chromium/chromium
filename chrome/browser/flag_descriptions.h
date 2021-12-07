@@ -3123,11 +3123,6 @@ extern const char kDynamicTcmallocDescription[];
 #endif  // BUILDFLAG(USE_TCMALLOC)
 #endif  // #if defined(OS_CHROMEOS) || defined(OS_LINUX)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kUserDataSnapshotName[];
-extern const char kUserDataSnapshotDescription[];
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_MAC)
 extern const char kWebShareName[];
 extern const char kWebShareDescription[];

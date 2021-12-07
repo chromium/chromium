@@ -6396,13 +6396,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReduceUserAgentDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kReduceUserAgent)},
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-user-data-snapshot", flag_descriptions::kUserDataSnapshotName,
-     flag_descriptions::kUserDataSnapshotDescription,
-     kOsMac | kOsWin | kOsLinux | kOsFuchsia,
-     FEATURE_VALUE_TYPE(features::kUserDataSnapshot)},
-#endif
-
 #if defined(OS_WIN)
     {"run-video-capture-service-in-browser",
      flag_descriptions::kRunVideoCaptureServiceInBrowserProcessName,
