@@ -935,6 +935,14 @@ void ShimlessRmaService::FinalizationProgress(
   }
 }
 
+void ShimlessRmaService::RoFirmwareUpdateProgress(
+    rmad::UpdateRoFirmwareStatus status) {
+  last_update_ro_firmware_progress_ = status;
+  if (update_ro_firmware_observer_.is_bound()) {
+    update_ro_firmware_observer_->OnUpdateRoFirmwareStatusChanged(status);
+  }
+}
+
 void ShimlessRmaService::ObserveError(
     ::mojo::PendingRemote<mojom::ErrorObserver> observer) {
   error_observer_.Bind(std::move(observer));
@@ -1004,6 +1012,15 @@ void ShimlessRmaService::ObserveFinalizationStatus(
     finalization_observer_->OnFinalizationUpdated(
         last_finalization_progress_->status(),
         last_finalization_progress_->progress());
+  }
+}
+
+void ShimlessRmaService::ObserveRoFirmwareUpdateProgress(
+    ::mojo::PendingRemote<mojom::UpdateRoFirmwareObserver> observer) {
+  update_ro_firmware_observer_.Bind(std::move(observer));
+  if (last_update_ro_firmware_progress_) {
+    update_ro_firmware_observer_->OnUpdateRoFirmwareStatusChanged(
+        *last_update_ro_firmware_progress_);
   }
 }
 

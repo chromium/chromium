@@ -288,6 +288,26 @@ TEST_F(ShimlessRmaMojoToProtoTest, WriteProtectDisableCompleteActionMatch) {
   TestMojoToProto(enums);
 }
 
+TEST_F(ShimlessRmaMojoToProtoTest, UpdateRoFirmwareStatusMatch) {
+  constexpr auto enums = base::MakeFixedFlatMap<mojom::UpdateRoFirmwareStatus,
+                                                rmad::UpdateRoFirmwareStatus>(
+      {{mojom::UpdateRoFirmwareStatus::kWaitUsb,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_WAIT_USB},
+       {mojom::UpdateRoFirmwareStatus::kFileNotFound,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_FILE_NOT_FOUND},
+       {mojom::UpdateRoFirmwareStatus::kDownloading,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING},
+       {mojom::UpdateRoFirmwareStatus::kUpdating,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_UPDATING},
+       {mojom::UpdateRoFirmwareStatus::kRebooting,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_REBOOTING},
+       {mojom::UpdateRoFirmwareStatus::kComplete,
+        rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_COMPLETE}});
+
+  TestProtoToMojo(enums);
+  TestMojoToProto(enums);
+}
+
 TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStatusMatch) {
   constexpr auto enums = base::MakeFixedFlatMap<mojom::ProvisioningStatus,
                                                 rmad::ProvisionStatus::Status>(

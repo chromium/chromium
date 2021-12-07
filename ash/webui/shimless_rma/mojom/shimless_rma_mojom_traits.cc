@@ -50,6 +50,10 @@ using ProtoCalibrationStatus =
 
 using MojomFinalizationStatus = ash::shimless_rma::mojom::FinalizationStatus;
 using ProtoFinalizationStatus = rmad::FinalizeStatus_Status;
+
+using MojomUpdateRoFirmwareStatus =
+    ash::shimless_rma::mojom::UpdateRoFirmwareStatus;
+using ProtoUpdateRoFirmwaretatus = rmad::UpdateRoFirmwareStatus;
 }  // namespace
 
 // The rmad state does not map 1:1 with UI app state, the UI handles more states
@@ -923,6 +927,63 @@ bool StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
     out->set_progress(data.progress());
     return true;
   }
+  return false;
+}
+
+// static// static
+MojomUpdateRoFirmwareStatus
+EnumTraits<MojomUpdateRoFirmwareStatus, ProtoUpdateRoFirmwaretatus>::ToMojom(
+    ProtoUpdateRoFirmwaretatus step) {
+  switch (step) {
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_WAIT_USB:
+      return MojomUpdateRoFirmwareStatus::kWaitUsb;
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_FILE_NOT_FOUND:
+      return MojomUpdateRoFirmwareStatus::kFileNotFound;
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING:
+      return MojomUpdateRoFirmwareStatus::kDownloading;
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_UPDATING:
+      return MojomUpdateRoFirmwareStatus::kUpdating;
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_REBOOTING:
+      return MojomUpdateRoFirmwareStatus::kRebooting;
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_COMPLETE:
+      return MojomUpdateRoFirmwareStatus::kComplete;
+
+    case ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_UNKNOWN:
+    default:
+      NOTREACHED();
+      return MojomUpdateRoFirmwareStatus::kUnknown;
+  }
+  NOTREACHED();
+  return MojomUpdateRoFirmwareStatus::kUnknown;
+}
+
+bool EnumTraits<MojomUpdateRoFirmwareStatus, ProtoUpdateRoFirmwaretatus>::
+    FromMojom(MojomUpdateRoFirmwareStatus step,
+              ProtoUpdateRoFirmwaretatus* out) {
+  switch (step) {
+    case MojomUpdateRoFirmwareStatus::kWaitUsb:
+      *out = ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_WAIT_USB;
+      return true;
+    case MojomUpdateRoFirmwareStatus::kFileNotFound:
+      *out = ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_FILE_NOT_FOUND;
+      return true;
+    case MojomUpdateRoFirmwareStatus::kDownloading:
+      *out = ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING;
+      return true;
+    case MojomUpdateRoFirmwareStatus::kUpdating:
+      *out = ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_UPDATING;
+      return true;
+    case MojomUpdateRoFirmwareStatus::kRebooting:
+      *out = ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_REBOOTING;
+      return true;
+    case MojomUpdateRoFirmwareStatus::kComplete:
+      *out = ProtoUpdateRoFirmwaretatus::RMAD_UPDATE_RO_FIRMWARE_COMPLETE;
+      return true;
+    case MojomUpdateRoFirmwareStatus::kUnknown:
+      NOTREACHED();
+      return false;
+  }
+  NOTREACHED();
   return false;
 }
 }  // namespace mojo

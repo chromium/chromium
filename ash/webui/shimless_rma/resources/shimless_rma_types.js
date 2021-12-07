@@ -56,6 +56,10 @@ export const ComponentRepairStatus =
 export const WriteProtectDisableCompleteAction =
     ash.shimlessRma.mojom.WriteProtectDisableCompleteAction;
 
+/** @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareStatus} */
+export const UpdateRoFirmwareStatus =
+    ash.shimlessRma.mojom.UpdateRoFirmwareStatus;
+
 /**
  * @typedef {ash.shimlessRma.mojom.CalibrationSetupInstruction}
  */
@@ -140,6 +144,27 @@ export const OsUpdateObserverReceiver =
  */
 export const OsUpdateObserverInterface =
     ash.shimlessRma.mojom.OsUpdateObserverInterface;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverRemote}
+ */
+export const UpdateRoFirmwareObserverRemote =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverRemote;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverReceiver}
+ */
+export const UpdateRoFirmwareObserverReceiver =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverReceiver;
+
+/**
+ * Type alias for UpdateRoFirmwareObserverInterface.
+ * @typedef {ash.shimlessRma.mojom.UpdateRoFirmwareObserverInterface}
+ */
+export const UpdateRoFirmwareObserverInterface =
+    ash.shimlessRma.mojom.UpdateRoFirmwareObserverInterface;
 
 /**
  * Type alias for CalibrationObserverRemote.

@@ -166,6 +166,16 @@ class StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
       rmad::CalibrationComponentStatus* out);
 };
 
+template <>
+struct EnumTraits<ash::shimless_rma::mojom::UpdateRoFirmwareStatus,
+                  rmad::UpdateRoFirmwareStatus> {
+  static ash::shimless_rma::mojom::UpdateRoFirmwareStatus ToMojom(
+      rmad::UpdateRoFirmwareStatus status);
+
+  static bool FromMojom(ash::shimless_rma::mojom::UpdateRoFirmwareStatus input,
+                        rmad::UpdateRoFirmwareStatus* out);
+};
+
 }  // namespace mojo
 
 #endif  // ASH_WEBUI_SHIMLESS_RMA_MOJOM_SHIMLESS_RMA_MOJOM_TRAITS_H_

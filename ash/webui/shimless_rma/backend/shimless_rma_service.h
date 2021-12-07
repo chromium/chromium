@@ -153,6 +153,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       override;
   void ObserveFinalizationStatus(
       ::mojo::PendingRemote<mojom::FinalizationObserver> observer) override;
+  void ObserveRoFirmwareUpdateProgress(
+      ::mojo::PendingRemote<mojom::UpdateRoFirmwareObserver> observer) override;
 
   void BindInterface(
       mojo::PendingReceiver<mojom::ShimlessRmaService> pending_receiver);
@@ -169,6 +171,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void HardwareVerificationResult(
       const rmad::HardwareVerificationResult& result) override;
   void FinalizationProgress(const rmad::FinalizeStatus& status) override;
+  void RoFirmwareUpdateProgress(rmad::UpdateRoFirmwareStatus status) override;
 
   void OsUpdateProgress(update_engine::Operation operation, double progress);
 
@@ -215,6 +218,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   absl::optional<rmad::HardwareVerificationResult>
       last_hardware_verification_result_;
   absl::optional<rmad::FinalizeStatus> last_finalization_progress_;
+  absl::optional<rmad::UpdateRoFirmwareStatus>
+      last_update_ro_firmware_progress_;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
   mojo::Remote<mojom::OsUpdateObserver> os_update_observer_;
@@ -227,6 +232,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::RemoteSet<mojom::HardwareVerificationStatusObserver>
       hardware_verification_observers_;
   mojo::Remote<mojom::FinalizationObserver> finalization_observer_;
+  mojo::Remote<mojom::UpdateRoFirmwareObserver> update_ro_firmware_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>

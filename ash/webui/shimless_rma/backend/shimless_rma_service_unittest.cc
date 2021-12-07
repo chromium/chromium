@@ -2849,6 +2849,43 @@ TEST_F(ShimlessRmaServiceTest, ObserveError) {
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
+class FakeUpdateRoFirmwareObserver : public mojom::UpdateRoFirmwareObserver {
+ public:
+  void OnUpdateRoFirmwareStatusChanged(
+      rmad::UpdateRoFirmwareStatus status) override {
+    observations.push_back(status);
+  }
+
+  std::vector<rmad::UpdateRoFirmwareStatus> observations;
+  mojo::Receiver<mojom::UpdateRoFirmwareObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveUpdateRoFirmwareStatus) {
+  FakeUpdateRoFirmwareObserver fake_observer;
+  shimless_rma_provider_->ObserveRoFirmwareUpdateProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerRoFirmwareUpdateProgressObservation(
+      rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0],
+            rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING);
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveUpdateRoFirmwareStatusAfterSignal) {
+  fake_rmad_client_()->TriggerRoFirmwareUpdateProgressObservation(
+      rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING);
+  FakeUpdateRoFirmwareObserver fake_observer;
+  shimless_rma_provider_->ObserveRoFirmwareUpdateProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0],
+            rmad::UpdateRoFirmwareStatus::RMAD_UPDATE_RO_FIRMWARE_DOWNLOADING);
+}
+
 class FakeCalibrationObserver : public mojom::CalibrationObserver {
  public:
   void OnCalibrationUpdated(

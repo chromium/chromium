@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -37,6 +37,12 @@ export class FakeShimlessRmaService {
      * @private {boolean}
      */
     this.automaticallyTriggerDisableWriteProtectionObservation_ = false;
+
+    /**
+     * Control automatically triggering update RO firmware observations.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerUpdateRoFirmwareObservation_ = false;
 
     /**
      * Control automatically triggering provisioning observations.
@@ -768,6 +774,29 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * Implements ShimlessRmaServiceInterface.ObserveRoFirmwareUpdateProgress.
+   * @param {!UpdateRoFirmwareObserverRemote} remote
+   */
+  observeRoFirmwareUpdateProgress(remote) {
+    this.observables_.observe(
+        'UpdateRoFirmwareObserver_onUpdateRoFirmwareStatusChanged',
+        (status) => {
+          remote.onUpdateRoFirmwareStatusChanged(
+              /** @type {!UpdateRoFirmwareStatus} */ (status));
+        });
+    if (this.automaticallyTriggerUpdateRoFirmwareObservation_) {
+      this.triggerUpdateRoFirmwareObserver(UpdateRoFirmwareStatus.kComplete, 0);
+    }
+  }
+
+  /**
+   * Trigger update ro firmware observations when an observer is added.
+   */
+  automaticallyTriggerUpdateRoFirmwareObservation() {
+    this.automaticallyTriggerUpdateRoFirmwareObservation_ = true;
+  }
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveCalibration.
    * @param {!CalibrationObserverRemote} remote
    */
@@ -1020,6 +1049,17 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * Causes the update RO firmware observer to fire after a delay.
+   * @param {!UpdateRoFirmwareStatus} status
+   * @param {number} delayMs
+   */
+  triggerUpdateRoFirmwareObserver(status, delayMs) {
+    return this.triggerObserverAfterMs(
+        'UpdateRoFirmwareObserver_onUpdateRoFirmwareStatusChanged', status,
+        delayMs);
+  }
+
+  /**
    * Causes the calibration observer to fire after a delay.
    * @param {!CalibrationComponentStatus} componentStatus
    * @param {number} delayMs
@@ -1236,6 +1276,8 @@ export class FakeShimlessRmaService {
     this.observables_ = new FakeObservables();
     this.observables_.register('ErrorObserver_onError');
     this.observables_.register('OsUpdateObserver_onOsUpdateProgressUpdated');
+    this.observables_.register(
+        'UpdateRoFirmwareObserver_onUpdateRoFirmwareStatusChanged');
     this.observables_.register('CalibrationObserver_onCalibrationUpdated');
     this.observables_.register('CalibrationObserver_onCalibrationStepComplete');
     this.observables_.register('ProvisioningObserver_onProvisioningUpdated');

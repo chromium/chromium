@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, State, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, State, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -847,6 +847,24 @@ export function fakeShimlessRmaServiceTestSuite() {
     service.observeOsUpdateProgress(osUpdateObserver);
     return service.triggerOsUpdateObserver(
         OsUpdateOperation.kDownloading, 0.75, 0);
+  });
+
+  test('ObserveRoFirmwareUpdate', () => {
+    /** @type {!UpdateRoFirmwareObserverRemote} */
+    const roFirmwareUpdateObserver =
+        /** @type {!UpdateRoFirmwareObserverRemote} */ ({
+          /**
+           * Implements
+           * UpdateRoFirmwareObserver.onUpdateRoFirmwareStatusChanged()
+           * @param {!UpdateRoFirmwareStatus} status
+           */
+          onUpdateRoFirmwareStatusChanged(status) {
+            assertEquals(UpdateRoFirmwareStatus.kDownloading, status);
+          }
+        });
+    service.observeRoFirmwareUpdateProgress(roFirmwareUpdateObserver);
+    return service.triggerUpdateRoFirmwareObserver(
+        UpdateRoFirmwareStatus.kDownloading, 0);
   });
 
   test('ObserveCalibrationUpdated', () => {

@@ -269,6 +269,22 @@ enum WriteProtectDisableCompleteAction {
   kCompleteKeepDeviceOpen = 3,
 };
 
+// Status of device read only firmware reimaging.
+// In some cases device firmware must be re-written from a recovery image for
+// device security.
+// This must remain in sync with
+// UpdateRoFirmwareStatus in //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
+enum UpdateRoFirmwareStatus {
+  kUnknown = 0,
+  kWaitUsb = 1,
+  kFileNotFound = 2,
+  kDownloading = 3,
+  kUpdating = 4,
+  kRebooting = 5,
+  kComplete = 6,
+};
+
 // Enumeration of all instructions needed for calibration that require manual
 // setup.
 enum CalibrationSetupInstruction {
@@ -383,6 +399,13 @@ interface HardwareVerificationStatusObserver {
 interface FinalizationObserver {
   // OnFinalizationUpdated is called to report progress of device finalization.
   OnFinalizationUpdated(FinalizationStatus status, float progress);
+};
+
+// Implemented by clients to receive status of RO firmware update progress.
+interface UpdateRoFirmwareObserver {
+  // OnUpdateRoFirmwareStatusChanged is called to report progress of RO firmware
+  // update.
+  OnUpdateRoFirmwareStatusChanged(UpdateRoFirmwareStatus status);
 };
 
 // Enables clients in the webui to manage the RMA flow.
@@ -714,4 +737,7 @@ interface ShimlessRmaService {
       pending_remote<HardwareVerificationStatusObserver> observer);
   // Registers an observer for status of finalization.
   ObserveFinalizationStatus(pending_remote<FinalizationObserver> observer);
+  // Registers an observer for status of RO firmware update.
+  ObserveRoFirmwareUpdateProgress(
+      pending_remote<UpdateRoFirmwareObserver> observer);
 };
