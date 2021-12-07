@@ -730,8 +730,7 @@
                   '|ui/webui/resources/cr_components/chromeos/bluetooth*'
     },
     'chromeos_cellular': {
-      'filepath': 'chrome/browser/resources/chromeos/cellular_setup/|'\
-                  'chrome/browser/ui/webui/chromeos/cellular_setup/|'\
+      'filepath': 'chromeos/dbus/hermes/|'\
                   'chromeos/services/cellular_setup/|'\
                   'ui/webui/resources/cr_components/chromeos/cellular_setup/',
     },
@@ -2371,8 +2370,13 @@
     'chromeos_attestation': ['dkrahn+watch@chromium.org'],
     'chromeos_bluetooth': ['hansberry+watch-bluetooth@chromium.org'],
     'chromeos_cellular': ['azeemarshad+watch-cellular@chromium.org',
-                          'benchan+watch-cellular@chromium.org',
-                          'ejcaruso+watch-cellular@chromium.org'],
+                          'chadduffin+watch-cellular@chromium.org',
+                          'ejcaruso+watch-cellular@chromium.org',
+                          'gordonseto+watch-cellular@google.com',
+                          'hsuregan+watch-cellular@chromium.org',
+                          'jiajunz+watch-cellular@google.com',
+                          'khorimoto+watch-cellular@chromium.org',
+                          'tjohnsonkanu+watch-cellular@google.com'],
     'chromeos_geolocation': ['alemate+watch@chromium.org'],
     'chromeos_lkgm': ['achuith+watch@chromium.org',
                       'bpastene+watch@chromium.org'],
