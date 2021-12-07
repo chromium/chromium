@@ -127,7 +127,8 @@ int SmartLockAuthFactorModel::GetLabelId() const {
     case SmartLockState::kPrimaryUserAbsent:
       FALLTHROUGH;
     case SmartLockState::kPhoneNotAuthenticated:
-      return IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+      return can_use_pin_ ? IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED
+                          : IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED;
     case SmartLockState::kBluetoothDisabled:
       return IDS_SMART_LOCK_LABEL_NO_BLUETOOTH;
     case SmartLockState::kPhoneNotLockable:

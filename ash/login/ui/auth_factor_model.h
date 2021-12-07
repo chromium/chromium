@@ -61,6 +61,11 @@ class ASH_EXPORT AuthFactorModel {
     kAuthenticated,
   };
 
+  // Should be called when the visibility of PIN authentication changes.
+  static void set_can_use_pin(bool can_use_pin);
+
+  static bool can_use_pin();
+
   AuthFactorModel();
   AuthFactorModel(AuthFactorModel&) = delete;
   AuthFactorModel& operator=(AuthFactorModel&) = delete;
@@ -116,6 +121,10 @@ class ASH_EXPORT AuthFactorModel {
   // Should be called whenever the internal state of the auth model changes to
   // invoke the |update_state_callback_| if set. Calls `UpdateIcon`.
   void RefreshUI();
+
+  // Indicates whether PIN is visible on the lock/login screen. May be used to
+  // show different labels depending on whether PIN is available.
+  static bool can_use_pin_;
 
   // If the auth factor state is kErrorPermanent, this indicates whether the
   // error has been shown to the user and timed out, which determines whether

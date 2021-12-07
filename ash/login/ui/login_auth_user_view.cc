@@ -1344,9 +1344,11 @@ void LoginAuthUserView::SetAuthMethods(
 
   if (smart_lock_ui_revamp_enabled_) {
     DCHECK(fingerprint_auth_factor_model_);
+    DCHECK(smart_lock_auth_factor_model_);
+    DCHECK(auth_factors_view_);
     fingerprint_auth_factor_model_->set_available(
         current_state.has_fingerprint);
-    fingerprint_auth_factor_model_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
+    auth_factors_view_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
   } else {
     DCHECK(fingerprint_view_);
     fingerprint_view_->SetVisible(current_state.has_fingerprint);

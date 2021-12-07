@@ -425,4 +425,15 @@ TEST_F(LoginAuthFactorsViewUnittest, ErrorPermanent) {
   EXPECT_EQ(2u, GetVisibleIconCount());
 }
 
+TEST_F(LoginAuthFactorsViewUnittest, CanUsePin) {
+  AddAuthFactors({AuthFactorType::kSmartLock, AuthFactorType::kFingerprint});
+
+  for (bool can_use_pin : {true, false}) {
+    view_->SetCanUsePin(can_use_pin);
+    EXPECT_EQ(can_use_pin, AuthFactorModel::can_use_pin());
+    EXPECT_EQ(can_use_pin, auth_factors_[0]->can_use_pin());
+    EXPECT_EQ(can_use_pin, auth_factors_[1]->can_use_pin());
+  }
+}
+
 }  // namespace ash

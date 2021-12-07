@@ -279,6 +279,14 @@ void LoginAuthFactorsView::AddAuthFactor(
   UpdateState();
 }
 
+void LoginAuthFactorsView::SetCanUsePin(bool can_use_pin) {
+  if (can_use_pin == AuthFactorModel::can_use_pin())
+    return;
+
+  AuthFactorModel::set_can_use_pin(can_use_pin);
+  UpdateState();
+}
+
 void LoginAuthFactorsView::UpdateState() {
   AuthFactorModel* active_auth_factor =
       GetHighestPriorityAuthFactor(auth_factors_);
@@ -377,10 +385,7 @@ void LoginAuthFactorsView::UpdateState() {
             active_auth_factor->GetLabelId(),
             active_auth_factor->GetAccessibleNameId());
       } else {
-        // TODO(crbug.com/1233614): Check if pin is visible and use "enter
-        // password or PIN" string if it is.
-        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD,
-                                      IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD);
+        SetLabelTextAndAccessibleName(GetDefaultLabelId(), GetDefaultLabelId());
       }
       return;
     case PrioritizedAuthFactorViewState::kUnavailable:
@@ -448,7 +453,7 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
   if (ready_factor_count == 0u) {
     LOG(ERROR) << "GetReadyLabelId() called without any ready auth factors.";
     NOTREACHED();
-    return IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+    return GetDefaultLabelId();
   }
 
   if (ready_factor_count == 1u)
@@ -461,7 +466,13 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
   }
 
   NOTREACHED();
-  return IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+  return GetDefaultLabelId();
+}
+
+int LoginAuthFactorsView::GetDefaultLabelId() const {
+  return AuthFactorModel::can_use_pin()
+             ? IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED
+             : IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED;
 }
 
 // views::View:

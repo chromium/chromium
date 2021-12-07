@@ -45,11 +45,6 @@ void FingerprintAuthFactorModel::NotifyFingerprintAuthResult(bool result) {
   RefreshUI();
 }
 
-void FingerprintAuthFactorModel::SetCanUsePin(bool can_use_pin) {
-  can_use_pin_ = can_use_pin;
-  RefreshUI();
-}
-
 AuthFactorModel::AuthFactorState
 FingerprintAuthFactorModel::GetAuthFactorState() const {
   if (!available_)
@@ -102,11 +97,8 @@ int FingerprintAuthFactorModel::GetLabelId() const {
       // "Too many fingerprint attempts".
       return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_DISABLED_FROM_ATTEMPTS;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
-      // TODO(crbug.com/1233614): Merge these "password required" strings with
-      // those used by Smart Lock.
-      if (can_use_pin_)
-        return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PIN_OR_PASSWORD_REQUIRED;
-      return IDS_ASH_LOGIN_FINGERPRINT_UNLOCK_PASSWORD_REQUIRED;
+      return can_use_pin_ ? IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED
+                          : IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED;
   }
   NOTREACHED();
 }

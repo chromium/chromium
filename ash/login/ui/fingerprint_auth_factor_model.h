@@ -23,7 +23,6 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
 
   void SetFingerprintState(FingerprintState state);
   void NotifyFingerprintAuthResult(bool result);
-  void SetCanUsePin(bool can_use_pin);
 
   // If |available| is false, forces |GetAuthFactorState()| to return
   // |kUnavailable|, otherwise has no effect. Used to hide Fingerprint auth
@@ -44,8 +43,6 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
   absl::optional<bool> auth_result_;
 
-  // Affects DISABLED_FROM_TIMEOUT message.
-  bool can_use_pin_ = false;
   bool available_ = true;
 };
 

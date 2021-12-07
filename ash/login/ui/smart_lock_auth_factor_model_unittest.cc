@@ -6,6 +6,7 @@
 
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/auth_icon_view.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +16,67 @@ namespace ash {
 namespace {
 
 using AuthFactorState = AuthFactorModel::AuthFactorState;
+
+struct LabelTestcase {
+  SmartLockState state;
+  absl::optional<bool> can_use_pin;
+  int label_id;
+  int accessible_name_id;
+};
+
+constexpr LabelTestcase kLabelTestcases[] = {
+    {SmartLockState::kDisabled, /*can_use_pin=*/true,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
+    {SmartLockState::kDisabled, /*can_use_pin=*/false,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
+    {SmartLockState::kInactive, /*can_use_pin=*/true,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
+    {SmartLockState::kInactive, /*can_use_pin=*/false,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
+    {SmartLockState::kPasswordReentryRequired, /*can_use_pin=*/true,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
+    {SmartLockState::kPasswordReentryRequired, /*can_use_pin=*/false,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
+    {SmartLockState::kPrimaryUserAbsent, /*can_use_pin=*/true,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
+    {SmartLockState::kPrimaryUserAbsent, /*can_use_pin=*/false,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
+    {SmartLockState::kPhoneNotAuthenticated, /*can_use_pin=*/true,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED},
+    {SmartLockState::kPhoneNotAuthenticated, /*can_use_pin=*/false,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED,
+     IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED},
+    {SmartLockState::kBluetoothDisabled, /*can_use_pin=*/absl::nullopt,
+     IDS_SMART_LOCK_LABEL_NO_BLUETOOTH, IDS_SMART_LOCK_LABEL_NO_BLUETOOTH},
+    {SmartLockState::kPhoneNotLockable, /*can_use_pin=*/absl::nullopt,
+     IDS_SMART_LOCK_LABEL_NO_PHONE_LOCK_SCREEN,
+     IDS_SMART_LOCK_LABEL_NO_PHONE_LOCK_SCREEN},
+    {SmartLockState::kConnectingToPhone, /*can_use_pin=*/absl::nullopt,
+     IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE,
+     IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE},
+    {SmartLockState::kPhoneFoundLockedAndDistant, /*can_use_pin=*/absl::nullopt,
+     IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR, IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR},
+    {SmartLockState::kPhoneFoundUnlockedAndDistant,
+     /*can_use_pin=*/absl::nullopt, IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR,
+     IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR},
+    {SmartLockState::kPhoneNotFound, /*can_use_pin=*/absl::nullopt,
+     IDS_SMART_LOCK_LABEL_NO_PHONE, IDS_SMART_LOCK_LABEL_NO_PHONE},
+    {SmartLockState::kPhoneFoundLockedAndProximate,
+     /*can_use_pin=*/absl::nullopt, IDS_SMART_LOCK_LABEL_PHONE_LOCKED,
+     IDS_SMART_LOCK_LABEL_PHONE_LOCKED},
+    {SmartLockState::kPhoneAuthenticated, /*can_use_pin=*/absl::nullopt,
+     IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
+     IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER},
+};
 
 }  // namespace
 
@@ -155,6 +217,17 @@ TEST_F(SmartLockAuthFactorModelUnittest, NotifySmartLockAuthResult) {
   smart_lock_model_->NotifySmartLockAuthResult(/*result=*/false);
   EXPECT_TRUE(on_state_changed_called_);
   EXPECT_EQ(AuthFactorState::kErrorPermanent, model_->GetAuthFactorState());
+}
+
+TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAndAccessibleName) {
+  for (const LabelTestcase& testcase : kLabelTestcases) {
+    smart_lock_model_->SetSmartLockState(testcase.state);
+    if (testcase.can_use_pin.has_value()) {
+      model_->set_can_use_pin(testcase.can_use_pin.value());
+    }
+    EXPECT_EQ(testcase.label_id, model_->GetLabelId());
+    EXPECT_EQ(testcase.accessible_name_id, model_->GetAccessibleNameId());
+  }
 }
 
 }  // namespace ash

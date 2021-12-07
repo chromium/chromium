@@ -7,6 +7,9 @@
 
 namespace ash {
 
+// static
+bool AuthFactorModel::can_use_pin_ = false;
+
 AuthFactorModel::AuthFactorModel() = default;
 
 AuthFactorModel::~AuthFactorModel() = default;
@@ -62,6 +65,14 @@ void AuthFactorModel::RefreshUI() {
     update_state_callback_.Run();
   }
   UpdateIcon(icon_);
+}
+
+void AuthFactorModel::set_can_use_pin(bool can_use_pin) {
+  can_use_pin_ = can_use_pin;
+}
+
+bool AuthFactorModel::can_use_pin() {
+  return can_use_pin_;
 }
 
 void AuthFactorModel::OnArrowButtonTapOrClickEvent() {}

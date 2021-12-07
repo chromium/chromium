@@ -64,6 +64,11 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
+  // Should be called when the visibility of PIN authentication changes.
+  // Used to determine whether strings should mention that PIN can be used as an
+  // authentication mechanism.
+  void SetCanUsePin(bool can_use_pin);
+
  private:
   // Recomputes the state and updates the label and icons. Should be called
   // whenever any auth factor's state changes so that those changes can be
@@ -82,6 +87,9 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // Computes the label to be shown when one or more auth factors are in the
   // Ready state.
   int GetReadyLabelId() const;
+
+  // Gets the label to be shown when no auth factor can be used.
+  int GetDefaultLabelId() const;
 
   // Causes screen readers to read the label as an alert.
   void FireAlert();

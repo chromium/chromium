@@ -4315,14 +4315,14 @@ Here are some things you can try to get started.
       <message name="IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK" desc="Label on user's lock screen when unlock authentication methods fail.">
         Can't unlock your Chromebook
       </message>
-      <message name="IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD" desc="Label on user's lock screen prompting user to enter password after other unlock authentication methods fail.">
-        To unlock your Chromebook, enter password
-      </message>
       <message name="IDS_AUTH_FACTOR_LABEL_CANNOT_SIGN_IN" desc="Label on user's lock screen when sign in authentication methods fail.">
         Can't sign in to your Chromebook
       </message>
-      <message name="IDS_AUTH_FACTOR_LABEL_SIGN_IN_PASSWORD" desc="Label on user's lock screen prompting user to enter password after other sign in authentication methods fail.">
-        To sign in to your Chromebook, enter password
+      <message name="IDS_AUTH_FACTOR_LABEL_PASSWORD_REQUIRED" desc="Label on user's lock screen prompting user to enter password after other sign in authentication methods fail.">
+        Enter password for more security
+      </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_PASSWORD_OR_PIN_REQUIRED" desc="Label on user's lock screen prompting user to enter password or PIN after other sign in authentication methods fail.">
+        Enter password or PIN for more security
       </message>
       <message name="IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER" desc="Label on user's lock screen when a user is successfully authenticated and may click to enter Chromebook.">
         Tap or click to enter
