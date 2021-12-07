@@ -29,7 +29,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -56,6 +55,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
             new BaseActivityTestRule<>(Activity.class);
 
     private View mWidgetView;
+    private View mDinoWidgetView;
     private QuickActionSearchWidgetProviderDelegate mDelegate;
     private Context mContext;
     private int mDefaultWidgetWidthDp;
@@ -135,12 +135,22 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1225949")
     public void testDinoButtonClick() throws Exception {
         QuickActionSearchWidgetTestUtils.assertDinoGameLaunchedAfterAction(
                 mActivityTestRule, () -> {
                     QuickActionSearchWidgetTestUtils.clickOnView(
                             mWidgetView, R.id.dino_quick_action_button);
+                });
+        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+    }
+
+    @Test
+    @SmallTest
+    public void testDinoWidgetDinoButtonClick() throws Exception {
+        QuickActionSearchWidgetTestUtils.assertDinoGameLaunchedAfterAction(
+                mActivityTestRule, () -> {
+                    QuickActionSearchWidgetTestUtils.clickOnView(
+                            mDinoWidgetView, R.id.dino_quick_action_button);
                 });
         ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
     }
@@ -163,6 +173,8 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                                       // Landscape mode dimensions:
                                       mDefaultWidgetWidthDp, mMediumWidgetMinHeightDp)
                               .apply(mContext, null);
+        mDinoWidgetView =
+                mDelegate.createDinoWidgetRemoteViews(mContext, prefs).apply(mContext, null);
     }
 
     /**
