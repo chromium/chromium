@@ -388,6 +388,32 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     return secondary_text;
   }
 
+  // Returns the color for the secondary text to display for the underlying
+  // download.
+  absl::optional<cros_styles::ColorName> GetSecondaryTextColor() const {
+    // Only in-progress download items have secondary text.
+    if (!IsInProgress(mojo_download_item_.get()))
+      return absl::nullopt;
+
+    // In-progress download items which are being scanned have a special
+    // secondary text treatment.
+    if (IsScanning(mojo_download_item_.get()))
+      return cros_styles::ColorName::kTextColorProminent;
+
+    // In-progress download items which are dangerous but not malicious can be
+    // kept or discarded by the user via notification. This being the case, such
+    // items have a special secondary text treatment.
+    if (IsDangerous() && !MightBeMalicious())
+      return cros_styles::ColorName::kTextColorWarning;
+
+    // In-progress download items which are dangerous or mixed content have a
+    // special secondary text treatment.
+    if (IsDangerous() || IsMixedContent())
+      return cros_styles::ColorName::kTextColorAlert;
+
+    return absl::nullopt;
+  }
+
  protected:
   // Updates the `mojo_download_item_` associated with this in-progress
   // download, notifying `delegate_` of the change in state. Note that invoking
@@ -894,6 +920,7 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())
       .SetSecondaryText(in_progress_download->GetSecondaryText())
+      .SetSecondaryTextColor(in_progress_download->GetSecondaryTextColor())
       .SetPaused(in_progress_download->IsPaused())
       .SetProgress(in_progress_download->GetProgress());
 }

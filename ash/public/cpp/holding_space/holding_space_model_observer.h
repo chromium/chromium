@@ -38,7 +38,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
     kPaused = kBackingFile << 1u,
     kProgress = kPaused << 1u,
     kSecondaryText = kProgress << 1u,
-    kText = kSecondaryText << 1u,
+    kSecondaryTextColor = kSecondaryText << 1u,
+    kText = kSecondaryTextColor << 1u,
   };
 
   // Called when an `item` gets updated within the holding space model. The

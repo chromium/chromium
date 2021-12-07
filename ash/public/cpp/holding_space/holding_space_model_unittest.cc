@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/scoped_observation.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_styles.h"
 
 namespace ash {
 namespace {
@@ -272,6 +273,17 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->secondary_text(), u"secondary_text");
 
+  // Update secondary text color.
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetSecondaryTextColor(cros_styles::ColorName::kTextColorAlert);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(),
+            UpdatedField::kSecondaryTextColor);
+  EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
+  EXPECT_EQ(item_ptr->secondary_text_color(),
+            cros_styles::ColorName::kTextColorAlert);
+
   // Update all attributes.
   updated_file_path = base::FilePath("again_updated_file_path");
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
@@ -281,6 +293,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
       .SetBackingFile(updated_file_path, updated_file_system_url)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
+      .SetSecondaryTextColor(cros_styles::ColorName::kTextColorWarning)
       .SetPaused(false)
       .SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
@@ -288,7 +301,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(observation.TakeLastUpdatedFields(),
             UpdatedField::kAccessibleName | UpdatedField::kBackingFile |
                 UpdatedField::kPaused | UpdatedField::kProgress |
-                UpdatedField::kSecondaryText | UpdatedField::kText);
+                UpdatedField::kSecondaryText |
+                UpdatedField::kSecondaryTextColor | UpdatedField::kText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->GetAccessibleName(), u"updated_accessible_name");
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
@@ -297,6 +311,8 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.75f);
   EXPECT_EQ(item_ptr->GetText(), u"updated_text");
   EXPECT_EQ(item_ptr->secondary_text(), u"updated_secondary_text");
+  EXPECT_EQ(item_ptr->secondary_text_color(),
+            cros_styles::ColorName::kTextColorWarning);
 }
 
 // Verifies that updating items will no-op appropriately.
@@ -329,6 +345,7 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
       .SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)
+      .SetSecondaryTextColor(absl::nullopt)
       .SetPaused(item_ptr->IsPaused())
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);

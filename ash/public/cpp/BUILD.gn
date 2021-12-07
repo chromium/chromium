@@ -429,6 +429,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
     "//ui/aura:test_support",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/compositor_extra",
     "//ui/gfx:test_support",
     "//ui/views",

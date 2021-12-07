@@ -23,6 +23,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace cros_styles {
+enum class ColorName;
+}  // namespace cros_styles
+
 namespace ash {
 
 class HoldingSpaceModelObserver;
@@ -73,6 +77,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     ScopedItemUpdate& SetSecondaryText(
         const absl::optional<std::u16string>& secondary_text);
 
+    // Sets the color for the secondary text that should be shown for the item
+    // and returns a reference to `this`.
+    ScopedItemUpdate& SetSecondaryTextColor(
+        const absl::optional<cros_styles::ColorName>& secondary_text_color);
+
     // Sets the text that should be shown for the item and returns a reference
     // to `this`. If absent, the lossy display name of the backing file will be
     // used.
@@ -91,6 +100,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     absl::optional<bool> paused_;
     absl::optional<HoldingSpaceProgress> progress_;
     absl::optional<absl::optional<std::u16string>> secondary_text_;
+    absl::optional<absl::optional<cros_styles::ColorName>>
+        secondary_text_color_;
     absl::optional<absl::optional<std::u16string>> text_;
     bool invalidate_image_ = false;
   };
