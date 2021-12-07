@@ -2335,12 +2335,11 @@ void DocumentLoader::CommitNavigation() {
   // documents.
   if (commit_reason_ != CommitReason::kInitialization &&
       !frame_->DomWindow()->GetSecurityOrigin()->IsOpaque()) {
-    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-      app_history->InitializeForNewWindow(
-          *history_item_, load_type_, commit_reason_,
-          *AppHistory::appHistory(*previous_window), app_history_back_entries_,
-          app_history_forward_entries_);
-    }
+    AppHistory::From(*frame_->DomWindow())
+        ->InitializeForNewWindow(*history_item_, load_type_, commit_reason_,
+                                 AppHistory::appHistory(*previous_window),
+                                 app_history_back_entries_,
+                                 app_history_forward_entries_);
     // Now that appHistory's entries array is initialized, we don't need to
     // retain the state from which it was initialized.
     app_history_back_entries_.Clear();

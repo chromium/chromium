@@ -47,13 +47,16 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
  public:
   static const char kSupplementName[];
   static AppHistory* appHistory(LocalDOMWindow&);
+  // Unconditionally creates AppHistory, even if the RuntimeEnabledFeatures is
+  // disabled.
+  static AppHistory* From(LocalDOMWindow&);
   explicit AppHistory(LocalDOMWindow&);
   ~AppHistory() final = default;
 
   void InitializeForNewWindow(HistoryItem& current,
                               WebFrameLoadType,
                               CommitReason,
-                              AppHistory& previous,
+                              AppHistory* previous,
                               const WebVector<WebHistoryItem>& back_entries,
                               const WebVector<WebHistoryItem>& forward_entries);
   void UpdateForNavigation(HistoryItem&, WebFrameLoadType);

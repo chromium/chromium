@@ -161,8 +161,11 @@ String DetermineNavigationType(WebFrameLoadType type) {
 const char AppHistory::kSupplementName[] = "AppHistory";
 
 AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
-  if (!RuntimeEnabledFeatures::AppHistoryEnabled(&window))
-    return nullptr;
+  return RuntimeEnabledFeatures::AppHistoryEnabled(&window) ? From(window)
+                                                            : nullptr;
+}
+
+AppHistory* AppHistory::From(LocalDOMWindow& window) {
   auto* app_history = Supplement<LocalDOMWindow>::From<AppHistory>(window);
   if (!app_history) {
     app_history = MakeGarbageCollected<AppHistory>(window);
@@ -189,7 +192,7 @@ void AppHistory::InitializeForNewWindow(
     HistoryItem& current,
     WebFrameLoadType load_type,
     CommitReason commit_reason,
-    AppHistory& previous,
+    AppHistory* previous,
     const WebVector<WebHistoryItem>& back_entries,
     const WebVector<WebHistoryItem>& forward_entries) {
   DCHECK(entries_.IsEmpty());
@@ -209,11 +212,12 @@ void AppHistory::InitializeForNewWindow(
   // window and use the same update algorithm as same-document navigations.
   if (commit_reason != CommitReason::kRegular ||
       (current.Url() == BlankURL() && !IsBackForwardLoadType(load_type)) ||
-      (current.Url().IsAboutSrcdocURL() && !previous.entries_.IsEmpty() &&
-       !IsBackForwardLoadType(load_type))) {
-    CloneFromPrevious(previous);
-    UpdateForNavigation(current, load_type);
-    return;
+      (current.Url().IsAboutSrcdocURL() && !IsBackForwardLoadType(load_type))) {
+    if (previous && !previous->entries_.IsEmpty()) {
+      CloneFromPrevious(*previous);
+      UpdateForNavigation(current, load_type);
+      return;
+    }
   }
 
   // Construct |entries_|. Any back entries are inserted, then the current
