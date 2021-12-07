@@ -946,10 +946,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   __weak __typeof(self) weakSelf = self;
   auto completionBlock = ^(BOOL completed, BOOL finished) {
     weakSelf.collectionView.scrollEnabled = YES;
-    weakSelf.currentLayout = nextLayout;
+    if (finished) {
+      weakSelf.currentLayout = nextLayout;
+    }
     if (thumbStripDismissEnabled) {
-      self.thumbStripDismissRecognizer.enabled = YES;
-      self.thumbStripSwipeUpDismissRecognizer.enabled = YES;
+      weakSelf.thumbStripDismissRecognizer.enabled = YES;
+      weakSelf.thumbStripSwipeUpDismissRecognizer.enabled = YES;
     }
     if (completion) {
       completion(completed, finished);
