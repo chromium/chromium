@@ -32,10 +32,6 @@ extern const base::Feature kEnableFREDefaultBrowserScreenTesting;
 // Feature flag that enables using the FRE UI module to show first run screens.
 extern const base::Feature kEnableFREUIModuleIOS;
 
-// Feature flag that enables using the strings of the previous sync screen in
-// the current FRE.
-extern const base::Feature kOldSyncStringFRE;
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished. Flag to modernize the tabstrip without disturbing the existing one.
 extern const base::Feature kModernTabStrip;

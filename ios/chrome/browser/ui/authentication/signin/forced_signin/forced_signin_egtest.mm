@@ -162,10 +162,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  // Disable the kOldSyncStringFRE feature to avoid having the strings on the
-  // sync screen changing.
-  config.features_disabled = std::vector<base::Feature>{kOldSyncStringFRE};
-
   // Configure the policy to force sign-in.
   config.additional_args.push_back(
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));

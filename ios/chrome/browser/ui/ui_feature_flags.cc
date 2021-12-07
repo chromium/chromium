@@ -22,9 +22,6 @@ const base::Feature kEnableFREDefaultBrowserScreenTesting{
 const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOS",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kOldSyncStringFRE{"OldSyncStringFRE",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
 // TODO(crbug.com/1128242): Remove this flag after the refactoring work is
 // finished.
 const base::Feature kModernTabStrip{"ModernTabStrip",

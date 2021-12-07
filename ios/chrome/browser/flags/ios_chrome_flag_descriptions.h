@@ -319,11 +319,6 @@ extern const char kNewOverflowMenuDescription[];
 extern const char kNTPViewHierarchyRepairName[];
 extern const char kNTPViewHierarchyRepairDescription[];
 
-// Title and description for the flag to use the previous sync screen in the new
-// FRE.
-extern const char kOldSyncStringFREName[];
-extern const char kOldSyncStringFREDescription[];
-
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];

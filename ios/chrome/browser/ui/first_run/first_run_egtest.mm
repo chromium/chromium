@@ -63,11 +63,6 @@ id<GREYMatcher> GetAcceptButton() {
 
 // Returns a matcher for the button to turn on sync.
 id<GREYMatcher> GetTurnSyncOnButton() {
-  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
-    return grey_allOf(grey_text(l10n_util::GetNSString(
-                          IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)),
-                      grey_sufficientlyVisible(), nil);
-  }
   return grey_allOf(grey_text(l10n_util::GetNSString(
                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
                     grey_sufficientlyVisible(), nil);
@@ -75,11 +70,6 @@ id<GREYMatcher> GetTurnSyncOnButton() {
 
 // Returns a matcher for the button to not turn on sync.
 id<GREYMatcher> GetDontSyncButton() {
-  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
-    return grey_allOf(grey_text(l10n_util::GetNSString(
-                          IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON)),
-                      grey_sufficientlyVisible(), nil);
-  }
   return grey_allOf(grey_text(l10n_util::GetNSString(
                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
                     grey_sufficientlyVisible(), nil);
@@ -87,10 +77,6 @@ id<GREYMatcher> GetDontSyncButton() {
 
 // Returns a matcher for the button to open the Sync settings.
 id<GREYMatcher> GetSyncSettings() {
-  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
-    return grey_allOf(grey_accessibilityLabel(@"settings"),
-                      grey_sufficientlyVisible(), nil);
-  }
   return grey_allOf(grey_text(l10n_util::GetNSString(
                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
                     grey_sufficientlyVisible(), nil);
