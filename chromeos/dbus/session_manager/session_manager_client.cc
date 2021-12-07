@@ -55,6 +55,11 @@ constexpr char kEmptyAccountId[] = "";
 // The timeout used when starting the android container is 90 seconds
 constexpr int kStartArcTimeout = 90 * 1000;
 
+// TODO(b/205032502): Because upgrading the container from mini to full often
+// takes more than 25 seconds, increasing it to 1 minute for now. Once we have
+// the update metrics, update the timeout to a tighter value.
+constexpr int kUpgradeTimeoutMs = 60 * 1000;  // 60 seconds
+
 // 10MB. It's the current restriction enforced by session manager.
 const size_t kSharedMemoryDataSizeLimit = 10 * 1024 * 1024;
 
@@ -607,7 +612,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     writer.AppendProtoAsArrayOfBytes(request);
 
     session_manager_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, kUpgradeTimeoutMs,
         base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
