@@ -55,10 +55,13 @@ TotalDiskSpace& GetTotalDiskSpace() {
 
 // Returns the total-disk-space set for the volume containing |path|. If
 // |volume_path| is non-null then it receives the path to the relevant volume.
-// Returns -1, and does not modify |volume_path|, if no match is found.
+// Returns -1, and does not modify |volume_path|, if no match is found. Also
+// returns -1 if |path| is not absolute.
 int64_t GetAmountOfTotalDiskSpaceAndVolumePath(const FilePath& path,
                                                FilePath* volume_path) {
-  CHECK(path.IsAbsolute());
+  if (!path.IsAbsolute()) {
+    return -1;
+  }
   TotalDiskSpace& total_disk_space = GetTotalDiskSpace();
 
   AutoLock l(total_disk_space.lock);
