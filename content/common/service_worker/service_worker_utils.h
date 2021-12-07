@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -18,11 +16,6 @@ class ServiceWorkerUtils {
   static bool ContainsDisallowedCharacter(const GURL& scope,
                                           const GURL& script_url,
                                           std::string* error_message);
-
-  // Converts an enum defined in net/base/load_flags.h to
-  // blink::mojom::FetchCacheMode.
-  CONTENT_EXPORT static blink::mojom::FetchCacheMode GetCacheModeFromLoadFlags(
-      int load_flags);
 
  private:
   static bool IsPathRestrictionSatisfiedInternal(

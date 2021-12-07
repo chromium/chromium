@@ -50,33 +50,4 @@ bool ServiceWorkerUtils::ContainsDisallowedCharacter(
   return false;
 }
 
-// static
-blink::mojom::FetchCacheMode ServiceWorkerUtils::GetCacheModeFromLoadFlags(
-    int load_flags) {
-  if (load_flags & net::LOAD_DISABLE_CACHE)
-    return blink::mojom::FetchCacheMode::kNoStore;
-
-  if (load_flags & net::LOAD_VALIDATE_CACHE)
-    return blink::mojom::FetchCacheMode::kValidateCache;
-
-  if (load_flags & net::LOAD_BYPASS_CACHE) {
-    if (load_flags & net::LOAD_ONLY_FROM_CACHE)
-      return blink::mojom::FetchCacheMode::kUnspecifiedForceCacheMiss;
-    return blink::mojom::FetchCacheMode::kBypassCache;
-  }
-
-  if (load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
-    if (load_flags & net::LOAD_ONLY_FROM_CACHE)
-      return blink::mojom::FetchCacheMode::kOnlyIfCached;
-    return blink::mojom::FetchCacheMode::kForceCache;
-  }
-
-  if (load_flags & net::LOAD_ONLY_FROM_CACHE) {
-    DCHECK(!(load_flags & net::LOAD_SKIP_CACHE_VALIDATION));
-    DCHECK(!(load_flags & net::LOAD_BYPASS_CACHE));
-    return blink::mojom::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict;
-  }
-  return blink::mojom::FetchCacheMode::kDefault;
-}
-
 }  // namespace content

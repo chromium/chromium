@@ -5,10 +5,19 @@
 #ifndef CONTENT_COMMON_FETCH_FETCH_REQUEST_TYPE_CONVERTERS_H_
 #define CONTENT_COMMON_FETCH_FETCH_REQUEST_TYPE_CONVERTERS_H_
 
+#include "content/common/content_export.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 // This is used only by Service Workers for now.
+
+namespace content {
+
+CONTENT_EXPORT blink::mojom::FetchCacheMode
+GetFetchCacheModeFromLoadFlagsForTest(int load_flags);
+
+}  // namespace content
+
 namespace mojo {
 
 template <>
