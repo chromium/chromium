@@ -118,10 +118,15 @@ size_t PrefetchProxyMaximumNumberOfConcurrentPrefetches() {
       features::kIsolatePrerenders, "max_concurrent_prefetches", 1));
 }
 
-base::TimeDelta PrefetchProxyProbeTimeout() {
+base::TimeDelta PrefetchProxyCanaryCheckTimeout() {
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-      features::kIsolatePrerendersMustProbeOrigin, "probe_timeout_ms",
-      10 * 1000 /* 10 seconds */));
+      features::kIsolatePrerendersMustProbeOrigin, "canary_check_timeout_ms",
+      5 * 1000 /* 5 seconds */));
+}
+
+int PrefetchProxyCanaryCheckRetries() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerendersMustProbeOrigin, "canary_check_retries", 1);
 }
 
 bool PrefetchProxyCloseIdleSockets() {
@@ -180,12 +185,6 @@ GURL PrefetchProxyDNSCanaryCheckURL() {
 base::TimeDelta PrefetchProxyCanaryCheckCacheLifetime() {
   return base::Hours(base::GetFieldTrialParamByFeatureAsInt(
       features::kIsolatePrerendersMustProbeOrigin, "canary_cache_hours", 24));
-}
-
-bool PrefetchProxyMustHTTPProbeInsteadOfTLS() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kIsolatePrerendersMustProbeOrigin, "replace_tls_with_http",
-      false);
 }
 
 size_t PrefetchProxyMaxSubresourcesPerPrerender() {

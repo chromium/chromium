@@ -15,7 +15,6 @@
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 #include "chrome/browser/accessibility/accessibility_ui.h"
 #include "chrome/browser/accessibility/invert_bubble_prefs.h"
-#include "chrome/browser/availability/availability_prober.h"
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/component_updater_prefs.h"
@@ -670,6 +669,14 @@ const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
 // Deprecated 11/2021.
 const char kWasPreviouslySetUpPrefName[] = "android_sms.was_previously_set_up";
 
+// Deprecated 12/2021.
+const char kAvailabilityProberOriginCheck[] =
+    "Availability.Prober.cache.IsolatedPrerenderOriginCheck";
+const char kAvailabilityProberTLSCanaryCheck[] =
+    "Availability.Prober.cache.IsolatedPrerenderTLSCanaryCheck";
+const char kAvailabilityProberDNSCanaryCheck[] =
+    "Availability.Prober.cache.IsolatedPrerenderDNSCanaryCheck";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -860,6 +867,10 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterBooleanPref(kAppCacheForceEnabled, false);
   registry->RegisterBooleanPref(kWasPreviouslySetUpPrefName, false);
+
+  registry->RegisterDictionaryPref(kAvailabilityProberOriginCheck);
+  registry->RegisterDictionaryPref(kAvailabilityProberTLSCanaryCheck);
+  registry->RegisterDictionaryPref(kAvailabilityProberDNSCanaryCheck);
 }
 
 }  // namespace
@@ -1103,7 +1114,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   AccessibilityLabelsService::RegisterProfilePrefs(registry);
   AccessibilityUIMessageHandler::RegisterProfilePrefs(registry);
   AnnouncementNotificationService::RegisterProfilePrefs(registry);
-  AvailabilityProber::RegisterProfilePrefs(registry);
   autofill::prefs::RegisterProfilePrefs(registry);
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
   certificate_transparency::prefs::RegisterPrefs(registry);
@@ -1711,6 +1721,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 11/2021.
   syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
   profile_prefs->ClearPref(kWasPreviouslySetUpPrefName);
+
+  // Added 12/2021.
+  profile_prefs->ClearPref(kAvailabilityProberOriginCheck);
+  profile_prefs->ClearPref(kAvailabilityProberTLSCanaryCheck);
+  profile_prefs->ClearPref(kAvailabilityProberDNSCanaryCheck);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

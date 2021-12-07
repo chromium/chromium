@@ -189,7 +189,6 @@ Refer to README.md for content description and update process.
  <item id="ppapi_download_request" added_in_milestone="62" content_hash_code="07d4e067" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc" />
  <item id="predictive_prefetch" added_in_milestone="85" content_hash_code="01acbb76" os_list="linux,windows,chromeos,android" file_path="chrome/browser/predictors/prefetch_manager.cc" />
  <item id="prefetch_download" added_in_milestone="62" content_hash_code="0146e99e" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/prefetch_downloader_impl.cc" />
- <item id="prefetch_proxy_canary_check" added_in_milestone="88" content_hash_code="0329567f" os_list="linux,windows,chromeos,android" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc" />
  <item id="prefetch_proxy_probe" added_in_milestone="88" content_hash_code="001d245d" os_list="linux,windows,chromeos,android" file_path="chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc" />
  <item id="prefetch_visuals" added_in_milestone="75" content_hash_code="0564010a" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/visuals_fetch_by_url.cc" />
  <item id="printer_job_handler" added_in_milestone="62" type="partial" second_id="cloud_print" content_hash_code="048348b5" os_list="linux,windows" semantics_fields="2,3,4" file_path="chrome/service/cloud_print/printer_job_handler.cc" />

@@ -13,7 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-class AvailabilityProber;
+class PrefetchProxyCanaryChecker;
 class Profile;
 
 // This class handles all probing and canary checks for the prefetch proxy
@@ -30,6 +30,9 @@ class PrefetchProxyOriginProber {
 
   explicit PrefetchProxyOriginProber(Profile* profile);
   ~PrefetchProxyOriginProber();
+
+  // Run canary checks if they are not already cached.
+  void RunCanaryChecksIfNeeded() const;
 
   // Returns true if a probe needs to be done before using prefetched resources.
   bool ShouldProbeOrigins() const;
@@ -87,10 +90,10 @@ class PrefetchProxyOriginProber {
   raw_ptr<ProbeURLOverrideDelegate> override_delegate_ = nullptr;
 
   // The TLS canary url checker.
-  std::unique_ptr<AvailabilityProber> tls_canary_check_;
+  std::unique_ptr<PrefetchProxyCanaryChecker> tls_canary_check_;
 
   // The DNS canary url checker.
-  std::unique_ptr<AvailabilityProber> dns_canary_check_;
+  std::unique_ptr<PrefetchProxyCanaryChecker> dns_canary_check_;
 
   base::WeakPtrFactory<PrefetchProxyOriginProber> weak_factory_{this};
 };

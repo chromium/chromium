@@ -103,6 +103,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_util.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store.h"
@@ -121,8 +122,10 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -473,13 +476,6 @@ class PrefetchProxyBrowserTest
         net::EmbeddedTestServer::TYPE_HTTP);
     http_server_->ServeFilesFromSourceDirectory("chrome/test/data");
     EXPECT_TRUE(http_server_->Start());
-
-    canary_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTP);
-    canary_server_->RegisterRequestHandler(
-        base::BindRepeating(&PrefetchProxyBrowserTest::HandleCanaryRequest,
-                            base::Unretained(this)));
-    EXPECT_TRUE(canary_server_->Start());
   }
 
   void SetUp() override {
@@ -514,8 +510,9 @@ class PrefetchProxyBrowserTest
     host_resolver()->AddRule("insecure.com", "127.0.0.1");
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");
+    host_resolver()->AddRule("resolve-success.com", "127.0.0.1");
 
-    host_resolver()->AddSimulatedFailure("baddnsprobe.a.test");
+    host_resolver()->AddSimulatedFailure("resolve-fail.com");
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -604,22 +601,6 @@ class PrefetchProxyBrowserTest
     run_loop.Run();
 
     return std::move(config_client.config_);
-  }
-
-  void WaitForTLSCanaryCheck() {
-    PrefetchProxyService* service =
-        PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
-    while (!service->origin_prober()->IsTLSCanaryCheckCompleteForTesting()) {
-      base::RunLoop().RunUntilIdle();
-    }
-  }
-
-  void WaitForDNSCanaryCheck() {
-    PrefetchProxyService* service =
-        PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
-    while (!service->origin_prober()->IsDNSCanaryCheckCompleteForTesting()) {
-      base::RunLoop().RunUntilIdle();
-    }
   }
 
   bool RequestHasClientHints(const net::test_server::HttpRequest& request) {
@@ -800,8 +781,6 @@ class PrefetchProxyBrowserTest
     return referring_page_server_->GetURL("www.google.com", path);
   }
 
-  GURL GetCanaryServerURL() const { return canary_server_->GetURL("/"); }
-
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleOriginRequest(
       const net::test_server::HttpRequest& request) {
@@ -977,7 +956,6 @@ class PrefetchProxyBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> proxy_server_;
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
-  std::unique_ptr<net::EmbeddedTestServer> canary_server_;
   std::unique_ptr<net::EmbeddedTestServer> referring_page_server_;
 
   std::vector<net::test_server::HttpRequest> origin_server_requests_;
@@ -2571,167 +2549,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1U, found_reports);
 }
 
-class ProbingEnabled_CanaryOff_HTTPHead_PrefetchProxyBrowserTest
-    : public PrefetchProxyBrowserTest {
- public:
-  void SetFeatures() override {
-    PrefetchProxyBrowserTest::SetFeatures();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerendersMustProbeOrigin,
-        {
-            {"do_canary", "false"},
-            {"replace_tls_with_http", "true"},
-            {"ineligible_decoy_request_probability", "0"},
-            {"ineligible_decoy_request_probability", "0"},
-        });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ProbingEnabled_CanaryOff_HTTPHead_PrefetchProxyBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(ProbeGood)) {
-  SetDataSaverEnabled(true);
-  GURL starting_page = GetOriginServerURL("/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
-  WaitForUpdatedCustomProxyConfig();
-
-  PrefetchProxyTabHelper* tab_helper =
-      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
-
-  GURL eligible_link = GetOriginServerURL("/title2.html");
-
-  TestTabHelperObserver tab_helper_observer(tab_helper);
-  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
-
-  base::RunLoop run_loop;
-  tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
-
-  GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {eligible_link});
-
-  // This run loop will quit when all the prefetch responses have been
-  // successfully done and processed.
-  run_loop.Run();
-
-  // Navigate to the prefetched page, this also triggers UKM recording.
-  size_t starting_origin_request_count = OriginServerRequestCount();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
-
-  // Only the probe should have hit the origin server.
-  EXPECT_EQ(starting_origin_request_count + 1, OriginServerRequestCount());
-
-  EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
-
-  ASSERT_TRUE(tab_helper->after_srp_metrics());
-  ASSERT_TRUE(tab_helper->after_srp_metrics()->prefetch_status_.has_value());
-  // 1 is the value of "prefetch used, probe success". The test does not
-  // reference the enum directly to ensure that casting the enum to an int went
-  // cleanly, and to provide an extra review point if the value should ever
-  // accidentally change in the future, which it never should.
-  EXPECT_EQ(1, static_cast<int>(
-                   tab_helper->after_srp_metrics()->prefetch_status_.value()));
-
-  absl::optional<base::TimeDelta> probe_latency =
-      tab_helper->after_srp_metrics()->probe_latency_;
-  ASSERT_TRUE(probe_latency.has_value());
-  EXPECT_GT(probe_latency.value(), base::TimeDelta());
-
-  // Navigate again to trigger UKM recording.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  base::RunLoop().RunUntilIdle();
-
-  // 1 = |kPrefetchUsedProbeSuccess|.
-  EXPECT_EQ(absl::optional<int64_t>(1),
-            GetUKMMetric(eligible_link,
-                         ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
-                         ukm::builders::PrefetchProxy_AfterSRPClick::
-                             kSRPClickPrefetchStatusName));
-  // The actual probe latency is hard to deterministically test for. Just make
-  // sure it is set within reasonable bounds.
-  absl::optional<int64_t> probe_latency_ms = GetUKMMetric(
-      eligible_link, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
-      ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName);
-  EXPECT_NE(absl::nullopt, probe_latency_ms);
-  EXPECT_GT(probe_latency_ms.value(), 0);
-  EXPECT_LT(probe_latency_ms.value(), 1000);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ProbingEnabled_CanaryOff_HTTPHead_PrefetchProxyBrowserTest,
-    DISABLE_ON_WIN_MAC_CHROMEOS(ProbeBad)) {
-  SetDataSaverEnabled(true);
-  GURL starting_page = GetOriginServerURL("/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
-  WaitForUpdatedCustomProxyConfig();
-
-  // Override the probing URL.
-  PrefetchProxyService* service =
-      PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
-  CustomProbeOverrideDelegate delegate(GURL("http://invalid.com"));
-  service->origin_prober()->SetProbeURLOverrideDelegateOverrideForTesting(
-      &delegate);
-
-  PrefetchProxyTabHelper* tab_helper =
-      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
-
-  GURL eligible_link = GetOriginServerURL("/title2.html");
-
-  TestTabHelperObserver tab_helper_observer(tab_helper);
-  tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link});
-
-  base::RunLoop run_loop;
-  tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
-
-  GURL doc_url("https://www.google.com/search?q=test");
-  MakeNavigationPrediction(doc_url, {eligible_link});
-
-  // This run loop will quit when all the prefetch responses have been
-  // successfully done and processed.
-  run_loop.Run();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
-
-  EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
-
-  ASSERT_TRUE(tab_helper->after_srp_metrics());
-  ASSERT_TRUE(tab_helper->after_srp_metrics()->prefetch_status_.has_value());
-  // 2 is the value of "prefetch not used, probe failed". The test does not
-  // reference the enum directly to ensure that casting the enum to an int went
-  // cleanly, and to provide an extra review point if the value should ever
-  // accidentally change in the future, which it never should.
-  EXPECT_EQ(2, static_cast<int>(
-                   tab_helper->after_srp_metrics()->prefetch_status_.value()));
-
-  absl::optional<base::TimeDelta> probe_latency =
-      tab_helper->after_srp_metrics()->probe_latency_;
-  ASSERT_TRUE(probe_latency.has_value());
-  EXPECT_GT(probe_latency.value(), base::TimeDelta());
-
-  // Navigate again to trigger UKM recording.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  base::RunLoop().RunUntilIdle();
-
-  // 1 = |kPrefetchNotUsedProbeFailed|.
-  EXPECT_EQ(absl::optional<int64_t>(2),
-            GetUKMMetric(eligible_link,
-                         ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
-                         ukm::builders::PrefetchProxy_AfterSRPClick::
-                             kSRPClickPrefetchStatusName));
-  // The actual probe latency is hard to deterministically test for. Just make
-  // sure it is set within reasonable bounds.
-  absl::optional<int64_t> probe_latency_ms = GetUKMMetric(
-      eligible_link, ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName,
-      ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName);
-  EXPECT_NE(absl::nullopt, probe_latency_ms);
-}
-
 class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
  public:
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
+  }
+
+  void WaitForTLSCanaryCheck() {
+    PrefetchProxyService* service =
+        PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
+    while (!service->origin_prober()->IsTLSCanaryCheckCompleteForTesting()) {
+      base::RunLoop().RunUntilIdle();
+    }
+  }
+
+  void WaitForDNSCanaryCheck() {
+    PrefetchProxyService* service =
+        PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
+    while (!service->origin_prober()->IsDNSCanaryCheckCompleteForTesting()) {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   void RunProbeTest(bool wait_for_tls,
@@ -2840,8 +2677,8 @@ class ProbingEnabled_CanaryOn_BothCanaryGood_PrefetchProxyBrowserTest
         {
             {"do_canary", "true"},
             {"do_tls_canary", "true"},
-            {"tls_canary_url", GetCanaryServerURL().spec()},
-            {"dns_canary_url", GetCanaryServerURL().spec()},
+            {"tls_canary_url", "https://resolve-success.com"},
+            {"dns_canary_url", "https://resolve-success.com"},
             {"ineligible_decoy_request_probability", "0"},
         });
   }
@@ -2860,8 +2697,8 @@ class ProbingEnabled_CanaryOn_TLSCanaryBad_DNSCanaryBad_PrefetchProxyBrowserTest
         {
             {"do_canary", "true"},
             {"do_tls_canary", "true"},
-            {"tls_canary_url", "http://invalid.com"},
-            {"dns_canary_url", "http://invalid.com"},
+            {"tls_canary_url", "https://resolve-fail.com"},
+            {"dns_canary_url", "https://resolve-fail.com"},
             {"ineligible_decoy_request_probability", "0"},
         });
   }
@@ -2881,8 +2718,8 @@ class
         {
             {"do_canary", "true"},
             {"do_tls_canary", "true"},
-            {"tls_canary_url", "http://invalid.com"},
-            {"dns_canary_url", GetCanaryServerURL().spec()},
+            {"tls_canary_url", "https://resolve-fail.com"},
+            {"dns_canary_url", "https://resolve-success.com"},
             {"ineligible_decoy_request_probability", "0"},
         });
   }
@@ -2902,8 +2739,8 @@ class
         {
             {"do_canary", "true"},
             {"do_tls_canary", "false"},
-            {"tls_canary_url", "http://invalid.com"},
-            {"dns_canary_url", GetCanaryServerURL().spec()},
+            {"tls_canary_url", "https://resolve-fail.com"},
+            {"dns_canary_url", "https://resolve-success.com"},
             {"ineligible_decoy_request_probability", "0"},
         });
   }
@@ -2923,27 +2760,8 @@ class
         {
             {"do_canary", "true"},
             {"do_tls_canary", "true"},
-            {"tls_canary_url", GetCanaryServerURL().spec()},
-            {"dns_canary_url", "http://invalid.com"},
-            {"ineligible_decoy_request_probability", "0"},
-        });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class ProbingEnabled_CanaryOn_CanaryBad_PrefetchProxyBrowserTest
-    : public PrefetchProxyBaseProbingBrowserTest {
- public:
-  void SetFeatures() override {
-    PrefetchProxyBaseProbingBrowserTest::SetFeatures();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kIsolatePrerendersMustProbeOrigin,
-        {
-            {"do_canary", "true"},
-            {"do_tls_canary", "true"},
-            {"canary_url", "http://invalid.com"},
+            {"tls_canary_url", "https://resolve-success.com"},
+            {"dns_canary_url", "https://resolve-fail.com"},
             {"ineligible_decoy_request_probability", "0"},
         });
   }
@@ -2985,9 +2803,9 @@ IN_PROC_BROWSER_TEST_F(
                /*expect_probe=*/true);
 
   histogram_tester().ExpectTotalCount(
-      "Availability.Prober.FinalState.IsolatedPrerenderDNSCanaryCheck", 1);
+      "PrefetchProxy.CanaryChecker.FinalState.DNS", 1);
   histogram_tester().ExpectTotalCount(
-      "Availability.Prober.FinalState.IsolatedPrerenderTLSCanaryCheck", 1);
+      "PrefetchProxy.CanaryChecker.FinalState.TLS", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

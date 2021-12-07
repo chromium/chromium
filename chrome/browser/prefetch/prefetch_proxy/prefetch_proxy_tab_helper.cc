@@ -23,6 +23,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_metrics_collector.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
@@ -870,6 +871,19 @@ void PrefetchProxyTabHelper::StartSinglePrefetch() {
       PrefetchProxyMainframeBodyLengthLimit());
 
   page_->url_loaders_.emplace(std::move(loader));
+
+  if (!prefetch_container->IsDecoy() &&
+      page_->srp_metrics_->prefetch_attempted_count_ == 1) {
+    // Make sure canary checks have run so we know the result by the time we
+    // want to use the prefetch. Checking the canary cache can be a slow and
+    // blocking operation (see crbug.com/1266018), so we only do this for the
+    // first non-decoy prefetch we make on the page.
+    // TODO(crbug.com/1266018): once this bug is fixed, fire off canary check
+    // regardless of whether the request is a decoy or not.
+    PrefetchProxyService* service =
+        PrefetchProxyServiceFactory::GetForProfile(profile_);
+    service->origin_prober()->RunCanaryChecksIfNeeded();
+  }
 
   // Start a spare renderer now so that it will be ready by the time it is
   // useful to have.

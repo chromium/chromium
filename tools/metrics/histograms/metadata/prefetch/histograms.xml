@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PrefetchProxyCanaryCheckerClient">
+  <variant name="DNS" summary="DNS canary check"/>
+  <variant name="TLS" summary="TLS canary check"/>
+</variants>
+
 <histogram name="IsolatedPrerender.AfterClick.Mainframe.CookieWaitTime"
     units="ms" expires_after="2021-06-20">
   <obsolete>
@@ -276,6 +281,115 @@ chromium-metrics-reviews@google.com.
     Records whether a previously prefetched subresource from an Isolated
     Prerender was served from cache when its page was later navigated to.
   </summary>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
+    units="hours" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    How old a cached probe result was when it was used, in hours.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram name="PrefetchProxy.CanaryChecker.CacheLookupResult"
+    enum="CanaryCheckLookupResult" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <summary>
+    Records the status of canary check cache lookups. A sample is recorded every
+    time Chrome attempts to use a resource prefetched using the prefetch proxy.
+    Cache misses or cached failures result in filter probing the origin before
+    the prefetched response can be used.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
+    enum="BooleanSuccess" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the end state of a probe just before it goes inactive. This happens
+    when the prober succeeds, fails and has no more retries, or the delegate
+    stops probing.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.GenerateCacheKey.{PrefetchProxyCanaryCheckerClient}"
+    units="ms" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the amount of time spent generating a cache key for the availability
+    prober. In particular, this tracks how much getNetworkOperator calls might
+    be slowing down this method. See crbug.com/1266018 for more details.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
+    enum="NetErrorCodes" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the net error of a completed or timed out probe. Note that if a HTTP
+    response does not occur within the probe's TTL, when a sample will also be
+    added to the ERR_TIMED_OUT bucket.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.NumAttemptsBeforeSuccess.{PrefetchProxyCanaryCheckerClient}"
+    units="count" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the number of attempts that are made to achieve a successful canary
+    check. This is recorded every time we make a canary check and the result is
+    a success. In particular, this means this is no recorded when a result was
+    already cached or when the check attempt fails after exhausting its retries.
+    This metric is 1-based so if a probe succeeds the first time, a sample of 1
+    will be recorded.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
+    units="ms" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the amount of time spent working on a single probe attempt to get to
+    a failed state. Recorded every time a probe fails.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
+</histogram>
+
+<histogram
+    name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
+    units="ms" expires_after="M104">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@chromium.org</owner>
+  <summary>
+    Records the amount of time spent working on a single probe attempt to get to
+    a successful state. Recorded every time a probe succeeds.
+  </summary>
+  <token key="PrefetchProxyCanaryCheckerClient"
+      variants="PrefetchProxyCanaryCheckerClient"/>
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"

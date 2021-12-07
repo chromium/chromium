@@ -93,7 +93,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="auction_report_sender"/>
       <traffic_annotation unique_id="interest_group_update_fetcher"/>
       <traffic_annotation unique_id="shared_storage_worklet_module_script_downloader"/>
-      <traffic_annotation unique_id="prefetch_proxy_canary_check"/>
       <traffic_annotation unique_id="proxy_config_windows_resolver"/>
       <traffic_annotation unique_id="remoting_directory_delete_host"/>
       <traffic_annotation unique_id="remoting_directory_get_host_list"/>

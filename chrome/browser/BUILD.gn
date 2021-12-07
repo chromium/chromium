@@ -178,8 +178,6 @@ static_library("browser") {
     "autofill/strike_database_factory.h",
     "autofill/validation_rules_storage_factory.cc",
     "autofill/validation_rules_storage_factory.h",
-    "availability/availability_prober.cc",
-    "availability/availability_prober.h",
     "background_fetch/background_fetch_delegate_factory.cc",
     "background_fetch/background_fetch_delegate_factory.h",
     "background_fetch/background_fetch_delegate_impl.cc",
@@ -1288,8 +1286,12 @@ static_library("browser") {
     "prefetch/prefetch_proxy/chrome_speculation_host_delegate.h",
     "prefetch/prefetch_proxy/prefetch_container.cc",
     "prefetch/prefetch_proxy/prefetch_container.h",
+    "prefetch/prefetch_proxy/prefetch_proxy_canary_checker.cc",
+    "prefetch/prefetch_proxy/prefetch_proxy_canary_checker.h",
     "prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h",
+    "prefetch/prefetch_proxy/prefetch_proxy_dns_prober.cc",
+    "prefetch/prefetch_proxy/prefetch_proxy_dns_prober.h",
     "prefetch/prefetch_proxy/prefetch_proxy_features.cc",
     "prefetch/prefetch_proxy/prefetch_proxy_features.h",
     "prefetch/prefetch_proxy/prefetch_proxy_from_string_url_loader.cc",
@@ -1937,7 +1939,6 @@ static_library("browser") {
   ]
   deps = [
     ":active_use_util",
-    ":availability_protos",
     ":browser_process",
     ":buildflags",
     ":dev_ui_browser_resources_grit",
@@ -7280,10 +7281,6 @@ source_set("theme_properties") {
     "//skia",
     "//ui/gfx",
   ]
-}
-
-proto_library("availability_protos") {
-  sources = [ "availability/proto/availability_prober_cache_entry.proto" ]
 }
 
 proto_library("resource_prefetch_predictor_proto") {

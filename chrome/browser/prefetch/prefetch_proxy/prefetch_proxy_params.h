@@ -53,8 +53,11 @@ size_t PrefetchProxyMainframeBodyLengthLimit();
 // Whether idle sockets should be closed after every prefetch.
 bool PrefetchProxyCloseIdleSockets();
 
-// The amount of time to allow before timing out an origin probe.
-base::TimeDelta PrefetchProxyProbeTimeout();
+// The amount of time to allow before timing out a canary check.
+base::TimeDelta PrefetchProxyCanaryCheckTimeout();
+
+// The number of retries to allow for canary checks.
+int PrefetchProxyCanaryCheckRetries();
 
 // The amount of time to allow a prefetch to take before considering it a
 // timeout error.
@@ -80,9 +83,6 @@ GURL PrefetchProxyDNSCanaryCheckURL();
 
 // How long a canary check can be cached for the same network.
 base::TimeDelta PrefetchProxyCanaryCheckCacheLifetime();
-
-// Experimental control to replace TLS probing with HTTP.
-bool PrefetchProxyMustHTTPProbeInsteadOfTLS();
 
 // The maximum number of subresources that will be fetched per prefetched page.
 size_t PrefetchProxyMaxSubresourcesPerPrerender();

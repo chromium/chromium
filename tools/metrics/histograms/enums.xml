@@ -11142,6 +11142,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Camera privacy switch on notification shown"/>
 </enum>
 
+<enum name="CanaryCheckLookupResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Cache miss"/>
+</enum>
+
 <enum name="CancelableTaskStatus">
   <int value="0" label="Live, on same sequence"/>
   <int value="1" label="Live, on other sequence"/>
