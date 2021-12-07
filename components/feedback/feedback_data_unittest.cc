@@ -76,10 +76,8 @@ class FeedbackDataTest : public testing::Test {
   }
 
   void Send() {
-    bool attached_file_completed =
-        data_->attached_file_uuid().empty();
-    bool screenshot_completed =
-        data_->screenshot_uuid().empty();
+    bool attached_file_completed = data_->attached_file_uuid().empty();
+    bool screenshot_completed = data_->screenshot_uuid().empty();
 
     if (screenshot_completed && attached_file_completed) {
       data_->OnFeedbackPageDataComplete();
@@ -89,14 +87,17 @@ class FeedbackDataTest : public testing::Test {
   void RunMessageLoop() {
     run_loop_ = std::make_unique<base::RunLoop>();
     quit_closure_ = run_loop_->QuitClosure();
+    Send();
     run_loop_->Run();
   }
 
   void set_send_report_callback() { std::move(quit_closure_).Run(); }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   base::OnceClosure quit_closure_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -104,12 +105,10 @@ class FeedbackDataTest : public testing::Test {
   scoped_refptr<FeedbackData> data_;
 };
 
-// TODO (crbug.com/1261932): Test is flaky. Please re-enable it when fixed.
-TEST_F(FeedbackDataTest, FLAKY_ReportSending) {
+TEST_F(FeedbackDataTest, ReportSending) {
   data_->SetAndCompressHistograms(kHistograms);
   data_->set_image(kImageData);
   data_->AttachAndCompressFileData(kFileData);
-  Send();
   RunMessageLoop();
   EXPECT_EQ(data_->user_email(), "");
   EXPECT_TRUE(data_->IsDataComplete());
@@ -122,7 +121,6 @@ TEST_F(FeedbackDataTest, ReportSendingWithEmail) {
   data_->set_image(kImageData);
   data_->AttachAndCompressFileData(kFileData);
   data_->set_user_email("foo@bar.com");
-  Send();
   RunMessageLoop();
   EXPECT_EQ(data_->user_email(), "foo@bar.com");
   EXPECT_TRUE(data_->IsDataComplete());
