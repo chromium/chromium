@@ -1914,7 +1914,8 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   params->user_agent = (origin_trial_tokens_ &&
                         origin_trial_tokens_->contains("UserAgentReduction"))
                            ? browser_client->GetReducedUserAgent()
-                           : browser_client->GetUserAgent();
+                           : browser_client->GetUserAgentBasedOnPolicy(
+                                 context_->wrapper()->browser_context());
   params->ua_metadata = browser_client->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;

@@ -2061,6 +2061,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ukm_worker_browsertest.cc",
       "../browser/unload_browsertest.cc",
       "../browser/usb/usb_browsertest.cc",
+      "../browser/user_agent/user_agent_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
       "../browser/window_placement/window_placement_browsertest.cc",

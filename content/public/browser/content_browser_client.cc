@@ -883,7 +883,7 @@ void ContentBrowserClient::ConfigureNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params,
     cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
-  network_context_params->user_agent = GetUserAgent();
+  network_context_params->user_agent = GetUserAgentBasedOnPolicy(context);
   network_context_params->accept_language = "en-us,en";
 }
 
@@ -1073,6 +1073,11 @@ std::string ContentBrowserClient::GetProduct() {
 
 std::string ContentBrowserClient::GetUserAgent() {
   return std::string();
+}
+
+std::string ContentBrowserClient::GetUserAgentBasedOnPolicy(
+    content::BrowserContext* content) {
+  return GetUserAgent();
 }
 
 std::string ContentBrowserClient::GetReducedUserAgent() {

@@ -244,6 +244,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/browser_child_process_host.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1317,6 +1318,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
                                 true);
   registry->RegisterDictionaryPref(
       enterprise::content::kCopyPreventionSettings);
+  registry->RegisterIntegerPref(
+      prefs::kUserAgentReduction,
+      UserAgentReductionEnterprisePolicyState::kDefault);
 }
 
 // static
@@ -5321,7 +5325,7 @@ void ChromeContentBrowserClient::ConfigureNetworkContextParams(
                                            cert_verifier_creation_params);
   } else {
     // Set default params.
-    network_context_params->user_agent = GetUserAgent();
+    network_context_params->user_agent = GetUserAgentBasedOnPolicy(context);
     network_context_params->accept_language = GetApplicationLocale();
   }
 }
@@ -5798,6 +5802,19 @@ std::string ChromeContentBrowserClient::GetProduct() {
 
 std::string ChromeContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
+}
+
+std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
+    content::BrowserContext* context) {
+  switch (GetUserAgentReductionEnterprisePolicyState(context)) {
+    case UserAgentReductionEnterprisePolicyState::kForceDisabled:
+      return embedder_support::GetFullUserAgent();
+    case UserAgentReductionEnterprisePolicyState::kForceEnabled:
+      return GetReducedUserAgent();
+    case UserAgentReductionEnterprisePolicyState::kDefault:
+    default:
+      return GetUserAgent();
+  }
 }
 
 std::string ChromeContentBrowserClient::GetReducedUserAgent() {
@@ -6346,4 +6363,21 @@ void ChromeContentBrowserClient::FlushBackgroundAttributions(
   background_attribution_flusher_->FlushPreNativeAttributions(
       std::move(callback));
 #endif
+}
+
+ChromeContentBrowserClient::UserAgentReductionEnterprisePolicyState
+ChromeContentBrowserClient::GetUserAgentReductionEnterprisePolicyState(
+    content::BrowserContext* context) {
+  int policy = Profile::FromBrowserContext(context)->GetPrefs()->GetInteger(
+      prefs::kUserAgentReduction);
+  switch (policy) {
+    case 0:
+      return UserAgentReductionEnterprisePolicyState::kDefault;
+    case 1:
+      return UserAgentReductionEnterprisePolicyState::kForceDisabled;
+    case 2:
+      return UserAgentReductionEnterprisePolicyState::kForceEnabled;
+  }
+
+  return UserAgentReductionEnterprisePolicyState::kDefault;
 }

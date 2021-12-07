@@ -39,8 +39,7 @@ String NavigatorBase::platform() const {
   // If the User-Agent string is frozen, platform should be a value
   // matching the frozen string per https://github.com/WICG/ua-client-hints.
   // See content::frozen_user_agent_strings.
-  if (base::FeatureList::IsEnabled(features::kReduceUserAgent) ||
-      RuntimeEnabledFeatures::UserAgentReductionEnabled(execution_context)) {
+  if (RuntimeEnabledFeatures::UserAgentReductionEnabled(execution_context)) {
 #if defined(OS_ANDROID)
     return "Linux armv81";
 #elif defined(OS_MAC)

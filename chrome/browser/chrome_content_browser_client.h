@@ -642,6 +642,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::string GetProduct() override;
   std::string GetUserAgent() override;
+  std::string GetUserAgentBasedOnPolicy(
+      content::BrowserContext* context) override;
   std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
@@ -769,6 +771,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void FlushBackgroundAttributions(base::OnceClosure callback) override;
 
+  enum UserAgentReductionEnterprisePolicyState {
+    kDefault = 0,
+    kForceDisabled = 1,
+    kForceEnabled = 2,
+  };
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
@@ -854,6 +862,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnKeepaliveTimerFired(
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
 #endif
+
+  UserAgentReductionEnterprisePolicyState
+  GetUserAgentReductionEnterprisePolicyState(content::BrowserContext* context);
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.

@@ -1645,6 +1645,10 @@ const char kQuietNotificationPermissionPromoWasShown[] =
 const char kSuppressDifferentOriginSubframeJSDialogs[] =
     "suppress_different_origin_subframe_js_dialogs";
 
+// Enum indicating if the user agent reduction feature should be forced enabled
+// or disabled. Defaults to blink::features::kReduceUserAgent field trial.
+const char kUserAgentReduction[] = "user_agent_reduction";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

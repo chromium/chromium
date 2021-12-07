@@ -29003,7 +29003,49 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
       The <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE">minimum_data_size</ph> indicates the minimum amount of data in bytes that triggers the pattern check. This means that a clipboard write from a blocked URL would be allowed if the size of the copied data is smaller than the value specified in this field. The default value is 100 bytes if the field is unset.
       '''
-    }
+    },
+    {
+      'name': 'UserAgentReduction',
+      'owners': ['abeyad@chromium.org', 'aarontag@chromium.org', 'miketaylr@chromium.org'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [0,1,2],
+      },
+      'items': [
+        {
+          'name': 'Default',
+          'value': 0,
+          'caption': '''User Agent reduction will be controllable via Field-Trials and Origin-Trials.''',
+        },
+        {
+          'name': 'ForceDisabled',
+          'value': 1,
+          'caption': '''User Agent reduction diabled, and not enabled by Field-Trials or Origin-Trials.''',
+        },
+        {
+          'name': 'ForceEnabled',
+          'value': 2,
+          'caption': '''User Agent reduction will be enabled for all origins.''',
+        },
+      ],
+      'supported_on': ['chrome_os:98-', 'chrome.*:98-', 'android:98-'],
+      'default': 0,
+      'example_value': 0,
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': True,
+      },
+      'id': 932,
+      'tags': ['website-sharing'],
+      'caption': '''Enable or disable the <ph name="USER_AGENT_REDUCTION_FEATURE_NAME">User-Agent Reduction</ph>.''',
+      'desc': '''The <ph name="USER_AGENT_HEADER_NAME">User-Agent</ph> HTTP request header is scheduled to be reduced. In order to facilitate testing and compatibility, this policy can enable the reduction feature for all websites, or disable the ability for origin trials or field trials to enable the feature.
+
+      To learn more about the <ph name="USER_AGENT_REDUCTION_FEATURE_NAME">User-Agent Reduction</ph> and its timeline, read here:
+
+      https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
+      '''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -29977,6 +30019,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 931,
+  'highest_id_currently_used': 932,
   'highest_atomic_group_id_currently_used': 41
 }

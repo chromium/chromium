@@ -27422,6 +27422,7 @@ Called by update_document_policy_enum.py.-->
   <int value="929" label="ReportDeviceAudioStatusCheckingRateMs"/>
   <int value="930" label="FullscreenNotificationUrlExemptList"/>
   <int value="931" label="OnPrintEnterpriseConnector"/>
+  <int value="932" label="UserAgentReduction"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

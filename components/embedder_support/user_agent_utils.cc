@@ -5,6 +5,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 
 #include "base/command_line.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -259,12 +260,7 @@ std::string GetUserAgent() {
   if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent))
     return GetReducedUserAgent();
 
-  std::string product = GetProduct(/*allow_version_override=*/true);
-#if defined(OS_ANDROID)
-  if (command_line->HasSwitch(switches::kUseMobileUserAgent))
-    product += " Mobile";
-#endif
-  return content::BuildUserAgentFromProduct(product);
+  return GetFullUserAgent();
 }
 
 std::string GetReducedUserAgent() {
@@ -275,6 +271,16 @@ std::string GetReducedUserAgent() {
           blink::features::kForceMajorVersion100InUserAgent)
           ? kMajorVersion100
           : version_info::GetMajorVersionNumber());
+}
+
+std::string GetFullUserAgent() {
+  std::string product = GetProduct(/*allow_version_override=*/true);
+#if defined(OS_ANDROID)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseMobileUserAgent))
+    product += " Mobile";
+#endif
+  return content::BuildUserAgentFromProduct(product);
 }
 
 // Generate a pseudo-random permutation of the following brand/version pairs:

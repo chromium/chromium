@@ -309,7 +309,8 @@ bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
 // values of relevant headers like Sec-CH-UA-Reduced.  If `user_agent_override`
 // is non-empty, `user_agent_override` is returned as the header value.
 std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
-                                  const std::string& user_agent_override) {
+                                  const std::string& user_agent_override,
+                                  content::BrowserContext* context) {
   if (!user_agent_override.empty()) {
     base::UmaHistogramEnumeration("Navigation.UserAgentStringType",
                                   UserAgentStringType::kOverriden);
@@ -327,7 +328,8 @@ std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
                                 reduced ? UserAgentStringType::kReducedVersion
                                         : UserAgentStringType::kFullVersion);
   return reduced ? GetContentClient()->browser()->GetReducedUserAgent()
-                 : GetContentClient()->browser()->GetUserAgent();
+                 : GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
+                       context);
 }
 
 // TODO(clamy): This should match what's happening in
@@ -362,7 +364,7 @@ void AddAdditionalRequestHeaders(
 
   headers->SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent,
-      ComputeUserAgentValue(*headers, user_agent_override));
+      ComputeUserAgentValue(*headers, user_agent_override, browser_context));
 
   if (!render_prefs.enable_referrers) {
     *referrer =
@@ -3985,7 +3987,8 @@ void NavigationRequest::OnRedirectChecksComplete(
     if (!devtools_user_agent_override_) {
       modified_headers.SetHeader(
           net::HttpRequestHeaders::kUserAgent,
-          ComputeUserAgentValue(modified_headers, GetUserAgentOverride()));
+          ComputeUserAgentValue(modified_headers, GetUserAgentOverride(),
+                                browser_context));
     }
   }
 
@@ -6517,8 +6520,9 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
         common_params_->url, client_hints_delegate, is_overriding_user_agent(),
         frame_tree_node_, &headers);
   }
-  headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                    ComputeUserAgentValue(headers, GetUserAgentOverride()));
+  headers.SetHeader(
+      net::HttpRequestHeaders::kUserAgent,
+      ComputeUserAgentValue(headers, GetUserAgentOverride(), browser_context));
   begin_params_->headers = headers.ToString();
   // |request_headers_| comes from |begin_params_|. Clear |request_headers_| now
   // so that if |request_headers_| are needed, they will be updated.
