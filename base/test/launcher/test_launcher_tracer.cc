@@ -15,16 +15,18 @@ TestLauncherTracer::TestLauncherTracer()
 
 TestLauncherTracer::~TestLauncherTracer() = default;
 
-void TestLauncherTracer::RecordProcessExecution(TimeTicks start_time,
-                                                TimeDelta duration) {
+int TestLauncherTracer::RecordProcessExecution(TimeTicks start_time,
+                                               TimeDelta duration) {
   AutoLock lock(lock_);
 
+  int process_num = events_.size();
   Event event;
-  event.name = StringPrintf("process #%zu", events_.size());
+  event.name = StringPrintf("process #%d", process_num);
   event.timestamp = start_time;
   event.duration = duration;
   event.thread_id = PlatformThread::CurrentId();
   events_.push_back(event);
+  return process_num;
 }
 
 bool TestLauncherTracer::Dump(const FilePath& path) {

@@ -310,8 +310,6 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
                                       TimeDelta timeout,
                                       TestLauncherDelegate* delegate,
                                       bool* was_timeout) {
-  TimeTicks start_time(TimeTicks::Now());
-
 #if defined(OS_POSIX)
   // Make sure an option we rely on is present - see LaunchChildGTestProcess.
   DCHECK(options.new_process_group);
@@ -511,9 +509,6 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
     GetLiveProcesses()->erase(process.Handle());
   }
 
-  GetTestLauncherTracer()->RecordProcessExecution(
-      start_time, TimeTicks::Now() - start_time);
-
   return exit_code;
 }
 
@@ -526,6 +521,12 @@ struct ChildProcessResults {
   bool was_timeout = false;
   // Exit code of child process.
   int exit_code;
+  // Thread ID of the runner.
+  PlatformThreadId thread_id;
+  // The sequence number of the child test process executed.
+  // It's used instead of process id to distinguish processes that process id
+  // might be reused by OS.
+  int process_num;
 };
 
 // Returns the path to a temporary directory within |task_temp_dir| for the
@@ -565,6 +566,7 @@ ChildProcessResults DoLaunchChildTestProcess(
   TimeTicks start_time = TimeTicks::Now();
 
   ChildProcessResults result;
+  result.thread_id = PlatformThread::CurrentId();
 
   ScopedFILE output_file;
   FilePath output_filename;
@@ -648,6 +650,8 @@ ChildProcessResults DoLaunchChildTestProcess(
 #endif
   }
   result.elapsed_time = TimeTicks::Now() - start_time;
+  result.process_num = GetTestLauncherTracer()->RecordProcessExecution(
+      start_time, result.elapsed_time);
   return result;
 }
 
@@ -1049,7 +1053,8 @@ void TestLauncher::LaunchChildGTestProcess(
       BindOnce(&TestLauncher::ProcessTestResults, Unretained(this), test_names,
                result_file, process_results.output_file_contents,
                process_results.elapsed_time, process_results.exit_code,
-               process_results.was_timeout,
+               process_results.was_timeout, process_results.thread_id,
+               process_results.process_num,
                CountItemsInDirectory(child_temp_dir)));
 }
 
@@ -1081,6 +1086,8 @@ void TestLauncher::ProcessTestResults(
     TimeDelta elapsed_time,
     int exit_code,
     bool was_timeout,
+    PlatformThreadId thread_id,
+    int process_num,
     int leaked_items) {
   std::vector<TestResult> test_results;
   bool crashed = false;
@@ -1159,6 +1166,11 @@ void TestLauncher::ProcessTestResults(
   for (auto& i : final_results) {
     // Fix the output snippet after possible changes to the test result.
     i.output_snippet = GetTestOutputSnippet(i, output);
+    // The thread id injected here is the worker thread that launching the child
+    // testing process, it might be different from the current thread that
+    // ProcessTestResults.
+    i.thread_id = thread_id;
+    i.process_num = process_num;
   }
 
   if (leaked_items)

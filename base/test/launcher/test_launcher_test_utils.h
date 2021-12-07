@@ -30,11 +30,13 @@ bool ValidateKeyValue(const Value& dict_value,
                       int64_t expected_value);
 
 // Validate |iteration_data| contains one test result under |test_name|
-// with |status|, and |result_part_count| number of result parts.
+// with |status|, |result_part_count| number of result parts and additional
+// fields that only generated after execution when |have_running_info|.
 bool ValidateTestResult(const Value* iteration_data,
                         const std::string& test_name,
                         const std::string& status,
-                        size_t result_part_count);
+                        size_t result_part_count,
+                        bool have_running_info = true);
 
 // Validate test_locations contains all tests in |test_case_name|.
 bool ValidateTestLocations(const Value* test_locations,
