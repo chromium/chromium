@@ -26,9 +26,11 @@ constexpr size_t kBitsPerElement = sizeof(uint32_t) * 8;
 static_assert(sizeof(uint32_t) == sizeof(std::atomic<uint32_t>), "");
 
 // Keep the array in BSS only for non-official builds to avoid potential harm to
-// data locality and unspecified behavior from the reinterpret_cast below. In
-// order to start new experiments with base::Feature(ReachedCodeProfiler) on
-// Canary/Dev this array will need to be reintroduced to official builds.
+// data locality and unspecified behavior from the reinterpret_cast below.
+// In order to start new experiments with base::Feature(ReachedCodeProfiler) on
+// Canary/Dev this array will need to be reintroduced to official builds. When
+// doing so, don't forget to update `kConfigurationSupported` in
+// `reached_code_profiler.cc`
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING) && !defined(OFFICIAL_BUILD)
 // Enough for 1 << 29 bytes of code, 512MB.
 constexpr size_t kTextBitfieldSize = 1 << 20;
