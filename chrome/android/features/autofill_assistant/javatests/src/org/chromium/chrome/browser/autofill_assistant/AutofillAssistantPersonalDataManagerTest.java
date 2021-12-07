@@ -874,7 +874,10 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    public void testCreateShippingAddressAndCreditCard() {
+    @DisableIf.Build(supported_abis_includes = "x86", sdk_is_greater_than = Build.VERSION_CODES.O,
+            message = "Times out on Android P+ emulators: https://crbug.com/1219046")
+    public void
+    testCreateShippingAddressAndCreditCard() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
