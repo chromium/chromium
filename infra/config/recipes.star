@@ -131,9 +131,7 @@ build_recipe(
 build_recipe(
     name = "recipe:chromium",
     bootstrappable = True,
-    experiments = {
-        "luci.recipes.use_python3": 20,
-    },
+    use_python3 = True,
 )
 
 build_recipe(
