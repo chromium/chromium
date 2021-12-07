@@ -144,6 +144,45 @@ class ThreadDestructionObserver
   base::OnceClosure callback_;
 };
 
+#if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+ConnectionParams CreateSyncNodeConnectionParams(
+    const base::Process& target_process,
+    ConnectionParams connection_params,
+    const ProcessErrorCallback& process_error_callback,
+    Channel::HandlePolicy& handle_policy) {
+  ConnectionParams node_connection_params;
+  // BrokerHost owns itself.
+  BrokerHost* broker_host = new BrokerHost(
+      target_process.IsValid() ? target_process.Duplicate() : base::Process(),
+      std::move(connection_params), process_error_callback);
+
+#if defined(OS_WIN)
+  // On Windows, if target_process is invalid it means it's elevated or running
+  // in another session so a named pipe should be used instead.
+  if (!target_process.IsValid()) {
+    handle_policy = Channel::HandlePolicy::kRejectHandles;
+    NamedPlatformChannel::Options options;
+    NamedPlatformChannel named_channel(options);
+    node_connection_params =
+        ConnectionParams(named_channel.TakeServerEndpoint());
+    broker_host->SendNamedChannel(named_channel.GetServerName());
+    return node_connection_params;
+  }
+#endif
+
+  // Sync connections usurp the passed endpoint and use it for the sync broker
+  // channel. A new channel is created here for the NodeChannel and sent over
+  // a sync broker message to the client.
+  PlatformChannel node_channel;
+  node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
+  bool channel_ok = broker_host->SendChannel(
+      node_channel.TakeRemoteEndpoint().TakePlatformHandle());
+  CHECK(channel_ok);
+
+  return node_connection_params;
+}
+#endif  // !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+
 }  // namespace
 
 NodeController::~NodeController() = default;
@@ -365,45 +404,23 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
 #if !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
+  Channel::HandlePolicy handle_policy = Channel::HandlePolicy::kAcceptHandles;
   ConnectionParams node_connection_params;
-  if (!connection_params.is_async()) {
-    // Sync connections usurp the passed endpoint and use it for the sync broker
-    // channel. A new channel is created here for the NodeChannel and sent over
-    // a sync broker message to the client.
-    PlatformChannel node_channel;
-    node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
-    // BrokerHost owns itself.
-    BrokerHost* broker_host =
-        new BrokerHost(target_process.Duplicate(), std::move(connection_params),
-                       process_error_callback);
-    bool channel_ok = broker_host->SendChannel(
-        node_channel.TakeRemoteEndpoint().TakePlatformHandle());
 
-#if defined(OS_WIN)
-    if (!channel_ok) {
-      // On Windows the above operation may fail if the channel is crossing a
-      // session boundary. In that case we fall back to a named pipe.
-      NamedPlatformChannel::Options options;
-      NamedPlatformChannel named_channel(options);
-      node_connection_params =
-          ConnectionParams(named_channel.TakeServerEndpoint());
-      broker_host->SendNamedChannel(named_channel.GetServerName());
-    }
-#else
-    CHECK(channel_ok);
-#endif  // defined(OS_WIN)
-  } else {
+  if (connection_params.is_async()) {
     // For async connections, the passed endpoint really is the NodeChannel
     // endpoint. The broker channel will be established asynchronously by a
     // |BIND_SYNC_BROKER| message from the invited client.
     node_connection_params = std::move(connection_params);
+  } else {
+    node_connection_params = CreateSyncNodeConnectionParams(
+        target_process, std::move(connection_params), process_error_callback,
+        handle_policy);
   }
 
-  scoped_refptr<NodeChannel> channel =
-      NodeChannel::Create(this, std::move(node_connection_params),
-                          Channel::HandlePolicy::kAcceptHandles,
-                          io_task_runner_, process_error_callback);
-
+  scoped_refptr<NodeChannel> channel = NodeChannel::Create(
+      this, std::move(node_connection_params), handle_policy, io_task_runner_,
+      process_error_callback);
 #else   // !defined(OS_APPLE) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
   scoped_refptr<NodeChannel> channel = NodeChannel::Create(
       this, std::move(connection_params), Channel::HandlePolicy::kAcceptHandles,

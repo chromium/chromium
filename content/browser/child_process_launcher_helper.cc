@@ -172,7 +172,7 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
     if (mojo_named_channel_) {
       DCHECK(!mojo_channel_);
       mojo::OutgoingInvitation::Send(
-          std::move(invitation), process.process.Handle(),
+          std::move(invitation), base::kNullProcessHandle,
           mojo_named_channel_->TakeServerEndpoint(), process_error_callback_);
     } else
 #endif

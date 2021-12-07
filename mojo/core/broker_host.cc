@@ -36,7 +36,9 @@ BrokerHost::BrokerHost(base::Process client_process,
   base::CurrentThread::Get()->AddDestructionObserver(this);
 
   channel_ = Channel::Create(this, std::move(connection_params),
-                             Channel::HandlePolicy::kAcceptHandles,
+                             client_process.IsValid()
+                                 ? Channel::HandlePolicy::kAcceptHandles
+                                 : Channel::HandlePolicy::kRejectHandles,
                              base::ThreadTaskRunnerHandle::Get());
   channel_->Start();
 }
@@ -50,15 +52,14 @@ BrokerHost::~BrokerHost() {
 }
 
 bool BrokerHost::PrepareHandlesForClient(
-    std::vector<PlatformHandleInTransit>* handles,
-    bool check_on_failure) {
+    std::vector<PlatformHandleInTransit>* handles) {
 #if defined(OS_WIN)
+  if (!client_process_.IsValid())
+    return false;
   bool handles_ok = true;
   for (auto& handle : *handles) {
-    if (!handle.TransferToProcess(client_process_.Duplicate(),
-                                  check_on_failure)) {
+    if (!handle.TransferToProcess(client_process_.Duplicate()))
       handles_ok = false;
-    }
   }
   return handles_ok;
 #else
@@ -84,7 +85,7 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
 
   // This may legitimately fail on Windows if the client process is in another
   // session, e.g., is an elevated process.
-  if (!PrepareHandlesForClient(&handles, /*check_on_failure=*/false))
+  if (!PrepareHandlesForClient(&handles))
     return false;
 
   message->SetHandles(std::move(handles));
@@ -138,7 +139,7 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
     const base::UnguessableToken& guid = region.GetGUID();
     response->guid_high = guid.GetHighForSerialization();
     response->guid_low = guid.GetLowForSerialization();
-    PrepareHandlesForClient(&handles, /*check_on_failure=*/true);
+    PrepareHandlesForClient(&handles);
     message->SetHandles(std::move(handles));
   }
 
