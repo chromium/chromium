@@ -17,7 +17,7 @@
 <translation id="1175951029573070619">一般 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1195447618553298278">未知的錯誤。</translation>
-<translation id="1196959502276349371"><ph name="VERSION" /> 版</translation>
+<translation id="1196959502276349371">版本：<ph name="VERSION" /></translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1204296502688602597">DNS 延遲時間</translation>
 <translation id="123124571410524056">可能有網絡入口</translation>
@@ -183,7 +183,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池經過完整充電循環的次數</translation>
-<translation id="3924044641767672375">建議連線至 Wi-Fi，這樣可簡化維修程序。系統將儲存你的網路。</translation>
+<translation id="3924044641767672375">建議連線至 Wi-Fi，簡化維修程序。系統將會儲存您的網絡。</translation>
 <translation id="3932043219784172185">未連接任何裝置</translation>
 <translation id="3941014780699102620">無法解析主機</translation>
 <translation id="3942420633017001071">診斷</translation>
@@ -228,7 +228,7 @@
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
-<translation id="4485626319513081846">如果要將裝置重新上架或整新以發布給新客戶，請選取這個選項。</translation>
+<translation id="4485626319513081846">如果裝置將重新銷售，或者進行翻新以發佈給新客戶，請選取此選項。</translation>
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4521826082652183069">主體替代名稱相符</translation>
 <translation id="4536864596629708641">IP 設定</translation>
@@ -418,7 +418,7 @@
 <translation id="6957231940976260713">服務名稱</translation>
 <translation id="6961170852793647506">如要開始，請將文件放到掃瞄器上</translation>
 <translation id="6977381486153291903">韌體版本</translation>
-<translation id="6992266763844448459">如果裝置的擁有權未變更，請選取這個選項。比方說，將裝置轉移給機構中的其他人。</translation>
+<translation id="6992266763844448459">如果裝置的擁有權未變更，請選取此選項。例如，將裝置轉移給機構中的其他人。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="7040230719604914234">流動網絡供應商</translation>
 <translation id="7058278511608979688">結束並儲存</translation>

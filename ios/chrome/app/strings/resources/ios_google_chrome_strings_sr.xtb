@@ -50,6 +50,7 @@
 <translation id="4214277427269650960">Пријавите се на овај сајт и у Chrome. Синхронизацију можете да укључите касније.</translation>
 <translation id="424864128008805179">Желите ли да се одјавите из Chrome-а?</translation>
 <translation id="4249068189593983585">Савет за Chrome. Ако желите више опција за картице, додирните и задржите дугме Прикажи картице на траци с алаткама, која се налази у дну или врху екрана.</translation>
+<translation id="4267862249323750454">Лозинке се чувају у <ph name="BEGIN_LINK" />Google менаџеру лозинки<ph name="END_LINK" /> да бисте могли да их користите на било ком уређају.</translation>
 <translation id="4523886039239821078">Неки програмски додаци изазивају отказивање Chrome-а. Деинсталирајте:</translation>
 <translation id="4633328489441962921">Chrome не може да тражи ажурирања</translation>
 <translation id="4698415050768537821">Chrome није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
@@ -70,6 +71,7 @@
 <translation id="6063091872902370735">Дозволите пријављивање у Chrome</translation>
 <translation id="6181930887571472871">Пређите на Chrome</translation>
 <translation id="6238746320622508509">Дозволите Chrome-у да закључа картице без архивирања.</translation>
+<translation id="6387994324662817823">Лозинке се чувају у Google менаџеру лозинки само на овом уређају.</translation>
 <translation id="6427126399757991875">Ваша организација подешава Chrome...</translation>
 <translation id="6600954340915313787">Копирана у Chrome</translation>
 <translation id="6634107063912726160">Када се одјавите, Chrome не синхронизује никакве нове податке са Google налогом. Претходно синхронизовани подаци остају на налогу.</translation>

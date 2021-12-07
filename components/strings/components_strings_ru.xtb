@@ -646,6 +646,7 @@
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Добавить адрес получения</translation>
+<translation id="3098513225387949945">Игнорируется, так как список "Отключено" содержит шаблон "*", что приравнивается к отключению правила.</translation>
 <translation id="3105172416063519923">Идентификатор объекта:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Проверить настройки безопасного DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средний лоток</translation>
@@ -1554,6 +1555,7 @@
 <translation id="6008122969617370890">В порядке от N до 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Проверьте свои пароли</translation>
+<translation id="6014851866995737824">Игнорируется, так как отсутствует список "Включено" или "Отключено".</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6017514345406065928">Зеленый</translation>
 <translation id="6017850046339264347">Злоумышленники могут использовать сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, чтобы установить вредоносные приложения, маскирующиеся под безопасные программы или собирающие данные, по которым вас можно отследить. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1726,7 +1728,6 @@
 <translation id="6596325263575161958">Параметры шифрования</translation>
 <translation id="6609880536175561541">Prc7 (конверт)</translation>
 <translation id="6615297766614333076">Укладчик 2</translation>
-<translation id="6623589891453322342">обработчики файлов</translation>
 <translation id="6624427990725312378">Контактная информация</translation>
 <translation id="6626291197371920147">Введите номер действующей карты</translation>
 <translation id="6628463337424475685">Поиск <ph name="ENGINE" /></translation>
@@ -1819,7 +1820,6 @@
 <translation id="6949872517221025916">Сброс пароля</translation>
 <translation id="6950684638814147129">Ошибка при синтаксическом анализе значения JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Сбросить все</translation>
-<translation id="6954341342296443517">Разрешено отправлять запрос на открытие файлов определенных типов</translation>
 <translation id="6957887021205513506">Возможно, сертификат сервера фальсифицирован.</translation>
 <translation id="6958564499836457428">Открыть настройки конфиденциальности в аккаунте Google</translation>
 <translation id="6961844873822989059">Разрешено отправлять запрос на использование шрифтов, установленных на устройстве</translation>
@@ -1846,7 +1846,6 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Масштаб</translation>
 <translation id="7016992613359344582">Списание может быть разовым или повторяющимся без каких-либо уведомлений.</translation>
-<translation id="7024588353896425985">Обработчики файлов</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030436163253143341">Недействительный сертификат</translation>
 <translation id="7031646650991750659">Приложения, установленные из Google Play.</translation>

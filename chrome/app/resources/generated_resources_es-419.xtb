@@ -467,7 +467,6 @@
 <translation id="1480663089572535854">Puedes volver para cambiar la asignación de "Seleccionar". En Configuración, podrás desactivar el escaneo automático en cualquier momento.</translation>
 <translation id="1481537595330271162">Se produjo un error al cambiar el tamaño del disco</translation>
 <translation id="1482626744466814421">Agregar esta pestaña a favoritos…</translation>
-<translation id="1483272013430662157">Permitir que las aplicaciones web soliciten permiso para abrir determinados tipos de archivos</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484979925941077974">El sitio está usando la conexión Bluetooth</translation>
 <translation id="1485015260175968628">Ahora puede:</translation>
@@ -643,7 +642,6 @@
 <translation id="164936512206786300">Desvincular el dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Debes ingresar la misma frase de contraseña dos veces</translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
-<translation id="1653631694606464309">Las aplicaciones web por lo general solicitan permiso para abrir determinados tipos de archivos para que puedas trabajar en ellos donde quieras, como en tu procesador de texto preferido</translation>
 <translation id="1656528038316521561">Opacidad del fondo</translation>
 <translation id="1657406563541664238">Ayúdanos a <ph name="PRODUCT_NAME" /> mejorar enviando automáticamente estadísticas de uso e informes de fallos a Google.</translation>
 <translation id="1657937299377480641">Pídele permiso a tu madre o padre para ingresar de nuevo a la cuenta que te permita acceder a recursos educativos</translation>
@@ -681,6 +679,7 @@
 <translation id="1692115862433274081">Usar otra cuenta</translation>
 <translation id="1692118695553449118">La sincronización está activada.</translation>
 <translation id="1692210323591458290">Púrpura oscuro</translation>
+<translation id="1695487653372841667">Puedes controlar qué datos se comparten con Google. Puedes cambiar este parámetro cuando lo desees en Configuración.</translation>
 <translation id="169675691788639886">El dispositivo tiene configurado un servidor SSH. No accedas con cuentas sensibles.</translation>
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar archivo</translation>
@@ -1728,6 +1727,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2757338480560142065">Asegúrate de que la contraseña que guardes coincida con tu contraseña de <ph name="WEBSITE" /></translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
 <translation id="2764786626780673772">Detalles de VPN</translation>
+<translation id="2765100602267695013">Comunícate con tu proveedor de servicios móviles</translation>
 <translation id="2765217105034171413">Pequeño</translation>
 <translation id="2766006623206032690">Pe&amp;gar y acceder</translation>
 <translation id="2766161002040448006">Preguntarles a tus padres</translation>
@@ -2289,6 +2289,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3370260763947406229">Corrección automática</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (puerto lateral derecho delantero)</translation>
 <translation id="337286756654493126">Leer carpetas que abras en la aplicación</translation>
+<translation id="3374294321938930390">Se movió "<ph name="BOOKMARK_TITLE" />" a "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3378572629723696641">Es posible que esta extensión esté dañada.</translation>
 <translation id="337920581046691015">Se instalará <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3380365263193509176">Error desconocido</translation>
@@ -2382,7 +2383,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3449839693241009168">Presiona <ph name="SEARCH_KEY" /> para enviar comandos a<ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Porcentaje de ocupación de estado de inactividad</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización.</translation>
-<translation id="3451753556629288767">Puede abrir determinados tipos de archivos</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453612417627951340">Autorización requerida</translation>
 <translation id="3454213325559396544">Esta es la última actualización automática de software y seguridad para el dispositivo <ph name="DEVICE_TYPE" />. Para recibir futuras actualizaciones, obtén un modelo más nuevo.</translation>
@@ -5100,6 +5100,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6385994920693662133">Advertencia: Se habilitó el registro detallado. Es posible que los registros que aparecen a continuación incluyan URL o información confidencial. Revísalos y asegúrate de no tener inconvenientes con enviar esta información.</translation>
 <translation id="6387674443318562538">División vertical</translation>
 <translation id="6388429472088318283">Buscar idiomas</translation>
+<translation id="6388577073199278153">No se pudo acceder a tu cuenta móvil</translation>
 <translation id="6390020764191254941">Mueve la pestaña a una ventana nueva</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
@@ -5424,6 +5425,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="672609503628871915">Novedades</translation>
 <translation id="67269783048918309">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Conectado (batería: <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="6733620523445262364">Se creó "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="6735304988756581115">Mostrar cookies y otros datos de sitio...</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6737663862851963468">Quitar el ticket de Kerberos</translation>
@@ -5464,7 +5466,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6785518634832172390">El PIN debe tener 12 dígitos o menos</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6787097042755590313">Otra pestaña</translation>
-<translation id="6787631759192429908">¿Deseas abrir los archivos?</translation>
 <translation id="6787839852456839824">Accesos directos</translation>
 <translation id="6788210894632713004">Extensión sin empaquetar</translation>
 <translation id="6789592661892473991">División horizontal</translation>
@@ -5716,7 +5717,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7025082428878635038">Presentamos una nueva forma de navegar con gestos</translation>
 <translation id="7025190659207909717">Administración del servicio de datos para celulares</translation>
 <translation id="7025895441903756761">Seguridad y privacidad</translation>
-<translation id="7026552751317161576">No permitir que las aplicaciones web abran determinados tipos de archivos</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todo en una ventana de &amp;incógnito}=1{Abrir en una ventana de &amp;incógnito}other{Abrir todo ({COUNT}) en una ventana de &amp;incógnito}}</translation>
 <translation id="7029307918966275733">No se instaló Crostini. Instálalo para ver los créditos.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
@@ -5761,7 +5761,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7067396782363924830">Colores del ambiente</translation>
 <translation id="7067725467529581407">No volver a mostrar.</translation>
 <translation id="7069811530847688087">Es posible que <ph name="WEBSITE" /> solicite un tipo de llave de seguridad más nuevo o diferente</translation>
-<translation id="7070269827082111569">No se permite abrir determinados tipos de archivos</translation>
 <translation id="7070484045139057854">Esta extensión puede leer y cambiar los datos del sitio</translation>
 <translation id="7072010813301522126">Nombre del acceso directo</translation>
 <translation id="7075513071073410194">PKCS N. º 1 MD5 con encriptación RSA</translation>
@@ -6330,7 +6329,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7680416688940118410">Calibración de la pantalla táctil</translation>
 <translation id="7681095912841365527">El sitio puede usar la conexión Bluetooth</translation>
 <translation id="7681597159868843240">Por lo general, los sitios utilizan los sensores de movimiento del dispositivo en funciones, como el seguimiento de la actividad física o la realidad virtual.</translation>
-<translation id="7683164815270164555">Preguntar cuando una aplicación web desea abrir determinados tipos de archivos</translation>
 <translation id="7683373461016844951">Para continuar, haz clic en Aceptar y, luego, en Agregar un usuario para crear un perfil nuevo para tu dirección de correo electrónico de <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Instalado por el administrador</translation>
 <translation id="7684559058815332124">Visitar la página de acceso al portal cautivo</translation>
@@ -6673,6 +6671,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8006630792898017994">Barra espaciadora o tecla de tabulación</translation>
 <translation id="8008356846765065031">No hay conexión a Internet. Comprueba la conexión.</translation>
 <translation id="8009225694047762179">Administrar contraseñas</translation>
+<translation id="8011372169388649948">Se movió "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="8012647001091218357">No pudimos comunicarnos con tus padres. Vuelve a intentarlo.</translation>
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8014154204619229810">El actualizador se está ejecutando en este momento. Actualiza dentro de un minuto para verificarlo de nuevo.</translation>
@@ -6834,7 +6833,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8161293209665121583">Modo de lectura para páginas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
 <translation id="8165997195302308593">Redirección de puertos para Crostini</translation>
-<translation id="8166081708154635403">¿Deseas abrir el archivo?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un número de teléfono}other{# números de teléfono}}</translation>
 <translation id="8168071266284693455">Tus favoritos, contraseñas, historial y más están sincronizados en todos tus dispositivos.</translation>
 <translation id="8168435359814927499">Contenido</translation>
@@ -7407,7 +7405,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8800004011501252845">Mostrando destinos para</translation>
 <translation id="8800034312320686233">¿No funciona el sitio?</translation>
-<translation id="880004380809002950">No permitir que las aplicaciones web abran determinados tipos de archivos</translation>
 <translation id="8803953437405899238">Abre una pestaña nueva con un solo clic</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover la pestaña a otra ventana}other{Mover las pestañas a otra ventana}}</translation>
 <translation id="8805140816472474147">Confirma la configuración para comenzar la sincronización.</translation>

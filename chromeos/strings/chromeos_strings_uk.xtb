@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Середній сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
+<translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1204296502688602597">Затримка DNS</translation>
 <translation id="123124571410524056">Можливо, виявлено портал</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
+<translation id="3924044641767672375">Щоб спростити ремонт, рекомендовано підключитися до Wi-Fi. Мережу буде збережено.</translation>
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="3942420633017001071">Діагностика</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
+<translation id="4485626319513081846">Виберіть цей варіант, якщо пристрій знову в наявності або відремонтований для надання новому клієнту.</translation>
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Збіг з альтернативною назвою суб’єкта</translation>
 <translation id="4536864596629708641">Конфігурація IP-адрес</translation>
@@ -415,6 +418,7 @@
 <translation id="6957231940976260713">Назва служби</translation>
 <translation id="6961170852793647506">Щоб почати, покладіть документ на сканер</translation>
 <translation id="6977381486153291903">Мікропрограма</translation>
+<translation id="6992266763844448459">Виберіть цей варіант, якщо власник пристрою не змінюється. Наприклад, коли він передається іншій особі в межах організації.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7058278511608979688">Завершити та зберегти</translation>

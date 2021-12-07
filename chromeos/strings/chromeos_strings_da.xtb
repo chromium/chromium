@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3865414814144988605">Opløsning</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
+<translation id="3924044641767672375">Det anbefales at oprette forbindelse til Wi-Fi for at gøre reparationsprocessen nemmere. Dit netværk gemmes.</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
+<translation id="4485626319513081846">Vælg denne mulighed, hvis enheden sendes tilbage til lageret eller renoveres med henblik på levering til en ny kunde.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Match af alternativt emnenavn</translation>
 <translation id="4536864596629708641">IP-konfiguration</translation>
@@ -415,6 +417,7 @@
 <translation id="6957231940976260713">Tjenestens navn</translation>
 <translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
+<translation id="6992266763844448459">Vælg denne mulighed, hvis ejerskabet over enheden ikke ændres. Det kan f.eks. være, hvis enheden overdrages til en anden person i samme organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
 <translation id="7058278511608979688">Afslut, og gem</translation>

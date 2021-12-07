@@ -649,6 +649,7 @@
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3095940652251934233">പ്രസ്‌താവന</translation>
 <translation id="3096100844101284527">പിക്കപ്പ് വിലാസം ചേർക്കുക</translation>
+<translation id="3098513225387949945">പ്രവർത്തനരഹിതമാക്കൽ ലിസ്റ്റിൽ '*' എന്നതിന് സമമായ ഒരു പാറ്റേൺ ഉള്ളതിനാൽ അവഗണിച്ചു, ഇത് നയം പ്രവർത്തനരഹിതമാക്കുന്നതിന് തുല്യമാണ്.</translation>
 <translation id="3105172416063519923">അസറ്റ് ഐഡി:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />സുരക്ഷിത DNS കോൺഫിഗറേഷൻ പരിശോധിക്കുന്നു<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">മധ്യഭാഗത്തുള്ള ട്രേ</translation>
@@ -1560,6 +1561,7 @@
 <translation id="6008122969617370890">N-1 ക്രമത്തിൽ</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">നിങ്ങളുടെ പാസ്‍വേഡുകൾ പരിശോധിക്കുക</translation>
+<translation id="6014851866995737824">ലിസ്റ്റ് "പ്രവർത്തനക്ഷമമാക്കുക" അല്ലെങ്കിൽ "പ്രവർത്തനരഹിതമാക്കുക" ഇല്ലാത്തതിനാൽ അവഗണിച്ചു.</translation>
 <translation id="6015796118275082299">വര്‍ഷം</translation>
 <translation id="6017514345406065928">പച്ച</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്നതിലുള്ള അക്രമികൾ, മറ്റെന്തെങ്കിലുമാണെന്ന വ്യാജേന തെറ്റിദ്ധരിപ്പിക്കുന്ന ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാം അല്ലെങ്കിൽ ഡാറ്റ ശേഖരിച്ച് നിങ്ങളെ ട്രാക്കുചെയ്യാൻ ഉപയോഗിക്കാം. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1732,7 +1734,6 @@
 <translation id="6596325263575161958">എൻക്രിപ്‌ഷൻ ഓപ്‌ഷനുകൾ</translation>
 <translation id="6609880536175561541">Prc7 (എൻവലപ്പ്)</translation>
 <translation id="6615297766614333076">സ്റ്റാക്കർ 2</translation>
-<translation id="6623589891453322342">ഫയൽ കൈകാര്യം ചെയ്യുന്ന സംവിധാനം</translation>
 <translation id="6624427990725312378">കോണ്‍ടാക്റ്റ് വിവരം</translation>
 <translation id="6626291197371920147">ശരിയായ കാർഡ് നമ്പർ ചേർക്കുക</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> തിരയൽ</translation>
@@ -1825,7 +1826,6 @@
 <translation id="6949872517221025916">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6950684638814147129">JSON മൂല്യം വിശകലനം ചെയ്യുമ്പോൾ പിശക്: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">എല്ലാം റീസെറ്റ് ചെയ്യുക</translation>
-<translation id="6954341342296443517">ഫയൽ തരങ്ങൾ തുറക്കാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="6957887021205513506">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് വിശ്വസിക്കാൻ കൊള്ളാത്ത ഒന്നായി തോന്നുന്നു.</translation>
 <translation id="6958564499836457428">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ Google സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="6961844873822989059">നിങ്ങളുടെ ഉപകരണത്തിൽ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന ഫോണ്ടുകൾ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
@@ -1852,7 +1852,6 @@
 <translation id="7012363358306927923">ചൈന UnionPay</translation>
 <translation id="7014741021609395734">സൂം നില</translation>
 <translation id="7016992613359344582">ഈ നിരക്കുകൾ ഒറ്റത്തവണ അടയ്ക്കുന്നതോ അല്ലെങ്കിൽ ആവർത്തിക്കുന്നവയോ ആവാം, ഒപ്പം വ്യക്തമല്ലായിരിക്കാം.</translation>
-<translation id="7024588353896425985">ഫയൽ കൈകാര്യം ചെയ്യുന്ന സംവിധാനം</translation>
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7030436163253143341">സർട്ടിഫിക്കറ്റ് അസാധുവാണ്</translation>
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>

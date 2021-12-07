@@ -1738,7 +1738,6 @@
 <translation id="6596325263575161958">خيارات التشفير</translation>
 <translation id="6609880536175561541">‏Prc7 (مغلف)</translation>
 <translation id="6615297766614333076">المكدِّس 2</translation>
-<translation id="6623589891453322342">معالِجات الملفات</translation>
 <translation id="6624427990725312378">معلومات الاتصال</translation>
 <translation id="6626291197371920147">إضافة رقم بطاقة صالح</translation>
 <translation id="6628463337424475685">بحث <ph name="ENGINE" /></translation>
@@ -1831,7 +1830,6 @@
 <translation id="6949872517221025916">إعادة تحديد كلمة المرور</translation>
 <translation id="6950684638814147129">‏حدث خطأ أثناء تحليل قيمة JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">إعادة ضبط الكل</translation>
-<translation id="6954341342296443517">السماح للموقع الإلكتروني بطلب فتح أنواع معيّنة من الملفات</translation>
 <translation id="6957887021205513506">يبدو أن شهادة الخادم مزيفة.</translation>
 <translation id="6958564499836457428">‏إدارة إعدادات الخصوصية في حسابك على Google</translation>
 <translation id="6961844873822989059">السماح للموقع الإلكتروني بطلب استخدام أشكال الخط المثبَّتة على جهازك</translation>
@@ -1858,7 +1856,6 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">مستوى التكبير أو التصغير</translation>
 <translation id="7016992613359344582">قد يتمّ تحصيل هذه الرسوم لمرة واحدة أو بشكل متكرر، وقد تكون غير واضحة.</translation>
-<translation id="7024588353896425985">معالِجات الملفات</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7030436163253143341">الشهادة غير صالحة</translation>
 <translation id="7031646650991750659">‏تطبيقات Google Play التي ثبّتها</translation>

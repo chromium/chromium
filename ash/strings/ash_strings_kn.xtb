@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ಡಾಕ್‌‌ ಮಾಡಿರುವ ವರ್ಧಕ</translation>
 <translation id="2942516765047364088">ಶೆಲ್ಫ್ ಸ್ಥಳ</translation>
 <translation id="2946119680249604491">ಸಂಪರ್ಕ ಸೇರಿಸಿ</translation>
+<translation id="2960314608273155470">ಕ್ಯಾಪ್ಚರ್ ಮೋಡ್, <ph name="SOURCE" /> <ph name="TYPE" /> ಡೀಫಾಲ್ಟ್ ಆಗಿದೆ. ಕೀಬೋರ್ಡ್ ನ್ಯಾವಿಗೇಶನ್‌ಗಾಗಿ ಟ್ಯಾಬ್ ಒತ್ತಿರಿ.</translation>
 <translation id="2961963223658824723">ಏನೋ ಸಮಸ್ಯೆಯಾಗಿದೆ. ಕೆಲವು ನಿಮಿಷಗಳಲ್ಲಿ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -887,6 +888,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7042322267639375032">ಸ್ಥಿತಿ ಕ್ಷೇತ್ರವನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="7045033600005038336">ಇತ್ತೀಚಿನ ಟೆಂಪ್ಲೇಟ್ ಇದೆಯೇ?</translation>
 <translation id="7045595904618419789">ಮ್ಯಾಗ್ನಿಫೈರ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7055381872777910864">ಬು</translation>
 <translation id="7055910611768509537">ಒಂದು ವಾರದಿಂದ ಸ್ಟೈಲಸ್ ಅನ್ನು ಬಳಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7066646422045619941">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
@@ -1080,6 +1082,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8412677897383510995">ಡಿಸ್‌ಪ್ಲೇ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8413272770729657668">ರೆಕಾರ್ಡಿಂಗ್ 3, 2, 1 ರಲ್ಲಿ ಪ್ರಾರಂಭವಾಗುತ್ತಿದೆ</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ಕೇಸ್)</translation>
+<translation id="8421270167862077762">ಈ ಸಾಧನದಲ್ಲಿ <ph name="UNAVAILABLE_APPS" /> ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="8425213833346101688">ಬದಲಿಸಿ</translation>
 <translation id="8426708595819210923">ಶುಭ ಸಂಜೆ <ph name="GIVEN_NAME" /> ಅವರೇ,</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -1207,6 +1210,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="938963181863597773">ನನ್ನ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ಏನಿದೆ?</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="951991426597076286">ನಿರಾಕರಿಸಿ</translation>
+<translation id="96080156868846968">ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> ಕುರಿತಾದ <ph name="RESULT_COUNT" /> ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="98515147261107953">ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" />ವಿಂಡೋವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ.</translation>

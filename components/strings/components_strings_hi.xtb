@@ -651,6 +651,7 @@
 <translation id="3087734570205094154">नीचे</translation>
 <translation id="3095940652251934233">जानकारी</translation>
 <translation id="3096100844101284527">पिकअप का पता जोड़ें</translation>
+<translation id="3098513225387949945">नज़रअंदाज़ किया गया, क्योंकि 'बंद है' वाली सूची में '*' जैसा पैटर्न शामिल है. इसका मतलब नीति को बंद करना होता है.</translation>
 <translation id="3105172416063519923">एसेट आईडी:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करना<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">बीच की ट्रे</translation>
@@ -1564,6 +1565,7 @@
 <translation id="6008122969617370890">N-से-1 के क्रम में</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">अपना पासवर्ड जांचें</translation>
+<translation id="6014851866995737824">नज़रअंदाज़ किया गया, क्योंकि "चालू है" या "बंद है" वाली सूची मौजूद नहीं है.</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6017514345406065928">हरा</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> पर मौजूद हमलावर ऐसे भ्रामक ऐप्लिकेशन इंस्टॉल कर सकते हैं जो कुछ और होने का दावा करते हैं या ऐसा डेटा एकत्रित करते हैं जिसका उपयोग आप पर नज़र रखने के लिए किया जा सके. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1736,7 +1738,6 @@
 <translation id="6596325263575161958">सुरक्षित करने के तरीकों के विकल्प</translation>
 <translation id="6609880536175561541">पीआरसी7 (एन्वेलप)</translation>
 <translation id="6615297766614333076">स्टैकर 2</translation>
-<translation id="6623589891453322342">फ़ाइल हैंडलर</translation>
 <translation id="6624427990725312378">संपर्क जानकारी</translation>
 <translation id="6626291197371920147">मान्य कार्ड नंबर जोड़ें</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> सर्च</translation>
@@ -1829,7 +1830,6 @@
 <translation id="6949872517221025916">पासवर्ड रीसेट करें</translation>
 <translation id="6950684638814147129">JSON मान पार्स करते समय गड़बड़ी हुई: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">सभी को रीसेट करें</translation>
-<translation id="6954341342296443517">साइट, अलग-अलग तरह की फ़ाइलें खोलने की अनुमति मांग सकती है</translation>
 <translation id="6957887021205513506">सर्वर का प्रमाणपत्र फर्जी दिखाई देता है.</translation>
 <translation id="6958564499836457428">अपने Google खाते में, Google की निजता सेटिंग को मैनेज करें</translation>
 <translation id="6961844873822989059">साइट, आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति मांग सकती है</translation>
@@ -1856,7 +1856,6 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7016992613359344582">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में स्पष्ट जानकारी न दी जाए.</translation>
-<translation id="7024588353896425985">फ़ाइल हैंडलर</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7030436163253143341">प्रमाणपत्र मान्य नहीं है</translation>
 <translation id="7031646650991750659">आपने Google Play के कौनसे ऐप्लिकेशन इंस्टॉल किए हैं</translation>

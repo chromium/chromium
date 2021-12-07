@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Saamgebinde toestelle</translation>
 <translation id="1153636665119721804">Google se Gevorderde Beskerming-program</translation>
 <translation id="1155816283571436363">Koppel tans aan jou foon</translation>
+<translation id="1158080958325422608">Maak dit hoofletters</translation>
 <translation id="1158238185437008462">Sien herinneringe</translation>
 <translation id="1161575384898972166">Meld asseblief by <ph name="TOKEN_NAME" /> aan om die kliëntsertifikaat uit te voer.</translation>
 <translation id="116173250649946226">Jou administrateur het 'n verstektema gestel wat nie verander kan word nie.</translation>
@@ -471,7 +472,6 @@
 <translation id="1480663089572535854">Jy kan teruggaan om die toewysing vir "Kies" te verander. Jy kan altyd outskandeer in Instellings afskakel.</translation>
 <translation id="1481537595330271162">Kon nie skyfgrootte verander nie</translation>
 <translation id="1482626744466814421">Boekmerk hierdie oortjie …</translation>
-<translation id="1483272013430662157">Webprogramme kan vra om sekere tipes lêers oop te maak</translation>
 <translation id="1483493594462132177">Stuur</translation>
 <translation id="1484979925941077974">Werf gebruik tans Bluetooth</translation>
 <translation id="1485015260175968628">Dit kan nou:</translation>
@@ -652,7 +652,6 @@
 <translation id="164936512206786300">Maak Bluetooth-toestel los</translation>
 <translation id="1651008383952180276">Jy moet dieselfde wagfrase twee keer invoer</translation>
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
-<translation id="1653631694606464309">Webprogramme vra gewoonlik om sekere tipes lêers oop te maak sodat jy aan daardie lêers kan werk wanneer jy wil, soos om dokumente in jou voorkeurwoordverwerker oop te maak</translation>
 <translation id="1656528038316521561">Agtergrondondeursigtigheid</translation>
 <translation id="1657406563541664238">Help om <ph name="PRODUCT_NAME" /> te verbeter deur gebruikstatistiek en omvalverslae outomaties na Google te stuur</translation>
 <translation id="1657937299377480641">Vra jou ouer om jou toestemming te gee om weer aan te meld vir toegang tot opvoedkundige hulpbronne</translation>
@@ -697,6 +696,7 @@
 <translation id="1700079447639026019">Werwe wat nooit webkoekies kan gebruik nie</translation>
 <translation id="1703331064825191675">Moet nooit oor jou wagwoorde bekommerd wees nie</translation>
 <translation id="1703666494654169921">Moenie werwe toelaat om virtuelerealiteittoestelle of data te gebruik nie</translation>
+<translation id="1704097193565924901">Hoofletters</translation>
 <translation id="1704230497453185209">Moenie werwe toelaat om klank te speel nie</translation>
 <translation id="1704970325597567340">Veiligheidskontrole het op <ph name="DATE" /> plaasgevind</translation>
 <translation id="1706586824377653884">Bygevoeg deur jou administrateur</translation>
@@ -2411,7 +2411,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3449839693241009168">Druk <ph name="SEARCH_KEY" /> om bevele na <ph name="EXTENSION_NAME" /> te stuur</translation>
 <translation id="3450157232394774192">Rustoestand se besettingpersentasie</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai.</translation>
-<translation id="3451753556629288767">Word toegelaat om sekere tipes lêers oop te maak</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453612417627951340">Benodig magtiging</translation>
 <translation id="3454213325559396544">Dit is die laaste outomatiese sagteware- en sekuriteitopdatering vir hierdie <ph name="DEVICE_TYPE" />. Gradeer na 'n nuwer model toe op om toekomstige opdaterings te kry.</translation>
@@ -3581,6 +3580,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4681453295291708042">Deaktiveer Nabydeling</translation>
 <translation id="4681930562518940301">Maak oorspronklike prent in nuwe oortjie oop</translation>
 <translation id="4682551433947286597">Muurpapiere verskyn op die aanmeldskerm</translation>
+<translation id="4683629100208651599">Maak dit kleinletters</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (verstek)</translation>
 <translation id="4684427112815847243">Sinkroniseer alles</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> probeer tans om toegang tot die kamera te verkry. Skakel die kamera se privaatheidskakelaar af om toegang te gee.</translation>
@@ -5529,7 +5529,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6785518634832172390">PIN moet 12 syfers of minder wees</translation>
 <translation id="6786747875388722282">Uitbreidings</translation>
 <translation id="6787097042755590313">Ander oortjie</translation>
-<translation id="6787631759192429908">Maak lêers oop?</translation>
 <translation id="6787839852456839824">Kortpadsleutels</translation>
 <translation id="6788210894632713004">Uitgepakte uitbreiding</translation>
 <translation id="6789592661892473991">Verdeel horisontaal</translation>
@@ -5781,7 +5780,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7025082428878635038">Stel tans 'n nuwe manier bekend om met gebare te navigeer</translation>
 <translation id="7025190659207909717">Mobieledatadiensbestuur</translation>
 <translation id="7025895441903756761">Sekuriteit en privaatheid</translation>
-<translation id="7026552751317161576">Moenie webprogramme toelaat om sekere tipes lêers oop te maak nie</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Maak almal in &amp;incognitovenster oop}=1{Maak in &amp;incognitovenster oop}other{Maak almal ({COUNT}) in &amp;incognitovenster oop}}</translation>
 <translation id="7029307918966275733">Crostini is nie geïnstalleer nie. Installeer Crostini om krediete te bekyk.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
@@ -5826,7 +5824,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7067396782363924830">Agtergrondkleure</translation>
 <translation id="7067725467529581407">Moet dit nooit weer wys nie.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> kan dalk 'n nuwer of ander soort sekuriteitsleutel vereis</translation>
-<translation id="7070269827082111569">Word nie toegelaat om sekere tipes lêers oop te maak nie</translation>
 <translation id="7070484045139057854">Dit kan werfdata lees en verander</translation>
 <translation id="7072010813301522126">Kortpadnaam</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 met RSA-enkripsie</translation>
@@ -5977,6 +5974,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7257173066616499747">Wi-Fi-netwerke</translation>
 <translation id="725758059478686223">Drukdiens</translation>
 <translation id="7257666756905341374">Lees data wat jy kopieer en plak</translation>
+<translation id="7258192266780953209">Transformasies</translation>
 <translation id="7258225044283673131">Die progam reageer nie. Kies "Forseer toemaak" om die program toe te maak.</translation>
 <translation id="7262004276116528033">Hierdie aanmelddiens word deur <ph name="SAML_DOMAIN" /> gehou</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Probeer hierdie foutsporingstappe:
@@ -6398,7 +6396,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7680416688940118410">Raakskermkalibrasie</translation>
 <translation id="7681095912841365527">Werf kan Bluetooth gebruik</translation>
 <translation id="7681597159868843240">Werwe gebruik gewoonlik jou toestel se bewegingsensors vir kenmerke soos virtuele realiteit of fiksheidnasporing</translation>
-<translation id="7683164815270164555">Vra wanneer 'n webprogram sekere tipes lêers wil oopmaak</translation>
 <translation id="7683373461016844951">Om voort te gaan, klik OK en klik dan Voeg Persoon By om 'n nuwe profiel vir jou <ph name="DOMAIN" />-e-posadres te skep.</translation>
 <translation id="7684212569183643648">Deur jou administrateur geïnstalleer</translation>
 <translation id="7684559058815332124">Besoek gevangeportaal-aanmeldbladsy</translation>
@@ -6903,7 +6900,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8161293209665121583">Lesermodus vir webbladsye</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skuif oortjie na nuwe venster toe}other{Skuif oortjies na nuwe venster toe}}</translation>
 <translation id="8165997195302308593">Crostini-poortaanstuur</translation>
-<translation id="8166081708154635403">Maak lêer oop?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{'n foonnommer}other{# foonnommers}}</translation>
 <translation id="8168071266284693455">Jou boekmerke, wagwoorde, geskiedenis en meer word op al jou toestelle gesinkroniseer</translation>
 <translation id="8168435359814927499">Inhoud</translation>
@@ -7478,7 +7474,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8798099450830957504">Verstek</translation>
 <translation id="8800004011501252845">Wys tans bestemmings vir</translation>
 <translation id="8800034312320686233">Werk werf nie?</translation>
-<translation id="880004380809002950">Keer webprogramme om sekere tipes lêers oop te maak</translation>
 <translation id="8803953437405899238">Maak 'n nuwe oortjie met een klik oop</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Skuif oortjie na 'n ander venster toe}other{Skuif oortjies na 'n ander venster toe}}</translation>
 <translation id="8805140816472474147">Bevestig sinkroniseringinstellings om sinkronisering te begin.</translation>

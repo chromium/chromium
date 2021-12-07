@@ -104,7 +104,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
-<translation id="1894205589103145703">Something went wrong during sign-in.</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last Hour</translation>
 <translation id="1930989359703290198">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
 <translation id="5523579157975978438">To turn off, open <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> and go to Passwords.</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
-<translation id="5532698011560297095">Can't Sign In</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>

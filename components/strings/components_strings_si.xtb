@@ -404,6 +404,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{ලිපින 1}one{ලිපින #}other{ලිපින #}}</translation>
 <translation id="2187317261103489799">හදුනාගන්න (පෙරනිමි)</translation>
 <translation id="2188375229972301266">පහළට ඇනීම් බොහොමයක්</translation>
+<translation id="2188852899391513400">ඔබ මේ දැන් භාවිතා කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, Google මුරපද කළමනාකරු එය දැන් වෙනස් කර ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="2202020181578195191">වලංගු කල් ඉකුත් වීමේ වසරක් ඇතුළු කරන්න</translation>
 <translation id="22081806969704220">බඳුන 3</translation>
 <translation id="2212735316055980242">ප්‍රතිපත්තිය නොමැත</translation>
@@ -649,6 +650,7 @@
 <translation id="3087734570205094154">පතුල</translation>
 <translation id="3095940652251934233">ප්‍රකාශය</translation>
 <translation id="3096100844101284527">නංවා ගැනීමේ ලිපිනය එක් කරන්න</translation>
+<translation id="3098513225387949945">අබල කිරීමේ ලැයිස්තුවේ ප්‍රතිපත්තිය අබල කිරීමට සමාන '*' ට සමාන රටාවක් අඩංගු බැවින් නොසලකා හරින ලදී.</translation>
 <translation id="3105172416063519923">වත්කම් ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />සුරක්‍ෂිත DNS වින්‍යාසය පරීක්‍ෂා කිරීම<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Middle Tray</translation>
@@ -897,6 +899,7 @@
 <translation id="3827112369919217609">නියත</translation>
 <translation id="3827475930221174051">"<ph name="SEARCH_TERM" />"ට අදාළ ක්‍රියාකාරකම් මත පදනම්ව</translation>
 <translation id="3828924085048779000">හිස් රහස්පද ඉඩ නොදේ.</translation>
+<translation id="3831065134033923230">ඔබගේ සුරැකි මුරපද පරීක්ෂා කරන්න</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> අමතර කාර්ය සඳහා දිගු ස්ථාපන කර ඇත. දිගුවලට ඔබේ දත්තවලින් සමහරකට ප්‍රවේශය තිබේ.</translation>
 <translation id="3832522519263485449">වමට බොහොමයක් අනින්න</translation>
 <translation id="3835233591525155343">ඔබගේ උපාංග භාවිතය</translation>
@@ -1093,6 +1096,7 @@
 <translation id="443673843213245140">ප්‍රොක්සියක භාවිතය අබල කර ඇති නමුත් ප්‍රකාශිත ප්‍රොක්සි වින්‍යාසකරණයක් නිශ්චය කර ඇත.</translation>
 <translation id="4450893287417543264">නැවත නොපෙන්වන්න</translation>
 <translation id="4451135742916150903">HID උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
+<translation id="4452328064229197696">ඔබ මේ දැන් භාවිතා කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, Google මුරපද කළමනාකරු ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="4455222631300069614">දැන් ඔබගේ මුරපදය වෙනස් කරන්න</translation>
 <translation id="4460315069258617173">ඔබ මෙම අඩවිය සඳහා ටැබ වසන තෙක් ඉඩ දේ</translation>
 <translation id="4464826014807964867">ඔබේ සංවිධානය වෙතින් වන තොරතුරු සහිත වෙබ් අඩවි</translation>
@@ -1558,6 +1562,7 @@
 <translation id="6008122969617370890">N-සිට-1 පිළිවෙළ</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">ඔබේ මුරපද පරීක්‍ෂා කරන්න</translation>
+<translation id="6014851866995737824">"සබල" හෝ "අබල" ලැයිස්තුව යන දෙකින් එකක් අස්ථානගත වී ඇති නිසා නොසලකා හරින ලදී.</translation>
 <translation id="6015796118275082299">වර්ශය</translation>
 <translation id="6017514345406065928">කොළ</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> හි ප්‍රහාරකයින් වෙන දෙයක් ලෙස මවා පාන හෝ ඔබව නිරීක්ෂණය කිරීමට භාවිතා කළ හැකි දත්ත එකතු කරන කූට යෙදුම් ස්ථාපනය කළ හැකිය. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1581,6 +1586,7 @@
 <translation id="6051221802930200923">වෙබ් අඩවිය සහතික ඇමිණීම් භාවිතා කරන නිසා ඔබට මේ දැන් <ph name="SITE" /> වෙත පිවිසිය නොහැක. ජාල දෝෂ සහ ප්‍රහාර සාමාන්‍යයෙන් තාවකාලිකය, එනිසා මෙම පිටුව සමහර විට පසුව වැඩ කරනු ඇත.</translation>
 <translation id="6051898664905071243">පිටු ගණන:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">ඔබ මේ දැන් භාවිතා කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. Google මුරපද කළමනාකරු මෙම මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="6055888660316801977">සුරක්ෂිත ගෙවීම් අක්තපත්‍ර ගැළපෙන අක්තපත්‍ර පත්‍රය නැත</translation>
 <translation id="6058977677006700226">ඔබේ කාඩ්පත් ඔබේ උපාංග සියල්ල මත භාවිත කරන්නේද?</translation>
 <translation id="6059925163896151826">USB උපාංග</translation>
@@ -1729,7 +1735,6 @@
 <translation id="6596325263575161958">සංකේතනය කිරීමේ විකල්ප</translation>
 <translation id="6609880536175561541">Prc7 (ලියුම් කවරය)</translation>
 <translation id="6615297766614333076">අට්ටිය 2</translation>
-<translation id="6623589891453322342">ගොනු හසුරුවන්නන්</translation>
 <translation id="6624427990725312378">සම්බන්ධතා තතු</translation>
 <translation id="6626291197371920147">වලංගු කාඩ්පත් අංකය එක් කරන්න</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> සෙවීම</translation>
@@ -1822,7 +1827,6 @@
 <translation id="6949872517221025916">මුරපදය යළි පිහිටුවන්න</translation>
 <translation id="6950684638814147129">JSON අගය විග්‍රහය කිරීමේ දී දෝෂයක් විය: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">සියල්ල යළි සකසන්න</translation>
-<translation id="6954341342296443517">ගොනු වර්ග විවෘත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="6957887021205513506">සේවාදායකයෙහි සහතිකය කූටරචනයක් බව පෙනෙන්නට තිබේ.</translation>
 <translation id="6958564499836457428">ඔබගේ Google ගිණුම තුළ Google පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="6961844873822989059">ඔබගේ උපාංගයේ ස්ථාපනය කර ඇති ෆොන්ට භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
@@ -1849,7 +1853,6 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">විශාලන මට්ටම</translation>
 <translation id="7016992613359344582">මෙම අය කිරීම් එක්-වර හෝ ප්‍රත්‍යාවර්ත විය හැකි අතර, පැහැදිලි නොවිය හැක.</translation>
-<translation id="7024588353896425985">ගොනු හසුරුවන්නන්</translation>
 <translation id="7029809446516969842">මුරපද</translation>
 <translation id="7030436163253143341">සහතිකය වලංගු නැත</translation>
 <translation id="7031646650991750659">ඔබ ස්ථාපන කර ඇති Google Play යෙදුම් මොනවාද</translation>

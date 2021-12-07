@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Dispositivi accoppiati</translation>
 <translation id="1153636665119721804">Programma di protezione avanzata di Google</translation>
 <translation id="1155816283571436363">Connessione al telefono in corso</translation>
+<translation id="1158080958325422608">Usa lettere maiuscole</translation>
 <translation id="1158238185437008462">Visualizza ricordi</translation>
 <translation id="1161575384898972166">Accedi a <ph name="TOKEN_NAME" /> per esportare il certificato client.</translation>
 <translation id="116173250649946226">Il tuo amministratore ha impostato un tema predefinito che non può essere modificato.</translation>
@@ -469,7 +470,6 @@
 <translation id="1480663089572535854">Puoi tornare indietro per modificare l'assegnazione per "Seleziona". Puoi disattivare la scansione automatica in qualsiasi momento in Impostazioni.</translation>
 <translation id="1481537595330271162">Errore durante il ridimensionamento del disco</translation>
 <translation id="1482626744466814421">Aggiungi questa scheda ai preferiti…</translation>
-<translation id="1483272013430662157">Le app web possono chiedere di aprire determinati tipi di file</translation>
 <translation id="1483493594462132177">Invia</translation>
 <translation id="1484979925941077974">Il sito usa il Bluetooth</translation>
 <translation id="1485015260175968628">Ora può:</translation>
@@ -650,7 +650,6 @@
 <translation id="164936512206786300">Disaccoppiare dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Devi inserire la stessa passphrase due volte</translation>
 <translation id="1652326691684645429">Attiva Condivisione nelle vicinanze</translation>
-<translation id="1653631694606464309">Generalmente le app web chiedono di aprire determinati tipi di file in modo che tu possa lavorarci con il programma che vuoi, ad esempio con il tuo elaboratore di testi preferito</translation>
 <translation id="1656528038316521561">Opacità sfondo</translation>
 <translation id="1657406563541664238">Aiutaci a migliorare <ph name="PRODUCT_NAME" /> inviando automaticamente a Google le statistiche sull'utilizzo e segnalazioni sugli arresti anomali</translation>
 <translation id="1657937299377480641">Per eseguire di nuovo l'accesso per accedere a risorse didattiche, chiedi l'autorizzazione a uno dei tuoi genitori</translation>
@@ -695,6 +694,7 @@
 <translation id="1700079447639026019">Siti che non possono mai usare i cookie</translation>
 <translation id="1703331064825191675">Non preoccuparti delle tue password</translation>
 <translation id="1703666494654169921">Non consentire ai siti di usare i dati o dispositivi per realtà virtuale</translation>
+<translation id="1704097193565924901">Scrivi in maiuscolo</translation>
 <translation id="1704230497453185209">Non consentire ai siti di riprodurre l'audio</translation>
 <translation id="1704970325597567340">Il controllo di sicurezza è stato eseguito il giorno <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Aggiunta dall'amministratore</translation>
@@ -2397,7 +2397,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3449839693241009168">Premi <ph name="SEARCH_KEY" /> per inviare comandi a <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Percentuale di occupazione dello stato di inattività</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento.</translation>
-<translation id="3451753556629288767">App web autorizzate ad aprire determinati tipi di file</translation>
 <translation id="3452999110156026232">Accesso genitori</translation>
 <translation id="3453612417627951340">Occorre l'autorizzazione</translation>
 <translation id="3454213325559396544">Questo è l'ultimo aggiornamento software e di sicurezza automatico per il dispositivo <ph name="DEVICE_TYPE" />. Per ricevere gli aggiornamenti futuri, esegui l'upgrade a un modello più recente.</translation>
@@ -3566,6 +3565,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4681453295291708042">Disattiva Condivisione nelle vicinanze</translation>
 <translation id="4681930562518940301">Apri &amp;originale in nuova scheda</translation>
 <translation id="4682551433947286597">Gli sfondi vengono visualizzati sulla schermata di accesso.</translation>
+<translation id="4683629100208651599">Usa lettere minuscole</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (valore predefinito)</translation>
 <translation id="4684427112815847243">Sincronizza tutto</translation>
 <translation id="4684471265911890182">L'app <ph name="APP_NAME" /> sta tentando di accedere alla videocamera. Disattiva l'opzione Privacy videocamera per consentire l'accesso.</translation>
@@ -5513,7 +5513,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6785518634832172390">Il PIN deve contenere al massimo 12 cifre</translation>
 <translation id="6786747875388722282">Estensioni</translation>
 <translation id="6787097042755590313">Un'altra scheda</translation>
-<translation id="6787631759192429908">Vuoi aprire i file?</translation>
 <translation id="6787839852456839824">Scorciatoie da tastiera</translation>
 <translation id="6788210894632713004">Estensione non pacchettizzata</translation>
 <translation id="6789592661892473991">Divisione in orizzontale</translation>
@@ -5765,7 +5764,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7025082428878635038">Scopri un nuovo modo per navigare tramite gesti</translation>
 <translation id="7025190659207909717">Gestione del servizio dati mobile</translation>
 <translation id="7025895441903756761">Sicurezza e privacy</translation>
-<translation id="7026552751317161576">Non consentire alle app web di aprire determinati tipi di file</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Apri tutti nella finestra di navigazione in &amp;incognito}=1{Apri nella finestra di navigazione in &amp;incognito}one{Apri tutti ({COUNT}) nella finestra di navigazione in &amp;incognito}other{Apri tutti ({COUNT}) nella finestra di navigazione in &amp;incognito}}</translation>
 <translation id="7029307918966275733">Crostini non è installato. Per visualizzare i crediti, installa Crostini.</translation>
 <translation id="7029809446516969842">Password</translation>
@@ -5810,7 +5808,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7067396782363924830">Colori ambient</translation>
 <translation id="7067725467529581407">Non visualizzare più questo messaggio.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> potrebbe richiedere un token di sicurezza più recente o di diverso tipo</translation>
-<translation id="7070269827082111569">App web non autorizzate ad aprire determinati tipi di file</translation>
 <translation id="7070484045139057854">Può leggere e cambiare i dati dei siti</translation>
 <translation id="7072010813301522126">Nome scorciatoia</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 con crittografia RSA</translation>
@@ -5961,6 +5958,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7257173066616499747">Reti Wi-Fi</translation>
 <translation id="725758059478686223">Servizio di stampa</translation>
 <translation id="7257666756905341374">Lettura dei dati copiati e incollati</translation>
+<translation id="7258192266780953209">Trasformazioni</translation>
 <translation id="7258225044283673131">L'applicazione non risponde. Seleziona "Termina" per chiudere l'app.</translation>
 <translation id="7262004276116528033">Questo servizio di accesso è in hosting su <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Prova a svolgere i seguenti passaggi per la risoluzione dei problemi:
@@ -6382,7 +6380,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7680416688940118410">Calibrazione del touchscreen</translation>
 <translation id="7681095912841365527">Il sito può usare il Bluetooth</translation>
 <translation id="7681597159868843240">Solitamente i siti usano i sensori di movimento del dispositivo per funzionalità come la realtà virtuale o il monitoraggio dell'attività fisica</translation>
-<translation id="7683164815270164555">Chiedi quando un'app web vuole aprire determinati tipi di file</translation>
 <translation id="7683373461016844951">Per continuare, fai clic su OK, quindi fai clic su Aggiungi persona per creare un nuovo profilo per il tuo indirizzo email <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Installata dall'amministratore</translation>
 <translation id="7684559058815332124">Visita la pagina di accesso del captive portal</translation>
@@ -6888,7 +6885,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8161293209665121583">Modalità Reader per le pagine web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Sposta scheda in una nuova finestra}one{Sposta schede in una nuova finestra}other{Sposta schede in una nuova finestra}}</translation>
 <translation id="8165997195302308593">Port forwarding su Crostini</translation>
-<translation id="8166081708154635403">Vuoi aprire il file?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un numero di telefono}one{# numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="8168071266284693455">I preferiti, le password, la cronologia e altri dati vengono sincronizzati su tutti i tuoi dispositivi</translation>
 <translation id="8168435359814927499">Contenuti</translation>
@@ -7464,7 +7460,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8800004011501252845">Destinazioni per</translation>
 <translation id="8800034312320686233">Il sito non funziona?</translation>
-<translation id="880004380809002950">Impedisci alle app web di aprire determinati tipi di file</translation>
 <translation id="8803953437405899238">Apri una nuova scheda con un clic</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Sposta scheda in un'altra finestra}one{Sposta schede in un'altra finestra}other{Sposta schede in un'altra finestra}}</translation>
 <translation id="8805140816472474147">Conferma le impostazioni di sincronizzazione per avviare l'operazione.</translation>

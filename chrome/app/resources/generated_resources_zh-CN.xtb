@@ -468,7 +468,6 @@
 <translation id="1480663089572535854">您可返回以更改为“选择”操作分配的开关，也可随时在“设置”中关闭“自动扫描”功能。</translation>
 <translation id="1481537595330271162">调整磁盘大小时出错</translation>
 <translation id="1482626744466814421">为此标签页添加书签…</translation>
-<translation id="1483272013430662157">Web 应用可以请求打开各类文件</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484979925941077974">此网站正在使用蓝牙</translation>
 <translation id="1485015260175968628">该程序现在可以：</translation>
@@ -646,7 +645,6 @@
 <translation id="164936512206786300">取消与蓝牙设备配对</translation>
 <translation id="1651008383952180276">您两次输入的密码必须相同</translation>
 <translation id="1652326691684645429">启用“附近分享”功能</translation>
-<translation id="1653631694606464309">Web 应用通常会请求打开某些类型的文件，以便您能在所需程序中处理这些文件，例如在首选的文字处理程序中打开文档</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">将使用情况统计信息和崩溃报告自动发送给 Google，帮助我们完善 <ph name="PRODUCT_NAME" /></translation>
 <translation id="1657937299377480641">要重新登录并访问教育资源，请让您的家长向您授予权限</translation>
@@ -684,6 +682,7 @@
 <translation id="1692115862433274081">使用其他帐号</translation>
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1692210323591458290">深紫色</translation>
+<translation id="1695487653372841667">您可以控制与 Google 分享哪些数据。您随时可在“设置”中更改此设置。</translation>
 <translation id="169675691788639886">设备已配置了 SSH 服务器。请勿使用敏感帐号登录。</translation>
 <translation id="1697150536837697295">艺术</translation>
 <translation id="1697686431566694143">修改文件</translation>
@@ -2391,7 +2390,6 @@
 <translation id="3449839693241009168">按 <ph name="SEARCH_KEY" /> 可向<ph name="EXTENSION_NAME" />发送命令</translation>
 <translation id="3450157232394774192">闲置状态占用率</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
-<translation id="3451753556629288767">可以打开各类文件</translation>
 <translation id="3452999110156026232">家长访问</translation>
 <translation id="3453612417627951340">需要获得授权</translation>
 <translation id="3454213325559396544">这是最后一次为此 <ph name="DEVICE_TYPE" /> 提供自动的软件和安全更新。要想接收以后的更新，请升级至较新的型号。</translation>
@@ -5506,7 +5504,6 @@
 <translation id="6785518634832172390">PIN 码不得超过 12 位数</translation>
 <translation id="6786747875388722282">扩展程序</translation>
 <translation id="6787097042755590313">另一标签页</translation>
-<translation id="6787631759192429908">打开文件？</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
 <translation id="6788210894632713004">未封装的扩展程序</translation>
 <translation id="6789592661892473991">水平分割</translation>
@@ -5758,7 +5755,6 @@
 <translation id="7025082428878635038">欢迎了解全新的手势导航</translation>
 <translation id="7025190659207909717">移动数据服务管理</translation>
 <translation id="7025895441903756761">安全和隐私设置</translation>
-<translation id="7026552751317161576">不允许 Web 应用打开各类文件</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在无痕式窗口中打开全部书签(&amp;I)}=1{在无痕式窗口中打开(&amp;I)}other{在无痕式窗口中打开全部（{COUNT} 个）书签(&amp;I)}}</translation>
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
@@ -5803,7 +5799,6 @@
 <translation id="7067396782363924830">环境颜色</translation>
 <translation id="7067725467529581407">不再显示此气泡。</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> 可能需要一个较新的或其他类型的安全密钥</translation>
-<translation id="7070269827082111569">不得打开各类文件</translation>
 <translation id="7070484045139057854">可读取和更改网站数据</translation>
 <translation id="7072010813301522126">快捷方式名称</translation>
 <translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
@@ -6375,7 +6370,6 @@
 <translation id="7680416688940118410">触摸屏校准</translation>
 <translation id="7681095912841365527">该网站可能会使用蓝牙</translation>
 <translation id="7681597159868843240">网站通常会使用您设备的移动传感器以实现某些功能（例如虚拟实境或健身跟踪）</translation>
-<translation id="7683164815270164555">在 Web 应用想打开各类文件时询问</translation>
 <translation id="7683373461016844951">要想继续，请点击“确定”，然后点击“添加用户”为您位于 <ph name="DOMAIN" /> 中的电子邮件地址创建一份新个人资料。</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
 <translation id="7684559058815332124">访问强制门户登录页面</translation>
@@ -6880,7 +6874,6 @@
 <translation id="8161293209665121583">使用阅读器模式显示网页</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8165997195302308593">Crostini 端口转发</translation>
-<translation id="8166081708154635403">打开文件？</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168071266284693455">您的已存书签、密码、历史记录等信息会同步到您的所有设备上</translation>
 <translation id="8168435359814927499">内容</translation>
@@ -7455,7 +7448,6 @@
 <translation id="8798099450830957504">默认</translation>
 <translation id="8800004011501252845">目前显示的是以下帐号的目标打印机：</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
-<translation id="880004380809002950">禁止 Web 应用打开各类文件</translation>
 <translation id="8803953437405899238">只需点击一下，即可打开一个新标签页</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
 <translation id="8805140816472474147">请确认同步设置以开始同步。</translation>

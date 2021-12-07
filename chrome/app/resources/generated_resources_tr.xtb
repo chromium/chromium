@@ -468,7 +468,6 @@
 <translation id="1480663089572535854">"Seç"in atamasını değiştirmek için geri dönebilirsiniz. Otomatik tarama özelliğini istediğiniz zaman Ayarlar'dan kapatabilirsiniz.</translation>
 <translation id="1481537595330271162">Disk yeniden boyutlandırılırken hata oluştu</translation>
 <translation id="1482626744466814421">Bu Sekmeye Yer İşareti Koy...</translation>
-<translation id="1483272013430662157">Web uygulamaları, dosya türlerini açma izni isteyebilir</translation>
 <translation id="1483493594462132177">Gönder</translation>
 <translation id="1484979925941077974">Sitede Bluetooth bağlantısı kullanılıyor</translation>
 <translation id="1485015260175968628">Artık şunları yapabilir:</translation>
@@ -649,7 +648,6 @@
 <translation id="164936512206786300">Bluetooth cihazı ile eşlemeyi kaldır</translation>
 <translation id="1651008383952180276">Aynı parolayı iki kez girmelisiniz</translation>
 <translation id="1652326691684645429">Yakındakilerle Paylaş'ı etkinleştir</translation>
-<translation id="1653631694606464309">Web uygulamaları, genellikle belirli dosya türlerini açmak ister. Böylece, bu dosyalar üzerinde (dokümanlarınızı tercih ettiğiniz kelime işlemcide açmak gibi) istediğiniz yerde çalışabilirsiniz.</translation>
 <translation id="1656528038316521561">Arka plan opaklığı</translation>
 <translation id="1657406563541664238">Google'a otomatik olarak kullanım istatistikleri ve kilitlenme raporları göndererek <ph name="PRODUCT_NAME" /> ürününü iyileştirmemize yardımcı olun.</translation>
 <translation id="1657937299377480641">Eğitim kaynaklarına erişmek üzere tekrar oturum açmak için ebeveyninizden size izin vermesini isteyin</translation>
@@ -2394,7 +2392,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3449839693241009168">Komutları <ph name="EXTENSION_NAME" /> uygulamasına göndermek için <ph name="SEARCH_KEY" /> tuşuna basın</translation>
 <translation id="3450157232394774192">Boşta Kalma Durumu Kullanma Yüzdesi</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" />, şimdi kablosuz ağa bağlanarak bir güncelleme indirmenizi gerektiriyor.</translation>
-<translation id="3451753556629288767">Dosya türlerini açmasına izin verilen siteler</translation>
 <translation id="3452999110156026232">Ebeveyn Erişimi</translation>
 <translation id="3453612417627951340">Yetkilendirme gerektiriyor</translation>
 <translation id="3454213325559396544">Bu, <ph name="DEVICE_TYPE" /> için son otomatik yazılım ve güvenlik güncellemesidir. Gelecekteki güncellemeleri almak için daha yeni bir sürüme geçin.</translation>
@@ -5511,7 +5508,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6785518634832172390">PIN en fazla 12 basamaklı olmalıdır</translation>
 <translation id="6786747875388722282">Uzantılar</translation>
 <translation id="6787097042755590313">Diğer Sekmesi</translation>
-<translation id="6787631759192429908">Dosyalar açılsın mı?</translation>
 <translation id="6787839852456839824">Klavye kısayolları</translation>
 <translation id="6788210894632713004">Paketlenmemiş uzantı</translation>
 <translation id="6789592661892473991">Yatay Böl</translation>
@@ -5763,7 +5759,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7025082428878635038">Hareketlerle gezinme için yeni bir yol</translation>
 <translation id="7025190659207909717">Mobil veri hizmeti yönetimi</translation>
 <translation id="7025895441903756761">Güvenlik ve Gizlilik</translation>
-<translation id="7026552751317161576">Web uygulamalarının, dosya türlerini açmasına izin verme</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Tümünü &amp;Gizli Pencerede Aç}=1{&amp;Gizli Pencerede Aç}other{Tümünü ({COUNT}) &amp;Gizli Pencerede Aç}}</translation>
 <translation id="7029307918966275733">Crostini yüklü değil. Kredileri görüntülemek için lütfen Crostini yükleyin.</translation>
 <translation id="7029809446516969842">Şifreler</translation>
@@ -5808,7 +5803,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7067396782363924830">Ortam renkleri</translation>
 <translation id="7067725467529581407">Bunu bir daha gösterme.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> daha yeni veya farklı türde bir güvenlik anahtarı gerektirebilir</translation>
-<translation id="7070269827082111569">Dosya türlerini açmasına izin verilmeyen siteler</translation>
 <translation id="7070484045139057854">Bu Uzantı Site Verilerini Okuyabilir ve Değiştirebilir</translation>
 <translation id="7072010813301522126">Kısayol adı</translation>
 <translation id="7075513071073410194">PKCS #1 RSA Şifrelemeli MD5</translation>
@@ -6380,7 +6374,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7680416688940118410">Dokunmatik ekran kalibrasyonu</translation>
 <translation id="7681095912841365527">Site, Bluetooth'u kullanabilir</translation>
 <translation id="7681597159868843240">Sanal gerçeklik veya fitness takibi gibi özelliklerin kullanılması için siteler genellikle cihazınızın hareket sensörlerini kullanır</translation>
-<translation id="7683164815270164555">Bir web uygulaması, dosya türlerini açmak istediğinde sor</translation>
 <translation id="7683373461016844951">Devam etmek için Tamam'ı tıklayın, ardından <ph name="DOMAIN" /> e-posta adresiniz için yeni profil oluşturmak üzere Kişi Ekle'yi tıklayın.</translation>
 <translation id="7684212569183643648">Yöneticiniz Tarafından Yüklendi</translation>
 <translation id="7684559058815332124">Giriş portalı giriş sayfasını ziyaret et</translation>
@@ -6884,7 +6877,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8161293209665121583">Web sayfaları için okuyucu modu</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Sekmeyi Yeni Pencereye Taşı}other{Sekmeleri Yeni Pencereye Taşı}}</translation>
 <translation id="8165997195302308593">Crostini bağlantı noktasını yönlendir</translation>
-<translation id="8166081708154635403">Dosya açılsın mı?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{bir telefon numarası}other{# telefon numarası}}</translation>
 <translation id="8168071266284693455">Yer işaretleri, şifreler, geçmiş ve diğer öğeleriniz tüm cihazlarınızda senkronize edilir</translation>
 <translation id="8168435359814927499">İçerik</translation>
@@ -7459,7 +7451,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8800004011501252845">Bu adresin hedefleri gösteriliyor:</translation>
 <translation id="8800034312320686233">Site çalışmıyor mu?</translation>
-<translation id="880004380809002950">Web uygulamalarının dosya türlerini açmasını engelle</translation>
 <translation id="8803953437405899238">Tek tıklamayla yeni sekme açın</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Sekmeyi Başka Bir Pencereye Taşı}other{Sekmeleri Başka Bir Pencereye Taşı}}</translation>
 <translation id="8805140816472474147">Senkronizasyonu başlatmak için senkronizasyon ayarlarını onaylayın.</translation>

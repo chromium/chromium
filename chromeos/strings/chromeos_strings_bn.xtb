@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
+<translation id="1196959502276349371">ভার্সন <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1204296502688602597">ডিএনএস লেটেন্সি</translation>
 <translation id="123124571410524056">পোর্টাল হতে পারে</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3865414814144988605">রেজোলিউশন</translation>
 <translation id="387301095347517405">আপনার ব্যাটারি যতবার পুরো চার্জ দেওয়া হয়েছে</translation>
+<translation id="3924044641767672375">মেরামতের পদ্ধতি সহজ করার জন্য ওয়াই-ফাইয়ে কানেক্ট করার সাজেশন দেওয়া হয়। আপনার নেটওয়ার্ক সেভ করে রাখা হবে।</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="3941014780699102620">হোস্ট নেম যাচাই করা যায়নি</translation>
 <translation id="3942420633017001071">ডায়গনিস্টিক</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
+<translation id="4485626319513081846">নতুন গ্রাহককে ডেলিভারি করার জন্য ডিভাইস রিস্টক বা রিফারবিশ করা হলে, এই বিকল্পটি বেছে নিন।</translation>
 <translation id="4511264077854731334">পোর্টাল</translation>
 <translation id="4521826082652183069">সাবজেক্টের বিকল্প নামের সাথে মিল আছে</translation>
 <translation id="4536864596629708641">IP কনফিগারেশন</translation>
@@ -414,6 +417,7 @@
 <translation id="6957231940976260713">পরিষেবার নাম</translation>
 <translation id="6961170852793647506">শুরু করার জন্য, স্ক্যানারে ডকুমেন্ট রাখুন</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
+<translation id="6992266763844448459">ডিভাইসের মালিকানা পরিবর্তন না হলে এই বিকল্পটি বেছে নিন। যেমন, কোনও প্রতিষ্ঠানের মধ্যেই অন্য ব্যক্তিকে ডিভাইস ট্রান্সফার করা হচ্ছে।</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
 <translation id="7058278511608979688">সম্পূর্ণ করে সেভ করুন</translation>

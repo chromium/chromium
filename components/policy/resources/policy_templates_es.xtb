@@ -1489,6 +1489,10 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2716623398185506073">Si se habilita la política, los dispositivos registrados enviarán estadísticas de hardware e identificadores relacionados con la energía.
 
       Si se inhabilita la política o no se establece, los dispositivos registrados no enviarán estadísticas de energía.</translation>
+<translation id="2717628606602248727">Esta política está habilitada de forma predeterminada. Controla si los dispositivos registrados comunican la información de la memoria.
+
+      Si se inhabilita la política, los dispositivos registrados no comunicarán ninguna información de la memoria.
+      Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información de la memoria libre en M95 y versiones anteriores.</translation>
 <translation id="2721185634942265347">Inhabilitar sugerencias de búsqueda</translation>
 <translation id="2721582713721006926">Inhabilitar definición de Respuestas rápidas</translation>
 <translation id="2723692978495226412">Si se habilita esta política, se mostrarán recomendaciones de aplicaciones instaladas anteriormente por el usuario en otros dispositivos. Si no se ha introducido ningún texto de búsqueda, estas recomendaciones se mostrarán en el menú de aplicaciones después de las recomendaciones de aplicaciones locales.
@@ -1618,23 +1622,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita la política o no se establece, los dispositivos registrados no informarán sobre el estado de Android.</translation>
 <translation id="288923520817177650">Permitir la creación de sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Conceder permiso automáticamente a estos sitios web para conectarse a dispositivos USB con los ID de proveedor y producto facilitados.</translation>
-<translation id="2892041629748346178">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se descarga un archivo en Chrome.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para su análisis cuando se descargue de una página específica, y qué etiquetas se van a incluir en la solicitud de análisis del archivo. En la solicitud de análisis, se incluirá una etiqueta correspondiente a un patrón enable si la URL de la página coincide con un patrón asociado a esa etiqueta, siempre y cuando ningún patrón disable con esa misma etiqueta coincida con la URL de la página. El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponden los ajustes.
-
-      Si se establece el valor 1 en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, Chrome esperará a obtener una respuesta del servicio de análisis antes de permitir al usuario acceder al archivo descargado. Si se establece cualquier otro valor entero, Chrome permitirá al usuario acceder de forma inmediata al archivo.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si Chrome bloquea o permite archivos protegidos con contraseña.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si Chrome bloquea o permite archivos demasiado grandes para ser analizados (más de 50 MB).
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> define las etiquetas que determinarán que el conector solicite al usuario que proporcione una justificación para sortear un análisis que dé como resultado una advertencia evitable. Si no se define este campo, se considera que no es necesaria una justificación.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se utilizan para configurar un mensaje que se muestra al usuario cuando aparece una advertencia, después de que un análisis arroje un resultado no limpio. En el campo del mensaje, se incluye el texto que se va a mostrar al usuario. Debe tener 200 caracteres como máximo. El campo learn_more_url contiene una URL proporcionada por el administrador en la que el usuario podrá hacer clic para consultar más información (facilitada por el cliente) sobre las razones por las que se ha bloqueado la acción. El campo del idioma, que es opcional, contiene el idioma del mensaje. Si el campo del idioma está vacío o su valor es default, el mensaje se usará cuando no exista ningún mensaje en el idioma del usuario. El campo de etiqueta define los tipos de análisis que determinarán que se muestre el mensaje. La lista custom_messages puede tener cero o más entradas. Cada entrada debe tener un mensaje que no esté vacío y campos de etiquetas.
-
-      Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2893546967669465276">Enviar los registros del sistema al servidor de administración</translation>
 <translation id="2893660462311365527">Intervalo de recogida de telemetría de red en milisegundos</translation>
 <translation id="2896434627453256512">Configura la política para habilitar la función de ventana fantasma.
@@ -4005,6 +3992,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se enviará esta información del dispositivo.
       Si se le asigna el valor "true", se enviará información sobre VPD del dispositivo.
       Los datos vitales del producto (VPD, Vital Product Data) son un conjunto de datos de configuración e informativos (como los números de serie) asociados al dispositivo.</translation>
+<translation id="576158229686912964">Esta política está obsoleta en M96. Usa <ph name="REPORT_DEVICE_NETWORK_CONFIGURATION" /> y <ph name="REPORT_DEVICE_NETWORK_STATUS" />.
+
+      Si se habilita la política o no se establece, los dispositivos registrados informarán sobre la lista de interfaces de red junto a sus tipos y direcciones de hardware. Si se inhabilita la política, los dispositivos registrados no informarán sobre la interfaz de red.</translation>
 <translation id="5762969307102447459">Inhabilitar la función Autocompletar para direcciones</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No utilices <ph name="WINDOW_OPENER_PROPERTY" /> en enlaces destinados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -4853,11 +4843,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se enviará información de uso.</translation>
 <translation id="6821268164692776674">Destinos <ph name="CLOUD_PRINT_NAME" /> y Guardar en Google Drive</translation>
-<translation id="6823273740874361732">Si se define esta política, se controlará la configuración de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidas las que controlen las políticas existentes relacionadas con las extensiones. Esta política sustituirá a todas las políticas antiguas que se hubieran establecido.
-
-      Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política. Si se utiliza una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si al indicador "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará utilizando la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará el indicador "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.
-
-      Nota: Para las instancias de Windows® que no estén vinculadas a un dominio de <ph name="MS_AD_NAME" />, la instalación forzada se limitará a las aplicaciones y extensiones disponibles en Chrome Web Store.</translation>
 <translation id="6823711520976094072">Si a esta política se le asigna un valor inferior a 1 MB o no se le asigna ningún valor, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado de 256 MB para el almacenamiento en caché de aplicaciones y extensiones que deben instalar varios usuarios de un mismo dispositivo, lo que evitará que cada usuario deba volver a descargar cada elemento.</translation>
 <translation id="6833023569065717572">Si se le asigna el valor "True" a la política, se usará el formato de reloj de 24 horas en la pantalla de inicio de sesión del dispositivo.
 
@@ -5296,23 +5281,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si la política no se configura o no se le asigna ningún valor, el usuario puede establecer cualquier cuenta de Google como la cuenta principal de navegador en <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">Configurar la longitud mínima del PIN para la pantalla de bloqueo</translation>
 <translation id="7234280155140786597">Nombres de hosts de mensajes nativos no permitidos (o * para todos)</translation>
-<translation id="72369543045636739">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se adjunta un archivo a Chrome.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para su análisis cuando se adjunte a una página específica, y qué etiquetas se van a incluir en la solicitud de análisis del archivo. En la solicitud de análisis, se incluirá una etiqueta correspondiente a un patrón enable si la URL de la página coincide con un patrón asociado a esa etiqueta, siempre y cuando ningún patrón disable con esa misma etiqueta coincida con la URL de la página. El análisis se realiza si se debe incluir al menos 1 etiqueta en la solicitud.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponden los ajustes.
-
-      Si se establece el valor 1 en el campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" />, Chrome esperará a obtener una respuesta del servicio de análisis antes de permitir a la página acceder al archivo. Si se establece cualquier otro valor entero, Chrome permitirá a la página acceder de forma inmediata al archivo.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> controla si Chrome bloquea o permite archivos protegidos con contraseña.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> controla si Chrome bloquea o permite archivos demasiado grandes para ser analizados (más de 50 MB).
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> define las etiquetas que determinarán que el conector solicite al usuario que proporcione una justificación para sortear un análisis que dé como resultado una advertencia evitable. Si no se define este campo, se considera que no es necesaria una justificación.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> se utilizan para configurar un mensaje que se muestra al usuario cuando aparece una advertencia, después de que un análisis arroje un resultado no limpio. En el campo del mensaje, se incluye el texto que se va a mostrar al usuario. Debe tener 200 caracteres como máximo. El campo learn_more_url contiene una URL proporcionada por el administrador en la que el usuario podrá hacer clic para consultar más información (facilitada por el cliente) sobre las razones por las que se ha bloqueado la acción. El campo del idioma, que es opcional, contiene el idioma del mensaje. Si el campo del idioma está vacío o su valor es default, el mensaje se usará cuando no exista ningún mensaje en el idioma del usuario. El campo de etiqueta define los tipos de análisis que determinarán que se muestre el mensaje. La lista custom_messages puede tener cero o más entradas. Cada entrada debe tener un mensaje que no esté vacío y campos de etiquetas.
-
-      Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Permite habilitar las notificaciones de Mi teléfono.</translation>
 <translation id="7249828445670652637">Habilitar los certificados AC de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
 <translation id="7251825257294351251">Permitir notificaciones del sistema</translation>
@@ -5427,6 +5395,10 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
           Si no se establece esta política, se usará en todos los sitios el valor general predeterminado especificado en la política DefaultKeygenSetting (si está configurada) o en la configuración personal del usuario (en caso contrario).
 
           Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="7394023172636522064">Si se habilita esta política, se informará sobre el estado de seguridad del TPM del dispositivo.
+
+      Si se inhabilita la política o no se establece, los dispositivos registrados no informarán ni registrarán el estado de seguridad del TPM.
+      Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información del TPM en M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permitir reutilizar las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" /> para la autenticación de red</translation>
 <translation id="7400971609879083218">Si se habilita esta política, se permite que las imágenes de terceros de una página muestren una solicitud de autenticación.
 
@@ -5504,6 +5476,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si esta política no se establece, la opción predeterminada será <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE" /> en el caso de los usuarios gestionados por empresas y, en el caso de los usuarios no gestionados, la opción predeterminada será <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />.
 
       En el futuro, con el valor <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE" /> se podrá establecer que <ph name="LACROS_NAME" /> sea el único navegador disponible en <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="7509761893401042250">Esta política está obsoleta a partir de la versión M96. Usa <ph name="REPORT_DEVICE_CPU_INFO" />, <ph name="REPORT_DEVICE_MEMORY_INFO" />, <ph name="REPORT_DEVICE_STORAGE_STATUS" />, <ph name="REPORT_DEVICE_SECURITY_STATUS" /> y <ph name="REPORT_DEVICE_AUDIO_STATUS" />.
+
+      Si se habilita la política o no se establece, los dispositivos registrados informarán sobre las estadísticas de hardware, como el uso de la CPU/RAM. Si se inhabilita la política, los dispositivos registrados no informarán sobre las estadísticas de hardware.</translation>
 <translation id="7519218194072744342">La URL del controlador de protocolos.</translation>
 <translation id="7519251620064708155">Permitir la generación de claves en estos sitios web</translation>
 <translation id="7529144158022474049">Actualizar de forma automática el factor de dispersión</translation>
@@ -5511,6 +5486,10 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si no se asigna ningún valor a esta política o se le asigna el valor "True", se mostrará una alerta para recordar a los usuarios que deben salir del modo de pantalla completa antes de escribir la contraseña. Si se le asigna el valor "False", no se mostrará ninguna alerta.</translation>
 <translation id="7534199150025803530">Esta política no afecta a la aplicación Google Drive para Android. Si quieres impedir el uso de esta aplicación en conexiones de datos móviles, debes inhabilitar la descarga de Google Drive para Android.</translation>
+<translation id="7538583957913002726">Esta política está habilitada de forma predeterminada. Controla si los dispositivos registrados informan sobre el nombre del modelo, la arquitectura y la velocidad máxima de reloj de la CPU (además del uso y la temperatura de la CPU en M96 y versiones posteriores).
+
+      Si se inhabilita la política, los dispositivos registrados no informarán sobre ningún dato de la CPU.
+      Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla el envío de información sobre el uso y la temperatura de la CPU en M95 y versiones anteriores.</translation>
 <translation id="7540622499178214923">Permite el controlador de diagnóstico y telemetría wilco</translation>
 <translation id="7540826630642174841">Si se asigna un valor a esta política, se ignoran las políticas de dispositivos especificadas (se utilizará la configuración predeterminada de estas políticas) durante los intervalos de tiempo especificados. <ph name="PRODUCT_NAME" /> volverá a aplicar las políticas de dispositivos cuando se inicie o finalice el periodo de la política. Cuando cambien este periodo y los ajustes de la política de dispositivos (por ejemplo, cuando un usuario inicie sesión con una cuenta no permitida), el usuario recibirá una notificación y se forzará el cierre de su sesión.</translation>
 <translation id="7540945123920084379">Esta política controla qué modos de desbloqueo rápido se pueden usar para desbloquear la pantalla de bloqueo.
@@ -5685,6 +5664,10 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Nota: Puedes consultar ejemplos detallados en The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="7717938661004793600">Permite configurar funciones de accesibilidad de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="7718127720248642697">Esta política está habilitada de forma predeterminada. Controla si los dispositivos registrados informan sobre estadísticas e identificadores de hardware de dispositivos de almacenamiento.
+
+      Si se inhabilita la política, los dispositivos registrados no informarán sobre estadísticas de almacenamiento.
+      Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla el tamaño y el espacio libre del disco en M95 y versiones anteriores.</translation>
 <translation id="7721944091689270995">ID de usuario de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7724161903134898864">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar ventanas emergentes. Si se le asigna el valor 2, se denegarán las ventanas emergentes.
 
@@ -6834,6 +6817,10 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
+<translation id="9069588907259547232">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre el volumen de audio del dispositivo.
+
+      Si se inhabilita la política, los dispositivos registrados no informarán ni registrarán el estado de audio.
+      Excepción: <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> controla la información del nivel de volumen del sistema en M95 y versiones anteriores.</translation>
 <translation id="9073405975862312795">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre los periodos en los que un usuario está activo en el dispositivo.
 
       Si se inhabilita la política, dichos dispositivos no registrarán los periodos de actividad ni informarán sobre ellos.</translation>

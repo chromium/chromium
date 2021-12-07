@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">සාමාන්‍යයි (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1195447618553298278">නොදන්නා දෝෂය.</translation>
+<translation id="1196959502276349371">අනුවාදය <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1204296502688602597">DNS පමාව</translation>
 <translation id="123124571410524056">ද්වාරය සැක කරන ලදි</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">නම</translation>
 <translation id="3865414814144988605">විභේදනය</translation>
 <translation id="387301095347517405">ඔබගේ බැටරිය පූර්ණ ආරෝපණ චක්‍රයක් හරහා ගිය වාර ගණන</translation>
+<translation id="3924044641767672375">අලුත්වැඩියා කිරීමේ ක්‍රියාවලිය වඩා පහසු කිරීමට Wi-Fi වෙත සම්බන්ධ කිරීම නිර්දේශ කෙරේ. ඔබගේ ජාලය සුරකිනු ඇත.</translation>
 <translation id="3932043219784172185">උපාංගයක් සම්බන්ධ නැත</translation>
 <translation id="3941014780699102620">සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="3942420633017001071">දෝෂ විනිශ්චය</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4479639480957787382">ඊදර්නෙට්</translation>
 <translation id="4483049906298469269">පෙරනිමි නොවන ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
+<translation id="4485626319513081846">උපාංගය නව පාරිභෝගිකයකුට බෙදා හැරීමට නැවත පුරවමින් හෝ නැවත සකස් කරමින් පවතී නම් මෙම විකල්පය තෝරන්න.</translation>
 <translation id="4511264077854731334">ද්වාරය</translation>
 <translation id="4521826082652183069">මාතෘකා විකල්ප නම ගැළපීම</translation>
 <translation id="4536864596629708641">IP වින්‍යාසකරණය</translation>
@@ -415,6 +418,7 @@
 <translation id="6957231940976260713">සේවා නාමය</translation>
 <translation id="6961170852793647506">ආරම්භ කිරීමට, ඔබගේ ලේඛනය ස්කෑනරය මත තබන්න</translation>
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
+<translation id="6992266763844448459">උපාංගයේ හිමිකාරිත්වය වෙනස් නොවන්නේ නම් මෙම විකල්පය තෝරන්න. උදාහරණණයක් ලෙස, උපාංගය සංවිධානයක වෙනත් පුද්ගලයෙකුට මාරු කරමින් පවතී.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> මෙම උපාංගය කළමනාකරණය කරන අතර, එයට පිවිසි වෙබ් පිටු, මුරපද සහ ඉ-තැපෑල ඇතුළුව සියලු පරිශීලක ක්‍රියාකාරකම් වෙත ප්‍රවේශය තිබේ.</translation>
 <translation id="7040230719604914234">මෙහෙයවනය</translation>
 <translation id="7058278511608979688">අවසන් කර සුරකින්න</translation>

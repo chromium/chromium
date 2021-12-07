@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Vidējs (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Noņemt</translation>
 <translation id="1195447618553298278">Nezināma kļūda.</translation>
+<translation id="1196959502276349371">Versija <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1204296502688602597">DNS latentums</translation>
 <translation id="123124571410524056">Aizdomas par portālu</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3865414814144988605">Izšķirtspēja</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
+<translation id="3924044641767672375">Ieteicams izveidot savienojumu ar Wi-Fi tīklu, lai atvieglotu labošanu. Jūsu tīkls tiks saglabāts.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4485626319513081846">Atlasiet šo opciju, ja ierīce tiek padarīta atkal pieejama vai atjaunota izplatīšanai jaunam klientam.</translation>
 <translation id="4511264077854731334">Portāls</translation>
 <translation id="4521826082652183069">Subjekta alternatīvā nosaukuma atbilstība</translation>
 <translation id="4536864596629708641">IP konfigurācija</translation>
@@ -415,6 +418,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6957231940976260713">Pakalpojuma nosaukums</translation>
 <translation id="6961170852793647506">Lai sāktu darbu, novietojiet dokumentu uz skenera.</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
+<translation id="6992266763844448459">Atlasiet šo opciju, ja ierīces īpašumtiesības netiek mainītas, piemēram, ja ierīce tiek nodota citai personai tajā pašā organizācijā.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
 <translation id="7058278511608979688">Beigt un saglabāt</translation>

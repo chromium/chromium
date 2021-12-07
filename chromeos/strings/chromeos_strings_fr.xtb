@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Moyenne (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1195447618553298278">Erreur inconnue</translation>
+<translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1204296502688602597">Latence avec le DNS</translation>
 <translation id="123124571410524056">Un portail semble activé</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
+<translation id="3924044641767672375">Il est recommandé de se connecter au Wi-Fi pour faciliter la procédure de réparation. Votre réseau sera enregistré.</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
+<translation id="4485626319513081846">Sélectionnez cette option si l'appareil est remis en stock ou reconditionné pour être distribué à un nouveau client.</translation>
 <translation id="4511264077854731334">Portail</translation>
 <translation id="4521826082652183069">Correspondance de l'autre nom de l'objet</translation>
 <translation id="4536864596629708641">Configuration IP</translation>
@@ -415,6 +418,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6957231940976260713">Nom du service</translation>
 <translation id="6961170852793647506">Pour commencer, placez votre document sur le scanner</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
+<translation id="6992266763844448459">Sélectionnez cette option si l'appareil ne change pas de propriétaire, par exemple s'il est transféré à une autre personne d'une même organisation.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7058278511608979688">Terminer et enregistrer</translation>

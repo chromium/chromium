@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
 <translation id="2942516765047364088">அடுக்கின் நிலை</translation>
 <translation id="2946119680249604491">இணைப்பைச் சேர்</translation>
+<translation id="2960314608273155470">படமெடுப்புப் பயன்முறையின் இயல்பு, <ph name="SOURCE" /> <ph name="TYPE" />. கீபோர்டு மூலம் வழிசெலுத்துதலுக்கு Tab பட்டனை அழுத்தவும்.</translation>
 <translation id="2961963223658824723">ஏதோ தவறாகிவிட்டது. சில வினாடிகள் கழித்து மீண்டும் முயலவும்.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்களைப் பதிவிறக்க முடியவில்லை</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">நிலைப் பகுதியை சுருக்கும்</translation>
 <translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>
 <translation id="7045595904618419789">பெரிதாக்கியை இயக்கு</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> துண்டிக்கப்பட்டது</translation>
 <translation id="7055381872777910864">புத</translation>
 <translation id="7055910611768509537">ஒரு வாரத்திற்கும் மேலாக ஸ்டைலஸ் பயன்படுத்தப்படவில்லை</translation>
 <translation id="7066646422045619941">இந்த நெட்வொர்க் உங்கள் நிர்வாகியால் முடக்கப்பட்டுள்ளது.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">திரை அமைப்புகளைக் காட்டும்</translation>
 <translation id="8413272770729657668">ரெக்கார்டிங் தொடங்கப் போகிறது 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (கேஸ்)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> இந்தச் சாதனத்தில் இல்லை.</translation>
 <translation id="8425213833346101688">மாற்று</translation>
 <translation id="8426708595819210923">மாலை வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
@@ -1206,6 +1209,7 @@
 <translation id="938963181863597773">எனது கேலெண்டரில் என்ன உள்ளது?</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="951991426597076286">நிராகரி</translation>
+<translation id="96080156868846968">ஸ்கேன் செய்கிறது</translation>
 <translation id="974545358917229949"><ph name="QUERY" />க்கான <ph name="RESULT_COUNT" /> முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="98515147261107953">லேண்ட்ஸ்கேப்</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> சாளரம் மூடப்பட்டது.</translation>

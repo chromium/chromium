@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ແວ່ນຂະຫຍາຍທີ່ຕັ້ງໄວ້</translation>
 <translation id="2942516765047364088">ຕໍາ​ແຫນ່ງ​ຖ້ານ</translation>
 <translation id="2946119680249604491">ເພີ່ມການ​ເຊື່ອມ​ຕໍ່</translation>
+<translation id="2960314608273155470">ໂໝດບັນທຶກ, ຄ່າເລີ່ມຕົ້ນແມ່ນ <ph name="SOURCE" /> <ph name="TYPE" />. ກົດແຖບສຳລັບການນຳທາງແປ້ນພິມ.</translation>
 <translation id="2961963223658824723">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນອີກສອງສາມວິນາທີ.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ການເວົ້າ <ph name="LANGUAGE" /> ໄດ້</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">ຍຸບພື້ນທີ່ສະແດງສະຖານະ</translation>
 <translation id="7045033600005038336">ແທນທີ່ແມ່ແບບບໍ?</translation>
 <translation id="7045595904618419789">ເລີ່ມແວ່ນຂະຫຍາຍ</translation>
+<translation id="7051244143160304048">ຕັດການເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="7055381872777910864">ພຸ</translation>
 <translation id="7055910611768509537">ບໍ່ໄດ້ໃຊ້ປາກກາເປັນເວລາຫຼາຍກວ່າໜຶ່ງອາທິດແລ້ວ</translation>
 <translation id="7066646422045619941">ເຄືອຂ່າຍນີ້ຖືກປິດການນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">ສະແດງການຕັ້ງຄ່າຈໍສະແດງຜົນ</translation>
 <translation id="8413272770729657668">ການບັນທຶກຈະເລີ່ມຂຶ້ນໃນ 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ເຄສ)</translation>
+<translation id="8421270167862077762">ບໍ່ມີ <ph name="UNAVAILABLE_APPS" /> ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="8425213833346101688">ປ່ຽນ​ແປງ</translation>
 <translation id="8426708595819210923">ສະບາຍດີຕອນແລງ <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
@@ -1206,6 +1209,7 @@
 <translation id="938963181863597773">ມີຫຍັງໃນປະຕິທິນຂອງຂ້ອຍ?</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="951991426597076286">ປະຕິເສດ</translation>
+<translation id="96080156868846968">ກຳລັງສະແກນ</translation>
 <translation id="974545358917229949">ສະແດງຜົນການຊອກຫາ <ph name="RESULT_COUNT" /> ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="98515147261107953">ລວງຂວາງ</translation>
 <translation id="990277280839877440">ປິດໜ້າຈໍ <ph name="WINDOW_TITILE" /> ແລ້ວ.</translation>

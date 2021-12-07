@@ -400,6 +400,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2184405333245229118">{COUNT,plural, =1{1 dirección}other{# direcciones}}</translation>
 <translation id="2187317261103489799">Detectar (predeterminado)</translation>
 <translation id="2188375229972301266">Perforaciones múltiples en la parte inferior</translation>
+<translation id="2188852899391513400">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas más tarde.</translation>
 <translation id="2202020181578195191">Ingresa un año de vencimiento válido</translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2212735316055980242">No se encontró la política.</translation>
@@ -645,6 +646,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Agregar dirección de retiro</translation>
+<translation id="3098513225387949945">Se ignoró porque la lista de inhabilitaciones contenía un patrón igual a "*", lo que es igual a la política de inhabilitación.</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Comprobar la configuración de DNS seguro<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bandeja del medio</translation>
@@ -892,6 +894,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3827112369919217609">Absoluto</translation>
 <translation id="3827475930221174051">Según la actividad relacionada con "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">No se permite una frase de contraseña vacía.</translation>
+<translation id="3831065134033923230">Revisar las contraseñas guardadas</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instaló extensiones para funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
 <translation id="3832522519263485449">Perforaciones múltiples a la izquierda</translation>
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
@@ -1085,6 +1088,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
+<translation id="4452328064229197696">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tu cuenta, el Administrador de contraseñas de Google te recomienda revisar las contraseñas guardadas.</translation>
 <translation id="4455222631300069614">Cambiar la contraseña ahora</translation>
 <translation id="4460315069258617173">Se permite hasta que cierres las pestañas para este sitio.</translation>
 <translation id="4464826014807964867">Sitios web con información de tu organización</translation>
@@ -1549,6 +1553,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6008122969617370890">Orden de N a 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Revisa tus contraseñas</translation>
+<translation id="6014851866995737824">Se ignoró porque faltaba la lista de habilitaciones o la de inhabilitaciones.</translation>
 <translation id="6015796118275082299">Año</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6017850046339264347">Es posible que los atacantes que se encuentran en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> instalen apps engañosas que se hagan pasar por otro tipo de contenido o que recopilen datos que se usen para rastrearte. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1572,6 +1577,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6051221802930200923">No puedes visitar <ph name="SITE" /> ahora porque el sitio web usa la fijación de certificados. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
 <translation id="6051898664905071243">Cantidad de páginas:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiar la contraseña ahora.</translation>
 <translation id="6055888660316801977">Se abrió la hoja inferior para indicar que las credenciales de pago seguro no coinciden</translation>
 <translation id="6058977677006700226">¿Quieres usar tus tarjetas en todos los dispositivos?</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
@@ -1718,7 +1724,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6596325263575161958">Opciones de encriptación</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6615297766614333076">Apilador 2</translation>
-<translation id="6623589891453322342">controladores de archivos</translation>
 <translation id="6624427990725312378">Información de contacto</translation>
 <translation id="6626291197371920147">Agregar un número de tarjeta válido</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Búsqueda</translation>
@@ -1809,7 +1814,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6949872517221025916">Restablecer contraseña</translation>
 <translation id="6950684638814147129">Error al analizar el valor JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Restablecer todos los valores</translation>
-<translation id="6954341342296443517">Puede solicitar permiso para abrir determinados tipos de archivos</translation>
 <translation id="6957887021205513506">El certificado del servidor parece falso.</translation>
 <translation id="6958564499836457428">Administrar la configuración de privacidad de Google en tu Cuenta de Google</translation>
 <translation id="6961844873822989059">Puede solicitar permiso para usar las fuentes instaladas en el dispositivo</translation>
@@ -1836,7 +1840,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Nivel del zoom</translation>
 <translation id="7016992613359344582">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes.</translation>
-<translation id="7024588353896425985">Controladores de archivos</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7030436163253143341">El certificado no es válido</translation>
 <translation id="7031646650991750659">Las apps de Google Play que instalaste</translation>

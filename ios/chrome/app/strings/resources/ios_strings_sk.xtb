@@ -104,7 +104,6 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1870148520156231997">Odhaliť heslo</translation>
 <translation id="1872096359983322073">Baterka</translation>
-<translation id="1894205589103145703">Počas prihlasovania sa vyskytla chyba.</translation>
 <translation id="1911619930368729126">Nahrať na Disk Google</translation>
 <translation id="1923342640370224680">Posledná hodina</translation>
 <translation id="1930989359703290198">Vaša organizácia vám povoľuje prihlásiť sa iba určitými účtami. Nepovolené účty sú skryté. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
 <translation id="5523579157975978438">Túto funkciu môžete vypnúť tak, že otvoríte <ph name="BEGIN_LINK" />Nastavenia<ph name="END_LINK" /> a prejdete do sekcie Heslá.</translation>
 <translation id="5525269841082836315">Vytv. prístup. frázu</translation>
-<translation id="5532698011560297095">Nedá sa prihlásiť</translation>
 <translation id="5548760955356983418">Funkcia Handoff umožňuje začať prehliadanie webových stránok na tomto zariadení a potom jednoducho pokračovať na počítači Mac. Aktuálne otvorené stránky sa zobrazia v doku na počítači Mac.
 
 Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zariadenia musia používať rovnaký účet iCloud.</translation>

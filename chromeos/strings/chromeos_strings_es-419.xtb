@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Promedio (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1195447618553298278">Error desconocido.</translation>
+<translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1204296502688602597">Latencia de DNS</translation>
 <translation id="123124571410524056">Posible portal</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="387301095347517405">El número de veces que la batería ha completado un ciclo de carga</translation>
+<translation id="3924044641767672375">Para facilitar el proceso de reparación, se recomienda que te conectes a una red Wi-Fi. Se guardará tu red.</translation>
 <translation id="3932043219784172185">No hay ningún dispositivo conectado</translation>
 <translation id="3941014780699102620">no se pudo resolver el host</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Comenzar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
+<translation id="4485626319513081846">Selecciona esta opción si el dispositivo es parte de una reposición o se reacondicionó para distribuirse a un cliente nuevo.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia del nombre alternativo del sujeto</translation>
 <translation id="4536864596629708641">Configuración de IP</translation>
@@ -415,6 +418,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6957231940976260713">Nombre del servicio</translation>
 <translation id="6961170852793647506">Para comenzar, coloca tu documento en el escáner.</translation>
 <translation id="6977381486153291903">Revisión de firmware</translation>
+<translation id="6992266763844448459">Selecciona esta opción si el propietario del dispositivo es el mismo. Por ejemplo, cuando no se transfiere el dispositivo a otra persona dentro de una organización.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Finalizar y guardar</translation>

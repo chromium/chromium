@@ -104,7 +104,6 @@
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
-<translation id="1894205589103145703">登入時發生問題。</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1923342640370224680">前一個小時</translation>
 <translation id="1930989359703290198">貴機構規定你只能使用特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
 <translation id="5523579157975978438">如要關閉，請開啟<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />並前往 [密碼] 部分。</translation>
 <translation id="5525269841082836315">建立通關密語</translation>
-<translation id="5532698011560297095">無法登入</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
 此外，您必須在 [設定] 的「一般設定」部分中啟用 Handoff，且您的裝置必須使用同一個 iCloud 帳戶。</translation>

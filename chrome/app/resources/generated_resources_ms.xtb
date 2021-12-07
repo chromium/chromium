@@ -472,7 +472,6 @@
 <translation id="1480663089572535854">Anda boleh kembali untuk menukar penetapan untuk “Pilih”. Anda boleh mematikan autoimbas dalam Tetapan pada bila-bila masa.</translation>
 <translation id="1481537595330271162">Ralat semasa mengubah saiz cakera</translation>
 <translation id="1482626744466814421">Tanda Tab Ini...</translation>
-<translation id="1483272013430662157">Apl web boleh meminta untuk membuka jenis fail</translation>
 <translation id="1483493594462132177">Hantar</translation>
 <translation id="1484979925941077974">Tapak sedang menggunakan Bluetooth</translation>
 <translation id="1485015260175968628">Item kini boleh:</translation>
@@ -653,7 +652,6 @@
 <translation id="164936512206786300">Nyahgandingkan peranti Bluetooth</translation>
 <translation id="1651008383952180276">Anda mesti memasukkan ungkapan laluan yang sama dua kali</translation>
 <translation id="1652326691684645429">Dayakan Kongsi Berdekatan</translation>
-<translation id="1653631694606464309">Biasanya apl web meminta untuk membuka jenis fail tertentu supaya anda boleh menggunakan fail tersebut dalam mana-mana perisian, seperti membuka dokumen dalam pemproses kata pilihan anda</translation>
 <translation id="1656528038316521561">Kelegapan latar</translation>
 <translation id="1657406563541664238">Bantu jadikan <ph name="PRODUCT_NAME" /> lebih baik dengan menghantar statistik dan laporan nahas secara automatik kepada Google</translation>
 <translation id="1657937299377480641">Untuk log masuk sekali lagi bagi mengakses sumber pendidikan, minta ibu/bapa memberi anda kebenaran</translation>
@@ -2413,7 +2411,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3449839693241009168">Tekan <ph name="SEARCH_KEY" /> untuk menghantar perintah kepada <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Peratusan Penggunaan Keadaan Melahu</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi sekarang dan memuat turun kemaskinian.</translation>
-<translation id="3451753556629288767">Dibenarkan untuk membuka jenis fail</translation>
 <translation id="3452999110156026232">Akses Ibu Bapa</translation>
 <translation id="3453612417627951340">Memerlukan kebenaran</translation>
 <translation id="3454213325559396544">Ini ialah kemas kini perisian dan keselamatan yang terakhir untuk <ph name="DEVICE_TYPE" /> ini. Untuk mendapatkan kemas kini pada masa akan datang, tingkatkan kepada model yang lebih baharu.</translation>
@@ -5531,7 +5528,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6785518634832172390">PIN mestilah 12 angka atau kurang</translation>
 <translation id="6786747875388722282">Pelanjutan</translation>
 <translation id="6787097042755590313">Tab Lain</translation>
-<translation id="6787631759192429908">Buka fail?</translation>
 <translation id="6787839852456839824">Pintasan papan kekunci</translation>
 <translation id="6788210894632713004">Sambungan dinyahpek</translation>
 <translation id="6789592661892473991">Pisah Mendatar</translation>
@@ -5783,7 +5779,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7025082428878635038">Memperkenalkan cara baharu untuk menavigasi dengan gerak isyarat</translation>
 <translation id="7025190659207909717">Pengurusan perkhidmatan data mudah alih</translation>
 <translation id="7025895441903756761">Keselamatan dan Privasi</translation>
-<translation id="7026552751317161576">Jangan benarkan apl web membuka jenis fail</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buka Semua dalam Tetingkap &amp;Inkognito}=1{Buka dalam Tetingkap &amp;Inkognito}other{Buka Semua ({COUNT}) dalam Tetingkap &amp;Inkognito}}</translation>
 <translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
@@ -5828,7 +5823,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7067396782363924830">Warna ambien</translation>
 <translation id="7067725467529581407">Jangan sekali-kali tunjukkan ini lagi.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> mungkin memerlukan kunci keselamatan yang lebih baharu atau jenis yang lain</translation>
-<translation id="7070269827082111569">Tidak dibenarkan untuk membuka jenis fail</translation>
 <translation id="7070484045139057854">Sambungan Ini Boleh Membaca dan Mengubah Data Tapak</translation>
 <translation id="7072010813301522126">Nama pintasan</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 Dengan Penyulitan RSA</translation>
@@ -6401,7 +6395,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7680416688940118410">Penentukuran skrin sentuh</translation>
 <translation id="7681095912841365527">Tapak boleh menggunakan bluetooth</translation>
 <translation id="7681597159868843240">Laman biasanya menggunakan penderia gerakan peranti anda untuk ciri seperti realiti maya atau penjejakan kecergasan</translation>
-<translation id="7683164815270164555">Tanya apabila apl web mahu membuka jenis fail</translation>
 <translation id="7683373461016844951">Klik OK untuk meneruskan, kemudian klik Tambah Orang untuk membuat profil baharu untuk alamat e-mel <ph name="DOMAIN" /> anda.</translation>
 <translation id="7684212569183643648">Dipasang oleh Pentadbir Anda</translation>
 <translation id="7684559058815332124">Lawati halaman log masuk portal tawanan</translation>
@@ -6907,7 +6900,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8161293209665121583">Mod pembaca untuk halaman web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Alihkan Tab ke Tetingkap Baharu}other{Alihkan Tab ke Tetingkap Baharu}}</translation>
 <translation id="8165997195302308593">Kiriman semula port Crostini</translation>
-<translation id="8166081708154635403">Buka fail?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{satu nombor telefon}other{# nombor telefon}}</translation>
 <translation id="8168071266284693455">Penanda halaman, kata laluan, sejarah anda dan pelbagai lagi disegerakkan pada semua peranti anda</translation>
 <translation id="8168435359814927499">Kandungan</translation>
@@ -7483,7 +7475,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8798099450830957504">Lalai</translation>
 <translation id="8800004011501252845">Menunjukkan destinasi untuk</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
-<translation id="880004380809002950">Sekat apl web daripada membuka jenis fail</translation>
 <translation id="8803953437405899238">Buka tab baharu dengan satu klik</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Alihkan Tab ke Tetingkap Lain}other{Alihkan Tab ke Tetingkap Lain}}</translation>
 <translation id="8805140816472474147">Sahkan tetapan penyegerakan untuk memulakan penyegerakan.</translation>

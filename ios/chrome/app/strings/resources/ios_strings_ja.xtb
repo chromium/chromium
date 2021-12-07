@@ -104,7 +104,6 @@
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
 <translation id="1870148520156231997">パスワードを表示します</translation>
 <translation id="1872096359983322073">照明</translation>
-<translation id="1894205589103145703">ログイン中にエラーが発生しました。</translation>
 <translation id="1911619930368729126">ドライブにアップロード</translation>
 <translation id="1923342640370224680">1 時間以内</translation>
 <translation id="1930989359703290198">組織が特定のアカウントでのログインしか許可していません。許可されていないアカウントは非表示になっています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@
 <translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
 <translation id="5523579157975978438">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワード] に移動します。</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
-<translation id="5532698011560297095">ログインできない</translation>
 <translation id="5548760955356983418">Handoffを使うと、このデバイスで見ているウェブサイトの続きをMacで見ることができます。現在開いているウェブサイトはMacのDockに表示されます。
 
 また[設定]の[一般]画面でHandoffを有効にしておく必要があります。お使いのデバイスでは、iCloudと同じアカウントを使用してください。</translation>

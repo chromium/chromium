@@ -280,6 +280,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2942350706960889382">Lupa fijada</translation>
 <translation id="2942516765047364088">Posición de la estantería</translation>
 <translation id="2946119680249604491">Añadir conexión</translation>
+<translation id="2960314608273155470">Modo de captura, establecido en <ph name="TYPE" /> <ph name="SOURCE" />. Pulsa el tabulador para desplazarte por el teclado.</translation>
 <translation id="2961963223658824723">Se ha producido un error. Vuelve a intentarlo en unos segundos.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">No se han podido descargar los archivos de voz en <ph name="LANGUAGE" /></translation>
@@ -887,6 +888,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7042322267639375032">Comprimir área de estado</translation>
 <translation id="7045033600005038336">¿Quieres sustituir la plantilla?</translation>
 <translation id="7045595904618419789">Iniciar lupa</translation>
+<translation id="7051244143160304048">Desconectado: <ph name="DEVICE_NAME" /></translation>
 <translation id="7055381872777910864">X</translation>
 <translation id="7055910611768509537">El lápiz óptico no se ha usado en más de una semana</translation>
 <translation id="7066646422045619941">El administrador ha inhabilitado esta red.</translation>
@@ -1080,6 +1082,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8412677897383510995">Mostrar ajustes de pantalla</translation>
 <translation id="8413272770729657668">La grabación empezará en 3, 2. 1…</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (funda)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no está en este dispositivo.</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8426708595819210923">Buenas noches, <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
@@ -1207,6 +1210,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>
+<translation id="96080156868846968">Se está analizando</translation>
 <translation id="974545358917229949">Se muestran <ph name="RESULT_COUNT" /> resultados de <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">La ventana <ph name="WINDOW_TITILE" /> se ha cerrado.</translation>

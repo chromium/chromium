@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1153636665119721804">Programa Protección avanzada de Google</translation>
 <translation id="1155816283571436363">Conectando co teu teléfono</translation>
+<translation id="1158080958325422608">Escribir en maiúsculas</translation>
 <translation id="1158238185437008462">Ver lembranzas</translation>
 <translation id="1161575384898972166">Inicia sesión en <ph name="TOKEN_NAME" /> para exportar o certificado de cliente.</translation>
 <translation id="116173250649946226">O teu administrador definiu un tema predeterminado que non se pode cambiar.</translation>
@@ -468,7 +469,6 @@
 <translation id="1480663089572535854">Podes ir atrás para cambiar a asignación da acción Seleccionar. Sempre podes desactivar a exploración automática en Configuración.</translation>
 <translation id="1481537595330271162">Produciuse un erro ao cambiar o tamaño do disco</translation>
 <translation id="1482626744466814421">Engadir esta pestana aos marcadores…</translation>
-<translation id="1483272013430662157">As aplicacións web poden pedirche permiso para abrir distintos tipos de ficheiros</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1484979925941077974">O sitio está usando o Bluetooth</translation>
 <translation id="1485015260175968628">Agora pode:</translation>
@@ -648,7 +648,6 @@
 <translation id="164936512206786300">Desvincular dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Debes introducir a mesma frase de acceso dúas veces</translation>
 <translation id="1652326691684645429">Activar Compartir por Nearby</translation>
-<translation id="1653631694606464309">As aplicacións web adoitan pedir permiso para abrir certos tipos de ficheiros, o que che ofrece a posibilidade de traballar con eles onde queiras (por exemplo, abrir documentos co teu procesador de texto preferido)</translation>
 <translation id="1656528038316521561">Opacidade do fondo</translation>
 <translation id="1657406563541664238">Axúdanos a mellorar <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de uso e informes de erros a Google</translation>
 <translation id="1657937299377480641">Se queres iniciar sesión de novo para acceder a recursos educativos, pídelle a teu pai ou a túa nai que che dea permiso</translation>
@@ -693,6 +692,7 @@
 <translation id="1700079447639026019">Sitios que nunca poden utilizar cookies</translation>
 <translation id="1703331064825191675">Non te preocupes nunca polos teus contrasinais</translation>
 <translation id="1703666494654169921">Non permitir que os sitios utilicen datos nin dispositivos de realidade virtual</translation>
+<translation id="1704097193565924901">Usar maiúsculas</translation>
 <translation id="1704230497453185209">Non permitir que os sitios reproduzan son</translation>
 <translation id="1704970325597567340">A comprobación de seguranza executouse o <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Engadido polo administrador</translation>
@@ -2394,7 +2394,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3449839693241009168">Preme <ph name="SEARCH_KEY" /> para enviar comandos a <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Porcentaxe de ocupación de estado de inactividade</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> require que te conectes agora á wifi e descargues unha actualización.</translation>
-<translation id="3451753556629288767">Con permiso para abrir tipos de ficheiros</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453612417627951340">Precisa autorización</translation>
 <translation id="3454213325559396544">Esta é a última actualización automática de software e seguranza para este <ph name="DEVICE_TYPE" />. Para obter futuras actualizacións, cambia a un modelo máis novo.</translation>
@@ -3563,6 +3562,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4681453295291708042">Desactivar Compartir por Nearby</translation>
 <translation id="4681930562518940301">Abrir imaxe orixinal na pestana nova</translation>
 <translation id="4682551433947286597">Os fondos de pantalla aparecen na pantalla de inicio de sesión.</translation>
+<translation id="4683629100208651599">Escribir en minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predeterminado)</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> está tentando acceder á cámara. Para darlle acceso, desactiva o interruptor de privacidade da cámara.</translation>
@@ -5510,7 +5510,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6785518634832172390">O PIN debe ter como máximo 12 díxitos</translation>
 <translation id="6786747875388722282">Extensións</translation>
 <translation id="6787097042755590313">Outra pestana</translation>
-<translation id="6787631759192429908">Queres abrir os ficheiros?</translation>
 <translation id="6787839852456839824">Atallos do teclado</translation>
 <translation id="6788210894632713004">Extensión descomprimida</translation>
 <translation id="6789592661892473991">Dividir horizontalmente</translation>
@@ -5762,7 +5761,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7025082428878635038">Presentamos unha nova forma de navegar con xestos</translation>
 <translation id="7025190659207909717">Xestión de servizos de datos móbiles</translation>
 <translation id="7025895441903756761">Seguranza e privacidade</translation>
-<translation id="7026552751317161576">Non permitir que as aplicacións web abran distintos tipos de ficheiros</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir todos nunha ventá de &amp;incógnito}=1{Abrir nunha ventá de &amp;incógnito}other{Abrir todos ({COUNT}) nunha ventá de &amp;incógnito}}</translation>
 <translation id="7029307918966275733">Crostini non está instalado. Instálao para ver os créditos.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
@@ -5807,7 +5805,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7067396782363924830">Cores de ambiente</translation>
 <translation id="7067725467529581407">Non volver mostrar nunca.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> pode requirir un tipo de chave de seguranza máis novo ou diferente</translation>
-<translation id="7070269827082111569">Sen permiso para abrir tipos de ficheiros</translation>
 <translation id="7070484045139057854">Pode consultar e modificar os datos do sitio</translation>
 <translation id="7072010813301522126">Nome do atallo</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 con cifrado RSA</translation>
@@ -5958,6 +5955,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7257173066616499747">Redes wifi</translation>
 <translation id="725758059478686223">Servizo de impresión</translation>
 <translation id="7257666756905341374">Ler os datos que copies e pegues</translation>
+<translation id="7258192266780953209">Transformacións</translation>
 <translation id="7258225044283673131">A aplicación non responde. Para pechala, selecciona Forzar peche.</translation>
 <translation id="7262004276116528033">Este servizo de inicio de sesión está aloxado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Proba estes pasos para tentar solucionar o problema:
@@ -6379,7 +6377,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7680416688940118410">Calibración da pantalla táctil</translation>
 <translation id="7681095912841365527">O sitio pode usar o Bluetooth</translation>
 <translation id="7681597159868843240">Os sitios adoitan usar os sensores de movemento do dispositivo para ofrecerche determinadas funcións (por exemplo, as relacionadas coa realidade virtual ou co seguimento da forma física)</translation>
-<translation id="7683164815270164555">Preguntarme cando unha aplicación web queira abrir distintos tipos de ficheiros</translation>
 <translation id="7683373461016844951">Para continuar, fai clic en Aceptar e, despois, en Engadir persoa se queres crear un perfil para o teu enderezo de correo electrónico de <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Extensión instalada polo administrador</translation>
 <translation id="7684559058815332124">Visitar a páxina de inicio de sesión do portal cautivo</translation>
@@ -6883,7 +6880,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8161293209665121583">Modo de lector para páxinas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
 <translation id="8165997195302308593">Encamiñamento de porto de Crostini</translation>
-<translation id="8166081708154635403">Queres abrir o ficheiro?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 número de teléfono}other{# números de teléfono}}</translation>
 <translation id="8168071266284693455">Os marcadores, os contrasinais, o historial e outros datos sincronizaranse en todos os teus dispositivos</translation>
 <translation id="8168435359814927499">Contido</translation>
@@ -7458,7 +7454,6 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8800004011501252845">Mostrando destinos para</translation>
 <translation id="8800034312320686233">O sitio non funciona?</translation>
-<translation id="880004380809002950">Impedir que as aplicacións web abran distintos tipos de ficheiros</translation>
 <translation id="8803953437405899238">Abre unha pestana nova cun só clic</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mover pestana a outra ventá}other{Mover pestanas a outra ventá}}</translation>
 <translation id="8805140816472474147">Para poder iniciar a sincronización debes confirmar a súa configuración.</translation>

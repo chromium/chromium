@@ -469,7 +469,6 @@
 <translation id="1480663089572535854">Poți reveni ca să modifici atribuirea pentru Selectează. Poți dezactiva oricând scanarea automată din Setări.</translation>
 <translation id="1481537595330271162">Eroare la redimensionarea discului</translation>
 <translation id="1482626744466814421">Marchează această filă...</translation>
-<translation id="1483272013430662157">Aplicațiile web pot solicita să deschidă tipuri de fișiere</translation>
 <translation id="1483493594462132177">Trimite</translation>
 <translation id="1484979925941077974">Site-ul folosește Bluetooth</translation>
 <translation id="1485015260175968628">Aceasta poate acum să:</translation>
@@ -650,7 +649,6 @@
 <translation id="164936512206786300">Anulează asocierea dispozitivului Bluetooth</translation>
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
-<translation id="1653631694606464309">Aplicațiile web solicită de obicei permisiunea de a deschide anumite tipuri de fișiere, ca să poți lucra în acestea oricând dorești, de exemplu, deschizând documente în procesorul de text preferat</translation>
 <translation id="1656528038316521561">Opacitatea fundalului</translation>
 <translation id="1657406563541664238">Trimite automat statistici de utilizare și rapoarte de blocare la Google pentru a contribui la îmbunătățirea <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1657937299377480641">Ca să te conectezi din nou pentru acces la resurse educaționale, solicită permisiunea unui părinte</translation>
@@ -2397,7 +2395,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3449839693241009168">Apasă pe <ph name="SEARCH_KEY" /> pentru a trimite comenzi la <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Procentaj de ocupare în starea inactivă</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare.</translation>
-<translation id="3451753556629288767">Au permisiunea de a deschide tipuri de fișiere</translation>
 <translation id="3452999110156026232">Acces pentru părinți</translation>
 <translation id="3453612417627951340">Necesită autorizare</translation>
 <translation id="3454213325559396544">Aceasta este cea mai recentă actualizare automată de software și securitate pentru acest dispozitiv <ph name="DEVICE_TYPE" />. Pentru a primi actualizări viitoare, fă upgrade la un model mai nou.</translation>
@@ -5513,7 +5510,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6785518634832172390">Codul PIN trebuie să aibă maximum 12 cifre</translation>
 <translation id="6786747875388722282">Extensii</translation>
 <translation id="6787097042755590313">Altă filă</translation>
-<translation id="6787631759192429908">Deschizi fișierele?</translation>
 <translation id="6787839852456839824">Comenzi rapide de la tastatură</translation>
 <translation id="6788210894632713004">Extensie neîmpachetată</translation>
 <translation id="6789592661892473991">Împarte pe orizontală</translation>
@@ -5765,7 +5761,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7025082428878635038">Îți prezentăm o nouă modalitate de a naviga prin gesturi</translation>
 <translation id="7025190659207909717">Gestionarea serviciului de date mobile</translation>
 <translation id="7025895441903756761">Securitate și confidențialitate</translation>
-<translation id="7026552751317161576">Nu permite aplicațiilor web să deschidă tipuri de fișiere</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;incognito}=1{Deschide într-o fereastră &amp;incognito}few{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}other{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}}</translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
 <translation id="7029809446516969842">Parole</translation>
@@ -5810,7 +5805,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7067396782363924830">Culori ambientale</translation>
 <translation id="7067725467529581407">Nu mai afișa niciodată acest mesaj.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> poate necesita un tip diferit sau mai nou de cheie de securitate</translation>
-<translation id="7070269827082111569">Nu au permisiunea de a deschide tipuri de fișiere</translation>
 <translation id="7070484045139057854">Poate să citească și să modifice datele site-ului</translation>
 <translation id="7072010813301522126">Numele comenzii rapide</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 cu criptare RSA</translation>
@@ -6382,7 +6376,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7680416688940118410">Calibrarea ecranului tactil</translation>
 <translation id="7681095912841365527">Site-ul poate folosi Bluetooth</translation>
 <translation id="7681597159868843240">Site-urile folosesc de obicei senzorii de mișcare ai dispozitivului pentru funcții cum ar fi realitatea virtuală sau monitorizarea activității de fitness</translation>
-<translation id="7683164815270164555">Întreabă când o aplicație web vrea să deschidă tipuri de fișiere</translation>
 <translation id="7683373461016844951">Pentru a continua, dă clic pe OK, apoi pe Adaugă o persoană pentru a crea un profil nou pentru adresa de e-mail <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Instalată de administrator</translation>
 <translation id="7684559058815332124">Accesează pagina de conectare a portalului captiv</translation>
@@ -6887,7 +6880,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8161293209665121583">Modul Cititor pentru pagini web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mută fila în fereastră nouă}few{Mută filele în fereastră nouă}other{Mută filele în fereastră nouă}}</translation>
 <translation id="8165997195302308593">Redirecționarea de port în Crostini</translation>
-<translation id="8166081708154635403">Deschizi fișierul?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un număr de telefon}few{# numere de telefon}other{# de numere de telefon}}</translation>
 <translation id="8168071266284693455">Marcajele, parolele, istoricul și alte date vor fi sincronizate pe toate dispozitivele</translation>
 <translation id="8168435359814927499">Conținut</translation>
@@ -7463,7 +7455,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8800004011501252845">Se afișează destinații pentru</translation>
 <translation id="8800034312320686233">Site-ul nu funcționează?</translation>
-<translation id="880004380809002950">Blochează deschiderea tipurilor de fișiere de către aplicațiile web</translation>
 <translation id="8803953437405899238">Deschide o filă nouă cu un singur clic</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mută fila în altă fereastră}few{Mută filele în altă fereastră}other{Mută filele în altă fereastră}}</translation>
 <translation id="8805140816472474147">Pentru a începe sincronizarea, confirmă setările de sincronizare.</translation>

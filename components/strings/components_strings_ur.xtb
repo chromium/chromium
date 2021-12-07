@@ -650,6 +650,7 @@
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">پک اپ کا پتہ شامل کریں</translation>
+<translation id="3098513225387949945">نظر انداز کیا گیا کیونکہ غیر فعال کرنے کی فہرست میں '*' کے برابر ایک پیٹرن ہے جو پالیسی کو غیر فعال کرنے کے مساوی ہے۔</translation>
 <translation id="3105172416063519923">‏اثاثہ ID:</translation>
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />محفوظ DNS کنفیگریشن کو چیک کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">درمیانی ٹرے</translation>
@@ -1565,6 +1566,7 @@
 <translation id="6008122969617370890">‏N سے 1 ترتیب</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">اپنے پاس ورڈز چیک کریں</translation>
+<translation id="6014851866995737824">نظر انداز کیا گیا کیونکہ یا تو "فعال" یا "غیر فعال" فہرست غائب ہے۔</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6017514345406065928">سبز</translation>
 <translation id="6017850046339264347">حملہ آور <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> پر فریب ایپس انسٹال کر سکتے ہیں جو کچھ اور ہونے کا دکھاوا کرتی ہیں یا آپ کا پتہ لگانے کیلئے استعمال کئے جانے والے ڈیٹا جمع کرتی ہیں۔<ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1738,7 +1740,6 @@
 <translation id="6596325263575161958">مرموزکاری کے اختیارات</translation>
 <translation id="6609880536175561541">Prc7 ‎(Envelope‎)‎</translation>
 <translation id="6615297766614333076">اسٹیکر 2</translation>
-<translation id="6623589891453322342">فائل ہینڈلرز</translation>
 <translation id="6624427990725312378">رابطے کی معلومات</translation>
 <translation id="6626291197371920147">درست کارڈ نمبر شامل کریں</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> تلاش</translation>
@@ -1831,7 +1832,6 @@
 <translation id="6949872517221025916">پاس ورڈ دوبارہ ترتیب دیں</translation>
 <translation id="6950684638814147129">‏JSON قدر پارس کرنے میں خرابی: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">تمام کو ری سیٹ کریں</translation>
-<translation id="6954341342296443517">سائٹ فائلز کی اقسام کو کھولنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="6957887021205513506">سرور کا سرٹیفکیٹ ایک جعل سازی معلوم پڑتی ہے۔</translation>
 <translation id="6958564499836457428">‏اپنے Google اکاؤنٹ میں Google کی رازداری کی ترتیبات کا نظم کریں</translation>
 <translation id="6961844873822989059">سائٹ آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
@@ -1858,7 +1858,6 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">زوم کی سطح</translation>
 <translation id="7016992613359344582">یہ چارجز ایک بار یا بار بار عائد ہوسکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔</translation>
-<translation id="7024588353896425985">فائل ہینڈلرز</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7030436163253143341">سرٹیفیکیٹ درست نہیں ہے</translation>
 <translation id="7031646650991750659">‏آپ نے کن Google Play ایپس کو انسٹال کیا ہے</translation>

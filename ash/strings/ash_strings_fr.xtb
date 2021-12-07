@@ -280,6 +280,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2942350706960889382">Loupe ancrée</translation>
 <translation id="2942516765047364088">Position de l'étagère</translation>
 <translation id="2946119680249604491">Ajouter une connexion</translation>
+<translation id="2960314608273155470">Mode de capture, la valeur par défaut est : <ph name="TYPE" /> <ph name="SOURCE" />. Appuyez sur Tab pour la navigation au clavier.</translation>
 <translation id="2961963223658824723">Une erreur s'est produite. Veuillez réessayer dans quelques secondes.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" /></translation>
@@ -886,6 +887,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7042322267639375032">Réduire la zone d'état</translation>
 <translation id="7045033600005038336">Remplacer le modèle ?</translation>
 <translation id="7045595904618419789">Utiliser la loupe</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s'est déconnecté</translation>
 <translation id="7055381872777910864">M</translation>
 <translation id="7055910611768509537">Stylet inutilisé depuis plus d'une semaine</translation>
 <translation id="7066646422045619941">Votre administrateur a désactivé ce réseau.</translation>
@@ -1079,6 +1081,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement commence dans 3 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> n'est pas sur cet appareil.</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426708595819210923">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Paramètres</translation>
@@ -1206,6 +1209,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda ?</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
 <translation id="951991426597076286">Refuser</translation>
+<translation id="96080156868846968">Analyse en cours</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Paysage</translation>
 <translation id="990277280839877440">Fenêtre <ph name="WINDOW_TITILE" /> fermée.</translation>

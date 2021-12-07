@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ড'ক কৰা বিৱৰ্ধক</translation>
 <translation id="2942516765047364088">শ্বেল্ফৰ স্থান</translation>
 <translation id="2946119680249604491">সংযোগ যোগ কৰক</translation>
+<translation id="2960314608273155470">কেপচাৰ ম’ড, ডিফ’ল্টটো হৈছে <ph name="SOURCE" /> <ph name="TYPE" />। কীব’ৰ্ড নেভিগেশ্বনৰ বাবে টেব টিপক।</translation>
 <translation id="2961963223658824723">কিবা এটা ভুল হৈছে। কেই ছেকেণ্ডমানৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" />ৰ কথনৰ ফাইল ডাউনল’ড কৰিব পৰা নগ’ল</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">বিভিন্ন স্থিতি দেখুওৱা ঠাই সংকোচন কৰক</translation>
 <translation id="7045033600005038336">টেমপ্লে’টটো সলনি কৰিবনে?</translation>
 <translation id="7045595904618419789">বিৱৰ্ধক আৰম্ভ কৰক</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> বিচ্ছিন্ন কৰা হ’ল</translation>
 <translation id="7055381872777910864">বু</translation>
 <translation id="7055910611768509537">এসপ্তাহ ধৰি ষ্টাইলাছ ব্যৱহাৰ কৰা হোৱা নাই</translation>
 <translation id="7066646422045619941">এই নেটৱৰ্কটো আপোনাৰ প্ৰশাসকে অক্ষম কৰি থৈছে।</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">ডিছপ্লে’ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="8413272770729657668">ৰেকৰ্ডিং আৰম্ভ হ'ব ৩, ২, ১</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কে’ছ)</translation>
+<translation id="8421270167862077762">এই ডিভাইচটোত <ph name="UNAVAILABLE_APPS" /> নাই।</translation>
 <translation id="8425213833346101688">সলনি কৰক</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
@@ -1206,6 +1209,7 @@
 <translation id="938963181863597773">আপোনাৰ কেলেণ্ডাৰত কি আছে?</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="951991426597076286">অস্বীকাৰ কৰক</translation>
+<translation id="96080156868846968">স্কেন কৰি থকা হৈছে</translation>
 <translation id="974545358917229949"><ph name="QUERY" />ৰ বাবে <ph name="RESULT_COUNT" />টা ফলাফল দেখুৱাই থকা হৈছে</translation>
 <translation id="98515147261107953">লেণ্ডস্কেইপ</translation>
 <translation id="990277280839877440">ৱিণ্ড’ <ph name="WINDOW_TITILE" /> বন্ধ হৈ আছে৷</translation>

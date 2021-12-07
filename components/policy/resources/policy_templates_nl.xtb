@@ -1604,23 +1604,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten geen Android-statusinformatie.</translation>
 <translation id="288923520817177650">Toestaan dat <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />-sessies van <ph name="WEBXR_API_NAME_SHORT" /> worden gemaakt</translation>
 <translation id="2890645751406497668">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
-<translation id="2892041629748346178">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload in Chrome.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het wordt gedownload vanaf een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de gebruiker toegang tot het gedownloade bestand geeft. Elke andere waarde met een geheel getal betekent dat Chrome de gebruiker onmiddellijk toegang tot het bestand geeft.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of Chrome bestanden die zijn beveiligd met een wachtwoord blokkeert of toestaat.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of Chrome bestanden die te groot zijn om te worden geanalyseerd (meer dan 50 MB) blokkeert of toestaat.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
-
-      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2893546967669465276">Systeemlogboeken naar de beheerserver verzenden</translation>
 <translation id="2893660462311365527">Snelheid voor verzameling van netwerktelemetrie in milliseconden.</translation>
 <translation id="2896434627453256512">Stel het beleid in om de functie voor ghostvenster aan te zetten.
@@ -4791,11 +4774,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Als je het beleid niet toepast of niet instelt, wordt er geen gebruiksinformatie gerapporteerd.</translation>
 <translation id="6821268164692776674">De bestemmingen <ph name="CLOUD_PRINT_NAME" /> en 'Opslaan in Google Drive'</translation>
-<translation id="6823273740874361732">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die mogelijk zijn ingesteld.
-
-      Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de markering override_update_url is ingesteld opTrue, wordt de extensie geïnstalleerd en geüpdatet met de update-URL die is gespecificeerd in het <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />-beleid of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
-
-      Voor Windows®-instanties die niet zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, is afgedwongen installatie beperkt tot apps en extensies die in de Chrome Web Store worden vermeld.</translation>
 <translation id="6823711520976094072">Als je het beleid instelt op een waarde lager dan 1 MB of als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte van 256 MB voor het opslaan van apps en extensies in het cachegeheugen voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
 <translation id="6833023569065717572">Als je het beleid instelt op True, krijgt het inlogscherm van een apparaat de 24-uurs kloknotatie.
 
@@ -5231,23 +5209,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
       Als dit beleid niet wordt ingesteld of leeg is, kan de gebruiker elk willekeurig Google-account instellen als primair browseraccount in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="723103540848640830">De minimumlengte van de pincode voor het vergrendelscherm instellen</translation>
 <translation id="7234280155140786597">Namen van de verboden hosts voor systeemeigen berichten (of * voor alle)</translation>
-<translation id="72369543045636739">Lijst met instellingen voor Chrome Enterprise Connectors-services die moeten worden toegepast op de Enterprise Connector <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt bijgevoegd in Chrome.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand voor analyse moet sturen als het is bijgevoegd bij een specifieke pagina en welke tags moeten worden opgenomen in het analyseverzoek voor dat bestand. Een tag die overeenkomt met een 'enable'-patroon, wordt opgenomen in het analyseverzoek als de pagina-URL overeenkomt met een patroon dat is gekoppeld aan die tag, op voorwaarde dat er geen 'disable'-patroon met dezelfde tag overeenkomt met de pagina-URL. De analyse vindt plaats als er ten minste 1 tag moet worden opgenomen in het verzoek.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Als je het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> instelt op 1, betekent dit dat Chrome wacht op een reactie van de analyseservice voordat Chrome de pagina toegang tot het bestand geeft. Elke andere waarde met een geheel getal betekent dat Chrome de pagina onmiddellijk toegang tot het bestand geeft.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> bepaalt of Chrome bestanden die zijn beveiligd met een wachtwoord blokkeert of toestaat.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> bepaalt of Chrome bestanden die te groot zijn om te worden geanalyseerd (meer dan 50 MB) blokkeert of toestaat.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> wordt gebruikt om te bepalen voor welke tags de connector moet vereisen dat de gebruiker een verantwoording opgeeft om een scan over te slaan die resulteert in een waarschuwing die kan worden overgeslagen. Als je het veld niet instelt, wordt aangenomen dat er geen verantwoording vereist is.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> worden gebruikt om een bericht in te stellen dat de gebruiker te zien krijgt als een waarschuwing wordt getoond nadat een scan problemen heeft gevonden. Het veld 'message' bevat de tekst die de gebruiker te zien krijgt en mag maximaal 200 tekens bevatten. Het veld 'learn_more_url' bevat een door de beheerder geleverde URL waarop de gebruiker kan klikken voor meer door de klant geleverde informatie over waarom de actie is geblokkeerd. Het veld 'language' is optioneel en bevat de taal van het bericht. Met een leeg veld 'language' of de waarde 'default' wordt een bericht aangegeven dat moet worden gebruikt als er geen bericht is in de taal van de gebruiker. Het veld 'tag' geeft aan voor welk type scans het bericht wordt getoond. De lijst 'custom_messages' kan nul of meer items bevatten. Voor elk item moeten de velden 'message' en 'tag' zijn ingevuld.
-
-      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="7246767840750730334">Toestaan dat Phone Hub-meldingen worden aangezet.</translation>
 <translation id="7249828445670652637">CA-certificaten van <ph name="PRODUCT_OS_NAME" /> voor ARC-apps aanzetten</translation>
 <translation id="7251825257294351251">Systeemmeldingen toestaan</translation>

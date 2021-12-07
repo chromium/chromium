@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">ডক করা ম্যাগনিফায়ার</translation>
 <translation id="2942516765047364088">তাকের লোকেশন</translation>
 <translation id="2946119680249604491">সংযোগ জুড়ুন</translation>
+<translation id="2960314608273155470">ক্যাপচার মোড, <ph name="SOURCE" /> <ph name="TYPE" /> ডিফল্ট হিসেবে সেট করা হয়েছে। কীবোর্ড ব্যবহার করে নেভিগেট করতে Tab কী প্রেস করুন।</translation>
 <translation id="2961963223658824723">কিছু সমস্যা হয়েছে। কয়েক সেকেন্ডের মধ্যে আবার চেষ্টা করুন।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা যায়নি</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">স্ট্যাটাস এরিয়া আড়াল করুন</translation>
 <translation id="7045033600005038336">টেমপ্লেট পরিবর্তন করবেন?</translation>
 <translation id="7045595904618419789">ম্যাগনিফায়ার চালু করুন</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ডিসকানেক্ট হয়ে গেছে</translation>
 <translation id="7055381872777910864">বু</translation>
 <translation id="7055910611768509537">এক সপ্তাহের বেশি সময় ধরে স্টাইলাস ব্যবহার করা হয়নি</translation>
 <translation id="7066646422045619941">এই নেটওয়ার্কটি আপনার প্রশাসকের দ্বারা অক্ষম করা হয়েছে৷</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">ডিসপ্লে সেটিংস দেখুন</translation>
 <translation id="8413272770729657668">রেকর্ডিং শুরু করা হচ্ছে ৩, ২, ১</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (কেস)</translation>
+<translation id="8421270167862077762">এই ডিভাইসে <ph name="UNAVAILABLE_APPS" /> উপলভ্য নেই।</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
@@ -1206,6 +1209,7 @@
 <translation id="938963181863597773">আমার ক্যালেন্ডারে কী কী আছে?</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
+<translation id="96080156868846968">স্ক্যান করা হচ্ছে</translation>
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="98515147261107953">ল্যান্ডস্কেপ</translation>
 <translation id="990277280839877440">উইন্ডো <ph name="WINDOW_TITILE" /> বন্ধ করা আছে।</translation>

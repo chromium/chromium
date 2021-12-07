@@ -471,7 +471,6 @@
 <translation id="1480663089572535854">돌아가서 '선택'에 할당된 항목을 변경할 수 있습니다. 설정에서 언제든지 자동 스캔을 사용 중지할 수 있습니다.</translation>
 <translation id="1481537595330271162">디스크 크기를 조정하는 중에 오류가 발생했습니다.</translation>
 <translation id="1482626744466814421">현재 탭을 북마크에 추가</translation>
-<translation id="1483272013430662157">웹 앱이 여러 형식의 파일을 열도록 요청할 수 있음</translation>
 <translation id="1483493594462132177">보내기</translation>
 <translation id="1484979925941077974">사이트에서 블루투스를 사용하고 있습니다.</translation>
 <translation id="1485015260175968628">앱의 현재 권한:</translation>
@@ -652,7 +651,6 @@
 <translation id="164936512206786300">블루투스 기기 페어링 해제</translation>
 <translation id="1651008383952180276">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="1652326691684645429">Nearby Share 사용</translation>
-<translation id="1653631694606464309">웹 앱은 일반적으로 원하는 워드 프로세서에서 문서를 열 때와 같이 원하는 곳에서 파일로 작업할 수 있도록 여러 유형의 파일을 열어도 되는지 묻습니다.</translation>
 <translation id="1656528038316521561">배경 불투명도</translation>
 <translation id="1657406563541664238">사용 통계 및 비정상 종료 보고서가 Google로 자동 전송되게 하여 <ph name="PRODUCT_NAME" /> 개선에 도움 주기</translation>
 <translation id="1657937299377480641">교육 자료에 액세스하기 위해 다시 로그인하려면 부모님에게 권한을 부여해 달라고 요청하세요.</translation>
@@ -2411,7 +2409,6 @@
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" /> 키를 눌러 <ph name="EXTENSION_NAME" />에 명령 보내기</translation>
 <translation id="3450157232394774192">유휴 상태 점유율</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
-<translation id="3451753556629288767">여러 유형의 파일을 열 수 있음</translation>
 <translation id="3452999110156026232">부모 액세스</translation>
 <translation id="3453612417627951340">승인 필요</translation>
 <translation id="3454213325559396544">이 <ph name="DEVICE_TYPE" />의 마지막 자동 소프트웨어 및 보안 업데이트입니다. 향후 업데이트를 받으려면 새 모델로 업그레이드하세요.</translation>
@@ -5525,7 +5522,6 @@
 <translation id="6785518634832172390">PIN은 12자리 이하여야 합니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787097042755590313">다른 탭</translation>
-<translation id="6787631759192429908">파일을 여시겠습니까?</translation>
 <translation id="6787839852456839824">단축키</translation>
 <translation id="6788210894632713004">압축해제된 확장 프로그램</translation>
 <translation id="6789592661892473991">수평 분할</translation>
@@ -5777,7 +5773,6 @@
 <translation id="7025082428878635038">동작으로 탐색하는 새로운 방법</translation>
 <translation id="7025190659207909717">모바일 데이터 서비스 관리</translation>
 <translation id="7025895441903756761">보안 및 개인정보 보호</translation>
-<translation id="7026552751317161576">웹 앱이 여러 형식의 파일을 열도록 허용 안함</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{시크릿 창에서 모두 열기(&amp;I)}=1{시크릿 창에서 열기(&amp;I)}other{시크릿 창에서 {COUNT}개 모두 열기(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
@@ -5822,7 +5817,6 @@
 <translation id="7067396782363924830">주변 색상</translation>
 <translation id="7067725467529581407">다시 표시하지 않음</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" />에서 새로운 또는 다른 유형의 보안 키를 요구할 수 있습니다.</translation>
-<translation id="7070269827082111569">여러 유형의 파일을 열 수 없음</translation>
 <translation id="7070484045139057854">사이트 데이터를 읽고 변경할 수 있음</translation>
 <translation id="7072010813301522126">바로가기 이름</translation>
 <translation id="7075513071073410194">PKCS #1 MD5(RSA 암호화 사용)</translation>
@@ -6394,7 +6388,6 @@
 <translation id="7680416688940118410">터치스크린 조정</translation>
 <translation id="7681095912841365527">사이트에서 블루투스를 사용할 수 있습니다.</translation>
 <translation id="7681597159868843240">사이트에서는 주로 가상 현실 또는 피트니스 추적과 같은 기능을 지원하기 위해 기기의 움직임 감지 센서를 사용합니다.</translation>
-<translation id="7683164815270164555">웹 앱이 여러 형식의 파일을 열려고 할 때 확인</translation>
 <translation id="7683373461016844951">계속하려면 확인을 클릭한 다음 사용자 추가를 클릭하여 <ph name="DOMAIN" /> 이메일 주소로 새로운 프로필을 만드세요.</translation>
 <translation id="7684212569183643648">관리자가 설치함</translation>
 <translation id="7684559058815332124">캡티브 포털 로그인 페이지로 이동</translation>
@@ -6900,7 +6893,6 @@
 <translation id="8161293209665121583">웹페이지 리더 모드</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
 <translation id="8165997195302308593">Crostini 포트 전달</translation>
-<translation id="8166081708154635403">파일을 여시겠습니까?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{전화번호 1개}other{전화번호 #개}}</translation>
 <translation id="8168071266284693455">북마크, 비밀번호, 방문 기록 등이 모든 기기에서 동기화됩니다.</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
@@ -7475,7 +7467,6 @@
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8800004011501252845">해당 목적지 사용자 표시</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
-<translation id="880004380809002950">웹 앱이 여러 형식의 파일을 열지 못하도록 차단</translation>
 <translation id="8803953437405899238">클릭 한 번으로 새 탭을 열 수 있습니다.</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{탭을 다른 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
 <translation id="8805140816472474147">동기화를 시작하려면 동기화 설정을 확인하세요.</translation>

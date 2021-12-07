@@ -104,7 +104,6 @@
 <translation id="1832848789136765277">ដើម្បី​ប្រាកដថា អ្នកអាចចូលប្រើ​ទិន្នន័យ​សមកាលកម្ម​របស់អ្នកបាន​ជានិច្ច សូមផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
 <translation id="1870148520156231997">បង្ហាញ​ពាក្យសម្ងាត់</translation>
 <translation id="1872096359983322073">ពិល</translation>
-<translation id="1894205589103145703">មានអ្វីមួយខុសប្រក្រតី ក្នុងអំឡុងពេល​ចូលគណនី។</translation>
 <translation id="1911619930368729126">អាប់ឡូត Google Drive</translation>
 <translation id="1923342640370224680">ម៉ោងមុន</translation>
 <translation id="1930989359703290198">ស្ថាប័នរបស់អ្នក​អនុញ្ញាតឱ្យអ្នក​ចូលដោយប្រើ​គណនីជាក់លាក់​តែប៉ុណ្ណោះ។ គណនីដែលមិនមាន​ការអនុញ្ញាត​ត្រូវបានលាក់។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -169,6 +168,7 @@
 <translation id="2584132361465095047">បន្ថែមគណនី…</translation>
 <translation id="2600682495497606169">សម្អាត​ខូគីរបស់គេហទំព័រ</translation>
 <translation id="2625189173221582860">បានចម្លង​ពាក្យសម្ងាត់</translation>
+<translation id="2626236249646841566">សូម​ពិនិត្យមើល​ការតភ្ជាប់​របស់អ្នក រួចសាកល្បង​ចូលគណនី​ម្ដងទៀត។</translation>
 <translation id="2647269890314209800">ខូគីកំពុងត្រូវបានប្រើ</translation>
 <translation id="2648803196158606475">លុបធាតុដែលបានអាន</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
@@ -364,6 +364,7 @@
 <translation id="4508750114462689118">បិទការផ្សព្វផ្សាយនៃការចូលគណនី</translation>
 <translation id="4526249700380860531">មើល និងគ្រប់គ្រងពាក្យសម្ងាត់ដែលបានរក្សាទុកនៅលើ <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">សាកល្បងព្យាយាមចូលម្តងទៀត</translation>
+<translation id="4540780316273593836">មានអ្វីមួយ​ខុសប្រក្រតី</translation>
 <translation id="457386861538956877">ច្រើនទៀត...</translation>
 <translation id="4592368184551360546">ក្ដារចុច</translation>
 <translation id="461440297010471931">ស្វែងរក​ដោយប្រើ Google</translation>
@@ -464,7 +465,6 @@
 <translation id="5513681519188741830"><ph name="TIME" /> ម៉ោង​មុន</translation>
 <translation id="5523579157975978438">ដើម្បីបិទ សូមបើក<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" /> ហើយចូលទៅកាន់​ពាក្យសម្ងាត់។</translation>
 <translation id="5525269841082836315">បង្កើតឃ្លាសម្ងាត់</translation>
-<translation id="5532698011560297095">មិនអាចចូលគណនីបានទេ</translation>
 <translation id="5548760955356983418">Handoff អនុញ្ញាតឲ្យអ្នកចាប់ផ្តើមរុករកគេហទំព័រលើឧបករណ៍នេះ ហើយបន្តប្រើប្រាស់យ៉ាងងាយស្រួលនៅលើឧបករណ៍ Mac របស់អ្នក។ គេហទំព័រដែលបើកពេលបច្ចុប្បន្ននឹងបង្ហាញលើរបារកម្មវិធីនៃឧបករណ៍ Mac របស់អ្នក។
 
 Handoff ត្រូវបើកដំណើរការនៅក្នុងផ្នែកទូទៅនៃការកំណត់ ហើយឧបករណ៍របស់អ្នកត្រួវតែប្រើគណនី iCloud តែមួយ។</translation>
@@ -480,6 +480,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">កំណែ <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{កំពុងបង្ហាញ​វិនដូ Chrome ចំនួន 1 ឥឡូវនេះ}other{កំពុងបង្ហាញ​វិនដូ Chrome ចំនួន {count} ឥឡូវនេះ}}</translation>
+<translation id="5704908597376970822">មិនអាច​ចូលគណនី​បានទេ។</translation>
 <translation id="5706552126692816153">ដំណើរការ 1 ថ្ងៃមុន</translation>
 <translation id="5711039611392265845">សម្រាប់​ការកំណត់​ជាច្រើនទៀត ដែលពាក់ព័ន្ធនឹង​ឯកជន​ភាព សុវត្ថិភាព និង​ការ​ប្រមូល​ទិន្នន័យ សូមមើល<ph name="BEGIN_LINK" />សមកាលកម្ម​ និង​សេវាកម្ម Google<ph name="END_LINK" /> ។</translation>
 <translation id="5724941645893276623">ដើម្បី​រុករក​អ៊ីនធឺណិត​ជាលក្ខណៈឯកជន សូមបញ្ចូលផ្ទាំង​ថ្មី</translation>

@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Light</translation>
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
+<translation id="1832459821645506983">Yes, I’m in</translation>
 <translation id="1843805151597803366">To get better translations, let Google Search use the current page</translation>
 <translation id="1856325424225101786">Reset Lite mode?</translation>
 <translation id="1868024384445905608">Chrome now downloads files faster</translation>
@@ -289,6 +290,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2718846868787000099">To show content in your preferred languages, the sites that you visit can see your preferences</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Sort by site</translation>
+<translation id="2732063072010454421">Get a better voice experience</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Tap a word to search instantly or see related actions</translation>
 <translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
@@ -835,6 +837,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="587735546353481577">To follow a site, go to the site, open the Chrome menu and tap Follow.</translation>
 <translation id="5880748256563468367">Go to feed</translation>
 <translation id="5884076754568147479">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant</translation>
+<translation id="5906513782029855931">Knowing the URLs of sites allows Google Assistant to help you complete tasks. You can turn off Assistant in Chrome settings.</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> to start sync</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> saved</translation>

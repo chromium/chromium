@@ -280,7 +280,7 @@
 <translation id="2942350706960889382">固定的放大鏡</translation>
 <translation id="2942516765047364088">捷徑列位置</translation>
 <translation id="2946119680249604491">新增連線</translation>
-<translation id="2960314608273155470">擷取模式，預設為<ph name="SOURCE" /><ph name="TYPE" />。按下 Tab 鍵即可查看鍵盤瀏覽資訊。</translation>
+<translation id="2960314608273155470">擷取模式，預設係<ph name="SOURCE" /><ph name="TYPE" />。㩒 tab 鍵就可以睇下鍵盤導覽資料。</translation>
 <translation id="2961963223658824723">系統發生錯誤，請幾秒後再試。</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">無法下載<ph name="LANGUAGE" />語音檔案</translation>
@@ -1080,7 +1080,7 @@
 <translation id="8412677897383510995">顯示螢幕設定</translation>
 <translation id="8413272770729657668">3、2、1，開始錄影</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
-<translation id="8421270167862077762">這部裝置未安裝「<ph name="UNAVAILABLE_APPS" />」。</translation>
+<translation id="8421270167862077762">此裝置上未安裝「<ph name="UNAVAILABLE_APPS" />」。</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="8428213095426709021">設定</translation>
@@ -1208,6 +1208,7 @@
 <translation id="938963181863597773">我日曆有咩活動？</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="951991426597076286">拒絕</translation>
+<translation id="96080156868846968">正在掃描</translation>
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="98515147261107953">橫向</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 閂咗。</translation>

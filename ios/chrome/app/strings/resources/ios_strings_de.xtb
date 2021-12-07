@@ -104,7 +104,6 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="1832848789136765277">Bestätigen Sie Ihre Identität, damit Sie jederzeit auf Ihre synchronisierten Daten zugreifen können</translation>
 <translation id="1870148520156231997">Passwort einblenden</translation>
 <translation id="1872096359983322073">Taschenlampe</translation>
-<translation id="1894205589103145703">Bei der Anmeldung ist ein Fehler aufgetreten.</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
 <translation id="1930989359703290198">Ihre Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5513681519188741830">Vor <ph name="TIME" /> h</translation>
 <translation id="5523579157975978438">Öffnen Sie zum Deaktivieren die <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehen Sie zu „Passwörter“.</translation>
 <translation id="5525269841082836315">Passphrase erstellen</translation>
-<translation id="5532698011560297095">Anmeldung nicht möglich</translation>
 <translation id="5548760955356983418">Mit Handoff können Sie auf diesem Gerät auf einer Website stöbern und dann einfach auf Ihrem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock Ihres Macs angezeigt.
 
 Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein und Ihre Geräte müssen dasselbe iCloud-Konto verwenden.</translation>

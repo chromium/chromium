@@ -403,6 +403,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresë}other{# adresa}}</translation>
 <translation id="2187317261103489799">Zbulo (parazgjedhja)</translation>
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
+<translation id="2188852899391513400">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" i Google rekomandon ta ndryshosh tani dhe më pas të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="2202020181578195191">Fut një vit të vlefshëm skadimi</translation>
 <translation id="22081806969704220">Tabakaja 3</translation>
 <translation id="2212735316055980242">Politika nuk u gjet</translation>
@@ -648,6 +649,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3096100844101284527">Shto adresën e marrjes</translation>
+<translation id="3098513225387949945">U shpërfill, pasi lista "çaktivizo" përmban një motiv të barabartë me "*", i cili është ekuivalent me çaktivizimin e politikës.</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Po kontrollon konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Tabakaja e mesit</translation>
@@ -894,6 +896,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3827475930221174051">Bazuar në aktivitetin në lidhje me "<ph name="SEARCH_TERM" />"</translation>
 <translation id="3828924085048779000">Lënia bosh e frazës së kalimit nuk lejohet.</translation>
+<translation id="3831065134033923230">Kontrollo fjalëkalimet e tua të ruajtura</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ka instaluar shtesa për funksione shtesë. Shtesat kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="3832522519263485449">Shumë shpime majtas</translation>
 <translation id="3835233591525155343">Përdorimi i pajisjes sate</translation>
@@ -1090,6 +1093,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="443673843213245140">Përdorimi i një përfaqësuesi është i çaktivizuar, por është specifikuar një konfigurim i qartë përfaqësuesi.</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
+<translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" i Google rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4455222631300069614">Ndrysho fjalëkalimin tënd tani</translation>
 <translation id="4460315069258617173">Lejohet derisa të mbyllësh skedat për këtë faqe</translation>
 <translation id="4464826014807964867">Sajtet e uebit me informacione nga organizata jote</translation>
@@ -1554,6 +1558,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6008122969617370890">Renditja N deri në 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Kontrollo fjalëkalimet e tua</translation>
+<translation id="6014851866995737824">U shpërfill, pasi mungon lista "aktivizo" ose "çaktivizo".</translation>
 <translation id="6015796118275082299">Viti</translation>
 <translation id="6017514345406065928">E gjelbër</translation>
 <translation id="6017850046339264347">Sulmuesit në <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mund të instalojnë aplikacione mashtruese që pretendojnë se janë diçka tjetër ose që mbledhin të dhëna që mund të përdoren për të të gjurmuar. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1577,6 +1582,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6051898664905071243">Numri i faqeve:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" i Google rekomandon ndryshimin e këtij fjalëkalimi tani.</translation>
 <translation id="6055888660316801977">Kredencial pagese të sigurt pa fletë përkatëse kredenciali</translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
@@ -1722,7 +1728,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
 <translation id="6609880536175561541">Prc7 (Zarf)</translation>
 <translation id="6615297766614333076">Stivuesi 2</translation>
-<translation id="6623589891453322342">përpunuesit e skedarëve</translation>
 <translation id="6624427990725312378">Informacionet e kontaktit</translation>
 <translation id="6626291197371920147">Shto numër të vlefshëm karte</translation>
 <translation id="6628463337424475685">Kërkimi me <ph name="ENGINE" /></translation>
@@ -1813,7 +1818,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6949872517221025916">Rivendos fjalëkalimin</translation>
 <translation id="6950684638814147129">Gabim gjatë paraqitjes së vlerës JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Rivendos të gjitha</translation>
-<translation id="6954341342296443517">Mund të kërkojë të hapë llojet e skedarëve</translation>
 <translation id="6957887021205513506">Certifikata e serverit duket se është e rreme.</translation>
 <translation id="6958564499836457428">Menaxho cilësimet e privatësisë të Google në "Llogarinë tënde të Google"</translation>
 <translation id="6961844873822989059">Mund të kërkojë të përdorë fontet e instaluara në pajisjen tënde</translation>
@@ -1840,7 +1844,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Niveli i zmadhimit</translation>
 <translation id="7016992613359344582">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë.</translation>
-<translation id="7024588353896425985">Përpunuesit e skedarëve</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7030436163253143341">Certifikata nuk është e vlefshme</translation>
 <translation id="7031646650991750659">Cilat aplikacione të Google Play ke instaluar</translation>

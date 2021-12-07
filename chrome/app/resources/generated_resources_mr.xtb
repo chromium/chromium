@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
 <translation id="1153636665119721804">Google प्रगत संरक्षण प्रोग्राम</translation>
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
+<translation id="1158080958325422608">अप्परकेस करा</translation>
 <translation id="1158238185437008462">मेमरी पहा</translation>
 <translation id="1161575384898972166">कृपया क्लायंट प्रमाणपत्र एक्सपोर्ट करण्यासाठी <ph name="TOKEN_NAME" /> मध्ये साइन इन करा.</translation>
 <translation id="116173250649946226">तुमच्या अ‍ॅडमिनिस्ट्रेटरने डीफॉल्ट थीम सेट केली आहे जी बदलली जाऊ शकत नाही.</translation>
@@ -471,7 +472,6 @@
 <translation id="1480663089572535854">तुम्ही “निवडा” ची असाइनमेंट बदलण्यासाठी मागे जाऊ शकता. तुम्ही सेटिंग्ज मध्ये ऑटो-स्कॅन कधीही बंद करू शकता.</translation>
 <translation id="1481537595330271162">डिस्कचा आकार बदलताना एरर आली</translation>
 <translation id="1482626744466814421">हा टॅब बुकमार्क करा…</translation>
-<translation id="1483272013430662157">वेब अ‍ॅप्स ही विविध प्रकारच्या फाइल उघडण्याबद्दल विचारू शकतात</translation>
 <translation id="1483493594462132177">पाठवा</translation>
 <translation id="1484979925941077974">साइट ब्लूटूथ वापरत आहे</translation>
 <translation id="1485015260175968628">ते आता करू शकते:</translation>
@@ -651,7 +651,6 @@
 <translation id="164936512206786300">ब्लूटूथ डिव्हाइसचे पेअरिंग काढा</translation>
 <translation id="1651008383952180276">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे</translation>
 <translation id="1652326691684645429">Nearby सह शेअरिंग सुरू करा</translation>
-<translation id="1653631694606464309">वेब अ‍ॅप्स साधारणतः विविध प्रकारच्या फाइल उघडण्याची विनंती करते त्यामुळे त्या फाइलवर तुम्हाला जिथे हवे आहे तिथे काम करू शकता जसे की, तुमच्या प्राधान्यकृत वर्ड प्रोसेसरमध्ये दस्तऐवज उघडणे</translation>
 <translation id="1656528038316521561">बॅकग्राउंडची अपारदर्शकता</translation>
 <translation id="1657406563541664238">वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप Google कडे पाठवून <ph name="PRODUCT_NAME" /> ला अधिक चांगले करण्यास मदत करा</translation>
 <translation id="1657937299377480641">शैक्षणिक स्रोतांच्या अ‍ॅक्सेससाठी पुन्हा साइन इन करण्याकरिता, तुम्हाला परवानगी देण्याबाबत पालकाला सांगा</translation>
@@ -696,6 +695,7 @@
 <translation id="1700079447639026019">कधीही कुकी वापरू न शकणार्‍या साइट</translation>
 <translation id="1703331064825191675">तुमच्या पासवर्डची कधीही चिंता करू नका</translation>
 <translation id="1703666494654169921">साइटना आभासी वास्तविकता डिव्हाइस किंवा डेटा वापरण्याची अनुमती देऊ नका</translation>
+<translation id="1704097193565924901">कॅपिटल करणे</translation>
 <translation id="1704230497453185209">साइटना आवाज प्ले करण्याची अनुमती देऊ नका</translation>
 <translation id="1704970325597567340">सुरक्षा तपासणी <ph name="DATE" /> रोजी रन केली गेली</translation>
 <translation id="1706586824377653884">तुमच्या ॲडमिनिस्ट्रेटरने जोडले</translation>
@@ -2410,7 +2410,6 @@
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> कडे कमांड पाठविण्यासाठी <ph name="SEARCH_KEY" /> दाबा</translation>
 <translation id="3450157232394774192">निष्क्रिय स्थिती कब्जा टक्केवारी</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे.</translation>
-<translation id="3451753556629288767">विविध प्रकारच्या फाइल उघडण्याची अनुमती आहे</translation>
 <translation id="3452999110156026232">पालक ॲक्सेस</translation>
 <translation id="3453612417627951340">ऑथेंटिकेशन आवश्यक</translation>
 <translation id="3454213325559396544">या <ph name="DEVICE_TYPE" /> साठी हे अंतिम ऑटोमेटिक सॉफ्टवेअर आणि सिक्युरिटी अपडेट आहे. वैशिष्ट्यांसंबंधित अपडेट मिळवण्यासाठी, सर्वात नवीन मॉडेलवर अपग्रेड करा.</translation>
@@ -3578,6 +3577,7 @@
 <translation id="4681453295291708042">Nearby सह शेअरिंग बंद करा</translation>
 <translation id="4681930562518940301">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
 <translation id="4682551433947286597">साइन-इन स्क्रीनवर दिसणारे वॉलपेपर.</translation>
+<translation id="4683629100208651599">लोअरकेस करा</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डीफॉल्ट)</translation>
 <translation id="4684427112815847243">सर्वकाही संंकालित करा</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> कॅमेरा अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेस करण्याची अनुमती देण्यासाठी कॅमेरा प्रायव्हसी स्विच बंद करा.</translation>
@@ -5526,7 +5526,6 @@
 <translation id="6785518634832172390">पिन १२ अंकी किंवा त्यापेक्षा कमी असणे आवश्यक आहे</translation>
 <translation id="6786747875388722282">विस्तार</translation>
 <translation id="6787097042755590313">इतर टॅब</translation>
-<translation id="6787631759192429908">फाइल उघडायच्या आहेत का?</translation>
 <translation id="6787839852456839824">कीबोर्ड शॉर्टकट</translation>
 <translation id="6788210894632713004">पॅक न केलेले एक्स्टेंशन</translation>
 <translation id="6789592661892473991">आडवे विभाजित करा</translation>
@@ -5778,7 +5777,6 @@
 <translation id="7025082428878635038">जेश्चरसोबत नेव्हिगेट करण्याचा नवीन मार्ग सादर करत आहोत</translation>
 <translation id="7025190659207909717">मोबाइल डेटा सेवा व्यवस्थापन</translation>
 <translation id="7025895441903756761">सुरक्षा आणि गोपनीयता</translation>
-<translation id="7026552751317161576">वेब ॲप्सना विविध प्रकारच्या फाइल उघडण्याची अनुमती देऊ नका</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Open All in Incognito Window}=1{गुप्त विंडोमध्ये उघडा}other{सर्व ({COUNT}) गुप्त विंडोमध्ये उघडा}}</translation>
 <translation id="7029307918966275733">Crostini इंस्टॉल केलेले नाही. क्रेडिट पाहण्यासाठी कृपया Crostini इंस्टॉल करा.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
@@ -5823,7 +5821,6 @@
 <translation id="7067396782363924830">अँबियंट रंग</translation>
 <translation id="7067725467529581407">हे कधीही दर्शवू नका.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> ला नवीनतम किंवा वेगळ्या प्रकारच्या सिक्युरिटी की ची आवश्यकता असू शकते</translation>
-<translation id="7070269827082111569">विविध प्रकारच्या फाइल उघडण्याची अनुमती नाही</translation>
 <translation id="7070484045139057854">हे साइट डेटा वाचू आणि बदलू शकते</translation>
 <translation id="7072010813301522126">शॉर्टकट नाव</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 With RSA एंक्रिप्शन</translation>
@@ -5974,6 +5971,7 @@
 <translation id="7257173066616499747">वाय-फाय नेटवर्क</translation>
 <translation id="725758059478686223">प्रिंटिंग सेवा</translation>
 <translation id="7257666756905341374">तुम्ही कॉपी आणि पेस्ट करता तो डेटा वाचा</translation>
+<translation id="7258192266780953209">परिवर्तने</translation>
 <translation id="7258225044283673131">ॲप्लिकेशन प्रतिसाद देत नाही. अ‍ॅप बंद करण्यासाठी "सक्तीने बंद करा" निवडा.</translation>
 <translation id="7262004276116528033">ही साइन-इन सेवा <ph name="SAML_DOMAIN" /> द्वारे होस्ट केली जाते</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />या ट्रबलशूटिंग पायऱ्या वापरून पहा:
@@ -6395,7 +6393,6 @@
 <translation id="7680416688940118410">टचस्क्रीन कॅलिब्रेशन</translation>
 <translation id="7681095912841365527">साइट ब्लूटूथ वापरू शकते</translation>
 <translation id="7681597159868843240">आभासी वास्तविकता किंवा फिटनेस ट्रॅकिंग यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमच्या डिव्हाइसची मोशन सेन्सर वापरतात</translation>
-<translation id="7683164815270164555">एखाद्या वेब ॲपला विविध प्रकारच्या फाइल उघडायच्या असतील तेव्हा विचारा</translation>
 <translation id="7683373461016844951">पुढे सुरू ठेवण्यासाठी, ठीक आहे वर क्लिक करा, नंतर तुम्हाला <ph name="DOMAIN" /> ईमेल पत्त्यासाठी नवीन प्रोफाइल तयार करण्याकरता व्यक्तीला जोडावर क्लिक करा.</translation>
 <translation id="7684212569183643648">तुमच्या ॲडमिनिस्ट्रेटरद्वारे इंस्टॉल केले</translation>
 <translation id="7684559058815332124">कॅप्टिव्ह लॉग इन पेजला भेट द्या</translation>
@@ -6899,7 +6896,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8161293209665121583">वेब पेजसाठी वाचक मोड</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टॅब नवीन विंडो वर हलवा}other{टॅब नवीन विंडो वर हलवा}}</translation>
 <translation id="8165997195302308593">Crostini पोर्ट फॉरवर्डिंग</translation>
-<translation id="8166081708154635403">फाइल उघडायची आहे का?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{फोन नंबर}other{# फोन नंबर}}</translation>
 <translation id="8168071266284693455">तुमचे बुकमार्क, पासवर्ड, इतिहास आणि आणखी बरेच काही तुमच्या सर्व डिव्हाइसवर सिंक केले आहे</translation>
 <translation id="8168435359814927499">आशय</translation>
@@ -7474,7 +7470,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8800004011501252845">यासाठी गंतव्ये दर्शवत आहे</translation>
 <translation id="8800034312320686233">साइट काम करत नाही का?</translation>
-<translation id="880004380809002950">वेब ॲप्सना विविध प्रकारच्या फाइल उघडण्यापासून ब्लॉक करा</translation>
 <translation id="8803953437405899238">एका क्लिकने एक नवीन टॅब उघडा</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{टॅब दुसर्‍या विंडोवर हलवा}other{टॅब दुसर्‍या विंडोवर हलवा}}</translation>
 <translation id="8805140816472474147">सिंक करणे सुरू करण्यासाठी सिंक सेटिंग्जची पुष्टी करा.</translation>

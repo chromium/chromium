@@ -280,6 +280,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2942350706960889382">Kikuzaji Kilichoambatishwa</translation>
 <translation id="2942516765047364088">Nafasi ya rafu</translation>
 <translation id="2946119680249604491">Ongeza muunganisho</translation>
+<translation id="2960314608273155470">Hali ya Kupiga Picha, chaguomsingi ni <ph name="SOURCE" /> <ph name="TYPE" />. Bonyeza 'tab' ili usogeze kwa kutumia kibodi.</translation>
 <translation id="2961963223658824723">Hitilafu fulani imetokea. Jaribu tena baada ya sekunde chache.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Imeshindwa kupakua faili za matamshi za <ph name="LANGUAGE" /></translation>
@@ -886,6 +887,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7042322267639375032">Kunja eneo la hali</translation>
 <translation id="7045033600005038336">Ungependa kubadilisha kiolezo?</translation>
 <translation id="7045595904618419789">Fungua kikuzaji</translation>
+<translation id="7051244143160304048">Muunganisho wa <ph name="DEVICE_NAME" /> umekatika</translation>
 <translation id="7055381872777910864">J5</translation>
 <translation id="7055910611768509537">Hujatumia Stylus kwa zaidi ya wiki moja</translation>
 <translation id="7066646422045619941">Mtandao huu umezimwa na msimamizi wako.</translation>
@@ -1080,6 +1082,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8412677897383510995">Onyesha mipangilio ya skrini</translation>
 <translation id="8413272770729657668">Inaanza kurekodi baada ya tatu, mbili, moja</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Kifuniko)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> haipo kwenye kifaa hiki.</translation>
 <translation id="8425213833346101688">Badilisha</translation>
 <translation id="8426708595819210923">Habari za jioni <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Mipangilio</translation>
@@ -1207,6 +1210,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="938963181863597773">Kuna nini kwenye kalenda yangu?</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
 <translation id="951991426597076286">Kataa</translation>
+<translation id="96080156868846968">Inachanganuliwa</translation>
 <translation id="974545358917229949">Inaonyesha matokeo <ph name="RESULT_COUNT" /> ya <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Mlalo</translation>
 <translation id="990277280839877440">Dirisha la <ph name="WINDOW_TITILE" /> limefungwa.</translation>

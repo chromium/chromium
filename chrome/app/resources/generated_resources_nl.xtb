@@ -468,7 +468,6 @@
 <translation id="1480663089572535854">Je kunt teruggaan om de toewijzing voor Selecteren te wijzigen. Je kunt Automatische scan altijd uitzetten via Instellingen.</translation>
 <translation id="1481537595330271162">Fout bij aanpassen van schijfgrootte</translation>
 <translation id="1482626744466814421">Bookmark toevoegen voor dit tabblad…</translation>
-<translation id="1483272013430662157">Web-apps mogen vragen bepaalde typen bestanden te openen</translation>
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1484979925941077974">Site gebruikt Bluetooth</translation>
 <translation id="1485015260175968628">De app/extensie kan nu het volgende doen:</translation>
@@ -649,7 +648,6 @@
 <translation id="164936512206786300">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="1651008383952180276">Je moet twee keer dezelfde wachtwoordzin opgeven</translation>
 <translation id="1652326691684645429">Dichtbij delen aanzetten</translation>
-<translation id="1653631694606464309">Web-apps vragen gewoonlijk of bepaalde typen bestanden mogen worden geopend, zodat je waar je wilt aan die bestanden kunt werken (zoals documenten openen in je favoriete tekstverwerker)</translation>
 <translation id="1656528038316521561">Ondoorzichtigheid van achtergrond</translation>
 <translation id="1657406563541664238">Help <ph name="PRODUCT_NAME" /> beter te maken door automatisch gebruiksstatistieken en crashmeldingen naar Google te verzenden</translation>
 <translation id="1657937299377480641">Als je opnieuw wilt inloggen voor toegang tot educatieve bronnen, vraag je een ouder om je toestemming te geven</translation>
@@ -2395,7 +2393,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3449839693241009168">Druk op <ph name="SEARCH_KEY" /> om opdrachten te verzenden naar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Bezettingspercentage van inactieve status</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt.</translation>
-<translation id="3451753556629288767">Mag bepaalde typen bestanden openen</translation>
 <translation id="3452999110156026232">Toegang door ouders</translation>
 <translation id="3453612417627951340">Autorisatie vereist</translation>
 <translation id="3454213325559396544">Dit is de laatste automatische software- en beveiligingsupdate voor deze <ph name="DEVICE_TYPE" />. Upgrade naar een nieuwer model om nieuwe updates te ontvangen.</translation>
@@ -5509,7 +5506,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6785518634832172390">Pincode mag maximaal 12 cijfers bevatten</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6787097042755590313">Ander tabblad</translation>
-<translation id="6787631759192429908">Bestanden openen?</translation>
 <translation id="6787839852456839824">Sneltoetsen</translation>
 <translation id="6788210894632713004">Uitgepakte extensie</translation>
 <translation id="6789592661892473991">Horizontaal splitsen</translation>
@@ -5761,7 +5757,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7025082428878635038">Maak kennis met een nieuwe manier om te navigeren met gebaren</translation>
 <translation id="7025190659207909717">Beheer van mobiele netwerken</translation>
 <translation id="7025895441903756761">Beveiliging en privacy</translation>
-<translation id="7026552751317161576">Web-apps niet toestaan om typen bestanden te openen</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Alles openen in &amp;incognitovenster}=1{Openen in &amp;incognitovenster}other{Alles ({COUNT}) openen in &amp;incognitovenster}}</translation>
 <translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
@@ -5806,7 +5801,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7067396782363924830">Omgevingskleuren</translation>
 <translation id="7067725467529581407">Nooit meer bekijken.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> vereist mogelijk een nieuwere of een ander type beveiligingssleutel</translation>
-<translation id="7070269827082111569">Mag bepaalde typen bestanden niet openen</translation>
 <translation id="7070484045139057854">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="7072010813301522126">Naam van snelkoppeling</translation>
 <translation id="7075513071073410194">PKCS nr. 1 MD5 met RSA-encryptie</translation>
@@ -6378,7 +6372,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7680416688940118410">Kalibratie touchscreen</translation>
 <translation id="7681095912841365527">Site kan Bluetooth gebruiken</translation>
 <translation id="7681597159868843240">Sites gebruiken de bewegingssensoren van je apparaat meestal voor functies zoals virtual reality of fitnesstracking</translation>
-<translation id="7683164815270164555">Vragen als een web-app bepaalde typen bestanden wil openen</translation>
 <translation id="7683373461016844951">Als je verder wilt gaan, klik je op 'OK' en vervolgens op 'Persoon toevoegen' om een nieuw profiel te maken voor je <ph name="DOMAIN" />-mailadres.</translation>
 <translation id="7684212569183643648">Geïnstalleerd door je beheerder</translation>
 <translation id="7684559058815332124">Captive portal-loginpagina bezoeken</translation>
@@ -6882,7 +6875,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8161293209665121583">Lezermodus voor webpagina's</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar nieuw venster}}</translation>
 <translation id="8165997195302308593">Poortdoorschakeling voor Crostini</translation>
-<translation id="8166081708154635403">Bestand openen?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{een telefoonnummer}other{# telefoonnummers}}</translation>
 <translation id="8168071266284693455">Je bookmarks, wachtwoorden, geschiedenis en meer zijn gesynchroniseerd op al je apparaten</translation>
 <translation id="8168435359814927499">Content</translation>
@@ -7458,7 +7450,6 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8800004011501252845">Bestemmingen bekijken voor</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
-<translation id="880004380809002950">Voorkomen dat web-apps bepaalde typen bestanden openen</translation>
 <translation id="8803953437405899238">Je kunt met één klik een nieuw tabblad openen</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tabblad verplaatsen naar ander venster}other{Tabbladen verplaatsen naar ander venster}}</translation>
 <translation id="8805140816472474147">Bevestig de synchronisatie-instellingen om de synchronisatie te starten.</translation>

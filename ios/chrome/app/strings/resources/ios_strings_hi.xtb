@@ -104,7 +104,6 @@
 <translation id="1832848789136765277">यह पक्का करने के लिए कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें, अपनी पहचान की पुष्टि करें</translation>
 <translation id="1870148520156231997">पासवर्ड दिखाएं</translation>
 <translation id="1872096359983322073">टॉर्च</translation>
-<translation id="1894205589103145703">साइन इन करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="1911619930368729126">Google डिस्क पर अपलोड करें</translation>
 <translation id="1923342640370224680">पिछला घंटा</translation>
 <translation id="1930989359703290198">आपका संगठन, आपको सिर्फ़ कुछ खास खातों से साइन इन करने की अनुमति देता है. जिन खातों से साइन करने की अनुमति नहीं है वे छिपा दिए जाते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@
 <translation id="5513681519188741830"><ph name="TIME" /> घंटे पहले</translation>
 <translation id="5523579157975978438">बंद करने के लिए, <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> खोलें और पासवर्ड पर जाएं.</translation>
 <translation id="5525269841082836315">'पासफ़्रेज़' बनाएं</translation>
-<translation id="5532698011560297095">प्रवेश नहीं कर सकता</translation>
 <translation id="5548760955356983418">Handoff से आप इस डिवाइस पर वेबसाइट ब्राउज़ करना प्रारंभ करके उसे अपने Mac पर आसानी से जारी रख सकते हैं. वर्तमान में खुली हुई वेबसाइट आपके Mac के Dock में दिखाई देगी.
 
 Handoff को Settings के General अनुभाग में भी सक्षम किया जाना चाहिए और आपके डिवाइसों को समान iCloud खाते का उपयोग करना चाहिए.</translation>

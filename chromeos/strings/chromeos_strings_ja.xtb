@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">名前</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
+<translation id="3924044641767672375">修理手続きをスムーズに進めるため、Wi-Fi に接続することをおすすめします。ネットワークは保存されます。</translation>
 <translation id="3932043219784172185">接続されているデバイスはありません</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
 <translation id="3942420633017001071">診断</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">始める</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
+<translation id="4485626319513081846">デバイスを保管または修理して新しい顧客に配布する場合は、このオプションを選択します。</translation>
 <translation id="4511264077854731334">ポータル</translation>
 <translation id="4521826082652183069">サブジェクト代替名マッチ</translation>
 <translation id="4536864596629708641">IP 設定</translation>
@@ -416,6 +418,7 @@
 <translation id="6957231940976260713">サービス名</translation>
 <translation id="6961170852793647506">まずスキャナにドキュメントを置きます</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
+<translation id="6992266763844448459">デバイスの所有者が変わらない場合は、このオプションを選択します。たとえば、組織内の他の人がデバイスを使う場合などです。</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
 <translation id="7058278511608979688">終了して保存</translation>

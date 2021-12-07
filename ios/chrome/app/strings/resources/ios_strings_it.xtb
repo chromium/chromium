@@ -104,7 +104,6 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
 <translation id="1870148520156231997">Mostra password</translation>
 <translation id="1872096359983322073">Torcia</translation>
-<translation id="1894205589103145703">Si è verificato un problema durante l'accesso.</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
 <translation id="1923342640370224680">Ultima ora</translation>
 <translation id="1930989359703290198">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5513681519188741830"><ph name="TIME" /> h fa</translation>
 <translation id="5523579157975978438">Per disattivare, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai alla sezione Password.</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
-<translation id="5532698011560297095">Impossibile eseguire l'accesso</translation>
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
 La funzione Handoff deve anche essere attivata nella sezione Generali di Impostazioni e sui dispositivi deve essere in uso lo stesso account iCloud.</translation>

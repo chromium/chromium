@@ -104,7 +104,6 @@
 <translation id="1832848789136765277">Та синк хийсэн өгөгдөлдөө үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="1870148520156231997">Нууц үгийг харуулах</translation>
 <translation id="1872096359983322073">Чийдэн</translation>
-<translation id="1894205589103145703">Нэвтрэх үед алдаа гарлаа.</translation>
 <translation id="1911619930368729126">Google Drive руу татаж оруул</translation>
 <translation id="1923342640370224680">Сүүлийн цаг</translation>
 <translation id="1930989359703290198">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө. Зөвшөөрөөгүй бүртгэлүүдийг нуусан. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -169,6 +168,7 @@
 <translation id="2584132361465095047">Бүртгэл нэмэх...</translation>
 <translation id="2600682495497606169">Сайтын күүкиг арилгах</translation>
 <translation id="2625189173221582860">Нууц үгийг хуулсан</translation>
+<translation id="2626236249646841566">Холболтоо шалгаад, нэвтрэхээр дахин оролдоно уу.</translation>
 <translation id="2647269890314209800">Ашиглаж буй күүки</translation>
 <translation id="2648803196158606475">Уншсаныг устгах</translation>
 <translation id="2653659639078652383">Илгээх</translation>
@@ -364,6 +364,7 @@
 <translation id="4508750114462689118">Нэвтрэх сурталчилгааг хаах</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />-д хадгалсан нууц үгээ нээж, удирдах</translation>
 <translation id="4536418791685807335">Дахин нэвтрэхээр оролдоно уу.</translation>
+<translation id="4540780316273593836">Алдаа гарлаа</translation>
 <translation id="457386861538956877">Илүү ихийг ...</translation>
 <translation id="4592368184551360546">Гар</translation>
 <translation id="461440297010471931">Google-р хайж байна</translation>
@@ -463,7 +464,6 @@
 <translation id="5513681519188741830"><ph name="TIME" /> цагийн өмнө</translation>
 <translation id="5523579157975978438">Унтраахын тулд <ph name="BEGIN_LINK" />Тохиргоог<ph name="END_LINK" /> нээж, Нууц үг рүү очно уу.</translation>
 <translation id="5525269841082836315">Нэвтрэх үгийг үүсгэх</translation>
-<translation id="5532698011560297095">Нэвтрэх боломжгүй</translation>
 <translation id="5548760955356983418">Handoff нь танд энэ төхөөрөмж дээр веб хуудсыг ачаалж, дараа нь Mac дээр хялбархан үргэжлүүлэн ажиллах боломжийг олгодог. Одоо нээлттэй байгаа вебсайт таны Mac-ийн Dock дотор гарч ирнэ.
 
 Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүүлсэн байх ёстой бөгөөд таны төхөөрөмжүүд ижилхэн iCloud акаунт ашиглах ёстой.</translation>
@@ -479,6 +479,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Хувилбар <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Одоо Chrome-н 1 цонхыг харуулж байна}other{Одоо Chrome-н {count} цонхыг харуулж байна}}</translation>
+<translation id="5704908597376970822">Нэвтрэх боломжгүй.</translation>
 <translation id="5706552126692816153">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="5711039611392265845">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог <ph name="BEGIN_LINK" />Синк хийх болон Google-н үйлчилгээ<ph name="END_LINK" />-с харна уу.</translation>
 <translation id="5724941645893276623">Вебийг хувийн байдлаар үзэхийн тулд шинэ таб нэмнэ үү</translation>

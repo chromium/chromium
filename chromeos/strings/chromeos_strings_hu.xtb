@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Név</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="387301095347517405">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
+<translation id="3924044641767672375">A javítási folyamat leegyszerűsítéséhez javasoljuk, hogy csatlakozzon Wi-Fi-hálózathoz. A hálózatát menteni fogja a rendszer.</translation>
 <translation id="3932043219784172185">Nincs csatlakoztatott eszköz</translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
 <translation id="3942420633017001071">Diagnosztika</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nem sikerült a nem alapértelmezett hálózati átjáró pingelése</translation>
+<translation id="4485626319513081846">Akkor válassza ezt a lehetőséget, ha az eszközt újraértékesítik vagy felújítják új ügyfél számára történő értékesítéshez.</translation>
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Tárgy alternatív neve – egyezés</translation>
 <translation id="4536864596629708641">IP-konfiguráció</translation>
@@ -416,6 +418,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6957231940976260713">Szolgáltatás neve</translation>
 <translation id="6961170852793647506">A kezdéshez helyezze dokumentumát a szkennerbe</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
+<translation id="6992266763844448459">Akkor válassza ezt a lehetőséget, ha az eszköz tulajdonosa nem változik. Ha például az eszközt másik személynek adják át a szervezeten belül.</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
 <translation id="7040230719604914234">Szolgáltató</translation>
 <translation id="7058278511608979688">Befejezés és mentés</translation>

@@ -468,7 +468,6 @@
 <translation id="1480663089572535854">Pots tornar enrere per canviar l'assignació a Selecciona. Pots desactivar la cerca automàtica sempre que vulguis des de Configuració.</translation>
 <translation id="1481537595330271162">S'ha produït un error en canviar la mida del disc</translation>
 <translation id="1482626744466814421">Afegeix aquesta pestanya a les adreces d'interès...</translation>
-<translation id="1483272013430662157">Les aplicacions web poden demanar-te permís per obrir certs tipus de fitxers</translation>
 <translation id="1483493594462132177">Envia</translation>
 <translation id="1484979925941077974">El lloc web està utilitzant el Bluetooth</translation>
 <translation id="1485015260175968628">Ara pot:</translation>
@@ -649,7 +648,6 @@
 <translation id="164936512206786300">Desvincula el dispositiu Bluetooth</translation>
 <translation id="1651008383952180276">Has d'escriure la mateixa frase de contrasenya dues vegades</translation>
 <translation id="1652326691684645429">Activa Compartició Nearby</translation>
-<translation id="1653631694606464309">Normalment, les aplicacions web demanen obrir determinats tipus de fitxers perquè hi puguis treballar on vulguis; per exemple, demanen obrir els documents al teu processador de textos preferit</translation>
 <translation id="1656528038316521561">Opacitat del fons</translation>
 <translation id="1657406563541664238">Ajuda'ns a millorar <ph name="PRODUCT_NAME" /> enviant estadístiques d'ús i informes d'error a Google automàticament.</translation>
 <translation id="1657937299377480641">Per tornar a iniciar la sessió per accedir als recursos educatius, has de demanar permís als teus pares</translation>
@@ -2359,7 +2357,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3429160811076349561">Les funcions de prova estan desactivades</translation>
 <translation id="3429271624041785769">Idiomes del contingut web</translation>
 <translation id="3429275422858276529">Afegeix aquesta pàgina a les adreces d'interès per trobar-la fàcilment més endavant</translation>
-<translation id="343115368966109153">Vols baixar <ph name="FILE_NAME" />? Qualsevol persona que faci servir aquest dispositiu podrà veure-ho.</translation>
+<translation id="343115368966109153">Vols baixar <ph name="FILE_NAME" />? Qualsevol persona que faci servir aquest dispositiu podrà veure'l.</translation>
 <translation id="3432227430032737297">Suprimeix totes les que es mostren</translation>
 <translation id="3432762828853624962">Treballadors compartits</translation>
 <translation id="3433621910545056227">El sistema no ha pogut establir el bloqueig dels atributs del temps d'instal·lació del dispositiu.</translation>
@@ -2392,7 +2390,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3449839693241009168">Premeu <ph name="SEARCH_KEY" /> per enviar ordres a <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Percentatge d'ocupació de l'estat d'inactivitat</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització.</translation>
-<translation id="3451753556629288767">Amb permís per obrir certs tipus de fitxers</translation>
 <translation id="3452999110156026232">Accés parental</translation>
 <translation id="3453612417627951340">Necessita una autorització.</translation>
 <translation id="3454213325559396544">Aquesta actualització de programari i seguretat és l'última que rebràs per a aquest dispositiu de tipus <ph name="DEVICE_TYPE" />. Per obtenir actualitzacions en el futur, canvia el dispositiu per un model més nou.</translation>
@@ -5507,7 +5504,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6785518634832172390">El PIN ha de tenir 12 dígits com a màxim</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Una altra pestanya</translation>
-<translation id="6787631759192429908">Vols obrir fitxers?</translation>
 <translation id="6787839852456839824">Tecles de drecera</translation>
 <translation id="6788210894632713004">Extensió sense empaquetar</translation>
 <translation id="6789592661892473991">Divisió horitzontal</translation>
@@ -5759,7 +5755,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7025082428878635038">Presentem una nova manera de navegar amb gestos</translation>
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7025895441903756761">Seguretat i privadesa</translation>
-<translation id="7026552751317161576">No permetis que les aplicacions web obrin certs tipus de fitxers</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Obre-les totes en una finestra d'&amp;incògnit}=1{Obre en una finestra d'&amp;incògnit}other{Obre-les totes ({COUNT}) en una finestra d'&amp;incògnit}}</translation>
 <translation id="7029307918966275733">Crostini no està instal·lat. Instal·la'l per veure els crèdits.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
@@ -5804,7 +5799,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7067396782363924830">Colors d'ambient</translation>
 <translation id="7067725467529581407">No m'ho tornis a mostrar</translation>
 <translation id="7069811530847688087">Pot ser que <ph name="WEBSITE" /> requereixi un tipus de seguretat més nou o diferent</translation>
-<translation id="7070269827082111569">Sense permís per obrir certs tipus de fitxers</translation>
 <translation id="7070484045139057854">Aquesta extensió pot llegir i modificar les dades dels llocs web</translation>
 <translation id="7072010813301522126">Nom de la drecera</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 amb encriptació RSA</translation>
@@ -6376,7 +6370,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7680416688940118410">Calibratge de la pantalla tàctil</translation>
 <translation id="7681095912841365527">El lloc web pot utilitzar el Bluetooth</translation>
 <translation id="7681597159868843240">Els llocs web solen utilitzar els sensors de moviment del dispositiu per a funcions com ara la realitat virtual o el seguiment de fitnes</translation>
-<translation id="7683164815270164555">Pregunta'm quan un lloc web vulgui obrir certs tipus de fitxers</translation>
 <translation id="7683373461016844951">Per continuar, fes clic a D'acord i, a continuació, a Afegeix una persona per crear un perfil per a la teva adreça electrònica del domini <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Extensió instal·lada per l'administrador</translation>
 <translation id="7684559058815332124">Accedeix a la pàgina d'inici de sessió del portal captiu</translation>
@@ -6881,7 +6874,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8161293209665121583">Mode de lector a les pàgines web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mou la pestanya a una finestra nova}other{Mou les pestanyes a una finestra nova}}</translation>
 <translation id="8165997195302308593">Redirecció de ports de Crostini</translation>
-<translation id="8166081708154635403">Vols obrir el fitxer?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 número de telèfon}other{# números de telèfon}}</translation>
 <translation id="8168071266284693455">Les adreces d'interès, les contrasenyes, l'historial i altres elements se sincronitzen en tots els dispositius</translation>
 <translation id="8168435359814927499">Contingut</translation>
@@ -7457,7 +7449,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8800004011501252845">S'estan mostrant les destinacions per a</translation>
 <translation id="8800034312320686233">El lloc web no funciona?</translation>
-<translation id="880004380809002950">No permetis que les aplicacions web obrin certs tipus de fitxers</translation>
 <translation id="8803953437405899238">Obre una pestanya nova amb un sol clic</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Mou la pestanya a una altra finestra}other{Mou les pestanyes a una altra finestra}}</translation>
 <translation id="8805140816472474147">Confirma la configuració de sincronització per començar a sincronitzar.</translation>

@@ -1739,7 +1739,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6596325263575161958">Salausasetukset</translation>
 <translation id="6609880536175561541">Prc7 (kirjekuori)</translation>
 <translation id="6615297766614333076">Pinoaja 2</translation>
-<translation id="6623589891453322342">tiedostojen käsittelijät</translation>
 <translation id="6624427990725312378">Yhteystiedot</translation>
 <translation id="6626291197371920147">Lisää kelvollinen kortin numero</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" />-haku</translation>
@@ -1832,7 +1831,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6949872517221025916">Pyydä uusi salasana</translation>
 <translation id="6950684638814147129">Virhe jäsennettäessä JSON-arvoa: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Palauta kaikki</translation>
-<translation id="6954341342296443517">Saa pyytää lupaa tietyntyyppisten tiedostojen avaamiseen</translation>
 <translation id="6957887021205513506">Palvelimen varmenne näyttää olevan väärennös.</translation>
 <translation id="6958564499836457428">Tarkista Googlen yksityisyysasetukset Google-tililläsi</translation>
 <translation id="6961844873822989059">Saa pyytää lupaa käyttää laitteellesi asennettuja fontteja</translation>
@@ -1859,7 +1857,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Zoomauksen taso</translation>
 <translation id="7016992613359344582">Veloitukset voivat olla kertaluontoisia tai toistuvia, eikä niitä välttämättä esitetä selkeästi.</translation>
-<translation id="7024588353896425985">Tiedostojen käsittelijät</translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7030436163253143341">Varmenne ei ole voimassa</translation>
 <translation id="7031646650991750659">Asentamasi Google Play ‑sovellukset</translation>

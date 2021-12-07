@@ -160,6 +160,7 @@
 <translation id="1153636665119721804">Google Qabaqcıl Qoruma Proqramı</translation>
 <translation id="1155545602507378023">Xeyr, yalnız bu cihaz</translation>
 <translation id="1155816283571436363">Telefonunuza qoşulur</translation>
+<translation id="1158080958325422608">Böyük hərflərə çevirin</translation>
 <translation id="1158238185437008462">Xatirələrə baxın</translation>
 <translation id="1161575384898972166">Klient sertifikatını eksport etmək üçün <ph name="TOKEN_NAME" /> üzərinə daxil olun.</translation>
 <translation id="116173250649946226">Administratorunuz dəyişdirilə bilməyən bir defolt tema ayarlayıb.</translation>
@@ -468,7 +469,6 @@
 <translation id="1480663089572535854">"Seçin" əməliyyatı üçün təyinatı dəyişdirmək üçün geri qayıda bilərsiniz. Hər zaman Ayarlarda avtomatik skanlamanı deaktiv edə bilərsiniz.</translation>
 <translation id="1481537595330271162">Diskin ölçüsünü dəyişərkən xəta baş verdi</translation>
 <translation id="1482626744466814421">Bu tabı əlfəcinlərə əlavə edin...</translation>
-<translation id="1483272013430662157">Veb tətbiqlər fayl növlərinin açılmasını soruşa bilər</translation>
 <translation id="1483493594462132177">Göndərin</translation>
 <translation id="1484979925941077974">Sayt Bluetooth istifadə edir</translation>
 <translation id="1485015260175968628">İndi bunları bacarır:</translation>
@@ -647,7 +647,6 @@
 <translation id="164936512206786300">Bluetooth cihazını ayırın</translation>
 <translation id="1651008383952180276">Eyni parol sözü iki dəfə daxil etməlisiniz</translation>
 <translation id="1652326691684645429">Yaxındakılarla Paylaşmanı aktivləşdirin</translation>
-<translation id="1653631694606464309">Veb tətbiqlər adətən müəyyən növ faylları açmağı tələb edir ki, həmin faylların üzərində istədiyiniz yerdə işləyə biləsiniz (məsələn, tərcih etdiyiniz söz emalçısında sənədlərin açılması).</translation>
 <translation id="1656528038316521561">Arxa fonun qeyri-şəffaflığı</translation>
 <translation id="1657406563541664238">İstifadə statistikası və xəta hesabatlarını avtomatik Google'a göndərməklə <ph name="PRODUCT_NAME" /> tətbiqini təkmilləşdirməyə kömək edin</translation>
 <translation id="1657937299377480641">Təhsillə bağlı resurslara giriş üçün yenidən daxil olmaq məqsədilə valideyndən sizə icazə verməsini istəyin</translation>
@@ -692,6 +691,7 @@
 <translation id="1700079447639026019">Heç vaxt kukilərdən istifadə edə bilməyən saytlar</translation>
 <translation id="1703331064825191675">Parollarınız barədə narahat olmağınıza ehtiyac qalmayacaq</translation>
 <translation id="1703666494654169921">Saytlara virtual reallıq cihazlarından və ya datasından istifadə etmək icazəsi verməyin</translation>
+<translation id="1704097193565924901">Baş hərfi böyük yazın</translation>
 <translation id="1704230497453185209">Saytlara səs oxutmaq icazəsi verməyin</translation>
 <translation id="1704970325597567340">Təhlükəsizlik yoxlanışı <ph name="DATE" /> tarixində icra olunub</translation>
 <translation id="1706586824377653884">Administrator tərəfindən əlavə edildi</translation>
@@ -2402,7 +2402,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> artırmasına əmr göndərmək üçün <ph name="SEARCH_KEY" /> düyməsini basın</translation>
 <translation id="3450157232394774192">İnaktiv Durum Məşğuliyyət Faizi</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> sizdən indi Wi-Fi'a qoşulmağınızı və güncəlləməni endirməyinizi tələb edir.</translation>
-<translation id="3451753556629288767">Fayl növlərinin açılmasına icazə verilib</translation>
 <translation id="3452999110156026232">Valideyn Girişi</translation>
 <translation id="3453612417627951340">Doğrulama tələb edir</translation>
 <translation id="3454213325559396544">Bu, <ph name="DEVICE_TYPE" /> cihazı üçün sonuncu avtomatik proqram təminatı və təhlükəsizlik güncəlləməsidir. Növbəti güncəlləmələri əldə etmək üçün cihazı yeni modelə təkmilləşdirin.</translation>
@@ -3572,6 +3571,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4681453295291708042">Yaxındakılarla Paylaşmanı deaktiv edin</translation>
 <translation id="4681930562518940301">Original şəkli yeni tabda açın</translation>
 <translation id="4682551433947286597">Divar kağızları hesaba giriş ekranında görünür.</translation>
+<translation id="4683629100208651599">Kiçik hərflərə çevirin</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (defolt)</translation>
 <translation id="4684427112815847243">Hər şeyi sinxronlaşdırın</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> kameraya giriş etməyə çalışır. Girişə icazə vermək üçün kamera məxfilik dəyişdiricisini deaktiv edin.</translation>
@@ -5522,7 +5522,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6785518634832172390">PIN maksimum 12 rəqəmdən ibarət olmalıdır</translation>
 <translation id="6786747875388722282">Artırmalar</translation>
 <translation id="6787097042755590313">Digər Tab</translation>
-<translation id="6787631759192429908">Fayllar açılsın?</translation>
 <translation id="6787839852456839824">Klaviatura qısayolları</translation>
 <translation id="6788210894632713004">Paketlənməmiş artırma</translation>
 <translation id="6789592661892473991">Horizontal bölün</translation>
@@ -5774,7 +5773,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7025082428878635038">Jestlərlə naviqasiyanın yeni yolu ilə tanış olun</translation>
 <translation id="7025190659207909717">Mobil data xidmətini idarə edin</translation>
 <translation id="7025895441903756761">Güvənlik və Məxfilik</translation>
-<translation id="7026552751317161576">Veb tətbiqlərin fayl növlərini açmasına icazə verməyin</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Hamısını &amp;Anonim Pəncərədə Açın}=1{&amp;Anonim Pəncərədə Açın}other{Hamısını ({COUNT}) &amp;Anonim Pəncərədə Açın}}</translation>
 <translation id="7029307918966275733">Crostini quraşdırılmayıb. Kreditlərə baxmaq üçün Crostini'ni quraşdırın.</translation>
 <translation id="7029809446516969842">Parollar</translation>
@@ -5819,7 +5817,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7067396782363924830">Mühit rəngləri</translation>
 <translation id="7067725467529581407">Bunu heç vaxt yenidən göstərməyin.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> daha yeni və ya fərqli güvənlik açarı tələb edə bilər</translation>
-<translation id="7070269827082111569">Fayl növlərinin açılmasına icazə verilməyib</translation>
 <translation id="7070484045139057854">Bu Sayt Datasını Oxuya və Dəyişə Bilər</translation>
 <translation id="7072010813301522126">Qısayol adı</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 RSA Şifrələmə ilə</translation>
@@ -5970,6 +5967,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7257173066616499747">Wi-Fi şəbəkələri</translation>
 <translation id="725758059478686223">Çap Xidməti</translation>
 <translation id="7257666756905341374">Kopyaladığınız və yerləşdirdiyiniz datanı oxuyun</translation>
+<translation id="7258192266780953209">Transformasiya</translation>
 <translation id="7258225044283673131">Bu tətbiq cavab vermir. Tətbiqi bağlamaq üçün "Məcbur bağlayın" seçin.</translation>
 <translation id="7262004276116528033">Bu giriş xidməti <ph name="SAML_DOMAIN" /> tərəfindən dəstəklənir</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Bu nasazlıqların aradan qaldırılması addımlarını sınayın:
@@ -6393,7 +6391,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7680416688940118410">Sensor ekranın kalibrlənməsi</translation>
 <translation id="7681095912841365527">Sayt bluetooth istifadə edə bilər</translation>
 <translation id="7681597159868843240">Saytlar, adətən, virtual reallıq və ya fitnes izləmə kimi xüsusiyyətlər üçün cihazınızın hərəkət sensorlarından istifadə edir</translation>
-<translation id="7683164815270164555">Veb tətbiq fayl növlərini açmaq istədikdə soruşulsun</translation>
 <translation id="7683373461016844951">Davam etmək üçün "OK" seçimini edin, sonra <ph name="DOMAIN" /> e-poçtunda yeni profil yaratmaq üçün "Şəxs Əlavə Edin" əmrini seçin.</translation>
 <translation id="7684212569183643648">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="7684559058815332124">Kaptiv portal login səhifəsinə keçin</translation>
@@ -6898,7 +6895,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8161293209665121583">Veb səhifələr üçün oxucu rejimi</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabeli Yeni Pəncərəyə Köçürün}other{Tabelləri Yeni Pəncərəyə Köçürün}}</translation>
 <translation id="8165997195302308593">Crostini port yönləndirməsi</translation>
-<translation id="8166081708154635403">Fayl açılsın?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefon nömrəsi}other{# telefon nömrəsi}}</translation>
 <translation id="8168071266284693455">Əlfəcinləriniz, parollarınız, tarixçəniz və s. bütün cihazlarınızda sinxronizasiya edilib</translation>
 <translation id="8168435359814927499">Kontent</translation>
@@ -7472,7 +7468,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8800004011501252845">Üçün istiqamətlərə Göstər</translation>
 <translation id="8800034312320686233">Sayt işləmir?</translation>
-<translation id="880004380809002950">Veb tətbiqlərin fayl növlərini açmasını əngəlləyin</translation>
 <translation id="8803953437405899238">Bir klik ilə yeni tab açın</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tabı Başqa Pəncərəyə Köçürün}other{Tabları Başqa Pəncərəyə Köçürün}}</translation>
 <translation id="8805140816472474147">Sinxronizasiyaya başlamaq üçün sinxronizasiyanı təsdiq edin.</translation>

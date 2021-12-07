@@ -1728,7 +1728,6 @@
 <translation id="6596325263575161958">ตัวเลือกการเข้ารหัส</translation>
 <translation id="6609880536175561541">Prc7 (ซองจดหมาย)</translation>
 <translation id="6615297766614333076">สแต็กเกอร์ 2</translation>
-<translation id="6623589891453322342">เครื่องจัดการไฟล์</translation>
 <translation id="6624427990725312378">ข้อมูลติดต่อ</translation>
 <translation id="6626291197371920147">เพิ่มหมายเลขบัตรที่ถูกต้อง</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> ค้นหา</translation>
@@ -1821,7 +1820,6 @@
 <translation id="6949872517221025916">รีเซ็ตรหัสผ่าน</translation>
 <translation id="6950684638814147129">เกิดข้อผิดพลาดขณะแยกวิเคราะห์ค่า JSON: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">รีเซ็ตทั้งหมด</translation>
-<translation id="6954341342296443517">สามารถขอเปิดไฟล์ประเภทต่างๆ</translation>
 <translation id="6957887021205513506">ใบรับรองของเซิร์ฟเวอร์น่าจะเป็นของปลอม</translation>
 <translation id="6958564499836457428">จัดการการตั้งค่าความเป็นส่วนตัวของ Google ในบัญชี Google</translation>
 <translation id="6961844873822989059">สามารถขอใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์ได้</translation>
@@ -1848,7 +1846,6 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">ระดับการซูม</translation>
 <translation id="7016992613359344582">การเรียกเก็บเงินเหล่านี้อาจเกิดขึ้นครั้งเดียวหรือเป็นเกิดขึ้นซ้ำๆ และอาจไม่แสดงอย่างชัดแจ้ง</translation>
-<translation id="7024588353896425985">เครื่องจัดการไฟล์</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7030436163253143341">ใบรับรองไม่ถูกต้อง</translation>
 <translation id="7031646650991750659">แอปจาก Google Play ที่คุณติดตั้ง</translation>

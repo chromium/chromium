@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Сярэдні (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1195447618553298278">Невядомая памылка.</translation>
+<translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1204296502688602597">Затрымка DNS</translation>
 <translation id="123124571410524056">Магчыма, выяўлены партал</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
+<translation id="3924044641767672375">Для спрашчэння працэсу рамонту рэкамендуем падключыцца да Wi-Fi. Ваша сетка будзе захавана.</translation>
 <translation id="3932043219784172185">Няма падключаных прылад</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
+<translation id="4485626319513081846">Выберыце гэты параметр, калі прылада адпраўляецца на склад або на аднаўленне для продажу новаму кліенту.</translation>
 <translation id="4511264077854731334">Партал</translation>
 <translation id="4521826082652183069">Супадзенне па альтэрнатыўным імені суб'екта</translation>
 <translation id="4536864596629708641">Канфігурацыя IP-адраса</translation>
@@ -415,6 +418,7 @@
 <translation id="6957231940976260713">Імя сэрвісу</translation>
 <translation id="6961170852793647506">Для пачатку палажыце дакумент у сканер</translation>
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
+<translation id="6992266763844448459">Выберыце гэты параметр, калі права ўласнасці на прыладу не зменіцца (напрыклад, калі прылада перадаецца іншай асобе ўнутры арганізацыі).</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="7040230719604914234">Аператар</translation>
 <translation id="7058278511608979688">Завяршыць і захаваць</translation>

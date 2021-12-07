@@ -104,7 +104,6 @@
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
-<translation id="1894205589103145703">로그인 중에 문제가 발생했습니다.</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1930989359703290198">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -464,7 +463,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5513681519188741830"><ph name="TIME" />시간 전</translation>
 <translation id="5523579157975978438">사용 중지하려면 <ph name="BEGIN_LINK" />Settings(설정)<ph name="END_LINK" />를 열고 Passwords(비밀번호)로 이동합니다.</translation>
 <translation id="5525269841082836315">암호 만들기</translation>
-<translation id="5532698011560297095">로그인할 수 없음</translation>
 <translation id="5548760955356983418">Handoff를 이용하면 이 기기에서 웹사이트를 탐색하다가 Mac에서 간편하게 보던 페이지부터 계속할 수 있습니다. 현재 열어놓은 웹사이트가 Mac의 Dock에 표시됩니다.
 
 또한 Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이때 기기에서 반드시 동일한 iCloud 계정을 사용해야 합니다.</translation>

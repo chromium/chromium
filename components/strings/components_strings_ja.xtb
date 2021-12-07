@@ -400,6 +400,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 件のアドレス}other{# 件のアドレス}}</translation>
 <translation id="2187317261103489799">検出（デフォルト）</translation>
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
+<translation id="2188852899391513400">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために今すぐパスワードを変更して、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="2202020181578195191">有効期限（年）を正しい形式で入力してください</translation>
 <translation id="22081806969704220">トレイ 3</translation>
 <translation id="2212735316055980242">ポリシーが見つかりません</translation>
@@ -894,6 +895,7 @@
 <translation id="3827112369919217609">絶対的</translation>
 <translation id="3827475930221174051">「<ph name="SEARCH_TERM" />」に関連するアクティビティに基づいて表示</translation>
 <translation id="3828924085048779000">パスフレーズは必ず指定してください。</translation>
+<translation id="3831065134033923230">保存したパスワードを確認する</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> によって、機能を追加する拡張機能がインストールされました。この拡張機能では、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="3832522519263485449">多穴パンチ（左）</translation>
 <translation id="3835233591525155343">デバイスのアクティブ状態</translation>
@@ -1088,6 +1090,7 @@
 <translation id="443673843213245140">プロキシの使用は無効ですが、プロキシの設定が明示的に指定されています。</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
+<translation id="4452328064229197696">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
 <translation id="4455222631300069614">パスワードを今すぐ変更してください</translation>
 <translation id="4460315069258617173">このサイトのタブを開いている間のみ許可</translation>
 <translation id="4464826014807964867">組織の情報を使用しているウェブサイト</translation>
@@ -1577,6 +1580,7 @@
 <translation id="6051221802930200923"><ph name="SITE" /> では証明書ピンニングが使用されているため、現在アクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="6051898664905071243">ページ数:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="6055888660316801977">保護されたお支払い認証情報（認証情報の一致なし）シート</translation>
 <translation id="6058977677006700226">お使いのどのデバイスでも同じカードを使用できるようにしますか？</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
@@ -1725,7 +1729,6 @@
 <translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6609880536175561541">Prc7（封筒）</translation>
 <translation id="6615297766614333076">スタッカー 2</translation>
-<translation id="6623589891453322342">ファイル ハンドラ</translation>
 <translation id="6624427990725312378">連絡先情報</translation>
 <translation id="6626291197371920147">有効なカード番号を追加</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> 検索</translation>
@@ -1818,7 +1821,6 @@
 <translation id="6949872517221025916">パスワードを再設定</translation>
 <translation id="6950684638814147129">JSON 値の解析中にエラーが発生しました: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">すべてリセット</translation>
-<translation id="6954341342296443517">該当するファイル形式を開くよう要求できる</translation>
 <translation id="6957887021205513506">サーバーの証明書が偽造されたもののようです。</translation>
 <translation id="6958564499836457428">Google アカウントで Google のプライバシー設定を管理します</translation>
 <translation id="6961844873822989059">デバイスにインストールされたフォントの使用を要求できる</translation>
@@ -1845,7 +1847,6 @@
 <translation id="7012363358306927923">中国銀聯</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
-<translation id="7024588353896425985">ファイル ハンドラ</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030436163253143341">証明書が無効です</translation>
 <translation id="7031646650991750659">インストールした Google Play アプリ</translation>

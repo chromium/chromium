@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Jasny</translation>
 <translation id="1810845389119482123">Nie dokończono wstępnego konfigurowania synchronizacji</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
+<translation id="1832459821645506983">Tak, zgadzam się</translation>
 <translation id="1843805151597803366">Aby poprawić jakość tłumaczeń, pozwól wyszukiwarce Google na używanie bieżącej strony</translation>
 <translation id="1856325424225101786">Zresetować wersję uproszczoną?</translation>
 <translation id="1868024384445905608">Chrome pobiera pliki jeszcze szybciej</translation>
@@ -289,6 +290,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2718846868787000099">Odwiedzane witryny będą miały dostęp do Twoich ustawień, by mogły pokazywać zawartość w wybranym przez Ciebie języku</translation>
 <translation id="2723001399770238859">dźwięk</translation>
 <translation id="2728754400939377704">Sortuj według witryny</translation>
+<translation id="2732063072010454421">Wyszukiwanie głosowe może być jeszcze wygodniejsze</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Kliknij słowo, by szybko je wyszukać lub wyświetlić powiązane czynności</translation>
 <translation id="2760989362628427051">Włącz ciemny motyw, gdy urządzenie ma włączony ciemny motyw lub Oszczędzanie baterii</translation>
@@ -835,6 +837,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="587735546353481577">Aby obserwować stronę, otwórz ją, otwórz menu Chrome i kliknij Obserwuj.</translation>
 <translation id="5880748256563468367">Przejdź do kart</translation>
 <translation id="5884076754568147479">Aby pomóc Ci w wykonywaniu zadań, Google będzie otrzymywać adresy URL i zawartość stron, na których używasz Asystenta, a także informacje, które przekazujesz za pomocą Asystenta</translation>
+<translation id="5906513782029855931">Znając adresy URL stron internetowych, Asystent Google będzie mógł pomagać Ci w wykonywaniu zadań. Możesz go wyłączyć w ustawieniach Chrome.</translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5919204609460789179">Zaktualizuj przeglądarkę <ph name="PRODUCT_NAME" />, by rozpocząć synchronizację</translation>
 <translation id="5937580074298050696">Zaoszczędzono <ph name="AMOUNT" /></translation>

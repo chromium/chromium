@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Mesatar (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1195447618553298278">Gabim i panjohur.</translation>
+<translation id="1196959502276349371">Versioni <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1204296502688602597">Vonesa e DNS-së</translation>
 <translation id="123124571410524056">Dyshohet për portal</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3865414814144988605">Rezolucioni</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
+<translation id="3924044641767672375">Rekomandohet lidhja me Wi-Fi për ta bërë më të lehtë procesin e riparimit. Rrjeti yt do të ruhet.</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
+<translation id="4485626319513081846">Zgjidh këtë opsion nëse pajisja do të jetë sërish në gjendje ose do të rinovohet për t'u dërguar te një klient i ri.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Përputhje e emrit alternativ të subjektit</translation>
 <translation id="4536864596629708641">Konfigurimi i IP-së</translation>
@@ -414,6 +417,7 @@
 <translation id="6957231940976260713">Emri i shërbimit</translation>
 <translation id="6961170852793647506">Për të filluar, vendose dokumentin tënd në skaner</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
+<translation id="6992266763844448459">Zgjidh këtë opsion nëse zotërimi i pajisjes nuk do të ndryshojë. Për shembull, pajisja po transferohet te një person tjetër brenda një organizate.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7058278511608979688">Mbaro dhe ruaj</translation>

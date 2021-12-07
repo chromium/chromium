@@ -468,7 +468,6 @@
 <translation id="1480663089572535854">你可以返回變更「選取」的指派設定，而且隨時都能前往設定頁面關閉自動掃描功能。</translation>
 <translation id="1481537595330271162">調整磁碟大小時發生錯誤</translation>
 <translation id="1482626744466814421">將此分頁加入書籤...</translation>
-<translation id="1483272013430662157">網頁應用程式可以要求開啟特定類型的檔案</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1484979925941077974">網站正在使用藍牙</translation>
 <translation id="1485015260175968628">新的可用權限：</translation>
@@ -649,7 +648,6 @@
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
-<translation id="1653631694606464309">網頁應用程式通常會要求開啟裝置上特定類型的檔案，讓你能夠以適當方式處理這些檔案，例如在偏好的文書處理工具中開啟文件</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓「<ph name="PRODUCT_NAME" />」更臻完美</translation>
 <translation id="1657937299377480641">你必須要求家長授予權限，才能再次登入帳戶並存取教育資源</translation>
@@ -2396,7 +2394,6 @@
 <translation id="3449839693241009168">按下「<ph name="SEARCH_KEY" />」即可將指令傳送給 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">閒置狀態占用率</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
-<translation id="3451753556629288767">可以開啟的檔案類型</translation>
 <translation id="3452999110156026232">家長存取</translation>
 <translation id="3453612417627951340">需要授權</translation>
 <translation id="3454213325559396544">這是這部 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟體和安全性。如要取得後續更新，請升級為較新的型號。</translation>
@@ -5511,7 +5508,6 @@
 <translation id="6785518634832172390">PIN 碼不能超過 12 個數字</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787097042755590313">其他分頁</translation>
-<translation id="6787631759192429908">要開啟檔案嗎？</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">未封裝擴充功能</translation>
 <translation id="6789592661892473991">水平分割</translation>
@@ -5763,7 +5759,6 @@
 <translation id="7025082428878635038">全新的手勢瀏覽功能正式登場</translation>
 <translation id="7025190659207909717">行動數據服務管理</translation>
 <translation id="7025895441903756761">安全性與隱私權</translation>
-<translation id="7026552751317161576">禁止網頁應用程式開啟特定類型的檔案</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有網址(&amp;I)}=1{在無痕式視窗中開啟(&amp;I)}other{在無痕式視窗中開啟所有 ({COUNT} 個) 網址(&amp;I)}}</translation>
 <translation id="7029307918966275733">未安裝 Crostini。請安裝 Crostini 以查看開發人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
@@ -5808,7 +5803,6 @@
 <translation id="7067396782363924830">環境光顏色</translation>
 <translation id="7067725467529581407">不再顯示這個訊息。</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> 可能需要新的或不同種類的安全金鑰</translation>
-<translation id="7070269827082111569">不得開啟的檔案類型</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
 <translation id="7075513071073410194">PKCS #1 MD5 (使用 RSA 加密)</translation>
@@ -6380,7 +6374,6 @@
 <translation id="7680416688940118410">觸控螢幕校正</translation>
 <translation id="7681095912841365527">網站可以使用藍牙</translation>
 <translation id="7681597159868843240">網站通常會使用裝置的動作感應器提供虛擬實境或健身追蹤等功能</translation>
-<translation id="7683164815270164555">網頁應用程式必須先詢問你，才能開啟特定類型的檔案</translation>
 <translation id="7683373461016844951">如要繼續操作，請依序點選 [確定] 和 [新增使用者]，為你的 <ph name="DOMAIN" /> 電子郵件地址建立新的設定檔。</translation>
 <translation id="7684212569183643648">由您的管理員安裝</translation>
 <translation id="7684559058815332124">造訪監控式入口網站登入頁面</translation>
@@ -6886,7 +6879,6 @@
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
 <translation id="8165997195302308593">Crostini 連接埠轉送</translation>
-<translation id="8166081708154635403">要開啟檔案嗎？</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 組電話號碼}other{# 組電話號碼}}</translation>
 <translation id="8168071266284693455">你的書籤、密碼和歷史記錄等資料會在所有裝置上保持同步</translation>
 <translation id="8168435359814927499">內容</translation>
@@ -7461,7 +7453,6 @@
 <translation id="8798099450830957504">預設</translation>
 <translation id="8800004011501252845">顯示以下地址的目的地：</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
-<translation id="880004380809002950">禁止網頁應用程式開啟特定類型的檔案</translation>
 <translation id="8803953437405899238">按一下即可開啟新分頁</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{將分頁移到其他視窗}other{將分頁移到其他視窗}}</translation>
 <translation id="8805140816472474147">如要開始同步處理，請確認同步處理設定。</translation>

@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Upareni uređaji</translation>
 <translation id="1153636665119721804">Googleov program Napredne zaštite</translation>
 <translation id="1155816283571436363">Povezivanje s telefonom</translation>
+<translation id="1158080958325422608">Promijeni u velika slova</translation>
 <translation id="1158238185437008462">Prikaži uspomene</translation>
 <translation id="1161575384898972166">Prijavite se na <ph name="TOKEN_NAME" /> za izvoz potvrde klijenta.</translation>
 <translation id="116173250649946226">Vaš administrator je postavio zadanu temu koju nije moguće promijeniti.</translation>
@@ -473,7 +474,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1480663089572535854">Možete se vratiti da promijenite dodjelu za "Odaberi". Uvijek možete isključiti automatsko skeniranje u Postavkama.</translation>
 <translation id="1481537595330271162">Greška pri promjeni veličine diska</translation>
 <translation id="1482626744466814421">Označi ovu karticu…</translation>
-<translation id="1483272013430662157">Web aplikacije mogu tražiti da otvaraju određene vrste fajlova</translation>
 <translation id="1483493594462132177">Pošalji</translation>
 <translation id="1484979925941077974">Web lokacija koristi Bluetooth</translation>
 <translation id="1485015260175968628">Sada može:</translation>
@@ -654,7 +654,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="164936512206786300">Okončaj uparivanje Bluetooth uređaja</translation>
 <translation id="1651008383952180276">Morate dvaput unijeti isti pristupni izraz</translation>
 <translation id="1652326691684645429">Omogući Dijeljenje u blizini</translation>
-<translation id="1653631694606464309">Web aplikacije obično traže da otvaraju određene vrste fajlova da na njima možete raditi gdje to želite, naprimjer za otvaranje dokumenata u preferiranom obrađivaču teksta</translation>
 <translation id="1656528038316521561">Neprozirnost pozadine</translation>
 <translation id="1657406563541664238">Pomozite nam da poboljšamo <ph name="PRODUCT_NAME" /> automatskim slanjem statistika korištenja i izvještaja o padovima aplikacija Googleu</translation>
 <translation id="1657937299377480641">Da se prijaviš ponovo za pristup obrazovnim izvorima, zatraži od roditelja pristup</translation>
@@ -699,6 +698,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1700079447639026019">Web lokacije koje nikada ne koriste kolačiće</translation>
 <translation id="1703331064825191675">Nemojte nikada brinuti zbog svojih lozinki</translation>
 <translation id="1703666494654169921">Nemoj dozvoliti web lokacijama korištenje uređaja ili podataka virtuelne realnosti</translation>
+<translation id="1704097193565924901">Veliko početno slovo</translation>
 <translation id="1704230497453185209">Nemoj dozvoliti web lokacijama reproduciranje zvuka</translation>
 <translation id="1704970325597567340">Sigurnosna provjera je izvršena <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Dodao je vaš administrator</translation>
@@ -2409,7 +2409,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3449839693241009168">Pritisnite tipku <ph name="SEARCH_KEY" /> da pošaljete komande ekstenziji <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Postotak zauzetosti stanja neaktivnosti</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> zahtijeva da se sada povežete s WiFi mrežom i preuzmete ažuriranje.</translation>
-<translation id="3451753556629288767">Dozvoljeno je otvaranje određenih vrsta fajlova</translation>
 <translation id="3452999110156026232">Pristup roditelja</translation>
 <translation id="3453612417627951340">Potrebno je odobrenje</translation>
 <translation id="3454213325559396544">To je posljednje automatsko ažuriranje softvera i sigurnosno ažuriranje za uređaj <ph name="DEVICE_TYPE" />. Nadogradite na noviji model za buduća ažuriranja.</translation>
@@ -3579,6 +3578,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4681453295291708042">Onemogući Dijeljenje u blizini</translation>
 <translation id="4681930562518940301">Otvori originalnu sl&amp;iku u novoj kartici</translation>
 <translation id="4682551433947286597">Pozadinska slika se pojavljuje na ekranu za prijavu.</translation>
+<translation id="4683629100208651599">Promijeni u mala slova</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (zadano)</translation>
 <translation id="4684427112815847243">Sinhroniziranje svega</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> pokušava pristupiti kameri. Isključite prekidač za privatnost kamere da omogućite pristup.</translation>
@@ -5526,7 +5526,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6785518634832172390">PIN ne smije imati više od 12 cifara</translation>
 <translation id="6786747875388722282">Ekstenzije</translation>
 <translation id="6787097042755590313">Druga kartica</translation>
-<translation id="6787631759192429908">Otvoriti fajlove?</translation>
 <translation id="6787839852456839824">Prečice tastature</translation>
 <translation id="6788210894632713004">Neotpakovana ekstenzija</translation>
 <translation id="6789592661892473991">Podjela po horizontali</translation>
@@ -5778,7 +5777,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7025082428878635038">Predstavljamo novi način navigiranja pokretima</translation>
 <translation id="7025190659207909717">Upravljanje uslugom prijenosa podataka na mobilnoj mreži</translation>
 <translation id="7025895441903756761">Sigurnost i privatnost</translation>
-<translation id="7026552751317161576">Nemoj dozvoliti web aplikacijama da otvaraju određene vrste fajlova</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otvori sve u &amp;anonimnom prozoru}=1{Otvori u &amp;anonimnom prozoru}one{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}few{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}other{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}}</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da vidite zahvale.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
@@ -5823,7 +5821,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7067396782363924830">Boje okruženja</translation>
 <translation id="7067725467529581407">Ne prikazuj ovo više.</translation>
 <translation id="7069811530847688087">Web lokacija <ph name="WEBSITE" /> može tražiti noviju ili drugačiju vrstu sigurnosnog ključa</translation>
-<translation id="7070269827082111569">Nije dozvoljeno otvaranje određenih vrsta fajlova</translation>
 <translation id="7070484045139057854">Ovo može čitati i mijenjati podatke na web lokaciji</translation>
 <translation id="7072010813301522126">Naziv prečice</translation>
 <translation id="7075513071073410194">PKCS br. 1 MD5 sa RSA šifriranjem</translation>
@@ -5974,6 +5971,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7257173066616499747">Wi-Fi mreže</translation>
 <translation id="725758059478686223">Usluga štampanja</translation>
 <translation id="7257666756905341374">Čitati podatke koje kopirate i zalijepite</translation>
+<translation id="7258192266780953209">Transformacije</translation>
 <translation id="7258225044283673131">Aplikacija ne reagira. Odaberite "Prisilno zatvori" da zatvorite aplikaciju.</translation>
 <translation id="7262004276116528033">Ovu uslugu prijavljivanja hostira <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Pokušajte s ovim koracima za rješavanje problema:
@@ -6395,7 +6393,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7680416688940118410">Kalibracija ekrana na dodir</translation>
 <translation id="7681095912841365527">Web lokacija može koristiti bluetooth</translation>
 <translation id="7681597159868843240">Web lokacije obično koriste senzore kretanja vašeg uređaja radi funkcija kao što je virtuelna realnost ili praćenje fitnesa</translation>
-<translation id="7683164815270164555">Pitaj kada web aplikacija želi otvoriti određene vrste fajlova</translation>
 <translation id="7683373461016844951">Da nastavite, kliknite Uredu, a zatim kliknite Dodaj osobu da kreirate novi profil za svoju adresu e-pošte na domeni <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Instalirao vaš administrator</translation>
 <translation id="7684559058815332124">Posjeti stranicu za prijavu na zaštitni portal</translation>
@@ -6901,7 +6898,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8161293209665121583">Način rada za čitanje za web stranice</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premjesti karticu u novi prozor}one{Premjesti kartice u novi prozor}few{Premjesti kartice u novi prozor}other{Premjesti kartice u novi prozor}}</translation>
 <translation id="8165997195302308593">Prosljeđivanje priključka Crostinija</translation>
-<translation id="8166081708154635403">Otvoriti fajl?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{broj telefona}one{# broj telefona}few{# broja telefona}other{# brojeva telefona}}</translation>
 <translation id="8168071266284693455">Vaše oznake, lozinke, historija i drugo je sinhronizirano na svim vašim uređajima</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
@@ -7478,7 +7474,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8798099450830957504">Zadano</translation>
 <translation id="8800004011501252845">Prikaz odredišta za</translation>
 <translation id="8800034312320686233">Web lokacija ne funkcionira?</translation>
-<translation id="880004380809002950">Blokiraj web aplikacijama otvaranje određenih vrsta fajlova</translation>
 <translation id="8803953437405899238">Otvori novu karticu jednim klikom</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Premjesti karticu u drugi prozor}one{Premjesti kartice u drugi prozor}few{Premjesti kartice u drugi prozor}other{Premjesti kartice u drugi prozor}}</translation>
 <translation id="8805140816472474147">Potvrdite postavke za sinhronizaciju da biste je pokrenuli.</translation>

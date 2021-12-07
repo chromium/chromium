@@ -280,6 +280,7 @@
 <translation id="2942350706960889382">နေရာချထားသည့် မှန်ဘီလူး</translation>
 <translation id="2942516765047364088">စင်၏ အနေအထား</translation>
 <translation id="2946119680249604491">ချိတ်ဆက်မှုကို ထည့်ရန်</translation>
+<translation id="2960314608273155470">ပုံဖမ်းယူမှုမုဒ်၊ မူရင်းမှာ <ph name="SOURCE" /> <ph name="TYPE" /> ဖြစ်သည်။ ကီးဘုတ် လမ်းညွှန်အတွက် တဘ်ကိုနှိပ်ပါ။</translation>
 <translation id="2961963223658824723">တစ်ခုခုမှားယွင်း နေသည်။ မိနစ်အနည်းငယ်အကြာတွင် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များကို ဒေါင်းလုဒ်လုပ်၍ မရပါ</translation>
@@ -886,6 +887,7 @@
 <translation id="7042322267639375032">အခြေအနေပြ နေရာကို ခေါက်ရန်</translation>
 <translation id="7045033600005038336">နမူနာ ပုံစံကို အစားထိုးမလား။</translation>
 <translation id="7045595904618419789">မှန်ဘီလူး စတင်ရန်</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> နှင့် ချိတ်ဆက်မှု မရှိပါ</translation>
 <translation id="7055381872777910864">W</translation>
 <translation id="7055910611768509537">စတိုင်လပ်စ်ကို တစ်ပတ်ကျော် အသုံးပြုမထားပါ</translation>
 <translation id="7066646422045619941">ဤကွန်ယက်ကို သင့်စီမံခန့်ခွဲသူမှ ပိတ်ခဲ့သည်။</translation>
@@ -1079,6 +1081,7 @@
 <translation id="8412677897383510995">ဖန်သားပြင်ပြသမှုဆက်တင်များကို ပြရန်</translation>
 <translation id="8413272770729657668">ရိုက်ကူးခြင်း စပါတော့မည်- ၃၊ ၂၊ ၁</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (နားကြပ်ဘူး)</translation>
+<translation id="8421270167862077762">ဤစက်တွင် <ph name="UNAVAILABLE_APPS" /> မရှိပါ။</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8426708595819210923">မင်္ဂလာ ညနေခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
@@ -1206,6 +1209,7 @@
 <translation id="938963181863597773">ကျွန်ုပ်၏ ပြက္ခဒိန်မှာ ဘာတွေရှိလဲ။</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="951991426597076286">ပယ်ချရန်</translation>
+<translation id="96080156868846968">စစ်ဆေးနေပါသည်</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခုကို ပြနေသည်</translation>
 <translation id="98515147261107953">ဘေးတိုက်</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> ဝင်းဒိုးကို ပိတ်ထားသည်။</translation>

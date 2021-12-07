@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
 <translation id="1153636665119721804">Program Ochrony zaawansowanej Google</translation>
 <translation id="1155816283571436363">Łączę z Twoim telefonem</translation>
+<translation id="1158080958325422608">Wielkimi literami</translation>
 <translation id="1158238185437008462">Zobacz wspomnienia</translation>
 <translation id="1161575384898972166">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby wyeksportować certyfikat klienta.</translation>
 <translation id="116173250649946226">Administrator ustawił domyślny motyw, którego nie można zmienić.</translation>
@@ -470,7 +471,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1480663089572535854">Możesz wrócić, aby zmienić przypisanie do czynności „Wybierz”. Zawsze możesz wyłączyć automatyczne skanowanie w Ustawieniach.</translation>
 <translation id="1481537595330271162">Błąd podczas zmiany rozmiaru dysku</translation>
 <translation id="1482626744466814421">Dodaj tę kartę do zakładek...</translation>
-<translation id="1483272013430662157">Aplikacje internetowe mogą prosić o zezwolenie na otwieranie określonych typów plików</translation>
 <translation id="1483493594462132177">Wyślij</translation>
 <translation id="1484979925941077974">Strona używa Bluetootha</translation>
 <translation id="1485015260175968628">Może teraz:</translation>
@@ -651,7 +651,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="164936512206786300">Rozparowywanie urządzenia Bluetooth</translation>
 <translation id="1651008383952180276">Musisz dwukrotnie wpisać to samo hasło</translation>
 <translation id="1652326691684645429">Włącz Udostępnianie w pobliżu</translation>
-<translation id="1653631694606464309">Aplikacje internetowe zwykle proszą o zezwolenie na otwieranie określonych typów plików (np. dokumentów w ulubionym edytorze tekstu), aby umożliwić Ci pracę z plikami tam, gdzie chcesz</translation>
 <translation id="1656528038316521561">Przezroczystość tła</translation>
 <translation id="1657406563541664238">Pomóż ulepszyć <ph name="PRODUCT_NAME" />, przesyłając do Google statystyki użytkowania i raporty o awariach</translation>
 <translation id="1657937299377480641">Aby zalogować się ponownie na konto umożliwiające dostęp do zasobów edukacyjnych, poproś o zgodę rodziców</translation>
@@ -696,6 +695,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1700079447639026019">Witryny, które nigdy nie mogą używać plików cookie</translation>
 <translation id="1703331064825191675">Nie musisz się już martwić o bezpieczeństwo swoich haseł</translation>
 <translation id="1703666494654169921">Nie zezwalaj witrynom na używanie urządzeń ani danych rzeczywistości wirtualnej</translation>
+<translation id="1704097193565924901">Od wielkiej litery</translation>
 <translation id="1704230497453185209">Nie zezwalaj witrynom na odtwarzanie dźwięków</translation>
 <translation id="1704970325597567340">Kontrola zabezpieczeń została wykonana <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Dodane przez administratora</translation>
@@ -2393,7 +2393,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3449839693241009168">Naciśnij klawisz <ph name="SEARCH_KEY" />, aby wysłać polecenia do rozszerzenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Stan bezczynności – procentowo</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> wymaga połączenia się z Wi-Fi i pobrania aktualizacji.</translation>
-<translation id="3451753556629288767">Zezwolono na otwieranie określonych typów plików</translation>
 <translation id="3452999110156026232">Dostęp rodzica</translation>
 <translation id="3453612417627951340">Wymaga autoryzacji</translation>
 <translation id="3454213325559396544">To jest ostatnia automatyczna aktualizacja oprogramowania i zabezpieczeń, którą otrzymuje to urządzenie (<ph name="DEVICE_TYPE" />). Aby otrzymywać aktualizacje w przyszłości, przejdź na nowszy model.</translation>
@@ -3562,6 +3561,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4681453295291708042">Wyłącz Udostępnianie w pobliżu</translation>
 <translation id="4681930562518940301">Otwórz oryginalny &amp;obraz w nowej karcie</translation>
 <translation id="4682551433947286597">Na ekranie logowania są wyświetlane tapety.</translation>
+<translation id="4683629100208651599">Małymi literami</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (domyślnie)</translation>
 <translation id="4684427112815847243">Synchronizuj wszystko</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> próbuje uzyskać dostęp do kamery. Aby na to zezwolić, wyłącz przełącznik prywatności kamery.</translation>
@@ -5508,7 +5508,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6785518634832172390">Kod PIN musi się składać z maksymalnie 12 cyfr</translation>
 <translation id="6786747875388722282">Rozszerzenia</translation>
 <translation id="6787097042755590313">Inna karta</translation>
-<translation id="6787631759192429908">Otworzyć pliki?</translation>
 <translation id="6787839852456839824">Skróty klawiszowe</translation>
 <translation id="6788210894632713004">Rozszerzenie bez pakietu</translation>
 <translation id="6789592661892473991">Podziel poziomo</translation>
@@ -5760,7 +5759,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7025082428878635038">Przedstawiamy nowy sposób nawigowania gestami</translation>
 <translation id="7025190659207909717">Zarządzanie komórkową usługą transmisji danych</translation>
 <translation id="7025895441903756761">Prywatność i bezpieczeństwo</translation>
-<translation id="7026552751317161576">Nie zezwalaj aplikacjom internetowym na otwieranie określonych typów plików</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otwórz wszystkie w oknie &amp;incognito}=1{Otwórz w oknie &amp;incognito}few{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}many{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}other{Otwórz wszystkie ({COUNT}) w oknie &amp;incognito}}</translation>
 <translation id="7029307918966275733">Nie zainstalowano Crostini. Zainstaluj Crostini, by zobaczyć autorów.</translation>
 <translation id="7029809446516969842">Hasła</translation>
@@ -5805,7 +5803,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7067396782363924830">Kolory otoczenia</translation>
 <translation id="7067725467529581407">Nie pokazuj tego ponownie.</translation>
 <translation id="7069811530847688087"><ph name="WEBSITE" /> może wymagać nowszego lub innego rodzaju klucza bezpieczeństwa</translation>
-<translation id="7070269827082111569">Nie zezwolono na otwieranie określonych typów plików</translation>
 <translation id="7070484045139057854">Może odczytywać i modyfikować dane witryn</translation>
 <translation id="7072010813301522126">Nazwa skrótu</translation>
 <translation id="7075513071073410194">PKCS #1, MD5 z szyfrowaniem RSA</translation>
@@ -5956,6 +5953,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7257173066616499747">Sieci Wi-Fi</translation>
 <translation id="725758059478686223">Usługa drukowania</translation>
 <translation id="7257666756905341374">Odczyt danych, które kopiujesz i wklejasz</translation>
+<translation id="7258192266780953209">Transformacje</translation>
 <translation id="7258225044283673131">Aplikacja nie odpowiada. Aby ją zamknąć, wybierz „Wymuś zamknięcie”.</translation>
 <translation id="7262004276116528033">Ta usługa logowania pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Spróbuj rozwiązać problem w ten sposób:
@@ -6377,7 +6375,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7680416688940118410">Kalibracja ekranu dotykowego</translation>
 <translation id="7681095912841365527">Strona może używać Bluetootha</translation>
 <translation id="7681597159868843240">Witryny zwykle używają czujników ruchu urządzenia, aby obsługiwać funkcje takie jak rzeczywistość wirtualna czy monitorowanie aktywności</translation>
-<translation id="7683164815270164555">Pytaj, gdy aplikacja internetowa chce otwierać określone typy plików</translation>
 <translation id="7683373461016844951">Aby kontynuować, kliknij OK, a potem kliknij Dodaj osobę, by utworzyć nowy profil dla swojego adresu e-mail w domenie <ph name="DOMAIN" />.</translation>
 <translation id="7684212569183643648">Zainstalowane przez administratora</translation>
 <translation id="7684559058815332124">Wejdź na stronę logowania na portalu przechwytującym</translation>
@@ -6883,7 +6880,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8161293209665121583">Tryb czytnika stron internetowych</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Przenieś kartę do nowego okna}few{Przenieś karty do nowego okna}many{Przenieś karty do nowego okna}other{Przenieś karty do nowego okna}}</translation>
 <translation id="8165997195302308593">Przekierowanie portów w Crostini</translation>
-<translation id="8166081708154635403">Otworzyć plik?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
 <translation id="8168071266284693455">Twoje zakładki, hasła, historia i inne dane są synchronizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="8168435359814927499">Treść</translation>
@@ -7460,7 +7456,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8800004011501252845">Pokaż urządzenia docelowe dla</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
-<translation id="880004380809002950">Nie zezwalaj aplikacjom internetowym na otwieranie określonych typów plików</translation>
 <translation id="8803953437405899238">Otwórz nową kartę jednym kliknięciem</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Przenieś kartę do innego okna}few{Przenieś karty do innego okna}many{Przenieś karty do innego okna}other{Przenieś karty do innego okna}}</translation>
 <translation id="8805140816472474147">Potwierdź ustawienia synchronizacji, by ją rozpocząć.</translation>
