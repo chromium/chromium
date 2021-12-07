@@ -436,10 +436,8 @@ source_set("unit_tests") {
     "cloud/affiliation_unittest.cc",
     "cloud/cloud_policy_client_unittest.cc",
     "cloud/cloud_policy_core_unittest.cc",
-    "cloud/cloud_policy_manager_unittest.cc",
     "cloud/cloud_policy_refresh_scheduler_unittest.cc",
     "cloud/cloud_policy_service_unittest.cc",
-    "cloud/cloud_policy_validator_unittest.cc",
     "cloud/device_management_service_unittest.cc",
     "cloud/user_info_fetcher_unittest.cc",
     "command_line_policy_provider_unittest.cc",
@@ -459,6 +457,15 @@ source_set("unit_tests") {
     "schema_unittest.cc",
     "values_util_unittest.cc",
   ]
+
+  # TODO(crbug.com/1270429): Enable these tests on Fuchsia if appropriate.
+  if (!is_fuchsia) {
+    sources += [
+      "cloud/cloud_policy_manager_unittest.cc",
+      "cloud/cloud_policy_validator_unittest.cc",
+    ]
+  }
+
   if (is_win || is_linux || is_chromeos) {
     sources += [
       "preg_parser_unittest.cc",
@@ -473,19 +480,16 @@ source_set("unit_tests") {
   } else {
     sources += [
       "cloud/machine_level_user_cloud_policy_manager_unittest.cc",
-      "cloud/machine_level_user_cloud_policy_store_unittest.cc",
       "cloud/user_cloud_policy_manager_unittest.cc",
-      "cloud/user_cloud_policy_store_unittest.cc",
     ]
-  }
 
-  if (is_fuchsia) {
-    sources -= [
-      "cloud/cloud_policy_manager_unittest.cc",
-      "cloud/cloud_policy_validator_unittest.cc",
-      "cloud/machine_level_user_cloud_policy_store_unittest.cc",
-      "cloud/user_cloud_policy_store_unittest.cc",
-    ]
+    # TODO(crbug.com/1270429): Enable these tests on Fuchsia if appropriate.
+    if (!is_fuchsia) {
+      sources += [
+        "cloud/machine_level_user_cloud_policy_store_unittest.cc",
+        "cloud/user_cloud_policy_store_unittest.cc",
+      ]
+    }
   }
 
   if (is_win || is_mac) {
