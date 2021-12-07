@@ -388,7 +388,7 @@ html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
 
 /* A vertical splitter between the directory tree and the file list. It is
    a transparent area centered on the directory tree right border. */
-body.files-ng div.splitter {
+div.splitter {
   align-items: center;
   cursor: col-resize;
   display: flex;
@@ -401,9 +401,10 @@ body.files-ng div.splitter {
   z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
-body.files-ng div.splitter .splitter-button {
-  --hover-bg-color: rgba(0, 0, 0, 4%);
-  --ink-color: rgba(0, 0, 0, 88%);
+div.splitter .splitter-button {
+  --hover-bg-color: var(--cros-ripple-color);
+  --ink-color: var(--cros-ripple-color);
+  --ripple-opacity: 100%;
   border: none;
   border-radius: 50%;
   cursor: col-resize;
@@ -413,51 +414,40 @@ body.files-ng div.splitter .splitter-button {
   width: 32px;
 }
 
-html.pointer-active body.files-ng div.splitter:not(.splitter-active):hover {
+html.pointer-active div.splitter:not(.splitter-active):hover {
   cursor: default;
 }
 
-body.files-ng div.splitter.splitter-active .splitter-button:hover {
+div.splitter.splitter-active .splitter-button:hover {
   --hover-bg-color: none;
 }
 
-html.col-resize body.files-ng div.splitter:not(.splitter-active) .splitter-button:hover {
+html.col-resize div.splitter:not(.splitter-active) .splitter-button:hover {
   --hover-bg-color: none;
 }
 
-html.pointer-active body.files-ng div.splitter:not(.splitter-active) .splitter-button:not(:active):hover {
+html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover {
   --hover-bg-color: none;
   cursor: default;
 }
 
-body.files-ng div.splitter.splitter-active .splitter-button:not(:active) {
-  background-color: rgba(var(--google-grey-300-rgb), 88%);
+div.splitter.splitter-active .splitter-button:not(:active) {
+  background-color: var(--cros-ripple-color);
 }
 
-body.files-ng div.splitter .splitter-button .icon {
+div.splitter .splitter-button .icon {
   -webkit-mask-image: url(../images/common/dragger.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
+  /* TODO(crbug.com/1268206): the icon is not in disabled state */
+  background-color: var(--cros-icon-color-disabled);
   height: 20px;
   padding: 6px;
   width: 20px;
 }
 
-body.files-ng div.splitter:not(.splitter-active) .splitter-button .icon {
-  background-color: var(--google-grey-400);
-}
-
-html:not(.col-resize) body.files-ng div.splitter:not(.splitter-active) .splitter-button:hover .icon {
-  background-color: var(--google-grey-500);
-}
-
-html.pointer-active body.files-ng div.splitter:not(.splitter-active) .splitter-button:not(:active):hover .icon {
-  background-color: var(--google-grey-400);
+html.pointer-active div.splitter:not(.splitter-active) .splitter-button:not(:active):hover .icon {
   cursor: default;
-}
-
-body.files-ng div.splitter.splitter-active .splitter-button .icon {
-  background-color: var(--google-grey-500);
 }
 
 /* Breadcrumbs and things under the title but above the list view. */
