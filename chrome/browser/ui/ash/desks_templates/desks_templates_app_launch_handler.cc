@@ -206,6 +206,36 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   if (!ash::features::AreDesksTemplatesEnabled())
     return;
 
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache();
+
+  const auto& app_id_to_launch_list = restore_data()->app_id_to_launch_list();
+
+  // Add the ready ARC apps in `app_id_to_launch_list` to `app_ids`.
+  std::set<std::string> app_ids;
+  cache.ForEachApp(
+      [&app_ids, &app_id_to_launch_list](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady &&
+            update.AppType() == apps::mojom::AppType::kArc &&
+            base::Contains(app_id_to_launch_list, update.AppId())) {
+          app_ids.insert(update.AppId());
+        }
+      });
+
+  // For each ARC app, check and see if there is an existing instance. We will
+  // move this instance over instead of launching a new one. Remove the app from
+  // the restore data if it was successfully moved so that the ARC launch
+  // handler does not try to launch it later.
+  for (const std::string& app_id : app_ids) {
+    auto it = app_id_to_launch_list.find(app_id);
+    DCHECK(it != app_id_to_launch_list.end());
+    if (!ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
+            app_id, it->second)) {
+      restore_data()->RemoveApp(app_id);
+    }
+  }
+
   auto* arc_task_handler =
       ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
   if (!arc_task_handler)

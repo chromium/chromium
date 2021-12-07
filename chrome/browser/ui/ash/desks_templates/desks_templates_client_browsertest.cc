@@ -1129,6 +1129,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // - Deleting templates.
 // - Launching templates with uninstalled apps.
 // - Launching ARC apps.
+// - Launching ARC apps which already have an instance open.
 // - Port tests that use `DesksTemplatesClient` directly. These were meant to
 //   test launching while the prototype extension was being built, but now we
 //   can do end to end tests with the native UI.
