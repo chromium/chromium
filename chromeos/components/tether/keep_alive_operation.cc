@@ -85,7 +85,7 @@ void KeepAliveOperation::OnMessageReceived(
   }
 
   KeepAliveTickleResponse* response =
-      static_cast<KeepAliveTickleResponse*>(message_wrapper->GetProto().get());
+      static_cast<KeepAliveTickleResponse*>(message_wrapper->GetProto());
   device_status_ = std::make_unique<DeviceStatus>(response->device_status());
 
   DCHECK(!keep_alive_tickle_request_start_time_.is_null());

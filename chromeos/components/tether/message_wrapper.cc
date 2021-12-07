@@ -118,42 +118,41 @@ std::unique_ptr<MessageWrapper> MessageWrapper::FromRawMessage(
 
 MessageWrapper::MessageWrapper(const ConnectTetheringRequest& request)
     : type_(MessageType::CONNECT_TETHERING_REQUEST),
-      proto_(new ConnectTetheringRequest(request)) {}
+      proto_(std::make_unique<ConnectTetheringRequest>(request)) {}
 
 MessageWrapper::MessageWrapper(const ConnectTetheringResponse& response)
     : type_(MessageType::CONNECT_TETHERING_RESPONSE),
-      proto_(new ConnectTetheringResponse(response)) {}
+      proto_(std::make_unique<ConnectTetheringResponse>(response)) {}
 
 MessageWrapper::MessageWrapper(const DisconnectTetheringRequest& request)
     : type_(MessageType::DISCONNECT_TETHERING_REQUEST),
-      proto_(new DisconnectTetheringRequest(request)) {}
+      proto_(std::make_unique<DisconnectTetheringRequest>(request)) {}
 
 MessageWrapper::MessageWrapper(const KeepAliveTickle& tickle)
     : type_(MessageType::KEEP_ALIVE_TICKLE),
-      proto_(new KeepAliveTickle(tickle)) {}
+      proto_(std::make_unique<KeepAliveTickle>(tickle)) {}
 
 MessageWrapper::MessageWrapper(const KeepAliveTickleResponse& response)
     : type_(MessageType::KEEP_ALIVE_TICKLE_RESPONSE),
-      proto_(new KeepAliveTickleResponse(response)) {}
+      proto_(std::make_unique<KeepAliveTickleResponse>(response)) {}
 
 MessageWrapper::MessageWrapper(const TetherAvailabilityRequest& request)
     : type_(MessageType::TETHER_AVAILABILITY_REQUEST),
-      proto_(new TetherAvailabilityRequest(request)) {}
+      proto_(std::make_unique<TetherAvailabilityRequest>(request)) {}
 
 MessageWrapper::MessageWrapper(const TetherAvailabilityResponse& response)
     : type_(MessageType::TETHER_AVAILABILITY_RESPONSE),
-      proto_(new TetherAvailabilityResponse(response)) {}
+      proto_(std::make_unique<TetherAvailabilityResponse>(response)) {}
 
 MessageWrapper::MessageWrapper(
     const MessageType& type,
-    std::shared_ptr<google::protobuf::MessageLite> proto)
-    : type_(type), proto_(proto) {}
+    std::unique_ptr<google::protobuf::MessageLite> proto)
+    : type_(type), proto_(std::move(proto)) {}
 
 MessageWrapper::~MessageWrapper() = default;
 
-std::shared_ptr<google::protobuf::MessageLite> MessageWrapper::GetProto()
-    const {
-  return proto_;
+google::protobuf::MessageLite* MessageWrapper::GetProto() const {
+  return proto_.get();
 }
 
 MessageType MessageWrapper::GetMessageType() const {

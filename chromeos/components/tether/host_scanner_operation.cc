@@ -188,8 +188,7 @@ void HostScannerOperation::OnMessageReceived(
   }
 
   TetherAvailabilityResponse* response =
-      static_cast<TetherAvailabilityResponse*>(
-          message_wrapper->GetProto().get());
+      static_cast<TetherAvailabilityResponse*>(message_wrapper->GetProto());
   if (AreGmsCoreNotificationsDisabled(response)) {
     PA_LOG(WARNING)
         << "Received TetherAvailabilityResponse from device with ID "

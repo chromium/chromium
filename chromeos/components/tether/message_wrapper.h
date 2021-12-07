@@ -42,7 +42,7 @@ class MessageWrapper {
 
   ~MessageWrapper();
 
-  std::shared_ptr<google::protobuf::MessageLite> GetProto() const;
+  google::protobuf::MessageLite* GetProto() const;
   MessageType GetMessageType() const;
 
   // To send a message to a remote device, use ToRawMessage() and send the
@@ -51,11 +51,11 @@ class MessageWrapper {
 
  protected:
   MessageWrapper(const MessageType& type,
-                 std::shared_ptr<google::protobuf::MessageLite> proto);
+                 std::unique_ptr<google::protobuf::MessageLite> proto);
 
  private:
   MessageType type_;
-  std::shared_ptr<google::protobuf::MessageLite> proto_;
+  std::unique_ptr<google::protobuf::MessageLite> proto_;
 };
 
 }  // namespace tether

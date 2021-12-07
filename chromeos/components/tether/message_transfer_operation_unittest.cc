@@ -48,32 +48,33 @@ class TestOperation : public MessageTransferOperation {
   ~TestOperation() override = default;
 
   bool HasDeviceAuthenticated(multidevice::RemoteDeviceRef remote_device) {
-    const auto iter = device_map_.find(remote_device);
-    if (iter == device_map_.end())
+    const auto iter = device_authenticated_map_.find(remote_device);
+    if (iter == device_authenticated_map_.end())
       return false;
 
-    return iter->second.has_device_authenticated;
+    return iter->second;
   }
 
-  std::vector<std::shared_ptr<MessageWrapper>> GetReceivedMessages(
+  const std::vector<std::unique_ptr<MessageWrapper>>& GetReceivedMessages(
       multidevice::RemoteDeviceRef remote_device) {
-    const auto iter = device_map_.find(remote_device);
-    if (iter == device_map_.end())
-      return std::vector<std::shared_ptr<MessageWrapper>>();
+    static const std::vector<std::unique_ptr<MessageWrapper>> empty;
 
-    return iter->second.received_messages;
+    const auto iter = device_message_map_.find(remote_device);
+    if (iter == device_message_map_.end())
+      return empty;
+
+    return iter->second;
   }
 
   // MessageTransferOperation:
   void OnDeviceAuthenticated(
       multidevice::RemoteDeviceRef remote_device) override {
-    device_map_[remote_device].has_device_authenticated = true;
+    device_authenticated_map_[remote_device] = true;
   }
 
   void OnMessageReceived(std::unique_ptr<MessageWrapper> message_wrapper,
                          multidevice::RemoteDeviceRef remote_device) override {
-    device_map_[remote_device].received_messages.push_back(
-        std::move(message_wrapper));
+    device_message_map_[remote_device].push_back(std::move(message_wrapper));
 
     if (should_unregister_device_on_message_received_)
       UnregisterDevice(remote_device);
@@ -110,15 +111,10 @@ class TestOperation : public MessageTransferOperation {
   absl::optional<int> last_sequence_number() { return last_sequence_number_; }
 
  private:
-  struct DeviceMapValue {
-    DeviceMapValue() = default;
-    ~DeviceMapValue() = default;
-
-    bool has_device_authenticated;
-    std::vector<std::shared_ptr<MessageWrapper>> received_messages;
-  };
-
-  base::flat_map<multidevice::RemoteDeviceRef, DeviceMapValue> device_map_;
+  base::flat_map<multidevice::RemoteDeviceRef, bool> device_authenticated_map_;
+  base::flat_map<multidevice::RemoteDeviceRef,
+                 std::vector<std::unique_ptr<MessageWrapper>>>
+      device_message_map_;
 
   uint32_t timeout_seconds_ = kTestTimeoutSeconds;
   bool should_unregister_device_on_message_received_ = false;
@@ -317,8 +313,7 @@ TEST_F(MessageTransferOperationTest,
           MessageWrapper(CreateTetherAvailabilityResponse()).ToRawMessage());
 
   EXPECT_EQ(1u, operation_->GetReceivedMessages(test_devices_[0]).size());
-  std::shared_ptr<MessageWrapper> message =
-      operation_->GetReceivedMessages(test_devices_[0])[0];
+  const auto& message = operation_->GetReceivedMessages(test_devices_[0])[0];
   EXPECT_EQ(MessageType::TETHER_AVAILABILITY_RESPONSE,
             message->GetMessageType());
   EXPECT_EQ(CreateTetherAvailabilityResponse().SerializeAsString(),
@@ -363,8 +358,7 @@ TEST_F(MessageTransferOperationTest, TestRepeatedInputDevice) {
   // Should still have received only one message even though the device was
   // repeated twice in the constructor.
   EXPECT_EQ(1u, operation_->GetReceivedMessages(test_devices_[0]).size());
-  std::shared_ptr<MessageWrapper> message =
-      operation_->GetReceivedMessages(test_devices_[0])[0];
+  const auto& message = operation_->GetReceivedMessages(test_devices_[0])[0];
   EXPECT_EQ(MessageType::TETHER_AVAILABILITY_RESPONSE,
             message->GetMessageType());
   EXPECT_EQ(CreateTetherAvailabilityResponse().SerializeAsString(),

@@ -112,7 +112,7 @@ void ConnectTetheringOperation::OnMessageReceived(
   }
 
   ConnectTetheringResponse* response =
-      static_cast<ConnectTetheringResponse*>(message_wrapper->GetProto().get());
+      static_cast<ConnectTetheringResponse*>(message_wrapper->GetProto());
   if (response->response_code() ==
       ConnectTetheringResponse_ResponseCode::
           ConnectTetheringResponse_ResponseCode_SUCCESS) {
