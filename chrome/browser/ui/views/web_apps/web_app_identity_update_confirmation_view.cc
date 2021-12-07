@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
@@ -148,8 +149,23 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
                       .SizeToFit(kNameColumnWidth)))
       .BuildChildren();
 
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  DCHECK(provider);
+  registrar_observation_.Observe(&provider->registrar());
+
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::APP_IDENTITY_UPDATE_CONFIRMATION);
+}
+
+void WebAppIdentityUpdateConfirmationView::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
+  if (app_id == app_id_)
+    GetWidget()->Close();
+}
+
+void WebAppIdentityUpdateConfirmationView::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+  GetWidget()->Close();
 }
 
 bool WebAppIdentityUpdateConfirmationView::ShouldShowCloseButton() const {
