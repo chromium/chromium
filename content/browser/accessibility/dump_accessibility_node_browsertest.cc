@@ -966,6 +966,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextLabelWithInput) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-label-with-input.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelWithReadonlyInput) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-label-with-readonly-input.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextSelectInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-select-in-label.html"));
 }
