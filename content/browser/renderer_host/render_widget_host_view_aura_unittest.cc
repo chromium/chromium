@@ -6640,7 +6640,6 @@ class RenderWidgetHostViewAuraInputMethodTest
   }
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
 
  protected:
   // Not owned.

@@ -50,7 +50,6 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
   void OnFocus() override {}
   void OnBlur() override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
 

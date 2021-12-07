@@ -63,7 +63,6 @@ class ArcInputOverlayManager::InputMethodObserver
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {
     owner_->input_method_ = nullptr;
   }
-  void OnShowVirtualKeyboardIfEnabled() override {}
 
  private:
   ArcInputOverlayManager* const owner_;

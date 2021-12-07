@@ -1040,9 +1040,13 @@ class InputMethodObserverBase {
     return test_observer_.get();
   }
 
-  const base::RepeatingClosure success_closure() {
-    return base::BindRepeating(&InputMethodObserverBase::OnSuccess,
-                               base::Unretained(this));
+  const base::RepeatingCallback<void(bool)> success_closure() {
+    return base::BindRepeating(
+        [](InputMethodObserverBase* self, bool should_show) {
+          if (should_show)
+            self->OnSuccess();
+        },
+        base::Unretained(this));
   }
 
  private:
@@ -1061,7 +1065,7 @@ class InputMethodObserverForShowIme : public InputMethodObserverBase {
  public:
   explicit InputMethodObserverForShowIme(content::WebContents* web_contents)
       : InputMethodObserverBase(web_contents) {
-    test_observer()->SetOnShowVirtualKeyboardIfEnabledCallback(
+    test_observer()->SetOnVirtualKeyboardVisibilityChangedIfEnabledCallback(
         success_closure());
   }
 

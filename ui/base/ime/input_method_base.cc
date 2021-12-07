@@ -90,10 +90,9 @@ TextInputType InputMethodBase::GetTextInputType() const {
 }
 
 void InputMethodBase::ShowVirtualKeyboardIfEnabled() {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnShowVirtualKeyboardIfEnabled();
-  if (auto* keyboard = GetVirtualKeyboardController())
-    keyboard->DisplayVirtualKeyboard();
+  // TODO(crbug.com/1275410): Merge this into
+  // SetVirtualKeyboardVisibilityIfEnabled.
+  SetVirtualKeyboardVisibilityIfEnabled(true);
 }
 
 void InputMethodBase::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {

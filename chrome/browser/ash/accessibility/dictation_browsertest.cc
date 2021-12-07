@@ -173,7 +173,6 @@ class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
   void OnFocus() override {}
   void OnBlur() override {}
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
-  void OnShowVirtualKeyboardIfEnabled() override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
     run_loop_.Quit();

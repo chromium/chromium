@@ -92,12 +92,15 @@ void WebviewInputMethodObserver::OnInputMethodDestroyed(
   input_method_ = nullptr;
 }
 
-void WebviewInputMethodObserver::OnShowVirtualKeyboardIfEnabled() {
-  std::unique_ptr<chromecast::webview::WebviewResponse>
-      last_focus_response_copy =
-          std::make_unique<chromecast::webview::WebviewResponse>(
-              *last_focus_response_);
-  controller_->client()->EnqueueSend(std::move(last_focus_response_copy));
+void WebviewInputMethodObserver::OnVirtualKeyboardVisibilityChangedIfEnabled(
+    bool should_show) {
+  if (should_show) {
+    std::unique_ptr<chromecast::webview::WebviewResponse>
+        last_focus_response_copy =
+            std::make_unique<chromecast::webview::WebviewResponse>(
+                *last_focus_response_);
+    controller_->client()->EnqueueSend(std::move(last_focus_response_copy));
+  }
 }
 
 }  // namespace chromecast

@@ -155,7 +155,7 @@ class ArcInputMethodManagerService
   std::unique_ptr<ash::input_method::InputMethodEngine> proxy_ime_engine_;
 
   // The current (active) input method, observed for
-  // OnShowVirtualKeyboardIfEnabled.
+  // OnVirtualKeyboardVisibilityChangedIfEnabled.
   ui::InputMethod* input_method_ = nullptr;
   bool is_arc_ime_active_ = false;
 

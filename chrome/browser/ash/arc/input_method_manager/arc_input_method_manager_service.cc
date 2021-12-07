@@ -276,8 +276,11 @@ class ArcInputMethodManagerService::InputMethodObserver
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {
     owner_->input_method_ = nullptr;
   }
-  void OnShowVirtualKeyboardIfEnabled() override {
-    owner_->SendShowVirtualKeyboard();
+  void OnVirtualKeyboardVisibilityChangedIfEnabled(bool should_show) override {
+    if (should_show)
+      owner_->SendShowVirtualKeyboard();
+    else
+      owner_->SendHideVirtualKeyboard();
   }
 
  private:

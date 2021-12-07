@@ -215,9 +215,9 @@ class InputMethodObserverAura : public TestInputMethodObserver,
     return ui::TEXT_INPUT_TYPE_NONE;
   }
 
-  void SetOnShowVirtualKeyboardIfEnabledCallback(
-      const base::RepeatingClosure& callback) override {
-    on_show_ime_if_needed_callback_ = callback;
+  void SetOnVirtualKeyboardVisibilityChangedIfEnabledCallback(
+      const base::RepeatingCallback<void(bool)>& callback) override {
+    on_virtual_keyboard_visibility_changed_if_enabled_callback_ = callback;
   }
 
  private:
@@ -227,13 +227,15 @@ class InputMethodObserverAura : public TestInputMethodObserver,
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
-  void OnShowVirtualKeyboardIfEnabled() override {
-    on_show_ime_if_needed_callback_.Run();
+  void OnVirtualKeyboardVisibilityChangedIfEnabled(bool should_show) override {
+    on_virtual_keyboard_visibility_changed_if_enabled_callback_.Run(
+        should_show);
   }
 
   raw_ptr<ui::InputMethod> input_method_;
   raw_ptr<const ui::TextInputClient> text_input_client_;
-  base::RepeatingClosure on_show_ime_if_needed_callback_;
+  base::RepeatingCallback<void(bool)>
+      on_virtual_keyboard_visibility_changed_if_enabled_callback_;
 };
 #endif
 

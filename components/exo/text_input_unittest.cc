@@ -80,7 +80,7 @@ class TestingInputMethodObserver : public ui::InputMethodObserver {
   MOCK_METHOD(void, OnCaretBoundsChanged, (const ui::TextInputClient*), ());
   MOCK_METHOD(void, OnTextInputStateChanged, (const ui::TextInputClient*), ());
   MOCK_METHOD(void, OnInputMethodDestroyed, (const ui::InputMethod*), ());
-  MOCK_METHOD(void, OnShowVirtualKeyboardIfEnabled, (), ());
+  MOCK_METHOD(void, OnVirtualKeyboardVisibilityChangedIfEnabled, (bool), ());
 
  private:
   ui::InputMethod* input_method_ = nullptr;
@@ -185,9 +185,11 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
-  EXPECT_CALL(observer, OnShowVirtualKeyboardIfEnabled)
-      .WillOnce(testing::Invoke(
-          [this]() { text_input()->OnKeyboardVisibilityChanged(true); }));
+  EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
+      .WillOnce(testing::Invoke([this](bool should_show) {
+        if (should_show)
+          text_input()->OnKeyboardVisibilityChanged(true);
+      }));
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->ShowVirtualKeyboardIfEnabled();
   testing::Mock::VerifyAndClearExpectations(&observer);
@@ -207,9 +209,11 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
   text_input()->ShowVirtualKeyboardIfEnabled();
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
-  EXPECT_CALL(observer, OnShowVirtualKeyboardIfEnabled)
-      .WillOnce(testing::Invoke(
-          [this]() { text_input()->OnKeyboardVisibilityChanged(true); }));
+  EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
+      .WillOnce(testing::Invoke([this](bool should_show) {
+        if (should_show)
+          text_input()->OnKeyboardVisibilityChanged(true);
+      }));
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->Activate(surface());

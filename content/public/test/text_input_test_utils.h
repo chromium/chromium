@@ -307,8 +307,8 @@ class TestInputMethodObserver {
 
   virtual ui::TextInputType GetTextInputTypeFromClient() = 0;
 
-  virtual void SetOnShowVirtualKeyboardIfEnabledCallback(
-      const base::RepeatingClosure& callback) = 0;
+  virtual void SetOnVirtualKeyboardVisibilityChangedIfEnabledCallback(
+      const base::RepeatingCallback<void(bool)>& callback) = 0;
 
  protected:
   TestInputMethodObserver();

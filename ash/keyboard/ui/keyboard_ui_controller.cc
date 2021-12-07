@@ -831,7 +831,8 @@ void KeyboardUIController::OnTextInputStateChanged(
     // of hiding or the hide duration was very short (transient blur). Instead,
     // the virtual keyboard is shown in response to a user gesture (mouse or
     // touch) that is received while an element has input focus. Showing the
-    // keyboard requires an explicit call to OnShowVirtualKeyboardIfEnabled.
+    // keyboard requires an explicit call to
+    // OnVirtualKeyboardVisibilityChangedIfEnabled.
   }
 }
 
@@ -840,17 +841,13 @@ void KeyboardUIController::ShowKeyboardIfWithinTransientBlurThreshold() {
     ShowKeyboard(false);
 }
 
-void KeyboardUIController::OnShowVirtualKeyboardIfEnabled() {
-  DVLOG(1) << "OnShowVirtualKeyboardIfEnabled: " << IsEnabled();
-  // Calling |ShowKeyboardInternal| may move the keyboard to another display.
-  if (IsEnabled() && !keyboard_locked_)
-    ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
-}
-
 void KeyboardUIController::OnVirtualKeyboardVisibilityChangedIfEnabled(
     bool should_show) {
   if (should_show) {
-    OnShowVirtualKeyboardIfEnabled();
+    DVLOG(1) << "OnVirtualKeyboardVisibilityChangedIfEnabled: " << IsEnabled();
+    // Calling |ShowKeyboardInternal| may move the keyboard to another display.
+    if (IsEnabled() && !keyboard_locked_)
+      ShowKeyboardInternal(layout_delegate_->GetContainerForDefaultDisplay());
   } else {
     HideKeyboardExplicitlyBySystem();
   }
