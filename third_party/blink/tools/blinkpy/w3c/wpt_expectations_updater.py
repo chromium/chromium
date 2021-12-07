@@ -370,6 +370,16 @@ class WPTExpectationsUpdater(object):
             # if a test first fail then passed unexpectedly
             passed_test_ids = set([r["testId"] for r in rv if r["status"] == "PASS"])
             rv = [r for r in rv if r["testId"] not in passed_test_ids]
+            # only create test expectations for tests that had enough retries,
+            # so that we don't create excessive test expectations due to bot
+            # issues.
+            test_ids = [r["testId"] for r in rv]
+            rv = [r for r in rv if test_ids.count(r["testId"]) >= 3]
+        else:
+            passed_test_ids = set([r["testId"] for r in rv if r["status"] == "PASS"])
+            test_ids = [r["testId"] for r in rv]
+            rv = [r for r in rv if r["testId"] in passed_test_ids or test_ids.count(r["testId"]) >= 3]
+
         test_results_list.extend(rv)
 
         has_webdriver_tests = self.host.builders.has_webdriver_tests_for_builder(

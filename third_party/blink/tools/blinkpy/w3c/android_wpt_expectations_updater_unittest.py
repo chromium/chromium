@@ -115,10 +115,6 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "weblayer_shell_wpt"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "FAIL"
             },
             {
@@ -130,10 +126,6 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "weblayer_shell_wpt"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "FAIL"
             },
             {
@@ -145,10 +137,6 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "weblayer_shell_wpt"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "CRASH"
             },
             {
@@ -160,15 +148,11 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "weblayer_shell_wpt"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "FAIL"
             }]"""
         host.results_fetcher.set_results_to_resultdb(
             Build('MOCK Android Weblayer - Pie', 123, '123'),
-            json.loads(result))
+            json.loads(result) * 3)
 
         updater = AndroidWPTExpectationsUpdater(
             host, ['-vvv', '--android-product', ANDROID_WEBLAYER,
@@ -223,15 +207,11 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "weblayer_shell_wpt"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "CRASH"
             }"""
         host.results_fetcher.set_results_to_resultdb(
             Build('MOCK Android Weblayer - Pie', 123, '123'),
-            [json.loads(result)])
+            [json.loads(result)] * 3)
         updater = AndroidWPTExpectationsUpdater(
             host, ['-vvv',
                    '--clean-up-test-expectations',

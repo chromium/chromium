@@ -153,15 +153,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "blink_web_tests"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "ABORT"
-            }"""
+            }
+            """
         host.results_fetcher.set_results_to_resultdb(
             Build('MOCK Try Mac10.10', 333, 'Build-1'),
-            [json.loads(result)])
+            [json.loads(result)] * 3)
 
         self.assertEqual(0, updater.run())
 
@@ -194,10 +191,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "blink_web_tests"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "expected": true,
                 "status": "PASS"
             }"""
@@ -221,10 +214,6 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "blink_web_tests"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "expected": false,
                 "status": "PASS"
             }"""
@@ -257,16 +246,12 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "blink_web_tests"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "expected": false,
                 "status": "FAIL"
             }"""
         host.results_fetcher.set_results_to_resultdb(
             Build('MOCK Try Mac10.10', 123, 'Build-123'),
-            [json.loads(result)])
+            [json.loads(result)] * 3)
         updater = WPTExpectationsUpdater(host)
         results = updater.get_failing_results_dicts(
             Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
@@ -293,10 +278,28 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "blink_web_tests"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
+                "status": "FAIL"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'),
+            [json.loads(result)] * 3)
+        updater = WPTExpectationsUpdater(host)
+        results_dict = updater.get_failing_results_dicts(
+            Build('MOCK Try Mac10.10', 123, 'Build-123'), 'blink_web_tests')
+        self.assertEqual(results_dict, [])
+
+    def test_get_failing_results_dict_not_retried_test(self):
+        host = self.mock_host()
+        result = """
+            {
+                "testId": "ninja://:blink_web_tests/external/wpt/x/failing-test.html",
+                "variant": {
+                    "def": {
+                        "builder": "mac10.10-blink-rel",
+                        "os": "Mac-10.10",
+                        "test_suite": "blink_web_tests"
+                    }
+                },
                 "status": "FAIL"
             }"""
         host.results_fetcher.set_results_to_resultdb(
@@ -319,15 +322,11 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                         "test_suite": "blink_web_tests"
                     }
                 },
-                "tags": [{
-                    "key": "step_name",
-                    "value": "blink_web_tests (with patch) on Ubuntu-18.04"
-                }],
                 "status": "FAIL"
             }"""
         host.results_fetcher.set_results_to_resultdb(
             Build('MOCK Try Trusty', 123, 'Build-123'),
-            [json.loads(result)])
+            [json.loads(result)] * 3)
 
         host.results_fetcher.set_webdriver_test_results(
             Build('MOCK Try Trusty', 123, 'Build-123'), "tryserver.blink",
