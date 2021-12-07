@@ -19,4 +19,17 @@ void MockSimpleDownloadManager::NotifyOnNewDownloadCreated(DownloadItem* item) {
     observer.OnDownloadCreated(item);
 }
 
+const DownloadUrlParameters*
+MockSimpleDownloadManager::GetDownloadUrlParameters() {
+  DCHECK(params_.get());
+  return params_.get();
+}
+
+void MockSimpleDownloadManager::DownloadUrl(
+    std::unique_ptr<DownloadUrlParameters> params) {
+  DCHECK(params.get());
+  DownloadUrlMock(params.get());
+  params_ = std::move(params);
+}
+
 }  // namespace download

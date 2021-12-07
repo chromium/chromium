@@ -9,14 +9,17 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/mock_simple_download_manager.h"
 #include "content/public/test/fake_download_item.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,6 +37,7 @@ ACTION_P(PopulateVector, items) {
 }
 
 const char kFakeGuid[] = "fake_guid";
+const char kFakeURL[] = "https://www.example.com/kale";
 
 // Matcher to compare driver entries. Not all the memeber fields are compared.
 // Currently no comparison in non test code, so no operator== override for
@@ -67,15 +71,15 @@ class DownloadDriverImplTest : public testing::Test {
         .WillRepeatedly(Return(true));
     driver_ = std::make_unique<DownloadDriverImpl>(&coordinator_);
     coordinator_.SetSimpleDownloadManager(&mock_manager_, true);
+    ON_CALL(mock_manager_, CanDownload(_)).WillByDefault(Return(true));
   }
 
-  // TODO(xingliu): implements test download manager for embedders to test.
+ protected:
   SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<MockSimpleDownloadManager> mock_manager_;
   MockDriverClient mock_client_;
   std::unique_ptr<DownloadDriverImpl> driver_;
-
- protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
 };
@@ -235,6 +239,53 @@ TEST_F(DownloadDriverImplTest, TestCreateDriverEntry) {
   EXPECT_EQ(kUrls, entry.url_chain);
   EXPECT_EQ(DriverEntry::State::IN_PROGRESS, entry.state);
   EXPECT_EQ(headers, entry.response_headers);
+}
+
+bool HasHeader(const DownloadUrlParameters::RequestHeadersType& headers,
+               const std::string& header) {
+  for (const auto& pair : headers) {
+    if (pair.first == header)
+      return true;
+  }
+  return false;
+}
+
+// Range header set in RequestParams will be set correctly in
+// DownloadUrlParameters when calling |DownloadDriver::Start|.
+TEST_F(DownloadDriverImplTest, Start_WithRangeHeader) {
+  scoped_feature_list_.InitAndEnableFeature(download::features::kDownloadRange);
+  RequestParams request_params;
+  request_params.url = GURL(kFakeURL);
+  request_params.request_headers.AddHeaderFromString("Range: bytes=5-10");
+  EXPECT_CALL(mock_manager_, DownloadUrlMock(_)).RetiresOnSaturation();
+  driver_->Start(request_params, kFakeGuid, base::FilePath(), nullptr,
+                 TRAFFIC_ANNOTATION_FOR_TESTS);
+  const auto* download_url_parameters =
+      mock_manager_.GetDownloadUrlParameters();
+  DCHECK(download_url_parameters);
+  EXPECT_FALSE(download_url_parameters->use_if_range());
+  auto range_request_offset = download_url_parameters->range_request_offset();
+  EXPECT_EQ(5, range_request_offset.first);
+  EXPECT_EQ(10, range_request_offset.second);
+  EXPECT_FALSE(HasHeader(download_url_parameters->request_headers(),
+                         net::HttpRequestHeaders::kRange));
+  EXPECT_FALSE(HasHeader(download_url_parameters->request_headers(),
+                         net::HttpRequestHeaders::kIfRange));
+
+  request_params.request_headers.AddHeaderFromString("Range: bytes=-10");
+  EXPECT_CALL(mock_manager_, DownloadUrlMock(_)).RetiresOnSaturation();
+  driver_->Start(request_params, kFakeGuid, base::FilePath(), nullptr,
+                 TRAFFIC_ANNOTATION_FOR_TESTS);
+  download_url_parameters = mock_manager_.GetDownloadUrlParameters();
+  DCHECK(download_url_parameters);
+  EXPECT_FALSE(download_url_parameters->use_if_range());
+  range_request_offset = download_url_parameters->range_request_offset();
+  EXPECT_EQ(kInvalidRange, range_request_offset.first);
+  EXPECT_EQ(10, range_request_offset.second);
+  EXPECT_FALSE(HasHeader(download_url_parameters->request_headers(),
+                         net::HttpRequestHeaders::kRange));
+  EXPECT_FALSE(HasHeader(download_url_parameters->request_headers(),
+                         net::HttpRequestHeaders::kIfRange));
 }
 
 }  // namespace download

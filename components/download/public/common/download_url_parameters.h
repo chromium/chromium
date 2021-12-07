@@ -178,6 +178,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
 
   // Sets the range request header offset. Can use -1 for open ended request.
   // e.g, "bytes:100-".
+  // TODO(xingliu): Use net::HttpByteRange instead of two integer.
   void set_range_request_offset(int64_t from, int64_t to) {
     save_info_.range_request_from = from;
     save_info_.range_request_to = to;

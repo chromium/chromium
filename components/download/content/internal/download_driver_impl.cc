@@ -20,8 +20,11 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "net/http/http_byte_range.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 
@@ -69,6 +72,24 @@ FailureType FailureTypeFromInterruptReason(DownloadInterruptReason reason) {
 // Logs interrupt reason when download fails.
 void LogDownloadInterruptReason(download::DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.Service.Driver.InterruptReason", reason);
+}
+
+absl::optional<net::HttpByteRange> ParseRangeHeader(
+    const net::HttpRequestHeaders& request_headers) {
+  std::vector<net::HttpByteRange> byte_ranges;
+  std::string range_header;
+  bool success =
+      request_headers.GetHeader(net::HttpRequestHeaders::kRange, &range_header);
+  if (!success)
+    return absl::nullopt;
+
+  success = net::HttpUtil::ParseRangeHeader(range_header, &byte_ranges);
+
+  // Multiple ranges are not supported.
+  if (!success || byte_ranges.empty() || byte_ranges.size() > 1)
+    return absl::nullopt;
+
+  return byte_ranges.front();
 }
 
 }  // namespace
@@ -171,8 +192,38 @@ void DownloadDriverImpl::Start(
   // collision and return an error to fail the download cleanly.
   for (net::HttpRequestHeaders::Iterator it(request_params.request_headers);
        it.GetNext();) {
+    // Range and If-Range are managed by download core instead.
+    if (it.name() == net::HttpRequestHeaders::kRange ||
+        it.name() == net::HttpRequestHeaders::kIfRange) {
+      continue;
+    }
+
     download_url_params->add_request_header(it.name(), it.value());
   }
+
+  if (base::FeatureList::IsEnabled(features::kDownloadRange) &&
+      request_params.request_headers.HasHeader(
+          net::HttpRequestHeaders::kRange)) {
+    absl::optional<net::HttpByteRange> byte_range =
+        ParseRangeHeader(request_params.request_headers);
+    if (byte_range.has_value()) {
+      download_url_params->set_use_if_range(false);
+      if (byte_range->IsSuffixByteRange()) {
+        download_url_params->set_range_request_offset(
+            kInvalidRange, byte_range->suffix_length());
+      } else {
+        download_url_params->set_range_request_offset(
+            byte_range->first_byte_position(),
+            byte_range->last_byte_position());
+      }
+    } else {
+      // TODO(xingliu): Do input validation in ControllerImpl::StartDownload, so
+      // we don't need to return here.
+      LOG(ERROR) << "Failed to parse Range request header.";
+      return;
+    }
+  }
+
   download_url_params->set_guid(guid);
   download_url_params->set_transient(true);
   download_url_params->set_method(request_params.method);
@@ -194,6 +245,7 @@ void DownloadDriverImpl::Start(
     download_url_params->set_isolation_info(
         request_params.isolation_info.value());
   }
+
   download_manager_coordinator_->DownloadUrl(std::move(download_url_params));
 }
 
