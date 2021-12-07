@@ -41,6 +41,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -707,7 +708,9 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     profile_builder.OverridePolicyConnectorIsManagedForTesting(
         is_managed_profile);
     if (is_supervised) {
-      profile_builder.SetSupervisedUserId("id");
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      profile_builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+#endif
     }
     std::unique_ptr<TestingProfile> profile = profile_builder.Build();
 
@@ -4052,16 +4055,15 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // TODO(crbug.com/1035829): Figure out whether this can be resolved by tweaking
 // the test setup or whether the Active Directory services need to be adapted
 // for easy testing.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileDoesNotAllowRemoteLoggingForSupervisedProfiles) {
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   const bool allow_remote_logging = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
       GetScopedUserManager(user_manager::USER_TYPE_CHILD);
-#endif
 
   auto browser_context = CreateBrowserContextWithCustomSupervision(
       "name", true /* is_managed_profile */,
@@ -4075,6 +4077,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
   EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
 }
+#endif
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebRtcEventLogManagerTestPolicy,

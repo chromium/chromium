@@ -1043,7 +1043,7 @@ bool DoesProfileDefaultToLoggingEnabled(const Profile* const profile) {
   // cases (e.g. on Chrome OS). Although currently this should be covered by the
   // other checks, let's explicitly check to anticipate edge cases and make the
   // requirement explicit.
-  if (profile->IsOffTheRecord() || profile->IsSupervised()) {
+  if (profile->IsOffTheRecord() || profile->IsChild()) {
     return false;
   }
 
