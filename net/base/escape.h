@@ -13,6 +13,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 
 namespace net {

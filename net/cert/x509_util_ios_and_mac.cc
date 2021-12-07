@@ -5,6 +5,7 @@
 #include "net/cert/x509_util_ios_and_mac.h"
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
 #if defined(OS_IOS)
 #include "net/cert/x509_util_ios.h"

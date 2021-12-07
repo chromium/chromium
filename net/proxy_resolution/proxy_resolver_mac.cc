@@ -16,6 +16,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"

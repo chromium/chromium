@@ -5,6 +5,7 @@
 #ifndef NET_SSL_CLIENT_CERT_IDENTITY_TEST_UTIL_H_
 #define NET_SSL_CLIENT_CERT_IDENTITY_TEST_UTIL_H_
 
+#include "build/build_config.h"
 #include "net/ssl/client_cert_identity.h"
 
 namespace base {

@@ -6,6 +6,7 @@
 #define NET_SSL_CLIENT_CERT_IDENTITY_H_
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
