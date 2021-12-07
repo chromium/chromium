@@ -851,6 +851,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // or unttached, going to the window through the SceneState for the self.browser
 // solves both issues.
 - (UIEdgeInsets)rootSafeAreaInsets {
+  if (_isShutdown) {
+    return UIEdgeInsetsZero;
+  }
   UIView* view =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState().window;
   return view ? view.safeAreaInsets : self.view.safeAreaInsets;
