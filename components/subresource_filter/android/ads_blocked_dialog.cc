@@ -49,7 +49,10 @@ AdsBlockedDialog::AdsBlockedDialog(
 }
 
 AdsBlockedDialog::~AdsBlockedDialog() {
-  DCHECK(java_ads_blocked_dialog_.is_null());
+  // When the owning class is destroyed, ensure that any active dialog
+  // associated with the class is dismissed.
+  if (java_ads_blocked_dialog_)
+    Dismiss();
 }
 
 void AdsBlockedDialog::Show(bool should_post_dialog) {
