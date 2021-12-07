@@ -76,9 +76,6 @@ void ArcDarkThemeBridge::OnConnectionReady() {
   if (provider && ash::features::IsDarkLightModeEnabled())
     dark_theme_status = provider->IsDarkModeEnabled();
 
-  if (provider && ash::features::IsNotificationsRefreshEnabled())
-    dark_theme_status = provider->IsDarkModeEnabled();
-
   if (!ArcDarkThemeBridge::SendDeviceDarkThemeState(dark_theme_status)) {
     LOG(ERROR) << "OnConnectionReady failed to get Dark Theme instance for "
                   "initial dark theme status : "
