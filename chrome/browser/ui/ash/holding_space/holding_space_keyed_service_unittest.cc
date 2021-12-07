@@ -1810,6 +1810,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
   int64_t current_received_bytes = 0;
   int64_t current_total_bytes = 100;
   bool current_is_dangerous = false;
+  download::DownloadDangerType current_danger_type =
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
 
   // Create a fake download item and cache a function to update it.
   std::unique_ptr<content::FakeDownloadItem> fake_download_item =
@@ -1823,6 +1825,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
     fake_download_item->SetTargetFilePath(current_target_path);
     fake_download_item->SetTotalBytes(current_total_bytes);
     fake_download_item->SetIsDangerous(current_is_dangerous);
+    fake_download_item->SetDangerType(current_danger_type);
     fake_download_item->NotifyDownloadUpdated();
   };
 
@@ -1961,13 +1964,15 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
     run_loop.Run();
   }
 
-  // Mark the download as dangerous.
+  // Mark the download as dangerous and maybe malicious.
   current_is_dangerous = true;
+  current_danger_type = download::DownloadDangerType::
+      DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT;
   UpdateFakeDownloadItem();
 
   {
-    // Because the download has been marked as dangerous, the image should
-    // represent that the underlying download is in error.
+    // Because the download has been marked as dangerous and maybe malicious,
+    // the image should represent that the underlying download is in error.
     base::RunLoop run_loop;
     auto image_skia_changed_subscription =
         model->items()[0]->image().AddImageSkiaChangedCallback(
@@ -1981,6 +1986,37 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddInProgressDownloadItem) {
                       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon,
                                             kHoldingSpaceIconSize,
                                             gfx::kGoogleRed600));
+              EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
+              run_loop.Quit();
+            }));
+
+    // Force a thumbnail request and wait for the `ThumbnailLoader` to finish
+    // processing the request.
+    model->items()[0]->image().GetImageSkia(kImageSize, kDarkBackground);
+    run_loop.Run();
+  }
+
+  // Mark the download as *not* being malicious.
+  current_danger_type =
+      download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
+  UpdateFakeDownloadItem();
+
+  {
+    // Because the download has been marked as dangerous but *not* malicious,
+    // the image should represent that the underlying download is in warning.
+    base::RunLoop run_loop;
+    auto image_skia_changed_subscription =
+        model->items()[0]->image().AddImageSkiaChangedCallback(
+            base::BindLambdaForTesting([&]() {
+              gfx::ImageSkia actual_image =
+                  model->items()[0]->image().GetImageSkia(kImageSize,
+                                                          kDarkBackground);
+              gfx::ImageSkia expected_image =
+                  gfx::ImageSkiaOperations::CreateSuperimposedImage(
+                      image_util::CreateEmptyImage(kImageSize),
+                      gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon,
+                                            kHoldingSpaceIconSize,
+                                            gfx::kGoogleYellow600));
               EXPECT_TRUE(BitmapsAreEqual(actual_image, expected_image));
               run_loop.Quit();
             }));

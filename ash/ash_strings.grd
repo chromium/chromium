@@ -1380,6 +1380,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME" desc="The accessible name for a view representing an in-progress download holding space item. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
         Downloading <ph name="FILENAME">$1<ex>example.txt</ex></ph>
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_CONFIRM" desc="The accessible name for a view representing an in-progress download holding space item which must be kept/discarded via notification. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
+        Confirm download <ph name="FILENAME">$1<ex>example.txt</ex></ph>
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS" desc="The accessible name for a view representing an in-progress download holding space item which is dangerous. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
         Download dangerous <ph name="FILENAME">$1<ex>example.txt</ex></ph>
       </message>
@@ -1388,6 +1391,9 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED" desc="The accessible name for a view representing an in-progress download holding space item which is paused. The placeholder, FILENAME, is the filename of the holding space item's backing file.">
         Download paused <ph name="FILENAME">$1<ex>example.txt</ex></ph>
+      </message>
+      <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_CONFIRM" desc="Text displayed in a holding space download chip to indicate the underlying download must be kept/discarded via notification.">
+        Confirm download
       </message>
       <message name="IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_DANGEROUS_FILE" desc="Text displayed in a holding space download chip to indicate the underlying download is a dangerous file.">
         Dangerous file

@@ -28,6 +28,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -58,6 +59,7 @@ crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
 // to indicate error.
 gfx::ImageSkia CreateErrorPlaceholderImageSkia(
     const gfx::Size& size,
+    cros_styles::ColorName color_name,
     const absl::optional<bool>& dark_background) {
   DCHECK_GE(size.width(), kHoldingSpaceIconSize);
   DCHECK_GE(size.height(), kHoldingSpaceIconSize);
@@ -65,9 +67,14 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
       image_util::CreateEmptyImage(size),
       gfx::CreateVectorIcon(
           vector_icons::kErrorOutlineIcon, kHoldingSpaceIconSize,
-          dark_background.value_or(AshColorProvider::Get()->IsDarkModeEnabled())
-              ? gfx::kGoogleRed300
-              : gfx::kGoogleRed600));
+          cros_styles::ResolveColor(
+              color_name,
+              /*is_dark_mode=*/
+              dark_background.value_or(
+                  AshColorProvider::Get()->IsDarkModeEnabled()),
+              /*use_debug_colors=*/
+              base::FeatureList::IsEnabled(
+                  features::kSemanticColorsDebugOverride))));
 }
 
 // Returns the singleton `crosapi::DownloadControllerAsh` if it exists.
@@ -170,15 +177,22 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   absl::optional<std::u16string> GetAccessibleName() const {
     if (IsComplete(mojo_download_item_.get()))
       return absl::nullopt;
-    return l10n_util::GetStringFUTF16(
-        IsScanning(mojo_download_item_.get())
-            ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_SCANNING
-            : IsDangerous() || IsMixedContent()
-                  ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS
-                  : IsPaused()
-                        ? IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED
-                        : IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME,
-        mojo_download_item_->target_file_path.BaseName().LossyDisplayName());
+
+    int msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME;
+
+    if (IsScanning(mojo_download_item_.get())) {
+      msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_SCANNING;
+    } else if (IsDangerous() && !MightBeMalicious()) {
+      msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_CONFIRM;
+    } else if (IsDangerous() || IsMixedContent()) {
+      msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_DANGEROUS;
+    } else if (IsPaused()) {
+      msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED;
+    }
+
+    const auto& filename =
+        mojo_download_item_->target_file_path.BaseName().LossyDisplayName();
+    return l10n_util::GetStringFUTF16(msg_id, filename);
   }
 
   // Returns the file path associated with the underlying download.
@@ -241,6 +255,13 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // Returns whether the underlying download is paused.
   bool IsPaused() const { return mojo_download_item_->is_paused; }
 
+  // Returns whether the underlying download might be malicious.
+  bool MightBeMalicious() const {
+    return IsDangerous() && mojo_download_item_->danger_type !=
+                                crosapi::mojom::DownloadDangerType::
+                                    kDownloadDangerTypeDangerousFile;
+  }
+
   // Associates this in-progress download with the specified in-progress
   // `holding_space_item`. NOTE: This association may be performed only once.
   void SetHoldingSpaceItem(const HoldingSpaceItem* holding_space_item) {
@@ -270,7 +291,12 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
           if (in_progress_download &&
               (in_progress_download->IsDangerous() ||
                in_progress_download->IsMixedContent())) {
-            return CreateErrorPlaceholderImageSkia(size, dark_background);
+            return CreateErrorPlaceholderImageSkia(
+                size, /*color_name=*/in_progress_download->IsDangerous() &&
+                              !in_progress_download->MightBeMalicious()
+                          ? cros_styles::ColorName::kIconColorWarning
+                          : cros_styles::ColorName::kIconColorAlert,
+                dark_background);
           }
 
           base::FilePath rewritten_file_path(file_path);
@@ -306,6 +332,14 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     if (IsScanning(mojo_download_item_.get())) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SCANNING);
+    }
+
+    // In-progress download items which are dangerous but not malicious can be
+    // kept or discarded by the user via notification. This being the case, such
+    // items have a special secondary text treatment.
+    if (IsDangerous() && !MightBeMalicious()) {
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_CONFIRM);
     }
 
     // In-progress download items which are dangerous or mixed content have a
@@ -360,6 +394,8 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // this method may result in the destruction of `this`.
   void UpdateMojoDownloadItem(
       crosapi::mojom::DownloadItemPtr mojo_download_item) {
+    const bool was_dangerous_but_not_malicious =
+        IsDangerous() && !MightBeMalicious();
     const bool was_dangerous_or_mixed_content =
         IsDangerous() || IsMixedContent();
 
@@ -370,10 +406,17 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
       return;
     }
 
+    const bool is_dangerous_but_not_malicious =
+        IsDangerous() && !MightBeMalicious();
+    const bool is_dangerous_or_mixed_content =
+        IsDangerous() || IsMixedContent();
+
     // Explicitly invalidate the image of the associated holding space item if
-    // the download is transitioning to/from a dangerous or mixed content state.
+    // the download is transitioning to/from a state which required an error
+    // placeholder image.
     const bool invalidate_image =
-        was_dangerous_or_mixed_content != (IsDangerous() || IsMixedContent());
+        was_dangerous_but_not_malicious != is_dangerous_but_not_malicious ||
+        was_dangerous_or_mixed_content != is_dangerous_or_mixed_content;
 
     switch (mojo_download_item_->state) {
       case crosapi::mojom::DownloadState::kInProgress:
