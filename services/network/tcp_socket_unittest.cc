@@ -583,11 +583,8 @@ TEST_F(TCPSocketTest, SocketClosed) {
   // On some macOS kernels, send() on a closing TCP socket can return
   // EPROTOTYPE, which is unknown to the net stack and gets mapped to
   // net::ERR_FAILED.
-  // This behavior is known to exist as late as 10.12. Whether it exists after
-  // that is unknown.
   // See https://crbug.com/1034991
-  if (base::mac::IsAtMostOS10_12())
-    result_ok |= result == net::ERR_FAILED;
+  result_ok |= result == net::ERR_FAILED;
 #endif
   EXPECT_TRUE(result_ok) << "actual result: " << result;
 }
