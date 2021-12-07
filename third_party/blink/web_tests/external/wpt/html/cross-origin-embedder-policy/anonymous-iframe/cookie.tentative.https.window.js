@@ -15,11 +15,12 @@ const cookieFromResource = async resource_token => {
   return parseCookies(headers)[cookie_key];
 };
 
-// Load an iframe, return the HTTP request cookies.
-const cookieFromIframeNavigationRequest = async (iframe_origin) => {
+// Load an anonymous iframe, return the HTTP request cookies.
+const cookieFromAnonymousIframeRequest = async (iframe_origin) => {
   const resource_token = token();
   let iframe = document.createElement("iframe");
   iframe.src = `${showRequestHeaders(iframe_origin, resource_token)}`;
+  iframe.anonymous = true;
   document.body.appendChild(iframe);
   return await cookieFromResource(resource_token);
 };
@@ -45,14 +46,14 @@ promise_test_parallel(async test => {
 
   promise_test_parallel(async test => {
     assert_equals(
-      await cookieFromIframeNavigationRequest(same_origin),
+      await cookieFromAnonymousIframeRequest(same_origin),
       undefined
     );
   }, "Anonymous same-origin iframe is loaded without credentials");
 
   promise_test_parallel(async test => {
     assert_equals(
-      await cookieFromIframeNavigationRequest(cross_origin),
+      await cookieFromAnonymousIframeRequest(cross_origin),
       undefined
     );
   }, "Anonymous cross-origin iframe is loaded without credentials");
