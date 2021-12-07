@@ -436,6 +436,7 @@ void BackForwardCacheMetrics::RecordMetricsForHistoryNavigationCommit(
   for (const ax::mojom::Event event : page_store_result_->ax_events()) {
     base::UmaHistogramSparse(
         "BackForwardCache.HistoryNavigationOutcome."
+        "NotRestoredDueToAccessibility."
         "AXEventType",
         static_cast<int>(event));
   }
