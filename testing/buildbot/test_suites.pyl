@@ -1709,7 +1709,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter',
           # TODO(crbug.com/1254563): Fix net_unittests to work under run-test-component.
           '--use-run',
-          '--without-network',
         ],
       },
       'ozone_gl_unittests': {

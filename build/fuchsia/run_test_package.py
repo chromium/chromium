@@ -114,10 +114,9 @@ class MergedInputStream(object):
           del streams_by_fd[fileno]
 
 
-def _GetComponentUri(package_name, package_component_version):
-  suffix = 'cm' if package_component_version == '2' else 'cmx'
-  return 'fuchsia-pkg://fuchsia.com/%s#meta/%s.%s' % (package_name,
-                                                      package_name, suffix)
+def _GetComponentUri(package_name):
+  return 'fuchsia-pkg://fuchsia.com/%s#meta/%s.cmx' % (package_name,
+                                                       package_name)
 
 
 class RunTestPackageArgs:
@@ -130,15 +129,12 @@ class RunTestPackageArgs:
       file fetched after the test suite has run.
   use_run_test_component: If True then the test package will be run hermetically
                           via 'run-test-component', rather than using 'run'.
-  output_directory: If set, the output directory for CFv2 tests that use
-                    custom artifacts; see fxb/75690.
   """
 
   def __init__(self):
     self.code_coverage = False
     self.test_realm_label = None
     self.use_run_test_component = False
-    self.output_directory = None
 
   @staticmethod
   def FromCommonArgs(args):
@@ -168,7 +164,7 @@ def _SymbolizeStream(input_fd, ids_txt_files):
 
 
 def RunTestPackage(output_dir, target, package_paths, package_name,
-                   package_component_version, package_args, args):
+                   package_args, args):
   """Installs the Fuchsia package at |package_path| on the target,
   executes it with |package_args|, and symbolizes its output.
 
@@ -176,8 +172,6 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
   target: The deployment Target object that will run the package.
   package_paths: The paths to the .far packages to be installed.
   package_name: The name of the primary package to run.
-  package_component_version: The component version of the primary package to
-    run ("1" or "2").
   package_args: The arguments which will be passed to the Fuchsia process.
   args: RunTestPackageArgs instance configuring how the package will be run.
 
@@ -194,7 +188,6 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
     log_output_thread.start()
 
     with target.GetPkgRepo():
-      on_target = True
       start_time = time.time()
       target.InstallPackage(package_paths)
       logging.info('Test installed in {:.2f} seconds.'.format(time.time() -
@@ -205,23 +198,11 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
 
       logging.info('Running application.')
 
-      component_uri = _GetComponentUri(package_name, package_component_version)
-      if package_component_version == '2':
-        ffx = os.path.join(common.SDK_ROOT, 'tools',
-                           common.GetHostArchFromPlatform(), 'ffx')
-        command = [
-            ffx, '--config', 'test.experimental_structured_output=true', 'test',
-            'run'
-        ]
-        if args.output_directory:
-          command += ['--output-directory', args.output_directory]
-        command += [component_uri, '--']
-        on_target = False
-      elif args.code_coverage:
-        # TODO(crbug.com/1156768): Deprecate runtests.
+      # TODO(crbug.com/1156768): Deprecate runtests.
+      if args.code_coverage:
         # runtests requires specifying an output directory and a double dash
         # before the argument list.
-        command = ['runtests', '-o', '/tmp', component_uri]
+        command = ['runtests', '-o', '/tmp', _GetComponentUri(package_name)]
         if args.test_realm_label:
           command += ['--realm-label', args.test_realm_label]
         command += ['--']
@@ -229,23 +210,16 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
         command = ['run-test-component']
         if args.test_realm_label:
           command += ['--realm-label=%s' % args.test_realm_label]
-        command.append(component_uri)
+        command.append(_GetComponentUri(package_name))
         command.append('--')
       else:
-        command = ['run', component_uri]
+        command = ['run', _GetComponentUri(package_name)]
       command.extend(package_args)
 
-      if on_target:
-        process = target.RunCommandPiped(command,
-                                         stdin=open(os.devnull, 'r'),
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.STDOUT)
-      else:
-        logging.debug(command)
-        process = subprocess.Popen(command,
-                                   stdin=open(os.devnull, 'r'),
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT)
+      process = target.RunCommandPiped(command,
+                                       stdin=open(os.devnull, 'r'),
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT)
 
       # Symbolize klog and systemlog as separate streams. The symbolizer
       # protocol is stateful, so comingled raw stack dumps can yield

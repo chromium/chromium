@@ -50,8 +50,6 @@ if (is_android) {
 #   use_xvfb: (optional) whether to run the executable under Xvfb.
 #   use_raw_android_executable: Use executable() rather than android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
-#   use_cfv2: (Fuchsia, optional): build the test as a framework v2 component;
-#      see https://fuchsia.dev/fuchsia-src/concepts/components/v2 for details.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -328,58 +326,31 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
 
-    if (defined(invoker.use_cfv2) && invoker.use_cfv2) {
-      # Generate a CML fragment that provides the program name.
-      _test_program_fragment_target = "${target_name}_program-fragment"
-      _test_program_fragment =
-          "${target_out_dir}/${target_name}_program.test-cml"
-      _program_name = get_label_info(":${_exec_target}", "name")
-      generated_file(_test_program_fragment_target) {
-        contents = "{ program: { binary: \"${_program_name}\",},}"
-        outputs = [ _test_program_fragment ]
-      }
-
-      # Collate the complete set of elements to include in the test component's
-      # manifest.
-      _manifest_fragments = [
-        "//build/config/fuchsia/test/minimum_capabilities.test-cml",
-        "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
-        _test_program_fragment,
-      ]
-
-      _test_component_manifest = "${target_out_dir}/${target_name}.cml"
-      _merged_manifest_name = "${_output_name}.cml"
-    } else {
-      # Generate a CMX fragment that provides the program name.
-      _test_program_fragment_target = "${target_name}_program-fragment"
-      _test_program_fragment =
-          "${target_out_dir}/${target_name}_program.test-cmx"
-      _program_name = get_label_info(":${_exec_target}", "name")
-      generated_file(_test_program_fragment_target) {
-        contents = "{ \"program\": { \"binary\": \"${_program_name}\"}}"
-        outputs = [ _test_program_fragment ]
-      }
-
-      # Collate the complete set of elements to include in the test component's
-      # manifest.
-      _manifest_fragments = [
-        "//build/config/fuchsia/test/minimum_capabilities.test-cmx",
-        _test_program_fragment,
-      ]
-
-      _test_component_manifest = "${target_out_dir}/${target_name}.cmx"
-      _merged_manifest_name = "${_output_name}.cmx"
+    # Generate a CMX fragment that provides the program name.
+    _test_program_fragment_target = "${target_name}_program-fragment"
+    _test_program_fragment = "${target_out_dir}/${target_name}_program.test-cmx"
+    _program_name = get_label_info(":${_exec_target}", "name")
+    generated_file(_test_program_fragment_target) {
+      contents = "{ \"program\": { \"binary\": \"${_program_name}\"}}"
+      outputs = [ _test_program_fragment ]
     }
 
+    # Collate the complete set of elements to include in the test component's
+    # manifest.
+    _manifest_fragments = [
+      "//build/config/fuchsia/test/minimum_capabilities.test-cmx",
+      _test_program_fragment,
+    ]
     if (defined(invoker.additional_manifest_fragments)) {
       _manifest_fragments += invoker.additional_manifest_fragments
     }
 
     # Generate the test component manifest from the specified elements.
     _test_component_manifest_target = "${target_name}_component-manifest"
+    _test_component_manifest = "${target_out_dir}/${target_name}.cmx"
     cmc_merge(_test_component_manifest_target) {
       sources = _manifest_fragments
-      output_name = "${_merged_manifest_name}"
+      output_name = "${_output_name}.cmx"
       deps = [ ":${_test_program_fragment_target}" ]
     }
 
@@ -443,7 +414,6 @@ template("test") {
                                "data",
                                "data_deps",
                                "package_deps",
-                               "use_cfv2",
                                "use_test_server",
                              ])
 

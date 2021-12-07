@@ -19,8 +19,7 @@ from fvdl_target import FvdlTarget
 def main():
   parser = argparse.ArgumentParser(
       description='Launches a long-running emulator that can '
-      'be re-used for multiple test runs.',
-      conflict_handler='resolve')
+      'be re-used for multiple test runs.')
   AddLongRunningArgs(parser)
   FvdlTarget.RegisterArgs(parser)
   AemuTarget.RegisterArgs(parser)
