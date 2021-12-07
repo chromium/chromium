@@ -708,6 +708,7 @@ if (is_fuchsia) {
     data_deps = [
       ":fuchsia_telemetry_test_data",
       ":telemetry_gpu_integration_test_data",
+      "//base:base_perftests",
       "//testing:run_perf_test",
       "//tools/perf/:perf",
     ]
