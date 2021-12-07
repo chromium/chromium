@@ -246,9 +246,15 @@ class BigQueryQuerier(object):
 
     expectation_files = []
     for qr in results_for_each_step.values():
-      expectation_files.extend(
-          self._GetRelevantExpectationFilesForQueryResult(qr))
-    expectation_files = list(set(expectation_files))
+      # None is a special value indicating "use all expectation files", so
+      # handle that.
+      ef = self._GetRelevantExpectationFilesForQueryResult(qr)
+      if ef is None:
+        expectation_files = None
+        break
+      expectation_files.extend(ef)
+    if expectation_files is not None:
+      expectation_files = list(set(expectation_files))
 
     for r in query_results:
       if self._ShouldSkipOverResult(r):

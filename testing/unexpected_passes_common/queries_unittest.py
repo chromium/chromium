@@ -132,6 +132,62 @@ class QueryBuilderUnittest(unittest.TestCase):
                           '1234'))
     self.assertEqual(expectation_files, ['foo_expectations'])
 
+  def testValidResultsNoneExpectations(self):
+    """Tests when an implementation uses None for expectation files."""
+    query_results = [
+        {
+            'id':
+            'build-1234',
+            'test_id': ('ninja://chrome/test:telemetry_gpu_integration_test/'
+                        'gpu_tests.pixel_integration_test.'
+                        'PixelIntegrationTest.test_name'),
+            'status':
+            'FAIL',
+            'typ_expectations': [
+                'RetryOnFailure',
+            ],
+            'typ_tags': [
+                'win',
+                'intel',
+            ],
+            'step_name':
+            'step_name',
+        },
+        {
+            'id':
+            'build-1234',
+            'test_id': ('ninja://chrome/test:telemetry_gpu_integration_test/'
+                        'gpu_tests.pixel_integration_test.'
+                        'PixelIntegrationTest.test_name'),
+            'status':
+            'FAIL',
+            'typ_expectations': [
+                'RetryOnFailure',
+            ],
+            'typ_tags': [
+                'win',
+                'nvidia',
+            ],
+            'step_name':
+            'step_name',
+        },
+    ]
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        stdout=json.dumps(query_results))
+    with mock.patch.object(
+        self._querier, '_GetRelevantExpectationFilesForQueryResult') as ef_mock:
+      ef_mock.return_value = None
+      results, expectation_files = self._querier.QueryBuilder('builder', 'ci')
+      self.assertEqual(len(results), 2)
+      self.assertIn(
+          data_types.Result('test_name', ['win', 'intel'], 'Failure',
+                            'step_name', '1234'), results)
+      self.assertIn(
+          data_types.Result('test_name', ['win', 'nvidia'], 'Failure',
+                            'step_name', '1234'), results)
+      self.assertIsNone(expectation_files)
+      ef_mock.assert_called_once()
+
   def testValidResultsMultipleSteps(self):
     """Tests functionality when results from multiple steps are present."""
 
