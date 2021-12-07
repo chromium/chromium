@@ -1,4 +1,4 @@
-<style>
+<style include="cr-shared-style">
   .button-image {
     margin-inline-end: 8px;
   }
@@ -18,19 +18,25 @@
     margin: 32px 0;
   }
 </style>
-<h1>Cast to a new display</h1>
+<h1>$i18n{dialogTitle}</h1>
 <div id="codeInputView">
-  <p>Typed input view</p>
+  <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
   <cr-button on-click="switchToQrInput" class="text-button">
     <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
-    Use camera instead
+    $i18n{useCamera}
   </cr-button>
 </div>
 <div id="qrInputView">
   <p>Camera input view</p>
 </div>
 <div id="button-container">
-  <cr-button on-click="close">Close</cr-button>
-  <cr-button id="castButton" class="action-button">Cast</cr-button>
-  <cr-button id="backButton" on-click="switchToCodeInput" class="action-button">Back</cr-button>
+  <cr-button on-click="close">$i18n{close}</cr-button>
+  <cr-button id="castButton" class="action-button"
+    disabled="[[castButtonDisabled]]">
+    $i18n{cast}
+  </cr-button>
+  <cr-button id="backButton" on-click="switchToCodeInput"
+    class="action-button">
+    $i18n{back}
+  </cr-button>
 </div>

@@ -14,9 +14,12 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/access_code_cast_resources.h"
 #include "chrome/grit/access_code_cast_resources_map.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/bindings_policy.h"
+#include "ui/base/webui/web_ui_util.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //  AccessCodeCast dialog:
@@ -109,6 +112,16 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       source.get(),
       base::make_span(kAccessCodeCastResources, kAccessCodeCastResourcesSize),
       IDR_ACCESS_CODE_CAST_INDEX_HTML);
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"back", IDS_ACCESS_CODE_CAST_BACK},
+      {"cast", IDS_ACCESS_CODE_CAST_CAST},
+      {"close", IDS_CLOSE},
+      {"dialogTitle", IDS_ACCESS_CODE_CAST_DIALOG_TITLE},
+      {"useCamera", IDS_ACCESS_CODE_CAST_USE_CAMERA},
+  };
+
+  source->AddLocalizedStrings(kStrings);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();

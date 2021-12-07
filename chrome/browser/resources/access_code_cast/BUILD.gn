@@ -12,7 +12,10 @@ assert(!is_android, "access_code_cast is not for android.")
 resources_grd_file = "$target_gen_dir/resources.grd"
 
 html_to_js("web_components") {
-  js_files = [ "access_code_cast.ts" ]
+  js_files = [
+    "access_code_cast.ts",
+    "code_input/code_input.ts",
+  ]
 }
 
 copy("copy_browser_proxy") {
@@ -50,9 +53,10 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "browser_proxy.ts",
     "access_code_cast.mojom-webui.js",
     "access_code_cast.ts",
+    "browser_proxy.ts",
+    "code_input/code_input.ts",
     "route_request_result_code.mojom-webui.js",
   ]
 }

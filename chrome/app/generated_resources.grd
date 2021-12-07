@@ -277,6 +277,9 @@ are declared in tools/grit/grit_rule.gni.
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <!-- Access Code Cast specific strings -->
+      <part file="access_code_cast_strings.grdp" />
+
       <!-- Bookmarks specific strings -->
       <part file="bookmarks_strings.grdp" />
 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Access Code Cast-specific strings (included from generated_resources.grd). -->
+<grit-part>
+  <message name="IDS_ACCESS_CODE_CAST_BACK" desc="Label for the 'back' button to return to the previous screen">
+    Back
+  </message>
+  <message name="IDS_ACCESS_CODE_CAST_CAST" desc="Label for the button to start casting">
+    Cast
+  </message>
+  <message name="IDS_ACCESS_CODE_CAST_DIALOG_TITLE" desc="Title for access code cast dialog">
+    Cast to a new display
+  </message>
+  <message name="IDS_ACCESS_CODE_CAST_USE_CAMERA" desc="Label for the button to use the device camera to scan a QR code">
+    Use the camera to scan QR code
+  </message>
+</grit-part>

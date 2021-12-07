@@ -43,3 +43,19 @@ var AccessCodeCastAppTest = class extends AccessCodeCastBrowserTest {
 TEST_F('AccessCodeCastAppTest', 'All', function() {
   mocha.run();
 });
+
+// eslint-disable-next-line no-var
+var AccessCodeCastCodeInputElementTest = class extends AccessCodeCastBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://access-code-cast/test_loader.html?module=access_code_cast/code_input_test.js';
+  }
+};
+
+/**
+ * This browsertest acts as a thin wrapper to run the unit tests found
+ * at code_input_test.js
+ */
+TEST_F('AccessCodeCastCodeInputElementTest', 'All', function() {
+  mocha.run();
+});
