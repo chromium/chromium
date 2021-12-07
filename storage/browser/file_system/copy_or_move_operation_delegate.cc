@@ -39,6 +39,10 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
   virtual void Run(CopyOrMoveOperationDelegate::StatusCallback callback) = 0;
   virtual void Cancel() = 0;
 
+  // Force any file copy to result in an error. This affects copies or
+  // cross-filesystem moves.
+  void ForceCopyErrorForTest() { force_error_for_test_ = true; }
+
  protected:
   CopyOrMoveImpl(
       FileSystemOperationRunner* operation_runner,
@@ -158,6 +162,7 @@ class CopyOrMoveOperationDelegate::CopyOrMoveImpl {
   const FileSystemURL src_url_;
   const FileSystemURL dest_url_;
   const CopyOrMoveOperationDelegate::CopyOrMoveOptionSet options_;
+  bool force_error_for_test_ = false;
 
  private:
   const FileSystemOperation::CopyOrMoveProgressCallback progress_callback_;
@@ -363,6 +368,9 @@ class SnapshotCopyOrMoveImpl
   void RunAfterPostWriteValidation(
       CopyOrMoveOperationDelegate::StatusCallback callback,
       base::File::Error error) {
+    if (force_error_for_test_) {
+      error = base::File::FILE_ERROR_FAILED;
+    }
     if (cancel_requested_) {
       DidEndCopy(std::move(callback), base::File::FILE_ERROR_ABORT);
       return;
@@ -646,6 +654,9 @@ class StreamCopyOrMoveImpl
 
     NotifyOnModifyFile(dest_url_);
     NotifyOnEndUpdate(dest_url_);
+    if (force_error_for_test_) {
+      error = base::File::FILE_ERROR_FAILED;
+    }
     if (cancel_requested_)
       error = base::File::FILE_ERROR_ABORT;
 
@@ -963,9 +974,11 @@ void CopyOrMoveOperationDelegate::ProcessFile(const FileSystemURL& src_url,
   }
 
   // Register the running task.
-
   CopyOrMoveImpl* impl_ptr = impl.get();
   running_copy_set_[impl_ptr] = std::move(impl);
+  if (src_url == error_url_for_test_) {
+    impl_ptr->ForceCopyErrorForTest();  // IN-TEST
+  }
   impl_ptr->Run(base::BindOnce(&CopyOrMoveOperationDelegate::DidCopyOrMoveFile,
                                weak_factory_.GetWeakPtr(), std::move(callback),
                                impl_ptr));
