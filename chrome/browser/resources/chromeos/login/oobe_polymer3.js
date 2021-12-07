@@ -18,6 +18,7 @@ import 'chrome://oobe/screens/common/gesture_navigation.m.js';
 import 'chrome://oobe/screens/common/guest_tos.m.js';
 import 'chrome://oobe/screens/common/managed_terms_of_service.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
+import 'chrome://oobe/screens/common/offline_ad_login.m.js';
 import 'chrome://oobe/screens/common/parental_handoff.m.js';
 import 'chrome://oobe/screens/common/pin_setup.m.js';
 import 'chrome://oobe/screens/common/signin_fatal_error.m.js';

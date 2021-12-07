@@ -356,8 +356,24 @@ cr.define('cr.ui.login.debug', function() {
       // Remove this step from preview here, because it can only occur during
       // enterprise enrollment step and it is already available there in debug
       // overlay.
-      handledSteps: 'unlock',
+      handledSteps: 'unlock,creds',
       suffix: 'E',
+      states: [
+        {
+          id: 'unlock',
+          trigger: (screen) => {
+            screen.setUIStep('unlock');
+          },
+          data: {},
+        },
+        {
+          id: 'creds',
+          trigger: (screen) => {
+            screen.setUIStep('creds');
+          },
+          data: {},
+        },
+      ],
     },
     {
       id: 'enterprise-enrollment',

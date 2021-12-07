@@ -28,6 +28,7 @@ group("polymer3_elements") {
     ":hw_data_collection_module",
     ":managed_terms_of_service_module",
     ":marketing_opt_in_module",
+    ":offline_ad_login_module",
     ":oobe_reset_module",
     ":parental_handoff_module",
     ":pin_setup_module",
@@ -71,6 +72,7 @@ js_type_check("closure_compile_module") {
     ":hw_data_collection.m",
     ":managed_terms_of_service.m",
     ":marketing_opt_in.m",
+    ":offline_ad_login.m",
     ":oobe_reset.m",
     ":parental_handoff.m",
     ":pin_setup.m",
@@ -332,6 +334,24 @@ js_library("marketing_opt_in.m") {
   extra_deps = [ ":marketing_opt_in_module" ]
 }
 
+js_library("offline_ad_login.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.m.js" ]
+  deps = [
+    "../../components:oobe_a11y_option.m",
+    "../../components:oobe_select.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":offline_ad_login_module" ]
+}
+
 js_library("oobe_reset.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.m.js" ]
   deps = [
@@ -578,6 +598,14 @@ polymer_modulizer("managed_terms_of_service") {
 polymer_modulizer("marketing_opt_in") {
   js_file = "marketing_opt_in.js"
   html_file = "marketing_opt_in.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("offline_ad_login") {
+  js_file = "offline_ad_login.js"
+  html_file = "offline_ad_login.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
