@@ -598,29 +598,6 @@ INSTANTIATE_TEST_SUITE_P(MarketingOptInUnknownCountries,
                          testing::ValuesIn(kUnknownCountry),
                          RegionAsParameterInterface::ParamInfoToString);
 
-class MarketingOptInScreenTestDisabled : public MarketingOptInScreenTest {
- public:
-  MarketingOptInScreenTestDisabled() {
-    feature_list_.Reset();
-    // Disable kOobeMarketingScreen to disable marketing screen.
-    feature_list_.InitWithFeatures({}, {::features::kOobeMarketingScreen});
-  }
-
-  ~MarketingOptInScreenTestDisabled() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(MarketingOptInScreenTestDisabled, FeatureDisabled) {
-  ShowMarketingOptInScreen();
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(),
-            MarketingOptInScreen::Result::NOT_APPLICABLE);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Marketing-opt-in.Next", 0);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Marketing-opt-in",
-                                     0);
-}
-
 class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {

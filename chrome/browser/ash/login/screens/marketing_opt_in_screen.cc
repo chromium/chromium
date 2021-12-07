@@ -105,8 +105,7 @@ MarketingOptInScreen::~MarketingOptInScreen() {
 bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
   Initialize();
 
-  if (!base::FeatureList::IsEnabled(::features::kOobeMarketingScreen) ||
-      chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
+  if (chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||
       IsCurrentUserManaged()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

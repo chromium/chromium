@@ -785,10 +785,6 @@ const base::Feature kOobeMarketingDoubleOptInCountriesSupported{
     "kOobeMarketingDoubleOptInCountriesSupported",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables the marketing opt-in screen in OOBE
-const base::Feature kOobeMarketingScreen{"OobeMarketingScreen",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if defined(OS_ANDROID)
 // Enables or disabled the OOM intervention.
 const base::Feature kOomIntervention{"OomIntervention",
