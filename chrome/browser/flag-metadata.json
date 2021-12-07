@@ -2609,7 +2609,7 @@
   {
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 97
+    "expiry_milestone": 104
   },
   {
     "name": "enable-shortened-password-auto-fill-instruction",
