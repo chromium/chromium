@@ -59,6 +59,8 @@ void TouchModeMouseRewriter::OnWindowDestroying(aura::Window* window) {
 
 void TouchModeMouseRewriter::OnWindowAddedToRootWindow(aura::Window* window) {
   aura::WindowTreeHost* host = window->GetHost();
+  if (!host)
+    return;
   // |hosts_| is a multiset, so if this is the first one, add the EventRewriter
   // to that WindowTreeHost.
   if (hosts_.count(host) == 0)
@@ -70,6 +72,8 @@ void TouchModeMouseRewriter::OnWindowRemovingFromRootWindow(
     aura::Window* window,
     aura::Window* new_root) {
   aura::WindowTreeHost* host = window->GetHost();
+  if (!host)
+    return;
   auto it = hosts_.find(host);
   DCHECK(it != hosts_.end());
   hosts_.erase(it);
