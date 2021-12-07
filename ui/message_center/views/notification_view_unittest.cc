@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
