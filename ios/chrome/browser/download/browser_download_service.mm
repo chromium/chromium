@@ -126,7 +126,9 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper) {
       tab_helper->Download(std::move(task));
     }
-  } else if (task->GetMimeType() == kMobileConfigurationType) {
+    // SFSafariViewController can only open http and https URLs.
+  } else if (task->GetMimeType() == kMobileConfigurationType &&
+             task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
     MobileConfigTabHelper* tab_helper =
         MobileConfigTabHelper::FromWebState(web_state);
     if (tab_helper) {
