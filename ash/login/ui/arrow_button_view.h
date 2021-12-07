@@ -34,6 +34,13 @@ class ArrowButtonView : public LoginButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
+  // Causes the icon to transform bigger and smaller repeatedly to draw user
+  // attention to click.
+  void RunTransformAnimation();
+
+  // Stops any existing animation.
+  void StopAnimating();
+
   // Allows to control the loading animation (disabled by default). The
   // animation is an arc that gradually increases from a point to a full circle;
   // the animation is looped.

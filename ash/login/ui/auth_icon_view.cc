@@ -10,6 +10,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -35,6 +36,19 @@ constexpr int kProgressAnimationStrokeWidth = 3;
 // 1 frame / 30 msec = about 30 frames per second
 // 30 fps seems to be smooth enough to look good without excessive painting.
 constexpr base::TimeDelta kProgressFrameDuration = base::Milliseconds(30);
+// How long the nudge animation takes to scale up and fade out.
+constexpr base::TimeDelta kNudgeAnimationScalingDuration =
+    base::Milliseconds(2000);
+// How long the delay between the repeating nudge animation takes in between
+// cycles.
+constexpr base::TimeDelta kNudgeAnimationDelayDuration =
+    base::Milliseconds(1000);
+// How opaque the nudge animation will reset the view to.
+constexpr float kOpacityReset = 0.5;
+// Size that nudge animation scales view up and down by.
+constexpr SkScalar kTransformScaleUpSize = 3;
+// The interpolation of transform fails when scaling all the way down to 0.
+constexpr SkScalar kTransformScaleDownSize = 0.01;
 
 // See spec:
 // https://carbon.googleplex.com/cr-os-motion-work/pages/sign-in/undefined/e05c4091-eea2-4c5a-a6f8-38fd37953e7b#a929eb9f-2840-4b37-be52-97d96ca2aafa
@@ -85,6 +99,12 @@ void AuthIconView::SetIcon(const gfx::VectorIcon& icon, Color color) {
       gfx::CreateVectorIcon(icon, kAuthIconSizeDp, GetColor(color)));
 }
 
+void AuthIconView::SetCircleImage(int size, SkColor color) {
+  gfx::ImageSkia circle_icon =
+      gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(size, color);
+  icon_->SetImage(circle_icon);
+}
+
 void AuthIconView::SetAnimation(int animation_resource_id,
                                 base::TimeDelta duration,
                                 int num_frames) {
@@ -97,8 +117,7 @@ void AuthIconView::SetAnimation(int animation_resource_id,
 }
 
 void AuthIconView::RunErrorShakeAnimation() {
-  // Stop any existing animation.
-  icon_->layer()->GetAnimator()->StopAnimating();
+  StopAnimating();
 
   auto transform_sequence = std::make_unique<ui::LayerAnimationSequence>();
   gfx::Transform transform;
@@ -111,6 +130,64 @@ void AuthIconView::RunErrorShakeAnimation() {
   }
 
   // Animator takes ownership of transform_sequence.
+  icon_->layer()->GetAnimator()->StartAnimation(transform_sequence.release());
+}
+
+void AuthIconView::RunNudgeAnimation() {
+  StopAnimating();
+
+  // Create two separate animation sequences and run in parallel.
+  auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
+  auto transform_sequence = std::make_unique<ui::LayerAnimationSequence>();
+
+  // Fade out view by gradually setting opacity to 0.
+  auto element = ui::LayerAnimationElement::CreateOpacityElement(
+      0, kNudgeAnimationScalingDuration);
+  element->set_tween_type(gfx::Tween::Type::ACCEL_0_80_DECEL_80);
+  opacity_sequence->AddElement(std::move(element));
+
+  // Reset opacity so that |opacity_sequence| can be repeated.
+  element = ui::LayerAnimationElement::CreateOpacityElement(kOpacityReset,
+                                                            base::TimeDelta());
+  opacity_sequence->AddElement(std::move(element));
+
+  element = ui::LayerAnimationElement::CreatePauseElement(
+      0, kNudgeAnimationDelayDuration);
+  opacity_sequence->AddElement(std::move(element));
+
+  opacity_sequence->set_is_repeating(true);
+
+  // Every time it scales, translate by |center_offset| so that the view scales
+  // outward from center point.
+  auto center_offset = gfx::Vector2d(CalculatePreferredSize().width() / 2.0,
+                                     CalculatePreferredSize().height() / 2.0);
+  gfx::Transform transform;
+  transform.Translate(center_offset);
+  // Make view larger.
+  transform.Scale(/*x=*/kTransformScaleUpSize, /*y=*/kTransformScaleUpSize);
+  transform.Translate(-center_offset);
+  element = ui::LayerAnimationElement::CreateTransformElement(
+      transform, kNudgeAnimationScalingDuration);
+  element->set_tween_type(gfx::Tween::Type::ACCEL_0_40_DECEL_100);
+  transform_sequence->AddElement(std::move(element));
+
+  transform = gfx::Transform();
+  transform.Translate(center_offset);
+  // Make view smaller.
+  transform.Scale(/*x=*/kTransformScaleDownSize, /*y=*/kTransformScaleDownSize);
+  transform.Translate(-center_offset);
+  element = ui::LayerAnimationElement::CreateTransformElement(
+      transform, base::TimeDelta());
+  transform_sequence->AddElement(std::move(element));
+
+  element = ui::LayerAnimationElement::CreatePauseElement(
+      0, kNudgeAnimationDelayDuration);
+  transform_sequence->AddElement(std::move(element));
+
+  transform_sequence->set_is_repeating(true);
+
+  // Animator takes ownership of opacity_sequence and transform_sequence.
+  icon_->layer()->GetAnimator()->StartAnimation(opacity_sequence.release());
   icon_->layer()->GetAnimator()->StartAnimation(transform_sequence.release());
 }
 
@@ -134,6 +211,10 @@ void AuthIconView::StopProgressAnimation() {
 
   progress_animation_timer_.Stop();
   SchedulePaint();
+}
+
+void AuthIconView::StopAnimating() {
+  icon_->layer()->GetAnimator()->StopAnimating();
 }
 
 void AuthIconView::OnPaint(gfx::Canvas* canvas) {
@@ -171,6 +252,18 @@ bool AuthIconView::OnMousePressed(const ui::MouseEvent& event) {
     return true;
   }
   return false;
+}
+
+AuthIconView::CircleImageSource::CircleImageSource(int size, SkColor color)
+    : gfx::CanvasImageSource(gfx::Size(size, size)), color_(color) {}
+
+void AuthIconView::CircleImageSource::Draw(gfx::Canvas* canvas) {
+  float radius = size().width() / 2.0f;
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  flags.setAntiAlias(true);
+  flags.setColor(color_);
+  canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
 }
 
 }  // namespace ash

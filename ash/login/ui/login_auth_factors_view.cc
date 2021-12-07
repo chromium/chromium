@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -198,6 +199,10 @@ ArrowButtonView* LoginAuthFactorsView::TestApi::arrow_button() {
   return view_->arrow_button_;
 }
 
+AuthIconView* LoginAuthFactorsView::TestApi::arrow_nudge_animation() {
+  return view_->arrow_nudge_animation_;
+}
+
 AuthIconView* LoginAuthFactorsView::TestApi::checkmark_icon() {
   return view_->checkmark_icon_;
 }
@@ -209,12 +214,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   layer()->SetFillsBoundsOpaquely(false);
   SetBorder(views::CreateEmptyBorder(kIconTopSpacingDp, 0, 0, 0));
 
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kSpacingBetweenIconsAndLabelDp));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetBoxLayout(this);
 
   auth_factor_icon_row_ = AddChildView(std::make_unique<views::View>());
   auto* animating_layout = auth_factor_icon_row_->SetLayoutManager(
@@ -224,15 +224,34 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   animating_layout->SetTargetLayoutManager(
       std::make_unique<views::FlexLayout>());
 
-  arrow_button_ = AddChildView(std::make_unique<ArrowButtonView>(
-      base::BindRepeating(&LoginAuthFactorsView::ArrowButtonPressed,
-                          base::Unretained(this)),
-      kArrowButtonSizeDp));
+  arrow_icon_container_ = AddChildView(std::make_unique<views::View>());
+  arrow_icon_container_->SetUseDefaultFillLayout(true);
+
+  arrow_button_container_ =
+      arrow_icon_container_->AddChildView(std::make_unique<views::View>());
+  SetBoxLayout(arrow_button_container_);
+
+  arrow_button_ =
+      arrow_button_container_->AddChildView(std::make_unique<ArrowButtonView>(
+          base::BindRepeating(&LoginAuthFactorsView::ArrowButtonPressed,
+                              base::Unretained(this)),
+          kArrowButtonSizeDp));
   arrow_button_->SetInstallFocusRingOnFocus(true);
   views::InstallCircleHighlightPathGenerator(arrow_button_);
   arrow_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER));
-  arrow_button_->SetVisible(false);
+
+  arrow_nudge_animation_ =
+      arrow_icon_container_->AddChildView(std::make_unique<AuthIconView>());
+  arrow_nudge_animation_->SetCircleImage(
+      kArrowButtonSizeDp / 2, AshColorProvider::Get()->GetControlsLayerColor(
+                                  AshColorProvider::ControlsLayerType::
+                                      kControlBackgroundColorInactive));
+
+  arrow_nudge_animation_->set_on_tap_or_click_callback(base::BindRepeating(
+      &LoginAuthFactorsView::RelayArrowButtonPressed, base::Unretained(this)));
+
+  SetArrowVisibility(false);
 
   // TODO(crbug.com/1233614): Rename kLockScreenFingerprintSuccessIcon once the
   // feature flag is removed and FingerprintView no longer needs this.
@@ -372,15 +391,14 @@ void LoginAuthFactorsView::UpdateState() {
 
 void LoginAuthFactorsView::ShowArrowButton() {
   auth_factor_icon_row_->SetVisible(false);
-  arrow_button_->SetVisible(true);
   checkmark_icon_->SetVisible(false);
-  arrow_button_->EnableLoadingAnimation(false);
+  SetArrowVisibility(true);
 }
 
 void LoginAuthFactorsView::ShowSingleAuthFactor(AuthFactorModel* auth_factor) {
   auth_factor_icon_row_->SetVisible(true);
-  arrow_button_->SetVisible(false);
   checkmark_icon_->SetVisible(false);
+  SetArrowVisibility(false);
   for (auto& factor : auth_factors_) {
     factor->SetVisible(factor.get() == auth_factor);
   }
@@ -388,8 +406,8 @@ void LoginAuthFactorsView::ShowSingleAuthFactor(AuthFactorModel* auth_factor) {
 
 void LoginAuthFactorsView::ShowReadyAndDisabledAuthFactors() {
   auth_factor_icon_row_->SetVisible(true);
-  arrow_button_->SetVisible(false);
   checkmark_icon_->SetVisible(false);
+  SetArrowVisibility(false);
 
   for (auto& factor : auth_factors_) {
     PrioritizedAuthFactorViewState state =
@@ -402,8 +420,8 @@ void LoginAuthFactorsView::ShowReadyAndDisabledAuthFactors() {
 
 void LoginAuthFactorsView::ShowCheckmark() {
   auth_factor_icon_row_->SetVisible(false);
-  arrow_button_->SetVisible(false);
   checkmark_icon_->SetVisible(true);
+  SetArrowVisibility(false);
   // TODO(crbug.com/1233614): If transitioning from Click Required state, show
   // animation.
 }
@@ -468,9 +486,21 @@ void LoginAuthFactorsView::FireAlert() {
 }
 
 void LoginAuthFactorsView::ArrowButtonPressed(const ui::Event& event) {
+  arrow_nudge_animation_->SetVisible(false);
+  arrow_nudge_animation_->StopAnimating();
+  arrow_button_->StopAnimating();
+
   if (on_click_to_enter_callback_) {
     arrow_button_->EnableLoadingAnimation(true);
     on_click_to_enter_callback_.Run();
+  }
+}
+
+void LoginAuthFactorsView::RelayArrowButtonPressed() {
+  if (arrow_button_) {
+    ArrowButtonPressed(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
+                                      gfx::Point(), base::TimeTicks::Now(), 0,
+                                      0));
   }
 }
 
@@ -483,6 +513,31 @@ void LoginAuthFactorsView::OnErrorTimeout() {
         PrioritizedAuthFactorViewState::kErrorForeground) {
       factor->HandleErrorTimeout();
     }
+  }
+}
+
+void LoginAuthFactorsView::SetBoxLayout(views::View* parent_view) {
+  auto* layout =
+      parent_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+          kSpacingBetweenIconsAndLabelDp));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+}
+
+void LoginAuthFactorsView::SetArrowVisibility(bool is_visible) {
+  arrow_icon_container_->SetVisible(is_visible);
+  arrow_button_->SetVisible(is_visible);
+  arrow_nudge_animation_->SetVisible(is_visible);
+
+  if (is_visible) {
+    arrow_button_->EnableLoadingAnimation(false);
+    arrow_button_->RunTransformAnimation();
+    arrow_nudge_animation_->RunNudgeAnimation();
+  } else {
+    arrow_nudge_animation_->StopAnimating();
+    arrow_button_->StopAnimating();
   }
 }
 

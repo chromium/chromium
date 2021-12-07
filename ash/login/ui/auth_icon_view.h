@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -38,6 +39,9 @@ class ASH_EXPORT AuthIconView : public views::View {
   // Show a static icon.
   void SetIcon(const gfx::VectorIcon& icon, Color color = Color::kPrimary);
 
+  // Show a circle icon.
+  void SetCircleImage(int size, SkColor color);
+
   // Show a sequence of animation frames. |animation_resource_id| should refer
   // to an image with the frames of the animation layed out horizontally.
   // |duration| is the total duration of the animation. |num_frames| is the
@@ -50,11 +54,18 @@ class ASH_EXPORT AuthIconView : public views::View {
   // occurred.
   void RunErrorShakeAnimation();
 
+  // Cause the icon to repeatedly emit a circle that gradually scales up and
+  // fades out in order to nudge user to click.
+  void RunNudgeAnimation();
+
   // Starts a progress spinner animation if not already running.
   void StartProgressAnimation();
 
   // Stops the progress spinner animation if running.
   void StopProgressAnimation();
+
+  // Stops any existing animations.
+  void StopAnimating();
 
   void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
     on_tap_or_click_callback_ = on_tap_or_click;
@@ -67,6 +78,20 @@ class ASH_EXPORT AuthIconView : public views::View {
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
  private:
+  // Helper class to draw a circle that can be converted to "gfx::ImageSkia"
+  class CircleImageSource : public gfx::CanvasImageSource {
+   public:
+    explicit CircleImageSource(int size, SkColor color);
+    CircleImageSource(const CircleImageSource&) = delete;
+    CircleImageSource& operator=(const CircleImageSource&) = delete;
+    ~CircleImageSource() override = default;
+
+    void Draw(gfx::Canvas* canvas) override;
+
+   private:
+    SkColor color_;
+  };
+
   base::RepeatingClosure on_tap_or_click_callback_;
 
   AnimatedRoundedImageView* icon_;

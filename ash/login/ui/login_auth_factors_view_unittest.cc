@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_event_observer.h"
@@ -245,6 +246,7 @@ TEST_F(LoginAuthFactorsViewUnittest, SingleIconInAvailableState) {
   EXPECT_TRUE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());
   EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
 
   // The number of icons should match the number of auth factors initialized.
   EXPECT_EQ(auth_factors_.size(),
@@ -268,6 +270,7 @@ TEST_F(LoginAuthFactorsViewUnittest, MultipleAuthFactorsInReadyState) {
   EXPECT_TRUE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());
   EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
 
   // The number of icons should match the number of auth factors initialized.
   EXPECT_EQ(auth_factors_.size(),
@@ -283,19 +286,49 @@ TEST_F(LoginAuthFactorsViewUnittest, MultipleAuthFactorsInReadyState) {
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, ClickRequired) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   LoginAuthFactorsView::TestApi test_api(view_);
   auth_factors_[0]->state_ = AuthFactorState::kReady;
   auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
   test_api.UpdateState();
 
-  // Check that only the arrow button is shown and that the label has been
-  // updated.
+  // Check that the arrow button and arrow nudge animation is shown and that the
+  // label has been updated.
   EXPECT_TRUE(test_api.arrow_button()->GetVisible());
+  EXPECT_TRUE(test_api.arrow_nudge_animation()->GetVisible());
   EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());
   EXPECT_FALSE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER),
             test_api.label()->GetText());
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kReady;
+  auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
+  test_api.UpdateState();
+
+  // Check that the arrow button and arrow nudge animation is shown.
+  EXPECT_TRUE(test_api.arrow_button()->GetVisible());
+  EXPECT_TRUE(test_api.arrow_nudge_animation()->GetVisible());
+
+  // Simulate clicking arrow nudge animation, which sits on top of arrow button
+  // and should relay arrow button click.
+  const gfx::Point point(0, 0);
+  test_api.arrow_nudge_animation()->OnMousePressed(ui::MouseEvent(
+      ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
+
+  // Check that arrow button is still visible and that arrow nudge animation is
+  // no longer shown.
+  EXPECT_TRUE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, Authenticated) {
@@ -309,6 +342,7 @@ TEST_F(LoginAuthFactorsViewUnittest, Authenticated) {
   // updated.
   EXPECT_TRUE(test_api.checkmark_icon()->GetVisible());
   EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
   EXPECT_FALSE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_UNLOCKED),
             test_api.label()->GetText());
@@ -324,6 +358,7 @@ TEST_F(LoginAuthFactorsViewUnittest, ErrorTemporary) {
   EXPECT_TRUE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());
   EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
 
   // Only the error should be visible for the first three seconds after the
   // state update.
@@ -345,6 +380,7 @@ TEST_F(LoginAuthFactorsViewUnittest, ErrorPermanent) {
   EXPECT_TRUE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_FALSE(test_api.checkmark_icon()->GetVisible());
   EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
 
   // Only the error should be visible for the first three seconds after the
   // state update.
