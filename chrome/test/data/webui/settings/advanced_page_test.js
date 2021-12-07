@@ -38,11 +38,10 @@ suite('AdvancedPage', function() {
   });
 
   /**
-   * Verifies the section has a visible #main element and that any possible
-   * sub-pages are hidden.
+   * Verifies that a section is rendered but hidden, including all its subpages.
    * @param {!Node} section The DOM node for the section.
    */
-  function verifySubpagesHidden(section) {
+  function verifySectionWithSubpagesHidden(section) {
     // Check if there are sub-pages to verify.
     const pages = section.firstElementChild.shadowRoot.querySelector(
         'settings-animated-pages');
@@ -58,16 +57,17 @@ suite('AdvancedPage', function() {
       return element.tagName !== 'TEMPLATE';
     });
 
-    // The section's main child should be stamped and visible.
+    // The section's main child should be hidden since only the section
+    // corresponding to the current route should be visible.
     const main = stampedChildren.filter(function(element) {
       return element.getAttribute('route-path') === 'default';
     });
     const sectionName = /** @type {{section: string}} */ (section).section;
     assertEquals(
         main.length, 1, 'default card not found for section ' + sectionName);
-    assertGT(main[0].offsetHeight, 0);
+    assertEquals(main[0].offsetHeight, 0);
 
-    // Any other stamped subpages should not be visible.
+    // Any other stamped subpages should also be hidden.
     const subpages = stampedChildren.filter(function(element) {
       return element.getAttribute('route-path') !== 'default';
     });
@@ -89,7 +89,7 @@ suite('AdvancedPage', function() {
       const section = getSection(
           /** @type {!SettingsBasicPageElement} */ (basicPage), sections[i]);
       assertTrue(!!section);
-      verifySubpagesHidden(/** @type {!Node} */ (section));
+      verifySectionWithSubpagesHidden(/** @type {!Node} */ (section));
     }
   });
 });

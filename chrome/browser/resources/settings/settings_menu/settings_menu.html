@@ -118,16 +118,6 @@
             $i18n{autofillPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <template is="dom-if" if="[[!enableLandingPageRedesign_]]">
-            <a role="menuitem" href="/safetyCheck"
-                hidden="[[!pageVisibility.safetyCheck]]"
-                id="safetyCheck"
-                class="cr-nav-menu-item">
-              <iron-icon icon="settings20:safety-check"></iron-icon>
-              $i18n{safetyCheckSectionTitle}
-              <paper-ripple></paper-ripple>
-            </a>
-          </template>
           <a role="menuitem" href="/privacy"
               hidden="[[!pageVisibility.privacy]]"
               class="cr-nav-menu-item">

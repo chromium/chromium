@@ -16,6 +16,8 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
+  r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
+
   if (loadTimeData.getBoolean('privacyReviewEnabled')) {
     r.PRIVACY_REVIEW = r.PRIVACY.createChild('review');
   }
@@ -140,12 +142,6 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
   if (visibility.privacy !== false) {
     r.PRIVACY = r.BASIC.createSection('/privacy', 'privacy');
     addPrivacyChildRoutes(r);
-
-    if (loadTimeData.getBoolean('enableLandingPageRedesign')) {
-      r.SAFETY_CHECK = r.PRIVACY.createSection('/safetyCheck', 'safetyCheck');
-    } else {
-      r.SAFETY_CHECK = r.BASIC.createSection('/safetyCheck', 'safetyCheck');
-    }
   }
 
   // <if expr="not chromeos and not lacros">

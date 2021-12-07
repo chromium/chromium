@@ -1,12 +1,4 @@
     <style include="cr-shared-style cr-hidden-style settings-shared">
-      #overscroll {
-        margin-top: 64px;
-      }
-
-      .showing-subpage ~ #overscroll {
-        display: none;
-      }
-
       #noSearchResults {
         margin-top: 80px;
         text-align: center;
@@ -46,7 +38,6 @@
           class="cr-centered-card-container"
           prefs="{{prefs}}"
           page-visibility="[[pageVisibility]]"
-          on-showing-section="onShowingSection_"
           on-subpage-expand="onShowingSubpage_"
           on-showing-main-page="onShowingMainPage_"
           in-search-mode="[[inSearchMode_]]"
@@ -59,4 +50,3 @@
           prefs="{{prefs}}">
       </settings-about-page>
     </template>
-    <div id="overscroll" style="padding-bottom: [[overscroll_]]px"></div>

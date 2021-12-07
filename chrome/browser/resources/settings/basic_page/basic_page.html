@@ -5,29 +5,6 @@
         overflow: hidden;
       }
 
-      :host([advanced-toggling-in-progress_]) {
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      #advancedToggle {
-        --ink-color: currentColor;
-        align-items: center;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        color: currentColor;
-        display: flex;
-        font-weight: 400;
-        margin-bottom: 3px;
-        margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-        min-height: 32px;
-        padding: 0 12px;
-      }
-
-      :host-context(.focus-outline-visible) #advancedToggle:focus {
-        outline: auto 5px -webkit-focus-ring-color;
-      }
-
       #osSettingsBanner {
         background-color: var(--cr-card-background-color);
         border-radius: var(--cr-card-border-radius);
@@ -35,27 +12,7 @@
         margin-top: 21px;
       }
 
-      #toggleContainer {
-        align-items: center;
-        color: var(--cr-primary-text-color);
-        display: flex;
-        font: inherit;
-        justify-content: center;
-        margin-bottom: 0;
-        margin-top: 0;
-        padding-bottom: 0;
-        padding-top: 0;
-      }
-
-      #toggleSpacer {
-        padding-top: 33px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-      }
-
-      iron-icon {
-        margin-inline-start: 16px;
-      }
-
-      :host-context([enable-landing-page-redesign]):host(:not([in-search-mode])) settings-section:not([active]) {
+      :host(:not([in-search-mode])) settings-section:not([active]) {
         display: none;
       }
     </style>
@@ -153,19 +110,6 @@
     </template>
 
     <template is="dom-if" if="[[showAdvancedSettings_(pageVisibility.advancedSettings)]]">
-      <template is="dom-if" if="[[showAdvancedToggle_(
-          inSearchMode, hasExpandedSection_)]]">
-        <div id="toggleSpacer"></div>
-        <h2 id="toggleContainer">
-          <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
-              aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
-            <span>$i18n{advancedPageTitle}</span>
-            <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded)]]">
-            </iron-icon>
-          </cr-button>
-        </h2>
-      </template>
-
       <settings-idle-load id="advancedPageTemplate">
         <template>
           <div id="advancedPage" hidden$="[[!showAdvancedPage_(
