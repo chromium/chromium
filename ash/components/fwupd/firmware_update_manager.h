@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -17,30 +18,23 @@
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/fwupd/fwupd_device.h"
 #include "chromeos/dbus/fwupd/fwupd_update.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
-    : public chromeos::FwupdClient::Observer {
+    : public chromeos::FwupdClient::Observer,
+      public firmware_update::mojom::UpdateProvider {
  public:
-  // TODO(zentaro): Replace this struct with mojo struct when implemented.
-  struct FirmwareUpdate {
-    FirmwareUpdate();
-    FirmwareUpdate(FirmwareUpdate&& other);
-    FirmwareUpdate& operator=(FirmwareUpdate&& other);
-    ~FirmwareUpdate();
-
-    std::string device_id;
-    std::string device_name;
-    std::string version;
-    std::string description;
-    uint32_t priority;
-  };
-
   FirmwareUpdateManager();
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
   FirmwareUpdateManager& operator=(const FirmwareUpdateManager&) = delete;
   ~FirmwareUpdateManager() override;
+
+  // firmware_update::mojom::UpdateProvider
+  void ObservePeripheralUpdates(
+      mojo::PendingRemote<firmware_update::mojom::UpdateObserver> observer)
+      override;
 
   // Gets the global instance pointer.
   static FirmwareUpdateManager* Get();
@@ -64,10 +58,6 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void StartInstall(const std::string& device_id,
                     int release,
                     base::OnceCallback<void()> callback);
-
-  // Get the currently cached set of updates.
-  // TODO(zentaro): Remove once mojo api fires observers.
-  const std::vector<FirmwareUpdate>& GetCachedUpdatesForTesting();
 
  protected:
   friend class FirmwareUpdateManagerTest;
@@ -96,13 +86,24 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
                                int release,
                                base::OnceCallback<void()> callback);
 
+  // Notifies observers registered with ObservePeripheralUpdates() the current
+  // list of devices with pending updates (if any).
+  void NotifyUpdateListObservers();
+
+  bool HasPendingUpdates();
+
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
   base::flat_map<std::string, chromeos::FwupdDevice> devices_pending_update_;
 
   // List of all available updates. If `devices_pending_update_` is not
   // empty then this list is not yet complete.
-  std::vector<FirmwareUpdate> updates_;
+  std::vector<firmware_update::mojom::FirmwareUpdatePtr> updates_;
+
+  // Remotes for tracking observers that will be notified of changes to the
+  // list of firmware updates.
+  mojo::RemoteSet<firmware_update::mojom::UpdateObserver>
+      update_list_observers_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

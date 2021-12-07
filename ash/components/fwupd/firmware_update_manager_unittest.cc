@@ -14,12 +14,15 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +49,29 @@ void RunResponseCallback(dbus::ObjectProxy::ResponseOrErrorCallback callback,
                          std::unique_ptr<dbus::Response> response) {
   std::move(callback).Run(response.get(), nullptr);
 }
+
+class FakeUpdateObserver : public ash::firmware_update::mojom::UpdateObserver {
+ public:
+  void OnUpdateListChanged(
+      std::vector<ash::firmware_update::mojom::FirmwareUpdatePtr>
+          firmware_updates) override {
+    updates_ = std::move(firmware_updates);
+  }
+
+  mojo::PendingRemote<ash::firmware_update::mojom::UpdateObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  const std::vector<ash::firmware_update::mojom::FirmwareUpdatePtr>& updates()
+      const {
+    return updates_;
+  }
+
+ private:
+  std::vector<ash::firmware_update::mojom::FirmwareUpdatePtr> updates_;
+  mojo::Receiver<ash::firmware_update::mojom::UpdateObserver> receiver_{this};
+};
 
 }  // namespace
 
@@ -265,6 +291,12 @@ class FirmwareUpdateManagerTest : public testing::Test {
         ->on_install_update_response_count_for_testing_;
   }
 
+  void SetupObserver(FakeUpdateObserver* observer) {
+    firmware_update_manager_->ObservePeripheralUpdates(
+        observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   std::unique_ptr<FwupdClient> dbus_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
@@ -290,9 +322,10 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesNoDevices) {
 
   dbus_responses_.push_back(CreateEmptyDeviceResponse());
   firmware_update_manager_->RequestAllUpdates();
-  const std::vector<FirmwareUpdateManager::FirmwareUpdate>& updates =
-      firmware_update_manager_->GetCachedUpdatesForTesting();
-
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(updates.empty());
 }
@@ -304,8 +337,10 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceNoUpdates) {
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateNoUpdateResponse());
   firmware_update_manager_->RequestAllUpdates();
-  const std::vector<FirmwareUpdateManager::FirmwareUpdate>& updates =
-      firmware_update_manager_->GetCachedUpdatesForTesting();
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(updates.empty());
@@ -318,17 +353,22 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   firmware_update_manager_->RequestAllUpdates();
-  const std::vector<FirmwareUpdateManager::FirmwareUpdate>& updates =
-      firmware_update_manager_->GetCachedUpdatesForTesting();
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
-
-  EXPECT_EQ(kFakeDeviceIdForTesting, updates[0].device_id);
-  EXPECT_EQ(kFakeDeviceNameForTesting, updates[0].device_name);
-  EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0].version);
-  EXPECT_EQ(kFakeUpdateDescriptionForTesting, updates[0].description);
-  EXPECT_EQ(kFakeUpdatePriorityForTesting, updates[0].priority);
+  EXPECT_EQ(kFakeDeviceIdForTesting, updates[0]->device_id);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting)),
+            updates[0]->device_name);
+  EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0]->device_version);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeUpdateDescriptionForTesting)),
+            updates[0]->device_description);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdatePriority(
+                kFakeUpdatePriorityForTesting),
+            updates[0]->priority);
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
@@ -339,19 +379,26 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
   firmware_update_manager_->RequestAllUpdates();
-  const std::vector<FirmwareUpdateManager::FirmwareUpdate>& updates =
-      firmware_update_manager_->GetCachedUpdatesForTesting();
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  base::RunLoop().RunUntilIdle();
+
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
 
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1U, updates.size());
 
   // The second device was the one with the update.
-  EXPECT_EQ(std::string(kFakeDeviceIdForTesting) + "2", updates[0].device_id);
-  EXPECT_EQ(std::string(kFakeDeviceNameForTesting) + "2",
-            updates[0].device_name);
-  EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0].version);
-  EXPECT_EQ(kFakeUpdateDescriptionForTesting, updates[0].description);
-  EXPECT_EQ(kFakeUpdatePriorityForTesting, updates[0].priority);
+  EXPECT_EQ(std::string(kFakeDeviceIdForTesting) + "2", updates[0]->device_id);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeDeviceNameForTesting) + "2"),
+            updates[0]->device_name);
+  EXPECT_EQ(kFakeUpdateVersionForTesting, updates[0]->device_version);
+  EXPECT_EQ(base::UTF8ToUTF16(std::string(kFakeUpdateDescriptionForTesting)),
+            updates[0]->device_description);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdatePriority(
+                kFakeUpdatePriorityForTesting),
+            updates[0]->priority);
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestInstall) {

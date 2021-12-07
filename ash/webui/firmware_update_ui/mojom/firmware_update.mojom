@@ -33,3 +33,20 @@ struct FirmwareUpdate {
   // Priority of the device's firmware update.
   UpdatePriority priority;
 };
+
+// Send update descriptions.
+interface UpdateObserver {
+  // Fired once we've received the pending updates for all available devices
+  // (if any). Will fire once with an empty array if there are no updates
+  // available at the time the observer is attached.
+  OnUpdateListChanged(array<FirmwareUpdate> firmware_updates);
+};
+
+// Enables clients to receive a list of devices with pending updates.
+// Implemented in the browser process and called by the Firmware Update SWA
+// (a renderer process).
+interface UpdateProvider {
+  // Registers an observer to be notified on changes to devices with pending
+  // updates.
+  ObservePeripheralUpdates(pending_remote<UpdateObserver> observer);
+};

@@ -15,6 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
@@ -51,15 +52,21 @@ bool CreateDirIfNotExists(const base::FilePath& path) {
   return base::DirectoryExists(path) || base::CreateDirectory(path);
 }
 
-}  // namespace
+firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
+    const chromeos::FwupdUpdate& update_details,
+    const std::string& device_id,
+    const std::string& device_name) {
+  auto update = firmware_update::mojom::FirmwareUpdate::New();
+  update->device_id = device_id;
+  update->device_name = base::UTF8ToUTF16(device_name);
+  update->device_version = update_details.version;
+  update->device_description = base::UTF8ToUTF16(update_details.description);
+  update->priority =
+      firmware_update::mojom::UpdatePriority(update_details.priority);
+  return update;
+}
 
-FirmwareUpdateManager::FirmwareUpdate::FirmwareUpdate() = default;
-FirmwareUpdateManager::FirmwareUpdate::FirmwareUpdate(FirmwareUpdate&& other) =
-    default;
-FirmwareUpdateManager::FirmwareUpdate&
-FirmwareUpdateManager::FirmwareUpdate::operator=(FirmwareUpdate&& other) =
-    default;
-FirmwareUpdateManager::FirmwareUpdate::~FirmwareUpdate() = default;
+}  // namespace
 
 FirmwareUpdateManager::FirmwareUpdateManager()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -84,9 +91,28 @@ FirmwareUpdateManager* FirmwareUpdateManager::Get() {
   return g_instance;
 }
 
+void FirmwareUpdateManager::NotifyUpdateListObservers() {
+  for (auto& observer : update_list_observers_) {
+    observer->OnUpdateListChanged(mojo::Clone(updates_));
+  }
+}
+
+bool FirmwareUpdateManager::HasPendingUpdates() {
+  return !devices_pending_update_.empty();
+}
+
+void FirmwareUpdateManager::ObservePeripheralUpdates(
+    mojo::PendingRemote<firmware_update::mojom::UpdateObserver> observer) {
+  update_list_observers_.Add(std::move(observer));
+
+  if (HasPendingUpdates()) {
+    NotifyUpdateListObservers();
+  }
+}
+
 // Query all updates for all devices.
 void FirmwareUpdateManager::RequestAllUpdates() {
-  DCHECK(devices_pending_update_.empty());
+  DCHECK(!HasPendingUpdates());
   RequestDevices();
 }
 
@@ -170,10 +196,15 @@ void FirmwareUpdateManager::InstallUpdate(
 void FirmwareUpdateManager::OnDeviceListResponse(
     chromeos::FwupdDeviceList* devices) {
   DCHECK(devices);
-  DCHECK(devices_pending_update_.empty());
+  DCHECK(!HasPendingUpdates());
 
-  // TODO(zentaro): When mojo is implemented, fire the observer with an empty
-  // list if there are no devices in the response.
+  // Fire the observer with an empty list if there are no devices in the
+  // response.
+  if (devices->empty()) {
+    NotifyUpdateListObservers();
+    return;
+  }
+
   for (const auto& device : *devices) {
     devices_pending_update_[device.id] = device;
     RequestUpdates(device.id);
@@ -188,29 +219,18 @@ void FirmwareUpdateManager::OnUpdateListResponse(
 
   // If there are updates, then choose the first one.
   if (!updates->empty()) {
-    const chromeos::FwupdUpdate& update_details = updates->front();
-
+    auto device_name = devices_pending_update_[device_id].device_name;
     // Create a complete FirmwareUpdate and add to updates_.
-    FirmwareUpdate update;
-    update.device_id = device_id;
-    update.device_name = devices_pending_update_[device_id].device_name;
-    update.version = update_details.version;
-    update.description = update_details.description;
-    update.priority = update_details.priority;
-    updates_.push_back(std::move(update));
+    updates_.push_back(CreateUpdate(updates->front(), device_id, device_name));
   }
 
   // Remove the pending device.
   devices_pending_update_.erase(device_id);
 
-  // TODO(zentaro): When mojo is implemented, fire the observer with `updates_`
-  // if there are no more devices pending an update.
-}
-
-const std::vector<FirmwareUpdateManager::FirmwareUpdate>&
-FirmwareUpdateManager::GetCachedUpdatesForTesting() {
-  DCHECK(devices_pending_update_.empty());
-  return updates_;
+  // Fire the observer if there are no devices pending updates.
+  if (!HasPendingUpdates()) {
+    NotifyUpdateListObservers();
+  }
 }
 
 void FirmwareUpdateManager::OnInstallResponse(bool success) {
