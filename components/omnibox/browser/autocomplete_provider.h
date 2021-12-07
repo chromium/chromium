@@ -197,6 +197,12 @@ class AutocompleteProvider
   // OmniboxPopupModel::StartAutocomplete().
   virtual void Start(const AutocompleteInput& input, bool minimal_changes) = 0;
 
+  // Similar to Start(), but used to perform prefetch requests. Providers can
+  // override this method and perform a prefetch request in order to cache the
+  // response. Providers should *not* call OnProviderUpdate() after completing
+  // a prefetch request.
+  virtual void StartPrefetch(const AutocompleteInput& input) {}
+
   // Advises the provider to stop processing.  This may be called even if the
   // provider is already done.  If the provider caches any results, it should
   // clear the cache based on the value of |clear_cached_results|.  Normally,

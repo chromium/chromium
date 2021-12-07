@@ -121,6 +121,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   // sent.
   void Start(const AutocompleteInput& input);
 
+  // Simply calls StartPrefetch() on all providers so those providers that
+  // override it could perform a prefetch request and populate their caches.
+  void StartPrefetch(const AutocompleteInput& input);
+
   // Cancels the current query, ensuring there will be no future notifications
   // fired.  If new matches have come in since the most recent notification was
   // fired, they will be discarded.
@@ -199,6 +203,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateAssistedQueryStats);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
+                           SupportedProvider_NonPrefetch);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
+                           SupportedProvider_Prefetch);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderPrefetchTest,
+                           UnsupportedProvider_Prefetch);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
                            EmitAccessibilityEvents);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,

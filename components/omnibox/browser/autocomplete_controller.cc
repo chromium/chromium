@@ -494,6 +494,12 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   }
 }
 
+void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
+  for (auto provider : providers_) {
+    provider->StartPrefetch(input);
+  }
+}
+
 void AutocompleteController::Stop(bool clear_result) {
   StopHelper(clear_result, false);
 }
