@@ -61,6 +61,7 @@ class InspectorIssue;
 
 namespace probe {
 
+class AsyncTaskContext;
 class AsyncTaskId;
 
 class CORE_EXPORT ProbeBase {
@@ -74,34 +75,6 @@ class CORE_EXPORT ProbeBase {
  private:
   mutable base::TimeTicks start_time_;
   mutable base::TimeTicks end_time_;
-};
-
-// Tracks scheduling and cancelation of a single async task.
-// An async task scheduled via `AsyncTaskContext` is guaranteed to be
-// canceled.
-class CORE_EXPORT AsyncTaskContext {
- public:
-  AsyncTaskContext() = default;
-  ~AsyncTaskContext();
-
-  // Not copyable or movable. The address of the async_task_id_ is used
-  // to identify this task and corresponding runs/invocations via `AsyncTask`.
-  AsyncTaskContext(const AsyncTaskContext&) = delete;
-  AsyncTaskContext& operator=(const AsyncTaskContext&) = delete;
-
-  // Schedules this async task with the ThreadDebugger. `Schedule` can be called
-  // once and only once per AsyncTaskContext instance.
-  void Schedule(ExecutionContext* context, const WTF::StringView& name);
-
-  // Explicitly cancel this async task. No `AsyncTasks`s must be created with
-  // this context after `Cancel` was called.
-  void Cancel();
-
- private:
-  friend class AsyncTask;
-
-  AsyncTaskId async_task_id_;
-  v8::Isolate* isolate_;
 };
 
 // Tracks execution of a (previously scheduled) asynchronous task. An instance
