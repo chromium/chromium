@@ -47,6 +47,17 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return std::move(this->CopyAddressTo(view_address));
   }
 
+  template <typename View>
+  Builder& CopyAddressTo(raw_ptr<View>* view_address) & {
+    *view_address = view_ ? view_.get() : root_view_.get();
+    return *static_cast<Builder*>(this);
+  }
+
+  template <typename View>
+  Builder&& CopyAddressTo(raw_ptr<View>* view_address) && {
+    return std::move(this->CopyAddressTo(view_address));
+  }
+
   Builder& CustomConfigure(ConfigureCallback configure_callback) & {
     configure_callback_ = std::move(configure_callback);
     return *static_cast<Builder*>(this);
