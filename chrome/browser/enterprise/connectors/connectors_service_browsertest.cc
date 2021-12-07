@@ -444,7 +444,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     ConnectorsServiceAnalysisProfileBrowserTest,
     testing::Combine(
-        testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY),
+        testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT),
         testing::Values(ManagementStatus::AFFILIATED,
                         ManagementStatus::UNAFFILIATED,
                         ManagementStatus::UNMANAGED)));

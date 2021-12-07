@@ -393,6 +393,7 @@ std::string ConnectorsService::GetManagementDomain() {
         ConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
         ConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
         ConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
+        ConnectorScopePref(AnalysisConnector::PRINT),
         ConnectorScopePref(ReportingConnector::SECURITY_EVENT)}) {
     absl::optional<DmToken> dm_token = GetDmToken(scope_pref);
     if (dm_token.has_value()) {

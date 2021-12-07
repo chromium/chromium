@@ -1814,6 +1814,9 @@ std::string SerializeContentAnalysisRequest(
     case enterprise_connectors::BULK_DATA_ENTRY:
       request_dict.SetStringKey("analysis_connector", "BULK_DATA_ENTRY");
       break;
+    case enterprise_connectors::PRINT:
+      request_dict.SetStringKey("analysis_connector", "PRINT");
+      break;
   }
 
   if (request.has_request_data()) {

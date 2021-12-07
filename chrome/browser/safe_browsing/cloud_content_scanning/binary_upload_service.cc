@@ -737,6 +737,9 @@ GURL BinaryUploadService::Request::GetUrlWithParams() const {
     case enterprise_connectors::BULK_DATA_ENTRY:
       connector = "OnBulkDataEntry";
       break;
+    case enterprise_connectors::PRINT:
+      connector = "OnPrint";
+      break;
     case enterprise_connectors::ANALYSIS_CONNECTOR_UNSPECIFIED:
       break;
   }
@@ -874,7 +877,8 @@ void BinaryUploadService::SetAuthForTesting(const std::string& dm_token,
             ANALYSIS_CONNECTOR_UNSPECIFIED,
         enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY}) {
+        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+        enterprise_connectors::AnalysisConnector::PRINT}) {
     TokenAndConnector token_and_connector = {dm_token, connector};
     can_upload_enterprise_data_[token_and_connector] = authorized;
   }

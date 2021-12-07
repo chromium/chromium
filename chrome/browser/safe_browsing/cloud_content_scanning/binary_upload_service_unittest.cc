@@ -609,7 +609,8 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
             ANALYSIS_CONNECTOR_UNSPECIFIED,
         enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED}) {
+        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+        enterprise_connectors::AnalysisConnector::PRINT}) {
     service_->IsAuthorized(GURL(), base::BindOnce([](bool authorized) {
                              EXPECT_TRUE(authorized);
                            }),

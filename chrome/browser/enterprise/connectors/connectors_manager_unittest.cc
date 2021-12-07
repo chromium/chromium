@@ -31,7 +31,7 @@ namespace {
 
 constexpr AnalysisConnector kAllAnalysisConnectors[] = {
     AnalysisConnector::FILE_DOWNLOADED, AnalysisConnector::FILE_ATTACHED,
-    AnalysisConnector::BULK_DATA_ENTRY};
+    AnalysisConnector::BULK_DATA_ENTRY, AnalysisConnector::PRINT};
 
 constexpr ReportingConnector kAllReportingConnectors[] = {
     ReportingConnector::SECURITY_EVENT};

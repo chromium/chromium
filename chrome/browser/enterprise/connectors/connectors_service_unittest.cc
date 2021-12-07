@@ -140,11 +140,10 @@ TEST_P(ConnectorsServiceAnalysisNoFeatureTest, AnalysisConnectors) {
                   .empty());
 }
 
-INSTANTIATE_TEST_CASE_P(,
-                        ConnectorsServiceAnalysisNoFeatureTest,
-                        testing::Values(FILE_ATTACHED,
-                                        FILE_DOWNLOADED,
-                                        BULK_DATA_ENTRY));
+INSTANTIATE_TEST_CASE_P(
+    ,
+    ConnectorsServiceAnalysisNoFeatureTest,
+    testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT));
 
 // Tests to make sure getting reporting settings work with both the feature flag
 // and the OnSecurityEventEnterpriseConnector policy. The parameter for these

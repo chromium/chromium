@@ -286,6 +286,7 @@ void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
   StartObservingPref(AnalysisConnector::FILE_ATTACHED);
   StartObservingPref(AnalysisConnector::FILE_DOWNLOADED);
   StartObservingPref(AnalysisConnector::BULK_DATA_ENTRY);
+  StartObservingPref(AnalysisConnector::PRINT);
   StartObservingPref(ReportingConnector::SECURITY_EVENT);
   StartObservingPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
 }

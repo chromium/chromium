@@ -22,6 +22,7 @@ enum AnalysisConnector {
   FILE_DOWNLOADED = 1;
   FILE_ATTACHED = 2;
   BULK_DATA_ENTRY = 3;
+  PRINT = 4;
 }
 
 message ContentMetaData {
