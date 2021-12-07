@@ -215,6 +215,7 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
   }
 
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override {
+    params->shadow_type = views::Widget::InitParams::ShadowType::kDefault;
     params->init_properties_container.SetProperty(
         chromeos::kFrameActiveColorKey, kFilePickerActiveTitleColor);
     // Enabling the color below makes the Browser process to crash:
