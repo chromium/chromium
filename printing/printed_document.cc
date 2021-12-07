@@ -159,7 +159,7 @@ scoped_refptr<PrintedPage> PrintedDocument::GetPage(uint32_t page_number) {
   return page;
 }
 
-void PrintedDocument::DropPage(const PrintedPage* page) {
+void PrintedDocument::RemovePage(const PrintedPage* page) {
   base::AutoLock lock(lock_);
   PrintedPages::const_iterator it =
       mutable_.pages_.find(page->page_number() - 1);

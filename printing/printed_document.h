@@ -62,9 +62,9 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   // Note: locks for a short amount of time.
   scoped_refptr<PrintedPage> GetPage(uint32_t page_number);
 
-  // Drop the specified page's reference for the particular page number.
+  // Removes reference to a particular `page` based on its page number.
   // Note: locks for a short amount of time.
-  void DropPage(const PrintedPage* page);
+  void RemovePage(const PrintedPage* page);
 #endif  // defined(OS_WIN)
 
   // Sets the document data. Note: locks for a short amount of time.

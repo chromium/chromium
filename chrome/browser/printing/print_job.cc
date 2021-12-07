@@ -500,7 +500,7 @@ void PrintJob::OnPageDone(PrintedPage* page) {
     pdf_conversion_state_->OnPageProcessed(
         base::BindRepeating(&PrintJob::OnPdfPageConverted, this));
   }
-  document_->DropPage(page);
+  document_->RemovePage(page);
 }
 #endif  // defined(OS_WIN)
 
