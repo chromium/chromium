@@ -45,22 +45,11 @@ export class NamingController {
     /** @private @const {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
 
-    /**
-     * Controls if a context menu is shown for the rename input, so it shouldn't
-     * commit the new name.
-     * @private {boolean}
-     */
-    this.showingContextMenu_ = false;
-
     // Register events.
     this.listContainer_.renameInput.addEventListener(
         'keydown', this.onRenameInputKeyDown_.bind(this));
     this.listContainer_.renameInput.addEventListener(
         'blur', this.onRenameInputBlur_.bind(this));
-    this.listContainer_.renameInput.addEventListener(
-        'contextmenu', this.onContextMenu_.bind(this));
-    this.listContainer_.renameInput.addEventListener(
-        'focus', this.onFocus_.bind(this));
   }
 
   /**
@@ -243,20 +232,13 @@ export class NamingController {
     }
   }
 
-  onContextMenu_(event) {
-    this.showingContextMenu_ = true;
-  }
-
-  onFocus_(event) {
-    this.showingContextMenu_ = false;
-  }
-
   /**
    * @param {Event} event Blur event.
    * @private
    */
   onRenameInputBlur_(event) {
-    if (this.showingContextMenu_) {
+    const contextMenu = this.listContainer_.renameInput.contextMenu;
+    if (contextMenu && !contextMenu.hidden) {
       return;
     }
 

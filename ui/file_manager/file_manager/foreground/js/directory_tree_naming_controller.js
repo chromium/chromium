@@ -42,13 +42,6 @@ export class DirectoryTreeNamingController {
     /** @private {?VolumeInfo} */
     this.volumeInfo_ = null;
 
-    /**
-     * Controls if a context menu is shown for the rename input, so it shouldn't
-     * commit the new name.
-     * @private {boolean}
-     */
-    this.showingContextMenu_ = false;
-
     /** @private @const {!HTMLInputElement} */
     this.inputElement_ = /** @type {!HTMLInputElement} */
         (document.createElement('input'));
@@ -61,9 +54,6 @@ export class DirectoryTreeNamingController {
       // directory item and current directory is changed to editing item.
       event.stopPropagation();
     });
-    this.inputElement_.addEventListener(
-        'contextmenu', this.onContextMenu_.bind(this));
-    this.inputElement_.addEventListener('focus', this.onFocus_.bind(this));
   }
 
   /**
@@ -124,22 +114,13 @@ export class DirectoryTreeNamingController {
     this.editing_ = true;
   }
 
-  /** @private */
-  onContextMenu_() {
-    this.showingContextMenu_ = true;
-  }
-
-  /** @private */
-  onFocus_() {
-    this.showingContextMenu_ = false;
-  }
-
   /**
    * Commits rename.
    * @private
    */
   commitRename_() {
-    if (!this.editing_ || this.showingContextMenu_) {
+    const contextMenu = this.inputElement_.contextMenu;
+    if (!this.editing_ || (contextMenu && !contextMenu.hidden)) {
       return;
     }
     this.editing_ = false;
