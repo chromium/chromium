@@ -138,17 +138,20 @@ export function WallpaperCollectionsTest() {
       'id_1': [wallpaperProvider.images[0], wallpaperProvider.images[1]],
       'id_2': [],
       'id_3': null,
+      'id_4': [wallpaperProvider.images[0], wallpaperProvider.images[2]],
     };
     personalizationStore.data.loading.images = {
       'id_0': false,
       'id_1': false,
       'id_2': false,
       'id_3': false,
+      'id_4': false,
     };
     personalizationStore.notifyObservers();
 
     counts = (await sendImageCountsPromise)[1];
-    assertDeepEquals({'id_0': 1, 'id_1': 2, 'id_2': 0, 'id_3': null}, counts);
+    assertDeepEquals(
+        {'id_0': 1, 'id_1': 2, 'id_2': 0, 'id_3': null, 'id_4': 1}, counts);
   });
 
   test('sends local images when loaded', async () => {

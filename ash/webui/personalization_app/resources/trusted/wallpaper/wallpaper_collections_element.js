@@ -269,7 +269,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 
   /**
-   * Send count of images in each collection when a new collection is fetched.
+   * Send count of image units in each collection when a new collection is
+   * fetched. D/L variants of the same image represent a count of 1.
    * @param {Object<string,
    *     Array<!WallpaperImage>>} images
    * @param {Object<string, boolean>} imagesLoading
@@ -288,7 +289,15 @@ export class WallpaperCollections extends WithPersonalizationStore {
             .map(([key, value]) => {
               // Collection has completed loading. If no images were retrieved,
               // set count value to null to indicate failure.
-              return [key, Array.isArray(value) ? value.length : null];
+              if (Array.isArray(value)) {
+                const unitIds = new Set();
+                value.forEach(image => {
+                  unitIds.add(image.unitId);
+                });
+                return [key, unitIds.size];
+              } else {
+                return [key, null];
+              }
             })
             .reduce((result, [key, value]) => {
               result[key] = value;
