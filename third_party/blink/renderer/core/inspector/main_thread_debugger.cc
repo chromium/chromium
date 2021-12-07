@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
