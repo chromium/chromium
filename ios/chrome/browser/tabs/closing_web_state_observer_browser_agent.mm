@@ -42,24 +42,32 @@ void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
   if (!restore_service_)
     return;
 
-  web::NavigationManager* navigation_manager =
-      web_state->GetNavigationManager();
-  if (navigation_manager->IsRestoreSessionInProgress()) {
+  // It is possible to call this method with "unrealized" WebState. Check if
+  // the WebState is in that state before accessing the NavigationManager as
+  // that would force the realization of the WebState. The serialized state
+  // can be retrieved in the same way as for a WebState whoe restoration is
+  // in progress.
+  const web::NavigationManager* navigation_manager = nullptr;
+  if (web_state->IsRealized()) {
+    navigation_manager = web_state->GetNavigationManager();
+    DCHECK(navigation_manager);
+  }
+
+  if (!navigation_manager || navigation_manager->IsRestoreSessionInProgress()) {
     CRWSessionStorage* storage = web_state->BuildSessionStorage();
     auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(storage);
     restore_service_->CreateHistoricalTab(live_tab.get(), index);
     return;
   }
+
   // No need to record history if the tab has no navigation or has only
   // presented the NTP or the bookmark UI.
   if (navigation_manager->GetItemCount() <= 1) {
-    web::NavigationItem* item = navigation_manager->GetLastCommittedItem();
-    if (!item)
+    const GURL& last_committed_url = web_state->GetLastCommittedURL();
+    if (!last_committed_url.is_valid() ||
+        (last_committed_url.host_piece() == kChromeUINewTabHost)) {
       return;
-
-    const base::StringPiece host = item->GetVirtualURL().host_piece();
-    if (host == kChromeUINewTabHost)
-      return;
+    }
   }
 
   restore_service_->CreateHistoricalTab(
