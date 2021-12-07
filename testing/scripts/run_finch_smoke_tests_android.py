@@ -23,9 +23,6 @@ BLINK_TOOLS = os.path.join(
 BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
-DEFAULT_SEED_PATH = os.path.join(SRC_DIR, 'testing', 'scripts',
-                                 'variations_smoke_test_data',
-                                 'webview_test_seed')
 
 if PYUTILS not in sys.path:
   sys.path.append(PYUTILS)
@@ -114,6 +111,16 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
   @property
   def default_browser_activity_name(self):
     raise NotImplementedError
+
+  @property
+  def default_finch_seed_path(self):
+    raise NotImplementedError
+
+  def parse_args(self, args=None):
+    super(FinchTestCase, self).parse_args(args)
+    if (not self.options.finch_seed_path or
+        not os.path.exists(self.options.finch_seed_path)):
+      self.options.finch_seed_path = self.default_finch_seed_path
 
   def __enter__(self):
     self._device.EnableRoot()
@@ -241,9 +248,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     yield
 
   def browser_command_line_args(self):
-    # TODO(rmhasan): Add browser command line arguments
-    # for weblayer and chrome
-    return []
+    return ['--fake-variations-channel=%s' %
+            self.options.fake_variations_channel]
 
   def run_tests(self, test_run_variation, results_dict):
     """Run browser test on test device
@@ -364,6 +370,12 @@ class ChromeFinchTestCase(FinchTestCase):
     """Returns name of product being tested"""
     return 'chrome'
 
+  @property
+  def default_finch_seed_path(self):
+    return os.path.join(SRC_DIR, 'testing', 'scripts',
+                        'variations_smoke_test_data',
+                        'variations_seed_stable_chrome_android.json')
+
   @classmethod
   def wpt_product_name(cls):
     return CHROME_ANDROID
@@ -375,11 +387,6 @@ class ChromeFinchTestCase(FinchTestCase):
 
 class WebViewFinchTestCase(FinchTestCase):
 
-  def parse_args(self, args=None):
-    super(WebViewFinchTestCase, self).parse_args(args)
-    if (not self.options.finch_seed_path or
-        not os.path.exists(self.options.finch_seed_path)):
-      self.options.finch_seed_path = DEFAULT_SEED_PATH
 
   @classmethod
   def product_name(cls):
@@ -394,10 +401,15 @@ class WebViewFinchTestCase(FinchTestCase):
   def default_browser_activity_name(self):
     return 'org.chromium.webview_shell.WebPlatformTestsActivity'
 
+  @property
+  def default_finch_seed_path(self):
+    return os.path.join(SRC_DIR, 'testing', 'scripts',
+                        'variations_smoke_test_data',
+                        'webview_test_seed')
+
   def browser_command_line_args(self):
-    return ['--webview-verbose-logging',
-            ('--fake-variations-channel=%s' %
-             self.options.fake_variations_channel)]
+    return (super(WebViewFinchTestCase, self).browser_command_line_args() +
+            ['--webview-verbose-logging'])
 
   @contextlib.contextmanager
   def install_apks(self):
@@ -452,6 +464,12 @@ class WebLayerFinchTestCase(FinchTestCase):
   @property
   def default_browser_activity_name(self):
     return 'org.chromium.weblayer.shell.WebLayerShellActivity'
+
+  @property
+  def default_finch_seed_path(self):
+    return os.path.join(SRC_DIR, 'testing', 'scripts',
+                        'variations_smoke_test_data',
+                        'variations_seed_stable_weblayer.json')
 
   @contextlib.contextmanager
   def install_apks(self):
