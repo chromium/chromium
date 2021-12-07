@@ -3186,6 +3186,26 @@ chromium-metrics-reviews@google.com.
   <summary>Whether HW video encode is used in MediaRecorder.</summary>
 </histogram>
 
+<histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate"
+    enum="MediaStreamRequestResult2" expires_after="2022-12-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <summary>
+    Records media stream request responses for desktop-video capture
+    media-device-update requests.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaStreamManager.DisplayVideoDeviceUpdate"
+    enum="MediaStreamRequestResult2" expires_after="2022-12-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <summary>
+    Records media stream request responses for display-video capture
+    media-device-update requests.
+  </summary>
+</histogram>
+
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
     expires_after="2022-10-31">
   <owner>henrika@chromium.org</owner>

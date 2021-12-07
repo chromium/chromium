@@ -57334,6 +57334,7 @@ Called by update_use_counter_css.py.-->
   <int value="13" label="Failed Due To Shutdown (NotAllowedError)"/>
   <int value="14" label="Kill Switch On (NotAllowedError)"/>
   <int value="15" label="Permission Denied By System (NotAllowedError)"/>
+  <int value="16" label="Device In Use (NotReadableError)"/>
 </enum>
 
 <enum name="MediaStreamRequestState">
