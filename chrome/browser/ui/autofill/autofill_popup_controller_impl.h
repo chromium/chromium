@@ -159,6 +159,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // to find the AXPlatformNode specifically for the autofill text field.
   virtual ui::AXPlatformNode* GetRootAXPlatformNodeForWebContents();
 
+  // Hides |view_| unless it is null and then deletes |this|.
+  virtual void HideViewAndDie();
+
  private:
   // The user has accepted the currently selected line. Returns whether there
   // was a selection to accept.
@@ -167,9 +170,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
-
-  // Hides |view_| unless it is null and then deletes |this|.
-  void HideViewAndDie();
 
   // Returns true iff the focused frame has a pointer lock, which may be used to
   // trick the user into accepting some suggestion (crbug.com/1239496). In such

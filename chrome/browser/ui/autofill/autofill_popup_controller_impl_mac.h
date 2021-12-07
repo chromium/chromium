@@ -38,9 +38,10 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
   void UpdateDataListValues(const std::vector<std::u16string>& values,
                             const std::vector<std::u16string>& labels) override;
 
+ protected:
   // Hides the popup and destroys the controller. This also invalidates
   // |delegate_|.
-  void Hide(PopupHidingReason reason) override;
+  void HideViewAndDie() override;
 
  private:
   // The controller providing the autofill touch bar.

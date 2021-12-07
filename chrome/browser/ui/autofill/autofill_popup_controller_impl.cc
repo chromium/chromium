@@ -233,6 +233,8 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
 
   HideViewAndDie();
+  // No code below this line!
+  // |HideViewAndDie()| destroys |this|, so it should be the last line.
 }
 
 void AutofillPopupControllerImpl::ViewDestroyed() {
@@ -240,6 +242,8 @@ void AutofillPopupControllerImpl::ViewDestroyed() {
   view_ = nullptr;
 
   Hide(PopupHidingReason::kViewDestroyed);
+  // No code below this line!
+  // |Hide()| destroys |this|, so it should be the last line.
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
