@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_METRICS_INTENT_HANDLING_METRICS_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
