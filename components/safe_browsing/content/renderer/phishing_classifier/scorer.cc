@@ -113,10 +113,16 @@ std::vector<double> Scorer::ApplyVisualTfLiteModelHelper(
     const SkBitmap& bitmap,
     int input_width,
     int input_height,
-    const std::string& model_data) {
+    base::WeakPtr<Scorer> scorer) {
+  if (!scorer)
+    return std::vector<double>();
+
   TRACE_EVENT0("safe_browsing", "ApplyVisualTfLiteModel");
+  std::string model_data = std::string(
+      reinterpret_cast<const char*>(scorer->visual_tflite_model().data()),
+      scorer->visual_tflite_model().length());
   std::unique_ptr<tflite::task::vision::ImageClassifier> classifier =
-      CreateClassifier(model_data);
+      CreateClassifier(std::move(model_data));
   if (!classifier)
     return std::vector<double>();
 
@@ -160,5 +166,9 @@ double Scorer::LogOdds2Prob(double log_odds) {
 
 Scorer::Scorer() = default;
 Scorer::~Scorer() = default;
+
+base::WeakPtr<Scorer> Scorer::GetWeakPtr() const {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 }  // namespace safe_browsing

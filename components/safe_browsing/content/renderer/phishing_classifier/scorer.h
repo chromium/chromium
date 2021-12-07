@@ -84,6 +84,11 @@ class Scorer {
   virtual void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const = 0;
+
+  const base::MemoryMappedFile& visual_tflite_model() const {
+    return visual_tflite_model_;
+  }
+
 #endif
 
   // Returns the version number of the loaded client model.
@@ -128,6 +133,8 @@ class Scorer {
   Scorer(const Scorer&) = delete;
   Scorer& operator=(const Scorer&) = delete;
 
+  base::WeakPtr<Scorer> GetWeakPtr() const;
+
  protected:
   // Helper function which converts log odds to a probability in the range
   // [0.0,1.0].
@@ -138,7 +145,7 @@ class Scorer {
       const SkBitmap& bitmap,
       int input_width,
       int input_height,
-      const std::string& model_data);
+      base::WeakPtr<Scorer> scorer);
 
   base::MemoryMappedFile visual_tflite_model_;
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
