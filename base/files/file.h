@@ -77,17 +77,6 @@ class BASE_EXPORT File {
     FLAG_CAN_DELETE_ON_CLOSE = 1 << 20,  // Requests permission to delete a file
                                          // via DeleteOnClose() (Windows only).
                                          // See DeleteOnClose() for details.
-
-    // Deprecated names for Windows flags. Use WIN_-prefixed flags instead.
-    // TODO(crbug.com/1244149): Migrate all call sites.
-    FLAG_EXCLUSIVE_READ = FLAG_WIN_EXCLUSIVE_READ,
-    FLAG_EXCLUSIVE_WRITE = FLAG_WIN_EXCLUSIVE_WRITE,
-    FLAG_TEMPORARY = FLAG_WIN_TEMPORARY,
-    FLAG_HIDDEN = FLAG_WIN_HIDDEN,
-    FLAG_SHARE_DELETE = FLAG_WIN_SHARE_DELETE,
-    FLAG_BACKUP_SEMANTICS = FLAG_WIN_BACKUP_SEMANTICS,
-    FLAG_EXECUTE = FLAG_WIN_EXECUTE,
-    FLAG_SEQUENTIAL_SCAN = FLAG_WIN_SEQUENTIAL_SCAN,
   };
 
   // This enum has been recorded in multiple histograms using PlatformFileError
