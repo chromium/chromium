@@ -46,6 +46,10 @@ void TestPrintJob::Cancel() {
   set_job_pending(false);
 }
 
+void TestPrintJob::OnFailed() {}
+
+void TestPrintJob::OnDocDone(int job_id, PrintedDocument* document) {}
+
 bool TestPrintJob::FlushJob(base::TimeDelta timeout) {
   return true;
 }

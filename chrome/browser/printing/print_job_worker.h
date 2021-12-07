@@ -29,9 +29,8 @@ class PrintedDocument;
 class PrintedPage;
 
 // Worker thread code. It manages the PrintingContext, which can be blocking
-// and/or run a message loop. This is the object that generates most
-// NOTIFY_PRINT_JOB_EVENT notifications, but they are generated through a
-// NotificationTask task to be executed from the right thread, the UI thread.
+// and/or run a message loop. This object calls back into the PrintJob in order
+// to update the print job status. The callbacks all happen on the UI thread.
 // PrintJob always outlives its worker instance.
 class PrintJobWorker {
  public:

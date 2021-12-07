@@ -34,11 +34,6 @@ class TestPrintJob : public PrintJob {
   mojom::PrinterLanguageType type() const { return type_; }
 #endif
 
-  // `content::NotificationObserver` implementation. Deliberately empty.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {}
-
   // All remaining functions are `PrintJob` implementation.
   void Initialize(std::unique_ptr<PrinterQuery> query,
                   const std::u16string& name,
@@ -52,6 +47,10 @@ class TestPrintJob : public PrintJob {
 
   // Sets `job_pending_` to false and deletes the worker.
   void Cancel() override;
+
+  void OnFailed() override;
+
+  void OnDocDone(int job_id, PrintedDocument* document) override;
 
   // Intentional no-op, returns true.
   bool FlushJob(base::TimeDelta timeout) override;

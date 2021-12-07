@@ -19,14 +19,12 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/backend/print_backend.h"
@@ -117,16 +115,14 @@ bool ShouldPrintingContextSkipSystemCalls() {
 #endif
 }
 
-void NotificationCallback(PrintJob* print_job,
-                          JobEventDetails::Type detail_type,
-                          int job_id,
-                          PrintedDocument* document) {
-  auto details =
-      base::MakeRefCounted<JobEventDetails>(detail_type, job_id, document);
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PRINT_JOB_EVENT,
-      content::Source<PrintJob>(print_job),
-      content::Details<JobEventDetails>(details.get()));
+void DocDoneNotificationCallback(PrintJob* print_job,
+                                 int job_id,
+                                 PrintedDocument* document) {
+  print_job->OnDocDone(job_id, document);
+}
+
+void FailedNotificationCallback(PrintJob* print_job) {
+  print_job->OnFailed();
 }
 
 #if defined(OS_WIN)
@@ -510,10 +506,9 @@ void PrintJobWorker::OnDocumentDone() {
   }
 
   print_job_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NotificationCallback, base::RetainedRef(print_job_.get()),
-                     JobEventDetails::DOC_DONE, job_id,
-                     base::RetainedRef(document_)));
+      FROM_HERE, base::BindOnce(&DocDoneNotificationCallback,
+                                base::RetainedRef(print_job_.get()), job_id,
+                                base::RetainedRef(document_)));
 
   // Makes sure the variables are reinitialized.
   document_ = nullptr;
@@ -570,10 +565,9 @@ void PrintJobWorker::OnFailure() {
   // We may loose our last reference by broadcasting the FAILED event.
   scoped_refptr<PrintJob> handle(print_job_.get());
 
-  print_job_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NotificationCallback, base::RetainedRef(print_job_.get()),
-                     JobEventDetails::FAILED, 0, base::RetainedRef(document_)));
+  print_job_->PostTask(FROM_HERE,
+                       base::BindOnce(&FailedNotificationCallback,
+                                      base::RetainedRef(print_job_.get())));
   Cancel();
 
   // Makes sure the variables are reinitialized.

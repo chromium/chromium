@@ -137,10 +137,6 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
                                                        name, query->cookie());
   new_doc->set_page_count(page_count);
   UpdatePrintedDocument(new_doc);
-
-  // Don't forget to register to our own messages.
-  registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                 content::Source<PrintJob>(this));
 }
 
 #if defined(OS_WIN)
@@ -192,15 +188,6 @@ void PrintJob::ResetPageMapping() {
       GetFullPageMapping(pdf_page_mapping_, document_->page_count());
 }
 #endif  // defined(OS_WIN)
-
-void PrintJob::Observe(int type,
-                       const content::NotificationSource& source,
-                       const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(chrome::NOTIFICATION_PRINT_JOB_EVENT, type);
-
-  OnNotifyPrintJobEvent(*content::Details<JobEventDetails>(details).ptr());
-}
 
 void PrintJob::StartPrinting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -262,14 +249,7 @@ void PrintJob::Cancel() {
     // InvokeLater since it would take too much time.
     worker_->Cancel();
   }
-  // Make sure a `Cancel()` is broadcast.
-  auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::FAILED,
-                                                       0, nullptr);
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PRINT_JOB_EVENT,
-      content::Source<PrintJob>(this),
-      content::Details<JobEventDetails>(details.get()));
-  Stop();
+  OnFailed();
   is_canceling_ = false;
 }
 
@@ -524,22 +504,31 @@ void PrintJob::OnPageDone(PrintedPage* page) {
 }
 #endif  // defined(OS_WIN)
 
-void PrintJob::OnNotifyPrintJobEvent(const JobEventDetails& event_details) {
+void PrintJob::OnFailed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  switch (event_details.type()) {
-    case JobEventDetails::FAILED:
-      // No need to cancel since the worker already canceled itself.
-      Stop();
-      break;
-    case JobEventDetails::DOC_DONE:
-      // This will call `Stop()` and broadcast a `JOB_DONE` message.
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&PrintJob::OnDocumentDone, this));
-      break;
-    default:
-      break;
-  }
+  Stop();
+
+  // Make sure a `Cancel()` is broadcast.
+  auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::FAILED,
+                                                       0, nullptr);
+  content::NotificationService::current()->Notify(
+      chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
+      content::Details<JobEventDetails>(details.get()));
+}
+
+void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto details = base::MakeRefCounted<JobEventDetails>(
+      JobEventDetails::DOC_DONE, job_id, document);
+  content::NotificationService::current()->Notify(
+      chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
+      content::Details<JobEventDetails>(details.get()));
+
+  // This will call `Stop()` and broadcast a `JOB_DONE` message.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PrintJob::OnDocumentDone, this));
 }
 
 void PrintJob::OnDocumentDone() {
@@ -598,7 +587,6 @@ void PrintJob::ControlledWorkerShutdown() {
       base::BindOnce(&PrintJob::HoldUntilStopIsCalled, this));
 
   is_job_pending_ = false;
-  registrar_.RemoveAll();
   ClearPrintedDocument();
 }
 

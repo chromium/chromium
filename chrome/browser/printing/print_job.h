@@ -13,8 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "printing/print_settings.h"
 
 #if defined(OS_CHROMEOS)
@@ -45,8 +43,7 @@ class PrintSettings;
 // reference to the job to be sure it is kept alive. All the code in this class
 // runs in the UI thread. All virtual functions are virtual only so that
 // TestPrintJob can override them in tests.
-class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
-                 public content::NotificationObserver {
+class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
  public:
 #if defined(OS_CHROMEOS)
   // An enumeration of components where print jobs can come from. The order of
@@ -89,10 +86,11 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   void OnPageDone(PrintedPage* page);
 #endif
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // Called when the document is done printing.
+  virtual void OnDocDone(int job_id, PrintedDocument* document);
+
+  // Called if the document fails to print.
+  virtual void OnFailed();
 
   // Starts the actual printing. Signals the worker that it should begin to
   // spool as soon as data is available.
@@ -143,7 +141,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // Refcounted class.
   friend class base::RefCountedThreadSafe<PrintJob>;
 
-  ~PrintJob() override;
+  virtual ~PrintJob();
 
   // The functions below are used for tests only.
   void set_job_pending(bool pending);
@@ -163,9 +161,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
   // Helper method for UpdatePrintedDocument() and ClearPrintedDocument() to
   // sync |document_| updates with |worker_|.
   void SyncPrintedDocumentToWorker();
-
-  // Processes a NOTIFY_PRINT_JOB_EVENT notification.
-  void OnNotifyPrintJobEvent(const JobEventDetails& event_details);
 
   // Releases the worker thread by calling Stop(), then broadcasts a JOB_DONE
   // notification.
@@ -203,8 +198,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob>,
       const std::vector<uint32_t>& pages,
       uint32_t total_page_count);
 #endif  // defined(OS_WIN)
-
-  content::NotificationRegistrar registrar_;
 
   // All the UI is done in a worker thread because many Win32 print functions
   // are blocking and enters a message loop without your consent. There is one
