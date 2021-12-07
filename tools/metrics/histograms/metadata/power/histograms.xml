@@ -349,9 +349,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerPowerMode.{ProcessType}"
-    enum="PowerMode" expires_after="2021-12-31">
+    enum="PowerMode" expires_after="2022-06-30">
   <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
+  <owner>oksamyt@chromium.org</owner>
   <summary>
     Total seconds of CPU time consumed by Chrome's {ProcessType} process, split
     by power mode. Currently only implemented on Android. For every second of
