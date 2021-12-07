@@ -34,9 +34,9 @@
 #include "chromeos/network/network_policy_observer.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/onc/onc_signature.h"
 #include "chromeos/network/onc/onc_test_utils.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/onc/onc_validator.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
@@ -86,6 +86,12 @@ constexpr char kTestGuidEthernetEap[] = "policy_ethernet_eap";
 
 constexpr char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 constexpr char kTestEid[] = "12345678901234567890123456789012";
+
+// A valid but empty (no networks and no certificates) and unencrypted
+// configuration.
+constexpr char kEmptyUnencryptedConfiguration[] =
+    "{\"Type\":\"UnencryptedConfiguration\",\"NetworkConfigurations\":[],"
+    "\"Certificates\":[]}";
 
 std::string PrettyJson(const base::DictionaryValue& value) {
   std::string pretty;
@@ -260,7 +266,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
                  const std::string& path_to_onc) {
     base::Value policy =
         path_to_onc.empty()
-            ? onc::ReadDictionaryFromJson(onc::kEmptyUnencryptedConfiguration)
+            ? onc::ReadDictionaryFromJson(kEmptyUnencryptedConfiguration)
             : test_utils::ReadTestDictionaryValue(path_to_onc);
 
     onc::Validator validator(true,   // error_on_unknown_field

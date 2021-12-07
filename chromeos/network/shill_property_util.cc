@@ -19,7 +19,7 @@
 #include "base/values.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {

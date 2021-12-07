@@ -9,8 +9,8 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/network/network_event_log.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 
 namespace chromeos {

@@ -11,14 +11,22 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/onc/onc_signature.h"
 #include "chromeos/network/onc/onc_test_utils.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace onc {
+
+namespace {
+// A valid but empty (no networks and no certificates) and unencrypted
+// configuration.
+const char kEmptyUnencryptedConfiguration[] =
+    "{\"Type\":\"UnencryptedConfiguration\",\"NetworkConfigurations\":[],"
+    "\"Certificates\":[]}";
+}  // namespace
 
 class ONCValidatorTest : public ::testing::Test {
  public:

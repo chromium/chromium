@@ -13,7 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

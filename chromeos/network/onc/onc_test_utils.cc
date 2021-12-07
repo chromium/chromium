@@ -42,6 +42,23 @@ std::string ReadTestData(const std::string& filename) {
   return result;
 }
 
+std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
+  base::FilePath path;
+  std::unique_ptr<base::Value> result;
+  if (!chromeos::test_utils::GetTestDataPath(kNetworkComponentDirectory,
+                                             filename, &path)) {
+    LOG(FATAL) << "Unable to get test file path for: " << filename;
+    return result;
+  }
+  JSONFileValueDeserializer deserializer(path,
+                                         base::JSON_ALLOW_TRAILING_COMMAS);
+  std::string error_message;
+  result = deserializer.Deserialize(nullptr, &error_message);
+  CHECK(result != nullptr) << "Couldn't json-deserialize file: " << filename
+                           << ": " << error_message;
+  return result;
+}
+
 std::unique_ptr<base::DictionaryValue> ReadTestDictionary(
     const std::string& filename) {
   return base::DictionaryValue::From(
@@ -49,23 +66,7 @@ std::unique_ptr<base::DictionaryValue> ReadTestDictionary(
 }
 
 base::Value ReadTestDictionaryValue(const std::string& filename) {
-  base::FilePath path;
-  if (!chromeos::test_utils::GetTestDataPath(kNetworkComponentDirectory,
-                                             filename, &path)) {
-    LOG(FATAL) << "Unable to get test dictionary path for "
-               << kNetworkComponentDirectory << "/" << filename;
-    return base::Value();
-  }
-
-  JSONFileValueDeserializer deserializer(path,
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
-
-  std::string error_message;
-  std::unique_ptr<base::Value> content =
-      deserializer.Deserialize(nullptr, &error_message);
-  CHECK(content != nullptr) << "Couldn't json-deserialize file '" << filename
-                            << "': " << error_message;
-
+  std::unique_ptr<base::Value> content = ReadTestJson(filename);
   CHECK(content->is_dict())
       << "File '" << filename
       << "' does not contain a dictionary as expected, but type "

@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "net/cert/x509_certificate.h"

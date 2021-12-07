@@ -12,7 +12,7 @@
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_profile_handler.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

@@ -15,7 +15,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_profile_handler.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"

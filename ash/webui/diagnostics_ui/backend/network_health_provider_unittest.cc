@@ -23,7 +23,7 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/cros_network_config.h"
 #include "chromeos/services/network_config/in_process_instance.h"

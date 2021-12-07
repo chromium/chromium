@@ -39,7 +39,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/language/core/browser/pref_names.h"

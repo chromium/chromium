@@ -23,7 +23,7 @@
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/shill_property_util.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
