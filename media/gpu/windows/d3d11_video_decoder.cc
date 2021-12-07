@@ -956,13 +956,9 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     GetD3D11DeviceCB get_d3d11_device_cb) {
-  const std::string uma_name("Media.D3D11.WasVideoSupported");
-
   // Allow all of d3d11 to be turned off by workaround.
-  if (gpu_workarounds.disable_d3d11_video_decoder) {
-    UMA_HISTOGRAM_ENUMERATION(uma_name, NotSupportedReason::kOffByWorkaround);
+  if (gpu_workarounds.disable_d3d11_video_decoder)
     return {};
-  }
 
   // Remember that this might query the angle device, so this won't work if
   // we're not on the GPU main thread.  Also remember that devices are thread
@@ -973,17 +969,12 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
   //
   // Note also that, currently, we are called from the GPU main thread only.
   auto d3d11_device = get_d3d11_device_cb.Run();
-  if (!d3d11_device) {
-    UMA_HISTOGRAM_ENUMERATION(uma_name,
-                              NotSupportedReason::kCouldNotGetD3D11Device);
+  if (!d3d11_device)
     return {};
-  }
 
   D3D_FEATURE_LEVEL usable_feature_level;
   if (!GetD3D11FeatureLevel(d3d11_device, gpu_workarounds,
                             &usable_feature_level)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        uma_name, NotSupportedReason::kInsufficientD3D11FeatureLevel);
     return {};
   }
 
@@ -1011,9 +1002,6 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
                            /*require_encrypted=*/false);
     }
   }
-
-  // TODO(liberato): Should we separate out h264 and vp9?
-  UMA_HISTOGRAM_ENUMERATION(uma_name, NotSupportedReason::kVideoIsSupported);
 
   return configs;
 }

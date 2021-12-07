@@ -1857,6 +1857,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.D3D11.WasVideoSupported"
     enum="D3D11VideoNotSupportedReason" expires_after="2021-12-19">
+  <obsolete>
+    Deprecated as of 2021/12.
+  </obsolete>
   <owner>liberato@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <owner>tmathmeyer@chromium.org</owner>
