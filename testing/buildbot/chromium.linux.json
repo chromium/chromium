@@ -2604,7 +2604,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--use-run",
+          "--without-network"
         ],
         "merge": {
           "args": [],
@@ -3888,7 +3889,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--use-run",
+          "--without-network"
         ],
         "merge": {
           "args": [],

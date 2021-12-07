@@ -19019,6 +19019,7 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
+          "--without-network",
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}"
@@ -20219,7 +20220,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--use-run",
+          "--without-network"
         ],
         "merge": {
           "args": [],
@@ -21495,6 +21497,7 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
           "--use-run",
+          "--without-network",
           "--device=aemu"
         ],
         "merge": {
@@ -23296,7 +23299,8 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--use-run",
+          "--without-network"
         ],
         "merge": {
           "args": [],

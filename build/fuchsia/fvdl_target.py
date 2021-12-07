@@ -81,10 +81,12 @@ class FvdlTarget(emu_target.EmuTarget):
   @staticmethod
   def RegisterArgs(arg_parser):
     fvdl_args = arg_parser.add_argument_group('fvdl', 'FVDL arguments')
-    fvdl_args.add_argument('--with-network',
-                           action='store_true',
-                           default=False,
-                           help='Run emulator with emulated nic via tun/tap.')
+    fvdl_args.add_argument('--without-network',
+                           action='store_false',
+                           dest='with_network',
+                           default=True,
+                           help='Run emulator without emulated nic via ' +
+                           'tun/tap.')
     fvdl_args.add_argument('--custom-image',
                            help='Specify an image used for booting up the '
                            'emulator.')
