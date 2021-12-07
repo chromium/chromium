@@ -2752,6 +2752,12 @@
             '--gtest_filter=-*',
           ],
       },
+      # TODO(crbug.com/1131588) Tests are flaky only on CQ.
+      'Mac11 Tests': {
+        'precommit_args': [
+            '--gtest_filter=-*',
+          ],
+      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
@@ -2927,6 +2933,7 @@
       'Mac10.13 Tests',
       'Mac10.15 Tests',
       'Mac10.15 Tests (dbg)',
+      'Mac11 Tests',
       'Mac11 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
