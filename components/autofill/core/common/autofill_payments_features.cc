@@ -87,12 +87,6 @@ const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{
 const base::Feature kAutofillEnableOffersInDownstream{
     "kAutofillEnableOffersInDownstream", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When enabled and user is signed in, a footer indicating user's e-mail address
-// and profile picture will appear at the bottom of SaveCardInfoBar.
-const base::Feature kAutofillEnableSaveCardInfoBarAccountIndicationFooter{
-    "AutofillEnableSaveCardInfoBarAccountIndicationFooter",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, if the user interacts with the manual fallback bottom sheet
 // on Android, it'll remain sticky until the user dismisses it.
 const base::Feature kAutofillEnableStickyManualFallbackForCards{

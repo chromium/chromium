@@ -12,6 +12,9 @@ class Profile;
 
 namespace password_manager {
 
+// TODO(crbug.com/1277513): These functions should return a non-optional
+// AccountInfo, since AccountInfo itself already supports an "empty" state.
+
 absl::optional<AccountInfo> GetAccountInfoForPasswordInfobars(Profile* profile,
                                                               bool is_syncing);
 

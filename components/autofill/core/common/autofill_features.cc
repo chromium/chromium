@@ -149,21 +149,6 @@ const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers{
     "AutofillEnableImportWhenMultiplePhoneNumbers",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled and user has single account, a footer indicating user's e-mail
-// address and profile picture will appear at the bottom of InfoBars which has
-// corresponding account indication footer flags on.
-const base::Feature
-    kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers{
-        "AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers",
-        base::FEATURE_ENABLED_BY_DEFAULT};
-
-// When enabled and user is syncing, a footer indicating user's e-mail address
-// and profile picture will appear at the bottom of InfoBars which has
-// corresponding account indication footer flags on.
-const base::Feature kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers{
-    "AutofillEnableInfoBarAccountIndicationFooterForSyncUsers",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, the precedence is given to the field label over the name when
 // they match different types. Applied only for parsing of address forms in
 // Turkish.

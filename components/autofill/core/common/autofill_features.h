@@ -62,12 +62,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature
-    kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature
-    kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature
     kAutofillEnablePasswordInfoBarAccountIndicationFooter;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableSupportForApartmentNumbers;
