@@ -8,7 +8,7 @@ import dataclasses
 import pathlib
 import re
 import sys
-from typing import Optional
+from typing import List, Optional
 
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).parents[1].resolve(strict=True)
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
@@ -101,7 +101,7 @@ def get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         flaky_tests_count=annotation_counter[_FLAKY_TEST_ANNOTATION])
 
 
-def _count_annotations(annotations: list[Annotation]) -> collections.Counter:
+def _count_annotations(annotations: List[Annotation]) -> collections.Counter:
     counter = collections.Counter()
 
     for annotation in annotations:
