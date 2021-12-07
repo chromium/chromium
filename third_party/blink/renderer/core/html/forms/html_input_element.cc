@@ -2198,10 +2198,16 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   // except on file and color. In same-origin iframes it should work fine.
   // https://github.com/whatwg/html/issues/6909#issuecomment-917138991
   if (type() != input_type_names::kFile && type() != input_type_names::kColor &&
-      frame && frame->IsCrossOriginToMainFrame()) {
-    exception_state.ThrowSecurityError(
-        "HTMLInputElement::showPicker() called from cross-origin iframe.");
-    return;
+      frame) {
+    const SecurityOrigin* security_origin =
+        frame->GetSecurityContext()->GetSecurityOrigin();
+    const SecurityOrigin* top_security_origin =
+        frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
+    if (!security_origin->IsSameOriginWith(top_security_origin)) {
+      exception_state.ThrowSecurityError(
+          "HTMLInputElement::showPicker() called from cross-origin iframe.");
+      return;
+    }
   }
 
   if (!LocalFrame::HasTransientUserActivation(frame)) {
