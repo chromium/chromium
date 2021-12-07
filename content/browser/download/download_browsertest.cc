@@ -31,7 +31,6 @@
 #include "base/test/bind.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -2026,19 +2025,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ShutdownInProgress) {
         .WillOnce(Return());
   }
 
-  // See http://crbug.com/324525.  If we have a refcount release/post task
-  // race, the second post will stall the IO thread long enough so that we'll
-  // lose the race and crash.  The first stall is just to give the UI thread
-  // a chance to get the second stall onto the IO thread queue after the cancel
-  // message created by Shutdown and before the notification callback
-  // created by the IO thread in canceling the request.
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&base::PlatformThread::Sleep, base::Milliseconds(25)));
   DownloadManagerForShell(shell())->Shutdown();
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&base::PlatformThread::Sleep, base::Milliseconds(25)));
 }
 
 // Try to shutdown just after we release the download file, by delaying
