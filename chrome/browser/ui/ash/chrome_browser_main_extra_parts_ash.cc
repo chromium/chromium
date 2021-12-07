@@ -54,12 +54,12 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/ash/tab_cluster_ui_client.h"
-#include "chrome/browser/ui/ash/tab_scrubber.h"
 #include "chrome/browser/ui/ash/tablet_mode_page_behavior.h"
 #include "chrome/browser/ui/ash/vpn_list_forwarder.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
+#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
@@ -283,8 +283,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
-  // Initialize TabScrubber after the Ash Shell has been initialized.
-  TabScrubber::GetInstance();
+  // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
+  TabScrubberChromeOS::GetInstance();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {

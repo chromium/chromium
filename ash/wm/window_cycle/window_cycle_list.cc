@@ -100,7 +100,7 @@ WindowCycleList::WindowCycleList(const WindowList& windows)
   if (ShouldShowUi()) {
     // Disable the tab scrubber so three finger scrolling doesn't scrub tabs as
     // well.
-    Shell::Get()->shell_delegate()->SetTabScrubberEnabled(false);
+    Shell::Get()->shell_delegate()->SetTabScrubberChromeOSEnabled(false);
 
     if (g_disable_initial_delay) {
       InitWindowCycleView();
@@ -115,7 +115,7 @@ WindowCycleList::~WindowCycleList() {
   if (!ShouldShowUi())
     Shell::Get()->mru_window_tracker()->SetIgnoreActivations(false);
 
-  Shell::Get()->shell_delegate()->SetTabScrubberEnabled(true);
+  Shell::Get()->shell_delegate()->SetTabScrubberChromeOSEnabled(true);
 
   for (auto* window : windows_)
     window->RemoveObserver(this);

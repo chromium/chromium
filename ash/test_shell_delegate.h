@@ -45,7 +45,7 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<DesksTemplatesDelegate> CreateDesksTemplatesDelegate()
       const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
-  void SetTabScrubberEnabled(bool enabled) override;
+  void SetTabScrubberChromeOSEnabled(bool enabled) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
   void BindMultiDeviceSetup(

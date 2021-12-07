@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/tab_scrubber.h"
+#include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 
 #include <stdint.h>
 
 #include <algorithm>
 
-#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
@@ -25,18 +24,23 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#endif
+
 // static
-TabScrubber* TabScrubber::GetInstance() {
-  static TabScrubber* instance = nullptr;
+TabScrubberChromeOS* TabScrubberChromeOS::GetInstance() {
+  static TabScrubberChromeOS* instance = nullptr;
   if (!instance)
-    instance = new TabScrubber();
+    instance = new TabScrubberChromeOS();
   return instance;
 }
 
 // static
-gfx::Point TabScrubber::GetStartPoint(TabStrip* tab_strip,
-                                      int index,
-                                      TabScrubber::Direction direction) {
+gfx::Point TabScrubberChromeOS::GetStartPoint(
+    TabStrip* tab_strip,
+    int index,
+    TabScrubberChromeOS::Direction direction) {
   const Tab* tab = tab_strip->tab_at(index);
   gfx::Rect tab_bounds = tab->GetMirroredBounds();
 
@@ -63,27 +67,26 @@ gfx::Point TabScrubber::GetStartPoint(TabStrip* tab_strip,
   return gfx::Point(x, tab_bounds.CenterPoint().y());
 }
 
-bool TabScrubber::IsActivationPending() {
+bool TabScrubberChromeOS::IsActivationPending() {
   return activate_timer_.IsRunning();
 }
 
-void TabScrubber::SetEnabled(bool enabled) {
+void TabScrubberChromeOS::SetEnabled(bool enabled) {
   enabled_ = enabled;
 }
 
-TabScrubber::TabScrubber() {
-  // TODO(mash): Add window server API to observe swipe gestures. Observing
-  // gestures on browser windows is not sufficient, as this feature works when
-  // the cursor is over the shelf, desktop, etc. https://crbug.com/796366
+TabScrubberChromeOS::TabScrubberChromeOS() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::Shell::Get()->AddPreTargetHandler(this);
+#endif
   BrowserList::AddObserver(this);
 }
 
-TabScrubber::~TabScrubber() {
+TabScrubberChromeOS::~TabScrubberChromeOS() {
   BrowserList::RemoveObserver(this);
 }
 
-void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
+void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   if (!enabled_)
     return;
 
@@ -156,7 +159,7 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   }
 }
 
-void TabScrubber::OnBrowserRemoved(Browser* browser) {
+void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
   if (browser != browser_)
     return;
 
@@ -169,7 +172,7 @@ void TabScrubber::OnBrowserRemoved(Browser* browser) {
   tab_strip_ = nullptr;
 }
 
-void TabScrubber::OnTabAdded(int index) {
+void TabScrubberChromeOS::OnTabAdded(int index) {
   if (highlighted_tab_ == -1)
     return;
 
@@ -177,7 +180,7 @@ void TabScrubber::OnTabAdded(int index) {
     ++highlighted_tab_;
 }
 
-void TabScrubber::OnTabMoved(int from_index, int to_index) {
+void TabScrubberChromeOS::OnTabMoved(int from_index, int to_index) {
   if (highlighted_tab_ == -1)
     return;
 
@@ -189,7 +192,7 @@ void TabScrubber::OnTabMoved(int from_index, int to_index) {
     ++highlighted_tab_;
 }
 
-void TabScrubber::OnTabRemoved(int index) {
+void TabScrubberChromeOS::OnTabRemoved(int index) {
   if (highlighted_tab_ == -1)
     return;
   if (index == highlighted_tab_) {
@@ -200,7 +203,7 @@ void TabScrubber::OnTabRemoved(int index) {
     --highlighted_tab_;
 }
 
-Browser* TabScrubber::GetActiveBrowser() {
+Browser* TabScrubberChromeOS::GetActiveBrowser() {
   Browser* browser = chrome::FindLastActive();
   if (!browser || !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP) ||
       !browser->window()->IsActive()) {
@@ -210,7 +213,8 @@ Browser* TabScrubber::GetActiveBrowser() {
   return browser;
 }
 
-void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
+void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
+                                     float x_offset) {
   DCHECK(browser_view);
   DCHECK(browser_view->browser());
 
@@ -232,7 +236,7 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   tab_strip_->AddObserver(this);
 }
 
-void TabScrubber::FinishScrub(bool activate) {
+void TabScrubberChromeOS::FinishScrub(bool activate) {
   activate_timer_.Stop();
 
   if (browser_ && browser_->window()) {
@@ -260,17 +264,17 @@ void TabScrubber::FinishScrub(bool activate) {
   highlighted_tab_ = -1;
 }
 
-void TabScrubber::ScheduleFinishScrubIfNeeded() {
+void TabScrubberChromeOS::ScheduleFinishScrubIfNeeded() {
   // Tests use a really long delay to ensure RunLoops don't unnecessarily
   // trigger the timer running.
   const base::TimeDelta delay =
       base::Milliseconds(use_default_activation_delay_ ? 200 : 20000);
   activate_timer_.Start(FROM_HERE, delay,
-                        base::BindRepeating(&TabScrubber::FinishScrub,
+                        base::BindRepeating(&TabScrubberChromeOS::FinishScrub,
                                             base::Unretained(this), true));
 }
 
-void TabScrubber::ScrubDirectionChanged(Direction direction) {
+void TabScrubberChromeOS::ScrubDirectionChanged(Direction direction) {
   DCHECK(browser_);
   DCHECK(tab_strip_);
   DCHECK(scrubbing_);
@@ -283,7 +287,7 @@ void TabScrubber::ScrubDirectionChanged(Direction direction) {
   swipe_y_ = start_point.y();
 }
 
-void TabScrubber::UpdateSwipeX(float x_offset) {
+void TabScrubberChromeOS::UpdateSwipeX(float x_offset) {
   DCHECK(browser_);
   DCHECK(tab_strip_);
   DCHECK(scrubbing_);
@@ -316,7 +320,7 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
     swipe_x_ = last_tab_center;
 }
 
-void TabScrubber::UpdateHighlightedTab(Tab* new_tab, int new_index) {
+void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
   DCHECK(scrubbing_);
   DCHECK(new_tab);
 

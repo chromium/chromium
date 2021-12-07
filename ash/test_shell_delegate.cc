@@ -54,7 +54,7 @@ bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {
   return can_go_back_;
 }
 
-void TestShellDelegate::SetTabScrubberEnabled(bool enabled) {
+void TestShellDelegate::SetTabScrubberChromeOSEnabled(bool enabled) {
   tab_scrubber_enabled_ = enabled;
 }
 

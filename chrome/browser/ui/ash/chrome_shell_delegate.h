@@ -33,7 +33,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   void OpenKeyboardShortcutHelpPage() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
-  void SetTabScrubberEnabled(bool enabled) override;
+  void SetTabScrubberChromeOSEnabled(bool enabled) override;
   bool AllowDefaultTouchActions(gfx::NativeWindow window) override;
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   bool IsTabDrag(const ui::OSExchangeData& drop_data) override;

@@ -2301,8 +2301,6 @@ static_library("ui") {
       "ash/system_tray_client_impl.h",
       "ash/tab_cluster_ui_client.cc",
       "ash/tab_cluster_ui_client.h",
-      "ash/tab_scrubber.cc",
-      "ash/tab_scrubber.h",
       "ash/tablet_mode_page_behavior.cc",
       "ash/tablet_mode_page_behavior.h",
       "ash/test_ime_controller.cc",
@@ -3128,6 +3126,8 @@ static_library("ui") {
       "views/frame/top_controls_slide_controller_chromeos.h",
       "views/platform_keys_certificate_selector_chromeos.cc",
       "views/platform_keys_certificate_selector_chromeos.h",
+      "views/tabs/tab_scrubber_chromeos.cc",
+      "views/tabs/tab_scrubber_chromeos.h",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
     ]

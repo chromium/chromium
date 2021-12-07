@@ -68,7 +68,7 @@ class ASH_EXPORT ShellDelegate {
   virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 
   // Sets the tab scrubber |enabled_| field to |enabled|.
-  virtual void SetTabScrubberEnabled(bool enabled) = 0;
+  virtual void SetTabScrubberChromeOSEnabled(bool enabled) = 0;
 
   // Returns true if |window| allows default touch behaviors. If false, it means
   // no default touch behavior is allowed (i.e., the touch action of window is
