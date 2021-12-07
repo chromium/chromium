@@ -850,7 +850,7 @@ InputMethodEngine* GetEngine(content::BrowserContext* browser_context,
 }
 
 InputImeEventRouter::InputImeEventRouter(Profile* profile)
-    : InputImeEventRouterBase(profile) {}
+    : profile_(profile) {}
 
 InputImeEventRouter::~InputImeEventRouter() = default;
 

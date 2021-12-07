@@ -1071,8 +1071,6 @@ static_library("extensions") {
       "api/input_ime/input_ime_api.h",
       "api/input_ime/input_ime_api_chromeos.cc",
       "api/input_ime/input_ime_api_chromeos.h",
-      "api/input_ime/input_ime_event_router_base.cc",
-      "api/input_ime/input_ime_event_router_base.h",
       "api/media_perception_private/media_perception_api_delegate_chromeos.cc",
       "api/media_perception_private/media_perception_api_delegate_chromeos.h",
       "api/networking_private/networking_private_ui_delegate_chromeos.cc",

@@ -9,15 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/extensions/api/input_ime/input_ime_event_router_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/common/extensions/api/input_ime/input_components_handler.h"
 #include "extensions/browser/extension_function.h"
-
-namespace ash {
-namespace input_method {
-class InputMethodEngine;
-}  // namespace input_method
-}  // namespace ash
 
 namespace extensions {
 
@@ -192,14 +186,14 @@ class InputMethodPrivateGetCompositionBoundsFunction
   ResponseAction Run() override;
 };
 
-class InputImeEventRouter : public InputImeEventRouterBase {
+class InputImeEventRouter {
  public:
   explicit InputImeEventRouter(Profile* profile);
 
   InputImeEventRouter(const InputImeEventRouter&) = delete;
   InputImeEventRouter& operator=(const InputImeEventRouter&) = delete;
 
-  ~InputImeEventRouter() override;
+  ~InputImeEventRouter();
 
   bool RegisterImeExtension(
       const std::string& extension_id,
@@ -208,9 +202,11 @@ class InputImeEventRouter : public InputImeEventRouterBase {
 
   ash::input_method::InputMethodEngine* GetEngine(
       const std::string& extension_id);
+
+  // Gets the input method engine if the extension is active.
   ash::input_method::InputMethodEngine* GetEngineIfActive(
       const std::string& extension_id,
-      std::string* error) override;
+      std::string* error);
 
   std::string GetUnloadedExtensionId() const {
     return unloaded_component_extension_id_;
@@ -220,12 +216,16 @@ class InputImeEventRouter : public InputImeEventRouterBase {
     unloaded_component_extension_id_ = extension_id;
   }
 
+  Profile* GetProfile() const { return profile_; }
+
  private:
   // The engine map from extension_id to an engine.
   std::map<std::string, std::unique_ptr<ash::input_method::InputMethodEngine>>
       engine_map_;
   // The first party ime extension which is unloaded unexpectedly.
   std::string unloaded_component_extension_id_;
+
+  Profile* profile_;
 };
 
 }  // namespace extensions
