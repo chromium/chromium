@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/histogram_macros.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -852,7 +853,7 @@ bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
     // it will end up being the same and therefore a layout may not be
     // triggered. This can cause mini views not to show up at all. We must
     // guarantee that a layout will always occur by invalidating the layout.
-    // See https://crbug.com/1056371 for more details.
+    // See crbug.com/1056371 for more details.
     desks_bar_view_->InvalidateLayout();
     desks_widget_->SetBounds(desks_widget_bounds);
     return true;
@@ -1772,6 +1773,10 @@ void OverviewGrid::RefreshNoWindowsWidgetBounds(bool animate) {
 }
 
 void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
+  // TODO(crbug.com/1275282): The button should be updated whenever the
+  // overview grid changes, i.e. switches between active desks and/or the
+  // templates grid. This will be needed when we make it so that switching desks
+  // keeps us in overview mode.
   if (!desks_templates_util::AreDesksTemplatesEnabled())
     return;
 
@@ -1802,9 +1807,11 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   save_desk_as_template_widget_->Show();
 
   // Disable the create templates button if the current number of templates has
-  // reached the max.
+  // reached the max or the current desk has only unsupported apps.
   auto* presenter = DesksTemplatesPresenter::Get();
-  if (presenter->GetEntryCount() >= presenter->GetMaxEntryCount()) {
+  auto* desk = DesksController::Get()->active_desk();
+  if (presenter->GetEntryCount() >= presenter->GetMaxEntryCount() ||
+      desk->num_supported_windows() == 0) {
     auto* button = static_cast<PillButton*>(
         save_desk_as_template_widget_->GetContentsView());
     button->SetState(views::Button::STATE_DISABLED);

@@ -1170,6 +1170,24 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
   ASSERT_EQ(1ul, GetAllEntries().size());
 }
 
+// Tests that the save desk as template button is disabled when all windows on
+// the desk are unsupported.
+TEST_F(DesksTemplatesTest, AllUnsupportedAppsDisablesSaveTemplates) {
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+
+  // Use `CreateTestWindow` instead of `CreateAppWindow`, which by default
+  // creates a supported window.
+  auto test_window = CreateTestWindow();
+
+  EXPECT_EQ(0, DesksController::Get()->active_desk()->num_supported_windows());
+
+  ToggleOverview();
+
+  auto* save_template = static_cast<PillButton*>(
+      GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
+  EXPECT_EQ(views::Button::STATE_DISABLED, save_template->GetState());
+}
+
 // Tests the mouse and touch hover behavior on the template item view.
 TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
   auto test_window = CreateAppWindow();

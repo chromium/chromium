@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -283,6 +284,14 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
 
 void Desk::AddWindowToDesk(aura::Window* window) {
   DCHECK(!base::Contains(windows_, window));
+
+  // Increment `num_supported_windows_` if the window is supported.
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  if (delegate && delegate->IsWindowSupportedForDeskTemplate(window) &&
+      !wm::GetTransientParent(window)) {
+    num_supported_windows_++;
+  }
+
   windows_.push_back(window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
   // there in the first place. Also don't refresh for visible on all desks
@@ -305,6 +314,14 @@ void Desk::AddWindowToDesk(aura::Window* window) {
 
 void Desk::RemoveWindowFromDesk(aura::Window* window) {
   DCHECK(base::Contains(windows_, window));
+
+  // Decrement `num_supported_windows_` if the window was supported.
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  if (delegate && delegate->IsWindowSupportedForDeskTemplate(window) &&
+      !wm::GetTransientParent(window)) {
+    num_supported_windows_--;
+  }
+
   base::Erase(windows_, window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
   // there in the first place. Also don't refresh for visible on all desks

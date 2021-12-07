@@ -4972,6 +4972,31 @@ TEST_F(DesksTest, NewDeskButton) {
   EXPECT_TRUE(new_desk_button->GetEnabled());
 }
 
+TEST_F(DesksTest, AddRemoveSupportedWindows) {
+  auto* controller = DesksController::Get();
+
+  // Create a desk other than the default initial desk.
+  NewDesk();
+
+  Desk* desk_1 = controller->desks()[0].get();
+
+  // Create 3 supported windows on desk_1.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto win2 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+
+  // Expect `num_supported_windows_` to be 3.
+  EXPECT_EQ(3, desk_1->num_supported_windows());
+
+  // Close the supported windows.
+  win0.reset();
+  win1.reset();
+  win2.reset();
+
+  // Expect `num_supported_windows_` to be 0.
+  EXPECT_EQ(0, desk_1->num_supported_windows());
+}
+
 TEST_F(DesksTest, ZeroStateDeskButtonText) {
   UpdateDisplay("1600x1200");
   EnterOverview();
