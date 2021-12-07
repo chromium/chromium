@@ -86,7 +86,7 @@ const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
       return kBorealisAppsCountHistogramName;
     case apps::mojom::AppType::kSystemWeb:
       return kSystemWebAppsCountHistogramName;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       return kStandaloneBrowserExtensionCountHistogramName;
   }
 }

@@ -254,7 +254,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     DCHECK(IsChromeApp(extension));
     apps::mojom::AppPtr app = apps::mojom::App::New();
 
-    app->app_type = apps::mojom::AppType::kStandaloneBrowserExtension;
+    app->app_type = apps::mojom::AppType::kStandaloneBrowserChromeApp;
     app->app_id = lacros_extension_apps_utility::MuxId(profile_, extension);
     app->readiness = readiness;
     app->name = extension->name();

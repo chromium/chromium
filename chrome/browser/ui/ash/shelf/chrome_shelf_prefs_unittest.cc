@@ -242,7 +242,7 @@ TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
   shelf_prefs_->app_type_map_[kAshChromeAppId] =
       apps::mojom::AppType::kChromeApp;
   shelf_prefs_->app_type_map_[kLacrosChromeAppIdWithUsualPrefix] =
-      apps::mojom::AppType::kStandaloneBrowserExtension;
+      apps::mojom::AppType::kStandaloneBrowserChromeApp;
 
   std::vector<ash::ShelfID> pinned_apps =
       shelf_prefs_->GetPinnedAppsFromSync(nullptr);

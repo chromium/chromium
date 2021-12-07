@@ -27,7 +27,7 @@ enum class AppType {
   kRemote = 9,             // Remote app.
   kBorealis = 10,          // Borealis app, see go/borealis-app.
   kSystemWeb = 11,         // System web app.
-  kStandaloneBrowserExtension = 12,  // Extension based apps hosted in Lacros.
+  kStandaloneBrowserChromeApp = 12,  // Chrome app hosted in Lacros.
 };
 
 // Whether an app is ready to launch, i.e. installed.

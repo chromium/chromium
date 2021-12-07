@@ -99,7 +99,7 @@ enum AppType {
   kWeb,           // Web app.
   kSystemWeb,     // System web app.
   [MinVersion=1]
-  kStandaloneBrowserExtension,     // Extension based app.
+  kStandaloneBrowserChromeApp,     // Chrome app.
 };
 
 // Whether an app is ready to launch, i.e. installed.

@@ -61,7 +61,7 @@ em::AppInfo::AppType ExtractAppType(const apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kPluginVm:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_PLUGINVM;
     case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_EXTENSION;
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:

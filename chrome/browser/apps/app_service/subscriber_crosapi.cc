@@ -25,7 +25,7 @@ bool Accepts(apps::mojom::AppType app_type) {
          app_type == apps::mojom::AppType::kArc ||
          app_type == apps::mojom::AppType::kWeb ||
          app_type == apps::mojom::AppType::kSystemWeb ||
-         app_type == apps::mojom::AppType::kStandaloneBrowserExtension;
+         app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp;
 }
 
 bool Accepts(const std::vector<apps::mojom::AppPtr>& deltas) {

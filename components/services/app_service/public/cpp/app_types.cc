@@ -54,8 +54,8 @@ AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type) {
       return AppType::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return AppType::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return AppType::kStandaloneBrowserExtension;
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      return AppType::kStandaloneBrowserChromeApp;
   }
 }
 

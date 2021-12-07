@@ -26,14 +26,14 @@ StandaloneBrowserExtensionApps::StandaloneBrowserExtensionApps(
     return;
   }
   PublisherBase::Initialize(app_service,
-                            apps::mojom::AppType::kStandaloneBrowserExtension);
+                            apps::mojom::AppType::kStandaloneBrowserChromeApp);
 }
 
 StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
 
 void StandaloneBrowserExtensionApps::RegisterChromeAppsCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
-  RegisterPublisher(AppType::kStandaloneBrowserExtension);
+  RegisterPublisher(AppType::kStandaloneBrowserChromeApp);
 
   // At the moment the app service publisher will only accept one client
   // publishing apps to ash chrome. Any extra clients will be ignored.
@@ -105,7 +105,7 @@ void StandaloneBrowserExtensionApps::Connect(
   }
 
   subscribers_.Get(id)->OnApps(
-      std::move(apps), apps::mojom::AppType::kStandaloneBrowserExtension,
+      std::move(apps), apps::mojom::AppType::kStandaloneBrowserChromeApp,
       true /* should_notify_initialized */);
 }
 

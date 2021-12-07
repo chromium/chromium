@@ -62,7 +62,7 @@ Polymer({
         return AppManagementEntryPoint.MainViewArc;
       case AppType.kChromeApp:
       case AppType.kStandaloneBrowser:
-      case AppType.kStandaloneBrowserExtension:
+      case AppType.kStandaloneBrowserChromeApp:
         // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
         // Lacros-hosted chrome-apps.
         return AppManagementEntryPoint.MainViewChromeApp;

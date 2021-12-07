@@ -134,7 +134,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       return ash::EXTENSION_APP;
     case apps::mojom::AppType::kStandaloneBrowser:
       return ash::LACROS;

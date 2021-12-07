@@ -62,7 +62,7 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
     case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       // Chrome apps and Extensions both get called file_handler, even though
       // extensions really have file_browser_handler. It doesn't matter anymore
       // because both are executed through App Service, which can tell the
@@ -175,7 +175,7 @@ void FindAppServiceTasks(Profile* profile,
           app_type == apps::mojom::AppType::kWeb ||
           app_type == apps::mojom::AppType::kSystemWeb ||
           app_type == apps::mojom::AppType::kChromeApp ||
-          app_type == apps::mojom::AppType::kStandaloneBrowserExtension))
+          app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp))
       continue;
 
     if (app_type == apps::mojom::AppType::kWeb ||

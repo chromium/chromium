@@ -70,7 +70,7 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
     app_type_name_map->insert(apps::AppTypeName::kBorealis);
     app_type_name_map->insert(apps::AppTypeName::kSystemWeb);
     app_type_name_map->insert(apps::AppTypeName::kChromeBrowser);
-    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserExtension);
+    app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserChromeApp);
   }
   return *app_type_name_map;
 }
@@ -136,8 +136,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeNameV2::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
   }
 }
 
@@ -182,8 +182,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeNameV2::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeNameV2::kStandaloneBrowserExtension;
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
   }
 }
 
@@ -240,8 +240,8 @@ constexpr char kRemoteHistogramName[] = "RemoteApp";
 constexpr char kBorealisHistogramName[] = "Borealis";
 constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
 constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
-constexpr char kStandaloneBrowserExtensionHistogramName[] =
-    "StandaloneBrowserExtension";
+constexpr char kStandaloneBrowserChromeAppHistogramName[] =
+    "StandaloneBrowserChromeApp";
 
 constexpr char kChromeAppTabHistogramName[] = "ChromeAppTab";
 constexpr char kChromeAppWindowHistogramName[] = "ChromeAppWindow";
@@ -276,8 +276,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kSystemWebAppHistogramName;
     case apps::AppTypeName::kChromeBrowser:
       return kChromeBrowserHistogramName;
-    case apps::AppTypeName::kStandaloneBrowserExtension:
-      return kStandaloneBrowserExtensionHistogramName;
+    case apps::AppTypeName::kStandaloneBrowserChromeApp:
+      return kStandaloneBrowserChromeAppHistogramName;
   }
 }
 
@@ -313,8 +313,8 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kSystemWebAppHistogramName;
     case apps::AppTypeNameV2::kChromeBrowser:
       return kChromeBrowserHistogramName;
-    case apps::AppTypeNameV2::kStandaloneBrowserExtension:
-      return kStandaloneBrowserExtensionHistogramName;
+    case apps::AppTypeNameV2::kStandaloneBrowserChromeApp:
+      return kStandaloneBrowserChromeAppHistogramName;
   }
 }
 
@@ -1020,7 +1020,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
     case apps::mojom::AppType::kRemote:
       return ukm::kInvalidSourceId;
   }

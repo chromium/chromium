@@ -830,7 +830,7 @@ void NoteTakingHelper::OnShutdown(extensions::ExtensionRegistry* registry) {
 void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
   bool is_web_app = update.AppType() == apps::mojom::AppType::kWeb;
   bool is_chrome_app =
-      update.AppType() == apps::mojom::AppType::kStandaloneBrowserExtension;
+      update.AppType() == apps::mojom::AppType::kStandaloneBrowserChromeApp;
   if (!is_web_app && !is_chrome_app)
     return;
   // App was added, removed, enabled, or disabled.

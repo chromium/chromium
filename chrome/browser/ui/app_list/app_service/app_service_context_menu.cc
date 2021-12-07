@@ -122,7 +122,7 @@ AppServiceContextMenu::AppServiceContextMenu(
                         : apps::mojom::AppType::kUnknown;
       });
 
-  if (app_type_ == apps::mojom::AppType::kStandaloneBrowserExtension) {
+  if (app_type_ == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     standalone_browser_extension_menu_ =
         std::make_unique<StandaloneBrowserExtensionAppContextMenu>(
             app_id, StandaloneBrowserExtensionAppContextMenu::Source::kAppList);
@@ -139,7 +139,7 @@ void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
 
   // StandaloneBrowserExtension handles its own context menus. Forward to that
   // class.
-  if (app_type_ == apps::mojom::AppType::kStandaloneBrowserExtension) {
+  if (app_type_ == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     standalone_browser_extension_menu_->GetMenuModel(std::move(callback));
     return;
   }

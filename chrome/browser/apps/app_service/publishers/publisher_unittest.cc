@@ -249,7 +249,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     StandaloneBrowserExtensionApps* chrome_apps =
         StandaloneBrowserExtensionAppsFactory::GetForProfile(profile());
     std::vector<mojom::AppPtr> apps;
-    apps.push_back(MakeMojomApp(mojom::AppType::kStandaloneBrowserExtension,
+    apps.push_back(MakeMojomApp(mojom::AppType::kStandaloneBrowserChromeApp,
                                 /*app_id=*/"a",
                                 /*name=*/"TestApp", mojom::Readiness::kReady));
     chrome_apps->OnApps(std::move(apps));
@@ -277,7 +277,7 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
   ExtensionAppsOnApps();
-  VerifyApp(AppType::kStandaloneBrowserExtension, "a", "TestApp",
+  VerifyApp(AppType::kStandaloneBrowserChromeApp, "a", "TestApp",
             Readiness::kReady);
 }
 

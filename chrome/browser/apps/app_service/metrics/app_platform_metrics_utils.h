@@ -34,11 +34,11 @@ enum class AppTypeName {
   kBorealis = 10,
   kSystemWeb = 11,
   kChromeBrowser = 12,
-  kStandaloneBrowserExtension = 13,
+  kStandaloneBrowserChromeApp = 13,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
+  kMaxValue = kStandaloneBrowserChromeApp,
 };
 
 // This is used for logging, so do not remove or reorder existing entries.
@@ -63,11 +63,11 @@ enum class AppTypeNameV2 {
   kBorealis = 12,
   kSystemWeb = 13,
   kChromeBrowser = 14,
-  kStandaloneBrowserExtension = 15,
+  kStandaloneBrowserChromeApp = 15,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
+  kMaxValue = kStandaloneBrowserChromeApp,
 };
 
 extern const base::TimeDelta kMinDuration;

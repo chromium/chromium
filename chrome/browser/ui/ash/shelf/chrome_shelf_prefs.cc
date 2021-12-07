@@ -649,7 +649,7 @@ std::string ChromeShelfPrefs::GetShelfId(const std::string& sync_id) {
 
   // Now we have to check if the sync id corresponds to a lacros extension app.
   if (GetAppType(transformed_app_id) ==
-      apps::mojom::AppType::kStandaloneBrowserExtension) {
+      apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     return transformed_app_id;
   }
 
@@ -667,7 +667,7 @@ std::string ChromeShelfPrefs::GetSyncId(const std::string& shelf_id) {
   base::ReplaceFirstSubstringAfterOffset(&prefix_removed, /*start_offset=*/0,
                                          kLacrosChromeAppPrefix, "");
   apps::mojom::AppType type = GetAppType(shelf_id);
-  if (type == apps::mojom::AppType::kStandaloneBrowserExtension) {
+  if (type == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     return prefix_removed;
   }
 

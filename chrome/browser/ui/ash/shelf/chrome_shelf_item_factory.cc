@@ -48,7 +48,7 @@ bool ChromeShelfItemFactory::CreateShelfItemForAppId(
     return true;
   }
 
-  if (app_type == apps::mojom::AppType::kStandaloneBrowserExtension) {
+  if (app_type == apps::mojom::AppType::kStandaloneBrowserChromeApp) {
     *delegate =
         std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(
             shelf_id);

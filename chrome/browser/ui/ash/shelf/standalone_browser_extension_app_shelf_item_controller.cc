@@ -49,7 +49,7 @@ StandaloneBrowserExtensionAppShelfItemController::
     apps::IconKey icon_key;
     auto icon_type = apps::IconType::kStandard;
     icon_loader_releaser_ = proxy->LoadIconFromIconKey(
-        apps::AppType::kStandaloneBrowserExtension, shelf_id.app_id, icon_key,
+        apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id, icon_key,
         icon_type, kIconSize, kAllowPlaceholderIcon,
         base::BindOnce(
             &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,
@@ -58,7 +58,7 @@ StandaloneBrowserExtensionAppShelfItemController::
     apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
     auto icon_type = apps::mojom::IconType::kStandard;
     icon_loader_releaser_ = proxy->LoadIconFromIconKey(
-        apps::mojom::AppType::kStandaloneBrowserExtension, shelf_id.app_id,
+        apps::mojom::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,
         std::move(icon_key), icon_type, kIconSize, kAllowPlaceholderIcon,
         apps::MojomIconValueToIconValueCallback(base::BindOnce(
             &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,

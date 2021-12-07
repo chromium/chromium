@@ -251,7 +251,7 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kSystem,
         apps::mojom::InstallSource::kUnknown));
     deltas.push_back(MakeApp(
-        /*app_id=*/"lcr", apps::mojom::AppType::kStandaloneBrowserExtension, "",
+        /*app_id=*/"lcr", apps::mojom::AppType::kStandaloneBrowserChromeApp, "",
         apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser,
         apps::mojom::InstallSource::kChromeWebStore));
     deltas.push_back(MakeApp(
@@ -366,20 +366,20 @@ class AppPlatformMetricsServiceTest : public testing::Test {
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserExtension),
+            AppTypeName::kStandaloneBrowserChromeApp),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserExtension,
+            AppTypeName::kStandaloneBrowserChromeApp,
             apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserExtension),
+            AppTypeName::kStandaloneBrowserChromeApp),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserExtension,
+            AppTypeName::kStandaloneBrowserChromeApp,
             apps::mojom::InstallReason::kUser),
         /*expected_count=*/1);
     histogram_tester_.ExpectTotalCount(

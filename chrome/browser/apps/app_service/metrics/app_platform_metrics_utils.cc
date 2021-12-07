@@ -189,8 +189,8 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
       return apps::AppTypeName::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      return apps::AppTypeName::kStandaloneBrowserChromeApp;
   }
 }
 
@@ -221,7 +221,7 @@ bool ShouldRecordUkmForAppTypeName(AppType app_type) {
     case AppType::kMacOs:
     case AppType::kPluginVm:
     case AppType::kStandaloneBrowser:
-    case AppType::kStandaloneBrowserExtension:
+    case AppType::kStandaloneBrowserChromeApp:
     case AppType::kRemote:
       return false;
   }
@@ -277,8 +277,8 @@ AppTypeName GetAppTypeName(Profile* profile,
       return apps::AppTypeName::kBorealis;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserExtension:
-      return apps::AppTypeName::kStandaloneBrowserExtension;
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      return apps::AppTypeName::kStandaloneBrowserChromeApp;
   }
 }
 
