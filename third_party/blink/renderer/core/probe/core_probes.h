@@ -184,14 +184,14 @@ CORE_EXPORT void AsyncTaskScheduled(ExecutionContext*,
                                     const StringView& name,
                                     AsyncTaskId*);
 // DEPRECATED: Use `AsyncTaskContext::Schedule` instead and manually call
-// `probes::BreakableLocation`.
+// `probe::BreakableLocation`.
 CORE_EXPORT void AsyncTaskScheduledBreakable(ExecutionContext*,
                                              const char* name,
                                              AsyncTaskId*);
 // DEPRECATED: Use `AsyncTaskContext::Cancel` instead.
 CORE_EXPORT void AsyncTaskCanceled(ExecutionContext*, AsyncTaskId*);
 // DEPRECATED: Use `AsyncTaskContext::Cancel` instead and manually call
-// `probes::BreakableLocation`.
+// `probe::BreakableLocation`.
 CORE_EXPORT void AsyncTaskCanceledBreakable(ExecutionContext*,
                                             const char* name,
                                             AsyncTaskId*);
