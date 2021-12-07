@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/components/attestation/attestation_flow.h"
+#include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -312,6 +313,15 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
+  // Currently reven devices don't support sever-backed state keys, but they
+  // also don't support FRE/AutoRE so don't block enrollment on the
+  // availablility of state keys.
+  // TODO(b/208705225): Remove this special case when reven supports state keys.
+  if (ash::switches::IsRevenBranding()) {
+    LOG(WARNING) << "Skipping state keys.";
+    HandleStateKeysResult({});
+    return;
+  }
   LOG(WARNING) << "Requesting state keys.";
   state_keys_broker_->RequestStateKeys(
       base::BindOnce(&EnrollmentHandler::HandleStateKeysResult,
@@ -455,7 +465,7 @@ void EnrollmentHandler::HandleStateKeysResult(
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
-  LOG(WARNING) << "State keys generated.";
+  LOG(WARNING) << "State keys generated, success=" << !state_keys.empty();
   SetStep(STEP_LOADING_STORE);
   StartRegistration();
 }

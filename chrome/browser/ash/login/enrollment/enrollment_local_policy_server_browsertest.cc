@@ -266,7 +266,9 @@ class AutoEnrollmentNoStateKeys : public AutoEnrollmentWithStatistics {
   void SetUpInProcessBrowserTestFixture() override {
     AutoEnrollmentWithStatistics::SetUpInProcessBrowserTestFixture();
     // Session manager client is initialized by DeviceStateMixin.
-    FakeSessionManagerClient::Get()->set_force_state_keys_missing(true);
+    FakeSessionManagerClient::Get()->set_state_keys_handling(
+        FakeSessionManagerClient::ServerBackedStateKeysHandling::
+            kForceNotAvailable);
   }
 };
 
@@ -348,8 +350,50 @@ class InitialEnrollmentTest : public EnrollmentLocalPolicyServerBase {
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
+// Requesting state keys hangs forever, but that should not matter because we're
+// running on reven.
+class EnrollmentOnRevenWithNoStateKeysResponse
+    : public EnrollmentLocalPolicyServerBase {
+ public:
+  EnrollmentOnRevenWithNoStateKeysResponse() = default;
+
+  EnrollmentOnRevenWithNoStateKeysResponse(
+      const EnrollmentOnRevenWithNoStateKeysResponse&) = delete;
+  EnrollmentOnRevenWithNoStateKeysResponse& operator=(
+      const EnrollmentOnRevenWithNoStateKeysResponse&) = delete;
+
+  ~EnrollmentOnRevenWithNoStateKeysResponse() override = default;
+
+  // EnrollmentLocalPolicyServerBase:
+  void SetUpInProcessBrowserTestFixture() override {
+    EnrollmentLocalPolicyServerBase::SetUpInProcessBrowserTestFixture();
+    // Session manager client is initialized by DeviceStateMixin.
+    FakeSessionManagerClient::Get()->set_state_keys_handling(
+        FakeSessionManagerClient::ServerBackedStateKeysHandling::kNoResponse);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnrollmentLocalPolicyServerBase::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitch(switches::kRevenBranding);
+  }
+};
+
 // Simple manual enrollment.
 IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase, ManualEnrollment) {
+  TriggerEnrollmentAndSignInSuccessfully();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
+}
+
+// The test case is the same as EnrollmentLocalPolicyServerBase.ManualEnrollment
+// but the environment is different (simulate reven board, simulate state keys
+// not being available).
+IN_PROC_BROWSER_TEST_F(EnrollmentOnRevenWithNoStateKeysResponse,
+                       ManualEnrollment) {
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);

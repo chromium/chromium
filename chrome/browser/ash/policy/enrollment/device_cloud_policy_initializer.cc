@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -249,10 +249,15 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     return;
   }
 
+  // Currently reven devices don't support sever-backed state keys, but they
+  // also don't support FRE/AutoRE so don't block initialization of device
+  // policy on state keys being available on reven.
+  // TODO(b/208705225): Remove this special case when reven supports state keys.
+  const bool allow_init_without_state_keys = ash::switches::IsRevenBranding();
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we could drop the `state_keys_broker_->available()` requirement.
   if (policy_store_->is_initialized() && policy_store_->has_policy() &&
-      state_keys_broker_->available()) {
+      (allow_init_without_state_keys || state_keys_broker_->available())) {
     StartConnection(CreateClient(enterprise_service_));
   }
 }
