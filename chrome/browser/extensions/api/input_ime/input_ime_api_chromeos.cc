@@ -438,61 +438,67 @@ class ImeObserverChromeOS
       const std::string& engine_id,
       int context_id,
       const IMEEngineHandlerInterface::InputContext& context) override {
-    if (extension_id_.empty())
+    if (extension_id_.empty()) {
       return;
+    }
 
     // There is both a public and private OnFocus event. The private OnFocus
     // event is only for ChromeOS and contains additional information about pen
     // inputs. We ensure that we only trigger one OnFocus event.
     if (ExtensionHasListener(input_method_private::OnFocus::kEventName)) {
-      input_method_private::InputContext input_context;
-      input_context.context_id = context_id;
-      input_context.type = input_method_private::ParseInputContextType(
-          ConvertInputContextType(context));
-      input_context.mode = input_method_private::ParseInputModeType(
+      input_method_private::InputContext private_api_input_context;
+      private_api_input_context.context_id = context_id;
+      private_api_input_context.type =
+          input_method_private::ParseInputContextType(
+              ConvertInputContextType(context));
+      private_api_input_context.mode = input_method_private::ParseInputModeType(
           ConvertInputContextMode(context));
-      input_context.auto_correct = ConvertInputContextAutoCorrect(context);
-      input_context.auto_complete = ConvertInputContextAutoComplete(context);
-      input_context.auto_capitalize =
+      private_api_input_context.auto_correct =
+          ConvertInputContextAutoCorrect(context.flags);
+      private_api_input_context.auto_complete =
+          ConvertInputContextAutoComplete(context.flags);
+      private_api_input_context.auto_capitalize =
           ConvertInputContextAutoCapitalizePrivate(context.flags);
-      input_context.spell_check = ConvertInputContextSpellCheck(context);
-      input_context.has_been_password = ConvertHasBeenPassword(context);
-      input_context.should_do_learning = context.should_do_learning;
-      input_context.focus_reason = input_method_private::ParseFocusReason(
-          ConvertInputContextFocusReason(context));
+      private_api_input_context.spell_check =
+          ConvertInputContextSpellCheck(context.flags);
+      private_api_input_context.has_been_password =
+          ConvertHasBeenPassword(context);
+      private_api_input_context.should_do_learning = context.should_do_learning;
+      private_api_input_context.focus_reason =
+          input_method_private::ParseFocusReason(
+              ConvertInputContextFocusReason(context));
 
       // Populate app key for private OnFocus.
       // TODO(b/163645900): Add app type later.
       ash::input_method::TextFieldContextualInfo info;
       ash::input_method::GetTextFieldAppTypeAndKey(info);
-      input_context.app_key = std::make_unique<std::string>(info.app_key);
+      private_api_input_context.app_key =
+          std::make_unique<std::string>(info.app_key);
 
-      auto args(input_method_private::OnFocus::Create(input_context));
-
+      auto args(
+          input_method_private::OnFocus::Create(private_api_input_context));
       DispatchEventToExtension(
           extensions::events::INPUT_METHOD_PRIVATE_ON_FOCUS,
           input_method_private::OnFocus::kEventName, std::move(args));
-      return;
+    } else if (HasListener(input_ime::OnFocus::kEventName)) {
+      input_ime::InputContext public_api_input_context;
+      public_api_input_context.context_id = context_id;
+      public_api_input_context.type =
+          input_ime::ParseInputContextType(ConvertInputContextType(context));
+      public_api_input_context.auto_correct =
+          ConvertInputContextAutoCorrect(context.flags);
+      public_api_input_context.auto_complete =
+          ConvertInputContextAutoComplete(context.flags);
+      public_api_input_context.auto_capitalize =
+          ConvertInputContextAutoCapitalizePublic(context.flags);
+      public_api_input_context.spell_check =
+          ConvertInputContextSpellCheck(context.flags);
+      public_api_input_context.should_do_learning = context.should_do_learning;
+
+      auto args(input_ime::OnFocus::Create(public_api_input_context));
+      DispatchEventToExtension(extensions::events::INPUT_IME_ON_FOCUS,
+                               input_ime::OnFocus::kEventName, std::move(args));
     }
-
-    if (extension_id_.empty() || !HasListener(input_ime::OnFocus::kEventName))
-      return;
-
-    input_ime::InputContext context_value;
-    context_value.context_id = context_id;
-    context_value.type =
-        input_ime::ParseInputContextType(ConvertInputContextType(context));
-    context_value.auto_correct = ConvertInputContextAutoCorrect(context);
-    context_value.auto_complete = ConvertInputContextAutoComplete(context);
-    context_value.auto_capitalize =
-        ConvertInputContextAutoCapitalizePublic(context);
-    context_value.spell_check = ConvertInputContextSpellCheck(context);
-    context_value.should_do_learning = context.should_do_learning;
-
-    auto args(input_ime::OnFocus::Create(context_value));
-
-    DispatchEventToExtension(extensions::events::INPUT_IME_ON_FOCUS,
-                             input_ime::OnFocus::kEventName, std::move(args));
   }
 
   void OnSurroundingTextChanged(const std::string& component_id,
@@ -691,18 +697,14 @@ class ImeObserverChromeOS
     }
   }
 
-  bool ConvertInputContextAutoCorrect(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
-    if (!GetKeyboardConfig().auto_correct)
-      return false;
-    return !(input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
+  bool ConvertInputContextAutoCorrect(int flags) {
+    return GetKeyboardConfig().auto_correct &&
+           !(flags & ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
   }
 
-  bool ConvertInputContextAutoComplete(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
-    if (!GetKeyboardConfig().auto_complete)
-      return false;
-    return !(input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_OFF);
+  bool ConvertInputContextAutoComplete(int flags) {
+    return GetKeyboardConfig().auto_complete &&
+           !(flags & ui::TEXT_INPUT_FLAG_AUTOCOMPLETE_OFF);
   }
 
   input_method_private::AutoCapitalizeType
@@ -728,11 +730,9 @@ class ImeObserverChromeOS
     return input_method_private::AUTO_CAPITALIZE_TYPE_OFF;
   }
 
-  bool ConvertInputContextSpellCheck(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
-    if (!GetKeyboardConfig().spell_check)
-      return false;
-    return !(input_context.flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
+  bool ConvertInputContextSpellCheck(int flags) {
+    return GetKeyboardConfig().spell_check &&
+           !(flags & ui::TEXT_INPUT_FLAG_SPELLCHECK_OFF);
   }
 
   bool ConvertHasBeenPassword(
@@ -808,7 +808,7 @@ class ImeObserverChromeOS
   }
 
   input_ime::AutoCapitalizeType ConvertInputContextAutoCapitalizePublic(
-      ui::IMEEngineHandlerInterface::InputContext input_context) {
+      int flags) {
     // NOTE: ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE corresponds to Blink's
     // "none" that's a synonym for "off", while
     // input_ime::AUTO_CAPITALIZE_TYPE_NONE auto-generated via API specs means
@@ -816,12 +816,12 @@ class ImeObserverChromeOS
     // emitted as the API specifies a non-falsy enum. So technically there's a
     // bug here; either this impl or the API needs fixing. However, as a public
     // API, the behaviour is left intact for now.
-    if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
+    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_NONE)
       return input_ime::AUTO_CAPITALIZE_TYPE_NONE;
 
-    if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
+    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_CHARACTERS)
       return input_ime::AUTO_CAPITALIZE_TYPE_CHARACTERS;
-    if (input_context.flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
+    if (flags & ui::TEXT_INPUT_FLAG_AUTOCAPITALIZE_WORDS)
       return input_ime::AUTO_CAPITALIZE_TYPE_WORDS;
     // The default value is "sentences".
     return input_ime::AUTO_CAPITALIZE_TYPE_SENTENCES;
