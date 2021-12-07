@@ -43,6 +43,10 @@ class QuickAnswersUiControllerTest : public ChromeQuickAnswersTestBase {
 
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
+
+  // Set up a companion menu before creating the QuickAnswersView.
+  CreateAndShowBasicMenu();
+
   ui_controller()->CreateQuickAnswersView(kDefaultAnchorBoundsInScreen,
                                           "default_title", "default_query",
                                           /*is_internal=*/false);
@@ -51,6 +55,10 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
 
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileConsentViewShowing) {
   EXPECT_FALSE(ui_controller()->is_showing_user_consent_view());
+
+  // Set up a companion menu before creating the QuickAnswersView.
+  CreateAndShowBasicMenu();
+
   ui_controller()->CreateUserConsentView(kDefaultAnchorBoundsInScreen,
                                          std::u16string(), std::u16string());
   EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());

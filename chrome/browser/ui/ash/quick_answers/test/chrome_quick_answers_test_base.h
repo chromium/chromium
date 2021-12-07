@@ -11,6 +11,16 @@ namespace ash {
 class QuickAnswersController;
 }  // namespace ash
 
+namespace ui {
+class SimpleMenuModel;
+}  // namespace ui
+
+namespace views {
+class Label;
+class MenuRunner;
+class Widget;
+}  // namespace views
+
 // Helper class for Quick Answers related tests.
 class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
  public:
@@ -26,7 +36,16 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   void SetUp() override;
   void TearDown() override;
 
+ protected:
+  void CreateAndShowBasicMenu();
+
  private:
+  // Menu.
+  std::unique_ptr<views::Label> menu_delegate_;
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+  std::unique_ptr<views::Widget> menu_parent_;
+
   std::unique_ptr<ash::QuickAnswersController> quick_answers_controller_;
 };
 

@@ -61,6 +61,10 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
     // first.
     if (set_visibility)
       controller()->SetPendingShowQuickAnswers();
+
+    // Set up a companion menu before creating the QuickAnswersView.
+    CreateAndShowBasicMenu();
+
     controller()->MaybeShowQuickAnswers(kDefaultAnchorBoundsInScreen,
                                         kDefaultTitle, {});
   }

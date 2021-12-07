@@ -6,13 +6,14 @@
 
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -331,14 +332,11 @@ void UserConsentView::InitWidget() {
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
 
-  // Parent the widget depending on the context.
+  // Parent the widget to the owner of the menu.
   auto* active_menu_controller = views::MenuController::GetActiveInstance();
-  if (active_menu_controller && active_menu_controller->owner()) {
-    params.parent = active_menu_controller->owner()->GetNativeView();
-    params.child = true;
-  } else {
-    params.context = Shell::Get()->GetRootWindowForNewWindows();
-  }
+  DCHECK(active_menu_controller && active_menu_controller->owner());
+  params.parent = active_menu_controller->owner()->GetNativeView();
+  params.child = true;
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));

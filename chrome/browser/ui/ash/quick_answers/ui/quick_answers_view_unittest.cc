@@ -6,11 +6,7 @@
 
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
-#include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_controller.h"
-#include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -35,18 +31,10 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     ChromeQuickAnswersTestBase::SetUp();
 
     anchor_bounds_ = kDefaultAnchorBoundsInScreen;
-    CreateQuickAnswersView(anchor_bounds_, "default_title",
-                           /*create_menu=*/false);
   }
 
   void TearDown() override {
     quick_answers_view_.reset();
-
-    // Menu.
-    menu_parent_.reset();
-    menu_runner_.reset();
-    menu_model_.reset();
-    menu_delegate_.reset();
 
     ChromeQuickAnswersTestBase::TearDown();
   }
@@ -60,14 +48,12 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
   // Create a QuickAnswersView instance with custom anchor-bounds and
   // title-text.
   void CreateQuickAnswersView(const gfx::Rect anchor_bounds,
-                              const char* title,
-                              bool create_menu) {
+                              const char* title) {
     // Reset existing view if any.
     quick_answers_view_.reset();
 
     // Set up a companion menu before creating the QuickAnswersView.
-    if (create_menu)
-      CreateAndShowBasicMenu();
+    CreateAndShowBasicMenu();
 
     anchor_bounds_ = anchor_bounds;
     auto* ui_controller =
@@ -77,32 +63,15 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
         anchor_bounds_, title, /*is_internal=*/false, ui_controller);
   }
 
-  void CreateAndShowBasicMenu() {
-    menu_delegate_ = std::make_unique<views::Label>();
-    menu_model_ = std::make_unique<ui::SimpleMenuModel>(menu_delegate_.get());
-    menu_model_->AddItem(0, u"Menu item");
-    menu_runner_ = std::make_unique<views::MenuRunner>(
-        menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
-    menu_parent_ = CreateTestWidget();
-    menu_runner_->RunMenuAt(menu_parent_.get(), nullptr, gfx::Rect(),
-                            views::MenuAnchorPosition::kTopLeft,
-                            ui::MENU_SOURCE_MOUSE);
-  }
-
  private:
   std::unique_ptr<QuickAnswersView> quick_answers_view_;
   gfx::Rect anchor_bounds_;
-
-  // Menu.
-  std::unique_ptr<views::Label> menu_delegate_;
-  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-  std::unique_ptr<views::Widget> menu_parent_;
 };
 
 TEST_F(QuickAnswersViewsTest, DefaultLayoutAroundAnchor) {
-  gfx::Rect view_bounds = view()->GetBoundsInScreen();
   gfx::Rect anchor_bounds = GetAnchorBounds();
+  CreateQuickAnswersView(anchor_bounds, "default_title");
+  gfx::Rect view_bounds = view()->GetBoundsInScreen();
 
   // Vertically aligned with anchor.
   EXPECT_EQ(view_bounds.x(), anchor_bounds.x());
@@ -118,7 +87,7 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
   // space above it to show the QuickAnswersView.
   anchor_bounds.set_y(kSmallTop);
 
-  CreateQuickAnswersView(anchor_bounds, "title", /*create_menu=*/false);
+  CreateQuickAnswersView(anchor_bounds, "title");
   gfx::Rect view_bounds = view()->GetBoundsInScreen();
 
   // Anchor is positioned above the view.
@@ -126,17 +95,7 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
 }
 
 TEST_F(QuickAnswersViewsTest, FocusProperties) {
-  // Not focused by default.
-  EXPECT_FALSE(view()->HasFocus());
-
-  // Does not gain focus upon request if no active menu.
-  CHECK(views::MenuController::GetActiveInstance() == nullptr);
-  view()->RequestFocus();
-  EXPECT_FALSE(view()->HasFocus());
-
-  // Set up a companion menu before creating a new view.
-  CreateQuickAnswersView(GetAnchorBounds(), "title",
-                         /*create_menu=*/true);
+  CreateQuickAnswersView(GetAnchorBounds(), "title");
   CHECK(views::MenuController::GetActiveInstance() &&
         views::MenuController::GetActiveInstance()->owner());
 
