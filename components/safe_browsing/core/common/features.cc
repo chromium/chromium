@@ -63,7 +63,7 @@ const base::Feature kConnectorsScanningReportOnlyUI{
     "ConnectorsScanningReportOnlyUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
@@ -247,12 +247,13 @@ std::string GetClientSideDetectionTag() {
 }
 
 std::string GetFileTypePoliciesTag() {
-  if (base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
-    return variations::GetVariationParamValueByFeature(
-        kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
+  if (!base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
+    return "default";
   }
+  std::string tag_value = variations::GetVariationParamValueByFeature(
+      kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
 
-  return "default";
+  return tag_value.empty() ? "default" : tag_value;
 }
 
 }  // namespace safe_browsing

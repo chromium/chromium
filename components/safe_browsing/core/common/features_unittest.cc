@@ -105,4 +105,10 @@ TEST(SafeBrowsingFeatures, FileTypePoliciesTagEnabled) {
   EXPECT_EQ(GetFileTypePoliciesTag(), "45");
 }
 
+TEST(SafeBrowsingFeatures, FileTypePoliciesTagNoParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kFileTypePoliciesTag);
+  EXPECT_EQ(GetFileTypePoliciesTag(), "default");
+}
+
 }  // namespace safe_browsing
