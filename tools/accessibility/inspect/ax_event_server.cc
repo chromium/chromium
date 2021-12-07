@@ -5,7 +5,6 @@
 #include "tools/accessibility/inspect/ax_event_server.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "content/public/browser/ax_inspect_factory.h"
 
 namespace tools {
@@ -22,7 +21,7 @@ AXEventServer::AXEventServer(base::ProcessId pid,
 AXEventServer::~AXEventServer() = default;
 
 void AXEventServer::OnEvent(const std::string& event) const {
-  LOG(INFO) << "[" << base::Time::NowFromSystemTime() << "] " << event;
+  printf("%s\n", event.c_str());
 }
 
 }  // namespace tools
