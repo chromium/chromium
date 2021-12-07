@@ -448,7 +448,7 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-remote-m
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-url-image-hash.html [ Failure ]
 
 # CSS cascade layers
-crbug.com/1095765 external/wpt/css/css-cascade/layer-stylesheet-sharing.html [ Failure ]
+crbug.com/1277637 external/wpt/css/css-cascade/layer-stylesheet-sharing.html [ Failure ]
 
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Skip ]
