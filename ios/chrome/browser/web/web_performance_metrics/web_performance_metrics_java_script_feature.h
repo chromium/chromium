@@ -31,6 +31,11 @@ class WebPerformanceMetricsJavaScriptFeature : public web::JavaScriptFeature {
                                         double frameNavigationStartTime,
                                         double relativeFirstContentfulPaint,
                                         bool is_main_frame);
+
+  // Logs the First Input Delay time relative to each frame in UMA.
+  void LogRelativeFirstInputDelay(double value,
+                                  bool is_main_frame,
+                                  bool loaded_from_cache);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_JAVA_SCRIPT_FEATURE_H_

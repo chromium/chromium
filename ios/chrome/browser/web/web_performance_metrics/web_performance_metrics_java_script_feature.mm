@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 
+#include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -65,16 +66,27 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  absl::optional<double> frame_navigation_start_time =
-      message.body()->FindDoubleKey("frameNavigationStartTime");
-  if (!frame_navigation_start_time) {
-    return;
-  }
+  if (*metric == "FirstContentfulPaint") {
+    absl::optional<double> frame_navigation_start_time =
+        message.body()->FindDoubleKey("frameNavigationStartTime");
+    if (!frame_navigation_start_time) {
+      return;
+    }
 
-  LogRelativeFirstContentfulPaint(value.value(), message.is_main_frame());
-  LogAggregateFirstContentfulPaint(web_state,
-                                   frame_navigation_start_time.value(),
-                                   value.value(), message.is_main_frame());
+    LogRelativeFirstContentfulPaint(value.value(), message.is_main_frame());
+    LogAggregateFirstContentfulPaint(web_state,
+                                     frame_navigation_start_time.value(),
+                                     value.value(), message.is_main_frame());
+  } else if (*metric == "FirstInputDelay") {
+    absl::optional<bool> loaded_from_cache =
+        message.body()->FindBoolKey("cached");
+    if (!loaded_from_cache.has_value()) {
+      return;
+    }
+
+    LogRelativeFirstInputDelay(value.value(), message.is_main_frame(),
+                               loaded_from_cache.value());
+  }
 }
 
 void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstContentfulPaint(
@@ -121,5 +133,36 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstContentfulPaint(
     tab_helper->SetAggregateAbsoluteFirstContentfulPaint(
         web_performance_metrics::CalculateAbsoluteFirstContentfulPaint(
             frame_navigation_start_time, relative_first_contentful_paint));
+  }
+}
+
+void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
+    double value,
+    bool is_main_frame,
+    bool loaded_from_cache) {
+  base::TimeDelta delta = base::Milliseconds(value);
+
+  // WebKit does not reliably support pageshow events
+  // on version iOS 14 and below.
+  // TODO(crbug.com/1276537)
+  const bool page_show_reliably_supported =
+      base::ios::IsRunningOnIOS15OrLater();
+
+  if (is_main_frame) {
+    if (!loaded_from_cache) {
+      UMA_HISTOGRAM_TIMES("IOS.Frame.FirstInputDelay.MainFrame", delta);
+    } else if (loaded_from_cache && page_show_reliably_supported) {
+      UMA_HISTOGRAM_TIMES(
+          "IOS.Frame.FirstInputDelay.MainFrame.AfterBackForwardCacheRestore",
+          delta);
+    }
+  } else {
+    if (!loaded_from_cache) {
+      UMA_HISTOGRAM_TIMES("IOS.Frame.FirstInputDelay.SubFrame", delta);
+    } else if (loaded_from_cache && page_show_reliably_supported) {
+      UMA_HISTOGRAM_TIMES(
+          "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore",
+          delta);
+    }
   }
 }
