@@ -560,6 +560,9 @@ TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
       <text id="text">text content
         <tspan id="tspan">tspan content</tspan>
       </text>
+      <filter>
+        <feBlend id="feBlend"></feBlend>
+      </filter>
     </svg>
   )HTML");
 
@@ -584,6 +587,10 @@ TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
   ASSERT_TRUE(tspan_content->IsText());
   EXPECT_EQ(CompositingReason::kNone,
             DirectReasonsForPaintProperties(*tspan_content));
+
+  auto* feBlend = GetLayoutObjectByElementId("feBlend");
+  EXPECT_REASONS(CompositingReason::kNone,
+                 DirectReasonsForPaintProperties(*feBlend));
 }
 
 }  // namespace blink

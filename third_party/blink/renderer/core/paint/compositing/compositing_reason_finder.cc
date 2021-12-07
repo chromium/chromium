@@ -394,9 +394,10 @@ CompositingReasons CompositingReasonFinder::NonStyleDeterminedDirectReasons(
 static bool ObjectTypeSupportsCompositedTransformAnimation(
     const LayoutObject& object) {
   if (object.IsSVGChild()) {
-    // Transforms are not supported on hidden containers, inlines, or text.
+    // Transforms are not supported on hidden containers, inlines, text, or
+    // filter primitives.
     return !object.IsSVGHiddenContainer() && !object.IsLayoutInline() &&
-           !object.IsText();
+           !object.IsText() && !object.IsSVGFilterPrimitive();
   }
   // Transforms don't apply on non-replaced inline elements.
   return object.IsBox();
