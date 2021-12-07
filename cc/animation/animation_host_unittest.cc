@@ -43,7 +43,7 @@ class AnimationHostTest : public AnimationTimelinesTest {
     host_->AddAnimationTimeline(timeline_);
     timeline_->AttachAnimation(worklet_animation_);
 
-    host_->PushPropertiesTo(host_impl_);
+    host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
     timeline_impl_ = host_impl_->GetTimelineById(timeline_id_);
     worklet_animation_impl_ =
         ToWorkletAnimation(timeline_impl_->GetAnimationById(cc_id));
@@ -77,20 +77,20 @@ TEST_F(AnimationHostTest, SyncTimelinesAddRemove) {
 
   EXPECT_FALSE(host_impl->GetTimelineById(timeline_id));
 
-  host->PushPropertiesTo(host_impl.get());
+  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
 
   scoped_refptr<AnimationTimeline> timeline_impl =
       host_impl->GetTimelineById(timeline_id);
   EXPECT_TRUE(timeline_impl);
   EXPECT_EQ(timeline_impl->id(), timeline_id);
 
-  host->PushPropertiesTo(host_impl.get());
+  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
   EXPECT_EQ(timeline_impl, host_impl->GetTimelineById(timeline_id));
 
   host->RemoveAnimationTimeline(timeline.get());
   EXPECT_FALSE(timeline->animation_host());
 
-  host->PushPropertiesTo(host_impl.get());
+  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
   EXPECT_FALSE(host_impl->GetTimelineById(timeline_id));
 
   EXPECT_FALSE(timeline_impl->animation_host());
@@ -114,7 +114,7 @@ TEST_F(AnimationHostTest, ImplOnlyTimeline) {
   host->AddAnimationTimeline(timeline.get());
   host_impl->AddAnimationTimeline(timeline_impl.get());
 
-  host->PushPropertiesTo(host_impl.get());
+  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
 
   EXPECT_TRUE(host->GetTimelineById(timeline_id1));
   EXPECT_TRUE(host_impl->GetTimelineById(timeline_id2));
@@ -172,7 +172,7 @@ TEST_F(AnimationHostTest, FastLayerTreeMutatorUpdateTakesEffectInSameFrame) {
           [this, local_time]() { this->SetOutputState(local_time); }));
 
   // Push the opacity animation to the impl thread.
-  host_->PushPropertiesTo(host_impl_);
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
   host_impl_->ActivateAnimations(nullptr);
 
   // Ticking host should cause layer tree mutator to update output state which
@@ -206,7 +206,7 @@ TEST_F(AnimationHostTest, LayerTreeMutatorsIsMutatedWithCorrectInputState) {
   AddOpacityTransitionToAnimation(worklet_animation_.get(), duration,
                                   start_opacity, end_opacity, true);
 
-  host_->PushPropertiesTo(host_impl_);
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
   host_impl_->ActivateAnimations(nullptr);
 
   EXPECT_CALL(*mock_mutator, MutateRef(_));
@@ -231,7 +231,7 @@ TEST_F(AnimationHostTest, LayerTreeMutatorsIsMutatedOnlyWhenInputChanges) {
   AddOpacityTransitionToAnimation(worklet_animation_.get(), duration,
                                   start_opacity, end_opacity, true);
 
-  host_->PushPropertiesTo(host_impl_);
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
   host_impl_->ActivateAnimations(nullptr);
 
   EXPECT_CALL(*mock_mutator, MutateRef(_)).Times(1);
@@ -425,7 +425,7 @@ TEST_F(AnimationHostTest, PushPropertiesToImpl) {
   EXPECT_FALSE(host_impl->HasCanvasInvalidation());
   EXPECT_FALSE(host_impl->HasJSAnimation());
 
-  host->PushPropertiesTo(host_impl.get());
+  host->PushPropertiesTo(host_impl.get(), client_.GetPropertyTrees());
   EXPECT_TRUE(host_impl->HasCanvasInvalidation());
   EXPECT_TRUE(host_impl->HasJSAnimation());
 }

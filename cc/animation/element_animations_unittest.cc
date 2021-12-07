@@ -262,7 +262,7 @@ TEST_F(ElementAnimationsTest,
   gfx::PointF provider_initial_value(150.f, 300.f);
   gfx::PointF target_value(300.f, 200.f);
 
-  client_impl_.SetScrollOffsetForAnimation(provider_initial_value);
+  client_.SetScrollOffsetForAnimation(provider_initial_value, element_id_);
 
   // Animation with initial value set.
   std::unique_ptr<ScrollOffsetAnimationCurve> curve_fixed(
@@ -901,7 +901,7 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
-  client_impl_.SetScrollOffsetForAnimation(initial_value);
+  client_.SetScrollOffsetForAnimation(initial_value, element_id_);
   PushProperties();
   animation_impl_->ActivateKeyframeModels();
   EXPECT_TRUE(animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));
@@ -1074,7 +1074,7 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
-  client_.SetScrollOffsetForAnimation(initial_value);
+  client_.SetScrollOffsetForAnimation(initial_value, element_id_);
   PushProperties();
   animation_impl_->ActivateKeyframeModels();
   EXPECT_TRUE(animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));

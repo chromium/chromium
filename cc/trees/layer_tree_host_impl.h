@@ -470,7 +470,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       PaintWorkletInput::PropertyValue property_value) override;
 
   void ScrollOffsetAnimationFinished() override;
-  gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override;

@@ -176,13 +176,9 @@ void TestHostClient::MaximumScaleChanged(ElementId element_id,
 }
 
 void TestHostClient::SetScrollOffsetForAnimation(
-    const gfx::PointF& scroll_offset) {
-  scroll_offset_ = scroll_offset;
-}
-
-gfx::PointF TestHostClient::GetScrollOffsetForAnimation(
-    ElementId element_id) const {
-  return scroll_offset_;
+    const gfx::PointF& scroll_offset,
+    ElementId element_id) {
+  property_trees_.scroll_tree.SetScrollOffset(element_id, scroll_offset);
 }
 
 void TestHostClient::RegisterElementId(ElementId element_id,
@@ -417,11 +413,9 @@ AnimationTimelinesTest::AnimationTimelinesTest()
       host_impl_(nullptr),
       timeline_id_(AnimationIdProvider::NextTimelineId()),
       animation_id_(AnimationIdProvider::NextAnimationId()),
-      next_test_layer_id_(0) {
+      element_id_(1) {
   host_ = client_.host();
   host_impl_ = client_impl_.host();
-
-  element_id_ = ElementId(NextTestLayerId());
 }
 
 AnimationTimelinesTest::~AnimationTimelinesTest() = default;
@@ -469,7 +463,7 @@ void AnimationTimelinesTest::AttachTimelineAnimationLayer() {
 }
 
 void AnimationTimelinesTest::CreateImplTimelineAndAnimation() {
-  host_->PushPropertiesTo(host_impl_);
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
   GetImplTimelineAndAnimationByID();
 }
 
@@ -525,11 +519,6 @@ KeyframeEffect* AnimationTimelinesTest::GetImplKeyframeEffectForLayerId(
              : nullptr;
 }
 
-int AnimationTimelinesTest::NextTestLayerId() {
-  next_test_layer_id_++;
-  return next_test_layer_id_;
-}
-
 bool AnimationTimelinesTest::CheckKeyframeEffectTimelineNeedsPushProperties(
     bool needs_push_properties) const {
   DCHECK(animation_);
@@ -553,7 +542,7 @@ bool AnimationTimelinesTest::CheckKeyframeEffectTimelineNeedsPushProperties(
 }
 
 void AnimationTimelinesTest::PushProperties() {
-  host_->PushPropertiesTo(host_impl_);
+  host_->PushPropertiesTo(host_impl_, client_.GetPropertyTrees());
 }
 
 }  // namespace cc

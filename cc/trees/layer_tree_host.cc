@@ -1696,11 +1696,6 @@ void LayerTreeHost::MaximumScaleChanged(ElementId element_id,
   property_trees()->MaximumAnimationScaleChanged(element_id, maximum_scale);
 }
 
-gfx::PointF LayerTreeHost::GetScrollOffsetForAnimation(
-    ElementId element_id) const {
-  return property_trees()->scroll_tree.current_scroll_offset(element_id);
-}
-
 void LayerTreeHost::QueueImageDecode(const PaintImage& image,
                                      base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("cc", "LayerTreeHost::QueueImageDecode");

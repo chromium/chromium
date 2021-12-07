@@ -98,7 +98,8 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreateLayerImplTree() {
   active_tree()->SetPropertyTrees(*property_trees());
   TreeSynchronizer::PushLayerProperties(
       *pending_commit_state(), thread_unsafe_commit_state(), active_tree());
-  mutator_host()->PushPropertiesTo(host_impl_->mutator_host());
+  mutator_host()->PushPropertiesTo(host_impl_->mutator_host(),
+                                   *property_trees());
 
   active_tree()->property_trees()->scroll_tree.PushScrollUpdatesFromMainThread(
       property_trees(), active_tree(),
@@ -116,7 +117,8 @@ LayerImpl* FakeLayerTreeHost::CommitAndCreatePendingTree() {
   pending_tree()->SetPropertyTrees(*property_trees());
   TreeSynchronizer::PushLayerProperties(
       *pending_commit_state(), thread_unsafe_commit_state(), pending_tree());
-  mutator_host()->PushPropertiesTo(host_impl_->mutator_host());
+  mutator_host()->PushPropertiesTo(host_impl_->mutator_host(),
+                                   *property_trees());
 
   pending_tree()->property_trees()->scroll_tree.PushScrollUpdatesFromMainThread(
       property_trees(), pending_tree(),

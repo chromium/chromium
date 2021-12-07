@@ -66,8 +66,6 @@ class MutatorHostClient {
                                    float maximum_scale) = 0;
 
   virtual void ScrollOffsetAnimationFinished() = 0;
-  virtual gfx::PointF GetScrollOffsetForAnimation(
-      ElementId element_id) const = 0;
 
   virtual void NotifyAnimationWorkletStateChange(
       AnimationWorkletMutationState state,

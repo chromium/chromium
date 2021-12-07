@@ -70,6 +70,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   scoped_refptr<ElementAnimations> GetElementAnimationsForElementId(
       ElementId element_id) const;
 
+  gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const;
+
   // Parent LayerTreeHost or LayerTreeHostImpl.
   MutatorHostClient* mutator_host_client() { return mutator_host_client_; }
   const MutatorHostClient* mutator_host_client() const {
@@ -100,7 +102,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void SetLayerTreeMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
 
-  void PushPropertiesTo(MutatorHost* host_impl) override;
+  void PushPropertiesTo(MutatorHost* host_impl,
+                        const PropertyTrees& property_trees) override;
 
   void SetScrollAnimationDurationForTesting(base::TimeDelta duration) override;
   bool NeedsTickAnimations() const override;
@@ -257,6 +260,9 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   IdToTimelineMap id_to_timeline_map_;
 
   raw_ptr<MutatorHostClient> mutator_host_client_;
+
+  // This is only non-null within the call scope of PushPropertiesTo().
+  const PropertyTrees* property_trees_ = nullptr;
 
   // Exactly one of scroll_offset_animations_ and scroll_offset_animations_impl_
   // will be non-null for a given AnimationHost instance (the former if

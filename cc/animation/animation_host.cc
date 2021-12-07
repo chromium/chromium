@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
@@ -280,8 +281,12 @@ void AnimationHost::SetNeedsPushProperties() {
     mutator_host_client_->SetMutatorsNeedCommit();
 }
 
-void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl) {
+void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
+                                     const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);
+
+  base::AutoReset<const PropertyTrees*> properties(&property_trees_,
+                                                   &property_trees);
 
   // Update animation counts and whether raf was requested. These explicitly
   // do not request push properties and are pushed as part of the next commit
@@ -334,6 +339,9 @@ void AnimationHost::RemoveTimelinesFromImplThread(
 }
 
 void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
+  base::AutoReset<const PropertyTrees*> properties(&host_impl->property_trees_,
+                                                   property_trees_);
+
   // Sync all animations with impl thread to create ElementAnimations. This
   // needs to happen before the element animations are synced below.
   for (auto& kv : id_to_timeline_map_) {
@@ -370,6 +378,12 @@ AnimationHost::GetElementAnimationsForElementId(ElementId element_id) const {
     return nullptr;
   auto iter = element_to_animations_map_.find(element_id);
   return iter == element_to_animations_map_.end() ? nullptr : iter->second;
+}
+
+gfx::PointF AnimationHost::GetScrollOffsetForAnimation(
+    ElementId element_id) const {
+  DCHECK(property_trees_);
+  return property_trees_->scroll_tree.current_scroll_offset(element_id);
 }
 
 void AnimationHost::SetScrollAnimationDurationForTesting(

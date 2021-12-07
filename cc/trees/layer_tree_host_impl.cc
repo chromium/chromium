@@ -5025,16 +5025,6 @@ void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
   }
 }
 
-gfx::PointF LayerTreeHostImpl::GetScrollOffsetForAnimation(
-    ElementId element_id) const {
-  if (active_tree()) {
-    return active_tree()->property_trees()->scroll_tree.current_scroll_offset(
-        element_id);
-  }
-
-  return gfx::PointF();
-}
-
 bool LayerTreeHostImpl::CommitToActiveTree() const {
   return settings_.commit_to_active_tree;
 }

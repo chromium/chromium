@@ -21,6 +21,7 @@ namespace cc {
 class MutatorEvents;
 class MutatorHostClient;
 class LayerTreeMutator;
+class PropertyTrees;
 class ScrollTree;
 
 // Used as the return value of GetAnimationScales() to indicate that there is
@@ -55,7 +56,8 @@ class MutatorHost {
   virtual void SetLayerTreeMutator(
       std::unique_ptr<LayerTreeMutator> mutator) = 0;
 
-  virtual void PushPropertiesTo(MutatorHost* host_impl) = 0;
+  virtual void PushPropertiesTo(MutatorHost* host_impl,
+                                const PropertyTrees& property_trees) = 0;
 
   virtual void SetScrollAnimationDurationForTesting(
       base::TimeDelta duration) = 0;

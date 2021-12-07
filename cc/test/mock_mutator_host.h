@@ -27,7 +27,9 @@ class MockMutatorHost : public MutatorHost {
   MOCK_METHOD1(SetMutatorHostClient, void(MutatorHostClient* client));
   MOCK_METHOD1(SetLayerTreeMutator,
                void(std::unique_ptr<LayerTreeMutator> mutator));
-  MOCK_METHOD1(PushPropertiesTo, void(MutatorHost* host_impl));
+  MOCK_METHOD2(PushPropertiesTo,
+               void(MutatorHost* host_impl,
+                    const PropertyTrees& property_trees));
   MOCK_METHOD1(SetScrollAnimationDurationForTesting,
                void(base::TimeDelta duration));
   MOCK_CONST_METHOD0(NeedsTickAnimations, bool());

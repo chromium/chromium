@@ -120,12 +120,13 @@ class AnimationHostPerfTest : public testing::Test {
   }
 
   void DoTest(const std::string& test_name) {
+    PropertyTrees property_trees;
     timer_.Reset();
     do {
       // Invalidate dirty flags.
       SetAllTimelinesNeedPushProperties();
       SetAllAnimationsNeedPushProperties();
-      host()->PushPropertiesTo(host_impl());
+      host()->PushPropertiesTo(host_impl(), property_trees);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 

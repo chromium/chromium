@@ -544,12 +544,8 @@ void ElementAnimations::OnScrollOffsetAnimated(
 }
 
 gfx::PointF ElementAnimations::ScrollOffsetForAnimation() const {
-  if (animation_host_) {
-    DCHECK(animation_host_->mutator_host_client());
-    return animation_host_->mutator_host_client()->GetScrollOffsetForAnimation(
-        element_id());
-  }
-
+  if (animation_host_)
+    return animation_host_->GetScrollOffsetForAnimation(element_id());
   return gfx::PointF();
 }
 

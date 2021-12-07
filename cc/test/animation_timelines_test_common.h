@@ -14,6 +14,7 @@
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
+#include "cc/trees/property_tree.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/keyframe/target_property.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -150,8 +151,9 @@ class TestHostClient : public MutatorHostClient {
 
   void ScrollOffsetAnimationFinished() override {}
 
-  void SetScrollOffsetForAnimation(const gfx::PointF& scroll_offset);
-  gfx::PointF GetScrollOffsetForAnimation(ElementId element_id) const override;
+  void SetScrollOffsetForAnimation(const gfx::PointF& scroll_offset,
+                                   ElementId element_id);
+  const PropertyTrees& GetPropertyTrees() const { return property_trees_; }
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
@@ -226,8 +228,8 @@ class TestHostClient : public MutatorHostClient {
   ElementIdToTestLayer layers_in_active_tree_;
   ElementIdToTestLayer layers_in_pending_tree_;
 
-  gfx::PointF scroll_offset_;
   bool mutators_need_commit_;
+  PropertyTrees property_trees_;
 };
 
 class TestAnimationDelegate : public AnimationDelegate {
@@ -297,8 +299,6 @@ class AnimationTimelinesTest : public testing::Test {
   KeyframeEffect* GetKeyframeEffectForElementId(ElementId element_id);
   KeyframeEffect* GetImplKeyframeEffectForLayerId(ElementId element_id);
 
-  int NextTestLayerId();
-
   bool CheckKeyframeEffectTimelineNeedsPushProperties(
       bool needs_push_properties) const;
 
@@ -313,8 +313,6 @@ class AnimationTimelinesTest : public testing::Test {
   const int timeline_id_;
   const int animation_id_;
   ElementId element_id_;
-
-  int next_test_layer_id_;
 
   scoped_refptr<AnimationTimeline> timeline_;
   scoped_refptr<Animation> animation_;

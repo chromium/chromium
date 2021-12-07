@@ -614,7 +614,8 @@ void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
 
   TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");
   DCHECK(mutator_host());
-  unsafe_state.mutator_host->PushPropertiesTo(mutator_host());
+  unsafe_state.mutator_host->PushPropertiesTo(mutator_host(),
+                                              unsafe_state.property_trees);
 
   if (IsActiveTree() && property_trees()->changed) {
     if (unsafe_state.root_layer) {

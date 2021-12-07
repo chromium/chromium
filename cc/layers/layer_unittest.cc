@@ -1639,7 +1639,8 @@ TEST_F(LayerTest, PushAnimationCountsLazily) {
   EXPECT_FALSE(host_impl_.animation_host()->CurrentFrameHadRAF());
   EXPECT_FALSE(host_impl_.animation_host()->HasSmilAnimation());
   EXPECT_FALSE(animation_host_->needs_push_properties());
-  animation_host_->PushPropertiesTo(host_impl_.animation_host());
+  animation_host_->PushPropertiesTo(host_impl_.animation_host(),
+                                    *layer_tree_host_->property_trees());
   EXPECT_TRUE(host_impl_.animation_host()->CurrentFrameHadRAF());
   EXPECT_TRUE(host_impl_.animation_host()->HasSmilAnimation());
 }
