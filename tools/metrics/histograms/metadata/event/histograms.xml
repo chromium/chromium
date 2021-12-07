@@ -815,7 +815,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -858,8 +858,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-12-01">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -879,8 +879,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-12-01">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -902,8 +902,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2021-12-01">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1036,7 +1036,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Touch.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1045,12 +1045,19 @@ chromium-metrics-reviews@google.com.
     induced renderer swap and GPU starts to swap.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.GpuSwap2" units="microseconds"
-    expires_after="2021-12-12">
+    expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap the first ScrollUpdate gesture event in a
     given scroll gesture event sequence with touch source induced frame and the
@@ -1067,7 +1074,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-06-16">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1087,7 +1094,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Touch.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-06-16">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1096,11 +1103,17 @@ chromium-metrics-reviews@google.com.
     touch source, and browser receives the swap notification.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.TimeToHandled2"
-    units="microseconds" expires_after="2021-10-25">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1121,7 +1134,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4{TopControlsState}"
-    units="microseconds" expires_after="2021-12-19">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -1160,7 +1173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.GpuSwap2" units="microseconds"
-    expires_after="2021-06-16">
+    expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1179,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-11-21">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1199,7 +1212,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Wheel.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-07-13">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1208,11 +1221,17 @@ chromium-metrics-reviews@google.com.
     wheel source, and browser receives the swap notification.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2021-10-31">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1265,33 +1284,46 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollInertial.Touch.GpuSwap2"
-    units="microseconds" expires_after="2021-06-16">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between gpu starts to swap a ScrollUpdate gesture event generated from
     a touchscreen fling induced frame and the swap finishes.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollInertial.Touch.HandledToRendererSwap2"
-    units="microseconds" expires_after="M80">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between a ScrollUpdate gesture event generated from a touchscreen
     fling, is handled on main/impl thread (specified by suffix) and before
     renderer starts to swap.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram
     name="Event.Latency.ScrollInertial.Touch.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-06-16">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Time between the renderer starts to swap a frame induced by a ScrollUpdate
@@ -1299,25 +1331,39 @@ chromium-metrics-reviews@google.com.
     swap notification.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollInertial.Touch.TimeToHandled2"
-    units="microseconds" expires_after="M80">
-  <owner>nzolghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a ScrollUpdate gesture event generated from
     a touchscreen fling is handled on main/impl thread (specified by suffix). If
     no swap was induced by the ScrollUpdate gesture event, no recording is made.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram
     name="Event.Latency.ScrollInertial.Touch.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2021-01-24">
-  <owner>nozlghadr@chromium.org</owner>
+    units="microseconds" expires_after="2022-06-01">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a ScrollUpdate gesture event generated from
     a touchscreen fling and the start of the frame swap on the GPU service
@@ -1325,6 +1371,12 @@ chromium-metrics-reviews@google.com.
     by the event, no recording is made.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
@@ -1372,7 +1424,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Scrollbar.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1385,11 +1437,17 @@ chromium-metrics-reviews@google.com.
     in the browser process.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.GpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1408,7 +1466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1429,7 +1487,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Scrollbar.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1442,11 +1500,17 @@ chromium-metrics-reviews@google.com.
     historically the display compositor lived in the browser process.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Scrollbar.TimeToHandled2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>arakeri@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1693,7 +1757,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1701,11 +1765,17 @@ chromium-metrics-reviews@google.com.
     event with touch source induced renderer swap and GPU starts to swap.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.GpuSwap2"
-    units="microseconds" expires_after="2021-10-10">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1723,7 +1793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1743,7 +1813,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Touch.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-10-31">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1751,12 +1821,19 @@ chromium-metrics-reviews@google.com.
     gesture event with touch source, and browser receives the swap notification.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Touch.TimeToHandled2"
-    units="microseconds" expires_after="2021-10-17">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time between initial creation of a touch event and the generated
     ScrollUpdate gesture event is handled on main/impl thread (specified by
@@ -1805,7 +1882,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Wheel.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1813,11 +1890,17 @@ chromium-metrics-reviews@google.com.
     event with wheel source induced renderer swap and GPU starts to swap.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.GpuSwap2"
-    units="microseconds" expires_after="2021-06-16">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1835,7 +1918,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.HandledToRendererSwap2"
-    units="microseconds" expires_after="2021-06-16">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1856,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollUpdate.Wheel.RendererSwapToBrowserNotified2"
-    units="microseconds" expires_after="2021-07-13">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -1864,11 +1947,17 @@ chromium-metrics-reviews@google.com.
     gesture event with wheel source, and browser receives the swap notification.
 
     Team: input-dev@chromium.org.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
   </summary>
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToHandled2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-06-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
