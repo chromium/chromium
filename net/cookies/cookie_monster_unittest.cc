@@ -5271,4 +5271,42 @@ TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
                                    base::Bucket(3 /* min */, 1 /* samples */)));
 }
 
+TEST_F(CookieMonsterTest, GetAllCookiesForURLNonce) {
+  auto store = base::MakeRefCounted<MockPersistentCookieStore>();
+  auto cm = std::make_unique<CookieMonster>(store.get(), net::NetLog::Get());
+  CookieOptions options = CookieOptions::MakeAllInclusive();
+
+  auto anonymous_iframe_key = CookiePartitionKey::FromURLForTesting(
+      GURL("https://anonymous-iframe.test"), base::UnguessableToken::Create());
+
+  // Define cookies from outside an anonymous iframe:
+  EXPECT_TRUE(CreateAndSetCookie(cm.get(), https_www_foo_.url(),
+                                 "A=0; Secure; HttpOnly; Path=/;", options));
+  EXPECT_TRUE(CreateAndSetCookie(cm.get(), https_www_foo_.url(),
+                                 "__Host-B=0; Secure; HttpOnly; Path=/;",
+                                 options));
+
+  // Define cookies from inside an anonymous iframe:
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-B=1; Secure; HttpOnly; Path=/; Partitioned", options,
+      absl::nullopt, absl::nullopt, anonymous_iframe_key));
+  EXPECT_TRUE(CreateAndSetCookie(
+      cm.get(), https_www_foo_.url(),
+      "__Host-C=0; Secure; HttpOnly; Path=/; Partitioned", options,
+      absl::nullopt, absl::nullopt, anonymous_iframe_key));
+
+  // Check cookies from outside the anonymous iframe:
+  EXPECT_THAT(GetAllCookiesForURL(cm.get(), https_www_foo_.url()),
+              ElementsAre(MatchesCookieNameValue("A", "0"),
+                          MatchesCookieNameValue("__Host-B", "0")));
+
+  // Check cookies from inside the anonymous iframe:
+  EXPECT_THAT(
+      GetAllCookiesForURL(cm.get(), https_www_foo_.url(),
+                          CookiePartitionKeychain(anonymous_iframe_key)),
+      ElementsAre(MatchesCookieNameValue("__Host-B", "1"),
+                  MatchesCookieNameValue("__Host-C", "0")));
+}
+
 }  // namespace net

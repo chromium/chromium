@@ -140,6 +140,22 @@ void MaybeRunCookieCallback(base::OnceCallback<void(T)> callback,
     std::move(callback).Run(result);
 }
 
+// Anonymous and Fenced Frame uses a CookiePartitionKey with a nonce. In these
+// contexts, access to unpartitioned cookie is not granted.
+//
+// This returns true if the |list| of key should include unpartitioned cookie in
+// GetCookie...().
+bool IncludeUnpartitionedCookies(const net::CookiePartitionKeychain& list) {
+  if (list.IsEmpty() || list.ContainsAllKeys())
+    return true;
+
+  for (const net::CookiePartitionKey& key : list.PartitionKeys()) {
+    if (!key.nonce())
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 namespace net {
@@ -615,8 +631,13 @@ void CookieMonster::GetCookieListWithOptions(
   CookieAccessResultList included_cookies;
   CookieAccessResultList excluded_cookies;
   if (HasCookieableScheme(url)) {
-    std::vector<CanonicalCookie*> cookie_ptrs =
-        FindCookiesForRegistryControlledHost(url);
+    std::vector<CanonicalCookie*> cookie_ptrs;
+    if (IncludeUnpartitionedCookies(cookie_partition_keychain)) {
+      cookie_ptrs = FindCookiesForRegistryControlledHost(url);
+    } else {
+      DCHECK(!cookie_partition_keychain.IsEmpty());
+    }
+
     if (!cookie_partition_keychain.IsEmpty()) {
       if (cookie_partition_keychain.ContainsAllKeys()) {
         for (const auto& it : partitioned_cookies_) {

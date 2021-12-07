@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Set/Get cookie via JS API assert_equals: expected "cookie_value_1" but got ""
+FAIL Get Cookie via subresource requests assert_equals: expected (string) "cookie_value_1" but got (undefined) undefined
+FAIL Set Cookie via subresource requests assert_equals: expected "cookie_value_2" but got ""
+FAIL Set Cookie via navigation requests assert_equals: expected "cookie_value_3" but got ""
+Harness: the test ran to completion.
+

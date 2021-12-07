@@ -28,13 +28,15 @@ promise_setup(async () => {
     window.nextCookieValue = () => {
       return new Promise(resolve => {
         const old_cookie = getMyCookie();
+        let timeToLive = 40; // 40 iterations of 100ms = 4s;
         const interval = setInterval(() => {
           const next_cookie_value = getMyCookie();
-          if (old_cookie !== next_cookie_value) {
+          timeToLive--;
+          if (old_cookie !== next_cookie_value || timeToLive <= 0) {
             clearInterval(interval);
             resolve(next_cookie_value)
           }
-        })
+        }, 100)
       });
     };
   `);
