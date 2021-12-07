@@ -171,6 +171,8 @@ class CONTENT_EXPORT CompositorImpl
   void OnUpdateRefreshRate(float refresh_rate) override;
   void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override;
+  std::unique_ptr<ui::CompositorLock> GetCompositorLock(
+      base::TimeDelta timeout) override;
 
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
@@ -285,6 +287,8 @@ class CONTENT_EXPORT CompositorImpl
   // Listen to display density change events and update painted device scale
   // factor accordingly.
   display::ScopedDisplayObserver display_observer_{this};
+
+  ui::CompositorLockManager lock_manager_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 };

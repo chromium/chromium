@@ -83,6 +83,10 @@ class ResourceRequestBody;
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
+namespace ui {
+class CompositorLock;
+}  // namespace ui
+
 namespace content {
 
 class CrossOriginEmbedderPolicyReporter;
@@ -1936,6 +1940,10 @@ class CONTENT_EXPORT NavigationRequest
   // The suffix of a prerender embedder. This value is valid only when
   // PrerenderTriggerType is kEmbedder. Only used for metrics.
   std::string prerender_embedder_histogram_suffix_;
+
+  // Prevents the compositor from requesting main frame updates early in
+  // navigation.
+  std::unique_ptr<ui::CompositorLock> compositor_lock_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

@@ -150,8 +150,14 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
+#include "ui/compositor/compositor_lock.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+#if defined(OS_ANDROID)
+#include "ui/android/window_android.h"
+#include "ui/android/window_android_compositor.h"
+#endif
 
 namespace content {
 
@@ -1607,6 +1613,31 @@ NavigationRequest::NavigationRequest(
   }
 
   begin_params_->headers = headers.ToString();
+
+#if defined(OS_ANDROID)
+  static constexpr base::Feature kOptimizeEarlyNavigation{
+      "OptimizeEarlyNavigation", base::FEATURE_DISABLED_BY_DEFAULT};
+  static constexpr base::FeatureParam<base::TimeDelta> kCompositorLockTimeout{
+      &kOptimizeEarlyNavigation, "compositor_lock_timeout",
+      base::Milliseconds(150)};
+
+  RenderWidgetHostImpl* host = RenderWidgetHostImpl::From(
+      frame_tree_node_->current_frame_host()->GetRenderWidgetHost());
+  if (base::FeatureList::IsEnabled(kOptimizeEarlyNavigation) &&
+      NeedsUrlLoader() && frame_tree_node_->IsMainFrame() && host &&
+      !host->is_hidden() && host->GetView() &&
+      host->GetView()->GetNativeView() &&
+      host->GetView()->GetNativeView()->GetWindowAndroid()) {
+    // If the compositor changes, we will just let the lock timeout instead of
+    // trying to deal with it explicitly.
+    ui::WindowAndroidCompositor* compositor =
+        host->GetView()->GetNativeView()->GetWindowAndroid()->GetCompositor();
+    if (compositor) {
+      compositor_lock_ =
+          compositor->GetCompositorLock(kCompositorLockTimeout.Get());
+    }
+  }
+#endif
 }
 
 NavigationRequest::~NavigationRequest() {
@@ -3861,6 +3892,9 @@ void NavigationRequest::OnStartChecksComplete(
   network::mojom::WebSandboxFlags sandbox_flags =
       commit_params_->frame_policy.sandbox_flags;
 
+  // Reset the compositor lock before starting the loader.
+  compositor_lock_.reset();
+
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
@@ -3884,6 +3918,7 @@ void NavigationRequest::OnStartChecksComplete(
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
       std::move(cached_response_head), std::move(interceptor));
   DCHECK(!render_frame_host_);
+
   loader_->Start();
   // DO NOT ADD CODE after this. The previous call to
   // NavigationURLLoader::Start() could cause the destruction of the

@@ -292,7 +292,8 @@ CompositorImpl::CompositorImpl(CompositorClient* client,
       client_(client),
       needs_animate_(false),
       pending_frames_(0U),
-      layer_tree_frame_sink_request_pending_(false) {
+      layer_tree_frame_sink_request_pending_(false),
+      lock_manager_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(client);
 
   SetRootWindow(root_window);
@@ -673,6 +674,14 @@ void CompositorImpl::DeleteUIResource(cc::UIResourceId resource_id) {
 
 bool CompositorImpl::SupportsETC1NonPowerOfTwo() const {
   return gpu_capabilities_.texture_format_etc1_npot;
+}
+
+std::unique_ptr<ui::CompositorLock> CompositorImpl::GetCompositorLock(
+    base::TimeDelta timeout) {
+  if (!host_)
+    return nullptr;
+  return lock_manager_.GetCompositorLock(/*client=*/nullptr, timeout,
+                                         host_->DeferMainFrameUpdate());
 }
 
 void CompositorImpl::DidSubmitCompositorFrame() {
