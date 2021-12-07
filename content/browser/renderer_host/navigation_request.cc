@@ -676,7 +676,7 @@ void EnterChildTraceEvent(const char* name,
 
 network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     FrameTreeNode* frame_tree_node) {
-  if (frame_tree_node->IsFencedFrameRoot())
+  if (frame_tree_node->IsInFencedFrameTree())
     return network::mojom::RequestDestination::kFencedframe;
 
   if (frame_tree_node->IsMainFrame()) {
@@ -3104,11 +3104,12 @@ void NavigationRequest::OnResponseStarted(
 
   const auto& url = common_params_->url;
 
-  // The root fenced frames are required to have the Supports-Loading-Mode HTTP
-  // response header "fenced-frame" to be able to load.
+  // The fenced frame root and the nested iframes are required to have the
+  // Supports-Loading-Mode HTTP response header "fenced-frame" to be able to
+  // load.
   const bool should_enforce_fenced_frame_opt_in =
       response_should_be_rendered_ && response_head_->headers &&
-      frame_tree_node_->IsFencedFrameRoot() &&
+      frame_tree_node_->IsInFencedFrameTree() &&
       !(url.IsAboutBlank() || url.SchemeIsBlob() ||
         url.SchemeIs(url::kDataScheme));
   if (should_enforce_fenced_frame_opt_in &&

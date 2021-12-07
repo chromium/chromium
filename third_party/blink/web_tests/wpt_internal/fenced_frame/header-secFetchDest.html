@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test header.secFetchDest</title>
+<title>Test `Sec-Fetch-Dest` header</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
@@ -20,7 +20,14 @@ promise_test(async () => {
   const actual_result = await nextValueFromServer(sec_fetch_dest_value_key);
   assert_equals(actual_result, "b'fencedframe'", "The fenced frame " +
                                      "has the right value for " +
-                                     "`secFetchDest.value`");
+                                     "`Sec-Fetch-Dest` header");
+
+  attachFencedFrame("resources/header-secFetchDest-inner.html");
+
+  const iframe_actual_result = await nextValueFromServer(sec_fetch_dest_value_key);
+  assert_equals(iframe_actual_result, "b'fencedframe'",
+                "The iframe inside the fenced frame has the right value for " +
+                "`Sec-Fetch-Dest` header");
 }, "header.secFetchDest");
 </script>
 
