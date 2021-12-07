@@ -147,6 +147,18 @@ static void HibernateWrapperForTesting(
   HibernateWrapper(std::move(bridge), base::TimeTicks());
 }
 
+static void LoseContextInBackgroundWrapper(
+    base::WeakPtr<Canvas2DLayerBridge> bridge,
+    base::TimeTicks /*idleDeadline*/) {
+  if (bridge)
+    bridge->LoseContext();
+}
+
+static void LoseContextInBackgroundForTestingWrapper(
+    base::WeakPtr<Canvas2DLayerBridge> bridge) {
+  LoseContextInBackgroundWrapper(std::move(bridge), base::TimeTicks());
+}
+
 void Canvas2DLayerBridge::Hibernate() {
   DCHECK(!IsHibernating());
   DCHECK(hibernation_scheduled_);
@@ -203,6 +215,32 @@ void Canvas2DLayerBridge::Hibernate() {
   logger_->DidStartHibernating();
 }
 
+void Canvas2DLayerBridge::LoseContext() {
+  DCHECK(!lose_context_in_background_);
+  DCHECK(lose_context_in_background_scheduled_);
+
+  lose_context_in_background_scheduled_ = false;
+
+  // If canvas becomes visible again or canvas already lost its resource,
+  // return here.
+  if (!resource_host_ || !resource_host_->ResourceProvider() || !IsHidden() ||
+      !IsValid() || context_lost_)
+    return;
+
+  SkipQueuedDrawCommands();
+  DCHECK(!have_recorded_draw_commands_);
+
+  // Frees canvas resource.
+  lose_context_in_background_ = true;
+  ResetResourceProvider();
+
+  if (layer_)
+    layer_->ClearTexture();
+
+  if (resource_host_)
+    resource_host_->SetNeedsCompositingUpdate();
+}
+
 CanvasResourceProvider* Canvas2DLayerBridge::ResourceProvider() const {
   return resource_host_ ? resource_host_->ResourceProvider() : nullptr;
 }
@@ -243,8 +281,8 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   // If the Canvas2DLayerBridge has just been created, possibly due to failed
   // attempts of Restore(), the layer would not exist, therefore, it will not
   // fall through this clause to try Restore() again
-  if (layer_ && !IsHibernating() &&
-      adjusted_hint == RasterModeHint::kPreferGPU) {
+  if (layer_ && adjusted_hint == RasterModeHint::kPreferGPU &&
+      !lose_context_in_background_ && !IsHibernating()) {
     return nullptr;
   }
 
@@ -269,6 +307,10 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
                                cc::PaintFlags::FilterQuality::kNone);
   }
+  // After the page becomes visible and successfully restored the canvas
+  // resource provider, set |lose_context_in_background_| to false.
+  if (lose_context_in_background_)
+    lose_context_in_background_ = false;
 
   if (!IsHibernating())
     return resource_provider;
@@ -324,8 +366,22 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
   if (ResourceProvider())
     ResourceProvider()->SetResourceRecyclingEnabled(!IsHidden());
 
-  if (CANVAS2D_HIBERNATION_ENABLED && ResourceProvider() && IsAccelerated() &&
-      IsHidden() && !hibernation_scheduled_) {
+  if (!lose_context_in_background_ && !lose_context_in_background_scheduled_ &&
+      ResourceProvider() && !context_lost_ && IsHidden() &&
+      RuntimeEnabledFeatures::CanvasContextLostInBackgroundEnabled()) {
+    lose_context_in_background_scheduled_ = true;
+    if (dont_use_idle_scheduling_for_testing_) {
+      Thread::Current()->GetTaskRunner()->PostTask(
+          FROM_HERE, WTF::Bind(&LoseContextInBackgroundForTestingWrapper,
+                               weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      ThreadScheduler::Current()->PostIdleTask(
+          FROM_HERE, WTF::Bind(&LoseContextInBackgroundWrapper,
+                               weak_ptr_factory_.GetWeakPtr()));
+    }
+  } else if (CANVAS2D_HIBERNATION_ENABLED && ResourceProvider() &&
+             IsAccelerated() && IsHidden() && !hibernation_scheduled_ &&
+             !RuntimeEnabledFeatures::CanvasContextLostInBackgroundEnabled()) {
     if (layer_)
       layer_->ClearTexture();
     logger_->ReportHibernationEvent(kHibernationScheduled);
@@ -340,7 +396,7 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
           WTF::Bind(&HibernateWrapper, weak_ptr_factory_.GetWeakPtr()));
     }
   }
-  if (!IsHidden() && IsHibernating())
+  if (!IsHidden() && (IsHibernating() || lose_context_in_background_))
     GetOrCreateResourceProvider();  // Rude awakening
 }
 

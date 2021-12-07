@@ -114,6 +114,9 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   void SetCanvasResourceHost(CanvasResourceHost* host);
 
   void Hibernate();
+  // This is used for a memory usage experiment: frees canvas resource when
+  // canvas is in an invisible tab.
+  void LoseContext();
   bool IsHibernating() const { return hibernation_image_ != nullptr; }
 
   bool HasRecordedDrawCommands() { return have_recorded_draw_commands_; }
@@ -186,6 +189,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   bool hibernation_scheduled_ = false;
   bool dont_use_idle_scheduling_for_testing_ = false;
   bool context_lost_ = false;
+  bool lose_context_in_background_ = false;
+  bool lose_context_in_background_scheduled_ = false;
 
   // WritePixels content is not saved in recording. If a call was made to
   // WritePixels, the recording is now missing that information.
