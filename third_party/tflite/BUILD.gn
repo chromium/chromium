@@ -70,7 +70,7 @@ config("tflite_flags") {
     # on chromeos builds.
     defines += [
       "TF_LITE_DISABLE_X86_NEON",
-      "TFLITE_ENABLE_RUY=OFF",
+      "TFLITE_WITH_RUY=0",
     ]
   }
 }
