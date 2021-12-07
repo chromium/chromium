@@ -193,6 +193,7 @@ TEST_F(TabGridCoordinatorTest, InitialActiveViewController) {
 // TabSwitcher.
 TEST_F(TabGridCoordinatorTest, TabViewControllerBeforeTabSwitcher) {
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
@@ -214,6 +215,7 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
   EXPECT_EQ(coordinator_.baseViewController, coordinator_.activeViewController);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
@@ -231,11 +233,13 @@ TEST_F(TabGridCoordinatorTest, TabViewControllerAfterTabSwitcher) {
 // Tests swapping between two TabViewControllers.
 TEST_F(TabGridCoordinatorTest, SwapTabViewControllers) {
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
   [coordinator_ showTabViewController:incognito_tab_view_controller_
+                            incognito:YES
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_EQ(incognito_tab_view_controller_, coordinator_.activeViewController);
@@ -253,11 +257,13 @@ TEST_F(TabGridCoordinatorTest, ShowTabSwitcherTwice) {
 // Tests calling showTabViewController twice in a row with the same VC.
 TEST_F(TabGridCoordinatorTest, ShowTabViewControllerTwice) {
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_EQ(normal_tab_view_controller_, coordinator_.activeViewController);
@@ -274,6 +280,7 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
   delegate_.didEndCalled = NO;
   __block BOOL completion_handler_was_called = NO;
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:^{
                              completion_handler_was_called = YES;
@@ -288,6 +295,7 @@ TEST_F(TabGridCoordinatorTest, CompletionHandlers) {
   // view controller. Tests that the delegate 'didEnd' method is *not* called.
   delegate_.didEndCalled = NO;
   [coordinator_ showTabViewController:incognito_tab_view_controller_
+                            incognito:YES
                    shouldCloseTabGrid:YES
                            completion:^{
                              completion_handler_was_called = YES;
@@ -314,6 +322,7 @@ TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
   scoped_clock_.Advance(base::Seconds(20));
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   histogram_tester_.ExpectUniqueTimeSample("IOS.TabSwitcher.TimeSpent",
@@ -328,6 +337,7 @@ TEST_F(TabGridCoordinatorTest, tabGridActive) {
   EXPECT_FALSE(coordinator_.tabGridActive);
 
   [coordinator_ showTabViewController:normal_tab_view_controller_
+                            incognito:NO
                    shouldCloseTabGrid:YES
                            completion:nil];
   EXPECT_FALSE(coordinator_.tabGridActive);

@@ -118,6 +118,7 @@
 #import "ios/chrome/browser/ui/tabs/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_containing.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
@@ -186,9 +187,6 @@
 using base::UserMetricsAction;
 
 namespace {
-
-// The size of the tab strip view.
-const CGFloat kTabStripHeight = 39.0;
 
 const size_t kMaxURLDisplayChars = 32 * 1024;
 
@@ -2902,8 +2900,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             : [self.tabStripView
                   adjustTransformForRTL:CGAffineTransformMakeTranslation(
                                             0, self.tabStripView.frame.size
-                                                       .height +
-                                                   self.headerOffset)];
+                                                   .height)];
     self.tabStripSnapshot.alpha =
         currentViewRevealState == ViewRevealState::Revealed ||
                 currentViewRevealState == ViewRevealState::Fullscreen

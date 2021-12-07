@@ -242,7 +242,10 @@
                      focusOmnibox:NO
                      closeTabGrid:NO];
       } else {
-        [self showTabViewController:nil shouldCloseTabGrid:NO completion:nil];
+        [self showTabViewController:nil
+                          incognito:NO
+                 shouldCloseTabGrid:NO
+                         completion:nil];
       }
     }
   }
@@ -376,6 +379,7 @@
 }
 
 - (void)showTabViewController:(UIViewController*)viewController
+                    incognito:(BOOL)incognito
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion {
   bool thumbStripEnabled = self.isThumbStripEnabled;
@@ -391,6 +395,7 @@
 
   if (thumbStripEnabled) {
     self.bvcContainer.currentBVC = viewController;
+    self.bvcContainer.incognito = incognito;
     self.baseViewController.childViewControllerForStatusBarStyle =
         viewController;
     [self.baseViewController setNeedsStatusBarAppearanceUpdate];
@@ -413,6 +418,7 @@
   // container.
   if (self.bvcContainer) {
     self.bvcContainer.currentBVC = viewController;
+    self.bvcContainer.incognito = incognito;
     self.baseViewController.childViewControllerForStatusBarStyle =
         viewController;
     [self.baseViewController setNeedsStatusBarAppearanceUpdate];
@@ -424,6 +430,7 @@
 
   self.bvcContainer = [[BVCContainerViewController alloc] init];
   self.bvcContainer.currentBVC = viewController;
+  self.bvcContainer.incognito = incognito;
 
   BOOL animated = !self.animationsDisabledForTesting;
   // Never animate the first time.
@@ -777,6 +784,7 @@
       if (self.incognitoBrowser->GetWebStateList()->count() == 0) {
         DCHECK([self isThumbStripEnabled]);
         [self showTabViewController:nil
+                          incognito:NO
                  shouldCloseTabGrid:closeTabGrid
                          completion:nil];
         return;
@@ -787,6 +795,7 @@
       if (self.regularBrowser->GetWebStateList()->count() == 0) {
         DCHECK([self isThumbStripEnabled]);
         [self showTabViewController:nil
+                          incognito:NO
                  shouldCloseTabGrid:closeTabGrid
                          completion:nil];
         return;
@@ -796,6 +805,7 @@
     case TabGridPageRemoteTabs:
       if ([self isThumbStripEnabled]) {
         [self showTabViewController:nil
+                          incognito:NO
                  shouldCloseTabGrid:closeTabGrid
                          completion:nil];
         return;

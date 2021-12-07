@@ -2623,6 +2623,7 @@ bool IsSigninForcedByPolicy() {
   }
   [self.mainCoordinator
       showTabViewController:self.currentInterface.viewController
+                  incognito:self.currentInterface.incognito
          shouldCloseTabGrid:dismissTabSwitcher
                  completion:completion];
   [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),

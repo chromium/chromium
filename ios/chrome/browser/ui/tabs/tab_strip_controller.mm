@@ -105,9 +105,6 @@ const CGFloat kCollapsedTabWidthThreshold = 40.0;
 const CGFloat kMaxAutoscrollDistance = 10.0;
 const CGFloat kAutoscrollDecrementWidth = 10.0;
 
-// The size of the tab strip view.
-const CGFloat kTabStripHeight = 39.0;
-
 // The size of the new tab button.
 const CGFloat kNewTabButtonWidth = 44;
 

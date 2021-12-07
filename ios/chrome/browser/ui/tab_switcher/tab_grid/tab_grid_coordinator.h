@@ -73,6 +73,7 @@ class Browser;
 // |shouldCloseTabGrid| is only used for the thumb strip, where the
 // tab container view controller is never dismissed.
 - (void)showTabViewController:(UIViewController*)viewController
+                    incognito:(BOOL)incognito
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
                    completion:(ProceduralBlock)completion;
 

@@ -15,10 +15,6 @@
 // implements a great deal of custom logic around handling view controller
 // presentation and other features, this containing view controller handles
 // forwarding calls to the BVC instance where needed.
-//
-// This class isn't coupled to any implementation details of the BVC; it could
-// be used as a generic forwarding container if needed. In that case, its name
-// should be changed.
 @interface BVCContainerViewController
     : UIViewController <ThumbStripSupporting, ViewRevealingAnimatee>
 
@@ -26,6 +22,10 @@
 // will be removed as a child view controller, and the new |currentBVC| will
 // be added as a child and have its view resized to this object's view's bounds.
 @property(nonatomic, weak) UIViewController* currentBVC;
+
+// YES if the currentBVC is in incognito mode. Is used to set proper background
+// color.
+@property(nonatomic, assign) BOOL incognito;
 
 @end
 
