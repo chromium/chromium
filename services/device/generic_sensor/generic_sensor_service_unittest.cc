@@ -40,7 +40,6 @@ void CheckSuccess(base::OnceClosure quit_closure,
   std::move(quit_closure).Run();
 }
 
-
 class TestSensorClient : public mojom::SensorClient {
  public:
   TestSensorClient(SensorType type) : type_(type) {}
@@ -362,41 +361,41 @@ TEST_F(GenericSensorServiceTest, AddAndRemoveConfigurationTest) {
   }
 
   // Expect the SensorReadingChanged() will be called. The frequency value
-  // should be 30.0
-  PlatformSensorConfiguration configuration_30(30.0);
-  client->sensor()->AddConfiguration(
-      configuration_30,
-      base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                     base::Unretained(client.get()),
-                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
+  // should be 10.0.
   {
+    PlatformSensorConfiguration configuration_10(10.0);
+    client->sensor()->AddConfiguration(
+        configuration_10,
+        base::BindOnce(&TestSensorClient::OnAddConfiguration,
+                       base::Unretained(client.get()),
+                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
     base::RunLoop run_loop;
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 30.0));
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
 
   // Expect the SensorReadingChanged() will be called. The frequency value
-  // should be 30.0 instead of 20.0
+  // should be 40.0.
+  PlatformSensorConfiguration configuration_40(40.0);
+  client->sensor()->AddConfiguration(
+      configuration_40,
+      base::BindOnce(&TestSensorClient::OnAddConfiguration,
+                     base::Unretained(client.get()),
+                     base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
   {
     base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration_20(20.0);
-    client->sensor()->AddConfiguration(
-        configuration_20,
-        base::BindOnce(&TestSensorClient::OnAddConfiguration,
-                       base::Unretained(client.get()),
-                       base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 30.0));
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 40.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  // After 'configuration_30' is removed, expect the SensorReadingChanged() will
-  // be called. The frequency value should be 20.0.
+  // After |configuration_40| is removed, expect the SensorReadingChanged() will
+  // be called. The frequency value should be 10.0.
   {
     base::RunLoop run_loop;
-    client->sensor()->RemoveConfiguration(configuration_30);
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 20.0));
+    client->sensor()->RemoveConfiguration(configuration_40);
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -457,16 +456,16 @@ TEST_F(GenericSensorServiceTest, SuspendThenResumeTest) {
   }
 
   // Expect the SensorReadingChanged() will be called. The frequency should
-  // be 30.0 after AddConfiguration.
+  // be 10.0 after AddConfiguration.
   {
     base::RunLoop run_loop;
-    PlatformSensorConfiguration configuration_1(30.0);
+    PlatformSensorConfiguration configuration_1(10.0);
     client->sensor()->AddConfiguration(
         configuration_1,
         base::BindOnce(&TestSensorClient::OnAddConfiguration,
                        base::Unretained(client.get()),
                        base::BindOnce(&CheckSuccess, base::DoNothing(), true)));
-    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 30.0));
+    client->SetCheckValueCallback(base::BindOnce(&CheckValue, 10.0));
     client->SetQuitClosure(run_loop.QuitClosure());
     run_loop.Run();
   }

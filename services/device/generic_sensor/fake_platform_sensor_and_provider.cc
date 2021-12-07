@@ -26,7 +26,7 @@ FakePlatformSensor::FakePlatformSensor(
             if (GetType() == mojom::SensorType::AMBIENT_LIGHT) {
               // Set the shared buffer value as frequency for testing purpose.
               reading.als.value = configuration.frequency();
-              UpdateSharedBufferAndNotifyClients(reading);
+              AddNewReading(reading);
             }
             return true;
           }));
@@ -56,6 +56,10 @@ double FakePlatformSensor::GetMaximumSupportedFrequency() {
 
 double FakePlatformSensor::GetMinimumSupportedFrequency() {
   return 1.0;
+}
+
+void FakePlatformSensor::AddNewReading(const SensorReading& reading) {
+  UpdateSharedBufferAndNotifyClients(reading);
 }
 
 FakePlatformSensorProvider::FakePlatformSensorProvider() {

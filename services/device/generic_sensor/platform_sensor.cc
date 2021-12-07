@@ -117,24 +117,34 @@ bool PlatformSensor::GetLatestRawReading(SensorReading* result) const {
 
 void PlatformSensor::UpdateSharedBufferAndNotifyClients(
     const SensorReading& reading) {
-  UpdateSharedBuffer(reading);
-  main_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&PlatformSensor::NotifySensorReadingChanged,
-                                weak_factory_.GetWeakPtr()));
+  if (UpdateSharedBuffer(reading, /*do_significance_check=*/true)) {
+    main_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&PlatformSensor::NotifySensorReadingChanged,
+                                  weak_factory_.GetWeakPtr()));
+  }
 }
 
-void PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
+bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
+                                        bool do_significance_check) {
   if (!reading_buffer_)
-    return;
+    return false;
+
+  {
+    base::AutoLock auto_lock(lock_);
+    // Bail out early if the new reading does not differ significantly from
+    // our current one, when the sensor is not reporting data continuously.
+    // Empty readings (i.e. with a zero timestamp) are always processed.
+    if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
+        do_significance_check && last_raw_reading_.has_value() &&
+        !IsSignificantlyDifferent(*last_raw_reading_, reading, type_)) {
+      return false;
+    }
+    // Save the raw (non-rounded) reading for fusion sensors.
+    last_raw_reading_ = reading;
+  }
 
   ReadingBuffer* buffer = reading_buffer_;
   auto& seqlock = buffer->seqlock.value();
-
-  // Save the raw (non-rounded) reading for fusion sensors.
-  {
-    base::AutoLock auto_lock(lock_);
-    last_raw_reading_ = reading;
-  }
 
   // Round the reading to guard user privacy. See https://crbug.com/1018180.
   SensorReading rounded_reading = reading;
@@ -143,6 +153,7 @@ void PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   seqlock.WriteBegin();
   buffer->reading = rounded_reading;
   seqlock.WriteEnd();
+  return true;
 }
 
 void PlatformSensor::NotifySensorReadingChanged() {
@@ -177,7 +188,11 @@ bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
   if (!optimal_configuration) {
     is_active_ = false;
     StopSensor();
-    UpdateSharedBuffer(SensorReading());
+    // If we reached this condition, we want to set the current reading to zero
+    // regardless of the previous reading's value per
+    // https://w3c.github.io/sensors/#set-sensor-settings. That is the reason
+    // to skip significance check.
+    UpdateSharedBuffer(SensorReading(), /*do_significance_check=*/false);
     return true;
   }
 

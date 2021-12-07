@@ -33,6 +33,11 @@ constexpr double kOrientationEulerRoundingMultiple = 0.1;
 // Units are radians. This value corresponds to 0.1 degrees.
 constexpr double kOrientationQuaternionRoundingMultiple = 0.0017453292519943296;
 
+// Some sensor types also ignore value changes below a certain threshold to
+// avoid exposing whether a value is too close to the limit between one
+// rounded value and the next.
+constexpr int kAlsSignificanceThreshold = 50;
+
 // Round |value| to be a multiple of |multiple|.
 //
 // NOTE: Exposed for testing. Please use other Rounding functions below.
@@ -60,6 +65,14 @@ void RoundOrientationQuaternionReading(SensorReadingQuat* reading);
 
 // Round the sensor reading to guard user privacy.
 void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type);
+
+// Checks if new value is significantly different than old value.
+// When the reading we get does not differ significantly from our current
+// value, we discard this reading and do not emit any events. This is a privacy
+// measure to avoid giving readings that are too specific.
+bool IsSignificantlyDifferent(const SensorReading& lhs,
+                              const SensorReading& rhs,
+                              mojom::SensorType sensor_type);
 
 }  // namespace device
 

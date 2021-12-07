@@ -127,9 +127,14 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
 
-  // Updates shared buffer with provided SensorReading
+  // Updates shared buffer with provided SensorReading. If
+  // |do_significance_check| is true then |last_raw_reading_| and
+  // |reading_buffer_| are only updated if |reading| is significantly different
+  // from |last_raw_reading_|. Returns true if |reading_buffer_| has been
+  // updated, and false otherwise.
   // Note: this method is thread-safe.
-  void UpdateSharedBuffer(const SensorReading& reading);
+  bool UpdateSharedBuffer(const SensorReading& reading,
+                          bool do_significance_check);
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 

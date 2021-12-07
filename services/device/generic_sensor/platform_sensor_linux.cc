@@ -35,11 +35,6 @@ mojom::ReportingMode PlatformSensorLinux::GetReportingMode() {
 
 void PlatformSensorLinux::UpdatePlatformSensorReading(SensorReading reading) {
   DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-  if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
-      base::ranges::equal(reading.raw.values, old_values_.raw.values)) {
-    return;
-  }
-  old_values_ = reading;
   reading.raw.timestamp =
       (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
   UpdateSharedBufferAndNotifyClients(reading);

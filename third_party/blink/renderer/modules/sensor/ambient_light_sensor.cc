@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/modules/sensor/ambient_light_sensor.h"
 
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 
 using device::mojom::blink::SensorType;
 
@@ -22,12 +20,6 @@ constexpr int kAlsRoundingThreshold = 50;
 // Round off to the nearest kAlsRoundingThreshold.
 double RoundIlluminance(double value) {
   return kAlsRoundingThreshold * std::round(value / kAlsRoundingThreshold);
-}
-
-// Value will have to vary by at least half the rounding threshold before it has
-// an effect on the output.
-bool IsSignificantlyDifferent(double als_old, double als_new) {
-  return std::fabs(als_old - als_new) >= kAlsRoundingThreshold / 2;
 }
 
 }  // namespace
@@ -57,36 +49,10 @@ AmbientLightSensor::AmbientLightSensor(ExecutionContext* execution_context,
              SensorType::AMBIENT_LIGHT,
              {mojom::blink::PermissionsPolicyFeature::kAmbientLightSensor}) {}
 
-bool AmbientLightSensor::hasReading() const {
-  return latest_reading_.has_value() && Sensor::hasReading();
-}
-
 absl::optional<double> AmbientLightSensor::illuminance() const {
-  if (hasReading()) {
-    DCHECK(latest_reading_.has_value());
-    return RoundIlluminance(latest_reading_.value());
-  }
+  if (hasReading())
+    return RoundIlluminance(GetReading().als.value);
   return absl::nullopt;
-}
-
-// When the reading we get does not differ significantly from our current
-// value, we discard this reading and do not emit any events. This is a privacy
-// measure to avoid giving readings that are too specific.
-void AmbientLightSensor::OnSensorReadingChanged() {
-  // The platform sensor may start sending readings before the sensor is fully
-  // activated on the Blink side. In this case, bail out early, otherwise we
-  // will set |latest_reading_| and not send a "reading" event.
-  if (!activated())
-    return;
-
-  const double new_reading = GetReading().als.value;
-  if (latest_reading_.has_value() &&
-      !IsSignificantlyDifferent(*latest_reading_, new_reading)) {
-    return;
-  }
-
-  latest_reading_ = new_reading;
-  Sensor::OnSensorReadingChanged();
 }
 
 }  // namespace blink
