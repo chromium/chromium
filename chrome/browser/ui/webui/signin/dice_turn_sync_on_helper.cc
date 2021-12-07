@@ -31,8 +31,8 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
@@ -56,6 +56,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
+#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper_delegate_impl.h"
 #endif
 
 namespace {
@@ -255,6 +256,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
     Profile* profile,
     Browser* browser,
@@ -272,6 +274,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
           signin_aborted_mode,
           std::make_unique<DiceTurnSyncOnHelperDelegateImpl>(browser),
           base::OnceClosure()) {}
+#endif
 
 DiceTurnSyncOnHelper::~DiceTurnSyncOnHelper() {
   DCHECK_EQ(this, GetCurrentDiceTurnSyncOnHelper(profile_));
@@ -717,6 +720,7 @@ void DiceTurnSyncOnHelper::AbortAndDelete() {
             kDiceTurnOnSyncHelper_Abort);
   }
 #else
+  // TODO(https://crbug.com/1260291): Implement on Lacros.
   NOTIMPLEMENTED()
       << "Profiles without accounts are not yet supported on lacros.";
 #endif

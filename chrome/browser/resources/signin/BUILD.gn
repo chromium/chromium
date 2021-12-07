@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
+import("//components/signin/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
@@ -21,11 +22,15 @@ group("web_components") {
   ]
   if (!is_chromeos_ash) {
     public_deps += [
-      "dice_web_signin_intercept:web_components",
       "enterprise_profile_welcome:web_components",
       "profile_customization:web_components",
       "signin_email_confirmation:web_components",
       "signin_error:web_components",
+    ]
+  }
+  if (enable_dice_support) {
+    public_deps += [
+      "dice_web_signin_intercept:web_components",
       "signin_reauth:web_components",
     ]
   }
@@ -70,12 +75,16 @@ generate_grd("build_grd") {
   ]
   if (!is_chromeos_ash) {
     input_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept.html",
       "enterprise_profile_welcome/enterprise_profile_welcome.html",
       "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg",
       "profile_customization/profile_customization.html",
       "signin_email_confirmation/signin_email_confirmation.html",
       "signin_error/signin_error.html",
+    ]
+  }
+  if (enable_dice_support) {
+    input_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept.html",
       "signin_reauth/images/account_passwords_reauth_illustration_dark.svg",
       "signin_reauth/images/account_passwords_reauth_illustration.svg",
       "signin_reauth/signin_reauth.html",
@@ -97,10 +106,14 @@ preprocess_if_expr("preprocess") {
 
   if (!is_chromeos_ash) {
     in_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
       "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
       "profile_customization/profile_customization_browser_proxy.ts",
       "signin_error/signin_error.ts",
+    ]
+  }
+  if (enable_dice_support) {
+    in_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
       "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
@@ -118,11 +131,15 @@ preprocess_if_expr("preprocess_gen") {
 
   if (!is_chromeos_ash) {
     in_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
       "enterprise_profile_welcome/enterprise_profile_welcome_app.ts",
       "profile_customization/profile_customization_app.ts",
       "signin_email_confirmation/signin_email_confirmation_app.ts",
       "signin_error/signin_error_app.ts",
+    ]
+  }
+  if (enable_dice_support) {
+    in_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
       "signin_reauth/signin_reauth_app.ts",
     ]
   }
@@ -146,8 +163,6 @@ ts_library("build_ts") {
 
   if (!is_chromeos_ash) {
     in_files += [
-      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
-      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
       "enterprise_profile_welcome/enterprise_profile_welcome_app.ts",
       "enterprise_profile_welcome/enterprise_profile_welcome_browser_proxy.ts",
       "profile_customization/profile_customization_app.ts",
@@ -155,6 +170,12 @@ ts_library("build_ts") {
       "signin_email_confirmation/signin_email_confirmation_app.ts",
       "signin_error/signin_error_app.ts",
       "signin_error/signin_error.ts",
+    ]
+  }
+  if (enable_dice_support) {
+    in_files += [
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
+      "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
       "signin_reauth/signin_reauth_app.ts",
       "signin_reauth/signin_reauth_browser_proxy.ts",
     ]

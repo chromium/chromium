@@ -10,8 +10,9 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "base/command_line.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "build/chromeos_buildflags.h"');
-GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
+GEN('#include "components/signin/public/base/signin_buildflags.h"');
+GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
 
@@ -38,6 +39,7 @@ TEST_F('SigninSyncConfirmationTest', 'Dialog', function() {
   mocha.run();
 });
 
+GEN('#if BUILDFLAG(ENABLE_DICE_SUPPORT)');
 /**
  * Test fixture for
  * chrome/browser/resources/signin/signin_reauth/signin_reauth.html.
@@ -70,6 +72,7 @@ var DiceWebSigninInterceptTest = class extends SigninBrowserTest {
 TEST_F('DiceWebSigninInterceptTest', 'Bubble', function() {
   mocha.run();
 });
+GEN('#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)');
 
 /**
  * Test fixture for
