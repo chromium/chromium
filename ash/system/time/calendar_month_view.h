@@ -99,9 +99,6 @@ class ASH_EXPORT CalendarMonthView : public views::View {
   // If today's cell is in this view.
   bool has_today() { return has_today_; }
 
-  // Returns the index of this month view's last row.
-  int last_row_index() const { return last_row_index_; }
-
  private:
   // Adds the `current_date`'s `CalendarDateCellView` to the table layout and
   // returns it.
@@ -116,9 +113,6 @@ class ASH_EXPORT CalendarMonthView : public views::View {
 
   // If today's cell is in this view.
   bool has_today_ = false;
-
-  // The index of this month view's last row.
-  int last_row_index_;
 
   // The cells of each row that should be first focused on. These
   // `CalendarDateCellView`s are the children of this view.

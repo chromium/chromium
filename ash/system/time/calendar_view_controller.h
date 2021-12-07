@@ -121,20 +121,15 @@ class ASH_EXPORT CalendarViewController {
   // scrolling to this row when the event list is expanded.
   int selected_date_row_index() { return selected_date_row_index_; }
 
-  // Getters and setters: the row index when the event list view is showing,
-  // today's row number and today's row height.
-  int GetExpandedRowIndex() const;
-  void set_expanded_row_index(int row_index) {
-    expanded_row_index_ = row_index;
-  }
+  // Getters of the today's row position, top and bottom.
+  int GetTodayRowTopHeight() const;
+  int GetTodayRowBottomHeight() const;
+
+  // Getters and setters of the today's row number and row height.
   int today_row() const { return today_row_; }
   void set_today_row(int row) { today_row_ = row; }
   int row_height() const { return row_height_; }
   void set_row_height(int height) { row_height_ = height; }
-
-  // Getters of the today's row position, top and bottom.
-  int GetTodayRowTopHeight() const;
-  int GetTodayRowBottomHeight() const;
 
   // Requests more events as needed.
   void FetchEvents();
@@ -260,9 +255,6 @@ class ASH_EXPORT CalendarViewController {
 
   // The row index of the currently selected date.
   int selected_date_row_index_;
-
-  // The current row index when the event list view is shown.
-  int expanded_row_index_;
 
   // The event list of the currently selected date.
   SingleDayEventList* selected_date_events_;

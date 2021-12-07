@@ -160,11 +160,6 @@ std::u16string CalendarViewController::GetOnScreenMonthName() const {
   return calendar_utils::GetMonthName(current_date_);
 }
 
-int CalendarViewController::GetExpandedRowIndex() const {
-  DCHECK(is_event_list_showing_);
-  return expanded_row_index_;
-}
-
 int CalendarViewController::GetTodayRowTopHeight() const {
   return (today_row_ - 1) * row_height_;
 }
@@ -297,7 +292,6 @@ void CalendarViewController::ShowEventListView(
   }
   selected_date_ = selected_date;
   selected_date_row_index_ = row_index;
-  expanded_row_index_ = row_index;
 
   // Notify observers.
   for (auto& observer : observers_)
