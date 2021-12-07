@@ -231,17 +231,15 @@ class RealboxDropdownElement extends PolymerElement {
     }
 
     this.updateStyles({
-      '--search-box-icon': skColorToRgba(this.theme.icon),
+      '--search-box-icon-selected':
+          skColorToRgba(assert(this.theme.iconSelected)),
+      '--search-box-icon': skColorToRgba(assert(this.theme.icon)),
       '--search-box-results-bg-hovered':
           skColorToRgba(assert(this.theme.resultsBgHovered)),
-      '--search-box-results-bg-selected':
-          skColorToRgba(assert(this.theme.resultsBgSelected)),
       '--search-box-results-bg': skColorToRgba(assert(this.theme.resultsBg)),
       '--search-box-results-dim-selected':
           skColorToRgba(assert(this.theme.resultsDimSelected)),
       '--search-box-results-dim': skColorToRgba(assert(this.theme.resultsDim)),
-      '--search-box-results-text-selected':
-          skColorToRgba(assert(this.theme.resultsTextSelected)),
       '--search-box-results-text':
           skColorToRgba(assert(this.theme.resultsText)),
       '--search-box-results-url-selected':

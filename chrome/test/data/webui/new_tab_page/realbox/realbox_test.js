@@ -319,17 +319,12 @@ suite('NewTabPageRealboxTest', () => {
     assertStyle(realbox, '--search-box-placeholder', 'rgba(0, 0, 3, 1)');
     assertStyle(realbox, '--search-box-results-bg', 'rgba(0, 0, 4, 1)');
     assertStyle(realbox, '--search-box-text', 'rgba(0, 0, 13, 1)');
-    assertStyle(realbox, '--search-box-icon', 'rgba(0, 0, 1, 1)');
-    assertStyle(matches, '--search-box-icon', 'rgba(0, 0, 1, 1)');
+    assertStyle(matches, '--search-box-icon-selected', 'rgba(0, 0, 2, 1)');
     assertStyle(matches, '--search-box-results-bg-hovered', 'rgba(0, 0, 5, 1)');
-    assertStyle(
-        matches, '--search-box-results-bg-selected', 'rgba(0, 0, 6, 1)');
     assertStyle(matches, '--search-box-results-bg', 'rgba(0, 0, 4, 1)');
     assertStyle(
         matches, '--search-box-results-dim-selected', 'rgba(0, 0, 8, 1)');
     assertStyle(matches, '--search-box-results-dim', 'rgba(0, 0, 7, 1)');
-    assertStyle(
-        matches, '--search-box-results-text-selected', 'rgba(0, 0, 10, 1)');
     assertStyle(matches, '--search-box-results-text', 'rgba(0, 0, 9, 1)');
     assertStyle(
         matches, '--search-box-results-url-selected', 'rgba(0, 0, 12, 1)');
@@ -1785,6 +1780,65 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
     assertEquals('hello world', realbox.$.input.value);
     assertEquals(matchEls[0], realbox.$.matches.shadowRoot.activeElement);
+  });
+
+  test('focus indicator', async () => {
+    realbox.$.input.focus();
+    realbox.$.input.value = 'clear browsing history';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [createSearchMatch({
+      action: {
+        a11yLabel: mojoString16(''),
+        hint: mojoString16('Clear Browsing History'),
+        suggestionContents: mojoString16(''),
+        iconUrl: 'chrome://theme/current-channel-logo'
+      },
+      fillIntoEdit: mojoString16('clear browsing history'),
+      supportsDeletion: true
+    })];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
+    assertTrue(areMatchesShowing());
+    let matchEls =
+        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
+
+    let focusIndicator = matchEls[0].$['focus-indicator'];
+
+    // Select the first match
+    let arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+    assertEquals('clear browsing history', realbox.$.input.value);
+    assertEquals(window.getComputedStyle(focusIndicator).display, 'block');
+
+    // Give focus to the action button
+    let action = $$(matchEls[0], '#action');
+    action.focus();
+
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+    assertEquals(action, matchEls[0].shadowRoot.activeElement);
+    assertEquals(window.getComputedStyle(focusIndicator).display, 'none');
+
+    // Give focus to remove button
+    let removeButton = matchEls[0].$.remove;
+    removeButton.focus();
+
+    assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
+    assertEquals(removeButton, matchEls[0].shadowRoot.activeElement);
+    assertEquals(window.getComputedStyle(focusIndicator).display, 'none');
   });
 
   //============================================================================

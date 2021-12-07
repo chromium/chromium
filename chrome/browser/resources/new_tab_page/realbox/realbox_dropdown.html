@@ -48,6 +48,7 @@
 
   .header cr-icon-button {
     --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    --cr-icon-button-focus-outline-color: var(--google-blue-600);
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-margin-start: 0;
     --cr-icon-button-size: 24px;
@@ -60,27 +61,17 @@
   }
 
   .header:focus-within:not(:focus) cr-icon-button {
-    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
+      --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
   }
 
-  ntp-realbox-match:hover,
-  .header:hover {
+  ntp-realbox-match:-webkit-any(:hover, :focus-within, .selected),
+  .header:-webkit-any(:hover, :focus-within) {
     background-color: var(--search-box-results-bg-hovered, rgba(var(--google-grey-900-rgb), .1));
   }
 
-  ntp-realbox-match:-webkit-any(:focus-within, .selected),
-  .header:focus-within:not(:focus) {
-    background-color: var(--search-box-results-bg-selected, rgba(var(--google-grey-900-rgb), .16));
-    color: var(--search-box-results-text-selected, var(--google-grey-900));
-  }
-
   @media (forced-colors: active) {
-    ntp-realbox-match:hover,
-    .header:hover {
-      background-color: Highlight;
-    }
-    ntp-realbox-match:-webkit-any(:focus-within, .selected),
-    .header:focus-within:not(:focus) {
+    ntp-realbox-match:-webkit-any(:hover, :focus-within, .selected),
+    .header:-webkit-any(:hover, :focus-within) {
       background-color: Highlight;
     }
   }

@@ -4,19 +4,20 @@
     outline: none;
   }
 
-
   #action {
-      margin-inline-start: 40px; /* icon width + text padding */
+    margin-inline-start: 40px; /* icon width + text padding */
   }
 
   .container {
     align-items: center;
     cursor: default;
     display: flex;
+    overflow: hidden;
     padding-bottom: 6px;
     padding-inline-end: 16px;
     padding-inline-start: 12px;
     padding-top: 6px;
+    position: relative;
   }
 
   .container + .container {
@@ -27,6 +28,20 @@
   #description {
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  #focus-indicator {
+    background-color: var(--google-blue-600);
+    border-radius: 3px;
+    display: none;
+    height: 100%;
+    margin-inline-start: -15px; /* -1 * (.container padding + width / 2) */
+    position: absolute;
+    width: 6px;
+  }
+
+  :host(:-webkit-any(:focus, .selected:not(:focus-within))) #focus-indicator {
+    display: block;
   }
 
   #separator {
@@ -86,6 +101,7 @@
   #remove {
     --cr-icon-button-active-background-color: rgba(var(--google-grey-900-rgb), .16);
     --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    --cr-icon-button-focus-outline-color: var(--google-blue-600);
     --cr-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-margin-end: 0;
@@ -106,6 +122,7 @@
 
 </style>
 <div class="container" aria-hidden="true">
+  <div id="focus-indicator"></div>
   <ntp-realbox-icon id="icon" match="[[match]]"></ntp-realbox-icon>
   <div id="text-container">
     <span id="contents" inner-h-t-m-l="[[contentsHtml_]]"></span>
