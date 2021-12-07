@@ -4,12 +4,17 @@
 
 #include <jni.h>
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/net/secure_dns_config.h"
@@ -20,19 +25,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
-#include "net/dns/public/doh_provider_entry.h"
-#include "net/dns/public/secure_dns_mode.h"
-#include "net/dns/public/util.h"
-
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_instance.h"
+#include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
