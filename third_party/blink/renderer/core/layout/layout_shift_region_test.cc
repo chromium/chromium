@@ -93,7 +93,7 @@ TEST_F(LayoutShiftRegionTest, LargeRandom) {
     const int* d = data + (i * 4);
     gfx::Rect r(d[0], d[1], d[2], d[3]);
     region.AddRect(r);
-    naive_region.Unite(Region(IntRect(r)));
+    naive_region.Unite(Region(r));
   }
   EXPECT_EQ(expected_area, region.Area());
   EXPECT_EQ(expected_area, naive_region.Area());

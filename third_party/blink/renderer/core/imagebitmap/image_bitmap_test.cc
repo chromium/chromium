@@ -106,7 +106,7 @@ class ImageBitmapTest : public testing::Test {
 
 TEST_F(ImageBitmapTest, ImageResourceConsistency) {
   const ImageBitmapOptions* default_options = ImageBitmapOptions::Create();
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   auto* image_element =
       MakeGarbageCollected<HTMLImageElement>(dummy->GetDocument());
   sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
@@ -176,7 +176,7 @@ TEST_F(ImageBitmapTest, ImageResourceConsistency) {
 // Verifies that ImageBitmaps constructed from HTMLImageElements hold a
 // reference to the original Image if the HTMLImageElement src is changed.
 TEST_F(ImageBitmapTest, ImageBitmapSourceChanged) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   auto* image = MakeGarbageCollected<HTMLImageElement>(dummy->GetDocument());
   sk_sp<SkColorSpace> src_rgb_color_space = SkColorSpace::MakeSRGB();
   SkImageInfo raster_image_info =

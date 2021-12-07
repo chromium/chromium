@@ -30,7 +30,7 @@ class MediaControlTimelineElementTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize(100, 100));
+    PageTestBase::SetUp(gfx::Size(100, 100));
 
     video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     controls_ = MakeGarbageCollected<MediaControlsImpl>(*video_);

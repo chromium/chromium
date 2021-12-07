@@ -163,7 +163,7 @@ class ModuleScriptLoaderTest : public PageTestBase {
 };
 
 void ModuleScriptLoaderTest::SetUp() {
-  PageTestBase::SetUp(IntSize(500, 500));
+  PageTestBase::SetUp(gfx::Size(500, 500));
 }
 
 ModuleScriptLoaderTest::ModuleScriptLoaderTest()

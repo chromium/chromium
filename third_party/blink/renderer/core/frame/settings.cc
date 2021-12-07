@@ -65,12 +65,12 @@ struct FromString<double> {
 };
 
 template <>
-struct FromString<IntSize> {
-  IntSize operator()(const String& s) {
+struct FromString<gfx::Size> {
+  gfx::Size operator()(const String& s) {
     Vector<String> fields;
     s.Split(',', fields);
-    return IntSize(fields.size() > 0 ? fields[0].ToInt() : 0,
-                   fields.size() > 1 ? fields[1].ToInt() : 0);
+    return gfx::Size(fields.size() > 0 ? fields[0].ToInt() : 0,
+                     fields.size() > 1 ? fields[1].ToInt() : 0);
   }
 };
 

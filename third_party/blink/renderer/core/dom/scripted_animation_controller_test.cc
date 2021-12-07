@@ -34,7 +34,7 @@ class ScriptedAnimationControllerTest : public testing::Test {
 };
 
 void ScriptedAnimationControllerTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 
   // Note: The document doesn't know about this ScriptedAnimationController
   // instance.

@@ -158,7 +158,8 @@ const float kIdealPaddingRatio = 0.3f;
 
 // Returns a rect which is offset and scaled accordingly to |base_rect|'s
 // location and size.
-FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
+FloatRect NormalizeRect(const gfx::Rect& to_normalize,
+                        const gfx::Rect& base_rect) {
   FloatRect result(to_normalize);
   result.set_origin(
       gfx::PointF(to_normalize.origin() - base_rect.OffsetFromOrigin()));
@@ -357,9 +358,10 @@ gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
 
   // Return the bounding box in the root frame's coordinate space.
   if (node) {
-    IntRect absolute_rect = node->GetLayoutObject()->AbsoluteBoundingBoxRect();
+    gfx::Rect absolute_rect =
+        node->GetLayoutObject()->AbsoluteBoundingBoxRect();
     LocalFrame* frame = node->GetDocument().GetFrame();
-    return ToGfxRect(frame->View()->ConvertToRootFrame(absolute_rect));
+    return frame->View()->ConvertToRootFrame(absolute_rect);
   }
   return gfx::Rect();
 }
@@ -1917,10 +1919,10 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
     View()->ZoomAndScrollToFocusedEditableElementRect(
         main_frame_view->RootFrameToDocument(
             element->GetDocument().View()->ConvertToRootFrame(
-                IntRect(control_bounds_in_physical_pixels))),
+                control_bounds_in_physical_pixels)),
         main_frame_view->RootFrameToDocument(
             element->GetDocument().View()->ConvertToRootFrame(
-                IntRect(selection_bounds_in_physical_pixels))),
+                selection_bounds_in_physical_pixels)),
         View()->ShouldZoomToLegibleScale(*element));
 
     return true;
@@ -2020,8 +2022,8 @@ void WebFrameWidgetImpl::Resize(const gfx::Size& new_size) {
 
   size_ = new_size;
 
-  view->SetLayoutSize(IntSize(*size_));
-  view->Resize(IntSize(*size_));
+  view->SetLayoutSize(*size_);
+  view->Resize(*size_);
 }
 
 void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
@@ -3725,8 +3727,8 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(
   if (!local_frame)
     return;
 
-  IntRect anchor;
-  IntRect focus;
+  gfx::Rect anchor;
+  gfx::Rect focus;
   auto& selection = local_frame->Selection();
   if (!selection.ComputeAbsoluteBounds(anchor, focus))
     return;
@@ -3735,18 +3737,18 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(
   // For subframes it will just be a 1:1 transformation and the browser
   // will then apply later transformations to these rects.
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
-  anchor_root_frame = ToGfxRect(visual_viewport.RootFrameToViewport(
-      local_frame->View()->ConvertToRootFrame(anchor)));
-  focus_root_frame = ToGfxRect(visual_viewport.RootFrameToViewport(
-      local_frame->View()->ConvertToRootFrame(focus)));
+  anchor_root_frame = visual_viewport.RootFrameToViewport(
+      local_frame->View()->ConvertToRootFrame(anchor));
+  focus_root_frame = visual_viewport.RootFrameToViewport(
+      local_frame->View()->ConvertToRootFrame(focus));
 
   // Calculate the bounding box of the selection area.
   if (bounding_box_in_root_frame) {
-    const IntRect bounding_box = EnclosingIntRect(
+    const gfx::Rect bounding_box = ToEnclosingRect(
         CreateRange(selection.GetSelectionInDOMTree().ComputeRange())
             ->BoundingRect());
-    *bounding_box_in_root_frame = ToGfxRect(visual_viewport.RootFrameToViewport(
-        local_frame->View()->ConvertToRootFrame(bounding_box)));
+    *bounding_box_in_root_frame = visual_viewport.RootFrameToViewport(
+        local_frame->View()->ConvertToRootFrame(bounding_box));
   }
 }
 
@@ -4287,9 +4289,9 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   }
 
   LocalFrameView& frame_view = *element.GetDocument().View();
-  IntRect absolute_element_bounds =
+  gfx::Rect absolute_element_bounds =
       element.GetLayoutObject()->AbsoluteBoundingBoxRect();
-  IntRect absolute_caret_bounds =
+  gfx::Rect absolute_caret_bounds =
       element.GetDocument().GetFrame()->Selection().AbsoluteCaretBounds();
   // Ideally, the chosen rectangle includes the element box and caret bounds
   // plus some margin on the left. If this does not work (i.e., does not fit
@@ -4297,19 +4299,20 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   // bounds. It is preferable to also include element bounds' location and left
   // align the scroll. If this cant be satisfied, the scroll will be right
   // aligned.
-  IntRect maximal_rect =
+  gfx::Rect maximal_rect =
       UnionRects(absolute_element_bounds, absolute_caret_bounds);
 
   // Set the ideal margin.
-  maximal_rect.ShiftXEdgeTo(
-      maximal_rect.x() -
-      static_cast<int>(kIdealPaddingRatio * absolute_element_bounds.width()));
+  int width =
+      static_cast<int>(kIdealPaddingRatio * absolute_element_bounds.width());
+  maximal_rect.set_x(maximal_rect.right() - width);
+  maximal_rect.set_height(width);
 
   bool maximal_rect_fits_in_frame =
       !(frame_view.Size() - maximal_rect.size()).IsEmpty();
 
   if (!maximal_rect_fits_in_frame) {
-    IntRect frame_rect(maximal_rect.origin(), frame_view.Size());
+    gfx::Rect frame_rect(maximal_rect.origin(), frame_view.Size());
     maximal_rect.Intersect(frame_rect);
     gfx::Point point_forced_to_be_visible =
         absolute_caret_bounds.bottom_right() +

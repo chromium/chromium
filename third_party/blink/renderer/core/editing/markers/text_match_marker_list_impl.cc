@@ -109,8 +109,8 @@ static void UpdateMarkerLayoutRect(const Node& node, TextMatchMarker& marker) {
       frame_view->FrameToDocument(PhysicalRect(ComputeTextRect(range))));
 }
 
-Vector<IntRect> TextMatchMarkerListImpl::LayoutRects(const Node& node) const {
-  Vector<IntRect> result;
+Vector<gfx::Rect> TextMatchMarkerListImpl::LayoutRects(const Node& node) const {
+  Vector<gfx::Rect> result;
 
   for (DocumentMarker* marker : markers_) {
     auto* const text_match_marker = To<TextMatchMarker>(marker);
@@ -118,7 +118,7 @@ Vector<IntRect> TextMatchMarkerListImpl::LayoutRects(const Node& node) const {
       UpdateMarkerLayoutRect(node, *text_match_marker);
     if (!text_match_marker->IsRendered())
       continue;
-    result.push_back(PixelSnappedIntRect(text_match_marker->GetRect()));
+    result.push_back(ToPixelSnappedRect(text_match_marker->GetRect()));
   }
 
   return result;

@@ -228,7 +228,7 @@ TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
   bool success = input->SetupDateTimeChooserParameters(params);
   EXPECT_TRUE(success);
   EXPECT_EQ("date", params.type);
-  EXPECT_EQ(IntRect(16, 16, 400, 100), params.anchor_rect_in_screen);
+  EXPECT_EQ(gfx::Rect(16, 16, 400, 100), params.anchor_rect_in_screen);
 }
 
 TEST_F(HTMLInputElementTest, StepDownOverflow) {

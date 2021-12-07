@@ -110,7 +110,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
     // Otherwise, the intrinsic width is that of the video.
     case kVideo:
       if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
-        IntSize size(player->NaturalSize());
+        gfx::Size size = player->NaturalSize();
         if (!size.IsEmpty()) {
           LayoutSize layout_size = LayoutSize(size);
           layout_size.Scale(scale);

@@ -15,11 +15,11 @@
 
 namespace gfx {
 class PointF;
+class Rect;
 }  // namespace gfx
 
 namespace blink {
 
-class IntRect;
 class WebViewImpl;
 
 class CORE_EXPORT DevToolsEmulator final
@@ -75,8 +75,8 @@ class CORE_EXPORT DevToolsEmulator final
   // the size of the viewport, which gives an upper bound on the size of the
   // area that is visible. The |viewport_size| is physical pixels if
   // UseZoomForDSF() is enabled, or DIP otherwise.
-  void OverrideVisibleRect(const IntSize& viewport_size,
-                           IntRect* visible_rect) const;
+  void OverrideVisibleRect(const gfx::Size& viewport_size,
+                           gfx::Rect* visible_rect) const;
 
   // Returns the scale used to convert incoming input events while emulating
   // device metics.

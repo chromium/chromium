@@ -118,11 +118,11 @@ void RectToTracedValue(const gfx::Rect& rect,
 void RegionToTracedValue(const LayoutShiftRegion& region, TracedValue& value) {
   Region blink_region;
   for (const gfx::Rect& rect : region.GetRects())
-    blink_region.Unite(Region(IntRect(rect)));
+    blink_region.Unite(Region(rect));
 
   value.BeginArray("region_rects");
-  for (const IntRect& rect : blink_region.Rects())
-    RectToTracedValue(ToGfxRect(rect), value);
+  for (const gfx::Rect& rect : blink_region.Rects())
+    RectToTracedValue(rect, value);
   value.EndArray();
 }
 
@@ -482,8 +482,7 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
     return 1;
 
   // Map the subframe view rect into the coordinate space of the local root.
-  FloatClipRect subframe_cliprect(
-      gfx::RectF(gfx::SizeF(ToGfxSize(frame_view_->Size()))));
+  FloatClipRect subframe_cliprect(gfx::RectF(gfx::SizeF(frame_view_->Size())));
   const LocalFrame& local_root = frame.LocalFrameRoot();
   GeometryMapper::LocalToAncestorVisualRect(
       frame_view_->GetLayoutView()->FirstFragment().LocalBorderBoxProperties(),
@@ -496,12 +495,12 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
   // Intersect with the portion of the local root that overlaps the main frame.
   local_root.View()->MapToVisualRectInRemoteRootFrame(subframe_rect);
   gfx::Size subframe_visible_size = subframe_rect.PixelSnappedSize();
-  IntSize main_frame_size = frame.GetPage()->GetVisualViewport().Size();
+  gfx::Size main_frame_size = frame.GetPage()->GetVisualViewport().Size();
 
   // TODO(crbug.com/940711): This comparison ignores page scale and CSS
   // transforms above the local root.
   return static_cast<double>(subframe_visible_size.Area64()) /
-         main_frame_size.Area();
+         main_frame_size.Area64();
 }
 
 void LayoutShiftTracker::NotifyPrePaintFinishedInternal() {
@@ -784,9 +783,9 @@ void LayoutShiftTracker::SendLayoutShiftRectsToHud(
       WebVector<gfx::Rect> rects;
       Region blink_region;
       for (const gfx::Rect& rect : int_rects)
-        blink_region.Unite(Region(IntRect(rect)));
-      for (const IntRect& rect : blink_region.Rects())
-        rects.emplace_back(ToGfxRect(rect));
+        blink_region.Unite(Region(rect));
+      for (const gfx::Rect& rect : blink_region.Rects())
+        rects.emplace_back(rect);
       cc_layer->layer_tree_host()->hud_layer()->SetLayoutShiftRects(
           rects.ReleaseVector());
       cc_layer->layer_tree_host()->hud_layer()->SetNeedsPushProperties();

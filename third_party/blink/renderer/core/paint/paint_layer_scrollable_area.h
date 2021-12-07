@@ -84,7 +84,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
-  Vector<IntRect> tickmarks_override_;
+  Vector<gfx::Rect> tickmarks_override_;
 };
 
 // PaintLayerScrollableArea represents the scrollable area of a LayoutBox.
@@ -377,7 +377,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   cc::AnimationHost* GetCompositorAnimationHost() const override;
   CompositorAnimationTimeline* GetCompositorAnimationTimeline() const override;
   bool HasTickmarks() const override;
-  Vector<IntRect> GetTickmarks() const override;
+  Vector<gfx::Rect> GetTickmarks() const override;
 
   void VisibleSizeChanged();
 
@@ -629,7 +629,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return !!pending_view_state_;
   }
 
-  void SetTickmarksOverride(Vector<IntRect> tickmarks);
+  void SetTickmarksOverride(Vector<gfx::Rect> tickmarks);
 
   // For CompositeAfterPaint.
   bool ShouldDirectlyCompositeScrollbar(const Scrollbar&) const;

@@ -67,10 +67,10 @@ class GraphicsLayerUpdater {
 
     // Offset of this PaintLayer's LayoutObject relative to the position of its
     // main GraphicsLayer.
-    IntSize object_offset_delta;
+    gfx::Vector2d object_offset_delta;
 
     // The object_offset_delta of the compositing ancestor.
-    IntSize parent_object_offset_delta;
+    gfx::Vector2d parent_object_offset_delta;
 
    private:
     const PaintLayer* compositing_stacking_context_;

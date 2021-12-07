@@ -94,7 +94,7 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr LayoutPoint ToLayoutPoint() const { return {left, top}; }
   constexpr LayoutSize ToLayoutSize() const { return {left, top}; }
 
-  explicit PhysicalOffset(const IntSize& size)
+  explicit PhysicalOffset(const gfx::Size& size)
       : left(size.width()), top(size.height()) {}
   explicit PhysicalOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}

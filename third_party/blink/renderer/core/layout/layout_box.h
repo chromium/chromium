@@ -2073,7 +2073,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Sets the coordinates of find-in-page scrollbar tickmarks, bypassing
   // DocumentMarkerController.  This is used by the PDF plugin.
-  void OverrideTickmarks(Vector<IntRect> tickmarks);
+  void OverrideTickmarks(Vector<gfx::Rect> tickmarks);
 
   // Issues a paint invalidation on the layout viewport's vertical scrollbar
   // (which is responsible for painting the tickmarks).

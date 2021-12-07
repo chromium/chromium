@@ -1311,19 +1311,19 @@ static FloatRect ComputeTextRectTemplate(
   return result;
 }
 
-IntRect ComputeTextRect(const EphemeralRange& range) {
-  return EnclosingIntRect(ComputeTextRectTemplate(range));
+gfx::Rect ComputeTextRect(const EphemeralRange& range) {
+  return ToEnclosingRect(ComputeTextRectTemplate(range));
 }
 
-IntRect ComputeTextRect(const EphemeralRangeInFlatTree& range) {
-  return EnclosingIntRect(ComputeTextRectTemplate(range));
+gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree& range) {
+  return ToEnclosingRect(ComputeTextRectTemplate(range));
 }
 
 FloatRect ComputeTextFloatRect(const EphemeralRange& range) {
   return ComputeTextRectTemplate(range);
 }
 
-IntRect FirstRectForRange(const EphemeralRange& range) {
+gfx::Rect FirstRectForRange(const EphemeralRange& range) {
   DCHECK(!range.GetDocument().NeedsLayoutTreeUpdate());
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       range.GetDocument().Lifecycle());
@@ -1334,21 +1334,21 @@ IntRect FirstRectForRange(const EphemeralRange& range) {
   const PositionWithAffinity start_position(
       CreateVisiblePosition(range.StartPosition()).DeepEquivalent(),
       TextAffinity::kDownstream);
-  const IntRect start_caret_rect =
+  const gfx::Rect start_caret_rect =
       AbsoluteCaretBoundsOf(start_position, &extra_width_to_end_of_line);
   if (start_caret_rect.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
   const PositionWithAffinity end_position(
       CreateVisiblePosition(range.EndPosition()).DeepEquivalent(),
       TextAffinity::kUpstream);
-  const IntRect end_caret_rect = AbsoluteCaretBoundsOf(end_position);
+  const gfx::Rect end_caret_rect = AbsoluteCaretBoundsOf(end_position);
   if (end_caret_rect.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
   if (start_caret_rect.y() == end_caret_rect.y()) {
     // start and end are on the same line
-    return IntRect(
+    return gfx::Rect(
         std::min(start_caret_rect.x(), end_caret_rect.x()),
         start_caret_rect.y(), abs(end_caret_rect.x() - start_caret_rect.x()),
         std::max(start_caret_rect.height(), end_caret_rect.height()));
@@ -1356,7 +1356,7 @@ IntRect FirstRectForRange(const EphemeralRange& range) {
 
   // start and end aren't on the same line, so go from start to the end of its
   // line
-  return IntRect(
+  return gfx::Rect(
       start_caret_rect.x(), start_caret_rect.y(),
       (start_caret_rect.width() + extra_width_to_end_of_line).ToInt(),
       start_caret_rect.height());

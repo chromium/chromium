@@ -118,7 +118,7 @@ void PageScaleConstraintsSet::SetNeedsReset(bool needs_reset) {
 }
 
 void PageScaleConstraintsSet::DidChangeContentsSize(
-    IntSize contents_size,
+    gfx::Size contents_size,
     int vertical_scrollbar_width,
     float page_scale_factor) {
   // If a large fixed-width element expanded the size of the document late in
@@ -170,7 +170,7 @@ static float ComputeHeightByAspectRatio(float width,
 }
 
 void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
-    const IntSize& size) {
+    const gfx::Size& size) {
   if (icb_size_ == size)
     return;
 
@@ -178,8 +178,8 @@ void PageScaleConstraintsSet::DidChangeInitialContainingBlockSize(
   constraints_dirty_ = true;
 }
 
-IntSize PageScaleConstraintsSet::GetLayoutSize() const {
-  return FlooredIntSize(ComputeConstraintsStack().layout_size);
+gfx::Size PageScaleConstraintsSet::GetLayoutSize() const {
+  return ToFlooredSize(ComputeConstraintsStack().layout_size);
 }
 
 void PageScaleConstraintsSet::AdjustForAndroidWebViewQuirks(

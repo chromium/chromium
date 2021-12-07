@@ -62,7 +62,7 @@ class MockLockOrientationCallback : public blink::WebLockOrientationCallback {
 class ScreenOrientationControllerTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(GetFrame().DomWindow());
     ignore_result(screen_orientation.BindNewEndpointAndPassDedicatedReceiver());

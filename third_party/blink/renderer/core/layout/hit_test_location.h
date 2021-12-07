@@ -74,8 +74,8 @@ class CORE_EXPORT HitTestLocation {
   bool IsRectBasedTest() const { return is_rect_based_; }
   bool IsRectilinear() const { return is_rectilinear_; }
   const PhysicalRect& BoundingBox() const { return bounding_box_; }
-  IntRect EnclosingIntRect() const {
-    return ::blink::EnclosingIntRect(bounding_box_);
+  gfx::Rect ToEnclosingRect() const {
+    return ::blink::ToEnclosingRect(bounding_box_);
   }
 
   // Returns the 1px x 1px hit test rect for a point.

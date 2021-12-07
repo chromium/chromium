@@ -1019,7 +1019,7 @@ PhysicalRect NGFragmentItem::ComputeTextBoundsRectForHitTest(
   // See svg/hittest/text-small-font-size.html.
   if (Type() == kSvgText)
     return border_rect;
-  return PhysicalRect(PixelSnappedIntRect(border_rect));
+  return PhysicalRect(ToPixelSnappedRect(border_rect));
 }
 
 PositionWithAffinity NGFragmentItem::PositionForPointInText(

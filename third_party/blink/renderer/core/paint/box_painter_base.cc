@@ -135,7 +135,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
         if (!rect_to_clip_out.IsEmpty())
           context.ClipOutRoundedRect(rect_to_clip_out);
       } else {
-        // This IntRect is correct even with fractional shadows, because it is
+        // This gfx::Rect is correct even with fractional shadows, because it is
         // used for the rectangle of the box itself, which is always
         // pixel-aligned.
         gfx::RectF rect_to_clip_out = border.Rect();
@@ -807,7 +807,7 @@ FloatRoundedRect RoundedBorderRectForClip(
         RoundedBorderGeometry::PixelSnappedRoundedBorder(
             style,
             PhysicalRect(PhysicalOffset(),
-                         PhysicalSize(FlooredIntSize(flow_box_size))),
+                         PhysicalSize(ToFlooredSize(flow_box_size))),
             info.sides_to_include);
     border.SetRadii(segment_border.GetRadii());
   }

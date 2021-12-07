@@ -91,7 +91,7 @@ GPUExternalTexture* GPUExternalTexture::Create(
       context_provider_wrapper->ContextProvider()->IsContextLost())
     return nullptr;
 
-  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
+  const auto intrinsic_size = media_video_frame->natural_size();
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =

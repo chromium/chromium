@@ -41,10 +41,10 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_group.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -182,7 +182,7 @@ class CORE_EXPORT DocumentMarkerController final
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
 
   bool PossiblyHasTextMatchMarkers() const;
-  Vector<IntRect> LayoutRectsForTextMatchMarkers();
+  Vector<gfx::Rect> LayoutRectsForTextMatchMarkers();
   void InvalidateRectsForAllTextMatchMarkers();
   void InvalidateRectsForTextMatchMarkersInNode(const Text&);
 

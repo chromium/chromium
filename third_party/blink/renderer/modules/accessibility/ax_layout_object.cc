@@ -348,10 +348,10 @@ bool AXLayoutObject::IsLinked() const {
 
 bool AXLayoutObject::IsOffScreen() const {
   DCHECK(layout_object_);
-  IntRect content_rect =
-      PixelSnappedIntRect(layout_object_->VisualRectInDocument());
+  gfx::Rect content_rect =
+      ToPixelSnappedRect(layout_object_->VisualRectInDocument());
   LocalFrameView* view = layout_object_->GetFrame()->View();
-  IntRect view_rect(gfx::Point(), view->Size());
+  gfx::Rect view_rect(gfx::Point(), view->Size());
   view_rect.Intersect(content_rect);
   return view_rect.IsEmpty();
 }

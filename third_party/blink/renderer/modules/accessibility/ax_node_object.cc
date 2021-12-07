@@ -2352,7 +2352,7 @@ float AXNodeObject::GetTextIndent() const {
   return text_indent / kCssPixelsPerMillimeter;
 }
 
-String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
+String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
   Node* node = GetNode();
   if (!node)
     return String();
@@ -3180,7 +3180,7 @@ String AXNodeObject::TextAlternative(
   Page* page = GetNode() ? GetNode()->GetDocument().GetPage() : nullptr;
   if (page && page->InsidePortal()) {
     LayoutRect bounds = GetBoundsInFrameCoordinates();
-    IntSize document_size =
+    gfx::Size document_size =
         GetNode()->GetDocument().GetLayoutView()->GetLayoutSize();
     bool is_visible =
         bounds.Intersects(LayoutRect(gfx::Point(), document_size));

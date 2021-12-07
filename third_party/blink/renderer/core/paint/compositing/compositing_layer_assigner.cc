@@ -77,7 +77,7 @@ void CompositingLayerAssigner::SquashingState::
 
   next_non_scrolling_squashed_layer_index = 0;
   next_squashed_layer_in_scrolling_contents_index = 0;
-  bounding_rect = IntRect();
+  bounding_rect = gfx::Rect();
   most_recent_mapping = new_composited_layer_mapping;
   have_assigned_backings_to_entire_squashing_layer_subtree = false;
   // We may squash layers with CompositingReason::kOverflowScrollingParent into
@@ -94,12 +94,12 @@ void CompositingLayerAssigner::SquashingState::
 bool CompositingLayerAssigner::SquashingWouldExceedSparsityTolerance(
     const PaintLayer* candidate,
     const CompositingLayerAssigner::SquashingState& squashing_state) {
-  IntRect bounds = candidate->ClippedAbsoluteBoundingBox();
-  IntRect new_bounding_rect = squashing_state.bounding_rect;
+  gfx::Rect bounds = candidate->ClippedAbsoluteBoundingBox();
+  gfx::Rect new_bounding_rect = squashing_state.bounding_rect;
   new_bounding_rect.Union(bounds);
-  const uint64_t new_bounding_rect_area = new_bounding_rect.size().Area();
+  const uint64_t new_bounding_rect_area = new_bounding_rect.size().Area64();
   const uint64_t new_squashed_area =
-      squashing_state.total_area_of_squashed_rects + bounds.size().Area();
+      squashing_state.total_area_of_squashed_rects + bounds.size().Area64();
   return new_bounding_rect_area >
          kSquashingSparsityTolerance * new_squashed_area;
 }
@@ -350,9 +350,9 @@ void CompositingLayerAssigner::AssignLayersToBackingsInternal(
       } else {
         squashing_state.next_non_scrolling_squashed_layer_index++;
         squashing_state.next_layer_may_squash_into_scrolling_contents = false;
-        IntRect layer_bounds = layer->ClippedAbsoluteBoundingBox();
+        gfx::Rect layer_bounds = layer->ClippedAbsoluteBoundingBox();
         squashing_state.total_area_of_squashed_rects +=
-            layer_bounds.size().Area();
+            layer_bounds.size().Area64();
         squashing_state.bounding_rect.Union(layer_bounds);
       }
     }

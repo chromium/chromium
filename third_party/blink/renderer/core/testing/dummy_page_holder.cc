@@ -68,7 +68,7 @@ class DummyLocalFrameClient : public EmptyLocalFrameClient {
 }  // namespace
 
 DummyPageHolder::DummyPageHolder(
-    const IntSize& initial_view_size,
+    const gfx::Size& initial_view_size,
     ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
     base::OnceCallback<void(Settings&)> setting_overrider,

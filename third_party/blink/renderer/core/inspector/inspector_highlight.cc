@@ -2040,7 +2040,7 @@ bool InspectorHighlight::GetBoxModel(
   border.Scale(scale, scale);
   margin.Scale(scale, scale);
 
-  IntRect bounding_box =
+  gfx::Rect bounding_box =
       view->ConvertToRootFrame(layout_object->AbsoluteBoundingBoxRect());
   auto* model_object = DynamicTo<LayoutBoxModelObject>(layout_object);
 

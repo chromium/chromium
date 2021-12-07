@@ -107,10 +107,10 @@ bool Scrollbar::HasTickmarks() const {
          scrollable_area_->HasTickmarks();
 }
 
-Vector<IntRect> Scrollbar::GetTickmarks() const {
+Vector<gfx::Rect> Scrollbar::GetTickmarks() const {
   if (scrollable_area_)
     return scrollable_area_->GetTickmarks();
-  return Vector<IntRect>();
+  return Vector<gfx::Rect>();
 }
 
 bool Scrollbar::IsScrollableAreaActive() const {

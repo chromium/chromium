@@ -101,7 +101,6 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/cursors.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -117,6 +116,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -142,7 +142,7 @@ gfx::Point GetMiddleSelectionCaretOfPosition(
   const LocalCaretRect& local_caret_rect = LocalCaretRectOfPosition(position);
   if (local_caret_rect.IsEmpty())
     return gfx::Point();
-  const IntRect rect = AbsoluteCaretBoundsOf(position);
+  const gfx::Rect rect = AbsoluteCaretBoundsOf(position);
   // In a multiline edit, rect.bottom() would end up on the next line, so
   // take the midpoint in order to use this corner point directly.
   if (local_caret_rect.layout_object->IsHorizontalWritingMode())
@@ -153,7 +153,7 @@ gfx::Point GetMiddleSelectionCaretOfPosition(
   return {(rect.x() + rect.right()) / 2, rect.y()};
 }
 
-bool ContainsEvenAtEdge(const IntRect& rect, const gfx::Point& point) {
+bool ContainsEvenAtEdge(const gfx::Rect& rect, const gfx::Point& point) {
   return point.x() >= rect.x() && point.x() <= rect.right() &&
          point.y() >= rect.y() && point.y() <= rect.bottom();
 }
@@ -1694,8 +1694,8 @@ bool EventHandler::BestClickableNodeForHitTestResult(
 
   gfx::Point touch_center =
       frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
-  IntRect touch_rect =
-      frame_->View()->ConvertToRootFrame(location.EnclosingIntRect());
+  gfx::Rect touch_rect =
+      frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
 
   HeapVector<Member<Node>, 11> nodes;
   CopyToVector(result.ListBasedTestResult(), nodes);
@@ -1715,8 +1715,8 @@ bool EventHandler::BestContextMenuNodeForHitTestResult(
   DCHECK(location.IsRectBasedTest());
   gfx::Point touch_center =
       frame_->View()->ConvertToRootFrame(ToRoundedPoint(location.Point()));
-  IntRect touch_rect =
-      frame_->View()->ConvertToRootFrame(location.EnclosingIntRect());
+  gfx::Rect touch_rect =
+      frame_->View()->ConvertToRootFrame(location.ToEnclosingRect());
   HeapVector<Member<Node>, 11> nodes;
   CopyToVector(result.ListBasedTestResult(), nodes);
 
@@ -2139,14 +2139,14 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
     }
     // Intersect the selection rect and the visible bounds of focused_element.
     if (focused_element) {
-      IntRect clipped_rect = view->ViewportToFrame(
+      gfx::Rect clipped_rect = view->ViewportToFrame(
           GetFocusedElementRectForNonLocatedContextMenu(focused_element));
       left = std::max(clipped_rect.x(), left);
       top = std::max(clipped_rect.y(), top);
       right = std::min(clipped_rect.right(), right);
       bottom = std::min(clipped_rect.bottom(), bottom);
     }
-    IntRect selection_rect = IntRect(left, top, right - left, bottom - top);
+    gfx::Rect selection_rect = gfx::Rect(left, top, right - left, bottom - top);
 
     if (ContainsEvenAtEdge(selection_rect, start_point)) {
       location_in_root_frame = view->ConvertToRootFrame(start_point);
@@ -2157,7 +2157,7 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
           view->ConvertToRootFrame(selection_rect.CenterPoint());
     }
   } else if (focused_element) {
-    IntRect clipped_rect =
+    gfx::Rect clipped_rect =
         GetFocusedElementRectForNonLocatedContextMenu(focused_element);
     location_in_root_frame =
         visual_viewport.ViewportToRootFrame(clipped_rect.CenterPoint());
@@ -2173,7 +2173,7 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
       visual_viewport.RootFrameToViewport(location_in_root_frame);
   gfx::Point global_position =
       view->GetChromeClient()
-          ->ViewportToScreen(IntRect(location_in_viewport, IntSize()),
+          ->ViewportToScreen(gfx::Rect(location_in_viewport, gfx::Size()),
                              frame_->View())
           .origin();
 
@@ -2208,14 +2208,14 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
   return SendContextMenuEvent(mouse_event, focused_element);
 }
 
-IntRect EventHandler::GetFocusedElementRectForNonLocatedContextMenu(
+gfx::Rect EventHandler::GetFocusedElementRectForNonLocatedContextMenu(
     Element* focused_element) {
-  IntRect clipped_rect = focused_element->VisibleBoundsInVisualViewport();
+  gfx::Rect clipped_rect = focused_element->VisibleBoundsInVisualViewport();
   // The bounding rect of multiline elements may include points that are
   // not within the element. Intersect the clipped rect with the first
   // outline rect to ensure that the selection rect only includes visible
   // points within the focused element.
-  Vector<IntRect> outline_rects =
+  Vector<gfx::Rect> outline_rects =
       focused_element->OutlineRectsInVisualViewport();
   if (outline_rects.size() > 1)
     clipped_rect.Intersect(outline_rects[0]);

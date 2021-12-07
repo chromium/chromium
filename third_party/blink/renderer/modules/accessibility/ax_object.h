@@ -607,7 +607,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Return the content of an image or canvas as an image data url in
   // PNG format. If |maxSize| is not empty and if the image is larger than
   // those dimensions, the image will be resized proportionally first to fit.
-  virtual String ImageDataUrl(const IntSize& max_size) const {
+  virtual String ImageDataUrl(const gfx::Size& max_size) const {
     return g_null_atom;
   }
   // If this element points to another element in the same page, e.g.
@@ -1228,7 +1228,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestScrollToGlobalPointAction(const gfx::Point&);
   bool RequestScrollToMakeVisibleAction();
   bool RequestScrollToMakeVisibleWithSubFocusAction(
-      const IntRect&,
+      const gfx::Rect&,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment);
   bool RequestSetSelectedAction(bool);
@@ -1252,7 +1252,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;
   bool OnNativeScrollToMakeVisibleAction() const;
   bool OnNativeScrollToMakeVisibleWithSubFocusAction(
-      const IntRect&,
+      const gfx::Rect&,
       blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
       blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const;
   virtual bool OnNativeSetSelectedAction(bool);

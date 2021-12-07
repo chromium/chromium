@@ -48,7 +48,7 @@ class NotificationResourcesLoaderTest : public PageTestBase {
         ->UnregisterAllURLsAndClearMemoryCache();
   }
 
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
  protected:
   ExecutionContext* GetExecutionContext() const {

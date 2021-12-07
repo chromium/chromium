@@ -53,7 +53,7 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
 
   DrawingRecorder recorder(context, client, DisplayItem::kResizer, visual_rect);
 
-  DrawPlatformResizerImage(context, IntRect(visual_rect));
+  DrawPlatformResizerImage(context, visual_rect);
 
   // Draw a frame around the resizer (1px grey line) if there are any scrollbars
   // present.  Clipping will exclude the right and bottom edges of this frame.
@@ -89,7 +89,7 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
 
 void ScrollableAreaPainter::DrawPlatformResizerImage(
     GraphicsContext& context,
-    const IntRect& resizer_corner_rect) {
+    const gfx::Rect& resizer_corner_rect) {
   gfx::Point points[4];
   bool on_left = false;
   float paint_scale = GetScrollableArea().ScaleFromDIP();

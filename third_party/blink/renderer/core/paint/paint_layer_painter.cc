@@ -368,13 +368,13 @@ void PaintLayerPainter::AdjustForPaintProperties(
   }
 }
 
-static IntRect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
+static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
   // We don't want to include overflowing contents.
   PhysicalRect overflow_rect =
       object.IsBox() ? To<LayoutBox>(object).PhysicalSelfVisualOverflowRect()
                      : object.PhysicalVisualOverflowRect();
   overflow_rect.Move(object.FirstFragment().PaintOffset());
-  return EnclosingIntRect(overflow_rect);
+  return ToEnclosingRect(overflow_rect);
 }
 
 PaintResult PaintLayerPainter::PaintLayerContents(
@@ -478,8 +478,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
         IsUnclippedLayoutView(paint_layer_)) {
       result = kMayBeClippedByCullRect;
     } else {
-      IntRect visual_rect = FirstFragmentVisualRect(object);
-      IntRect cull_rect(object.FirstFragment().GetCullRect().Rect());
+      gfx::Rect visual_rect = FirstFragmentVisualRect(object);
+      gfx::Rect cull_rect = object.FirstFragment().GetCullRect().Rect();
       bool cull_rect_intersects_self = cull_rect.Intersects(visual_rect);
       if (!cull_rect.Contains(visual_rect))
         result = kMayBeClippedByCullRect;
@@ -826,7 +826,7 @@ static CullRect LegacyCullRect(const PaintLayerFragment& fragment,
   // space in which we will paint.
   new_cull_rect.Move(PhysicalOffset(
       ToRoundedPoint(fragment.root_fragment_data->PaintOffset())));
-  return CullRect(ToGfxRect(PixelSnappedIntRect(new_cull_rect)));
+  return CullRect(ToPixelSnappedRect(new_cull_rect));
 }
 
 void PaintLayerPainter::PaintBackgroundForFragmentsWithPhase(

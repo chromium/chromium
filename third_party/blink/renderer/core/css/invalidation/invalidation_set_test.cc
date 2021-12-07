@@ -263,7 +263,8 @@ TEST(InvalidationSetTest, Backing_GetHashSet) {
 }
 
 TEST(InvalidationSetTest, ClassInvalidatesElement) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   auto& document = dummy_page_holder->GetDocument();
   document.body()->setInnerHTML("<div id=test class='a b'>");
   document.View()->UpdateAllLifecyclePhasesForTest();
@@ -288,7 +289,8 @@ TEST(InvalidationSetTest, ClassInvalidatesElement) {
 }
 
 TEST(InvalidationSetTest, AttributeInvalidatesElement) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   auto& document = dummy_page_holder->GetDocument();
   document.body()->setInnerHTML("<div id=test a b>");
   document.View()->UpdateAllLifecyclePhasesForTest();

@@ -149,7 +149,7 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
     ExtractFirstFragmentRectCallback callback) {
   DCHECK(
       base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
-  IntRect rect_in_viewport;
+  gfx::Rect rect_in_viewport;
 
   TextFragmentAnchor* anchor = GetTextFragmentAnchor();
   if (!anchor || anchor->DirectiveFinderPairs().size() <= 0) {
@@ -166,11 +166,11 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
     PhysicalRect bounding_box(
         ComputeTextRect(finder->FirstMatch()->ToEphemeralRange()));
     rect_in_viewport =
-        GetFrame()->View()->FrameToViewport(EnclosingIntRect(bounding_box));
+        GetFrame()->View()->FrameToViewport(ToEnclosingRect(bounding_box));
     break;
   }
 
-  std::move(callback).Run(ToGfxRect(rect_in_viewport));
+  std::move(callback).Run(rect_in_viewport);
 }
 
 void TextFragmentHandler::DidFinishSelectorGeneration(

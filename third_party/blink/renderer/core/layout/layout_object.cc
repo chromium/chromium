@@ -1641,7 +1641,8 @@ FloatRect LayoutObject::AbsoluteBoundingBoxFloatRect(
   return result;
 }
 
-IntRect LayoutObject::AbsoluteBoundingBoxRect(MapCoordinatesFlags flags) const {
+gfx::Rect LayoutObject::AbsoluteBoundingBoxRect(
+    MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   DCHECK(!(flags & kIgnoreTransforms));
   Vector<FloatQuad> quads;
@@ -1649,9 +1650,9 @@ IntRect LayoutObject::AbsoluteBoundingBoxRect(MapCoordinatesFlags flags) const {
 
   wtf_size_t n = quads.size();
   if (!n)
-    return IntRect();
+    return gfx::Rect();
 
-  IntRect result = quads[0].EnclosingBoundingBox();
+  gfx::Rect result = quads[0].EnclosingBoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
     result.Union(quads[i].EnclosingBoundingBox());
   return result;
@@ -1683,7 +1684,7 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
   return rect;
 }
 
-void LayoutObject::AddAbsoluteRectForLayer(IntRect& result) {
+void LayoutObject::AddAbsoluteRectForLayer(gfx::Rect& result) {
   NOT_DESTROYED();
   if (HasLayer())
     result.Union(AbsoluteBoundingBoxRect());
@@ -1692,9 +1693,9 @@ void LayoutObject::AddAbsoluteRectForLayer(IntRect& result) {
     current->AddAbsoluteRectForLayer(result);
 }
 
-IntRect LayoutObject::AbsoluteBoundingBoxRectIncludingDescendants() const {
+gfx::Rect LayoutObject::AbsoluteBoundingBoxRectIncludingDescendants() const {
   NOT_DESTROYED();
-  IntRect result = AbsoluteBoundingBoxRect();
+  gfx::Rect result = AbsoluteBoundingBoxRect();
   for (LayoutObject* current = SlowFirstChild(); current;
        current = current->NextSibling())
     current->AddAbsoluteRectForLayer(result);

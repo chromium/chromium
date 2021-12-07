@@ -131,7 +131,8 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
       url, "", WrappedResourceResponse(response));
 
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder->GetDocument();
   ResourceFetcher* fetcher = document.Fetcher();
   CSSFontFaceSrcValue* src_value = CSSFontFaceSrcValue::Create(

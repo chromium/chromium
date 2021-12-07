@@ -28,7 +28,7 @@ class PaintWorkletGlobalScopeTest : public PageTestBase {
   PaintWorkletGlobalScopeTest() = default;
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     NavigateTo(KURL("https://example.com/"));
     // This test only needs the proxy client set to avoid calling
     // PaintWorkletProxyClient::Create, but it doesn't need the dispatcher/etc.

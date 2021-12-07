@@ -197,8 +197,8 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     marker.MoveBy(-box_origin);
     marker = marker.TransposedRect();
     marker.MoveBy(
-        gfx::Point(RoundToInt(box.X()),
-                   RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
+        LayoutPoint(RoundToInt(box.X()),
+                    RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
     state_saver.Save();
     context.Translate(marker.X(), marker.MaxY());
     context.Rotate(Deg2rad(90.0f));
@@ -260,7 +260,6 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
   } else {
-    // Is the truncation to IntSize below meaningful or a bug?
     context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId,
                      auto_dark_mode);
     text_origin += gfx::Vector2dF(font.Width(suffix_run), 0);

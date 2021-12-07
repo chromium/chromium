@@ -31,7 +31,7 @@ namespace blink {
 namespace {
 
 gfx::Rect GetRect(LayoutObject* layout_object) {
-  return ToGfxRect(EnclosingIntRect(layout_object->VisualRectInDocument()));
+  return ToEnclosingRect(layout_object->VisualRectInDocument());
 }
 
 void FindNodeVectorsDiff(const Vector<Persistent<Node>>& a,

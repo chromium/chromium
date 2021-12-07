@@ -85,9 +85,9 @@ class WebPluginContainerTest : public PageTestBase {
   }
 
   void CalculateGeometry(WebPluginContainerImpl* plugin_container_impl,
-                         IntRect& window_rect,
-                         IntRect& clip_rect,
-                         IntRect& unobscured_rect) {
+                         gfx::Rect& window_rect,
+                         gfx::Rect& clip_rect,
+                         gfx::Rect& unobscured_rect) {
     plugin_container_impl->CalculateGeometry(window_rect, clip_rect,
                                              unobscured_rect);
   }
@@ -1184,7 +1184,7 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTest) {
   auto* plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("translated-plugin")));
-  plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
+  plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
 
   gfx::Rect rect = plugin_container_impl->GetElement().BoundsInViewport();
   EXPECT_TRUE(plugin_container_impl->IsRectTopmost(rect));
@@ -1208,14 +1208,14 @@ TEST_F(WebPluginContainerTest, IsRectTopmostTestWithOddAndEvenDimensions) {
   auto* even_plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("translated-plugin")));
-  even_plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
+  even_plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
   auto even_rect = even_plugin_container_impl->GetElement().BoundsInViewport();
   EXPECT_TRUE(even_plugin_container_impl->IsRectTopmost(even_rect));
 
   auto* odd_plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("odd-dimensions-plugin")));
-  odd_plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
+  odd_plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
   auto odd_rect = odd_plugin_container_impl->GetElement().BoundsInViewport();
   EXPECT_TRUE(odd_plugin_container_impl->IsRectTopmost(odd_rect));
 }
@@ -1241,12 +1241,12 @@ TEST_F(WebPluginContainerTest, ClippedRectsForIframedElement) {
 
   DCHECK(plugin_container_impl);
 
-  IntRect window_rect, clip_rect, unobscured_rect;
+  gfx::Rect window_rect, clip_rect, unobscured_rect;
   CalculateGeometry(plugin_container_impl, window_rect, clip_rect,
                     unobscured_rect);
-  EXPECT_EQ(IntRect(20, 220, 40, 40), window_rect);
-  EXPECT_EQ(IntRect(0, 0, 40, 40), clip_rect);
-  EXPECT_EQ(IntRect(0, 0, 40, 40), unobscured_rect);
+  EXPECT_EQ(gfx::Rect(20, 220, 40, 40), window_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 40, 40), clip_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 40, 40), unobscured_rect);
 
   // Cause the plugin's frame to be detached.
   web_view_helper.Reset();
@@ -1273,67 +1273,62 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
 
   DCHECK(plugin_container_impl);
 
-  IntSize plugin_size(40, 40);
-  IntSize iframe_size(40, 40);
+  gfx::Size plugin_size(40, 40);
+  gfx::Size iframe_size(40, 40);
 
   gfx::Vector2d iframe_offset_in_root_frame(0, 300);
   gfx::Vector2d plugin_offset_in_iframe(0, 40);
 
-  auto compute_expected_values = [=](IntSize root_document_scroll_to,
-                                     IntSize iframe_scroll_to) {
+  auto compute_expected_values = [=](gfx::Point root_document_scroll_to,
+                                     gfx::Point iframe_scroll_to) {
     gfx::Vector2d offset_in_iframe =
-        plugin_offset_in_iframe - ToGfxVector2d(iframe_scroll_to);
+        plugin_offset_in_iframe - iframe_scroll_to.OffsetFromOrigin();
     gfx::Vector2d offset_in_root_document =
-        iframe_offset_in_root_frame - ToGfxVector2d(root_document_scroll_to);
+        iframe_offset_in_root_frame -
+        root_document_scroll_to.OffsetFromOrigin();
     // window_rect is a plugin rectangle in the root frame coordinates.
-    IntRect expected_window_rect(
+    gfx::Rect expected_window_rect(
         gfx::PointAtOffsetFromOrigin(offset_in_root_document +
                                      offset_in_iframe),
         plugin_size);
 
     // unobscured_rect is the visible part of the plugin, inside the iframe.
-    IntRect expected_unobscured_rect(ToGfxPoint(iframe_scroll_to), iframe_size);
-    expected_unobscured_rect.Intersect(IntRect(
+    gfx::Rect expected_unobscured_rect(iframe_scroll_to, iframe_size);
+    expected_unobscured_rect.Intersect(gfx::Rect(
         gfx::PointAtOffsetFromOrigin(plugin_offset_in_iframe), plugin_size));
-    expected_unobscured_rect.Offset(-IntSize(plugin_offset_in_iframe));
+    expected_unobscured_rect.Offset(-plugin_offset_in_iframe);
 
     // clip_rect is the visible part of the unobscured_rect, inside the
     // root_frame.
-    IntRect expected_clip_rect = expected_unobscured_rect;
-    expected_clip_rect.MoveBy(expected_window_rect.origin());
-    expected_clip_rect.Intersect({{0, 0}, IntSize(300, 300)});
-    expected_clip_rect.Offset(-ToIntSize(expected_window_rect.origin()));
+    gfx::Rect expected_clip_rect = expected_unobscured_rect;
+    expected_clip_rect.Offset(expected_window_rect.OffsetFromOrigin());
+    expected_clip_rect.Intersect(gfx::Rect(300, 300));
+    expected_clip_rect.Offset(-expected_window_rect.OffsetFromOrigin());
 
     return std::make_tuple(expected_window_rect, expected_clip_rect,
                            expected_unobscured_rect);
   };
 
-  IntSize root_document_scrolls_to[] = {IntSize(0, 0),
-                                        IntSize(0, 20),
-                                        IntSize(0, 300),
-                                        IntSize(0, 320),
-                                        IntSize(0, 340)};
+  gfx::Point root_document_scrolls_to[] = {
+      gfx::Point(0, 0), gfx::Point(0, 20), gfx::Point(0, 300),
+      gfx::Point(0, 320), gfx::Point(0, 340)};
 
-  IntSize iframe_scrolls_to[] = {IntSize(0, 0),
-                                 IntSize(0, 20),
-                                 IntSize(0, 40),
-                                 IntSize(0, 60),
-                                 IntSize(0, 80)};
+  gfx::Point iframe_scrolls_to[] = {gfx::Point(0, 0), gfx::Point(0, 20),
+                                    gfx::Point(0, 40), gfx::Point(0, 60),
+                                    gfx::Point(0, 80)};
 
   for (auto& root_document_scroll_to : root_document_scrolls_to) {
     for (auto& iframe_scroll_to : iframe_scrolls_to) {
-      web_view->SmoothScroll(root_document_scroll_to.width(),
-                             root_document_scroll_to.height(),
-                             base::TimeDelta());
-      iframe->SetScrollOffset(
-          gfx::PointF(iframe_scroll_to.width(), iframe_scroll_to.height()));
+      web_view->SmoothScroll(root_document_scroll_to.x(),
+                             root_document_scroll_to.y(), base::TimeDelta());
+      iframe->SetScrollOffset(gfx::PointF(iframe_scroll_to));
       UpdateAllLifecyclePhases(web_view);
       RunPendingTasks();
 
       auto expected_values =
           compute_expected_values(root_document_scroll_to, iframe_scroll_to);
 
-      IntRect window_rect, clip_rect, unobscured_rect;
+      gfx::Rect window_rect, clip_rect, unobscured_rect;
       CalculateGeometry(plugin_container_impl, window_rect, clip_rect,
                         unobscured_rect);
 
@@ -1372,12 +1367,12 @@ TEST_F(WebPluginContainerTest, ClippedRectsForSubpixelPositionedPlugin) {
 
   DCHECK(plugin_container_impl);
 
-  IntRect window_rect, clip_rect, unobscured_rect;
+  gfx::Rect window_rect, clip_rect, unobscured_rect;
   CalculateGeometry(plugin_container_impl, window_rect, clip_rect,
                     unobscured_rect);
-  EXPECT_EQ(IntRect(0, 0, 40, 40), window_rect);
-  EXPECT_EQ(IntRect(0, 0, 40, 40), clip_rect);
-  EXPECT_EQ(IntRect(0, 0, 40, 40), unobscured_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 40, 40), window_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 40, 40), clip_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, 40, 40), unobscured_rect);
 
   // Cause the plugin's frame to be detached.
   web_view_helper.Reset();
@@ -1415,7 +1410,7 @@ TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
   auto* plugin_container_impl =
       To<WebPluginContainerImpl>(GetWebPluginContainer(
           web_view, WebString::FromUTF8("translated-plugin")));
-  plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
+  plugin_container_impl->SetFrameRect(gfx::Rect(0, 0, 300, 300));
 
   EXPECT_TRUE(plugin_container_impl->IsRectTopmost(kTopmostRect));
 
@@ -1481,7 +1476,7 @@ TEST_F(WebPluginContainerTest, CompositedPlugin) {
       PropertyTreeState::Root());
   GraphicsContext graphics_context(*paint_controller);
   container->Paint(graphics_context, kGlobalPaintNormalPhase,
-                   CullRect(gfx::Rect(10, 10, 400, 300)));
+                   CullRect(gfx::Rect(10, 10, 400, 300)), gfx::Vector2d());
   paint_controller->CommitNewDisplayItems();
 
   const auto& display_items =

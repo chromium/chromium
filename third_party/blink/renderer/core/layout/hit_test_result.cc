@@ -391,10 +391,10 @@ Image* HitTestResult::GetImage(const Node* node) {
 gfx::Rect HitTestResult::ImageRect() const {
   if (!GetImage())
     return gfx::Rect();
-  return ToGfxRect(InnerNodeOrImageMapImage()
-                       ->GetLayoutBox()
-                       ->AbsoluteContentQuad()
-                       .EnclosingBoundingBox());
+  return InnerNodeOrImageMapImage()
+      ->GetLayoutBox()
+      ->AbsoluteContentQuad()
+      .EnclosingBoundingBox();
 }
 
 KURL HitTestResult::AbsoluteImageURL(const Node* node) {
@@ -546,8 +546,8 @@ ListBasedHitTestBehavior HitTestResult::AddNodeToListBasedTestResult(
       AddNodeToListBasedTestResultInternal(node, location);
   if (!should_check_containment)
     return behavior;
-  return region.Contains(location.EnclosingIntRect()) ? kStopHitTesting
-                                                      : kContinueHitTesting;
+  return region.Contains(location.ToEnclosingRect()) ? kStopHitTesting
+                                                     : kContinueHitTesting;
 }
 
 void HitTestResult::Append(const HitTestResult& other) {

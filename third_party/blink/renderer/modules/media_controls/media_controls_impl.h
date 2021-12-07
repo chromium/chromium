@@ -419,7 +419,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaElementMutationCallback> element_mutation_callback_;
 
   HeapTaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
-  IntSize size_;
+  gfx::Size size_;
 
   bool keep_showing_until_timer_fires_ : 1;
 

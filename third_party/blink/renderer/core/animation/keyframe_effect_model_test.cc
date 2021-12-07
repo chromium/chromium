@@ -58,7 +58,7 @@ using animation_test_helpers::EnsureInterpolatedValueCached;
 class AnimationKeyframeEffectModel : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().UpdateStyleAndLayoutTree();
     element = GetDocument().CreateElementForBinding("foo");
     GetDocument().body()->appendChild(element);

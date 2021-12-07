@@ -165,7 +165,7 @@ WebGLVideoFrameUploadMetadata WebGLVideoTexture::CreateVideoFrameUploadMetadata(
     return metadata;
 
   metadata.frame_id = frame->unique_id();
-  metadata.visible_rect = IntRect(frame->visible_rect());
+  metadata.visible_rect = frame->visible_rect();
   metadata.timestamp = frame->timestamp();
   if (frame->metadata().frame_duration.has_value()) {
     metadata.expected_timestamp =

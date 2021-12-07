@@ -221,7 +221,7 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
                   const void* pixels) override {
     if (target == GL_TEXTURE_2D && !level) {
       texture_sizes_.Set(bound_textures_.find(target)->value,
-                         IntSize(width, height));
+                         gfx::Size(width, height));
     }
   }
 
@@ -231,7 +231,7 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
                              GLenum internalformat) override {
     if (create_image_chromium_fail_)
       return 0;
-    image_sizes_.Set(current_image_id_, IntSize(width, height));
+    image_sizes_.Set(current_image_id_, gfx::Size(width, height));
     return current_image_id_++;
   }
 
@@ -257,7 +257,7 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   MOCK_METHOD1(ReleaseTexImage2DMock, void(GLint imageId));
   void ReleaseTexImage2DCHROMIUM(GLenum target, GLint image_id) override {
     if (target == kImageCHROMIUMTarget) {
-      image_sizes_.Set(current_image_id_, IntSize());
+      image_sizes_.Set(current_image_id_, gfx::Size());
       image_to_texture_map_.erase(image_id);
       ReleaseTexImage2DMock(image_id);
     }
@@ -353,7 +353,7 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
     return most_recently_waited_sync_token_;
   }
   GLuint NextImageIdToBeCreated() const { return current_image_id_; }
-  IntSize MostRecentlyProducedSize() const {
+  gfx::Size MostRecentlyProducedSize() const {
     return most_recently_produced_size_;
   }
 
@@ -431,11 +431,11 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
 
   gpu::SyncToken most_recently_waited_sync_token_;
   GLbyte current_mailbox_byte_ = 0;
-  IntSize most_recently_produced_size_;
+  gfx::Size most_recently_produced_size_;
   bool create_image_chromium_fail_ = false;
   GLuint current_image_id_ = 1;
-  HashMap<GLuint, IntSize> texture_sizes_;
-  HashMap<GLuint, IntSize> image_sizes_;
+  HashMap<GLuint, gfx::Size> texture_sizes_;
+  HashMap<GLuint, gfx::Size> image_sizes_;
   HashMap<GLuint, GLuint> image_to_texture_map_;
   gpu::Mailbox last_imported_shared_image_;
 };

@@ -116,12 +116,12 @@ RasterShapeIntervals::ComputeShapeMarginIntervals(int shape_margin) const {
 }
 
 void RasterShapeIntervals::InitializeBounds() {
-  bounds_ = IntRect();
+  bounds_ = gfx::Rect();
   for (int y = MinY(); y < MaxY(); ++y) {
     const IntShapeInterval& interval_at_y = IntervalAt(y);
     if (interval_at_y.IsEmpty())
       continue;
-    bounds_.Union(IntRect(interval_at_y.X1(), y, interval_at_y.Width(), 1));
+    bounds_.Union(gfx::Rect(interval_at_y.X1(), y, interval_at_y.Width(), 1));
   }
 }
 

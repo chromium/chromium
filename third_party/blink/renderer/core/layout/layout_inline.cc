@@ -1242,7 +1242,7 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
                 &intersected](const PhysicalRect& rect) {
     if (adjusted_location.Intersects(rect)) {
       intersected = true;
-      region_result.Unite(EnclosingIntRect(rect));
+      region_result.Unite(ToEnclosingRect(rect));
     }
   };
 
@@ -1982,7 +1982,7 @@ void LayoutInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
 
 PhysicalRect LayoutInline::DebugRect() const {
   NOT_DESTROYED();
-  return PhysicalRect(EnclosingIntRect(PhysicalLinesBoundingBox()));
+  return PhysicalRect(ToEnclosingRect(PhysicalLinesBoundingBox()));
 }
 
 }  // namespace blink

@@ -279,7 +279,7 @@ LayoutRect InlineTextBox::LocalSelectionRect(
   } else {
     // Avoid computing the font width when the entire line box is selected as an
     // optimization.
-    r = LayoutRect(EnclosingIntRect(
+    r = LayoutRect(ToEnclosingRect(
         LayoutRect(starting_point, LayoutSize(logical_width_, sel_height))));
   }
 

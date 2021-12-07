@@ -192,7 +192,7 @@ class MousePressEventBuilder : public WebMouseEvent {
 };
 
 void EventHandlerTest::SetUp() {
-  PageTestBase::SetUp(IntSize(300, 400));
+  PageTestBase::SetUp(gfx::Size(300, 400));
 }
 
 void EventHandlerTest::SetHtmlInnerHTML(const char* html_content) {
@@ -1190,7 +1190,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
 
   Element* element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 
   // Doing the same but for a button that doesn't have a tooltip text should
   // still trigger a tooltip update. The browser-side TooltipController will
@@ -1198,7 +1198,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
   GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
   element = GetDocument().getElementById("b2");
   EXPECT_TRUE(LastToolTipText().IsNull());
-  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
@@ -1227,7 +1227,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
 
   Element* element = GetDocument().getElementById("b");
   EXPECT_EQ("my tooltip", LastToolTipText());
-  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
@@ -1335,7 +1335,7 @@ TEST_F(EventHandlerTooltipTest,
 
   Element* element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 
   // Doing the same but for a button that doesn't have a tooltip text should
   // still trigger a tooltip update. The browser-side TooltipController will
@@ -1387,7 +1387,7 @@ TEST_F(EventHandlerTooltipTest,
 
   Element* element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 
   // Validate that blurring an element that is not focused will not just hide
   // the tooltip. It wouldn't make sense.
@@ -1395,7 +1395,7 @@ TEST_F(EventHandlerTooltipTest,
   element->blur();
 
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(ToGfxRect(GetDocument().getElementById("b1")->BoundsInViewport()),
+  EXPECT_EQ(GetDocument().getElementById("b1")->BoundsInViewport(),
             LastToolTipBounds());
 
   // Then, programmatically move the focus to another button that has no title
@@ -1411,7 +1411,7 @@ TEST_F(EventHandlerTooltipTest,
 
   element = GetDocument().getElementById("b1");
   EXPECT_EQ("my tooltip 1", LastToolTipText());
-  EXPECT_EQ(ToGfxRect(element->BoundsInViewport()), LastToolTipBounds());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
 
   // Then, programmatically blur the button to validate that the tooltip gets
   // hidden.

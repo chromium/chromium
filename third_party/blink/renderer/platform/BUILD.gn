@@ -741,8 +741,6 @@ component("platform") {
     "geometry/calculation_value.h",
     "geometry/cg/float_rect_cg.cc",
     "geometry/cg/float_size_cg.cc",
-    "geometry/cg/int_rect_cg.cc",
-    "geometry/cg/int_size_cg.cc",
     "geometry/double_point.cc",
     "geometry/double_point.h",
     "geometry/double_rect.cc",
@@ -767,11 +765,7 @@ component("platform") {
     "geometry/float_size.h",
     "geometry/geometry_as_json.h",
     "geometry/geometry_hash_traits.h",
-    "geometry/int_rect.cc",
-    "geometry/int_rect.h",
     "geometry/int_rect_outsets.h",
-    "geometry/int_size.cc",
-    "geometry/int_size.h",
     "geometry/layout_point.cc",
     "geometry/layout_point.h",
     "geometry/layout_rect.cc",
@@ -1766,8 +1760,6 @@ component("platform") {
     sources -= [
       "geometry/cg/float_rect_cg.cc",
       "geometry/cg/float_size_cg.cc",
-      "geometry/cg/int_rect_cg.cc",
-      "geometry/cg/int_size_cg.cc",
     ]
   }
 
@@ -2073,7 +2065,6 @@ source_set("blink_platform_unittests_sources") {
     "geometry/float_size_test.cc",
     "geometry/geometry_test_helpers.cc",
     "geometry/geometry_test_helpers.h",
-    "geometry/int_rect_test.cc",
     "geometry/layout_rect_test.cc",
     "geometry/layout_unit_test.cc",
     "geometry/length_functions_test.cc",

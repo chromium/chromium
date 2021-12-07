@@ -923,10 +923,10 @@ static void VisitLayoutObjectsOf(const Node& node, Visitor* visitor) {
   visitor->Visit(layout_object);
 }
 
-IntRect LayoutSelection::AbsoluteSelectionBounds() {
+gfx::Rect LayoutSelection::AbsoluteSelectionBounds() {
   Commit();
   if (paint_range_->IsNull())
-    return IntRect();
+    return gfx::Rect();
 
   // Create a single bounding box rect that encloses the whole selection.
   class SelectionBoundsVisitor {
@@ -941,7 +941,7 @@ IntRect LayoutSelection::AbsoluteSelectionBounds() {
   } visitor;
   VisitSelectedInclusiveDescendantsOf(frame_selection_->GetDocument(),
                                       &visitor);
-  return PixelSnappedIntRect(visitor.selected_rect);
+  return ToPixelSnappedRect(visitor.selected_rect);
 }
 
 void LayoutSelection::InvalidatePaintForSelection() {

@@ -32,7 +32,7 @@ class SurroundingTextTest : public testing::Test {
 };
 
 void SurroundingTextTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 }
 
 void SurroundingTextTest::SetHTML(const String& content) {

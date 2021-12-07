@@ -117,17 +117,18 @@ bool ExternalPopupMenu::ShowInternal() {
     if (!layout_object || !layout_object->IsBox())
       return false;
     auto* box = To<LayoutBox>(layout_object);
-    IntRect rect = EnclosingIntRect(
-        box->LocalToAbsoluteRect(box->PhysicalBorderBoxRect()));
-    IntRect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
+    gfx::Rect rect =
+        ToEnclosingRect(box->LocalToAbsoluteRect(box->PhysicalBorderBoxRect()));
+    gfx::Rect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
     float scale_for_emulation = WebLocalFrameImpl::FromFrame(local_frame_)
                                     ->LocalRootFrameWidget()
                                     ->GetEmulatorScale();
 
     // rect_in_viewport needs to be in CSS pixels.
     float dpr = GetDprForSizeAdjustment(*owner_element_);
-    if (dpr != 1.0)
-      rect_in_viewport.Scale(1 / dpr);
+    if (dpr != 1.0) {
+      rect_in_viewport = gfx::ScaleToRoundedRect(rect_in_viewport, 1 / dpr);
+    }
 
     gfx::Rect bounds =
         gfx::Rect(rect_in_viewport.x() * scale_for_emulation,

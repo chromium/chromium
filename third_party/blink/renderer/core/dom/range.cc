@@ -1353,7 +1353,7 @@ Node* Range::PastLastNode() const {
   return EndPosition().NodeAsRangePastLastNode();
 }
 
-IntRect Range::BoundingBox() const {
+gfx::Rect Range::BoundingBox() const {
   return ComputeTextRect(EphemeralRange(this));
 }
 

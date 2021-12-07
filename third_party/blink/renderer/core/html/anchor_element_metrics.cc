@@ -20,10 +20,10 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -126,10 +126,10 @@ bool IsUrlIncrementedByOne(const HTMLAnchorElement& anchor_element) {
 
 // Returns the bounding box rect of a layout object, including visual
 // overflows.
-IntRect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
+gfx::Rect AbsoluteElementBoundingBoxRect(const LayoutObject& layout_object) {
   Vector<PhysicalRect> rects = layout_object.OutlineRects(
       PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
-  return EnclosingIntRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
+  return ToEnclosingRect(layout_object.LocalToAbsoluteRect(UnionRect(rects)));
 }
 
 bool IsNonEmptyTextNode(Node* node) {
@@ -197,7 +197,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   float base_width = static_cast<float>(viewport.width());
 
   // The anchor element rect in the root frame.
-  IntRect target = local_frame_view->ConvertToRootFrame(
+  gfx::Rect target = local_frame_view->ConvertToRootFrame(
       AbsoluteElementBoundingBoxRect(*layout_object));
 
   // Limit the element size to the viewport size.
@@ -235,7 +235,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
   metrics->ratio_distance_root_bottom = ratio_distance_root_bottom;
 
   // Get the anchor element rect that intersects with the viewport.
-  gfx::Rect target_visible = ToGfxRect(target);
+  gfx::Rect target_visible = target;
   target_visible.Intersect(gfx::Rect(viewport.size()));
 
   // It guarantees to be less or equal to 1.

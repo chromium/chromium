@@ -16,7 +16,7 @@
 
 namespace blink {
 
-void NGMathMLPainter::PaintBar(const PaintInfo& info, const IntRect& bar) {
+void NGMathMLPainter::PaintBar(const PaintInfo& info, const gfx::Rect& bar) {
   if (bar.IsEmpty())
     return;
 
@@ -68,7 +68,7 @@ void NGMathMLPainter::PaintFractionBar(
             padding.HorizontalSum(),
         line_thickness};
     bar_rect.Move(paint_offset);
-    PaintBar(info, PixelSnappedIntRect(bar_rect));
+    PaintBar(info, ToPixelSnappedRect(bar_rect));
   }
 }
 
@@ -157,7 +157,7 @@ void NGMathMLPainter::PaintRadicalSymbol(
   PhysicalRect bar_rect = {bar_physical_offset.left, bar_physical_offset.top,
                            base_width, rule_thickness};
   bar_rect.Move(paint_offset);
-  PaintBar(info, PixelSnappedIntRect(bar_rect));
+  PaintBar(info, ToPixelSnappedRect(bar_rect));
 }
 
 void NGMathMLPainter::Paint(const PaintInfo& info,

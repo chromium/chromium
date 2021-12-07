@@ -258,14 +258,14 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
 
   void PaintFrameOverlay(const FrameOverlay& frame_overlay,
                          GraphicsContext& graphics_context,
-                         const IntSize& size) const override {
+                         const gfx::Size& size) const override {
     if (!overlay_->IsVisible())
       return;
 
     overlay_->PaintOverlayPage();
 
     if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_->SetBounds(ToGfxSize(size));
+      layer_->SetBounds(size);
       DEFINE_STATIC_LOCAL(
           Persistent<LiteralDebugNameClient>, debug_name_client,
           (MakeGarbageCollected<LiteralDebugNameClient>("InspectorOverlay")));
@@ -277,8 +277,7 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
 
     frame_overlay.Invalidate();
     DrawingRecorder recorder(graphics_context, frame_overlay,
-                             DisplayItem::kFrameOverlay,
-                             gfx::Rect(ToGfxSize(size)));
+                             DisplayItem::kFrameOverlay, gfx::Rect(size));
     // The overlay frame is has a standalone paint property tree. Paint it in
     // its root space into a paint record, then draw the record into the proper
     // target space in the overlaid frame.
@@ -1131,13 +1130,13 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   LocalFrame* overlay_frame = OverlayMainFrame();
   blink::VisualViewport& visual_viewport =
       frame->GetPage()->GetVisualViewport();
-  IntSize viewport_size = visual_viewport.Size();
+  gfx::Size viewport_size = visual_viewport.Size();
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // To make overlay render the same size text with any emulation scale,
     // compensate the emulation scale using page scale.
     float emulation_scale =
         frame->GetPage()->GetChromeClient().InputEventsScaleForEmulation();
-    viewport_size.Scale(emulation_scale);
+    viewport_size = gfx::ScaleToFlooredSize(viewport_size, emulation_scale);
     overlay_page_->GetVisualViewport().SetSize(viewport_size);
     overlay_page_->SetDefaultPageScaleLimits(1 / emulation_scale,
                                              1 / emulation_scale);
@@ -1170,7 +1169,7 @@ void InspectorOverlayAgent::PaintOverlayPage() {
 }
 
 static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
-    const IntSize& size) {
+    const gfx::Size& size) {
   std::unique_ptr<protocol::DictionaryValue> result =
       protocol::DictionaryValue::create();
   result->setInteger("width", size.width());
@@ -1282,7 +1281,7 @@ LocalFrame* InspectorOverlayAgent::OverlayMainFrame() {
 }
 
 void InspectorOverlayAgent::Reset(
-    const IntSize& viewport_size,
+    const gfx::Size& viewport_size,
     const DoubleSize& viewport_size_for_media_queries) {
   std::unique_ptr<protocol::DictionaryValue> reset_data =
       protocol::DictionaryValue::create();
@@ -1293,9 +1292,9 @@ void InspectorOverlayAgent::Reset(
   reset_data->setDouble("pageScaleFactor",
                         GetFrame()->GetPage()->GetVisualViewport().Scale());
 
-  IntRect viewport_in_screen =
+  gfx::Rect viewport_in_screen =
       GetFrame()->GetPage()->GetChromeClient().ViewportToScreen(
-          IntRect(gfx::Point(), viewport_size), GetFrame()->View());
+          gfx::Rect(gfx::Point(), viewport_size), GetFrame()->View());
   reset_data->setObject("viewportSize",
                         BuildObjectForSize(viewport_in_screen.size()));
   reset_data->setObject("viewportSizeForMediaQueries",

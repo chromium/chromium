@@ -47,7 +47,7 @@ class RasterShapeIntervals {
   }
 
   void InitializeBounds();
-  const IntRect& Bounds() const { return bounds_; }
+  const gfx::Rect& Bounds() const { return bounds_; }
   bool IsEmpty() const { return bounds_.IsEmpty(); }
 
   IntShapeInterval& IntervalAt(int y) {
@@ -73,7 +73,7 @@ class RasterShapeIntervals {
   int MinY() const { return -offset_; }
   int MaxY() const { return -offset_ + intervals_.size(); }
 
-  IntRect bounds_;
+  gfx::Rect bounds_;
   Vector<IntShapeInterval> intervals_;
   int offset_;
 };

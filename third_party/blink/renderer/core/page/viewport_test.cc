@@ -47,14 +47,14 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -108,10 +108,10 @@ static void SetViewportSettings(WebSettings* settings) {
 static PageScaleConstraints RunViewportTest(Page* page,
                                             int initial_width,
                                             int initial_height) {
-  IntSize initial_viewport_size(initial_width, initial_height);
+  gfx::Size initial_viewport_size(initial_width, initial_height);
   To<LocalFrame>(page->MainFrame())
       ->View()
-      ->SetFrameRect(IntRect(gfx::Point(), initial_viewport_size));
+      ->SetFrameRect(gfx::Rect(gfx::Point(), initial_viewport_size));
   ViewportDescription description = page->GetViewportDescription();
   PageScaleConstraints constraints =
       description.Resolve(FloatSize(initial_viewport_size), Length::Fixed(980));

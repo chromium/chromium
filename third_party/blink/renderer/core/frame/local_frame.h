@@ -89,6 +89,7 @@ class SingleThreadTaskRunner;
 namespace gfx {
 class Point;
 class Range;
+class Size;
 class SizeF;
 }  // namespace gfx
 
@@ -115,7 +116,6 @@ class CoreProbeSink;
 class IdlenessDetector;
 class InspectorTaskRunner;
 class InterfaceRegistry;
-class IntSize;
 class LayoutView;
 class LocalDOMWindow;
 class LocalWindowProxy;
@@ -188,7 +188,7 @@ class CORE_EXPORT LocalFrame final
   // this LocalFrame has no corresponding RenderFrameHost.
   void Init(Frame* opener, std::unique_ptr<PolicyContainer> policy_container);
   void SetView(LocalFrameView*);
-  void CreateView(const IntSize&, const Color&);
+  void CreateView(const gfx::Size&, const Color&);
 
   // Frame overrides:
   ~LocalFrame() override;
@@ -453,18 +453,18 @@ class CORE_EXPORT LocalFrame final
   void SetViewportIntersectionFromParent(
       const mojom::blink::ViewportIntersectionState& intersection_state);
 
-  IntSize GetMainFrameViewportSize() const override;
+  gfx::Size GetMainFrameViewportSize() const override;
   gfx::Point GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;
 
   // See viewport_intersection_state.mojom for more info on these
   // methods.
-  IntRect RemoteViewportIntersection() const {
-    return IntRect(intersection_state_.viewport_intersection);
+  gfx::Rect RemoteViewportIntersection() const {
+    return intersection_state_.viewport_intersection;
   }
-  IntRect RemoteMainFrameIntersection() const {
-    return IntRect(intersection_state_.main_frame_intersection);
+  gfx::Rect RemoteMainFrameIntersection() const {
+    return intersection_state_.main_frame_intersection;
   }
   gfx::Transform RemoteMainFrameTransform() const {
     return intersection_state_.main_frame_transform;

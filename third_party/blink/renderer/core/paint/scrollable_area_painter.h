@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace gfx {
+class Rect;
 class Vector2d;
 }
 
@@ -16,7 +17,6 @@ namespace blink {
 class CullRect;
 class DisplayItemClient;
 class GraphicsContext;
-class IntRect;
 class Scrollbar;
 struct PaintInfo;
 class PaintLayerScrollableArea;
@@ -52,7 +52,7 @@ class ScrollableAreaPainter {
 
  private:
   void DrawPlatformResizerImage(GraphicsContext&,
-                                const IntRect& resizer_corner_rect);
+                                const gfx::Rect& resizer_corner_rect);
 
   PaintLayerScrollableArea& GetScrollableArea() const;
   const DisplayItemClient& DisplayItemClientForCorner() const;

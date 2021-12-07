@@ -16,7 +16,7 @@ namespace blink {
 class HTMLObjectElementTest : public testing::Test {
  protected:
   void SetUp() final {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   }
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 

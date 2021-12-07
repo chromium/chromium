@@ -169,7 +169,7 @@ class PLATFORM_EXPORT GeometryMapper {
   // Same as SourceToDestinationProjection() except that it maps the rect
   // rather than returning the matrix.
   // |mapping_rect| is both input and output. Its type can be FloatRect,
-  // LayoutRect, IntRect, gfx::Rect or gfx::RectF.
+  // LayoutRect, gfx::Rect, gfx::Rect or gfx::RectF.
   template <typename Rect>
   static void SourceToDestinationRect(
       const TransformPaintPropertyNodeOrAlias& source,
@@ -346,12 +346,6 @@ class PLATFORM_EXPORT GeometryMapper {
 
   static void MoveRect(LayoutRect& rect, const gfx::Vector2dF& delta) {
     rect.Move(LayoutSize(delta.x(), delta.y()));
-  }
-
-  static void MoveRect(IntRect& rect, const gfx::Vector2dF& delta) {
-    auto float_rect = FloatRect(rect);
-    MoveRect(float_rect, delta);
-    rect = EnclosingIntRect(float_rect);
   }
 
   static void MoveRect(gfx::Rect& rect, const gfx::Vector2dF& delta) {

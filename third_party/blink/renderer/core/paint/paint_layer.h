@@ -325,11 +325,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
   // Location() is not the correct paint offset. It's also incorrect in flipped
   // blocks writing mode.
-  IntSize PixelSnappedSize() const {
+  gfx::Size PixelSnappedSize() const {
     LayoutPoint location = layout_object_->IsBox()
                                ? To<LayoutBox>(layout_object_.Get())->Location()
                                : LayoutPoint();
-    return PixelSnappedIntSize(Size(), location);
+    return ToPixelSnappedSize(Size(), location);
   }
 
 #if DCHECK_IS_ON()
@@ -487,7 +487,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PhysicalRect PhysicalBoundingBox(const PaintLayer* ancestor_layer) const;
   PhysicalRect FragmentsBoundingBox(const PaintLayer* ancestor_layer) const;
 
-  IntRect ExpandedBoundingBoxForCompositingOverlapTest(
+  gfx::Rect ExpandedBoundingBoxForCompositingOverlapTest(
       bool use_clipped_bounding_rect) const;
   PhysicalRect BoundingBoxForCompositing() const;
 
@@ -878,8 +878,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // These two do not include any applicable scroll offset of the
   // root PaintLayer, unless CompositingOptimizationsEnabled is on.
-  const IntRect ClippedAbsoluteBoundingBox() const;
-  const IntRect UnclippedAbsoluteBoundingBox() const;
+  const gfx::Rect ClippedAbsoluteBoundingBox() const;
+  const gfx::Rect UnclippedAbsoluteBoundingBox() const;
 
   const PaintLayer* OpacityAncestor() const {
     return GetAncestorDependentCompositingInputs().opacity_ancestor;

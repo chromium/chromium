@@ -53,7 +53,7 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
     // Paints frame overlay contents.
     virtual void PaintFrameOverlay(const FrameOverlay&,
                                    GraphicsContext&,
-                                   const IntSize& view_size) const = 0;
+                                   const gfx::Size& view_size) const = 0;
     // For CompositeAfterPaint. Invalidates composited layers managed by the
     // delegate if any.
     virtual void Invalidate() {}
@@ -79,7 +79,7 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
   }
 
   // FrameOverlay is always the same size as the viewport.
-  IntSize Size() const;
+  gfx::Size Size() const;
 
   const Delegate* GetDelegate() const { return delegate_.get(); }
   const LocalFrame& Frame() const { return *frame_; }

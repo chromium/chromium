@@ -108,7 +108,7 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   chrome_client_ = MakeGarbageCollected<WindowToViewportScalingChromeClient>();
   dummy_page_holder_ = nullptr;
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(view_width, view_height), chrome_client_);
+      gfx::Size(view_width, view_height), chrome_client_);
 
   if (page_zoom_factor_)
     dummy_page_holder_->GetFrame().SetPageZoomFactor(page_zoom_factor_);

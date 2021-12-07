@@ -17,7 +17,7 @@ class InspectorMediaContextImplTest : public ::testing::Test {
  protected:
   void SetUp() override {
     dummy_page_holder_ =
-        std::make_unique<DummyPageHolder>(IntSize(), nullptr, nullptr);
+        std::make_unique<DummyPageHolder>(gfx::Size(), nullptr, nullptr);
     impl = MediaInspectorContextImpl::From(
         *dummy_page_holder_->GetFrame().DomWindow());
   }

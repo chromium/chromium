@@ -485,7 +485,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void DispatchLoadEvent();
 
   // Return the viewport size including scrollbars.
-  IntSize GetViewportSize() const;
+  gfx::Size GetViewportSize() const;
 
   Member<ScriptController> script_controller_;
 

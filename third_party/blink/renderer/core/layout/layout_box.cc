@@ -5717,8 +5717,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
     if (LocalFrameView* frame_view = view->GetFrameView()) {
       // Don't use visibleContentRect since the PaintLayer's size has not been
       // set yet.
-      LayoutSize viewport_size(frame_view->LayoutViewport()->ExcludeScrollbars(
-          ToGfxSize(frame_view->Size())));
+      LayoutSize viewport_size(
+          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
       return LayoutUnit(containing_block->IsHorizontalWritingMode()
                             ? viewport_size.Width()
                             : viewport_size.Height());
@@ -5790,8 +5790,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
     if (LocalFrameView* frame_view = view->GetFrameView()) {
       // Don't use visibleContentRect since the PaintLayer's size has not been
       // set yet.
-      LayoutSize viewport_size(frame_view->LayoutViewport()->ExcludeScrollbars(
-          ToGfxSize(frame_view->Size())));
+      LayoutSize viewport_size(
+          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
       return containing_block->IsHorizontalWritingMode()
                  ? viewport_size.Height()
                  : viewport_size.Width();
@@ -8350,7 +8350,7 @@ bool LayoutBox::NeedsScrollNode(
   return GetScrollableArea()->ScrollsOverflow();
 }
 
-void LayoutBox::OverrideTickmarks(Vector<IntRect> tickmarks) {
+void LayoutBox::OverrideTickmarks(Vector<gfx::Rect> tickmarks) {
   NOT_DESTROYED();
   GetScrollableArea()->SetTickmarksOverride(std::move(tickmarks));
   InvalidatePaintForTickmarks();

@@ -40,12 +40,12 @@ namespace blink {
 
 class OverlapMapContainer {
  public:
-  void Add(const IntRect& bounds) {
+  void Add(const gfx::Rect& bounds) {
     layer_rects_.push_back(bounds);
     bounding_box_.Union(bounds);
   }
 
-  bool OverlapsLayers(const IntRect& bounds) const {
+  bool OverlapsLayers(const gfx::Rect& bounds) const {
     // Checking with the bounding box will quickly reject cases when
     // layers are created for lists of items going in one direction and
     // never overlap with each other.
@@ -64,8 +64,8 @@ class OverlapMapContainer {
   }
 
  private:
-  Vector<IntRect, 64> layer_rects_;
-  IntRect bounding_box_;
+  Vector<gfx::Rect, 64> layer_rects_;
+  gfx::Rect bounding_box_;
 };
 
 struct OverlapMapContainers {
@@ -93,7 +93,7 @@ class CompositingRequirementsUpdater::OverlapMap {
   // PaintLayers not within it are. This is necessary because PaintLayerClipper
   // is not smart enough to understand not to clip composited overflow clips,
   // but still clip otherwise.
-  void Add(PaintLayer* layer, const IntRect& bounds, bool is_clipped) {
+  void Add(PaintLayer* layer, const gfx::Rect& bounds, bool is_clipped) {
     DCHECK(!layer->IsRootLayer());
     if (bounds.IsEmpty())
       return;
@@ -108,7 +108,7 @@ class CompositingRequirementsUpdater::OverlapMap {
       overlap_stack_[overlap_stack_.size() - 2].unclipped.Add(bounds);
   }
 
-  bool OverlapsLayers(const IntRect& bounds, bool is_clipped) const {
+  bool OverlapsLayers(const gfx::Rect& bounds, bool is_clipped) const {
     bool clipped_overlap = overlap_stack_.back().clipped.OverlapsLayers(bounds);
     if (is_clipped)
       return clipped_overlap;
@@ -233,7 +233,7 @@ void CompositingRequirementsUpdater::Update(PaintLayer* root) {
   HeapVector<Member<PaintLayer>> unclipped_descendants;
   ClearCollectionScope<HeapVector<Member<PaintLayer>>> scope(
       &unclipped_descendants);
-  IntRect absolute_descendant_bounding_box;
+  gfx::Rect absolute_descendant_bounding_box;
   UpdateRecursive(nullptr, root, overlap_test_request_map, recursion_data,
                   saw3d_transform, unclipped_descendants,
                   absolute_descendant_bounding_box);
@@ -261,7 +261,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     RecursionData& current_recursion_data,
     bool& descendant_has3d_transform,
     HeapVector<Member<PaintLayer>>& unclipped_descendants,
-    IntRect& absolute_descendant_bounding_box) {
+    gfx::Rect& absolute_descendant_bounding_box) {
   PaintLayerCompositor* compositor = layout_view_.Compositor();
 
   CompositingReasons reasons_to_composite = CompositingReason::kNone;
@@ -354,7 +354,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     unclipped_descendants.push_back(layer);
   }
 
-  IntRect abs_bounds = layer->ExpandedBoundingBoxForCompositingOverlapTest(
+  gfx::Rect abs_bounds = layer->ExpandedBoundingBoxForCompositingOverlapTest(
       use_clipped_bounding_rect);
 
   absolute_descendant_bounding_box = abs_bounds;
@@ -439,7 +439,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
   if (!skip_children) {
     PaintLayerPaintOrderIterator iterator(layer, kNegativeZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
-      IntRect absolute_child_descendant_bounding_box;
+      gfx::Rect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,
                       any_descendant_has3d_transform, unclipped_descendants,
                       absolute_child_descendant_bounding_box);
@@ -489,7 +489,7 @@ void CompositingRequirementsUpdater::UpdateRecursive(
     PaintLayerPaintOrderIterator iterator(layer,
                                           kNormalFlowAndPositiveZOrderChildren);
     while (PaintLayer* child_layer = iterator.Next()) {
-      IntRect absolute_child_descendant_bounding_box;
+      gfx::Rect absolute_child_descendant_bounding_box;
       UpdateRecursive(layer, child_layer, overlap_map, child_recursion_data,
                       any_descendant_has3d_transform, unclipped_descendants,
                       absolute_child_descendant_bounding_box);

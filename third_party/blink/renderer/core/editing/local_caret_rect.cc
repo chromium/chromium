@@ -195,40 +195,41 @@ LocalCaretRect LocalSelectionRectOfPosition(
 // ----
 
 template <typename Strategy>
-static IntRect AbsoluteCaretBoundsOfAlgorithm(
+static gfx::Rect AbsoluteCaretBoundsOfAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
     LayoutUnit* extra_width_to_end_of_line,
     EditingBoundaryCrossingRule rule) {
   const LocalCaretRect& caret_rect = LocalCaretRectOfPositionTemplate<Strategy>(
       position, extra_width_to_end_of_line, rule);
   if (caret_rect.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
   return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
 }
 
-IntRect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
-                              LayoutUnit* extra_width_to_end_of_line,
-                              EditingBoundaryCrossingRule rule) {
+gfx::Rect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
+                                LayoutUnit* extra_width_to_end_of_line,
+                                EditingBoundaryCrossingRule rule) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(
       position, extra_width_to_end_of_line, rule);
 }
 
 template <typename Strategy>
-static IntRect AbsoluteSelectionBoundsOfAlgorithm(
+static gfx::Rect AbsoluteSelectionBoundsOfAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position) {
   DCHECK(visible_position.IsValid()) << visible_position;
   const LocalCaretRect& caret_rect =
       LocalSelectionRectOfPosition(visible_position.ToPositionWithAffinity());
   if (caret_rect.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
   return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
 }
 
-IntRect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
+gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
   return AbsoluteSelectionBoundsOfAlgorithm<EditingStrategy>(visible_position);
 }
 
-IntRect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position) {
+gfx::Rect AbsoluteCaretBoundsOf(
+    const PositionInFlatTreeWithAffinity& position) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(
       position, nullptr, kCanCrossEditingBoundary);
 }

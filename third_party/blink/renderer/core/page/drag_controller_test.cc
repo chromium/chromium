@@ -423,10 +423,9 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
   GetFrame().GetPage()->GetDragController().StartDrag(
       &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
-  IntSize expected_image_size =
-      IntSize(50 * page_scale_factor, 40 * page_scale_factor);
-  EXPECT_EQ(expected_image_size,
-            IntSize(GetChromeClient().last_drag_image_size));
+  gfx::Size expected_image_size =
+      gfx::Size(50 * page_scale_factor, 40 * page_scale_factor);
+  EXPECT_EQ(expected_image_size, GetChromeClient().last_drag_image_size);
   // The drag image has a margin of 2px which should offset the selection
   // image by 2px from the dragged location of (5, 10).
   gfx::Point expected_offset(5 * page_scale_factor,
@@ -468,11 +467,11 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
   GetFrame().GetPage()->GetDragController().StartDrag(
       &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
-  IntSize link_image_size = IntSize(GetChromeClient().last_drag_image_size);
+  gfx::Size link_image_size = GetChromeClient().last_drag_image_size;
   // The drag link image should be a textual representation of the drag url in a
   // system font (see: DragImageForLink in DragController.cpp) and should not be
   // an empty image.
-  EXPECT_GT(link_image_size.Area(), 0u);
+  EXPECT_GT(link_image_size.Area64(), 0u);
   // Unlike the drag image in DragImageOffsetWithPageScaleFactor, the link
   // image is not offset by margin because the link image is not based on the
   // link's painting but instead is a generated image of the link's url. Because

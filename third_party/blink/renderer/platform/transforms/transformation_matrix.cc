@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quaternion.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 
 #if defined(ARCH_CPU_X86_64)
@@ -960,8 +960,8 @@ FloatPoint3D TransformationMatrix::MapPoint(const FloatPoint3D& p) const {
   return InternalMapPoint(p);
 }
 
-IntRect TransformationMatrix::MapRect(const IntRect& rect) const {
-  return EnclosingIntRect(MapRect(FloatRect(rect)));
+gfx::Rect TransformationMatrix::MapRect(const gfx::Rect& rect) const {
+  return ToEnclosingRect(MapRect(FloatRect(rect)));
 }
 
 LayoutRect TransformationMatrix::MapRect(const LayoutRect& r) const {

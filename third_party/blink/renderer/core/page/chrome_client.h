@@ -92,7 +92,6 @@ class HTMLInputElement;
 class HTMLSelectElement;
 class HitTestLocation;
 class HitTestResult;
-class IntRect;
 class KeyboardEvent;
 class LocalFrame;
 class LocalFrameView;
@@ -140,8 +139,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void InvalidateContainer() = 0;
 
   // Converts the rect from the viewport coordinates to screen coordinates.
-  virtual IntRect ViewportToScreen(const IntRect&,
-                                   const LocalFrameView*) const = 0;
+  virtual gfx::Rect ViewportToScreen(const gfx::Rect&,
+                                     const LocalFrameView*) const = 0;
 
   void ScheduleAnimation(const LocalFrameView* view) {
     ScheduleAnimation(view, base::TimeDelta());
@@ -155,12 +154,12 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // if the |requesting_frame| (i.e. the opener or |frame| itself) has
   // experimental window placement features enabled. The browser will check
   // permissions before actually supporting cross-screen placement requests.
-  IntRect CalculateWindowRectWithAdjustment(const IntRect& pending_rect,
-                                            LocalFrame& frame,
-                                            LocalFrame& requesting_frame);
+  gfx::Rect CalculateWindowRectWithAdjustment(const gfx::Rect& pending_rect,
+                                              LocalFrame& frame,
+                                              LocalFrame& requesting_frame);
 
   // Calls CalculateWindowRectWithAdjustment, then SetWindowRect.
-  void SetWindowRectWithAdjustment(const IntRect& pending_rect,
+  void SetWindowRectWithAdjustment(const gfx::Rect& pending_rect,
                                    LocalFrame& frame);
 
   // Tells the browser that another page has accessed the DOM of the initial
@@ -169,7 +168,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   // This gives the rect of the top level window that the given LocalFrame is a
   // part of.
-  virtual IntRect RootWindowRect(LocalFrame&) = 0;
+  virtual gfx::Rect RootWindowRect(LocalFrame&) = 0;
 
   virtual void FocusPage() = 0;
   virtual void DidFocusPage() = 0;
@@ -239,7 +238,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // browser will discard the unnecessary show request.
   virtual void Show(const blink::LocalFrameToken& opener_frame_token,
                     NavigationPolicy navigation_policy,
-                    const IntRect& initial_rect,
+                    const gfx::Rect& initial_rect,
                     bool consumed_user_gesture) = 0;
 
   // All the parameters should be in viewport space. That is, if an event
@@ -324,7 +323,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // Returns a custom visible rect if a viewport override is active. Requires
   // the |frame| being painted, but only supports being used for the main frame.
   virtual void OverrideVisibleRectForMainFrame(LocalFrame& frame,
-                                               IntRect* paint_rect) const {}
+                                               gfx::Rect* paint_rect) const {}
 
   // Returns the scale used to convert incoming input events while emulating
   // device metics.
@@ -339,7 +338,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void ZoomToFindInPageRect(const gfx::Rect&) {}
 
-  virtual void ContentsSizeChanged(LocalFrame*, const IntSize&) const = 0;
+  virtual void ContentsSizeChanged(LocalFrame*, const gfx::Size&) const = 0;
   // Call during pinch gestures, or when page-scale changes on main-frame load.
   virtual void PageScaleFactorChanged() const {}
   virtual float ClampPageScaleFactorToLimits(float scale) const {
@@ -474,7 +473,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual bool IsSVGImageChromeClient() const { return false; }
 
-  virtual IntSize MinimumWindowSize() const { return IntSize(100, 100); }
+  virtual gfx::Size MinimumWindowSize() const { return gfx::Size(100, 100); }
 
   virtual bool IsChromeClientImpl() const { return false; }
 
@@ -564,7 +563,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   ChromeClient() = default;
 
   virtual void ShowMouseOverURL(const HitTestResult&) = 0;
-  virtual void SetWindowRect(const IntRect&, LocalFrame&) = 0;
+  virtual void SetWindowRect(const gfx::Rect&, LocalFrame&) = 0;
   virtual bool OpenBeforeUnloadConfirmPanelDelegate(LocalFrame*,
                                                     bool is_reload) = 0;
   virtual bool OpenJavaScriptAlertDelegate(LocalFrame*, const String&) = 0;

@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_update_type.h"
 #include "third_party/blink/renderer/core/paint/layout_object_counter.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class AnimationHost;
@@ -146,7 +146,7 @@ class CORE_EXPORT LocalFrameView final
   };
 
   explicit LocalFrameView(LocalFrame&);
-  LocalFrameView(LocalFrame&, const IntSize& initial_size);
+  LocalFrameView(LocalFrame&, const gfx::Size& initial_size);
   ~LocalFrameView() override;
 
   LocalFrame& GetFrame() const {
@@ -164,7 +164,7 @@ class CORE_EXPORT LocalFrameView final
   bool CanHaveScrollbars() const { return can_have_scrollbars_; }
   bool VisualViewportSuppliesScrollbars();
 
-  void SetLayoutOverflowSize(const IntSize&);
+  void SetLayoutOverflowSize(const gfx::Size&);
 
   bool DidFirstLayout() const;
   bool LifecycleUpdatesActive() const;
@@ -246,8 +246,8 @@ class CORE_EXPORT LocalFrameView final
 
   // Methods for getting/setting the size Blink should use to layout the
   // contents.
-  IntSize GetLayoutSize() const { return layout_size_; }
-  void SetLayoutSize(const IntSize&);
+  gfx::Size GetLayoutSize() const { return layout_size_; }
+  void SetLayoutSize(const gfx::Size&);
 
   // If this is set to false, the layout size will need to be explicitly set by
   // the owner.  E.g. WebViewImpl sets its mainFrame's layout size manually
@@ -256,7 +256,7 @@ class CORE_EXPORT LocalFrameView final
     return layout_size_fixed_to_frame_size_;
   }
 
-  void SetInitialViewportSize(const IntSize&);
+  void SetInitialViewportSize(const gfx::Size&);
   int InitialViewportWidth() const;
   int InitialViewportHeight() const;
 
@@ -423,7 +423,7 @@ class CORE_EXPORT LocalFrameView final
   void IncrementVisuallyNonEmptyPixelCount(const gfx::Size&);
   bool IsVisuallyNonEmpty() const { return is_visually_non_empty_; }
   void SetIsVisuallyNonEmpty() { is_visually_non_empty_ = true; }
-  void EnableAutoSizeMode(const IntSize& min_size, const IntSize& max_size);
+  void EnableAutoSizeMode(const gfx::Size& min_size, const gfx::Size& max_size);
   void DisableAutoSizeMode();
 
   void ForceLayoutForPagination(const gfx::SizeF& page_size,
@@ -508,8 +508,8 @@ class CORE_EXPORT LocalFrameView final
   // Methods for converting between this frame and other coordinate spaces.
   // For definitions and an explanation of the varous spaces, please see:
   // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
-  IntRect ViewportToFrame(const IntRect&) const;
-  IntRect FrameToViewport(const IntRect&) const;
+  gfx::Rect ViewportToFrame(const gfx::Rect&) const;
+  gfx::Rect FrameToViewport(const gfx::Rect&) const;
   gfx::Point FrameToViewport(const gfx::Point&) const;
   gfx::Point ViewportToFrame(const gfx::Point&) const;
   gfx::PointF ViewportToFrame(const gfx::PointF&) const;
@@ -522,31 +522,31 @@ class CORE_EXPORT LocalFrameView final
   gfx::Point SoonToBeRemovedUnscaledViewportToContents(const gfx::Point&) const;
 
   // Functions for converting to screen coordinates.
-  IntRect FrameToScreen(const IntRect&) const;
+  gfx::Rect FrameToScreen(const gfx::Rect&) const;
 
   // Converts from/to local frame coordinates to the root frame coordinates.
-  IntRect ConvertToRootFrame(const IntRect&) const;
+  gfx::Rect ConvertToRootFrame(const gfx::Rect&) const;
   gfx::Point ConvertToRootFrame(const gfx::Point&) const;
   PhysicalOffset ConvertToRootFrame(const PhysicalOffset&) const;
   gfx::PointF ConvertToRootFrame(const gfx::PointF&) const;
   PhysicalRect ConvertToRootFrame(const PhysicalRect&) const;
-  IntRect ConvertFromRootFrame(const IntRect&) const;
+  gfx::Rect ConvertFromRootFrame(const gfx::Rect&) const;
   gfx::Point ConvertFromRootFrame(const gfx::Point&) const;
   gfx::PointF ConvertFromRootFrame(const gfx::PointF&) const;
   PhysicalOffset ConvertFromRootFrame(const PhysicalOffset&) const;
 
-  IntRect RootFrameToDocument(const IntRect&);
+  gfx::Rect RootFrameToDocument(const gfx::Rect&);
   gfx::Point RootFrameToDocument(const gfx::Point&);
   gfx::PointF RootFrameToDocument(const gfx::PointF&);
   gfx::Point DocumentToFrame(const gfx::Point&) const;
   gfx::PointF DocumentToFrame(const gfx::PointF&) const;
   DoublePoint DocumentToFrame(const DoublePoint&) const;
   PhysicalOffset DocumentToFrame(const PhysicalOffset&) const;
-  IntRect DocumentToFrame(const IntRect&) const;
+  gfx::Rect DocumentToFrame(const gfx::Rect&) const;
   PhysicalRect DocumentToFrame(const PhysicalRect&) const;
   gfx::Point FrameToDocument(const gfx::Point&) const;
   PhysicalOffset FrameToDocument(const PhysicalOffset&) const;
-  IntRect FrameToDocument(const IntRect&) const;
+  gfx::Rect FrameToDocument(const gfx::Rect&) const;
   PhysicalRect FrameToDocument(const PhysicalRect&) const;
 
   // Normally a LocalFrameView synchronously paints during full lifecycle
@@ -759,7 +759,7 @@ class CORE_EXPORT LocalFrameView final
   }
 
  protected:
-  void FrameRectsChanged(const IntRect&) override;
+  void FrameRectsChanged(const gfx::Rect&) override;
   void SelfVisibleChanged() override;
   void ParentVisibleChanged() override;
   void NotifyFrameRectsChangedIfNeeded();
@@ -774,7 +774,7 @@ class CORE_EXPORT LocalFrameView final
   void EnqueueScrollEvents();
 
  private:
-  LocalFrameView(LocalFrame&, IntRect);
+  LocalFrameView(LocalFrame&, gfx::Rect);
 
 #if DCHECK_IS_ON()
   class DisallowLayoutInvalidationScope {
@@ -849,13 +849,13 @@ class CORE_EXPORT LocalFrameView final
   // this frame relative to its parent. Returns true on successfully creating
   // a placeholder and sending an IPC to the browser.
   bool CapturePaintPreview(GraphicsContext& context,
-                           const IntSize& paint_offset) const;
+                           const gfx::Vector2d& paint_offset) const;
 
   // EmbeddedContentView implementation
   void Paint(GraphicsContext&,
              const GlobalPaintFlags,
              const CullRect&,
-             const IntSize& = IntSize()) const final;
+             const gfx::Vector2d&) const final;
 
   void PaintInternal(GraphicsContext&,
                      const GlobalPaintFlags,
@@ -908,12 +908,12 @@ class CORE_EXPORT LocalFrameView final
 
   // Methods to do point conversion via layoutObjects, in order to take
   // transforms into account.
-  IntRect ConvertToContainingEmbeddedContentView(const IntRect&) const;
+  gfx::Rect ConvertToContainingEmbeddedContentView(const gfx::Rect&) const;
   gfx::Point ConvertToContainingEmbeddedContentView(const gfx::Point&) const;
   PhysicalOffset ConvertToContainingEmbeddedContentView(
       const PhysicalOffset&) const;
   gfx::PointF ConvertToContainingEmbeddedContentView(const gfx::PointF&) const;
-  IntRect ConvertFromContainingEmbeddedContentView(const IntRect&) const;
+  gfx::Rect ConvertFromContainingEmbeddedContentView(const gfx::Rect&) const;
   gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
   PhysicalOffset ConvertFromContainingEmbeddedContentView(
       const PhysicalOffset&) const;
@@ -933,7 +933,7 @@ class CORE_EXPORT LocalFrameView final
 
   AXObjectCache* ExistingAXObjectCache() const;
 
-  void SetLayoutSizeInternal(const IntSize&);
+  void SetLayoutSizeInternal(const gfx::Size&);
 
   ScrollingCoordinator* GetScrollingCoordinator() const;
 
@@ -1043,7 +1043,7 @@ class CORE_EXPORT LocalFrameView final
 
   // Used for tracking the frame's size and replicating it to the browser
   // process when it changes.
-  absl::optional<IntSize> frame_size_;
+  absl::optional<gfx::Size> frame_size_;
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;
@@ -1066,8 +1066,8 @@ class CORE_EXPORT LocalFrameView final
   ObjectSet background_attachment_fixed_objects_;
   Member<FrameViewAutoSizeInfo> auto_size_info_;
 
-  IntSize layout_size_;
-  IntSize initial_viewport_size_;
+  gfx::Size layout_size_;
+  gfx::Size initial_viewport_size_;
   bool layout_size_fixed_to_frame_size_;
 
   bool needs_update_geometries_;
@@ -1082,7 +1082,7 @@ class CORE_EXPORT LocalFrameView final
 
   // TODO(bokan): This is unneeded when root-layer-scrolls is turned on.
   // crbug.com/417782.
-  IntSize layout_overflow_size_;
+  gfx::Size layout_overflow_size_;
 
   bool root_layer_did_scroll_;
 

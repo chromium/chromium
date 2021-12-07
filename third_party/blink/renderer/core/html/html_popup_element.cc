@@ -15,9 +15,9 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -367,7 +367,7 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   // trigger a re-entrant style and layout update.
   int avail_width = GetDocument().View()->Size().width();
   int avail_height = GetDocument().View()->Size().height();
-  IntRect avail_rect = IntRect(0, 0, avail_width, avail_height);
+  gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
 
   // Position the listbox part where is more space available.
   const float available_space_above =

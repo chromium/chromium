@@ -127,7 +127,7 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
   rect_with_outsets.Expand(outsets);
   rect_with_outsets.size.ClampNegativeToZero();
 
-  // The standard LayoutRect::PixelSnappedIntRect() method will not
+  // The standard LayoutRect::ToPixelSnappedRect() method will not
   // let small sizes snap to zero, but that has the side effect here of
   // preventing an inner border for a very thin element from snapping to
   // zero size as occurs when a unit width border is applied to a sub-pixel

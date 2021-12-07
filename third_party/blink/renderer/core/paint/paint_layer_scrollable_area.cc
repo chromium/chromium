@@ -274,7 +274,8 @@ void PaintLayerScrollableArea::ApplyPendingHistoryRestoreScrollOffset() {
   pending_view_state_.reset();
 }
 
-void PaintLayerScrollableArea::SetTickmarksOverride(Vector<IntRect> tickmarks) {
+void PaintLayerScrollableArea::SetTickmarksOverride(
+    Vector<gfx::Rect> tickmarks) {
   EnsureRareData().tickmarks_override_ = std::move(tickmarks);
 }
 
@@ -2742,12 +2743,12 @@ bool PaintLayerScrollableArea::HasTickmarks() const {
          To<LayoutView>(GetLayoutBox())->HasTickmarks();
 }
 
-Vector<IntRect> PaintLayerScrollableArea::GetTickmarks() const {
+Vector<gfx::Rect> PaintLayerScrollableArea::GetTickmarks() const {
   if (RareData() && !RareData()->tickmarks_override_.IsEmpty())
     return RareData()->tickmarks_override_;
   if (layer_->IsRootLayer())
     return To<LayoutView>(GetLayoutBox())->GetTickmarks();
-  return Vector<IntRect>();
+  return Vector<gfx::Rect>();
 }
 
 void PaintLayerScrollableArea::ScrollbarManager::SetHasHorizontalScrollbar(

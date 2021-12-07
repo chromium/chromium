@@ -24,7 +24,7 @@ class PLATFORM_EXPORT DoublePoint {
   constexpr DoublePoint(const gfx::PointF& p) : x_(p.x()), y_(p.y()) {}
   // We also have conversion operator to DoublePoint defined in LayoutPoint.
 
-  constexpr explicit DoublePoint(const IntSize& s)
+  constexpr explicit DoublePoint(const gfx::Size& s)
       : x_(s.width()), y_(s.height()) {}
   constexpr explicit DoublePoint(const FloatSize& s)
       : x_(s.width()), y_(s.height()) {}

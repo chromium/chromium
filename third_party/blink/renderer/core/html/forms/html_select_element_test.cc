@@ -180,7 +180,7 @@ TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
       "-webkit-appearance:none;'><option>o1</select>");
   auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   ASSERT_NE(select, nullptr);
-  IntRect bounds = select->VisibleBoundsInVisualViewport();
+  gfx::Rect bounds = select->VisibleBoundsInVisualViewport();
   EXPECT_EQ(24, bounds.height());
 }
 

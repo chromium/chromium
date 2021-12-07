@@ -150,7 +150,7 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentNoLayoutUntilLoad) {
   Element* fragment = iframe->contentDocument()->getElementById("fragment");
 
   gfx::Rect fragment_rect_in_frame =
-      ToGfxRect(fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect();
   gfx::Rect viewport_rect(child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
@@ -210,7 +210,7 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentDirtyLayoutAfterLoad) {
   Element* fragment = iframe->contentDocument()->getElementById("fragment");
 
   gfx::Rect fragment_rect_in_frame =
-      ToGfxRect(fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect();
   gfx::Rect viewport_rect(child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
@@ -338,7 +338,7 @@ TEST_F(ElementFragmentAnchorTest, HasURLEncodedCharacters) {
   ASSERT_NE(nullptr, fragment);
 
   gfx::Rect fragment_rect_in_frame =
-      ToGfxRect(fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect();
   gfx::Rect viewport_rect(viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))

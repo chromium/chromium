@@ -42,9 +42,9 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
@@ -56,8 +56,6 @@ namespace blink {
 enum class PaintPropertyChangeType : unsigned char;
 class EffectPaintPropertyNode;
 class GraphicsContext;
-class IntRect;
-class IntSize;
 class LocalFrame;
 class Page;
 class PaintArtifactCompositor;
@@ -113,8 +111,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // The size of the Blink viewport area. See size_ for precise
   // definition.
-  void SetSize(const IntSize&);
-  IntSize Size() const { return size_; }
+  void SetSize(const gfx::Size&);
+  gfx::Size Size() const { return size_; }
 
   // The area of the layout viewport rect visible in the visual viewport,
   // relative to the layout viewport's top-left corner. i.e. As the page scale
@@ -166,9 +164,9 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // These methods are used to convert coordinates from/to viewport to root
   // frame. Root frame coordinates x page scale(pinch zoom) -> Viewport
   FloatRect ViewportToRootFrame(const FloatRect&) const;
-  IntRect ViewportToRootFrame(const IntRect&) const;
+  gfx::Rect ViewportToRootFrame(const gfx::Rect&) const;
   FloatRect RootFrameToViewport(const FloatRect&) const;
-  IntRect RootFrameToViewport(const IntRect&) const;
+  gfx::Rect RootFrameToViewport(const gfx::Rect&) const;
 
   gfx::PointF ViewportToRootFrame(const gfx::PointF&) const;
   gfx::PointF RootFrameToViewport(const gfx::PointF&) const;
@@ -313,7 +311,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // Contracts the given size by the thickness of any visible scrollbars. Does
   // not contract the size if the scrollbar is overlay.
-  IntSize ExcludeScrollbars(const IntSize&) const;
+  gfx::Size ExcludeScrollbars(const gfx::Size&) const;
 
   Member<Page> page_;
 
@@ -344,7 +342,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // they're animating or being dragged, size_ will not reflect the changed
   // visible content area. The transient URL bar-caused change to the visible
   // content area is tracked in browser_controls_adjustment.
-  IntSize size_;
+  gfx::Size size_;
 
   // Blink is only resized as a result of showing/hiding the URL bar once
   // they're fully committed (all the way hidden or shown). While they're

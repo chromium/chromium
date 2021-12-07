@@ -1105,8 +1105,8 @@ PhysicalRect Node::BoundingBox() const {
   return PhysicalRect();
 }
 
-IntRect Node::PixelSnappedBoundingBox() const {
-  return PixelSnappedIntRect(BoundingBox());
+gfx::Rect Node::PixelSnappedBoundingBox() const {
+  return ToPixelSnappedRect(BoundingBox());
 }
 
 PhysicalRect Node::BoundingBoxForScrollIntoView() const {

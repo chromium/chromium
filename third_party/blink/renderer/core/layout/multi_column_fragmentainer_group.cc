@@ -489,8 +489,8 @@ LayoutRect MultiColumnFragmentainerGroup::FlowThreadPortionOverflowRectAt(
   // be clipped in the middle of adjacent column gaps. Care is taken here to
   // avoid rounding errors.
   LayoutRect overflow_rect(
-      IntRect(-kMulticolMaxClipPixels, -kMulticolMaxClipPixels,
-              2 * kMulticolMaxClipPixels, 2 * kMulticolMaxClipPixels));
+      gfx::Rect(-kMulticolMaxClipPixels, -kMulticolMaxClipPixels,
+                2 * kMulticolMaxClipPixels, 2 * kMulticolMaxClipPixels));
   if (column_set_->IsHorizontalWritingMode()) {
     if (!is_first_column_in_multicol_container)
       overflow_rect.ShiftYEdgeTo(portion_rect.Y());

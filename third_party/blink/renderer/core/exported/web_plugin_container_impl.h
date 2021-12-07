@@ -56,7 +56,6 @@ class Event;
 class GestureEvent;
 class HTMLFrameOwnerElement;
 class HTMLPlugInElement;
-class IntRect;
 class KeyboardEvent;
 class LocalFrameView;
 class MouseEvent;
@@ -93,7 +92,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   void Paint(GraphicsContext&,
              const GlobalPaintFlags,
              const CullRect&,
-             const IntSize& paint_offset = IntSize()) const override;
+             const gfx::Vector2d& paint_offset) const override;
   void UpdateGeometry() override;
   void Show() override;
   void Hide() override;
@@ -185,7 +184,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   // method. Here we call Dispose() which does the correct virtual dispatch.
   void PreFinalize() { Dispose(); }
   void Dispose() override;
-  void SetFrameRect(const IntRect&) override;
+  void SetFrameRect(const gfx::Rect&) override;
   void PropagateFrameRects() override { ReportGeometry(); }
 
   void MaybeLostMouseLock();
@@ -201,9 +200,9 @@ class CORE_EXPORT WebPluginContainerImpl final
   // without also clipping to the screen), in local space of the plugin.
   void ComputeClipRectsForPlugin(
       const HTMLFrameOwnerElement* plugin_owner_element,
-      IntRect& window_rect,
-      IntRect& clipped_local_rect,
-      IntRect& unclipped_int_local_rect) const;
+      gfx::Rect& window_rect,
+      gfx::Rect& clipped_local_rect,
+      gfx::Rect& unclipped_int_local_rect) const;
 
   WebTouchEvent TransformTouchEvent(const WebInputEvent&);
   WebCoalescedInputEvent TransformCoalescedTouchEvent(
@@ -223,9 +222,9 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   void FocusPlugin();
 
-  void CalculateGeometry(IntRect& window_rect,
-                         IntRect& clip_rect,
-                         IntRect& unobscured_rect);
+  void CalculateGeometry(gfx::Rect& window_rect,
+                         gfx::Rect& clip_rect,
+                         gfx::Rect& unobscured_rect);
 
   friend class WebPluginContainerTest;
   class MouseLockLostListener;

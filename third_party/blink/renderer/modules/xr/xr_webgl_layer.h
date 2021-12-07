@@ -80,7 +80,7 @@ class XRWebGLLayer final : public XRLayer {
 
   // Called from XRSession::OnFrame handler. Params are background texture
   // mailbox holder and its size respectively.
-  void HandleBackgroundImage(const gpu::MailboxHolder&, const IntSize&) {}
+  void HandleBackgroundImage(const gpu::MailboxHolder&, const gfx::Size&) {}
 
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 

@@ -626,7 +626,7 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
 static bool IsCounted(const char* selector,
                       CSSParserMode mode,
                       WebFeature feature) {
-  auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(

@@ -38,7 +38,7 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     declaration_ = MakeGarbageCollected<CSSComputedStyleDeclaration>(
         GetDocument().documentElement());
   }

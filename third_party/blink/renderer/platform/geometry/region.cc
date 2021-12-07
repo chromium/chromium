@@ -31,10 +31,10 @@ namespace blink {
 
 Region::Region() = default;
 
-Region::Region(const IntRect& rect) : bounds_(rect), shape_(rect) {}
+Region::Region(const gfx::Rect& rect) : bounds_(rect), shape_(rect) {}
 
-Vector<IntRect> Region::Rects() const {
-  Vector<IntRect> rects;
+Vector<gfx::Rect> Region::Rects() const {
+  Vector<gfx::Rect> rects;
 
   for (Shape::SpanIterator span = shape_.SpansBegin(), end = shape_.SpansEnd();
        span != end && span + 1 != end; ++span) {
@@ -47,7 +47,7 @@ Vector<IntRect> Region::Rects() const {
       int x = *segment;
       int width = *(segment + 1) - x;
 
-      rects.push_back(IntRect(x, y, width, height));
+      rects.push_back(gfx::Rect(x, y, width, height));
     }
   }
 
@@ -234,7 +234,7 @@ struct Region::Shape::CompareIntersectsOperation {
 
 Region::Shape::Shape() = default;
 
-Region::Shape::Shape(const IntRect& rect) {
+Region::Shape::Shape(const gfx::Rect& rect) {
   AppendSpan(rect.y());
   AppendSegment(rect.x());
   AppendSegment(rect.right());
@@ -344,9 +344,9 @@ void Region::Shape::Dump() const {
 }
 #endif
 
-IntRect Region::Shape::Bounds() const {
+gfx::Rect Region::Shape::Bounds() const {
   if (IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
   SpanIterator span = SpansBegin();
   int min_y = span->y;
@@ -377,14 +377,14 @@ IntRect Region::Shape::Bounds() const {
   DCHECK_LE(min_x, max_x);
   DCHECK_LE(min_y, max_y);
 
-  return IntRect(min_x, min_y, max_x - min_x, max_y - min_y);
+  return gfx::Rect(min_x, min_y, max_x - min_x, max_y - min_y);
 }
 
-void Region::Shape::Translate(const IntSize& offset) {
+void Region::Shape::Translate(const gfx::Vector2d& offset) {
   for (wtf_size_t i = 0; i < segments_.size(); ++i)
-    segments_[i] += offset.width();
+    segments_[i] += offset.x();
   for (wtf_size_t i = 0; i < spans_.size(); ++i)
-    spans_[i].y += offset.height();
+    spans_[i].y += offset.y();
 }
 
 void Region::Shape::Swap(Shape& other) {
@@ -583,7 +583,7 @@ void Region::Intersect(const Region& region) {
     return;
   if (!bounds_.Intersects(region.bounds_)) {
     shape_ = Shape();
-    bounds_ = IntRect();
+    bounds_ = gfx::Rect();
     return;
   }
 
@@ -628,7 +628,7 @@ void Region::Subtract(const Region& region) {
   bounds_ = shape_.Bounds();
 }
 
-void Region::Translate(const IntSize& offset) {
+void Region::Translate(const gfx::Vector2d& offset) {
   bounds_.Offset(offset);
   shape_.Translate(offset);
 }

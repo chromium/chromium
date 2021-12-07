@@ -76,7 +76,7 @@ TEST(MixedContentCheckerTest, IsMixedContent) {
 }
 
 TEST(MixedContentCheckerTest, ContextTypeForInspector) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(1, 1));
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), KURL("http://example.test")),
@@ -117,7 +117,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
 
 TEST(MixedContentCheckerTest, HandleCertificateError) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
 
   KURL main_resource_url(NullURL(), "https://example.test");
   KURL displayed_url(NullURL(), "https://example-displayed.test");
@@ -155,7 +155,7 @@ TEST(MixedContentCheckerTest, HandleCertificateError) {
 TEST(MixedContentCheckerTest, DetectMixedForm) {
   KURL main_resource_url(NullURL(), "https://example.test/");
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), main_resource_url),
@@ -185,7 +185,7 @@ TEST(MixedContentCheckerTest, DetectMixedForm) {
 TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   KURL main_resource_url("https://example.test/");
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), main_resource_url),

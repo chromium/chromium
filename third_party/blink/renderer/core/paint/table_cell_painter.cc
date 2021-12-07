@@ -94,7 +94,7 @@ void TableCellPainter::PaintBoxDecorationBackground(
     paint_rect.Expand(layout_table_cell_.BorderBoxOutsets());
     client = &layout_table_cell_.GetScrollableArea()
                   ->GetScrollingBackgroundDisplayItemClient();
-    visual_rect = ToGfxRect(EnclosingIntRect(paint_rect));
+    visual_rect = ToEnclosingRect(paint_rect);
   } else {
     paint_rect = PaintRectNotIncludingVisualOverflow(paint_offset);
     visual_rect = BoxPainter(layout_table_cell_).VisualRect(paint_offset);

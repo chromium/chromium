@@ -945,7 +945,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
               text_combine->AdjustOffsetForHitTest(point_in_container_fragment);
         }
       }
-      if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
+      if (!ToEnclosingRect(cursor.Current().RectInContainerFragment())
                .Contains(ToFlooredPoint(point_in_container_fragment)))
         continue;
       if (auto position_with_affinity =
@@ -1112,8 +1112,8 @@ LayoutRect LayoutText::LocalCaretRect(
 
   return LayoutRect(
       StyleRef().IsHorizontalWritingMode()
-          ? IntRect(left.ToInt(), top, caret_width.ToInt(), height)
-          : IntRect(top, left.ToInt(), height, caret_width.ToInt()));
+          ? gfx::Rect(left.ToInt(), top, caret_width.ToInt(), height)
+          : gfx::Rect(top, left.ToInt(), height, caret_width.ToInt()));
 }
 
 ALWAYS_INLINE float LayoutText::WidthFromFont(
@@ -2865,7 +2865,7 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
 
 PhysicalRect LayoutText::DebugRect() const {
   NOT_DESTROYED();
-  return PhysicalRect(EnclosingIntRect(PhysicalLinesBoundingBox()));
+  return PhysicalRect(ToEnclosingRect(PhysicalLinesBoundingBox()));
 }
 
 DOMNodeId LayoutText::EnsureNodeId() {

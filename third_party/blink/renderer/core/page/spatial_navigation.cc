@@ -46,7 +46,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 

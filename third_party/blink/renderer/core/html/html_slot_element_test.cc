@@ -134,7 +134,7 @@ TEST_F(HTMLSlotElementTest, TableSizeLimit) {
 class HTMLSlotElementInDocumentTest : public testing::Test {
  protected:
   void SetUp() final {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   }
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
   const HeapVector<Member<Node>>& GetFlatTreeChildren(HTMLSlotElement& slot) {

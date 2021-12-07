@@ -29,14 +29,14 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
 // For last-uploaded-frame-metadata API. https://crbug.com/639174
 struct WebGLVideoFrameUploadMetadata {
   int frame_id = -1;
-  IntRect visible_rect = {};
+  gfx::Rect visible_rect = {};
   base::TimeDelta timestamp = {};
   base::TimeDelta expected_timestamp = {};
   bool skipped = false;

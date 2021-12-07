@@ -33,9 +33,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -136,7 +136,7 @@ class CORE_EXPORT Range final : public AbstractRange {
   Node* PastLastNode() const;
 
   // Not transform-friendly
-  IntRect BoundingBox() const;
+  gfx::Rect BoundingBox() const;
 
   // Transform-friendly
   void GetBorderAndTextQuads(Vector<FloatQuad>&) const;

@@ -112,7 +112,7 @@ void PagePopupController::ClearPagePopupClient() {
 }
 
 void PagePopupController::setWindowRect(int x, int y, int width, int height) {
-  popup_.SetWindowRect(IntRect(x, y, width, height));
+  popup_.SetWindowRect(gfx::Rect(x, y, width, height));
 }
 
 void PagePopupController::Trace(Visitor* visitor) const {

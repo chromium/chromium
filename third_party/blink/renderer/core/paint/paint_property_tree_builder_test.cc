@@ -115,7 +115,7 @@ void PaintPropertyTreeBuilderTest::SetUp() {
           expected.ToString().Ascii().c_str(),                                 \
           inflated_expected.ToString().Ascii().c_str()));                      \
       EXPECT_TRUE(                                                             \
-          PhysicalRect(EnclosingIntRect(slow_path_rect)).Contains(expected));  \
+          PhysicalRect(ToEnclosingRect(slow_path_rect)).Contains(expected));   \
       EXPECT_TRUE(inflated_expected.Contains(slow_path_rect));                 \
     } else {                                                                   \
       SCOPED_TRACE("Slow path: ");                                             \

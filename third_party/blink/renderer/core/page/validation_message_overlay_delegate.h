@@ -40,7 +40,7 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
   // FrameOverlay::Delegate implementation.
   void PaintFrameOverlay(const FrameOverlay&,
                          GraphicsContext&,
-                         const IntSize& view_size) const override;
+                         const gfx::Size& view_size) const override;
   void ServiceScriptedAnimations(base::TimeTicks) override;
 
   void StartToHide();
@@ -54,13 +54,13 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
   LocalFrameView& FrameView() const;
   void WriteDocument(SharedBuffer*);
   Element& GetElementById(const AtomicString&) const;
-  void AdjustBubblePosition(const IntRect& view_rect);
+  void AdjustBubblePosition(const gfx::Rect& view_rect);
 
   // An internal Page and a ChromeClient for it.
   Persistent<Page> page_;
   Persistent<ChromeClient> chrome_client_;
 
-  IntSize bubble_size_;
+  gfx::Size bubble_size_;
 
   // A page which triggered this validation message.
   Persistent<Page> main_page_;

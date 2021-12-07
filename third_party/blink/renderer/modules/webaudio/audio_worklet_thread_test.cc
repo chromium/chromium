@@ -50,7 +50,7 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
  public:
   void SetUp() override {
     ModuleTestBase::SetUp();
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }

@@ -74,7 +74,6 @@ struct ContextMenuData;
 class FindInPage;
 class HTMLFencedFrameElement;
 class HTMLPortalElement;
-class IntSize;
 class LocalFrameClientImpl;
 class ResourceError;
 class ScrollableArea;
@@ -424,7 +423,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       HTMLFencedFrameElement*,
       mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>);
 
-  void DidChangeContentsSize(const IntSize&);
+  void DidChangeContentsSize(const gfx::Size&);
 
   bool HasDevToolsOverlays() const;
   void UpdateDevToolsOverlaysPrePaint();

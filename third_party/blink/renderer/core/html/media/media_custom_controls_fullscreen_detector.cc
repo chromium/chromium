@@ -51,9 +51,9 @@ constexpr float kMaxAllowedPortionOfVideoOffScreen = 0.25;
 // In a nutshell:
 //  1. The video should occupy most of the viewport in at least one dimension.
 //  2. The video should be almost fully visible on the screen.
-bool IsFullscreenVideoOfDifferentRatio(const IntSize& video_size,
-                                       const IntSize& viewport_size,
-                                       const IntSize& intersection_size) {
+bool IsFullscreenVideoOfDifferentRatio(const gfx::Size& video_size,
+                                       const gfx::Size& viewport_size,
+                                       const gfx::Size& intersection_size) {
   if (video_size.IsEmpty() || viewport_size.IsEmpty())
     return false;
 
@@ -69,8 +69,8 @@ bool IsFullscreenVideoOfDifferentRatio(const IntSize& video_size,
   }
 
   // The video should be almost fully visible on the screen.
-  return video_size.Area() * (1.0 - kMaxAllowedPortionOfVideoOffScreen) <=
-         intersection_size.Area();
+  return video_size.Area64() * (1.0 - kMaxAllowedPortionOfVideoOffScreen) <=
+         intersection_size.Area64();
 }
 
 }  // anonymous namespace
@@ -205,9 +205,9 @@ void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(
   }
 
   const IntersectionGeometry& geometry = entries.back()->GetGeometry();
-  IntSize target_size = RoundedIntSize(geometry.TargetRect().size);
-  IntSize intersection_size = RoundedIntSize(geometry.IntersectionRect().size);
-  IntSize root_size = RoundedIntSize(geometry.RootRect().size);
+  gfx::Size target_size = ToRoundedSize(geometry.TargetRect().size);
+  gfx::Size intersection_size = ToRoundedSize(geometry.IntersectionRect().size);
+  gfx::Size root_size = ToRoundedSize(geometry.RootRect().size);
 
   ReportEffectivelyFullscreen(IsFullscreenVideoOfDifferentRatio(
       target_size, root_size, intersection_size));
@@ -241,9 +241,9 @@ void MediaCustomControlsFullscreenDetector::Trace(Visitor* visitor) const {
 // static
 bool MediaCustomControlsFullscreenDetector::
     IsFullscreenVideoOfDifferentRatioForTesting(
-        const IntSize& video_size,
-        const IntSize& viewport_size,
-        const IntSize& intersection_size) {
+        const gfx::Size& video_size,
+        const gfx::Size& viewport_size,
+        const gfx::Size& intersection_size) {
   return IsFullscreenVideoOfDifferentRatio(video_size, viewport_size,
                                            intersection_size);
 }

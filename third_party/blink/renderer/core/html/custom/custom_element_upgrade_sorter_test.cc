@@ -22,7 +22,7 @@ namespace blink {
 
 class CustomElementUpgradeSorterTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   Element* CreateElementWithId(const char* local_name, const char* id) {
     NonThrowableExceptionState no_exceptions;

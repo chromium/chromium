@@ -37,8 +37,8 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/color_page_popup_controller.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -91,7 +91,7 @@ void ColorChooserPopupUIController::WriteDocument(SharedBuffer* data) {
 
 void ColorChooserPopupUIController::WriteColorPickerDocument(
     SharedBuffer* data) {
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       client_->ElementRectRelativeToViewport(), frame_->View());
 
   PagePopupClient::AddString(
@@ -152,7 +152,7 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   Vector<String> suggestion_values;
   for (auto& suggestion : client_->Suggestions())
     suggestion_values.push_back(Color(suggestion->color).Serialized());
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       client_->ElementRectRelativeToViewport(), frame_->View());
 
   PagePopupClient::AddString(

@@ -42,10 +42,10 @@ Node* FindNonEmptyAnchorNode(const gfx::PointF& absolute_point,
   // If the node bounding box is sufficiently large, make a single attempt to
   // find a smaller node; the larger the node bounds, the greater the
   // variability under resize.
-  IntSize node_size =
+  gfx::Size node_size =
       node->GetLayoutObject()
           ? node->GetLayoutObject()->AbsoluteBoundingBoxRect().size()
-          : IntSize();
+          : gfx::Size();
   const int max_node_area =
       view_rect.width() * view_rect.height() * kViewportToNodeMaxRelativeArea;
   if (node_size.width() * node_size.height() > max_node_area) {
@@ -189,7 +189,7 @@ void RotationViewportAnchor::RestoreToAnchor() {
       page_scale_constraints_set_->FinalConstraints().ClampToConstraints(
           new_page_scale_factor);
 
-  gfx::SizeF visual_viewport_size(ToGfxSize(visual_viewport_->Size()));
+  gfx::SizeF visual_viewport_size(visual_viewport_->Size());
   visual_viewport_size.Scale(1 / new_page_scale_factor);
 
   gfx::Point main_frame_origin;

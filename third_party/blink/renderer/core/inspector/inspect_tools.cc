@@ -813,8 +813,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
   p2 = gfx::ScaleToRoundedPoint(p2, dp_to_dip);
 
   // Points are in device independent pixels (dip) now.
-  IntRect rect =
-      UnionRectsEvenIfEmpty(IntRect(p1, IntSize()), IntRect(p2, IntSize()));
+  gfx::Rect rect = UnionRectsEvenIfEmpty(gfx::Rect(p1, gfx::Size()),
+                                         gfx::Rect(p2, gfx::Size()));
   frontend_->screenshotRequested(protocol::Page::Viewport::create()
                                      .setX(rect.x())
                                      .setY(rect.y())

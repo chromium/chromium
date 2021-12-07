@@ -111,8 +111,8 @@ void LayoutThemeDefault::AdjustSliderThumbSize(ComputedStyle& style) const {
   if (!Platform::Current()->ThemeEngine())
     return;
 
-  IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartSliderThumb));
+  gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(
+      WebThemeEngine::kPartSliderThumb);
 
   float zoom_level = style.EffectiveZoom();
   if (style.EffectiveAppearance() == kSliderThumbHorizontalPart) {
@@ -137,14 +137,14 @@ void LayoutThemeDefault::SetSelectionColors(Color active_background_color,
 
 namespace {
 
-void SetSizeIfAuto(const IntSize& size, ComputedStyle& style) {
+void SetSizeIfAuto(const gfx::Size& size, ComputedStyle& style) {
   if (style.Width().IsAutoOrContentOrIntrinsic())
     style.SetWidth(Length::Fixed(size.width()));
   if (style.Height().IsAutoOrContentOrIntrinsic())
     style.SetHeight(Length::Fixed(size.height()));
 }
 
-void SetMinimumSizeIfAuto(const IntSize& size, ComputedStyle& style) {
+void SetMinimumSizeIfAuto(const gfx::Size& size, ComputedStyle& style) {
   // We only want to set a minimum size if no explicit size is specified, to
   // avoid overriding author intentions.
   if (style.MinWidth().IsAutoOrContentOrIntrinsic() &&
@@ -163,8 +163,8 @@ void LayoutThemeDefault::SetCheckboxSize(ComputedStyle& style) const {
       !style.Height().IsAutoOrContentOrIntrinsic())
     return;
 
-  IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartCheckbox));
+  gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(
+      WebThemeEngine::kPartCheckbox);
   float zoom_level = style.EffectiveZoom();
   size.set_width(size.width() * zoom_level);
   size.set_height(size.height() * zoom_level);
@@ -178,8 +178,8 @@ void LayoutThemeDefault::SetRadioSize(ComputedStyle& style) const {
       !style.Height().IsAutoOrContentOrIntrinsic())
     return;
 
-  IntSize size = IntSize(
-      Platform::Current()->ThemeEngine()->GetSize(WebThemeEngine::kPartRadio));
+  gfx::Size size =
+      Platform::Current()->ThemeEngine()->GetSize(WebThemeEngine::kPartRadio);
   float zoom_level = style.EffectiveZoom();
   size.set_width(size.width() * zoom_level);
   size.set_height(size.height() * zoom_level);
@@ -189,8 +189,8 @@ void LayoutThemeDefault::SetRadioSize(ComputedStyle& style) const {
 
 void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
     ComputedStyle& style) const {
-  IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
-      WebThemeEngine::kPartInnerSpinButton));
+  gfx::Size size = Platform::Current()->ThemeEngine()->GetSize(
+      WebThemeEngine::kPartInnerSpinButton);
 
   float zoom_level = style.EffectiveZoom();
   style.SetWidth(Length::Fixed(size.width() * zoom_level));

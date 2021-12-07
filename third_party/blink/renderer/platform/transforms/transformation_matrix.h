@@ -36,10 +36,10 @@
 #include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
 class PointF;
@@ -215,10 +215,8 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // Rounds the resulting mapped rectangle out. This is helpful for bounding
   // box computations but may not be what is wanted in other contexts.
-  IntRect MapRect(const IntRect&) const;
-  gfx::Rect MapRect(const gfx::Rect& r) const {
-    return ToGfxRect(MapRect(IntRect(r)));
-  }
+  gfx::Rect MapRect(const gfx::Rect&) const;
+
   LayoutRect MapRect(const LayoutRect&) const;
 
   // If the matrix has 3D components, the z component of the result is

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -1988,7 +1989,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     return nullptr;
   }
 
-  const IntRect image_data_rect(sx, sy, sw, sh);
+  const gfx::Rect image_data_rect(sx, sy, sw, sh);
 
   ImageData::ValidateAndCreateParams validate_and_create_params;
   validate_and_create_params.context_2d_error_mode = true;
@@ -2172,7 +2173,7 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     PutByteArray(data_pixmap, source_rect, dest_offset);
   }
 
-  GetPaintCanvasForDraw(IntRect(dest_rect),
+  GetPaintCanvasForDraw(gfx::RectToSkIRect(dest_rect),
                         CanvasPerformanceMonitor::DrawType::kImageData);
 }
 

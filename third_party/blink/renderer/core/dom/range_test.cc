@@ -342,8 +342,8 @@ static Vector<FloatQuad> GetBorderAndTextQuads(const Position& start,
   return quads;
 }
 
-static Vector<IntSize> ComputeSizesOfQuads(const Vector<FloatQuad>& quads) {
-  Vector<IntSize> sizes;
+static Vector<gfx::Size> ComputeSizesOfQuads(const Vector<FloatQuad>& quads) {
+  Vector<gfx::Size> sizes;
   for (const auto& quad : quads)
     sizes.push_back(quad.EnclosingBoundingBox().size());
   return sizes;

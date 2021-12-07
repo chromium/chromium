@@ -1345,7 +1345,7 @@ TEST_P(PaintPropertyTreeUpdateTest, EnsureSnapContainerData) {
   // do this. The size needs to be updated because otherwise the
   // RootFrameViewport's maximum scroll offset would be negative and trigger a
   // DCHECK.
-  GetDocument().GetPage()->GetVisualViewport().SetSize(IntSize(300, 300));
+  GetDocument().GetPage()->GetVisualViewport().SetSize(gfx::Size(300, 300));
   UpdateAllLifecyclePhasesForTest();
 
   auto doc_snap_container_data = DocScroll()->GetSnapContainerData();

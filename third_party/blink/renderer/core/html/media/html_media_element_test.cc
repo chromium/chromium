@@ -282,7 +282,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     EXPECT_CALL(*mock_media_player, SetLatencyHint(_)).Times(AnyNumber());
 
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr,
+        gfx::Size(), nullptr,
         MakeGarbageCollected<WebMediaStubLocalFrameClient>(
             std::move(mock_media_player)));
 
@@ -438,7 +438,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     // Make another document with the same security origin.
 
     auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr,
+        gfx::Size(), nullptr,
         MakeGarbageCollected<WebMediaStubLocalFrameClient>(
             /*player=*/nullptr));
     Document& document = dummy_page_holder->GetDocument();

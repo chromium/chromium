@@ -44,7 +44,7 @@ class NGTextFragmentPainter {
              const DisplayItemClient& display_item_client,
              const ComputedStyle& style,
              PhysicalRect box_rect,
-             const IntRect& visual_rect,
+             const gfx::Rect& visual_rect,
              bool is_ellipsis,
              bool is_symbol_marker,
              const PaintInfo& paint_info,

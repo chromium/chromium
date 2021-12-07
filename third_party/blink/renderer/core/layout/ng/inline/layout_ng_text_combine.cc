@@ -252,7 +252,7 @@ gfx::Rect LayoutNGTextCombine::VisualRectForPaint(
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
   PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
   ink_overflow.Move(paint_offset);
-  return ToGfxRect(EnclosingIntRect(ink_overflow));
+  return ToEnclosingRect(ink_overflow);
 }
 
 void LayoutNGTextCombine::SetScaleX(float new_scale_x) {

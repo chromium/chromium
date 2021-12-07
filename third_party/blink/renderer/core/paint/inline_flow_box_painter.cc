@@ -269,7 +269,7 @@ gfx::Rect InlineFlowBoxPainter::VisualRect(
   const auto& style = inline_flow_box_.GetLineLayoutItem().StyleRef();
   if (style.HasVisualOverflowingEffect())
     visual_rect.Expand(style.BoxDecorationOutsets());
-  return ToGfxRect(EnclosingIntRect(visual_rect));
+  return ToEnclosingRect(visual_rect);
 }
 
 void InlineFlowBoxPainter::RecordHitTestData(
@@ -281,8 +281,7 @@ void InlineFlowBoxPainter::RecordHitTestData(
   DCHECK_EQ(layout_object->StyleRef().Visibility(), EVisibility::kVisible);
 
   paint_info.context.GetPaintController().RecordHitTestData(
-      inline_flow_box_,
-      ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))),
+      inline_flow_box_, ToPixelSnappedRect(AdjustedFrameRect(paint_offset)),
       layout_object->EffectiveAllowedTouchAction(),
       layout_object->InsideBlockingWheelEventHandler());
 }
@@ -299,7 +298,7 @@ void InlineFlowBoxPainter::RecordRegionCaptureData(
     if (crop_id) {
       paint_info.context.GetPaintController().RecordRegionCaptureData(
           inline_flow_box_, *crop_id,
-          ToGfxRect(PixelSnappedIntRect(AdjustedFrameRect(paint_offset))));
+          ToPixelSnappedRect(AdjustedFrameRect(paint_offset)));
     }
   }
 }

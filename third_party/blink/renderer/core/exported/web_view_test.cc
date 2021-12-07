@@ -142,8 +142,6 @@
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/cursors.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
@@ -162,6 +160,8 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -273,7 +273,7 @@ class WebViewTest : public testing::Test {
                        const std::string& html_file);
   bool TapElement(WebInputEvent::Type, Element*);
   bool TapElementById(WebInputEvent::Type, const WebString& id);
-  IntSize PrintICBSizeFromPageSize(const FloatSize& page_size);
+  gfx::Size PrintICBSizeFromPageSize(const FloatSize& page_size);
 
   ExternalDateTimeChooser* GetExternalDateTimeChooser(
       WebViewImpl* web_view_impl);
@@ -471,12 +471,12 @@ TEST_F(WebViewTest, SetBaseBackgroundColor) {
   frame->GetDocument()->Shutdown();
 
   // Creating a new frame view with the background color having 0 alpha.
-  frame->CreateView(IntSize(1024, 768), Color::kTransparent);
+  frame->CreateView(gfx::Size(1024, 768), Color::kTransparent);
   EXPECT_EQ(SK_ColorTRANSPARENT, frame->View()->BaseBackgroundColor());
   frame->View()->Dispose();
 
   const Color transparent_red(100, 0, 0, 0);
-  frame->CreateView(IntSize(1024, 768), transparent_red);
+  frame->CreateView(gfx::Size(1024, 768), transparent_red);
   EXPECT_EQ(transparent_red, frame->View()->BaseBackgroundColor());
   frame->View()->Dispose();
 }
@@ -2720,7 +2720,7 @@ bool WebViewTest::TapElementById(WebInputEvent::Type type,
   return TapElement(type, element);
 }
 
-IntSize WebViewTest::PrintICBSizeFromPageSize(const FloatSize& page_size) {
+gfx::Size WebViewTest::PrintICBSizeFromPageSize(const FloatSize& page_size) {
   // The expected layout size comes from the calculation done in
   // ResizePageRectsKeepingRatio() which is used from PrintContext::begin() to
   // scale the page size.
@@ -2728,7 +2728,7 @@ IntSize WebViewTest::PrintICBSizeFromPageSize(const FloatSize& page_size) {
   const int icb_width =
       floor(page_size.width() * PrintContext::kPrintingMinimumShrinkFactor);
   const int icb_height = floor(icb_width * ratio);
-  return IntSize(icb_width, icb_height);
+  return gfx::Size(icb_width, icb_height);
 }
 
 ExternalDateTimeChooser* WebViewTest::GetExternalDateTimeChooser(
@@ -5131,9 +5131,9 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(), &visible_rect);
-    EXPECT_EQ(IntRect(1, 2, 3, 4), visible_rect);  // Was modified.
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(), &visible_rect);
+    EXPECT_EQ(gfx::Rect(1, 2, 3, 4), visible_rect);  // Was modified.
   }
 
   // Override applies transform, sets visible rect, and disables
@@ -5143,9 +5143,9 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   expected_matrix.MakeIdentity().Scale(2.f).Translate(-50, -55);
   EXPECT_EQ(expected_matrix, matrix);
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(100, 150), &visible_rect);
-    EXPECT_EQ(IntRect(50, 55, 100, 150), visible_rect);
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
+    EXPECT_EQ(gfx::Rect(50, 55, 100, 150), visible_rect);
   }
 
   // Setting new override discards previous one.
@@ -5154,9 +5154,9 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   expected_matrix.MakeIdentity().Scale(1.5f).Translate(-5.4f, -10.5f);
   EXPECT_EQ(expected_matrix, matrix);
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(100, 150), &visible_rect);
-    EXPECT_EQ(IntRect(5, 10, 101, 151), visible_rect);  // Was modified.
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
+    EXPECT_EQ(gfx::Rect(5, 10, 101, 151), visible_rect);  // Was modified.
   }
 
   // Clearing override restores original transform, visible rect and
@@ -5165,9 +5165,9 @@ TEST_F(WebViewTest, ForceAndResetViewport) {
   expected_matrix.MakeIdentity();
   EXPECT_EQ(expected_matrix, matrix);
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(), &visible_rect);
-    EXPECT_EQ(IntRect(1, 2, 3, 4), visible_rect);  // Not modified.
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(), &visible_rect);
+    EXPECT_EQ(gfx::Rect(1, 2, 3, 4), visible_rect);  // Not modified.
   }
 }
 
@@ -5228,9 +5228,9 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
   // Scale is irrelevant for visible rect.
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(100, 150), &visible_rect);
-    EXPECT_EQ(IntRect(50 - 100, 55 - 150, 100, 150), visible_rect);
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
+    EXPECT_EQ(gfx::Rect(50 - 100, 55 - 150, 100, 150), visible_rect);
   }
 
   // Transform adapts to scroll changes.
@@ -5245,9 +5245,9 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
   // Visible rect adapts to scroll change.
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(100, 150), &visible_rect);
-    EXPECT_EQ(IntRect(50 - 50, 55 - 55, 100, 150), visible_rect);
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
+    EXPECT_EQ(gfx::Rect(50 - 50, 55 - 55, 100, 150), visible_rect);
   }
 
   // Transform adapts to page scale changes.
@@ -5260,9 +5260,9 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   EXPECT_EQ(expected_matrix, web_view_impl->GetDeviceEmulationTransform());
   // Visible rect doesn't change.
   {
-    IntRect visible_rect(1, 2, 3, 4);
-    dev_tools_emulator->OverrideVisibleRect(IntSize(100, 150), &visible_rect);
-    EXPECT_EQ(IntRect(50 - 50, 55 - 55, 100, 150), visible_rect);
+    gfx::Rect visible_rect(1, 2, 3, 4);
+    dev_tools_emulator->OverrideVisibleRect(gfx::Size(100, 150), &visible_rect);
+    EXPECT_EQ(gfx::Rect(50 - 50, 55 - 55, 100, 150), visible_rect);
   }
 }
 
@@ -5290,7 +5290,7 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
   WebPrintParams print_params;
   print_params.print_content_area.set_size(page_size);
 
-  IntSize expected_size = PrintICBSizeFromPageSize(FloatSize(page_size));
+  gfx::Size expected_size = PrintICBSizeFromPageSize(FloatSize(page_size));
 
   frame->PrintBegin(print_params, WebNode());
 

@@ -699,7 +699,7 @@ EphemeralRange Editor::RangeForPoint(const gfx::Point& frame_point) const {
   if (previous.IsNotNull()) {
     const EphemeralRange previous_character_range =
         MakeRange(previous, position);
-    const IntRect rect = FirstRectForRange(previous_character_range);
+    const gfx::Rect rect = FirstRectForRange(previous_character_range);
     if (rect.Contains(frame_point))
       return EphemeralRange(previous_character_range);
   }
@@ -707,7 +707,7 @@ EphemeralRange Editor::RangeForPoint(const gfx::Point& frame_point) const {
   const VisiblePosition next = NextPositionOf(position);
   const EphemeralRange next_character_range = MakeRange(position, next);
   if (next_character_range.IsNotNull()) {
-    const IntRect rect = FirstRectForRange(next_character_range);
+    const gfx::Rect rect = FirstRectForRange(next_character_range);
     if (rect.Contains(frame_point))
       return EphemeralRange(next_character_range);
   }

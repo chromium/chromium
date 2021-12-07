@@ -1082,7 +1082,7 @@
     {
       name: "textAutosizingWindowSizeOverride",
       invalidate: ["TextAutosizing"],
-      type: "IntSize",
+      type: "gfx::Size",
     },
     {
       name: "WebXRImmersiveArAllowed",

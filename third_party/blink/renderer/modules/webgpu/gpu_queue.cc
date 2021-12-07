@@ -660,8 +660,8 @@ bool GPUQueue::CopyContentFromCPU(StaticBitmapImage* image,
                                   bool premultiplied_alpha,
                                   bool flipY) {
   // Prepare for uploading CPU data.
-  IntRect image_data_rect(origin.x, origin.y, copy_size.width,
-                          copy_size.height);
+  gfx::Rect image_data_rect(origin.x, origin.y, copy_size.width,
+                            copy_size.height);
 
   WebGPUImageUploadSizeInfo info = ComputeImageBitmapWebGPUUploadSizeInfo(
       image_data_rect, dest_texture_format);

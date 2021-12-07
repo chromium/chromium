@@ -154,7 +154,7 @@ class StyleEngineContainerQueryTest : public StyleEngineTest,
 };
 
 void StyleEngineTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 }
 
 StyleEngineTest::RuleSetInvalidation
@@ -2922,7 +2922,7 @@ TEST_F(StyleEngineTest,
   unsigned initial_count = GetStyleEngine().StyleForElementCount();
 
   GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
-  GetDocument().View()->SetLayoutSize(IntSize(1100, 800));
+  GetDocument().View()->SetLayoutSize(gfx::Size(1100, 800));
   UpdateAllLifecyclePhases();
 
   // Only the single div element should have its style recomputed.

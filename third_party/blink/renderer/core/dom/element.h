@@ -343,13 +343,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollTo(const ScrollToOptions*);
   LayoutBox* GetLayoutBoxForScrolling() const override;
 
-  IntRect BoundsInViewport() const;
+  gfx::Rect BoundsInViewport() const;
   // Returns an intersection rectangle of the bounds rectangle and the visual
   // viewport's rectangle in the visual viewport's coordinate space.
   // Applies ancestors' frames' clipping, but does not (yet) apply (overflow)
   // element clipping (crbug.com/889840).
-  IntRect VisibleBoundsInVisualViewport() const;
-  Vector<IntRect> OutlineRectsInVisualViewport(
+  gfx::Rect VisibleBoundsInVisualViewport() const;
+  Vector<gfx::Rect> OutlineRectsInVisualViewport(
       DocumentUpdateReason reason = DocumentUpdateReason::kUnknown) const;
 
   DOMRectList* getClientRects();

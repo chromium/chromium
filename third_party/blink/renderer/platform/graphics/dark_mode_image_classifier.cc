@@ -8,8 +8,8 @@
 
 #include "base/memory/singleton.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 namespace {

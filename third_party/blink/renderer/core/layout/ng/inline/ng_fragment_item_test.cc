@@ -329,14 +329,14 @@ TEST_F(NGFragmentItemTest, CulledInlineBox) {
   ASSERT_NE(span1, nullptr);
   Vector<const NGFragmentItem*> items_for_span1 = ItemsForAsVector(*span1);
   EXPECT_EQ(items_for_span1.size(), 0u);
-  EXPECT_EQ(IntRect(0, 0, 80, 20), span1->AbsoluteBoundingBoxRect());
+  EXPECT_EQ(gfx::Rect(0, 0, 80, 20), span1->AbsoluteBoundingBoxRect());
 
   // "span2" doesn't wrap, produces only one fragment.
   const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
   ASSERT_NE(span2, nullptr);
   Vector<const NGFragmentItem*> items_for_span2 = ItemsForAsVector(*span2);
   EXPECT_EQ(items_for_span2.size(), 0u);
-  EXPECT_EQ(IntRect(0, 20, 80, 10), span2->AbsoluteBoundingBoxRect());
+  EXPECT_EQ(gfx::Rect(0, 20, 80, 10), span2->AbsoluteBoundingBoxRect());
 }
 
 TEST_F(NGFragmentItemTest, SelfPaintingInlineBox) {

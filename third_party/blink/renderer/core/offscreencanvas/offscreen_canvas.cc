@@ -401,7 +401,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     return ResourceProvider();
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  IntSize surface_size(width(), height());
+  gfx::Size surface_size(width(), height());
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
       (IsWebGL() || IsWebGPU() ||

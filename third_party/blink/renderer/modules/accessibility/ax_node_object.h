@@ -155,7 +155,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
       ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
       ax::mojom::blink::TextDecorationStyle* text_underline_style) const final;
 
-  String ImageDataUrl(const IntSize& max_size) const final;
+  String ImageDataUrl(const gfx::Size& max_size) const final;
   int TextOffsetInFormattingContext(int offset) const override;
 
   // Object attributes.

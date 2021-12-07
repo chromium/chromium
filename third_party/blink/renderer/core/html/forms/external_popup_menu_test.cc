@@ -201,7 +201,7 @@ TEST_F(ExternalPopupMenuTest, PopupAccountsForVisualViewportTransform) {
 
   VisualViewport& visual_viewport = WebView()->GetPage()->GetVisualViewport();
 
-  IntRect rect_in_document = layout_object->AbsoluteBoundingBoxRect();
+  gfx::Rect rect_in_document = layout_object->AbsoluteBoundingBoxRect();
 
   constexpr int kScaleFactor = 2;
   ScrollOffset scroll_delta(20, 30);

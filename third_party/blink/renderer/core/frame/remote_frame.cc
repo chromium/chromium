@@ -80,7 +80,7 @@ static RemoteFramesByTokenMap& GetRemoteFramesMap() {
   return *map;
 }
 
-FloatRect DeNormalizeRect(const gfx::RectF& normalized, const IntRect& base) {
+FloatRect DeNormalizeRect(const gfx::RectF& normalized, const gfx::Rect& base) {
   FloatRect result(normalized);
   result.Scale(base.width(), base.height());
   result.MoveBy(gfx::PointF(base.origin()));
@@ -544,9 +544,9 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
   security_context_.SetInsecureNavigationsSet(set);
 }
 
-void RemoteFrame::FrameRectsChanged(const IntRect& local_frame_rect,
-                                    const IntRect& screen_space_rect) {
-  pending_visual_properties_.screen_space_rect = ToGfxRect(screen_space_rect);
+void RemoteFrame::FrameRectsChanged(const gfx::Rect& local_frame_rect,
+                                    const gfx::Rect& screen_space_rect) {
+  pending_visual_properties_.screen_space_rect = screen_space_rect;
   pending_visual_properties_.local_frame_size =
       gfx::Size(local_frame_rect.width(), local_frame_rect.height());
   SynchronizeVisualProperties();
@@ -733,18 +733,18 @@ void RemoteFrame::ScrollRectToVisible(
   absolute_rect =
       owner_object->ScrollRectToVisible(absolute_rect, std::move(params));
 
-  IntRect rect_in_document =
+  gfx::Rect rect_in_document =
       owner_object->GetDocument()
           .GetFrame()
           ->LocalFrameRoot()
           .View()
-          ->RootFrameToDocument(EnclosingIntRect(
+          ->RootFrameToDocument(ToEnclosingRect(
               owner_element->GetDocument().View()->ConvertToRootFrame(
                   absolute_rect)));
-  IntRect element_bounds_in_document = EnclosingIntRect(
+  gfx::Rect element_bounds_in_document = ToEnclosingRect(
       DeNormalizeRect(relative_element_bounds, rect_in_document));
-  IntRect caret_bounds_in_document = EnclosingIntRect(
-      DeNormalizeRect(relative_caret_bounds, rect_in_document));
+  gfx::Rect caret_bounds_in_document =
+      ToEnclosingRect(DeNormalizeRect(relative_caret_bounds, rect_in_document));
 
   // This is due to something such as scroll focused editable element into
   // view on Android which also requires an automatic zoom into legible scale.
@@ -833,7 +833,7 @@ void RemoteFrame::UpdateOpener(
   }
 }
 
-IntSize RemoteFrame::GetMainFrameViewportSize() const {
+gfx::Size RemoteFrame::GetMainFrameViewportSize() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());
@@ -974,7 +974,7 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
 
   if (view_) {
     pending_visual_properties_.compositor_viewport =
-        ToGfxRect(view_->GetCompositingRect());
+        view_->GetCompositingRect();
     pending_visual_properties_.compositing_scale_factor =
         view_->GetCompositingScaleFactor();
   }

@@ -282,9 +282,9 @@ void WebLocalFrameImpl::SetTickmarks(const WebElement& target,
 
 void FindInPage::SetTickmarks(const WebElement& target,
                               const WebVector<gfx::Rect>& tickmarks) {
-  Vector<IntRect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
+  Vector<gfx::Rect> tickmarks_converted(SafeCast<wtf_size_t>(tickmarks.size()));
   for (wtf_size_t i = 0; i < tickmarks.size(); ++i)
-    tickmarks_converted[i] = IntRect(tickmarks[i]);
+    tickmarks_converted[i] = tickmarks[i];
 
   LayoutBox* box;
   if (target.IsNull())

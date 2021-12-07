@@ -230,7 +230,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();
     ink_overflow.Move(physical_box.offset);
-    visual_rect = ToGfxRect(EnclosingIntRect(ink_overflow));
+    visual_rect = ToEnclosingRect(ink_overflow);
   }
 
   // Ensure the selection bounds are recorded on the paint chunk regardless of
@@ -317,9 +317,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
           : physical_box.offset.top + ascent);
 
-  NGTextPainter text_painter(context, font, fragment_paint_info,
-                             IntRect(visual_rect), text_origin, physical_box,
-                             is_horizontal);
+  NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
+                             text_origin, physical_box, is_horizontal);
   NGHighlightPainter highlight_painter(
       text_painter, paint_info, cursor_, *cursor_.CurrentItem(),
       physical_box.offset, style, selection, is_printing);
@@ -368,8 +367,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
     // We need to use physical coordinates when invalidating.
     if (paint_marker_backgrounds && recorder) {
-      recorder->UniteVisualRect(
-          ToGfxRect(EnclosingIntRect(physical_selection)));
+      recorder->UniteVisualRect(ToEnclosingRect(physical_selection));
     }
   }
 

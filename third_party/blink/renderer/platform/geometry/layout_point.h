@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
 
@@ -73,7 +74,7 @@ class PLATFORM_EXPORT LayoutPoint {
   void SetY(LayoutUnit y) { y_ = y; }
 
   void Move(const LayoutSize& s) { Move(s.Width(), s.Height()); }
-  void Move(const IntSize& s) { Move(s.width(), s.height()); }
+  void Move(const gfx::Vector2d& s) { Move(s.x(), s.y()); }
   void MoveBy(const LayoutPoint& offset) { Move(offset.X(), offset.Y()); }
   void Move(int dx, int dy) { Move(LayoutUnit(dx), LayoutUnit(dy)); }
   void Move(LayoutUnit dx, LayoutUnit dy) {
@@ -108,8 +109,8 @@ ALWAYS_INLINE LayoutPoint& operator+=(LayoutPoint& a, const LayoutPoint& b) {
   return a;
 }
 
-inline LayoutPoint& operator+=(LayoutPoint& a, const IntSize& b) {
-  a.Move(b.width(), b.height());
+inline LayoutPoint& operator+=(LayoutPoint& a, const gfx::Vector2d& b) {
+  a.Move(b.x(), b.y());
   return a;
 }
 
@@ -123,8 +124,8 @@ ALWAYS_INLINE LayoutPoint& operator-=(LayoutPoint& a, const LayoutSize& b) {
   return a;
 }
 
-inline LayoutPoint& operator-=(LayoutPoint& a, const IntSize& b) {
-  a.Move(-b.width(), -b.height());
+inline LayoutPoint& operator-=(LayoutPoint& a, const gfx::Vector2d& b) {
+  a.Move(-b.x(), -b.y());
   return a;
 }
 
@@ -149,8 +150,8 @@ inline LayoutPoint operator-(const LayoutPoint& a, const LayoutSize& b) {
   return LayoutPoint(a.X() - b.Width(), a.Y() - b.Height());
 }
 
-inline LayoutPoint operator-(const LayoutPoint& a, const IntSize& b) {
-  return LayoutPoint(a.X() - b.width(), a.Y() - b.height());
+inline LayoutPoint operator-(const LayoutPoint& a, const gfx::Vector2d& b) {
+  return LayoutPoint(a.X() - b.x(), a.Y() - b.y());
 }
 
 inline LayoutPoint operator-(const LayoutPoint& point) {
@@ -200,10 +201,6 @@ inline LayoutPoint CeiledLayoutPoint(const gfx::PointF& p) {
                      LayoutUnit::FromFloatCeil(p.y()));
 }
 
-inline IntSize PixelSnappedIntSize(const LayoutSize& s, const LayoutPoint& p) {
-  return IntSize(SnapSizeToPixel(s.Width(), p.X()),
-                 SnapSizeToPixel(s.Height(), p.Y()));
-}
 inline gfx::Size ToPixelSnappedSize(const LayoutSize& s, const LayoutPoint& p) {
   return gfx::Size(SnapSizeToPixel(s.Width(), p.X()),
                    SnapSizeToPixel(s.Height(), p.Y()));
@@ -214,10 +211,6 @@ inline gfx::Vector2d ToRoundedVector2d(const LayoutPoint& p) {
 }
 inline gfx::Size ToRoundedSize(const LayoutPoint& p) {
   return gfx::Size(p.X().Round(), p.Y().Round());
-}
-
-inline IntSize RoundedIntSize(const LayoutPoint& p) {
-  return IntSize(p.X().Round(), p.Y().Round());
 }
 
 inline LayoutSize ToLayoutSize(const LayoutPoint& p) {

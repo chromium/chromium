@@ -736,7 +736,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 #endif
 
-  void AddAbsoluteRectForLayer(IntRect& result);
+  void AddAbsoluteRectForLayer(gfx::Rect& result);
   bool RequiresAnonymousTableWrappers(const LayoutObject*) const;
 
  public:
@@ -2499,10 +2499,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   PhysicalOffset OffsetFromAncestor(const LayoutObject*) const;
 
   FloatRect AbsoluteBoundingBoxFloatRect(MapCoordinatesFlags = 0) const;
-  // This returns an IntRect enclosing this object. If this object has an
+  // This returns an gfx::Rect enclosing this object. If this object has an
   // integral size and the position has fractional values, the resultant
-  // IntRect can be larger than the integral size.
-  IntRect AbsoluteBoundingBoxRect(MapCoordinatesFlags = 0) const;
+  // gfx::Rect can be larger than the integral size.
+  gfx::Rect AbsoluteBoundingBoxRect(MapCoordinatesFlags = 0) const;
 
   // These two functions also handle inlines without content for which the
   // location of the result rect (which may be empty) should be the absolute
@@ -2512,7 +2512,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // can combine this with AbsoluteBoundingBoxRect().
   virtual PhysicalRect AbsoluteBoundingBoxRectHandlingEmptyInline(
       MapCoordinatesFlags flags = 0) const;
-  // This returns an IntRect expanded from
+  // This returns an gfx::Rect expanded from
   // AbsoluteBoundingBoxRectHandlingEmptyInline by ScrollMargin.
   PhysicalRect AbsoluteBoundingBoxRectForScrollIntoView() const;
 
@@ -2524,7 +2524,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // The bounding box (see: absoluteBoundingBoxRect) including all descendant
   // bounding boxes.
-  IntRect AbsoluteBoundingBoxRectIncludingDescendants() const;
+  gfx::Rect AbsoluteBoundingBoxRectIncludingDescendants() const;
 
   // For accessibility, we want the bounding box rect of this element
   // in local coordinates, which can then be converted to coordinates relative

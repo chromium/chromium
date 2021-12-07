@@ -103,28 +103,28 @@ void FrameOverlay::UpdatePrePaint() {
       parent_layer->Children().back() != layer_)
     parent_layer->AddChild(layer_);
   layer_->SetLayerState(DefaultPropertyTreeState(), gfx::Vector2d());
-  layer_->SetSize(ToGfxSize(Size()));
+  layer_->SetSize(Size());
 }
 
-IntSize FrameOverlay::Size() const {
-  if (frame_->IsMainFrame())
-    return frame_->GetPage()->GetVisualViewport().Size();
-  return frame_->GetPage()->GetVisualViewport().Size().ExpandedTo(
-      frame_->View()->Size());
+gfx::Size FrameOverlay::Size() const {
+  gfx::Size size = frame_->GetPage()->GetVisualViewport().Size();
+  if (!frame_->IsMainFrame())
+    size.SetToMax(frame_->View()->Size());
+  return size;
 }
 
 gfx::Rect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
                                             const gfx::Rect&) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  return gfx::Rect(gfx::Point(), ToGfxSize(Size()));
+  return gfx::Rect(gfx::Point(), Size());
 }
 
 gfx::Rect FrameOverlay::PaintableRegion(
     const GraphicsLayer* graphics_layer) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  return gfx::Rect(gfx::Point(), ToGfxSize(Size()));
+  return gfx::Rect(gfx::Point(), Size());
 }
 
 void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"

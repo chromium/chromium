@@ -794,7 +794,7 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   );
   // Don't leak the actual viewport size to unsanitized markup
   LocalFrameView* frame_view =
-      MakeGarbageCollected<LocalFrameView>(*frame, IntSize(800, 600));
+      MakeGarbageCollected<LocalFrameView>(*frame, gfx::Size(800, 600));
   frame->SetView(frame_view);
   frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 

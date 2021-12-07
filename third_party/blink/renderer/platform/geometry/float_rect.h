@@ -35,12 +35,12 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if defined(OS_MAC)
@@ -62,7 +62,7 @@ class PLATFORM_EXPORT FloatRect {
       : location_(location), size_(size) {}
   constexpr FloatRect(float x, float y, float width, float height)
       : location_(gfx::PointF(x, y)), size_(FloatSize(width, height)) {}
-  constexpr explicit FloatRect(const IntRect& r)
+  constexpr explicit FloatRect(const gfx::Rect& r)
       : FloatRect(r.x(), r.y(), r.width(), r.height()) {}
   constexpr explicit FloatRect(const gfx::RectF& r)
       : FloatRect(r.x(), r.y(), r.width(), r.height()) {}
@@ -140,12 +140,12 @@ class PLATFORM_EXPORT FloatRect {
                        location_.y() + size_.height());
   }  // typically bottomRight
 
-  WARN_UNUSED_RESULT bool Intersects(const IntRect&) const;
+  WARN_UNUSED_RESULT bool Intersects(const gfx::Rect&) const;
   WARN_UNUSED_RESULT bool Intersects(const FloatRect&) const;
-  bool Contains(const IntRect&) const;
+  bool Contains(const gfx::Rect&) const;
   bool Contains(const FloatRect&) const;
 
-  void Intersect(const IntRect&);
+  void Intersect(const gfx::Rect&);
   void Intersect(const FloatRect&);
 
   void Union(const FloatRect&);
@@ -247,19 +247,19 @@ constexpr bool operator!=(const FloatRect& a, const FloatRect& b) {
   return !(a == b);
 }
 
-// Returns a IntRect containing the given FloatRect.
-inline IntRect EnclosingIntRect(const FloatRect& rect) {
+// Returns a gfx::Rect containing the given FloatRect.
+inline gfx::Rect ToEnclosingRect(const FloatRect& rect) {
   gfx::Point location = gfx::ToFlooredPoint(rect.origin());
   gfx::Point max_point = gfx::ToCeiledPoint(rect.bottom_right());
-  return IntRect(location,
-                 IntSize(base::ClampSub(max_point.x(), location.x()),
-                         base::ClampSub(max_point.y(), location.y())));
+  return gfx::Rect(location,
+                   gfx::Size(base::ClampSub(max_point.x(), location.x()),
+                             base::ClampSub(max_point.y(), location.y())));
 }
 
-// Returns a valid IntRect contained within the given FloatRect.
-PLATFORM_EXPORT IntRect EnclosedIntRect(const FloatRect&);
+// Returns a valid gfx::Rect contained within the given FloatRect.
+PLATFORM_EXPORT gfx::Rect ToEnclosedRect(const FloatRect&);
 
-PLATFORM_EXPORT IntRect RoundedIntRect(const FloatRect&);
+PLATFORM_EXPORT gfx::Rect RoundedIntRect(const FloatRect&);
 
 // Map supplied rect from srcRect to an equivalent rect in destRect.
 PLATFORM_EXPORT FloatRect MapRect(const FloatRect&,

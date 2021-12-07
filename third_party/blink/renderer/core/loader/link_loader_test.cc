@@ -98,7 +98,7 @@ class LinkLoaderPreloadTestBase : public testing::Test,
   };
 
   LinkLoaderPreloadTestBase() {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   }
 
   ~LinkLoaderPreloadTestBase() override {
@@ -570,7 +570,8 @@ INSTANTIATE_TEST_SUITE_P(LinkLoaderTestPrefetchPrivacyChanges,
                          testing::Values(false, true));
 
 TEST_P(LinkLoaderTestPrefetchPrivacyChanges, PrefetchPrivacyChanges) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   dummy_page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
   Persistent<MockLinkLoaderClient> loader_client =
       MakeGarbageCollected<MockLinkLoaderClient>(true);
@@ -638,7 +639,7 @@ TEST_F(LinkLoaderTest, Prefetch) {
   // Test the cases with a single header
   for (const auto& test_case : cases) {
     auto dummy_page_holder =
-        std::make_unique<DummyPageHolder>(IntSize(500, 500));
+        std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
     dummy_page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);
     Persistent<MockLinkLoaderClient> loader_client =
         MakeGarbageCollected<MockLinkLoaderClient>(
@@ -688,7 +689,7 @@ TEST_F(LinkLoaderTest, DNSPrefetch) {
   // Test the cases with a single header
   for (const auto& test_case : cases) {
     auto dummy_page_holder =
-        std::make_unique<DummyPageHolder>(IntSize(500, 500));
+        std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
     dummy_page_holder->GetDocument().GetSettings()->SetDNSPrefetchingEnabled(
         true);
     dummy_page_holder->GetFrame().SetPrescientNetworkingForTesting(
@@ -730,7 +731,7 @@ TEST_F(LinkLoaderTest, Preconnect) {
   // Test the cases with a single header
   for (const auto& test_case : cases) {
     auto dummy_page_holder =
-        std::make_unique<DummyPageHolder>(IntSize(500, 500));
+        std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
     dummy_page_holder->GetFrame().SetPrescientNetworkingForTesting(
         std::make_unique<NetworkHintsMock>());
     auto* mock_network_hints = static_cast<NetworkHintsMock*>(
@@ -759,7 +760,8 @@ TEST_F(LinkLoaderTest, Preconnect) {
 }
 
 TEST_F(LinkLoaderTest, PreloadAndPrefetch) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   ResourceFetcher* fetcher = dummy_page_holder->GetDocument().Fetcher();
   ASSERT_TRUE(fetcher);
   dummy_page_holder->GetFrame().GetSettings()->SetScriptEnabled(true);

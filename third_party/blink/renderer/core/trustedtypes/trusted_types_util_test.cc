@@ -21,7 +21,8 @@
 namespace blink {
 
 void TrustedTypesCheckForHTMLThrows(const String& string) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   LocalDOMWindow* window = dummy_page_holder->GetFrame().DomWindow();
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
@@ -42,7 +43,8 @@ void TrustedTypesCheckForHTMLThrows(const String& string) {
 }
 
 void TrustedTypesCheckForScriptThrows(const String& string) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   LocalDOMWindow* window = dummy_page_holder->GetFrame().DomWindow();
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
@@ -63,7 +65,8 @@ void TrustedTypesCheckForScriptThrows(const String& string) {
 }
 
 void TrustedTypesCheckForScriptURLThrows(const String& string) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   LocalDOMWindow* window = dummy_page_holder->GetFrame().DomWindow();
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
@@ -86,7 +89,8 @@ void TrustedTypesCheckForScriptURLThrows(const String& string) {
 void TrustedTypesCheckForScriptWorks(
     const V8UnionStringOrTrustedScript* string_or_trusted_script,
     String expected) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   LocalDOMWindow* window = dummy_page_holder->GetFrame().DomWindow();
   V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;

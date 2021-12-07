@@ -40,7 +40,7 @@ DOMRectReadOnly* DOMRectReadOnly::FromRectF(const gfx::RectF& rect) {
                                                rect.height());
 }
 
-DOMRectReadOnly* DOMRectReadOnly::FromIntRect(const IntRect& rect) {
+DOMRectReadOnly* DOMRectReadOnly::FromIntRect(const gfx::Rect& rect) {
   return MakeGarbageCollected<DOMRectReadOnly>(rect.x(), rect.y(), rect.width(),
                                                rect.height());
 }

@@ -123,7 +123,7 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #endif
   Member<void*> members1[6];
   LayoutUnit layout_units[4];
-  IntSize size;
+  gfx::Size size;
   CullRect previous_cull_rect;
   Member<void*> members2[5];
 };
@@ -922,7 +922,8 @@ bool PaintLayer::UpdateSize() {
   } else if (GetLayoutObject().IsInline() &&
              GetLayoutObject().IsLayoutInline()) {
     auto& inline_flow = To<LayoutInline>(GetLayoutObject());
-    IntRect line_box = EnclosingIntRect(inline_flow.PhysicalLinesBoundingBox());
+    gfx::Rect line_box =
+        ToEnclosingRect(inline_flow.PhysicalLinesBoundingBox());
     size_ = LayoutSize(line_box.size());
   } else if (LayoutBox* box = GetLayoutBox()) {
     size_ = box->Size();
@@ -1204,14 +1205,14 @@ void PaintLayer::SetChildNeedsCompositingInputsUpdateUpToAncestor(
   ancestor->child_needs_compositing_inputs_update_ = true;
 }
 
-const IntRect PaintLayer::ClippedAbsoluteBoundingBox() const {
+const gfx::Rect PaintLayer::ClippedAbsoluteBoundingBox() const {
   PhysicalRect mapping_rect = LocalBoundingBoxForCompositingOverlapTest();
   GetLayoutObject().MapToVisualRectInAncestorSpace(
       GetLayoutObject().View(), mapping_rect, kUseGeometryMapper);
-  return PixelSnappedIntRect(mapping_rect);
+  return ToPixelSnappedRect(mapping_rect);
 }
-const IntRect PaintLayer::UnclippedAbsoluteBoundingBox() const {
-  return EnclosingIntRect(GetLayoutObject().LocalToAbsoluteRect(
+const gfx::Rect PaintLayer::UnclippedAbsoluteBoundingBox() const {
+  return ToEnclosingRect(GetLayoutObject().LocalToAbsoluteRect(
       LocalBoundingBoxForCompositingOverlapTest(),
       kUseGeometryMapperMode | kIgnoreScrollOffsetOfAncestor));
 }
@@ -2878,16 +2879,16 @@ PhysicalRect PaintLayer::LocalBoundingBoxForCompositingOverlapTest() const {
   return bounding_box;
 }
 
-IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
+gfx::Rect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
     bool use_clipped_bounding_rect) const {
   // Returns the bounding box for this layer and self-painted composited
   // children which are otherwise not included in
   // LocalBoundingBoxForCompositingOverlapTest. Use the bounds from this layer
   // for overlap testing that cares about the bounds of this layer and all its
   // children.
-  IntRect abs_bounds = use_clipped_bounding_rect
-                           ? ClippedAbsoluteBoundingBox()
-                           : UnclippedAbsoluteBoundingBox();
+  gfx::Rect abs_bounds = use_clipped_bounding_rect
+                             ? ClippedAbsoluteBoundingBox()
+                             : UnclippedAbsoluteBoundingBox();
   PaintLayer* root_layer = GetLayoutObject().View()->Layer();
   // |abs_bounds| does not include root scroller offset, as in it's in absolute
   // coordinates, for everything but fixed-pos objects (and their children)
@@ -2930,7 +2931,7 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
         if (!children_bounds.IsEmpty()) {
           GetLayoutObject().MapToVisualRectInAncestorSpace(
               GetLayoutObject().View(), children_bounds, kUseGeometryMapper);
-          abs_bounds.Union(EnclosingIntRect(children_bounds));
+          abs_bounds.Union(ToEnclosingRect(children_bounds));
         }
       }
 
@@ -2939,9 +2940,8 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
           scrollable_area->MaximumScrollOffset() - current_scroll_offset;
       ScrollOffset min_scroll_delta =
           current_scroll_offset - scrollable_area->MinimumScrollOffset();
-      abs_bounds.Expand(
-          IntRectOutsets(min_scroll_delta.y(), max_scroll_delta.x(),
-                         max_scroll_delta.y(), min_scroll_delta.x()));
+      abs_bounds.Outset(min_scroll_delta.x(), min_scroll_delta.y(),
+                        max_scroll_delta.x(), max_scroll_delta.y());
     }
   }
   return abs_bounds;
@@ -3045,9 +3045,9 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     // In root layer scrolling mode, the main GraphicsLayer is the size of the
     // layout viewport. In non-RLS mode, it is the union of the layout viewport
     // and the document's layout overflow rect.
-    IntRect result = IntRect();
+    gfx::Rect result = gfx::Rect();
     if (LocalFrameView* frame_view = GetLayoutObject().GetFrameView())
-      result = IntRect(gfx::Point(), frame_view->Size());
+      result = gfx::Rect(gfx::Point(), frame_view->Size());
     return PhysicalRect(result);
   }
 

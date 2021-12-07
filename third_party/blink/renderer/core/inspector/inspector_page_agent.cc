@@ -1502,8 +1502,8 @@ Response InspectorPageAgent::getLayoutMetrics(
   main_frame->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kInspector);
 
-  IntRect visible_contents(
-      main_frame->View()->LayoutViewport()->VisibleContentRect());
+  gfx::Rect visible_contents =
+      main_frame->View()->LayoutViewport()->VisibleContentRect();
   *out_layout_viewport = protocol::Page::LayoutViewport::create()
                              .setPageX(visible_contents.x())
                              .setPageY(visible_contents.y())
@@ -1514,7 +1514,7 @@ Response InspectorPageAgent::getLayoutMetrics(
   // `visible_contents` is in DIP or DP depending on the
   // `enable-use-zoom-for-dsf` flag. Normlisation needed to convert it to CSS
   // pixels. Details: https://crbug.com/1181313
-  IntRect css_visible_contents =
+  gfx::Rect css_visible_contents =
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
           visible_contents, main_frame->View());
   *out_css_layout_viewport = protocol::Page::LayoutViewport::create()
@@ -1538,9 +1538,9 @@ Response InspectorPageAgent::getLayoutMetrics(
   // `content_size` is in DIP or DP depending on the
   // `enable-use-zoom-for-dsf` flag. Normlisation needed to convert it to CSS
   // pixels. Details: https://crbug.com/1181313
-  IntRect css_content_size =
+  gfx::Rect css_content_size =
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
-          IntRect(gfx::Point(), IntSize(content_size)), main_frame->View());
+          gfx::Rect(content_size), main_frame->View());
   *out_css_content_size = protocol::DOM::Rect::create()
                               .setX(css_content_size.x())
                               .setY(css_content_size.y())

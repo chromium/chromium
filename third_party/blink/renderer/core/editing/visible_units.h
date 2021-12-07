@@ -35,13 +35,13 @@
 
 namespace gfx {
 class Point;
+class Rect;
 }
 
 namespace blink {
 
 class LayoutObject;
 class Node;
-class IntRect;
 class LocalFrame;
 
 // |WordSide| is used as a parameter of |StartOfWordPosition()| and
@@ -264,12 +264,12 @@ CORE_EXPORT bool RendersInDifferentPosition(const Position&, const Position&);
 CORE_EXPORT Position SkipWhitespace(const Position&);
 CORE_EXPORT PositionInFlatTree SkipWhitespace(const PositionInFlatTree&);
 
-CORE_EXPORT IntRect ComputeTextRect(const EphemeralRange&);
-IntRect ComputeTextRect(const EphemeralRangeInFlatTree&);
+CORE_EXPORT gfx::Rect ComputeTextRect(const EphemeralRange&);
+gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree&);
 FloatRect ComputeTextFloatRect(const EphemeralRange&);
 
 // |FirstRectForRange| requires up-to-date layout.
-IntRect FirstRectForRange(const EphemeralRange&);
+gfx::Rect FirstRectForRange(const EphemeralRange&);
 
 CORE_EXPORT PositionWithAffinity
 AdjustForwardPositionToAvoidCrossingEditingBoundaries(

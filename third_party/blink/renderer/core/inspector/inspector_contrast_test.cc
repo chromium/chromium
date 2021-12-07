@@ -26,7 +26,7 @@ class InspectorContrastTest : public testing::Test {
 };
 
 void InspectorContrastTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 }
 
 TEST_F(InspectorContrastTest, GetBackgroundColors) {

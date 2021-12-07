@@ -247,24 +247,24 @@ void EditContext::updateCharacterBounds(
       [this](const auto& bound) {
         const DoubleRect double_rect(bound->x(), bound->y(), bound->width(),
                                      bound->height());
-        character_bounds_.push_back(ToGfxRect(EnclosingIntRect(double_rect)));
+        character_bounds_.push_back(ToEnclosingRect(double_rect));
       });
 }
 
 void EditContext::updateControlBounds(DOMRect* control_bounds) {
-  // Return the IntRect containing the given DOMRect.
+  // Return the gfx::Rect containing the given DOMRect.
   const DoubleRect control_bounds_double_rect(
       control_bounds->x(), control_bounds->y(), control_bounds->width(),
       control_bounds->height());
-  control_bounds_ = ToGfxRect(EnclosingIntRect(control_bounds_double_rect));
+  control_bounds_ = ToEnclosingRect(control_bounds_double_rect);
 }
 
 void EditContext::updateSelectionBounds(DOMRect* selection_bounds) {
-  // Return the IntRect containing the given DOMRect.
+  // Return the gfx::Rect containing the given DOMRect.
   const DoubleRect selection_bounds_double_rect(
       selection_bounds->x(), selection_bounds->y(), selection_bounds->width(),
       selection_bounds->height());
-  selection_bounds_ = ToGfxRect(EnclosingIntRect(selection_bounds_double_rect));
+  selection_bounds_ = ToEnclosingRect(selection_bounds_double_rect);
 }
 
 void EditContext::updateText(uint32_t start,

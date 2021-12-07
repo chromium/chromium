@@ -28,11 +28,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_LAYER_ASSIGNER_H_
 
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/squashing_disallowed_reasons.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -89,7 +89,7 @@ class CompositingLayerAssigner {
 
     // The absolute bounding rect of all the squashed layers (not including
     // those squashed into scrolling contents).
-    IntRect bounding_rect;
+    gfx::Rect bounding_rect;
 
     // This is simply the sum of the areas of the squashed rects. This can be
     // very skewed if the rects overlap, but should be close enough to drive a

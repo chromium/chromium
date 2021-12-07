@@ -116,11 +116,11 @@ class CORE_EXPORT IntersectionGeometry {
 
   PhysicalRect RootRect() const { return root_rect_; }
 
-  IntRect IntersectionIntRect() const {
-    return PixelSnappedIntRect(intersection_rect_);
+  gfx::Rect IntersectionIntRect() const {
+    return ToPixelSnappedRect(intersection_rect_);
   }
-  IntRect TargetIntRect() const { return PixelSnappedIntRect(target_rect_); }
-  IntRect RootIntRect() const { return PixelSnappedIntRect(root_rect_); }
+  gfx::Rect TargetIntRect() const { return ToPixelSnappedRect(target_rect_); }
+  gfx::Rect RootIntRect() const { return ToPixelSnappedRect(root_rect_); }
 
   double IntersectionRatio() const { return intersection_ratio_; }
   unsigned ThresholdIndex() const { return threshold_index_; }

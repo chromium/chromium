@@ -130,7 +130,7 @@ class ScriptPromisePropertyResetter : public ScriptFunction {
 class ScriptPromisePropertyTestBase {
  public:
   ScriptPromisePropertyTestBase()
-      : page_(std::make_unique<DummyPageHolder>(IntSize(1, 1))) {
+      : page_(std::make_unique<DummyPageHolder>(gfx::Size(1, 1))) {
     v8::HandleScope handle_scope(GetIsolate());
     other_script_state_ = MakeGarbageCollected<ScriptState>(
         v8::Context::New(GetIsolate()),

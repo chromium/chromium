@@ -674,14 +674,14 @@ void BackgroundImageGeometry::ComputePositioningArea(
     // Apply the adjustments.
     snapped_dest_rect_ = unsnapped_dest_rect_;
     snapped_dest_rect_.Contract(snapped_dest_adjust);
-    snapped_dest_rect_ = PhysicalRect(PixelSnappedIntRect(snapped_dest_rect_));
+    snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
     snapped_dest_rect_.size.ClampNegativeToZero();
     unsnapped_dest_rect_.Contract(unsnapped_dest_adjust);
     unsnapped_dest_rect_.size.ClampNegativeToZero();
     snapped_positioning_area = unsnapped_positioning_area;
     snapped_positioning_area.Contract(snapped_box_outset);
     snapped_positioning_area =
-        PhysicalRect(PixelSnappedIntRect(snapped_positioning_area));
+        PhysicalRect(ToPixelSnappedRect(snapped_positioning_area));
     snapped_positioning_area.size.ClampNegativeToZero();
     unsnapped_positioning_area.Contract(unsnapped_box_outset);
     unsnapped_positioning_area.size.ClampNegativeToZero();
@@ -971,7 +971,7 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
   // Clip the snapped rect, and re-snap the dest rect as we may have
   // adjusted it with unsnapped values.
   snapped_dest_rect_.Intersect(paint_rect);
-  snapped_dest_rect_ = PhysicalRect(PixelSnappedIntRect(snapped_dest_rect_));
+  snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
 }
 
 const ImageResourceObserver& BackgroundImageGeometry::ImageClient() const {

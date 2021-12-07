@@ -695,7 +695,7 @@ PhysicalRect LayoutReplaced::ReplacedContentRect() const {
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
     const PhysicalRect& rect) {
-  return PhysicalRect(rect.offset, PhysicalSize(RoundedIntSize(rect.size)));
+  return PhysicalRect(rect.offset, PhysicalSize(ToRoundedSize(rect.size)));
 }
 
 void LayoutReplaced::ComputeIntrinsicSizingInfo(

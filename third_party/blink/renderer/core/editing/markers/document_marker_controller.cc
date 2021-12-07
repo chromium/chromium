@@ -931,11 +931,11 @@ bool DocumentMarkerController::PossiblyHasTextMatchMarkers() const {
   return PossiblyHasMarkers(DocumentMarker::kTextMatch);
 }
 
-Vector<IntRect> DocumentMarkerController::LayoutRectsForTextMatchMarkers() {
+Vector<gfx::Rect> DocumentMarkerController::LayoutRectsForTextMatchMarkers() {
   DCHECK(!document_->View()->NeedsLayout());
   DCHECK(!document_->NeedsLayoutTreeUpdate());
 
-  Vector<IntRect> result;
+  Vector<gfx::Rect> result;
 
   if (!PossiblyHasMarkers(DocumentMarker::kTextMatch))
     return result;

@@ -156,7 +156,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     return;
 
   physical_overflow.Move(paint_offset);
-  IntRect visual_rect = EnclosingIntRect(physical_overflow);
+  gfx::Rect visual_rect = ToEnclosingRect(physical_overflow);
 
   GraphicsContext& context = paint_info.context;
   PhysicalOffset box_origin =
@@ -221,8 +221,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, inline_text_box_,
                                                     paint_info.phase))
       return;
-    recorder.emplace(context, inline_text_box_, paint_info.phase,
-                     ToGfxRect(visual_rect));
+    recorder.emplace(context, inline_text_box_, paint_info.phase, visual_rect);
   }
 
   unsigned length = inline_text_box_.Len();
@@ -346,10 +345,10 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
       }
 
       if (recorder && !box_rect.Contains(selection_rect)) {
-        IntRect selection_visual_rect = EnclosingIntRect(selection_rect);
+        gfx::Rect selection_visual_rect = ToEnclosingRect(selection_rect);
         if (rotation)
           selection_visual_rect = rotation->MapRect(selection_visual_rect);
-        recorder->UniteVisualRect(ToGfxRect(selection_visual_rect));
+        recorder->UniteVisualRect(selection_visual_rect);
       }
     }
   }
@@ -496,7 +495,7 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   }
 
   if (!font.ShouldSkipDrawing())
-    PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect));
+    PaintTimingDetector::NotifyTextPaint(visual_rect);
 }
 
 InlineTextBoxPainter::PaintOffsets

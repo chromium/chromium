@@ -156,7 +156,7 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
   {
     // To force layout in next updateLayout calling, widen view.
     LocalFrameView& frame_view = GetDummyPageHolder().GetFrameView();
-    IntRect frame_rect = frame_view.FrameRect();
+    gfx::Rect frame_rect = frame_view.FrameRect();
     frame_rect.set_width(frame_rect.width() + 1);
     frame_rect.set_height(frame_rect.height() + 1);
     GetDummyPageHolder().GetFrameView().SetFrameRect(frame_rect);
@@ -779,7 +779,7 @@ TEST_F(FrameSelectionTest, FocusingButtonHidesRangeInDisabledTextControl) {
   // We use a double click to create the selection [Berlin].
   // FrameSelection::SelectAll (= textarea.select() in JavaScript) would have
   // been shorter, but currently that doesn't work on a *disabled* text control.
-  const IntRect elem_bounds = textarea->BoundsInViewport();
+  const gfx::Rect elem_bounds = textarea->BoundsInViewport();
   WebMouseEvent double_click(WebMouseEvent::Type::kMouseDown, 0,
                              WebInputEvent::GetStaticTimeStampForTests());
   double_click.SetPositionInWidget(elem_bounds.x(), elem_bounds.y());

@@ -26,7 +26,7 @@ class HTMLIFrameElementTest : public testing::Test {
 
   void SetUp() final {
     const KURL document_url("http://example.com");
-    page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     window_ = page_holder_->GetFrame().DomWindow();
     window_->document()->SetURL(document_url);
     window_->GetSecurityContext().SetSecurityOriginForTesting(

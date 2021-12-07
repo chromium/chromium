@@ -371,8 +371,8 @@ static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
 }
 
 static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
-  IntRect anchor;
-  IntRect focus;
+  gfx::Rect anchor;
+  gfx::Rect focus;
   selected_frame->Selection().ComputeAbsoluteBounds(anchor, focus);
   anchor = selected_frame->View()->FrameToViewport(anchor);
   focus = selected_frame->View()->FrameToViewport(focus);
@@ -387,7 +387,8 @@ static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
   if (doc) {
     Element* focused_element = doc->FocusedElement();
     if (focused_element) {
-      IntRect visible_bound = focused_element->VisibleBoundsInVisualViewport();
+      gfx::Rect visible_bound =
+          focused_element->VisibleBoundsInVisualViewport();
       left = std::max(visible_bound.x(), left);
       top = std::max(visible_bound.y(), top);
       right = std::min(visible_bound.right(), right);

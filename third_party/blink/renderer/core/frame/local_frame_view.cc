@@ -205,8 +205,9 @@ void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
     return;
   // Should not overflow, this calculation is done elsewhere when determining
   // whether the cursor exceeds its maximum size (see event_handler.cc).
-  auto scaled_size = IntSize(bitmap.width(), bitmap.height());
-  scaled_size.Scale(1 / cursor.image_scale_factor());
+  auto scaled_size =
+      gfx::ScaleToFlooredSize(gfx::Size(bitmap.width(), bitmap.height()),
+                              1 / cursor.image_scale_factor());
   if (scaled_size.width() > 64 || scaled_size.height() > 64) {
     UseCounter::Count(frame->GetDocument(), WebFeature::kCursorImageGT64x64);
   } else if (scaled_size.width() > 32 || scaled_size.height() > 32) {
@@ -237,17 +238,17 @@ constexpr int kCommitDelayDefaultInMs = 500;  // 30 frames @ 60hz
 static const unsigned kMaxUpdatePluginsIterations = 2;
 
 LocalFrameView::LocalFrameView(LocalFrame& frame)
-    : LocalFrameView(frame, IntRect()) {
+    : LocalFrameView(frame, gfx::Rect()) {
   Show();
 }
 
-LocalFrameView::LocalFrameView(LocalFrame& frame, const IntSize& initial_size)
-    : LocalFrameView(frame, IntRect(gfx::Point(), initial_size)) {
+LocalFrameView::LocalFrameView(LocalFrame& frame, const gfx::Size& initial_size)
+    : LocalFrameView(frame, gfx::Rect(gfx::Point(), initial_size)) {
   SetLayoutSizeInternal(initial_size);
   Show();
 }
 
-LocalFrameView::LocalFrameView(LocalFrame& frame, IntRect frame_rect)
+LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
     : FrameView(frame_rect),
       frame_(frame),
       can_have_scrollbars_(true),
@@ -525,7 +526,7 @@ void LocalFrameView::SetLifecycleUpdatesThrottledForTesting(bool throttled) {
   lifecycle_updates_throttled_ = throttled;
 }
 
-void LocalFrameView::FrameRectsChanged(const IntRect& old_rect) {
+void LocalFrameView::FrameRectsChanged(const gfx::Rect& old_rect) {
   const bool width_changed = Size().width() != old_rect.width();
   const bool height_changed = Size().height() != old_rect.height();
 
@@ -594,7 +595,7 @@ CompositorAnimationTimeline* LocalFrameView::GetCompositorAnimationTimeline()
   return c ? c->GetCompositorAnimationTimeline() : nullptr;
 }
 
-void LocalFrameView::SetLayoutOverflowSize(const IntSize& size) {
+void LocalFrameView::SetLayoutOverflowSize(const gfx::Size& size) {
   if (size == layout_overflow_size_)
     return;
 
@@ -615,8 +616,7 @@ void LocalFrameView::AdjustViewSize() {
     return;
 
   DCHECK_EQ(frame_->View(), this);
-  SetLayoutOverflowSize(
-      PixelSnappedIntRect(layout_view->DocumentRect()).size());
+  SetLayoutOverflowSize(ToPixelSnappedRect(layout_view->DocumentRect()).size());
 }
 
 void LocalFrameView::CountObjectsNeedingLayout(unsigned& needs_layout_objects,
@@ -756,7 +756,7 @@ void LocalFrameView::PerformLayout() {
       TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"), "LayoutTree", this,
       TracedLayoutObject::Create(*GetLayoutView(), false));
 
-  IntSize old_size(Size());
+  gfx::Size old_size(Size());
 
   DCHECK(in_subtree_layout || layout_subtree_root_list_.IsEmpty());
 
@@ -850,7 +850,7 @@ void LocalFrameView::PerformLayout() {
           layout_object_counter_, contents_height_before_layout,
           GetLayoutView()->DocumentRect().Height(), Height());
 
-  IntSize new_size(Size());
+  gfx::Size new_size(Size());
   if (old_size != new_size) {
     MarkViewportConstrainedObjectsForLayout(
         old_size.width() != new_size.width(),
@@ -1024,7 +1024,7 @@ void LocalFrameView::RunIntersectionObserverSteps() {
     gfx::Rect main_frame_dimensions =
         To<LayoutBox>(layout_object)->PixelSnappedLayoutOverflowRect();
     GetFrame().Client()->OnMainFrameIntersectionChanged(
-        IntRect(gfx::Rect(main_frame_dimensions.size())));
+        gfx::Rect(main_frame_dimensions.size()));
   }
 
   TRACE_EVENT0("blink,benchmark",
@@ -1387,7 +1387,7 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
   }
 }
 
-void LocalFrameView::SetLayoutSize(const IntSize& size) {
+void LocalFrameView::SetLayoutSize(const gfx::Size& size) {
   DCHECK(!LayoutSizeFixedToFrameSize());
   if (frame_->GetDocument() &&
       frame_->GetDocument()->Lifecycle().LifecyclePostponed())
@@ -3401,8 +3401,8 @@ bool LocalFrameView::UpdateStyleAndLayoutInternal() {
   return false;
 }
 
-void LocalFrameView::EnableAutoSizeMode(const IntSize& min_size,
-                                        const IntSize& max_size) {
+void LocalFrameView::EnableAutoSizeMode(const gfx::Size& min_size,
+                                        const gfx::Size& max_size) {
   if (!auto_size_info_)
     auto_size_info_ = MakeGarbageCollected<FrameViewAutoSizeInfo>(this);
 
@@ -3519,9 +3519,10 @@ void LocalFrameView::ForceLayoutForPagination(
   UpdateStyleAndLayout();
 }
 
-IntRect LocalFrameView::RootFrameToDocument(const IntRect& rect_in_root_frame) {
+gfx::Rect LocalFrameView::RootFrameToDocument(
+    const gfx::Rect& rect_in_root_frame) {
   gfx::Point offset = RootFrameToDocument(rect_in_root_frame.origin());
-  IntRect local_rect = rect_in_root_frame;
+  gfx::Rect local_rect = rect_in_root_frame;
   local_rect.set_origin(offset);
   return local_rect;
 }
@@ -3542,8 +3543,9 @@ gfx::PointF LocalFrameView::RootFrameToDocument(
   return local_frame + layout_viewport->GetScrollOffset();
 }
 
-IntRect LocalFrameView::DocumentToFrame(const IntRect& rect_in_document) const {
-  IntRect rect_in_frame = rect_in_document;
+gfx::Rect LocalFrameView::DocumentToFrame(
+    const gfx::Rect& rect_in_document) const {
+  gfx::Rect rect_in_frame = rect_in_document;
   rect_in_frame.set_origin(DocumentToFrame(rect_in_document.origin()));
   return rect_in_frame;
 }
@@ -3598,8 +3600,10 @@ PhysicalOffset LocalFrameView::FrameToDocument(
          PhysicalOffset::FromVector2dFRound(layout_viewport->GetScrollOffset());
 }
 
-IntRect LocalFrameView::FrameToDocument(const IntRect& rect_in_frame) const {
-  return IntRect(FrameToDocument(rect_in_frame.origin()), rect_in_frame.size());
+gfx::Rect LocalFrameView::FrameToDocument(
+    const gfx::Rect& rect_in_frame) const {
+  return gfx::Rect(FrameToDocument(rect_in_frame.origin()),
+                   rect_in_frame.size());
 }
 
 PhysicalRect LocalFrameView::FrameToDocument(
@@ -3608,30 +3612,30 @@ PhysicalRect LocalFrameView::FrameToDocument(
                       rect_in_frame.size);
 }
 
-IntRect LocalFrameView::ConvertToContainingEmbeddedContentView(
-    const IntRect& local_rect) const {
+gfx::Rect LocalFrameView::ConvertToContainingEmbeddedContentView(
+    const gfx::Rect& local_rect) const {
   if (ParentFrameView()) {
     auto* layout_object = GetLayoutEmbeddedContent();
     if (!layout_object)
       return local_rect;
 
-    IntRect rect(local_rect);
+    gfx::Rect rect(local_rect);
     // Add borders and padding
     rect.Offset(
         (layout_object->BorderLeft() + layout_object->PaddingLeft()).ToInt(),
         (layout_object->BorderTop() + layout_object->PaddingTop()).ToInt());
-    return PixelSnappedIntRect(
+    return ToPixelSnappedRect(
         layout_object->LocalToAbsoluteRect(PhysicalRect(rect)));
   }
 
   return local_rect;
 }
 
-IntRect LocalFrameView::ConvertFromContainingEmbeddedContentView(
-    const IntRect& parent_rect) const {
+gfx::Rect LocalFrameView::ConvertFromContainingEmbeddedContentView(
+    const gfx::Rect& parent_rect) const {
   if (ParentFrameView()) {
-    IntRect local_rect = parent_rect;
-    local_rect.Offset(-ToIntSize(Location()));
+    gfx::Rect local_rect = parent_rect;
+    local_rect.Offset(-Location().OffsetFromOrigin());
     return local_rect;
   }
   return parent_rect;
@@ -3933,11 +3937,10 @@ void LocalFrameView::PropagateFrameRects() {
   // To limit the number of Mojo communications, only notify the browser when
   // the rect's size changes, not when the position changes. The size needs to
   // be replicated if the iframe goes out-of-process.
-  IntSize frame_size = FrameRect().size();
+  gfx::Size frame_size = FrameRect().size();
   if (!frame_size_ || *frame_size_ != frame_size) {
     frame_size_ = frame_size;
-    GetFrame().GetLocalFrameHostRemote().FrameSizeChanged(
-        ToGfxSize(frame_size));
+    GetFrame().GetLocalFrameHostRemote().FrameSizeChanged(frame_size);
   }
 
   // It's possible for changing the frame rect to not generate a layout
@@ -3948,7 +3951,7 @@ void LocalFrameView::PropagateFrameRects() {
     cache->HandleFrameRectsChanged(*GetFrame().GetDocument());
 }
 
-void LocalFrameView::SetLayoutSizeInternal(const IntSize& size) {
+void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {
   if (layout_size_ == size)
     return;
   layout_size_ = size;
@@ -4025,8 +4028,9 @@ gfx::PointF LocalFrameView::ViewportToFrame(
   return ConvertFromRootFrame(point_in_root_frame);
 }
 
-IntRect LocalFrameView::ViewportToFrame(const IntRect& rect_in_viewport) const {
-  IntRect rect_in_root_frame =
+gfx::Rect LocalFrameView::ViewportToFrame(
+    const gfx::Rect& rect_in_viewport) const {
+  gfx::Rect rect_in_root_frame =
       frame_->GetPage()->GetVisualViewport().ViewportToRootFrame(
           rect_in_viewport);
   return ConvertFromRootFrame(rect_in_root_frame);
@@ -4037,8 +4041,9 @@ gfx::Point LocalFrameView::ViewportToFrame(
   return ToRoundedPoint(ViewportToFrame(PhysicalOffset(point_in_viewport)));
 }
 
-IntRect LocalFrameView::FrameToViewport(const IntRect& rect_in_frame) const {
-  IntRect rect_in_root_frame = ConvertToRootFrame(rect_in_frame);
+gfx::Rect LocalFrameView::FrameToViewport(
+    const gfx::Rect& rect_in_frame) const {
+  gfx::Rect rect_in_root_frame = ConvertToRootFrame(rect_in_frame);
   return frame_->GetPage()->GetVisualViewport().RootFrameToViewport(
       rect_in_root_frame);
 }
@@ -4050,10 +4055,10 @@ gfx::Point LocalFrameView::FrameToViewport(
       point_in_root_frame);
 }
 
-IntRect LocalFrameView::FrameToScreen(const IntRect& rect) const {
+gfx::Rect LocalFrameView::FrameToScreen(const gfx::Rect& rect) const {
   if (auto* client = GetChromeClient())
     return client->ViewportToScreen(FrameToViewport(rect), this);
-  return IntRect();
+  return gfx::Rect();
 }
 
 gfx::Point LocalFrameView::SoonToBeRemovedUnscaledViewportToContents(
@@ -4086,8 +4091,9 @@ PaintController& LocalFrameView::EnsurePaintController() {
   return *paint_controller_;
 }
 
-bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
-                                         const IntSize& paint_offset) const {
+bool LocalFrameView::CapturePaintPreview(
+    GraphicsContext& context,
+    const gfx::Vector2d& paint_offset) const {
   absl::optional<base::UnguessableToken> maybe_embedding_token =
       GetFrame().GetEmbeddingToken();
 
@@ -4100,7 +4106,7 @@ bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
   DrawingRecorder recorder(context, *GetFrame().OwnerLayoutObject(),
                            DisplayItem::kDocumentBackground);
   context.Save();
-  context.Translate(paint_offset.width(), paint_offset.height());
+  context.Translate(paint_offset.x(), paint_offset.y());
   DCHECK(context.Canvas());
 
   auto* tracker = context.Canvas()->GetPaintPreviewTracker();
@@ -4108,19 +4114,19 @@ bool LocalFrameView::CapturePaintPreview(GraphicsContext& context,
 
   // Create a placeholder ID that maps to an embedding token.
   context.Canvas()->recordCustomData(tracker->CreateContentForRemoteFrame(
-      ToGfxRect(FrameRect()), maybe_embedding_token.value()));
+      FrameRect(), maybe_embedding_token.value()));
   context.Restore();
 
   // Send a request to the browser to trigger a capture of the frame.
   GetFrame().GetLocalFrameHostRemote().CapturePaintPreviewOfSubframe(
-      ToGfxRect(FrameRect()), tracker->Guid());
+      FrameRect(), tracker->Guid());
   return true;
 }
 
 void LocalFrameView::Paint(GraphicsContext& context,
                            const GlobalPaintFlags global_paint_flags,
                            const CullRect& cull_rect,
-                           const IntSize& paint_offset) const {
+                           const gfx::Vector2d& paint_offset) const {
   const auto* owner_layout_object = GetFrame().OwnerLayoutObject();
   absl::optional<Document::PaintPreviewScope> paint_preview;
   if (owner_layout_object &&
@@ -4230,7 +4236,8 @@ void LocalFrameView::PaintContentsForTest(const CullRect& cull_rect) {
     if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
       PaintController::CycleScope cycle_scope(paint_controller);
       GraphicsContext graphics_context(paint_controller);
-      Paint(graphics_context, kGlobalPaintNormalPhase, cull_rect);
+      Paint(graphics_context, kGlobalPaintNormalPhase, cull_rect,
+            gfx::Vector2d());
       paint_controller.CommitNewDisplayItems();
     }
   } else {
@@ -4250,9 +4257,10 @@ sk_sp<PaintRecord> LocalFrameView::GetPaintRecord() const {
       PropertyTreeState::Root());
 }
 
-IntRect LocalFrameView::ConvertToRootFrame(const IntRect& local_rect) const {
+gfx::Rect LocalFrameView::ConvertToRootFrame(
+    const gfx::Rect& local_rect) const {
   if (LocalFrameView* parent = ParentFrameView()) {
-    IntRect parent_rect = ConvertToContainingEmbeddedContentView(local_rect);
+    gfx::Rect parent_rect = ConvertToContainingEmbeddedContentView(local_rect);
     return parent->ConvertToRootFrame(parent_rect);
   }
   return local_rect;
@@ -4294,10 +4302,10 @@ PhysicalRect LocalFrameView::ConvertToRootFrame(
   return local_rect;
 }
 
-IntRect LocalFrameView::ConvertFromRootFrame(
-    const IntRect& rect_in_root_frame) const {
+gfx::Rect LocalFrameView::ConvertFromRootFrame(
+    const gfx::Rect& rect_in_root_frame) const {
   if (LocalFrameView* parent = ParentFrameView()) {
-    IntRect parent_rect = parent->ConvertFromRootFrame(rect_in_root_frame);
+    gfx::Rect parent_rect = parent->ConvertFromRootFrame(rect_in_root_frame);
     return ConvertFromContainingEmbeddedContentView(parent_rect);
   }
   return rect_in_root_frame;
@@ -4760,7 +4768,7 @@ bool LocalFrameView::WillDoPaintHoldingForFCP() const {
          !have_deferred_commits_;
 }
 
-void LocalFrameView::SetInitialViewportSize(const IntSize& viewport_size) {
+void LocalFrameView::SetInitialViewportSize(const gfx::Size& viewport_size) {
   if (viewport_size == initial_viewport_size_)
     return;
 

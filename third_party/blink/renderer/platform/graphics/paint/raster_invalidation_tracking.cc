@@ -55,7 +55,7 @@ void RasterInvalidationTracking::AddInvalidation(
   // invalidation rect.
   gfx::Rect r = rect;
   r.Outset(1);
-  invalidation_region_since_last_paint_.Unite(IntRect(r));
+  invalidation_region_since_last_paint_.Unite(r);
 }
 
 static bool CompareRasterInvalidationInfo(const RasterInvalidationInfo& a,

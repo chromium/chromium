@@ -44,10 +44,10 @@
 
 namespace blink {
 
-static IntRect ConvertToContentCoordinatesWithoutCollapsingToZero(
-    const IntRect& rect_in_viewport,
+static gfx::Rect ConvertToContentCoordinatesWithoutCollapsingToZero(
+    const gfx::Rect& rect_in_viewport,
     const LocalFrameView* view) {
-  IntRect rect_in_contents = view->ViewportToFrame(rect_in_viewport);
+  gfx::Rect rect_in_contents = view->ViewportToFrame(rect_in_viewport);
   if (rect_in_viewport.width() > 0 && !rect_in_contents.width())
     rect_in_contents.set_width(1);
   if (rect_in_viewport.height() > 0 && !rect_in_contents.height())
@@ -63,7 +63,7 @@ static Node* NodeInsideFrame(Node* node) {
 
 SmartClip::SmartClip(LocalFrame* frame) : frame_(frame) {}
 
-SmartClipData SmartClip::DataForRect(const IntRect& crop_rect_in_viewport) {
+SmartClipData SmartClip::DataForRect(const gfx::Rect& crop_rect_in_viewport) {
   Node* best_node =
       FindBestOverlappingNode(frame_->GetDocument(), crop_rect_in_viewport);
   if (!best_node)
@@ -86,7 +86,7 @@ SmartClipData SmartClip::DataForRect(const IntRect& crop_rect_in_viewport) {
   }
 
   // Union won't work with the empty rect, so we initialize to the first rect.
-  IntRect united_rects = hit_nodes[0]->PixelSnappedBoundingBox();
+  gfx::Rect united_rects = hit_nodes[0]->PixelSnappedBoundingBox();
   StringBuilder collected_text;
   for (wtf_size_t i = 0; i < hit_nodes.size(); ++i) {
     collected_text.Append(ExtractTextFromNode(hit_nodes[i]));
@@ -110,8 +110,8 @@ Node* SmartClip::MinNodeContainsNodes(Node* min_node, Node* new_node) {
   if (!min_node)
     return new_node;
 
-  IntRect min_node_rect = min_node->PixelSnappedBoundingBox();
-  IntRect new_node_rect = new_node->PixelSnappedBoundingBox();
+  gfx::Rect min_node_rect = min_node->PixelSnappedBoundingBox();
+  gfx::Rect new_node_rect = new_node->PixelSnappedBoundingBox();
 
   Node* parent_min_node = min_node->parentNode();
   Node* parent_new_node = new_node->parentNode();
@@ -137,7 +137,7 @@ Node* SmartClip::MinNodeContainsNodes(Node* min_node, Node* new_node) {
   Node* node = min_node;
   while (node) {
     if (node->GetLayoutObject()) {
-      IntRect node_rect = node->PixelSnappedBoundingBox();
+      gfx::Rect node_rect = node->PixelSnappedBoundingBox();
       if (node_rect.Contains(new_node_rect)) {
         return node;
       }
@@ -148,12 +148,13 @@ Node* SmartClip::MinNodeContainsNodes(Node* min_node, Node* new_node) {
   return nullptr;
 }
 
-Node* SmartClip::FindBestOverlappingNode(Node* root_node,
-                                         const IntRect& crop_rect_in_viewport) {
+Node* SmartClip::FindBestOverlappingNode(
+    Node* root_node,
+    const gfx::Rect& crop_rect_in_viewport) {
   if (!root_node)
     return nullptr;
 
-  IntRect resized_crop_rect =
+  gfx::Rect resized_crop_rect =
       ConvertToContentCoordinatesWithoutCollapsingToZero(
           crop_rect_in_viewport, root_node->GetDocument().View());
 
@@ -161,7 +162,7 @@ Node* SmartClip::FindBestOverlappingNode(Node* root_node,
   Node* min_node = nullptr;
 
   while (node) {
-    IntRect node_rect = node->PixelSnappedBoundingBox();
+    gfx::Rect node_rect = node->PixelSnappedBoundingBox();
     auto* element = DynamicTo<Element>(node);
     if (element &&
         EqualIgnoringASCIICase(
@@ -213,16 +214,16 @@ bool SmartClip::ShouldSkipBackgroundImage(Node* node) {
 
 void SmartClip::CollectOverlappingChildNodes(
     Node* parent_node,
-    const IntRect& crop_rect_in_viewport,
+    const gfx::Rect& crop_rect_in_viewport,
     HeapVector<Member<Node>>& hit_nodes) {
   if (!parent_node)
     return;
-  IntRect resized_crop_rect =
+  gfx::Rect resized_crop_rect =
       ConvertToContentCoordinatesWithoutCollapsingToZero(
           crop_rect_in_viewport, parent_node->GetDocument().View());
   for (Node* child = parent_node->firstChild(); child;
        child = child->nextSibling()) {
-    IntRect child_rect = child->PixelSnappedBoundingBox();
+    gfx::Rect child_rect = child->PixelSnappedBoundingBox();
     if (resized_crop_rect.Intersects(child_rect))
       hit_nodes.push_back(child);
   }
@@ -241,7 +242,7 @@ String SmartClip::ExtractTextFromNode(Node* node) {
     if (Node* node_from_frame = NodeInsideFrame(&current_node))
       result.Append(ExtractTextFromNode(node_from_frame));
 
-    IntRect node_rect = current_node.PixelSnappedBoundingBox();
+    gfx::Rect node_rect = current_node.PixelSnappedBoundingBox();
     if (current_node.GetLayoutObject() && !node_rect.IsEmpty()) {
       if (current_node.IsTextNode()) {
         String node_value = current_node.nodeValue();

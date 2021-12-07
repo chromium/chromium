@@ -35,9 +35,9 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -202,16 +202,16 @@ class CORE_EXPORT FrameSelection final
   bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
 
   // Bounds of (possibly transformed) caret in absolute coords
-  IntRect AbsoluteCaretBounds() const;
+  gfx::Rect AbsoluteCaretBounds() const;
 
   // Returns anchor and focus bounds in absolute coords.
   // If the selection range is empty, returns the caret bounds.
   // Note: this updates styles and layout, use cautiously.
-  bool ComputeAbsoluteBounds(IntRect& anchor, IntRect& focus) const;
+  bool ComputeAbsoluteBounds(gfx::Rect& anchor, gfx::Rect& focus) const;
 
   // Computes the rect we should use when scrolling/zooming a selection into
   // view.
-  IntRect ComputeRectToScroll(RevealExtentOption);
+  gfx::Rect ComputeRectToScroll(RevealExtentOption);
 
   void DidChangeFocus();
 

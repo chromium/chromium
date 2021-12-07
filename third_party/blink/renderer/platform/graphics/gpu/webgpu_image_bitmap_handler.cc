@@ -81,7 +81,7 @@ SkColorType DawnColorTypeToSkColorType(WGPUTextureFormat dawn_format) {
 }  // anonymous namespace
 
 WebGPUImageUploadSizeInfo ComputeImageBitmapWebGPUUploadSizeInfo(
-    const IntRect& rect,
+    const gfx::Rect& rect,
     const WGPUTextureFormat& destination_format) {
   WebGPUImageUploadSizeInfo info;
 
@@ -104,7 +104,7 @@ WebGPUImageUploadSizeInfo ComputeImageBitmapWebGPUUploadSizeInfo(
 bool CopyBytesFromImageBitmapForWebGPU(
     scoped_refptr<StaticBitmapImage> image,
     base::span<uint8_t> dst,
-    const IntRect& rect,
+    const gfx::Rect& rect,
     const WGPUTextureFormat destination_format,
     bool premultipliedAlpha,
     bool flipY) {

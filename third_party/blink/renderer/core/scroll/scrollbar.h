@@ -36,11 +36,14 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class Element;
 class GraphicsContext;
-class IntRect;
 class ScrollableArea;
 class ScrollbarTheme;
 class WebGestureEvent;
@@ -76,7 +79,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   ScrollbarOverlayColorTheme GetScrollbarOverlayColorTheme() const;
   bool HasTickmarks() const;
-  Vector<IntRect> GetTickmarks() const;
+  Vector<gfx::Rect> GetTickmarks() const;
   bool IsScrollableAreaActive() const;
 
   gfx::Point ConvertFromRootFrame(const gfx::Point&) const;

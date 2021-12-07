@@ -45,6 +45,10 @@
 // This needs to be here because Element.h also depends on it.
 #define DUMP_NODE_STATISTICS 0
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class ComputedStyle;
@@ -58,7 +62,6 @@ class FlatTreeNodeData;
 class GetRootNodeOptions;
 class HTMLQualifiedName;
 class HTMLSlotElement;
-class IntRect;
 class KURL;
 class LayoutBox;
 class LayoutBoxModelObject;
@@ -597,7 +600,7 @@ class CORE_EXPORT Node : public EventTarget {
   LinkHighlightCandidate IsLinkHighlightCandidate() const;
 
   virtual PhysicalRect BoundingBox() const;
-  IntRect PixelSnappedBoundingBox() const;
+  gfx::Rect PixelSnappedBoundingBox() const;
 
   // BoundingBoxForScrollIntoView() is the node's scroll snap area.
   // It is expanded from the BoundingBox() by scroll-margin.

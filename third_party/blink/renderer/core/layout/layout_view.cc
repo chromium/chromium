@@ -753,7 +753,7 @@ PhysicalRect LayoutView::DocumentRect() const {
   return FlipForWritingMode(LayoutOverflowRect());
 }
 
-IntSize LayoutView::GetLayoutSize(
+gfx::Size LayoutView::GetLayoutSize(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   NOT_DESTROYED();
   if (ShouldUsePrintingLayout()) {
@@ -762,17 +762,16 @@ IntSize LayoutView::GetLayoutSize(
       size.SetHeight(PageLogicalHeight());
     else
       size.SetWidth(PageLogicalHeight());
-    return FlooredIntSize(size);
+    return ToFlooredSize(size);
   }
 
   if (!frame_view_)
-    return IntSize();
+    return gfx::Size();
 
-  IntSize result = frame_view_->GetLayoutSize();
+  gfx::Size result = frame_view_->GetLayoutSize();
   if (scrollbar_inclusion == kExcludeScrollbars &&
       frame_view_->LayoutViewport()) {
-    result = IntSize(
-        frame_view_->LayoutViewport()->ExcludeScrollbars(ToGfxSize(result)));
+    result = frame_view_->LayoutViewport()->ExcludeScrollbars(result);
   }
   return result;
 }
@@ -909,8 +908,8 @@ RecalcLayoutOverflowResult LayoutView::RecalcLayoutOverflow() {
 
 PhysicalRect LayoutView::DebugRect() const {
   NOT_DESTROYED();
-  return PhysicalRect(IntRect(0, 0, ViewWidth(kIncludeScrollbars),
-                              ViewHeight(kIncludeScrollbars)));
+  return PhysicalRect(gfx::Rect(0, 0, ViewWidth(kIncludeScrollbars),
+                                ViewHeight(kIncludeScrollbars)));
 }
 
 bool LayoutView::UpdateLogicalWidthAndColumnWidth() {
@@ -975,7 +974,7 @@ bool LayoutView::HasTickmarks() const {
   return GetDocument().Markers().PossiblyHasTextMatchMarkers();
 }
 
-Vector<IntRect> LayoutView::GetTickmarks() const {
+Vector<gfx::Rect> LayoutView::GetTickmarks() const {
   NOT_DESTROYED();
   return GetDocument().Markers().LayoutRectsForTextMatchMarkers();
 }

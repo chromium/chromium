@@ -1115,7 +1115,7 @@ TEST_F(LayoutShiftTrackerTest, ClipByVisualViewport) {
     <div id=target></div>
   )HTML");
 
-  GetDocument().GetPage()->GetVisualViewport().SetSize(IntSize(200, 500));
+  GetDocument().GetPage()->GetVisualViewport().SetSize(gfx::Size(200, 500));
   GetDocument().GetPage()->GetVisualViewport().SetLocation(gfx::PointF(0, 100));
   UpdateAllLifecyclePhasesForTest();
   // The visual viewport.

@@ -883,9 +883,9 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteCaretBoundsOfWithShadowDOM) {
   Element* body = GetDocument().body();
   Element* one = body->QuerySelector("#one");
 
-  IntRect bounds_in_dom_tree = AbsoluteCaretBoundsOf(
+  gfx::Rect bounds_in_dom_tree = AbsoluteCaretBoundsOf(
       CreateVisiblePosition(Position(one, 0)).ToPositionWithAffinity());
-  IntRect bounds_in_flat_tree =
+  gfx::Rect bounds_in_flat_tree =
       AbsoluteCaretBoundsOf(CreateVisiblePosition(PositionInFlatTree(one, 0))
                                 .ToPositionWithAffinity());
 
@@ -898,7 +898,7 @@ TEST_P(ParameterizedLocalCaretRectTest, AbsoluteSelectionBoundsOfWithImage) {
   SetBodyContent("<div>foo<img></div>");
 
   Node* node = GetDocument().QuerySelector("img");
-  IntRect rect = AbsoluteSelectionBoundsOf(VisiblePosition::Create(
+  gfx::Rect rect = AbsoluteSelectionBoundsOf(VisiblePosition::Create(
       PositionWithAffinity(Position::LastPositionInNode(*node))));
   EXPECT_FALSE(rect.IsEmpty());
 }

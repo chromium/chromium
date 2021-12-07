@@ -310,7 +310,7 @@ class TestCache : public Cache {
 
 class CacheStorageTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   TestCache* CreateCache(ScopedFetcherForTests* fetcher,
                          std::unique_ptr<ErrorCacheForTests> cache) {

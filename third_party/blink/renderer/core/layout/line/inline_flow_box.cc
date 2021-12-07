@@ -1137,7 +1137,7 @@ inline void InlineFlowBox::AddTextBoxVisualOverflow(
 
   LayoutRect frame_rect = text_box->LogicalFrameRect();
   frame_rect.Expand(visual_rect_outsets);
-  frame_rect = LayoutRect(EnclosingIntRect(frame_rect));
+  frame_rect = LayoutRect(ToEnclosingRect(frame_rect));
   logical_visual_overflow.Unite(frame_rect);
 
   if (logical_visual_overflow != text_box->LogicalFrameRect())
@@ -1460,7 +1460,7 @@ bool InlineFlowBox::NodeAtPoint(HitTestResult& result,
   rect.Move(accumulated_offset);
 
   // Pixel snap hit testing.
-  rect = PhysicalRect(PixelSnappedIntRect(rect));
+  rect = PhysicalRect(ToPixelSnappedRect(rect));
   if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
       hit_test_location.Intersects(rect)) {
     // Don't add in m_topLeft here, we want coords in the containing block's

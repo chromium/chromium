@@ -31,7 +31,7 @@
 #include <iosfwd>
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -60,12 +60,10 @@ class PLATFORM_EXPORT FloatSize {
   constexpr FloatSize() : width_(0), height_(0) {}
   constexpr FloatSize(float width, float height)
       : width_(width), height_(height) {}
-  constexpr explicit FloatSize(const IntSize& s)
+  constexpr explicit FloatSize(const gfx::Size& s)
       : FloatSize(s.width(), s.height()) {}
   constexpr explicit FloatSize(const gfx::Vector2dF& v)
       : FloatSize(v.x(), v.y()) {}
-  constexpr explicit FloatSize(const gfx::Size& s)
-      : FloatSize(s.width(), s.height()) {}
   constexpr explicit FloatSize(const gfx::SizeF& s)
       : FloatSize(s.width(), s.height()) {}
   explicit FloatSize(const SkSize& s) : FloatSize(s.width(), s.height()) {}
@@ -201,19 +199,19 @@ constexpr bool operator!=(const FloatSize& a, const FloatSize& b) {
   return !(a == b);
 }
 
-inline IntSize RoundedIntSize(const FloatSize& p) {
-  return IntSize(ClampTo<int>(roundf(p.width())),
-                 ClampTo<int>(roundf(p.height())));
+inline gfx::Size ToRoundedSize(const FloatSize& p) {
+  return gfx::Size(ClampTo<int>(roundf(p.width())),
+                   ClampTo<int>(roundf(p.height())));
 }
 
-inline IntSize FlooredIntSize(const FloatSize& p) {
-  return IntSize(ClampTo<int>(floorf(p.width())),
-                 ClampTo<int>(floorf(p.height())));
+inline gfx::Size ToFlooredSize(const FloatSize& p) {
+  return gfx::Size(ClampTo<int>(floorf(p.width())),
+                   ClampTo<int>(floorf(p.height())));
 }
 
-inline IntSize ExpandedIntSize(const FloatSize& p) {
-  return IntSize(ClampTo<int>(ceilf(p.width())),
-                 ClampTo<int>(ceilf(p.height())));
+inline gfx::Size ToCeiledSize(const FloatSize& p) {
+  return gfx::Size(ClampTo<int>(ceilf(p.width())),
+                   ClampTo<int>(ceilf(p.height())));
 }
 
 inline gfx::Point FlooredIntPoint(const FloatSize& p) {

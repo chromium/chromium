@@ -275,7 +275,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool IsScrollCornerVisible() const = 0;
   virtual gfx::Rect ScrollCornerRect() const = 0;
   virtual bool HasTickmarks() const { return false; }
-  virtual Vector<IntRect> GetTickmarks() const { return Vector<IntRect>(); }
+  virtual Vector<gfx::Rect> GetTickmarks() const { return Vector<gfx::Rect>(); }
 
   // Note that this function just set the scrollbar itself needs repaint by
   // blink during paint, but doesn't set the scrollbar parts (thumb or track)

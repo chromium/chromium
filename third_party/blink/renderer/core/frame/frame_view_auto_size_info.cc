@@ -23,8 +23,8 @@ void FrameViewAutoSizeInfo::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
 }
 
-void FrameViewAutoSizeInfo::ConfigureAutoSizeMode(const IntSize& min_size,
-                                                  const IntSize& max_size) {
+void FrameViewAutoSizeInfo::ConfigureAutoSizeMode(const gfx::Size& min_size,
+                                                  const gfx::Size& max_size) {
   DCHECK(!min_size.IsEmpty());
   DCHECK_LE(min_size.width(), max_size.width());
   DCHECK_LE(min_size.height(), max_size.height());
@@ -51,7 +51,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
 
   // If this is the first time we run autosize, start from small height and
   // allow it to grow.
-  IntSize size = frame_view_->Size();
+  gfx::Size size = frame_view_->Size();
   if (!did_run_autosize_) {
     running_first_autosize_ = true;
     did_run_autosize_ = true;
@@ -83,7 +83,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
     return false;
 
   int height = document_layout_box->ScrollHeight().ToInt();
-  IntSize new_size(width, height);
+  gfx::Size new_size(width, height);
 
   // Check to see if a scrollbar is needed for a given dimension and
   // if so, increase the other dimension to account for the scrollbar.
@@ -105,7 +105,7 @@ bool FrameViewAutoSizeInfo::AutoSizeIfNeeded() {
   }
 
   // Ensure the size is at least the min bounds.
-  new_size = new_size.ExpandedTo(min_auto_size_);
+  new_size.SetToMax(min_auto_size_);
 
   // Bound the dimensions by the max bounds and determine what scrollbars to
   // show.

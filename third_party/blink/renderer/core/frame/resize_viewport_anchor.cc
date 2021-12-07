@@ -14,7 +14,7 @@
 
 namespace blink {
 
-void ResizeViewportAnchor::ResizeFrameView(const IntSize& size) {
+void ResizeViewportAnchor::ResizeFrameView(const gfx::Size& size) {
   LocalFrameView* frame_view = RootFrameView();
   if (!frame_view)
     return;

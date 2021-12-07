@@ -198,7 +198,7 @@ class ModuleMapTest : public PageTestBase, public ModuleTestBase {
 
 void ModuleMapTest::SetUp() {
   ModuleTestBase::SetUp();
-  PageTestBase::SetUp(IntSize(500, 500));
+  PageTestBase::SetUp(gfx::Size(500, 500));
   NavigateTo(KURL("https://example.com"));
   modulator_ = MakeGarbageCollected<ModuleMapTestModulator>(
       ToScriptStateForMainWorld(&GetFrame()));

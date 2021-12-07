@@ -147,7 +147,7 @@ void PagePopupClient::AddProperty(const char* name,
 }
 
 void PagePopupClient::AddProperty(const char* name,
-                                  const IntRect& rect,
+                                  const gfx::Rect& rect,
                                   SharedBuffer* data) {
   data->Append(name, strlen(name));
   addLiteral(": {", data);

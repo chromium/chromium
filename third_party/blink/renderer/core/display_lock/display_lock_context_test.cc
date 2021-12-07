@@ -64,7 +64,7 @@ class DisplayLockTestFindInPageClient : public mojom::blink::FindInPageClient {
                       const gfx::Rect& active_match_rect,
                       int active_match_ordinal,
                       mojom::blink::FindMatchUpdateType final_update) final {
-    active_match_rect_ = IntRect(active_match_rect);
+    active_match_rect_ = active_match_rect;
     active_index_ = active_match_ordinal;
     find_results_are_ready_ =
         (final_update == mojom::blink::FindMatchUpdateType::kFinalUpdate);
@@ -73,17 +73,17 @@ class DisplayLockTestFindInPageClient : public mojom::blink::FindInPageClient {
   bool FindResultsAreReady() const { return find_results_are_ready_; }
   int Count() const { return count_; }
   int ActiveIndex() const { return active_index_; }
-  IntRect ActiveMatchRect() const { return active_match_rect_; }
+  gfx::Rect ActiveMatchRect() const { return active_match_rect_; }
 
   void Reset() {
     find_results_are_ready_ = false;
     count_ = -1;
     active_index_ = -1;
-    active_match_rect_ = IntRect();
+    active_match_rect_ = gfx::Rect();
   }
 
  private:
-  IntRect active_match_rect_;
+  gfx::Rect active_match_rect_;
   bool find_results_are_ready_;
   int active_index_;
 
@@ -491,19 +491,20 @@ TEST_F(DisplayLockContextTest,
   ASSERT_EQ(4u, tick_rects.size());
 
   // Sort the layout rects by y coordinate for deterministic checks below.
-  std::sort(tick_rects.begin(), tick_rects.end(),
-            [](const IntRect& a, const IntRect& b) { return a.y() < b.y(); });
+  std::sort(
+      tick_rects.begin(), tick_rects.end(),
+      [](const gfx::Rect& a, const gfx::Rect& b) { return a.y() < b.y(); });
 
   int y_offset = tick_rects[0].height();
 
   // The first tick rect will be based on the text itself, so we don't need to
   // check that. The next three should be the small, medium and large rects,
   // since those are the locked roots.
-  EXPECT_EQ(IntRect(0, y_offset, 100, 100), tick_rects[1]);
+  EXPECT_EQ(gfx::Rect(0, y_offset, 100, 100), tick_rects[1]);
   y_offset += tick_rects[1].height();
-  EXPECT_EQ(IntRect(0, y_offset, 150, 150), tick_rects[2]);
+  EXPECT_EQ(gfx::Rect(0, y_offset, 150, 150), tick_rects[2]);
   y_offset += tick_rects[2].height();
-  EXPECT_EQ(IntRect(0, y_offset, 200, 200), tick_rects[3]);
+  EXPECT_EQ(gfx::Rect(0, y_offset, 200, 200), tick_rects[3]);
 }
 
 TEST_F(DisplayLockContextTest,

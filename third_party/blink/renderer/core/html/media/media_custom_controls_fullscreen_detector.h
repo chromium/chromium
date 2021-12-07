@@ -50,9 +50,9 @@ class CORE_EXPORT MediaCustomControlsFullscreenDetector final
   bool IsVideoOrParentFullscreen();
   void ReportEffectivelyFullscreen(bool);
   static bool IsFullscreenVideoOfDifferentRatioForTesting(
-      const IntSize& video_size,
-      const IntSize& viewport_size,
-      const IntSize& intersection_size);
+      const gfx::Size& video_size,
+      const gfx::Size& viewport_size,
+      const gfx::Size& intersection_size);
 
   // `video_element_` owns |this|.
   Member<HTMLVideoElement> video_element_;

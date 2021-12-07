@@ -200,7 +200,7 @@ class DedicatedWorkerMessagingProxyForTest
 };
 
 void DedicatedWorkerTest::SetUp() {
-  PageTestBase::SetUp(IntSize());
+  PageTestBase::SetUp(gfx::Size());
   worker_messaging_proxy_ =
       MakeGarbageCollected<DedicatedWorkerMessagingProxyForTest>(
           GetFrame().DomWindow());

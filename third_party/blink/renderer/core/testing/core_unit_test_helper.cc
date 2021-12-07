@@ -28,7 +28,7 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
       child_client, *parent_frame->GetPage(), owner_element, parent_frame,
       nullptr, FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       &parent_frame->window_agent_factory(), nullptr);
-  child->CreateView(IntSize(500, 500), Color::kTransparent);
+  child->CreateView(gfx::Size(500, 500), Color::kTransparent);
   child->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
   return child;

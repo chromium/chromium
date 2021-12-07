@@ -41,14 +41,13 @@ class SolidColorOverlay : public FrameOverlay::Delegate {
 
   void PaintFrameOverlay(const FrameOverlay& frame_overlay,
                          GraphicsContext& graphics_context,
-                         const IntSize& size) const override {
+                         const gfx::Size& size) const override {
     if (DrawingRecorder::UseCachedDrawingIfPossible(
             graphics_context, frame_overlay, DisplayItem::kFrameOverlay))
       return;
     gfx::RectF rect(0, 0, size.width(), size.height());
     DrawingRecorder recorder(graphics_context, frame_overlay,
-                             DisplayItem::kFrameOverlay,
-                             gfx::Rect(ToGfxSize(size)));
+                             DisplayItem::kFrameOverlay, gfx::Rect(size));
     graphics_context.FillRect(rect, color_, AutoDarkMode::Disabled());
   }
 

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_VIEW_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
@@ -19,7 +20,7 @@ struct IntrinsicSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
  public:
-  explicit FrameView(const IntRect& frame_rect);
+  explicit FrameView(const gfx::Rect& frame_rect);
   ~FrameView() override = default;
 
   // parent_flags is the result of calling GetIntersectionObservationFlags on

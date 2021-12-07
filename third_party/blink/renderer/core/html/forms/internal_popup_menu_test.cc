@@ -24,7 +24,7 @@ namespace blink {
 
 TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
   auto dummy_page_holder_ =
-      std::make_unique<DummyPageHolder>(IntSize(800, 600));
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder_->GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <div id="container">

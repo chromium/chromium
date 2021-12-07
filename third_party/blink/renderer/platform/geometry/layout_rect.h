@@ -35,12 +35,12 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -65,10 +65,8 @@ class PLATFORM_EXPORT LayoutRect {
       : location_(location), size_(size) {}
   constexpr LayoutRect(const DoublePoint& location, const DoubleSize& size)
       : location_(location), size_(size) {}
-  constexpr LayoutRect(const gfx::Point& location, const IntSize& size)
+  constexpr LayoutRect(const gfx::Point& location, const gfx::Size& size)
       : location_(location), size_(size) {}
-  constexpr explicit LayoutRect(const IntRect& rect)
-      : location_(rect.origin()), size_(rect.size()) {}
   constexpr explicit LayoutRect(const gfx::Rect& rect)
       : location_(rect.origin()), size_(rect.size()) {}
 
@@ -122,14 +120,11 @@ class PLATFORM_EXPORT LayoutRect {
   }
 
   void Move(const LayoutSize& size) { location_ += size; }
-  void Move(const IntSize& size) {
-    location_.Move(LayoutUnit(size.width()), LayoutUnit(size.height()));
+  void Move(const gfx::Vector2d& offset) {
+    location_.Move(LayoutUnit(offset.x()), LayoutUnit(offset.y()));
   }
   void MoveBy(const LayoutPoint& offset) {
     location_.Move(offset.X(), offset.Y());
-  }
-  void MoveBy(const gfx::Point& offset) {
-    location_.Move(LayoutUnit(offset.x()), LayoutUnit(offset.y()));
   }
   void Move(LayoutUnit dx, LayoutUnit dy) { location_.Move(dx, dy); }
   void Move(int dx, int dy) { location_.Move(LayoutUnit(dx), LayoutUnit(dy)); }
@@ -220,14 +215,14 @@ class PLATFORM_EXPORT LayoutRect {
   }
 
   // Whether all edges of the rect are at full-pixel boundaries.
-  // i.e.: EnclosingIntRect(this)) == this
+  // i.e.: ToEnclosingRect(this)) == this
   bool EdgesOnPixelBoundaries() const {
     return !location_.X().HasFraction() && !location_.Y().HasFraction() &&
            !size_.Width().HasFraction() && !size_.Height().HasFraction();
   }
 
   // Expand each edge outwards to the next full-pixel boundary.
-  // i.e.: this = LayoutRect(EnclosingIntRect(this))
+  // i.e.: this = LayoutRect(ToEnclosingRect(this))
   void ExpandEdgesToPixelBoundaries() {
     int x = X().Floor();
     int y = Y().Floor();
@@ -284,7 +279,7 @@ class PLATFORM_EXPORT LayoutRect {
 
   static constexpr gfx::Rect InfiniteIntRect() {
     // Due to saturated arithmetic this value is not the same as
-    // LayoutRect(IntRect(INT_MIN/2, INT_MIN/2, INT_MAX, INT_MAX)).
+    // LayoutRect(gfx::Rect(INT_MIN/2, INT_MIN/2, INT_MAX, INT_MAX)).
     return gfx::Rect(LayoutUnit::NearlyMin().ToInt() / 2,
                      LayoutUnit::NearlyMin().ToInt() / 2,
                      LayoutUnit::NearlyMax().ToInt(),
@@ -330,22 +325,12 @@ constexpr bool operator!=(const LayoutRect& a, const LayoutRect& b) {
   return !(a == b);
 }
 
-inline IntRect PixelSnappedIntRect(const LayoutRect& rect) {
-  return IntRect(ToRoundedPoint(rect.Location()),
-                 IntSize(SnapSizeToPixel(rect.Width(), rect.X()),
-                         SnapSizeToPixel(rect.Height(), rect.Y())));
-}
 inline gfx::Rect ToPixelSnappedRect(const LayoutRect& rect) {
   return gfx::Rect(ToRoundedPoint(rect.Location()),
                    gfx::Size(SnapSizeToPixel(rect.Width(), rect.X()),
                              SnapSizeToPixel(rect.Height(), rect.Y())));
 }
 
-inline IntRect EnclosingIntRect(const LayoutRect& rect) {
-  gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
-  gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());
-  return IntRect(location, IntSize(max_point - location));
-}
 inline gfx::Rect ToEnclosingRect(const LayoutRect& rect) {
   gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
   gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());

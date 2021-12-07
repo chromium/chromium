@@ -430,9 +430,9 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   const auto& start = Position(first_paragraph, 0);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("This is a test page", PlainText(EphemeralRange(start, end)));
-  IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
+  gfx::Rect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      GetDocument().GetFrame()->View()->FrameToViewport(rect);
   // ExtractFirstTextFragmentsRect should return the first matched viewport
   // relative location.
   ASSERT_EQ(expected_rect.ToString(), "8,10 190x10");
@@ -479,9 +479,9 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
-  IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
+  gfx::Rect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      GetDocument().GetFrame()->View()->FrameToViewport(rect);
   // ExtractFirstTextFragmentsRect should return the first matched scaled
   // viewport relative location since the page is loaded zoomed in 4X
   ASSERT_EQ(expected_rect.ToString(), "432,296 360x44");
@@ -528,9 +528,9 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
-  IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
+  gfx::Rect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      GetDocument().GetFrame()->View()->FrameToViewport(rect);
   // ExtractFirstTextFragmentsRect should return the first matched viewport
   // relative location.
   ASSERT_EQ(expected_rect.ToString(), "108,10 90x10");
@@ -577,9 +577,9 @@ TEST_F(TextFragmentHandlerTest,
   const auto& start = Position(first_paragraph, 10);
   const auto& end = Position(first_paragraph, 19);
   ASSERT_EQ("test page", PlainText(EphemeralRange(start, end)));
-  IntRect rect(ComputeTextRect(EphemeralRange(start, end)));
+  gfx::Rect rect(ComputeTextRect(EphemeralRange(start, end)));
   gfx::Rect expected_rect =
-      ToGfxRect(GetDocument().GetFrame()->View()->FrameToViewport(rect));
+      GetDocument().GetFrame()->View()->FrameToViewport(rect);
   // ExtractFirstTextFragmentsRect should return the first matched viewport
   // relative location.
   ASSERT_EQ(expected_rect.ToString(), "108,10 90x10");

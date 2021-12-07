@@ -72,7 +72,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
 
   auto outline_rects = layout_object_.OutlineRects(
       paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
-  gfx::Rect rect = ToGfxRect(PixelSnappedIntRect(UnionRect(outline_rects)));
+  gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (rect.IsEmpty())
     return;
 

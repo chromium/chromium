@@ -367,7 +367,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   frame.View()->SetCanHaveScrollbars(features.scrollbars_visible);
 
-  IntRect window_rect = page->GetChromeClient().RootWindowRect(frame);
+  gfx::Rect window_rect = page->GetChromeClient().RootWindowRect(frame);
   if (features.x_set)
     window_rect.set_x(features.x);
   if (features.y_set)
@@ -377,7 +377,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   if (features.height_set)
     window_rect.set_height(features.height);
 
-  IntRect rect = page->GetChromeClient().CalculateWindowRectWithAdjustment(
+  gfx::Rect rect = page->GetChromeClient().CalculateWindowRectWithAdjustment(
       window_rect, frame, opener_frame);
   page->GetChromeClient().Show(opener_frame.GetLocalFrameToken(),
                                request.GetNavigationPolicy(), rect,

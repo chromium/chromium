@@ -135,7 +135,7 @@ class NFCProxyTest : public PageTestBase {
   NFCProxyTest() { nfc_service_ = std::make_unique<FakeNfcService>(); }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
         device::mojom::blink::NFC::Name_,
         WTF::BindRepeating(&FakeNfcService::BindRequest,

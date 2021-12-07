@@ -16,7 +16,7 @@ namespace blink {
 
 class FocusControllerTest : public PageTestBase {
  private:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 };
 
 TEST_F(FocusControllerTest, SetInitialFocus) {

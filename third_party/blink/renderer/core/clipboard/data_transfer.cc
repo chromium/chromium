@@ -109,15 +109,15 @@ class DraggedNodeImageBuilder {
     if (!layer->GetLayoutObject().IsStackingContext())
       layer = layer->AncestorStackingContext();
 
-    IntRect absolute_bounding_box =
+    gfx::Rect absolute_bounding_box =
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
     // TODO(chrishtr): consider using the root frame's visible rect instead
     // of the local frame, to avoid over-clipping.
-    IntRect visible_rect(gfx::Point(),
-                         layer->GetLayoutObject().GetFrameView()->Size());
+    gfx::Rect visible_rect(gfx::Point(),
+                           layer->GetLayoutObject().GetFrameView()->Size());
     // If the absolute bounding box is large enough to be possibly a memory
     // or IPC payload issue, clip it to the visible content rect.
-    if (absolute_bounding_box.size().Area() > visible_rect.size().Area()) {
+    if (absolute_bounding_box.size().Area64() > visible_rect.size().Area64()) {
       absolute_bounding_box.Intersect(visible_rect);
     }
 
@@ -380,8 +380,8 @@ gfx::RectF DataTransfer::ClipByVisualViewport(const gfx::RectF& absolute_rect,
                                               const LocalFrame& frame) {
   gfx::Rect viewport_in_root_frame =
       ToEnclosingRect(frame.GetPage()->GetVisualViewport().VisibleRect());
-  gfx::RectF absolute_viewport(ToGfxRect(
-      frame.View()->ConvertFromRootFrame(IntRect(viewport_in_root_frame))));
+  gfx::RectF absolute_viewport(
+      frame.View()->ConvertFromRootFrame(viewport_in_root_frame));
   return IntersectRects(absolute_viewport, absolute_rect);
 }
 

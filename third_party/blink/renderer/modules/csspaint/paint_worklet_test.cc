@@ -49,7 +49,7 @@ class TestPaintWorklet : public PaintWorklet {
 class PaintWorkletTest : public PageTestBase {
  public:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     test_paint_worklet_ =
         MakeGarbageCollected<TestPaintWorklet>(*GetDocument().domWindow());
     proxy_ = test_paint_worklet_->CreateGlobalScope();

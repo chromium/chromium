@@ -771,16 +771,16 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
       MainFrame()->GetDocument()->getElementById("iframe"));
   auto* iframe_view = To<LocalFrame>(iframe->ContentFrame())->View();
 
-  ASSERT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-  ASSERT_EQ(IntSize(400, 400), iframe_view->Size());
+  ASSERT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+  ASSERT_EQ(gfx::Size(400, 400), iframe_view->Size());
 
   // Make the iframe the rootscroller. This should cause the iframe's layout
   // size to be manually controlled.
   {
     ASSERT_EQ(iframe, EffectiveRootScroller(MainFrame()->GetDocument()));
     EXPECT_FALSE(iframe_view->LayoutSizeFixedToFrameSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->Size());
   }
 
   // Hide the URL bar, the iframe's frame rect should expand but the layout
@@ -788,16 +788,16 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 0, false);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 450), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 450), iframe_view->Size());
   }
 
   // Simulate a rotation. This time the layout size should reflect the resize.
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(450, 400), 50, 0, false);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(450, 350), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(450, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(450, 350), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(450, 400), iframe_view->Size());
 
     // "Un-rotate" for following tests.
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 0, false);
@@ -808,8 +808,8 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 400), 50, 0, true);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->Size());
   }
 
   // Hide the URL bar and reset the rootScroller. The iframe should go back to
@@ -817,14 +817,14 @@ TEST_F(RootScrollerTest, IFrameRootScrollerGetsNonFixedLayoutSize) {
   {
     GetWebView()->ResizeWithBrowserControls(gfx::Size(400, 450), 50, 0, false);
     UpdateAllLifecyclePhases(MainFrameView());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 450), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 450), iframe_view->Size());
     ExecuteScript("document.querySelector('#iframe').style.opacity = '0.5'");
     ASSERT_EQ(MainFrame()->GetDocument(),
               EffectiveRootScroller(MainFrame()->GetDocument()));
     EXPECT_TRUE(iframe_view->LayoutSizeFixedToFrameSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->GetLayoutSize());
-    EXPECT_EQ(IntSize(400, 400), iframe_view->Size());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->GetLayoutSize());
+    EXPECT_EQ(gfx::Size(400, 400), iframe_view->Size());
   }
 }
 
@@ -1153,7 +1153,7 @@ TEST_F(ImplicitRootScrollerSimTest, ResizeFromResizeAfterLayout) {
   Element* container = GetDocument().getElementById("container");
   ASSERT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
-  ASSERT_EQ(IntSize(800, 600), GetDocument().View()->Size());
+  ASSERT_EQ(gfx::Size(800, 600), GetDocument().View()->Size());
 
   request.Write(R"HTML(
           <div style="width:2000px;height:1000px"></div>
@@ -1161,7 +1161,7 @@ TEST_F(ImplicitRootScrollerSimTest, ResizeFromResizeAfterLayout) {
   request.Finish();
   Compositor().BeginFrame();
 
-  ASSERT_EQ(IntSize(2000, 1500), GetDocument().View()->Size());
+  ASSERT_EQ(gfx::Size(2000, 1500), GetDocument().View()->Size());
 }
 
 // Tests basic implicit root scroller mode with a <div>.

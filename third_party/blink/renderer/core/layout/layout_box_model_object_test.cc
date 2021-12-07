@@ -55,16 +55,16 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionConstraints) {
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
-  ASSERT_EQ(IntRect(15, 115, 170, 370),
-            EnclosingIntRect(
+  ASSERT_EQ(gfx::Rect(15, 115, 170, 370),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   ASSERT_EQ(
-      IntRect(15, 115, 100, 100),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(15, 115, 100, 100),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 
   // The sticky constraining rect also doesn't include the border offset.
-  ASSERT_EQ(IntRect(0, 0, 400, 100),
-            EnclosingIntRect(sticky->ComputeStickyConstrainingRect()));
+  ASSERT_EQ(gfx::Rect(0, 0, 400, 100),
+            ToEnclosingRect(sticky->ComputeStickyConstrainingRect()));
 }
 
 // Verifies that the sticky constraints are correctly computed in right to left.
@@ -96,16 +96,16 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLConstraints) {
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
-  ASSERT_EQ(IntRect(215, 115, 170, 370),
-            EnclosingIntRect(
+  ASSERT_EQ(gfx::Rect(215, 115, 170, 370),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   ASSERT_EQ(
-      IntRect(285, 115, 100, 100),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(285, 115, 100, 100),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 
   // The sticky constraining rect also doesn't include the border offset.
-  ASSERT_EQ(IntRect(0, 0, 400, 100),
-            EnclosingIntRect(sticky->ComputeStickyConstrainingRect()));
+  ASSERT_EQ(gfx::Rect(0, 0, 400, 100),
+            ToEnclosingRect(sticky->ComputeStickyConstrainingRect()));
 }
 
 // Verifies that the sticky constraints are correctly computed for inline.
@@ -147,14 +147,14 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionInlineConstraints) {
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
-  EXPECT_EQ(IntRect(0, 100, 200, 400),
-            EnclosingIntRect(
+  EXPECT_EQ(gfx::Rect(0, 100, 200, 400),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   EXPECT_EQ(
-      IntRect(0, 100, 10, 10),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
-            EnclosingIntRect(sticky->ComputeStickyConstrainingRect()));
+      gfx::Rect(0, 100, 10, 10),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+            ToEnclosingRect(sticky->ComputeStickyConstrainingRect()));
 }
 
 // Verifies that the sticky constraints are correctly computed for sticky with
@@ -204,14 +204,14 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionVerticalRLInlineConstraints) {
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
-  EXPECT_EQ(IntRect(2000, 100, 200, 400),
-            EnclosingIntRect(
+  EXPECT_EQ(gfx::Rect(2000, 100, 200, 400),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   EXPECT_EQ(
-      IntRect(2190, 100, 10, 10),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
-  EXPECT_EQ(IntRect(0, 0, 100, 100),
-            EnclosingIntRect(sticky->ComputeStickyConstrainingRect()));
+      gfx::Rect(2190, 100, 10, 10),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+            ToEnclosingRect(sticky->ComputeStickyConstrainingRect()));
 }
 
 // Verifies that the sticky constraints are not affected by transforms
@@ -243,12 +243,12 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTransforms) {
 
   // The coordinates of the constraint rects should all be with respect to the
   // unscrolled scroller.
-  ASSERT_EQ(IntRect(15, 115, 170, 370),
-            EnclosingIntRect(
+  ASSERT_EQ(gfx::Rect(15, 115, 170, 370),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   ASSERT_EQ(
-      IntRect(15, 115, 100, 100),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(15, 115, 100, 100),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 }
 
 // Verifies that the sticky constraints are correctly computed.
@@ -277,12 +277,12 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionPercentageStyles) {
       scrollable_area->GetStickyConstraintsMap().at(sticky->Layer());
   ASSERT_EQ(0.f, constraints->top_offset);
 
-  ASSERT_EQ(IntRect(25, 145, 200, 330),
-            EnclosingIntRect(
+  ASSERT_EQ(gfx::Rect(25, 145, 200, 330),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   ASSERT_EQ(
-      IntRect(25, 145, 100, 100),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(25, 145, 100, 100),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 }
 
 // Verifies that the sticky constraints are correct when the sticky position
@@ -308,12 +308,12 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionContainerIsScroller) {
 
   const StickyPositionScrollingConstraints* constraints =
       scrollable_area->GetStickyConstraintsMap().at(sticky->Layer());
-  ASSERT_EQ(IntRect(0, 0, 400, 1100),
-            EnclosingIntRect(
+  ASSERT_EQ(gfx::Rect(0, 0, 400, 1100),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   ASSERT_EQ(
-      IntRect(0, 0, 100, 100),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(0, 0, 100, 100),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 }
 
 // Verifies that the sticky constraints are correct when the sticky position
@@ -342,12 +342,12 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionAnonymousContainer) {
 
   const StickyPositionScrollingConstraints* constraints =
       scrollable_area->GetStickyConstraintsMap().at(sticky->Layer());
-  ASSERT_EQ(IntRect(15, 115, 170, 370),
-            EnclosingIntRect(
+  ASSERT_EQ(gfx::Rect(15, 115, 170, 370),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   ASSERT_EQ(
-      IntRect(15, 165, 100, 100),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(15, 165, 100, 100),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 }
 
 TEST_P(LayoutBoxModelObjectTest, StickyPositionTableContainers) {
@@ -369,12 +369,12 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionTableContainers) {
   sticky->UpdateStickyPositionConstraints();
   const StickyPositionScrollingConstraints* constraints =
       scrollable_area->GetStickyConstraintsMap().at(sticky->Layer());
-  EXPECT_EQ(IntRect(0, 0, 50, 100),
-            EnclosingIntRect(
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
+            ToEnclosingRect(
                 constraints->scroll_container_relative_containing_block_rect));
   EXPECT_EQ(
-      IntRect(0, 50, 50, 50),
-      EnclosingIntRect(constraints->scroll_container_relative_sticky_box_rect));
+      gfx::Rect(0, 50, 50, 50),
+      ToEnclosingRect(constraints->scroll_container_relative_sticky_box_rect));
 }
 
 // Tests that when a non-layer changes size it invalidates the constraints for

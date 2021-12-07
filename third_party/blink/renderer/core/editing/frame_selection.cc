@@ -603,13 +603,13 @@ bool FrameSelection::ShouldPaintCaret(
   return result;
 }
 
-IntRect FrameSelection::AbsoluteCaretBounds() const {
+gfx::Rect FrameSelection::AbsoluteCaretBounds() const {
   DCHECK(ComputeVisibleSelectionInDOMTree().IsValidFor(*frame_->GetDocument()));
   return frame_caret_->AbsoluteCaretBounds();
 }
 
-bool FrameSelection::ComputeAbsoluteBounds(IntRect& anchor,
-                                           IntRect& focus) const {
+bool FrameSelection::ComputeAbsoluteBounds(gfx::Rect& anchor,
+                                           gfx::Rect& focus) const {
   if (!IsAvailable() || GetSelectionInDOMTree().IsNone())
     return false;
 
@@ -1042,7 +1042,7 @@ PhysicalRect FrameSelection::AbsoluteUnclippedBounds() const {
   return PhysicalRect(layout_selection_->AbsoluteSelectionBounds());
 }
 
-IntRect FrameSelection::ComputeRectToScroll(
+gfx::Rect FrameSelection::ComputeRectToScroll(
     RevealExtentOption reveal_extent_option) {
   const VisibleSelection& selection = ComputeVisibleSelectionInDOMTree();
   if (selection.IsCaret())

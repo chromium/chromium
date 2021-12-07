@@ -5278,10 +5278,10 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
 
       // If it's a popup, account for the popup window's offset.
       if (view->GetPage()->GetChromeClient().IsPopup()) {
-        IntRect frame_rect = view->FrameToScreen(view->FrameRect());
+        gfx::Rect frame_rect = view->FrameToScreen(view->FrameRect());
         LocalFrameView* root_view =
             AXObjectCache().GetDocument().GetFrame()->View();
-        IntRect root_frame_rect =
+        gfx::Rect root_frame_rect =
             root_view->FrameToScreen(root_view->FrameRect());
 
         // Screen coordinates are in DIP without device scale factor applied.
@@ -5553,7 +5553,7 @@ bool AXObject::RequestScrollToMakeVisibleAction() {
 }
 
 bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
-    const IntRect& subfocus,
+    const gfx::Rect& subfocus,
     blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
     blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) {
   return OnNativeScrollToMakeVisibleWithSubFocusAction(
@@ -5620,7 +5620,7 @@ bool AXObject::OnNativeScrollToMakeVisibleAction() const {
 }
 
 bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
-    const IntRect& rect,
+    const gfx::Rect& rect,
     blink::mojom::blink::ScrollAlignment horizontal_scroll_alignment,
     blink::mojom::blink::ScrollAlignment vertical_scroll_alignment) const {
   LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();

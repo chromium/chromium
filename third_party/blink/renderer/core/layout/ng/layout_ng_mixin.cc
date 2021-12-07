@@ -325,8 +325,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   auto* layout_view = DynamicTo<LayoutView>(container);
   if (layout_view && !Base::GetDocument().Printing()) {
     if (LocalFrameView* frame_view = layout_view->GetFrameView()) {
-      PhysicalSize size(frame_view->LayoutViewport()->ExcludeScrollbars(
-          ToGfxSize(frame_view->Size())));
+      PhysicalSize size(
+          frame_view->LayoutViewport()->ExcludeScrollbars(frame_view->Size()));
       initial_containing_block_fixed_size =
           size.ConvertToLogical(container->Style()->GetWritingMode());
     }

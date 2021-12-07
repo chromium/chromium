@@ -517,7 +517,7 @@ class UserMediaClientTest : public ::testing::Test {
 
     ChromeClient* chrome_client = MakeGarbageCollected<UserMediaChromeClient>();
     dummy_page_holder_ =
-        std::make_unique<DummyPageHolder>(IntSize(1, 1), chrome_client);
+        std::make_unique<DummyPageHolder>(gfx::Size(1, 1), chrome_client);
 
     user_media_processor_ = MakeGarbageCollected<UserMediaProcessorUnderTest>(
         &(dummy_page_holder_->GetFrame()), base::WrapUnique(msd_observer),

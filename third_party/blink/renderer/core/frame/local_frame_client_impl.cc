@@ -1044,10 +1044,9 @@ void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
 }
 
 void LocalFrameClientImpl::OnMainFrameIntersectionChanged(
-    const IntRect& intersection_rect) {
+    const gfx::Rect& intersection_rect) {
   DCHECK(web_frame_->Client());
-  web_frame_->Client()->OnMainFrameIntersectionChanged(
-      ToGfxRect(intersection_rect));
+  web_frame_->Client()->OnMainFrameIntersectionChanged(intersection_rect);
 }
 
 void LocalFrameClientImpl::OnOverlayPopupAdDetected() {

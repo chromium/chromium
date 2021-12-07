@@ -26,12 +26,12 @@
 
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -102,13 +102,13 @@ bool FloatRect::Intersects(const FloatRect& other) const {
          other.x() < right() && y() < other.bottom() && other.y() < bottom();
 }
 
-bool FloatRect::Intersects(const IntRect& other) const {
+bool FloatRect::Intersects(const gfx::Rect& other) const {
   // Checking emptiness handles negative widths as well as zero.
   return !IsEmpty() && !other.IsEmpty() && x() < other.right() &&
          other.x() < right() && y() < other.bottom() && other.y() < bottom();
 }
 
-bool FloatRect::Contains(const IntRect& other) const {
+bool FloatRect::Contains(const gfx::Rect& other) const {
   return x() <= other.x() && right() >= other.right() && y() <= other.y() &&
          bottom() >= other.bottom();
 }
@@ -118,7 +118,7 @@ bool FloatRect::Contains(const FloatRect& other) const {
          bottom() >= other.bottom();
 }
 
-void FloatRect::Intersect(const IntRect& other) {
+void FloatRect::Intersect(const gfx::Rect& other) {
   float new_left = std::max(x(), static_cast<float>(other.x()));
   float new_top = std::max(y(), static_cast<float>(other.y()));
   float new_right = std::min(right(), static_cast<float>(other.right()));
@@ -217,18 +217,17 @@ FloatRect UnionRects(const Vector<FloatRect>& rects) {
   return result;
 }
 
-IntRect EnclosedIntRect(const FloatRect& rect) {
+gfx::Rect ToEnclosedRect(const FloatRect& rect) {
   gfx::Point location = gfx::ToCeiledPoint(rect.origin());
   gfx::Point max_point = gfx::ToFlooredPoint(rect.bottom_right());
-  IntSize size(base::ClampSub(max_point.x(), location.x()),
-               base::ClampSub(max_point.y(), location.y()));
-  size.ClampNegativeToZero();
-  return IntRect(location, size);
+  gfx::Rect r;
+  r.SetByBounds(location.x(), location.y(), max_point.x(), max_point.y());
+  return r;
 }
 
-IntRect RoundedIntRect(const FloatRect& rect) {
-  return IntRect(gfx::ToRoundedPoint(rect.origin()),
-                 RoundedIntSize(rect.size()));
+gfx::Rect RoundedIntRect(const FloatRect& rect) {
+  return gfx::Rect(gfx::ToRoundedPoint(rect.origin()),
+                   ToRoundedSize(rect.size()));
 }
 
 FloatRect MapRect(const FloatRect& r,

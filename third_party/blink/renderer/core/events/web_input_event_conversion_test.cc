@@ -48,10 +48,10 @@
 #include "third_party/blink/renderer/core/input/touch.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -218,8 +218,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(5, area.width());
     EXPECT_EQ(5, area.height());
   }
@@ -235,8 +235,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(10, area.width());
     EXPECT_EQ(10, area.height());
   }
@@ -251,8 +251,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(3, area.width());
     EXPECT_EQ(3, area.height());
   }
@@ -267,8 +267,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(6, area.width());
     EXPECT_EQ(6, area.height());
   }
@@ -283,8 +283,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(5, area.width());
     EXPECT_EQ(5, area.height());
   }
@@ -299,8 +299,8 @@ TEST(WebInputEventConversionTest, InputEventsScaling) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(5, area.width());
     EXPECT_EQ(5, area.height());
   }
@@ -452,8 +452,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(15, area.width());
     EXPECT_EQ(15, area.height());
   }
@@ -469,8 +469,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(15, area.width());
     EXPECT_EQ(15, area.height());
   }
@@ -485,8 +485,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(15, area.width());
     EXPECT_EQ(15, area.height());
   }
@@ -501,8 +501,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(15, area.width());
     EXPECT_EQ(15, area.height());
   }
@@ -517,8 +517,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(15, area.width());
     EXPECT_EQ(15, area.height());
   }
@@ -533,8 +533,8 @@ TEST(WebInputEventConversionTest, InputEventsTransform) {
 
     WebGestureEvent scaled_gesture_event =
         TransformWebGestureEvent(view, web_gesture_event);
-    IntSize area =
-        FlooredIntSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
+    gfx::Size area =
+        ToFlooredSize(FloatSize(scaled_gesture_event.TapAreaInRootFrame()));
     EXPECT_EQ(15, area.width());
     EXPECT_EQ(15, area.height());
   }

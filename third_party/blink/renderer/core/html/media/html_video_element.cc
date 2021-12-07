@@ -248,9 +248,8 @@ unsigned HTMLVideoElement::videoHeight() const {
   return GetWebMediaPlayer()->NaturalSize().height();
 }
 
-IntSize HTMLVideoElement::videoVisibleSize() const {
-  return GetWebMediaPlayer() ? IntSize(GetWebMediaPlayer()->VisibleSize())
-                             : IntSize();
+gfx::Size HTMLVideoElement::videoVisibleSize() const {
+  return GetWebMediaPlayer() ? GetWebMediaPlayer()->VisibleSize() : gfx::Size();
 }
 
 bool HTMLVideoElement::IsURLAttribute(const Attribute& attribute) const {

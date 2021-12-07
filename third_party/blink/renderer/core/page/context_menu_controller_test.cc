@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/rect.h"
 
 using testing::Return;
 
@@ -698,7 +698,7 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample");
 
   // The selection rect is not clipped.
-  IntRect anchor, focus;
+  gfx::Rect anchor, focus;
   selection.ComputeAbsoluteBounds(anchor, focus);
   anchor = document->GetFrame()->View()->FrameToViewport(anchor);
   focus = document->GetFrame()->View()->FrameToViewport(focus);
@@ -717,7 +717,7 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample editable text");
 
   // The selection rect is clipped by the editable box.
-  IntRect clip_bound = editable_element->VisibleBoundsInVisualViewport();
+  gfx::Rect clip_bound = editable_element->VisibleBoundsInVisualViewport();
   selection.ComputeAbsoluteBounds(anchor, focus);
   anchor = document->GetFrame()->View()->FrameToViewport(anchor);
   focus = document->GetFrame()->View()->FrameToViewport(focus);

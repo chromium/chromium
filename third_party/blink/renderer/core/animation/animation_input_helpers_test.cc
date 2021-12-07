@@ -69,7 +69,7 @@ class AnimationAnimationInputHelpersTest : public PageTestBase {
 
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     document = &GetDocument();
   }
 

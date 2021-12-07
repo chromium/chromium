@@ -46,7 +46,7 @@ class BoxBorderPainter {
   }
 
   static void DrawBoxSide(GraphicsContext& context,
-                          const IntRect& snapped_edge_rect,
+                          const gfx::Rect& snapped_edge_rect,
                           BoxSide side,
                           Color color,
                           EBorderStyle style,

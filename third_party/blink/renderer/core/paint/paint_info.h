@@ -36,7 +36,6 @@
 // "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -45,6 +44,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -136,8 +136,8 @@ struct CORE_EXPORT PaintInfo {
   bool IntersectsCullRect(
       const PhysicalRect& rect,
       const PhysicalOffset& offset = PhysicalOffset()) const {
-    return cull_rect_.Intersects(ToGfxRect(
-        EnclosingIntRect(PhysicalRect(rect.offset + offset, rect.size))));
+    return cull_rect_.Intersects(
+        ToEnclosingRect(PhysicalRect(rect.offset + offset, rect.size)));
   }
 
   void ApplyInfiniteCullRect() { cull_rect_ = CullRect::Infinite(); }

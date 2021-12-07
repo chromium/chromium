@@ -43,7 +43,7 @@ using animation_test_helpers::SetV8ObjectPropertyAsString;
 class KeyframeEffectTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     element = GetDocument().CreateElementForBinding("foo");
     GetDocument().documentElement()->AppendChild(element.Get());
   }

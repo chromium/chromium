@@ -174,7 +174,7 @@ void ValidationMessageClientImpl::CheckAnchorStatus(TimerBase*) {
     return;
   }
 
-  IntRect new_anchor_rect_in_viewport =
+  gfx::Rect new_anchor_rect_in_viewport =
       current_anchor_->VisibleBoundsInVisualViewport();
   if (new_anchor_rect_in_viewport.IsEmpty()) {
     // In a remote frame, VisibleBoundsInVisualViewport() returns an empty

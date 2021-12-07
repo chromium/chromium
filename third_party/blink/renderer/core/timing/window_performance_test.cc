@@ -143,7 +143,7 @@ class WindowPerformanceTest : public testing::Test {
 
   void ResetPerformance() {
     page_holder_ = nullptr;
-    page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
     page_holder_->GetDocument().SetURL(KURL("https://example.com"));
 
     LocalDOMWindow* window = LocalDOMWindow::From(GetScriptState());
@@ -202,7 +202,7 @@ TEST_F(WindowPerformanceTest, SanitizedLongTaskName) {
 
 TEST_F(WindowPerformanceTest, SanitizedLongTaskName_CrossOrigin) {
   // Create another dummy page holder and pretend it is an iframe.
-  DummyPageHolder another_page(IntSize(400, 300));
+  DummyPageHolder another_page(gfx::Size(400, 300));
   another_page.GetDocument().SetURL(KURL("https://iframed.com/bar"));
 
   // Unable to attribute, when no execution contents are available.
@@ -233,7 +233,7 @@ TEST_F(WindowPerformanceTest, NavigateAway) {
 // This happens when a page opens a new window and it navigates to a same-origin
 // document.
 TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   // Emulate a new window inheriting the origin for its initial empty document
   // from its opener. This is necessary to ensure window reuse below, as that
   // only happens when origins match.

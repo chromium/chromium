@@ -611,10 +611,10 @@ static void Write(WTF::TextStream& ts,
                   int indent = 0,
                   LayoutAsTextBehavior behavior = kLayoutAsTextBehaviorNormal,
                   const PaintLayer* marked_layer = nullptr) {
-  IntRect adjusted_layout_bounds = PixelSnappedIntRect(layer_bounds);
-  IntRect adjusted_background_clip_rect =
-      PixelSnappedIntRect(background_clip_rect);
-  IntRect adjusted_clip_rect = PixelSnappedIntRect(clip_rect);
+  gfx::Rect adjusted_layout_bounds = ToPixelSnappedRect(layer_bounds);
+  gfx::Rect adjusted_background_clip_rect =
+      ToPixelSnappedRect(background_clip_rect);
+  gfx::Rect adjusted_clip_rect = ToPixelSnappedRect(clip_rect);
 
   if (marked_layer)
     ts << (marked_layer == &layer ? "*" : " ");

@@ -123,7 +123,7 @@ gfx::Rect NGInlineBoxFragmentPainterBase::VisualRect(
     const PhysicalOffset& paint_offset) {
   PhysicalRect overflow_rect = inline_box_item_.SelfInkOverflow();
   overflow_rect.Move(paint_offset);
-  return ToGfxRect(EnclosingIntRect(overflow_rect));
+  return ToEnclosingRect(overflow_rect);
 }
 
 void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(

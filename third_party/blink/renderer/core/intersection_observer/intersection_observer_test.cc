@@ -773,9 +773,9 @@ TEST_F(IntersectionObserverTest, RootMarginDevicePixelRatio) {
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(PixelSnappedIntRect(
+  EXPECT_EQ(ToPixelSnappedRect(
                 observer_delegate->LastEntry()->GetGeometry().RootRect()),
-            IntRect(0, 31, 800, 600 - 31));
+            gfx::Rect(0, 31, 800, 600 - 31));
 }
 
 TEST_F(IntersectionObserverTest, CachedRectsTest) {

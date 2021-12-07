@@ -75,7 +75,7 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
   AnimationWorkletGlobalScopeTest() = default;
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }

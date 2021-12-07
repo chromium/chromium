@@ -511,7 +511,9 @@ void ImageDocument::WindowSizeChanged() {
     // around. i.e. The div should fill the viewport when minimally zoomed and
     // the URL bar is showing, but won't fill the new space when the URL bar
     // hides.
-    float aspect_ratio = View()->GetLayoutSize().AspectRatio();
+    gfx::Size layout_size = View()->GetLayoutSize();
+    float aspect_ratio =
+        static_cast<float>(layout_size.width()) / layout_size.height();
     int div_height = std::max(ImageSize().height(),
                               static_cast<int>(div_width / aspect_ratio));
     div_element_->SetInlineStyleProperty(CSSPropertyID::kHeight, div_height,

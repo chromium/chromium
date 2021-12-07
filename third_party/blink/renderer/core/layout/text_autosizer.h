@@ -43,11 +43,14 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
+namespace gfx {
+class Size;
+}
+
 namespace blink {
 
 class Document;
 class Frame;
-class IntSize;
 class LayoutBlock;
 class LayoutBox;
 class LayoutNGTableInterface;
@@ -313,7 +316,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
                 InflateBehavior = kThisBlockOnly,
                 float multiplier = 0);
   bool ShouldHandleLayout() const;
-  IntSize WindowSize() const;
+  gfx::Size WindowSize() const;
   void SetAllTextNeedsLayout(LayoutBlock* container = nullptr);
   void ResetMultipliers();
   BeginLayoutBehavior PrepareForLayout(LayoutBlock*);

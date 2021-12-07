@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/page_widget_delegate.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/apply_viewport_changes.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -75,6 +74,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cc {
 class ScopedDeferMainFrameUpdate;
@@ -361,8 +361,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // with bounds |element_bounds_in_document| and caret bounds
   // |caret_bounds_in_document|.
   void ZoomAndScrollToFocusedEditableElementRect(
-      const IntRect& element_bounds_in_document,
-      const IntRect& caret_bounds_in_document,
+      const gfx::Rect& element_bounds_in_document,
+      const gfx::Rect& caret_bounds_in_document,
       bool zoom_into_legible_scale);
 
   bool StartPageScaleAnimation(const gfx::Point& target_position,
@@ -400,9 +400,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   bool ShouldAutoResize() const { return should_auto_resize_; }
 
-  IntSize MinAutoSize() const { return min_auto_size_; }
+  gfx::Size MinAutoSize() const { return min_auto_size_; }
 
-  IntSize MaxAutoSize() const { return max_auto_size_; }
+  gfx::Size MaxAutoSize() const { return max_auto_size_; }
 
   void UpdateMainFrameLayoutSize();
   void UpdatePageDefinedViewportConstraints(const ViewportDescription&);
@@ -491,7 +491,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   gfx::Size GetPreferredSizeForTest() override;
 
   gfx::Size Size();
-  IntSize MainFrameSize();
+  gfx::Size MainFrameSize();
 
   PageScaleConstraintsSet& GetPageScaleConstraintsSet() const;
 
@@ -632,12 +632,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   float MaximumLegiblePageScale() const;
   void RefreshPageScaleFactor();
-  IntSize ContentsSize() const;
+  gfx::Size ContentsSize() const;
 
   void UpdateBrowserControlsConstraint(cc::BrowserControlsState constraint);
-  void UpdateICBAndResizeViewport(const IntSize& visible_viewport_size);
+  void UpdateICBAndResizeViewport(const gfx::Size& visible_viewport_size);
   void ResizeViewWhileAnchored(cc::BrowserControlsParams params,
-                               const IntSize& visible_viewport_size);
+                               const gfx::Size& visible_viewport_size);
 
   void UpdateBaseBackgroundColor();
   void UpdateFontRenderingFromRendererPrefs();
@@ -697,8 +697,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // bounds are projection of the original element's bounds in the main frame
   // which is inside the layout area of some remote frame in this frame tree.
   void ComputeScaleAndScrollForEditableElementRects(
-      const IntRect& element_bounds_in_document,
-      const IntRect& caret_bounds_in_document,
+      const gfx::Rect& element_bounds_in_document,
+      const gfx::Rect& caret_bounds_in_document,
       bool zoom_into_legible_scale,
       float& scale,
       gfx::Point& scroll,
@@ -736,9 +736,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // If true, automatically resize the layout view around its content.
   bool should_auto_resize_ = false;
   // The lower bound on the size when auto-resizing.
-  IntSize min_auto_size_;
+  gfx::Size min_auto_size_;
   // The upper bound on the size when auto-resizing.
-  IntSize max_auto_size_;
+  gfx::Size max_auto_size_;
 
   // An object that can be used to manipulate m_page->settings() without linking
   // against WebCore. This is lazily allocated the first time GetWebSettings()

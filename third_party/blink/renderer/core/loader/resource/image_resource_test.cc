@@ -925,7 +925,7 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
 
   std::unique_ptr<DummyPageHolder> page_holder =
       std::make_unique<DummyPageHolder>(
-          IntSize(800, 600), /*chrome_client=*/nullptr,
+          gfx::Size(800, 600), /*chrome_client=*/nullptr,
           MakeGarbageCollected<EmptyLocalFrameClient>());
 
   KURL test_url(kTestURL);

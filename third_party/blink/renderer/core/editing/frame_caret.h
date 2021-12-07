@@ -67,7 +67,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   void StopCaretBlinkTimer();
   void StartBlinkCaret();
   void SetCaretEnabled(bool);
-  IntRect AbsoluteCaretBounds() const;
+  gfx::Rect AbsoluteCaretBounds() const;
 
   // Paint invalidation methods delegating to DisplayItemClient.
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);

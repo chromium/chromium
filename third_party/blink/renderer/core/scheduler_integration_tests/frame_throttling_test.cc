@@ -1702,7 +1702,8 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   LocalFrameRoot().WasHidden();
   root_frame->View()->ScheduleAnimation();
   CompositeFrame();
-  EXPECT_EQ(root_frame->RemoteViewportIntersection(), IntRect(0, 0, 100, 100));
+  EXPECT_EQ(root_frame->RemoteViewportIntersection(),
+            gfx::Rect(0, 0, 100, 100));
   EXPECT_TRUE(root_frame->View()->CanThrottleRenderingForPropagation());
   EXPECT_EQ(root_frame->GetOcclusionState(),
             mojom::FrameOcclusionState::kPossiblyOccluded);
@@ -1722,7 +1723,8 @@ TEST_P(FrameThrottlingTest, NestedFramesInRemoteFrameHiddenAndShown) {
   static_cast<WebFrameWidgetImpl*>(LocalFrameRoot().FrameWidget())
       ->ApplyViewportIntersectionForTesting(intersection.Clone());
   CompositeFrame();
-  EXPECT_EQ(root_frame->RemoteViewportIntersection(), IntRect(0, 0, 100, 100));
+  EXPECT_EQ(root_frame->RemoteViewportIntersection(),
+            gfx::Rect(0, 0, 100, 100));
   EXPECT_FALSE(root_frame->View()->CanThrottleRenderingForPropagation());
   EXPECT_NE(root_frame->GetOcclusionState(),
             mojom::FrameOcclusionState::kPossiblyOccluded);

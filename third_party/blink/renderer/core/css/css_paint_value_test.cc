@@ -228,7 +228,7 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
   // A new generator should be created if there is no generator exists.
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 1u);
 
-  auto new_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  auto new_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   // Call GetImage on a new Document should not crash.
   paint_value->GetImage(*target, new_page_holder->GetDocument(), style,
                         target_size);

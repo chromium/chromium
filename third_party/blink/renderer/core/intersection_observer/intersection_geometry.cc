@@ -539,14 +539,14 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
       // kDontApplyMainFrameOverflowClip flag above, means it hasn't been
       // done yet.
       LocalFrame* local_root_frame = root->GetDocument().GetFrame();
-      IntRect clip_rect(local_root_frame->RemoteViewportIntersection());
+      gfx::Rect clip_rect(local_root_frame->RemoteViewportIntersection());
       if (clip_rect.IsEmpty()) {
         intersection_rect = PhysicalRect();
         does_intersect = false;
       } else {
         // Map clip_rect from the coordinate system of the local root frame to
         // the coordinate system of the remote main frame.
-        clip_rect = PixelSnappedIntRect(
+        clip_rect = ToPixelSnappedRect(
             local_root_frame->ContentLayoutObject()->LocalToAncestorRect(
                 PhysicalRect(clip_rect), nullptr,
                 kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform));

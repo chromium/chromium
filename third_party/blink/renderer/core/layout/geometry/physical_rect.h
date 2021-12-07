@@ -99,7 +99,7 @@ struct CORE_EXPORT PhysicalRect {
   WARN_UNUSED_RESULT bool IntersectsInclusively(const PhysicalRect&) const;
 
   // Whether all edges of the rect are at full-pixel boundaries.
-  // i.e.: EnclosingIntRect(this)) == this
+  // i.e.: ToEnclosingRect(this)) == this
   bool EdgesOnPixelBoundaries() const {
     return !offset.left.HasFraction() && !offset.top.HasFraction() &&
            !size.width.HasFraction() && !size.height.HasFraction();
@@ -213,9 +213,8 @@ struct CORE_EXPORT PhysicalRect {
                         LayoutUnit(rect.width()), LayoutUnit(rect.height()));
   }
 
-  explicit PhysicalRect(const IntRect& r)
+  explicit PhysicalRect(const gfx::Rect& r)
       : offset(r.origin()), size(r.size()) {}
-  explicit PhysicalRect(const gfx::Rect& r) : PhysicalRect(IntRect(r)) {}
 
   static constexpr gfx::Rect InfiniteIntRect() {
     return LayoutRect::InfiniteIntRect();
@@ -238,14 +237,6 @@ inline PhysicalRect Intersection(const PhysicalRect& a, const PhysicalRect& b) {
 
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
-inline IntRect EnclosingIntRect(const PhysicalRect& r) {
-  gfx::Point location = ToFlooredPoint(r.offset);
-  gfx::Point max_point = ToCeiledPoint(r.MaxXMaxYCorner());
-  return IntRect(location, IntSize(max_point - location));
-}
-inline IntRect PixelSnappedIntRect(const PhysicalRect& r) {
-  return {r.PixelSnappedOffset(), IntSize(r.PixelSnappedSize())};
-}
 inline gfx::Rect ToEnclosingRect(const PhysicalRect& r) {
   gfx::Point location = ToFlooredPoint(r.offset);
   gfx::Point max_point = ToCeiledPoint(r.MaxXMaxYCorner());

@@ -479,7 +479,7 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
@@ -509,7 +509,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
@@ -537,7 +537,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
@@ -603,7 +603,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
@@ -666,7 +666,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 
 TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -699,7 +699,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -741,7 +741,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -779,7 +779,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -961,7 +961,7 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
 
 TEST_F(ComputedStyleTest, BorderWidthZoom) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1009,7 +1009,7 @@ TEST_F(ComputedStyleTest,
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1049,7 +1049,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1157,7 +1157,7 @@ TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
 
 TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1223,7 +1223,7 @@ TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
 
 TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
 
   auto* html = document.documentElement();

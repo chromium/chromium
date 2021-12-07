@@ -182,7 +182,7 @@ class NotReachedWebServiceWorkerProvider : public WebServiceWorkerProvider {
 
 class ServiceWorkerContainerTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   ~ServiceWorkerContainerTest() override {
     ThreadState::Current()->CollectAllGarbageForTesting();

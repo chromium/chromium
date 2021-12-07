@@ -224,13 +224,13 @@ TEST_F(DocumentMarkerControllerTest, UpdateRenderedRects) {
   SetBodyContent("<div style='margin: 100px'>foo</div>");
   auto* div = To<Element>(GetDocument().body()->firstChild());
   MarkNodeContentsTextMatch(div);
-  Vector<IntRect> rendered_rects =
+  Vector<gfx::Rect> rendered_rects =
       MarkerController().LayoutRectsForTextMatchMarkers();
   EXPECT_EQ(1u, rendered_rects.size());
 
   div->setAttribute(html_names::kStyleAttr, "margin: 200px");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  Vector<IntRect> new_rendered_rects =
+  Vector<gfx::Rect> new_rendered_rects =
       MarkerController().LayoutRectsForTextMatchMarkers();
   EXPECT_EQ(1u, new_rendered_rects.size());
   EXPECT_NE(rendered_rects[0], new_rendered_rects[0]);

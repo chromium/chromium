@@ -33,10 +33,10 @@
 
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -52,7 +52,7 @@ struct DateTimeChooserParameters {
   CORE_EXPORT ~DateTimeChooserParameters();
 
   AtomicString type;
-  IntRect anchor_rect_in_screen;
+  gfx::Rect anchor_rect_in_screen;
   // Locale name for which the chooser should be localized. This
   // might be an invalid name because it comes from HTML lang
   // attributes.

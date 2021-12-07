@@ -4876,13 +4876,13 @@ void Document::SendFocusNotification(Element* new_focused_element,
   gfx::Rect element_bounds_in_dips;
   if (new_focused_element) {
     is_editable = IsEditableElement(*new_focused_element);
-    IntRect bounds_in_viewport;
+    gfx::Rect bounds_in_viewport;
 
     if (new_focused_element->IsSVGElement()) {
       // Convert to window coordinate system (this will be in DIPs).
       bounds_in_viewport = new_focused_element->BoundsInViewport();
     } else {
-      Vector<IntRect> outline_rects =
+      Vector<gfx::Rect> outline_rects =
           new_focused_element->OutlineRectsInVisualViewport(
               DocumentUpdateReason::kFocus);
       for (auto& outline_rect : outline_rects)
@@ -4892,9 +4892,9 @@ void Document::SendFocusNotification(Element* new_focused_element,
     if (GetFrame()->GetWidgetForLocalRoot()) {
       element_bounds_in_dips =
           GetFrame()->GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(
-              ToGfxRect(bounds_in_viewport));
+              bounds_in_viewport);
     } else {
-      element_bounds_in_dips = ToGfxRect(bounds_in_viewport);
+      element_bounds_in_dips = bounds_in_viewport;
     }
   }
 

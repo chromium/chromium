@@ -331,7 +331,7 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Called when the focus controller changes the focus to this frame.
   virtual void DidFocus() = 0;
 
-  virtual IntSize GetMainFrameViewportSize() const = 0;
+  virtual gfx::Size GetMainFrameViewportSize() const = 0;
   virtual gfx::Point GetMainFrameScrollOffset() const = 0;
 
   // Sets this frame's opener to another frame, or disowned the opener

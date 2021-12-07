@@ -95,7 +95,7 @@ LocalFrameView& ValidationMessageOverlayDelegate::FrameView() const {
 void ValidationMessageOverlayDelegate::PaintFrameOverlay(
     const FrameOverlay& overlay,
     GraphicsContext& context,
-    const IntSize& view_size) const {
+    const gfx::Size& view_size) const {
   if (IsHiding() && !page_)
     return;
 
@@ -103,7 +103,7 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
                                                   DisplayItem::kFrameOverlay))
     return;
   DrawingRecorder recorder(context, overlay, DisplayItem::kFrameOverlay,
-                           gfx::Rect(ToGfxSize(view_size)));
+                           gfx::Rect(view_size));
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     context.DrawRecord(FrameView().GetPaintRecord());
@@ -126,14 +126,15 @@ void ValidationMessageOverlayDelegate::ServiceScriptedAnimations(
 
 void ValidationMessageOverlayDelegate::UpdateFrameViewState(
     const FrameOverlay& overlay) {
-  IntSize view_size = overlay.Size();
+  gfx::Size view_size = overlay.Size();
   if (FrameView().Size() != view_size) {
     FrameView().Resize(view_size);
     page_->GetVisualViewport().SetSize(view_size);
   }
-  IntRect intersection = overlay.Frame().RemoteViewportIntersection();
-  AdjustBubblePosition(intersection.IsEmpty() ? IntRect(gfx::Point(), view_size)
-                                              : intersection);
+  gfx::Rect intersection = overlay.Frame().RemoteViewportIntersection();
+  AdjustBubblePosition(intersection.IsEmpty()
+                           ? gfx::Rect(gfx::Point(), view_size)
+                           : intersection);
 
   // This manual invalidation is necessary to avoid a DCHECK failure in
   // FindVisualRectNeedingUpdateScopeBase::CheckVisualRect().
@@ -147,7 +148,7 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 
   // TODO(tkent): Can we share code with WebPagePopupImpl and
   // InspectorOverlayAgent?
-  IntSize view_size = overlay.Size();
+  gfx::Size view_size = overlay.Size();
   chrome_client_ = MakeGarbageCollected<ValidationMessageChromeClient>(
       main_page_->GetChromeClient(), anchor_->GetDocument().View());
   Settings& main_settings = main_page_->GetSettings();
@@ -247,11 +248,11 @@ Element& ValidationMessageOverlayDelegate::GetElementById(
 }
 
 void ValidationMessageOverlayDelegate::AdjustBubblePosition(
-    const IntRect& view_rect) {
+    const gfx::Rect& view_rect) {
   if (IsHiding())
     return;
   float zoom_factor = To<LocalFrame>(page_->MainFrame())->PageZoomFactor();
-  IntRect anchor_rect = anchor_->VisibleBoundsInVisualViewport();
+  gfx::Rect anchor_rect = anchor_->VisibleBoundsInVisualViewport();
   bool show_bottom_arrow = false;
   double bubble_y = anchor_rect.bottom();
   if (view_rect.bottom() - anchor_rect.bottom() < bubble_size_.height()) {

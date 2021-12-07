@@ -26,7 +26,7 @@ namespace blink {
 // cache, the embedder is notified.
 TEST(ResourceLoadObserverForFrameTest, MemoryCacheCertificateError) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   LocalFrame& frame = dummy_page_holder->GetFrame();
   auto* observer = MakeGarbageCollected<ResourceLoadObserverForFrame>(
       *frame.GetDocument()->Loader(), *frame.GetDocument(),

@@ -95,7 +95,6 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -113,6 +112,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -195,15 +195,15 @@ void ChromeClientImpl::ChromeDestroyed() {
   // Our lifetime is bound to the WebViewImpl.
 }
 
-void ChromeClientImpl::SetWindowRect(const IntRect& r, LocalFrame& frame) {
+void ChromeClientImpl::SetWindowRect(const gfx::Rect& r, LocalFrame& frame) {
   DCHECK_EQ(&frame, web_view_->MainFrameImpl()->GetFrame());
-  web_view_->MainFrameViewWidget()->SetWindowRect(ToGfxRect(r));
+  web_view_->MainFrameViewWidget()->SetWindowRect(r);
 }
 
-IntRect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
+gfx::Rect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
   // The WindowRect() for each WebFrameWidget will be the same rect of the top
   // level window.
-  return IntRect(frame.GetWidgetForLocalRoot()->WindowRect());
+  return frame.GetWidgetForLocalRoot()->WindowRect();
 }
 
 void ChromeClientImpl::DidAccessInitialMainDocument() {
@@ -315,10 +315,10 @@ void ChromeClientImpl::SetOverscrollBehavior(
 
 void ChromeClientImpl::Show(const blink::LocalFrameToken& opener_frame_token,
                             NavigationPolicy navigation_policy,
-                            const IntRect& initial_rect,
+                            const gfx::Rect& initial_rect,
                             bool user_gesture) {
-  web_view_->Show(opener_frame_token, navigation_policy,
-                  ToGfxRect(initial_rect), user_gesture);
+  web_view_->Show(opener_frame_token, navigation_policy, initial_rect,
+                  user_gesture);
 }
 
 bool ChromeClientImpl::ShouldReportDetailedMessageForSourceAndSeverity(
@@ -454,18 +454,17 @@ void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
   }
 }
 
-IntRect ChromeClientImpl::ViewportToScreen(
-    const IntRect& rect_in_viewport,
+gfx::Rect ChromeClientImpl::ViewportToScreen(
+    const gfx::Rect& rect_in_viewport,
     const LocalFrameView* frame_view) const {
   LocalFrame& frame = frame_view->GetFrame();
 
   gfx::Rect screen_rect =
-      frame.GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(
-          ToGfxRect(rect_in_viewport));
+      frame.GetWidgetForLocalRoot()->BlinkSpaceToEnclosedDIPs(rect_in_viewport);
   gfx::Rect view_rect = frame.GetWidgetForLocalRoot()->ViewRect();
 
   screen_rect.Offset(view_rect.x(), view_rect.y());
-  return IntRect(screen_rect);
+  return screen_rect;
 }
 
 float ChromeClientImpl::WindowToViewportScalar(LocalFrame* frame,
@@ -494,10 +493,10 @@ const display::ScreenInfos& ChromeClientImpl::GetScreenInfos(
 
 void ChromeClientImpl::OverrideVisibleRectForMainFrame(
     LocalFrame& frame,
-    IntRect* visible_rect) const {
+    gfx::Rect* visible_rect) const {
   DCHECK(frame.IsMainFrame());
   return web_view_->GetDevToolsEmulator()->OverrideVisibleRect(
-      IntRect(frame.GetWidgetForLocalRoot()->ViewRect()).size(), visible_rect);
+      frame.GetWidgetForLocalRoot()->ViewRect().size(), visible_rect);
 }
 
 float ChromeClientImpl::InputEventsScaleForEmulation() const {
@@ -505,7 +504,7 @@ float ChromeClientImpl::InputEventsScaleForEmulation() const {
 }
 
 void ChromeClientImpl::ContentsSizeChanged(LocalFrame* frame,
-                                           const IntSize& size) const {
+                                           const gfx::Size& size) const {
   web_view_->DidChangeContentsSize();
 
   WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(frame);

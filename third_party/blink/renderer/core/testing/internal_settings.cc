@@ -242,7 +242,7 @@ void InternalSettings::setTextAutosizingWindowSizeOverride(
     int height,
     ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
-  GetSettings()->SetTextAutosizingWindowSizeOverride(IntSize(width, height));
+  GetSettings()->SetTextAutosizingWindowSizeOverride(gfx::Size(width, height));
 }
 
 void InternalSettings::setTextTrackKindUserPreference(

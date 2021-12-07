@@ -54,8 +54,8 @@
 #include "third_party/blink/renderer/core/layout/style_retain_scope.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -63,7 +63,7 @@ namespace {
 
 inline int GetLayoutInlineSize(const Document& document,
                                const LocalFrameView& main_frame_view) {
-  IntSize size = main_frame_view.GetLayoutSize();
+  gfx::Size size = main_frame_view.GetLayoutSize();
   const LayoutView* layout_view = document.GetLayoutView();
   if (IsHorizontalWritingMode(layout_view->StyleRef().GetWritingMode()))
     return size.width();
@@ -637,7 +637,7 @@ void TextAutosizer::UpdatePageInfo() {
       page_info_.shared_info_ = document_->GetPage()->TextAutosizerPageInfo();
     } else {
       LocalFrame& main_frame = To<LocalFrame>(frame);
-      IntSize frame_size =
+      gfx::Size frame_size =
           document_->GetSettings()->GetTextAutosizingWindowSizeOverride();
       if (frame_size.IsEmpty())
         frame_size = WindowSize();
@@ -698,7 +698,7 @@ void TextAutosizer::UpdatePageInfo() {
   }
 }
 
-IntSize TextAutosizer::WindowSize() const {
+gfx::Size TextAutosizer::WindowSize() const {
   Page* page = document_->GetPage();
   DCHECK(page);
   return page->GetVisualViewport().Size();
@@ -797,8 +797,8 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
     minimum_text_length_to_autosize =
         document_->GetPage()
             ->GetChromeClient()
-            .ViewportToScreen(IntRect(0, 0, minimum_text_length_to_autosize, 0),
-                              view)
+            .ViewportToScreen(
+                gfx::Rect(0, 0, minimum_text_length_to_autosize, 0), view)
             .width();
   }
 

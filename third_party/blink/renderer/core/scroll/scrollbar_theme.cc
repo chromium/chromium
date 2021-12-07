@@ -137,7 +137,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   if (rect.height() <= 0 || rect.width() <= 0)
     return;
 
-  Vector<IntRect> tickmarks = scrollbar.GetTickmarks();
+  Vector<gfx::Rect> tickmarks = scrollbar.GetTickmarks();
   if (!tickmarks.size())
     return;
 
@@ -150,7 +150,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   GraphicsContextStateSaver state_saver(context);
   context.SetShouldAntialias(false);
 
-  for (const IntRect& tickmark : tickmarks) {
+  for (const gfx::Rect& tickmark : tickmarks) {
     // Calculate how far down (in %) the tick-mark should appear.
     const float percent =
         static_cast<float>(tickmark.y()) / scrollbar.TotalSize();

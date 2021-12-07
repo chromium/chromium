@@ -131,7 +131,7 @@ class NoopClient final : public GarbageCollected<NoopClient>,
 
 class FormDataBytesConsumerTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 };
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromString) {

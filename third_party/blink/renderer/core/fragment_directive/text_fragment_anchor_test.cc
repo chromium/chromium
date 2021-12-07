@@ -85,7 +85,7 @@ class TextFragmentAnchorTest : public SimTest {
   }
 
   gfx::Rect BoundingRectInFrame(Node& node) {
-    return ToGfxRect(node.GetLayoutObject()->AbsoluteBoundingBoxRect());
+    return node.GetLayoutObject()->AbsoluteBoundingBoxRect();
   }
 
   void SimulateClick(int x, int y) {

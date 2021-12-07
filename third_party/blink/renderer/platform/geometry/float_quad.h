@@ -31,7 +31,6 @@
 
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -65,12 +64,6 @@ class PLATFORM_EXPORT FloatQuad {
         p4_(in_rect.x(), in_rect.bottom()) {}
 
   explicit constexpr FloatQuad(const gfx::RectF& in_rect)
-      : p1_(in_rect.origin()),
-        p2_(in_rect.right(), in_rect.y()),
-        p3_(in_rect.right(), in_rect.bottom()),
-        p4_(in_rect.x(), in_rect.bottom()) {}
-
-  explicit FloatQuad(const IntRect& in_rect)
       : p1_(in_rect.origin()),
         p2_(in_rect.right(), in_rect.y()),
         p3_(in_rect.right(), in_rect.bottom()),
@@ -147,8 +140,8 @@ class PLATFORM_EXPORT FloatQuad {
   }
 
   FloatRect BoundingBox() const;
-  IntRect EnclosingBoundingBox() const {
-    return EnclosingIntRect(BoundingBox());
+  gfx::Rect EnclosingBoundingBox() const {
+    return ToEnclosingRect(BoundingBox());
   }
 
   void Move(const FloatSize& offset) { Move(ToGfxVector2dF(offset)); }

@@ -35,9 +35,9 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -266,7 +266,7 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   // element's items (see AddElementStyle). This requires a style-clean tree.
   // See Element::EnsureComputedStyle for further explanation.
   DCHECK(!owner_element.GetDocument().NeedsLayoutTreeUpdate());
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       owner_element.VisibleBoundsInVisualViewport(),
       owner_element.GetDocument().View());
 
@@ -621,7 +621,7 @@ void InternalPopupMenu::Update(bool force_update) {
     return;
   needs_update_ = false;
 
-  if (!IntRect(gfx::Point(), OwnerElement().GetDocument().View()->Size())
+  if (!gfx::Rect(gfx::Point(), OwnerElement().GetDocument().View()->Size())
            .Intersects(OwnerElement().PixelSnappedBoundingBox())) {
     Hide();
     return;
@@ -647,7 +647,7 @@ void InternalPopupMenu::Update(bool force_update) {
   }
   context.FinishGroupIfNecessary();
   PagePopupClient::AddString("],\n", data.get());
-  IntRect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
+  gfx::Rect anchor_rect_in_screen = chrome_client_->ViewportToScreen(
       owner_element_->VisibleBoundsInVisualViewport(),
       OwnerElement().GetDocument().View());
   AddProperty("anchorRectInScreen", anchor_rect_in_screen, data.get());

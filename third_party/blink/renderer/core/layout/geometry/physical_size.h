@@ -119,8 +119,6 @@ struct CORE_EXPORT PhysicalSize {
   }
   constexpr explicit operator gfx::SizeF() const { return {width, height}; }
 
-  explicit PhysicalSize(const IntSize& size)
-      : width(size.width()), height(size.height()) {}
   explicit PhysicalSize(const gfx::Size& size)
       : width(size.width()), height(size.height()) {}
 
@@ -137,13 +135,13 @@ inline PhysicalSize ToPhysicalSize(const LogicalSize& other, WritingMode mode) {
 
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
-inline IntSize RoundedIntSize(const PhysicalSize& s) {
+inline gfx::Size ToRoundedSize(const PhysicalSize& s) {
   return {s.width.Round(), s.height.Round()};
 }
-inline IntSize FlooredIntSize(const PhysicalSize& s) {
+inline gfx::Size ToFlooredSize(const PhysicalSize& s) {
   return {s.width.Floor(), s.height.Floor()};
 }
-inline IntSize CeiledIntSize(const PhysicalSize& s) {
+inline gfx::Size ToCeiledSize(const PhysicalSize& s) {
   return {s.width.Ceil(), s.height.Ceil()};
 }
 

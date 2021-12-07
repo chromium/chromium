@@ -96,8 +96,8 @@ VisibleSelectionInFlatTree SelectionEditor::ComputeVisibleSelectionInFlatTree()
   return cached_visible_selection_in_flat_tree_;
 }
 
-bool SelectionEditor::ComputeAbsoluteBounds(IntRect& anchor,
-                                            IntRect& focus) const {
+bool SelectionEditor::ComputeAbsoluteBounds(gfx::Rect& anchor,
+                                            gfx::Rect& focus) const {
   DCHECK_EQ(GetFrame()->GetDocument(), GetDocument());
   DCHECK_EQ(GetFrame(), GetDocument().GetFrame());
   UpdateCachedAbsoluteBoundsIfNeeded();
@@ -125,8 +125,8 @@ void SelectionEditor::MarkCacheDirty() {
   if (!cached_absolute_bounds_are_dirty_) {
     cached_absolute_bounds_are_dirty_ = true;
     has_selection_bounds_ = false;
-    cached_anchor_bounds_ = IntRect();
-    cached_focus_bounds_ = IntRect();
+    cached_anchor_bounds_ = gfx::Rect();
+    cached_focus_bounds_ = gfx::Rect();
   }
 }
 
@@ -189,8 +189,8 @@ void SelectionEditor::ContextDestroyed() {
   cached_visible_selection_in_flat_tree_is_dirty_ = true;
   cached_absolute_bounds_are_dirty_ = true;
   has_selection_bounds_ = false;
-  cached_anchor_bounds_ = IntRect();
-  cached_focus_bounds_ = IntRect();
+  cached_anchor_bounds_ = gfx::Rect();
+  cached_focus_bounds_ = gfx::Rect();
 }
 
 static Position ComputePositionForChildrenRemoval(const Position& position,

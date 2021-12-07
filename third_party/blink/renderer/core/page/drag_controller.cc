@@ -79,8 +79,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -93,6 +91,8 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 #if defined(OS_WIN)
@@ -1001,7 +1001,7 @@ bool DragController::PopulateDragDataTransfer(LocalFrame* src,
       return false;
     }
 
-    IntRect bounding_including_descendants =
+    gfx::Rect bounding_including_descendants =
         layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
     gfx::Point drag_element_location =
         drag_origin - bounding_including_descendants.OffsetFromOrigin();
@@ -1332,8 +1332,8 @@ void DragController::DoSystemDrag(DragImage* image,
   gfx::Point adjusted_drag_location =
       frame->View()->FrameToViewport(drag_location);
   gfx::Point adjusted_event_pos = frame->View()->FrameToViewport(event_pos);
-  IntSize offset_size(adjusted_event_pos - adjusted_drag_location);
-  gfx::Point offset_point(offset_size.width(), offset_size.height());
+  gfx::Point offset_point =
+      adjusted_event_pos - adjusted_drag_location.OffsetFromOrigin();
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
   drag_data.SetReferrerPolicy(drag_initiator_->GetReferrerPolicy());
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();

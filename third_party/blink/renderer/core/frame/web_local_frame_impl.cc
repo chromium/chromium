@@ -803,9 +803,8 @@ gfx::Size WebLocalFrameImpl::DocumentSize() const {
   if (!GetFrameView() || !GetFrameView()->GetLayoutView())
     return gfx::Size();
 
-  return ToGfxSize(
-      PixelSnappedIntRect(GetFrameView()->GetLayoutView()->DocumentRect())
-          .size());
+  return ToPixelSnappedRect(GetFrameView()->GetLayoutView()->DocumentRect())
+      .size();
 }
 
 bool WebLocalFrameImpl::HasVisibleContent() const {
@@ -1200,7 +1199,7 @@ bool WebLocalFrameImpl::FirstRectForCharacterRange(
   if (range.IsNull())
     return false;
   rect_in_viewport =
-      ToGfxRect(GetFrame()->View()->FrameToViewport(FirstRectForRange(range)));
+      GetFrame()->View()->FrameToViewport(FirstRectForRange(range));
   return true;
 }
 
@@ -1857,10 +1856,9 @@ gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
   DCHECK(GetFrame());  // Not valid after the Frame is detached.
   GetFrame()->View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kSelection);
-  return HasSelection()
-             ? ToGfxRect(PixelSnappedIntRect(
-                   GetFrame()->Selection().AbsoluteUnclippedBounds()))
-             : gfx::Rect();
+  return HasSelection() ? ToPixelSnappedRect(
+                              GetFrame()->Selection().AbsoluteUnclippedBounds())
+                        : gfx::Rect();
 }
 
 gfx::Point WebLocalFrameImpl::GetPositionInViewportForTesting() const {
@@ -2190,7 +2188,7 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
   return To<WebRemoteFrameImpl>(frame)->GetFrame();
 }
 
-void WebLocalFrameImpl::DidChangeContentsSize(const IntSize& size) {
+void WebLocalFrameImpl::DidChangeContentsSize(const gfx::Size& size) {
   if (GetTextFinder() && GetTextFinder()->TotalMatchCount() > 0)
     GetTextFinder()->IncreaseMarkerVersion();
 }
@@ -2225,9 +2223,9 @@ void WebLocalFrameImpl::CreateFrameView() {
   bool is_main_frame = !Parent();
   // TODO(dcheng): Can this be better abstracted away? It's pretty ugly that
   // only local roots are special-cased here.
-  IntSize initial_size = (is_main_frame || !frame_widget_)
-                             ? web_view->MainFrameSize()
-                             : static_cast<IntSize>(frame_widget_->Size());
+  gfx::Size initial_size = (is_main_frame || !frame_widget_)
+                               ? web_view->MainFrameSize()
+                               : frame_widget_->Size();
   Color base_background_color = web_view->BaseBackgroundColor();
   if (!is_main_frame && Parent()->IsWebRemoteFrame())
     base_background_color = Color::kTransparent;

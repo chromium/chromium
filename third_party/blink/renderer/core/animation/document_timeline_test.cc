@@ -99,7 +99,7 @@ class TestDocumentTimeline : public DocumentTimeline {
 class AnimationDocumentTimelineTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     document = &GetDocument();
     GetAnimationClock().ResetTimeForTesting();
     GetAnimationClock().SetAllowedToDynamicallyUpdateTime(false);
@@ -145,7 +145,7 @@ class AnimationDocumentTimelineTest : public PageTestBase {
 class AnimationDocumentTimelineRealTimeTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     document = &GetDocument();
     timeline = document->Timeline();
     GetAnimationClock().SetAllowedToDynamicallyUpdateTime(false);

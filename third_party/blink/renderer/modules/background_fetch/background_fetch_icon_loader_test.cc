@@ -50,7 +50,7 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().SetBaseURLOverride(KURL(kBackgroundFetchImageLoaderBaseUrl));
     RegisterMockedURL(kBackgroundFetchImageLoaderIcon500x500);
     RegisterMockedURL(kBackgroundFetchImageLoaderIcon48x48);

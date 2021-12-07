@@ -67,7 +67,7 @@ class CORE_EXPORT HTMLVideoElement final
   unsigned videoWidth() const;
   unsigned videoHeight() const;
 
-  IntSize videoVisibleSize() const;
+  gfx::Size videoVisibleSize() const;
 
   bool IsDefaultIntrinsicSize() const {
     return is_default_overridden_intrinsic_size_;

@@ -34,13 +34,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -50,7 +50,7 @@ class TestImage : public Image {
     return base::AdoptRef(new TestImage(image));
   }
 
-  static scoped_refptr<TestImage> Create(const IntSize& size) {
+  static scoped_refptr<TestImage> Create(const gfx::Size& size) {
     return base::AdoptRef(new TestImage(size));
   }
 
@@ -84,7 +84,7 @@ class TestImage : public Image {
  private:
   explicit TestImage(sk_sp<SkImage> image) : image_(image) {}
 
-  explicit TestImage(IntSize size) : image_(nullptr) {
+  explicit TestImage(gfx::Size size) : image_(nullptr) {
     sk_sp<SkSurface> surface = CreateSkSurface(size);
     if (!surface)
       return;
@@ -93,7 +93,7 @@ class TestImage : public Image {
     image_ = surface->makeImageSnapshot();
   }
 
-  static sk_sp<SkSurface> CreateSkSurface(IntSize size) {
+  static sk_sp<SkSurface> CreateSkSurface(gfx::Size size) {
     return SkSurface::MakeRaster(
         SkImageInfo::MakeN32(size.width(), size.height(), kPremul_SkAlphaType));
   }
@@ -104,12 +104,12 @@ class TestImage : public Image {
 TEST(DragImageTest, NullHandling) {
   EXPECT_FALSE(DragImage::Create(nullptr));
 
-  scoped_refptr<TestImage> null_test_image(TestImage::Create(IntSize()));
+  scoped_refptr<TestImage> null_test_image(TestImage::Create(gfx::Size()));
   EXPECT_FALSE(DragImage::Create(null_test_image.get()));
 }
 
 TEST(DragImageTest, NonNullHandling) {
-  scoped_refptr<TestImage> test_image(TestImage::Create(IntSize(2, 2)));
+  scoped_refptr<TestImage> test_image(TestImage::Create(gfx::Size(2, 2)));
   std::unique_ptr<DragImage> drag_image = DragImage::Create(test_image.get());
   ASSERT_TRUE(drag_image);
 
@@ -123,7 +123,7 @@ TEST(DragImageTest, CreateDragImage) {
   // Tests that the DrageImage implementation doesn't choke on null values
   // of imageForCurrentFrame().
   // FIXME: how is this test any different from test NullHandling?
-  scoped_refptr<TestImage> test_image(TestImage::Create(IntSize()));
+  scoped_refptr<TestImage> test_image(TestImage::Create(gfx::Size()));
   EXPECT_FALSE(DragImage::Create(test_image.get()));
 }
 

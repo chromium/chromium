@@ -30,7 +30,7 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
  public:
   PaintWorkletStylePropertyMapTest() = default;
 
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   Node* PageNode() { return GetDocument().documentElement(); }
 

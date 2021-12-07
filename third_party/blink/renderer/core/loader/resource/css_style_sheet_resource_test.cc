@@ -55,7 +55,7 @@ class CSSStyleSheetResourceTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().SetURL(KURL("https://localhost/"));
   }
 

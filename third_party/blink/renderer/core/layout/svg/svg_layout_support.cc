@@ -139,7 +139,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
   if (adjusted_rect.IsEmpty()) {
     result_rect = PhysicalRect();
   } else {
-    // Use EnclosingIntRect because we cannot properly apply subpixel offset of
+    // Use ToEnclosingRect because we cannot properly apply subpixel offset of
     // the SVGRoot since we don't know the desired subpixel accumulation at this
     // point.
     result_rect = PhysicalRect(gfx::ToEnclosingRect(adjusted_rect));

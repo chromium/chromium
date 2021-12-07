@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/geometry/geometry_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -27,7 +27,7 @@ class CORE_EXPORT DOMRectReadOnly : public ScriptWrappable {
                                  double height);
   static DOMRectReadOnly* FromRect(const gfx::Rect&);
   static DOMRectReadOnly* FromRectF(const gfx::RectF&);
-  static DOMRectReadOnly* FromIntRect(const IntRect&);
+  static DOMRectReadOnly* FromIntRect(const gfx::Rect&);
   static DOMRectReadOnly* FromFloatRect(const FloatRect&);
   static DOMRectReadOnly* fromRect(const DOMRectInit*);
 

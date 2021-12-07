@@ -7,9 +7,9 @@
 
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -23,7 +23,7 @@ class PLATFORM_EXPORT DoubleSize {
   constexpr DoubleSize() : width_(0), height_(0) {}
   constexpr DoubleSize(double width, double height)
       : width_(width), height_(height) {}
-  constexpr explicit DoubleSize(const IntSize& p)
+  constexpr explicit DoubleSize(const gfx::Size& p)
       : width_(p.width()), height_(p.height()) {}
   constexpr DoubleSize(const FloatSize& s)
       : width_(s.width()), height_(s.height()) {}
@@ -93,18 +93,19 @@ constexpr bool operator!=(const DoubleSize& a, const DoubleSize& b) {
   return a.Width() != b.Width() || a.Height() != b.Height();
 }
 
-inline IntSize FlooredIntSize(const DoubleSize& p) {
-  return IntSize(ClampTo<int>(floor(p.Width())),
-                 ClampTo<int>(floor(p.Height())));
+inline gfx::Size ToFlooredSize(const DoubleSize& p) {
+  return gfx::Size(ClampTo<int>(floor(p.Width())),
+                   ClampTo<int>(floor(p.Height())));
 }
 
-inline IntSize RoundedIntSize(const DoubleSize& p) {
-  return IntSize(ClampTo<int>(round(p.Width())),
-                 ClampTo<int>(round(p.Height())));
+inline gfx::Size ToRoundedSize(const DoubleSize& p) {
+  return gfx::Size(ClampTo<int>(round(p.Width())),
+                   ClampTo<int>(round(p.Height())));
 }
 
-inline IntSize ExpandedIntSize(const DoubleSize& p) {
-  return IntSize(ClampTo<int>(ceil(p.Width())), ClampTo<int>(ceil(p.Height())));
+inline gfx::Size ToCeiledSize(const DoubleSize& p) {
+  return gfx::Size(ClampTo<int>(ceil(p.Width())),
+                   ClampTo<int>(ceil(p.Height())));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DoubleSize&);

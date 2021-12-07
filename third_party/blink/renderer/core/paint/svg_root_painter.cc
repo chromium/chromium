@@ -15,15 +15,15 @@
 
 namespace blink {
 
-IntRect SVGRootPainter::PixelSnappedSize(
+gfx::Rect SVGRootPainter::PixelSnappedSize(
     const PhysicalOffset& paint_offset) const {
-  return PixelSnappedIntRect(
+  return ToPixelSnappedRect(
       PhysicalRect(paint_offset, layout_svg_root_.Size()));
 }
 
 AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
     const PhysicalOffset& paint_offset) const {
-  const IntRect snapped_size = PixelSnappedSize(paint_offset);
+  const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
   LayoutSize size = layout_svg_root_.Size();

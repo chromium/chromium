@@ -352,7 +352,7 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
 
   // Collapsed borders are half inside and half outside of |rect|.
   ScopedPaintState paint_state(cell_, paint_info);
-  IntRect rect = PixelSnappedIntRect(
+  gfx::Rect rect = ToPixelSnappedRect(
       TableCellPainter(cell_).PaintRectNotIncludingVisualOverflow(
           paint_state.PaintOffset()));
 
@@ -362,37 +362,37 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
   // We never paint diagonals at the joins.  We simply let the border with the
   // highest precedence paint on top of borders with lower precedence.
   if (before_.value) {
-    IntRect edge_rect(rect.x() - before_.begin_outset,
-                      rect.y() - before_.outer_width,
-                      rect.width() + before_.begin_outset + before_.end_outset,
-                      before_.outer_width + before_.inner_width);
+    gfx::Rect edge_rect(
+        rect.x() - before_.begin_outset, rect.y() - before_.outer_width,
+        rect.width() + before_.begin_outset + before_.end_outset,
+        before_.outer_width + before_.inner_width);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kTop, before_.value->GetColor(),
         CollapsedBorderStyle(before_.value->Style()), auto_dark_mode);
   }
   if (after_.value) {
-    IntRect edge_rect(rect.x() - after_.begin_outset,
-                      rect.bottom() - after_.inner_width,
-                      rect.width() + after_.begin_outset + after_.end_outset,
-                      after_.inner_width + after_.outer_width);
+    gfx::Rect edge_rect(rect.x() - after_.begin_outset,
+                        rect.bottom() - after_.inner_width,
+                        rect.width() + after_.begin_outset + after_.end_outset,
+                        after_.inner_width + after_.outer_width);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kBottom, after_.value->GetColor(),
         CollapsedBorderStyle(after_.value->Style()), auto_dark_mode);
   }
   if (start_.value) {
-    IntRect edge_rect(rect.x() - start_.outer_width,
-                      rect.y() - start_.begin_outset,
-                      start_.outer_width + start_.inner_width,
-                      rect.height() + start_.begin_outset + start_.end_outset);
+    gfx::Rect edge_rect(
+        rect.x() - start_.outer_width, rect.y() - start_.begin_outset,
+        start_.outer_width + start_.inner_width,
+        rect.height() + start_.begin_outset + start_.end_outset);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kLeft, start_.value->GetColor(),
         CollapsedBorderStyle(start_.value->Style()), auto_dark_mode);
   }
   if (end_.value) {
-    IntRect edge_rect(rect.right() - end_.inner_width,
-                      rect.y() - end_.begin_outset,
-                      end_.inner_width + end_.outer_width,
-                      rect.height() + end_.begin_outset + end_.end_outset);
+    gfx::Rect edge_rect(rect.right() - end_.inner_width,
+                        rect.y() - end_.begin_outset,
+                        end_.inner_width + end_.outer_width,
+                        rect.height() + end_.begin_outset + end_.end_outset);
     BoxBorderPainter::DrawBoxSide(
         context, edge_rect, BoxSide::kRight, end_.value->GetColor(),
         CollapsedBorderStyle(end_.value->Style()), auto_dark_mode);

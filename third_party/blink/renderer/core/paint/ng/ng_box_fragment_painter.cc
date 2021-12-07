@@ -633,7 +633,7 @@ void NGBoxFragmentPainter::PaintObject(
       paint_phase == PaintPhase::kDescendantBlockBackgroundsOnly) {
     NGTablePainter(box_fragment_)
         .PaintCollapsedBorders(paint_info, paint_offset,
-                               IntRect(VisualRect(paint_offset)));
+                               VisualRect(paint_offset));
   }
 
   if (ShouldPaintSelfOutline(paint_phase)) {
@@ -1040,7 +1040,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
 
   if (ShouldRecordHitTestData(paint_info)) {
     paint_info.context.GetPaintController().RecordHitTestData(
-        *background_client, ToGfxRect(PixelSnappedIntRect(paint_rect)),
+        *background_client, ToPixelSnappedRect(paint_rect),
         PhysicalFragment().EffectiveAllowedTouchAction(),
         PhysicalFragment().InsideBlockingWheelEventHandler());
   }
@@ -1049,7 +1049,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   if (element && element->GetRegionCaptureCropId()) {
     paint_info.context.GetPaintController().RecordRegionCaptureData(
         *background_client, *(element->GetRegionCaptureCropId()),
-        ToGfxRect(PixelSnappedIntRect(paint_rect)));
+        ToPixelSnappedRect(paint_rect));
   }
 
   bool needs_scroll_hit_test = true;
@@ -1351,10 +1351,10 @@ void NGBoxFragmentPainter::PaintColumnRules(
     // specified and columns are balanced).
 
     rule.Move(paint_offset);
-    IntRect snapped_rule = PixelSnappedIntRect(rule);
+    gfx::Rect snapped_rule = ToPixelSnappedRect(rule);
     BoxBorderPainter::DrawBoxSide(paint_info.context, snapped_rule, box_side,
                                   rule_color, rule_style, auto_dark_mode);
-    recorder.UniteVisualRect(ToGfxRect(snapped_rule));
+    recorder.UniteVisualRect(snapped_rule);
 
     previous_column = current_column;
   }
@@ -1483,7 +1483,7 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   if (ShouldRecordHitTestData(paint_info)) {
     display_item_fragment.emplace(paint_info.context, line_fragment_id);
     paint_info.context.GetPaintController().RecordHitTestData(
-        display_item_client, ToGfxRect(PixelSnappedIntRect(border_box)),
+        display_item_client, ToPixelSnappedRect(border_box),
         PhysicalFragment().EffectiveAllowedTouchAction(),
         PhysicalFragment().InsideBlockingWheelEventHandler());
   }
@@ -1492,7 +1492,7 @@ inline void NGBoxFragmentPainter::PaintLineBox(
   if (element && element->GetRegionCaptureCropId()) {
     paint_info.context.GetPaintController().RecordRegionCaptureData(
         display_item_client, *(element->GetRegionCaptureCropId()),
-        ToGfxRect(PixelSnappedIntRect(border_box)));
+        ToPixelSnappedRect(border_box));
   }
 
   // Paint the background of the `::first-line` line box.
@@ -2002,7 +2002,7 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     // TODO(kojii): Don't have good explanation why only inline box needs to
     // snap, but matches to legacy and fixes crbug.com/976606.
     if (fragment.IsInlineBox())
-      bounds_rect = PhysicalRect(PixelSnappedIntRect(bounds_rect));
+      bounds_rect = PhysicalRect(ToPixelSnappedRect(bounds_rect));
     if (hit_test.location.Intersects(bounds_rect)) {
       // We set offset in container block instead of offset in |fragment| like
       // |NGBoxFragmentPainter::HitTestTextFragment()|.
@@ -2309,7 +2309,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
     }
     // TODO(kojii): Don't have good explanation why only inline box needs to
     // snap, but matches to legacy and fixes crbug.com/976606.
-    bounds_rect = PhysicalRect(PixelSnappedIntRect(bounds_rect));
+    bounds_rect = PhysicalRect(ToPixelSnappedRect(bounds_rect));
     if (hit_test.location.Intersects(bounds_rect)) {
       if (hit_test.AddNodeToResultWithContentOffset(item.NodeForHitTest(),
                                                     cursor.ContainerFragment(),
@@ -2648,7 +2648,7 @@ gfx::Rect NGBoxFragmentPainter::VisualRect(const PhysicalOffset& paint_offset) {
   DCHECK(box_item_);
   PhysicalRect ink_overflow = box_item_->InkOverflow();
   ink_overflow.Move(paint_offset);
-  return ToGfxRect(EnclosingIntRect(ink_overflow));
+  return ToEnclosingRect(ink_overflow);
 }
 
 }  // namespace blink

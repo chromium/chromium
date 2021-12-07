@@ -45,7 +45,7 @@ void LayoutDocumentTransitionContent::PaintReplaced(
 
   PhysicalRect paint_rect = ReplacedContentRect();
   paint_rect.Move(paint_offset);
-  IntRect pixel_snapped_rect = PixelSnappedIntRect(paint_rect);
+  gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(paint_rect);
   layer_->SetBounds(
       gfx::Size(pixel_snapped_rect.width(), pixel_snapped_rect.height()));
   layer_->SetIsDrawable(true);

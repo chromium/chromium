@@ -14,13 +14,13 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/mailbox.mojom-blink.h"
 #include "skia/buildflags.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/size.h"
 
 #include <dawn/webgpu_cpp.h>
 
@@ -29,6 +29,7 @@
 
 namespace gfx {
 
+class ColorSpace;
 class GpuMemoryBuffer;
 
 }  // namespace gfx

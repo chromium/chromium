@@ -1967,13 +1967,13 @@ void Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
                             scroll_behavior);
 }
 
-IntRect Element::BoundsInViewport() const {
+gfx::Rect Element::BoundsInViewport() const {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kUnknown);
 
   LocalFrameView* view = GetDocument().View();
   if (!view)
-    return IntRect();
+    return gfx::Rect();
 
   Vector<FloatQuad> quads;
 
@@ -1999,18 +1999,18 @@ IntRect Element::BoundsInViewport() const {
   }
 
   if (quads.IsEmpty())
-    return IntRect();
+    return gfx::Rect();
 
-  IntRect result = quads[0].EnclosingBoundingBox();
+  gfx::Rect result = quads[0].EnclosingBoundingBox();
   for (wtf_size_t i = 1; i < quads.size(); ++i)
     result.Union(quads[i].EnclosingBoundingBox());
 
   return view->FrameToViewport(result);
 }
 
-Vector<IntRect> Element::OutlineRectsInVisualViewport(
+Vector<gfx::Rect> Element::OutlineRectsInVisualViewport(
     DocumentUpdateReason reason) const {
-  Vector<IntRect> rects;
+  Vector<gfx::Rect> rects;
 
   LocalFrameView* view = GetDocument().View();
   if (!view)
@@ -2027,20 +2027,20 @@ Vector<IntRect> Element::OutlineRectsInVisualViewport(
       layout_object->StyleRef().OutlineRectsShouldIncludeBlockVisualOverflow());
   for (auto& r : outline_rects) {
     PhysicalRect physical_rect = layout_object->LocalToAbsoluteRect(r);
-    IntRect absolute_rect =
-        view->FrameToViewport(PixelSnappedIntRect(physical_rect));
+    gfx::Rect absolute_rect =
+        view->FrameToViewport(ToPixelSnappedRect(physical_rect));
     rects.push_back(absolute_rect);
   }
 
   return rects;
 }
 
-IntRect Element::VisibleBoundsInVisualViewport() const {
+gfx::Rect Element::VisibleBoundsInVisualViewport() const {
   if (!GetLayoutObject() || !GetDocument().GetPage() ||
       !GetDocument().GetFrame())
-    return IntRect();
+    return gfx::Rect();
 
-  // We don't use absoluteBoundingBoxRect() because it can return an IntRect
+  // We don't use absoluteBoundingBoxRect() because it can return an gfx::Rect
   // larger the actual size by 1px. crbug.com/470503
   PhysicalRect rect(
       RoundedIntRect(GetLayoutObject()->AbsoluteBoundingBoxFloatRect()));
@@ -2067,17 +2067,18 @@ IntRect Element::VisibleBoundsInVisualViewport() const {
              ->AbsoluteToLocalRect(rect, kTraverseDocumentBoundaries |
                                              kApplyRemoteMainFrameTransform);
 
-  IntRect visible_rect = PixelSnappedIntRect(rect);
+  gfx::Rect visible_rect = ToPixelSnappedRect(rect);
   // If the rect is in the coordinates of the main frame, then it should
   // also be clipped to the viewport to account for page scale. For OOPIFs,
   // local frame root -> viewport coordinate conversion is done in the
   // browser process.
   if (GetDocument().GetFrame()->LocalFrameRoot().IsMainFrame()) {
-    IntSize viewport_size = GetDocument().GetPage()->GetVisualViewport().Size();
+    gfx::Size viewport_size =
+        GetDocument().GetPage()->GetVisualViewport().Size();
     visible_rect =
         GetDocument().GetPage()->GetVisualViewport().RootFrameToViewport(
             visible_rect);
-    visible_rect.Intersect(IntRect(gfx::Point(), viewport_size));
+    visible_rect.Intersect(gfx::Rect(gfx::Point(), viewport_size));
   }
   return visible_rect;
 }

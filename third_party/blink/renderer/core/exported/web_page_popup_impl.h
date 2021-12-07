@@ -205,13 +205,13 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   bool ShouldCheckPopupPositionForTelemetry() const;
   void CheckScreenPointInOwnerWindowAndCount(const gfx::PointF& point_in_screen,
                                              WebFeature feature) const;
-  IntRect OwnerWindowRectInScreen() const;
+  gfx::Rect OwnerWindowRectInScreen() const;
   // Returns anchor rect in screen coordinates for this popup.
-  IntRect GetAnchorRectInScreen() const;
+  gfx::Rect GetAnchorRectInScreen() const;
 
   // PagePopup function
   AXObject* RootAXObject() override;
-  void SetWindowRect(const IntRect&) override;
+  void SetWindowRect(const gfx::Rect&) override;
 
   WebPagePopupImpl(
       CrossVariantMojoAssociatedRemote<

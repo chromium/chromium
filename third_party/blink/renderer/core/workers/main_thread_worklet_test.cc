@@ -47,7 +47,7 @@ class MainThreadWorkletTest : public PageTestBase {
     SetUpScope("script-src 'self' https://allowed.example.com");
   }
   void SetUpScope(const String& csp_header) {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     KURL url = KURL("https://example.com/");
     NavigateTo(url);
     LocalDOMWindow* window = GetFrame().DomWindow();

@@ -320,7 +320,7 @@ void LocalFrame::SetView(LocalFrameView* view) {
   view_ = view;
 }
 
-void LocalFrame::CreateView(const IntSize& viewport_size,
+void LocalFrame::CreateView(const gfx::Size& viewport_size,
                             const Color& background_color) {
   DCHECK(this);
   DCHECK(GetPage());
@@ -2020,7 +2020,7 @@ void LocalFrame::SetViewportIntersectionFromParent(
         gfx::RectF(gfx::Rect(intersection_state.main_frame_intersection));
 
     intersection_state.main_frame_transform.TransformRect(&transform_rect);
-    IntRect rect = EnclosingIntRect(
+    gfx::Rect rect = ToEnclosingRect(
         FloatRect(transform_rect.x(), transform_rect.y(),
                   transform_rect.width(), transform_rect.height()));
 
@@ -2046,12 +2046,14 @@ void LocalFrame::SetViewportIntersectionFromParent(
   }
 }
 
-IntSize LocalFrame::GetMainFrameViewportSize() const {
+gfx::Size LocalFrame::GetMainFrameViewportSize() const {
   LocalFrame& local_root = LocalFrameRoot();
-  return IntSize(
-      local_root.IsMainFrame()
-          ? local_root.View()->GetScrollableArea()->VisibleContentRect().size()
-          : local_root.intersection_state_.main_frame_viewport_size);
+  return local_root.IsMainFrame()
+             ? local_root.View()
+                   ->GetScrollableArea()
+                   ->VisibleContentRect()
+                   .size()
+             : local_root.intersection_state_.main_frame_viewport_size;
 }
 
 gfx::Point LocalFrame::GetMainFrameScrollOffset() const {
@@ -2330,7 +2332,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
  private:
   void PaintFrameOverlay(const FrameOverlay& frame_overlay,
                          GraphicsContext& graphics_context,
-                         const IntSize&) const override {
+                         const gfx::Size&) const override {
     const auto* view = frame_->View();
     DCHECK(view);
     if (view->Width() == 0 || view->Height() == 0)
@@ -2344,7 +2346,7 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
       return;
     DrawingRecorder recorder(graphics_context, frame_overlay,
                              DisplayItem::kFrameOverlay,
-                             gfx::Rect(ToGfxSize(view->Size())));
+                             gfx::Rect(view->Size()));
     gfx::RectF rect(0, 0, view->Width(), view->Height());
     graphics_context.FillRect(
         rect, color_,
@@ -3087,10 +3089,9 @@ void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
                                               String& clip_html,
                                               gfx::Rect& clip_rect) {
   // TODO(mahesh.ma): Check clip_data even after use-zoom-for-dsf is enabled.
-  SmartClipData clip_data =
-      SmartClip(this).DataForRect(IntRect(rect_in_viewport));
+  SmartClipData clip_data = SmartClip(this).DataForRect(rect_in_viewport);
   clip_text = clip_data.ClipData();
-  clip_rect = ToGfxRect(clip_data.RectInViewport());
+  clip_rect = clip_data.RectInViewport();
 
   gfx::Point start_point(rect_in_viewport.x(), rect_in_viewport.y());
   gfx::Point end_point(rect_in_viewport.x() + rect_in_viewport.width(),

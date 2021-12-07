@@ -165,7 +165,7 @@ void LineBoxListPainter::PaintBackplate(
     return;
 
   const auto& backplates = GetBackplates(paint_offset);
-  gfx::Rect visual_rect = ToGfxRect(EnclosingIntRect(UnionRect(backplates)));
+  gfx::Rect visual_rect = ToEnclosingRect(UnionRect(backplates));
   DrawingRecorder recorder(paint_info.context, layout_object,
                            DisplayItem::kForcedColorsModeBackplate,
                            visual_rect);

@@ -1881,7 +1881,7 @@ class ComputedStyle : public ComputedStyleBase,
     SetBorderBottomLeftRadius(s);
     SetBorderBottomRightRadius(s);
   }
-  void SetBorderRadius(const IntSize& s) {
+  void SetBorderRadius(const gfx::Size& s) {
     SetBorderRadius(
         LengthSize(Length::Fixed(s.width()), Length::Fixed(s.height())));
   }

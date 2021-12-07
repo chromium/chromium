@@ -9,9 +9,12 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
-class IntRect;
 class Node;
 
 // Nearly-complete implementation of DocumentMarkerList for text match markers.
@@ -47,7 +50,7 @@ class CORE_EXPORT TextMatchMarkerListImpl final : public DocumentMarkerList {
   void Trace(Visitor*) const override;
 
   // TextMatchMarkerListImpl-specific
-  Vector<IntRect> LayoutRects(const Node&) const;
+  Vector<gfx::Rect> LayoutRects(const Node&) const;
   // Returns true if markers within a range defined by |startOffset| and
   // |endOffset| are found.
   bool SetTextMatchMarkersActive(unsigned start_offset,

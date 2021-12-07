@@ -94,7 +94,7 @@ class AudioContextTest : public PageTestBase {
   ~AudioContextTest() override { platform_.reset(); }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
                                                         base::EmptyString());
   }

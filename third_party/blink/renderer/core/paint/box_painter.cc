@@ -101,7 +101,7 @@ void BoxPainter::PaintBoxDecorationBackground(
     PaintBoxDecorationBackgroundWithRect(
         contents_paint_state ? contents_paint_state->GetPaintInfo()
                              : paint_info,
-        IntRect(visual_rect), paint_rect, *background_client);
+        visual_rect, paint_rect, *background_client);
   }
 
   RecordHitTestData(paint_info, paint_rect, *background_client);
@@ -133,7 +133,7 @@ void BoxPainter::PaintBoxDecorationBackground(
 
 void BoxPainter::PaintBoxDecorationBackgroundWithRect(
     const PaintInfo& paint_info,
-    const IntRect& visual_rect,
+    const gfx::Rect& visual_rect,
     const PhysicalRect& paint_rect,
     const DisplayItemClient& background_client) {
   const ComputedStyle& style = layout_box_.StyleRef();
@@ -153,8 +153,7 @@ void BoxPainter::PaintBoxDecorationBackgroundWithRect(
     return;
 
   DrawingRecorder recorder(paint_info.context, background_client,
-                           DisplayItem::kBoxDecorationBackground,
-                           ToGfxRect(visual_rect));
+                           DisplayItem::kBoxDecorationBackground, visual_rect);
   GraphicsContextStateSaver state_saver(paint_info.context, false);
 
   bool needs_end_layer = false;
@@ -295,7 +294,7 @@ void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
     return;
 
   paint_info.context.GetPaintController().RecordHitTestData(
-      background_client, ToGfxRect(PixelSnappedIntRect(paint_rect)),
+      background_client, ToPixelSnappedRect(paint_rect),
       layout_box_.EffectiveAllowedTouchAction(),
       layout_box_.InsideBlockingWheelEventHandler());
 }
@@ -309,8 +308,7 @@ void BoxPainter::RecordRegionCaptureData(
     const RegionCaptureCropId* crop_id = element->GetRegionCaptureCropId();
     if (crop_id) {
       paint_info.context.GetPaintController().RecordRegionCaptureData(
-          background_client, *crop_id,
-          ToGfxRect(PixelSnappedIntRect(paint_rect)));
+          background_client, *crop_id, ToPixelSnappedRect(paint_rect));
     }
   }
 }
@@ -359,7 +357,7 @@ gfx::Rect BoxPainter::VisualRect(const PhysicalOffset& paint_offset) {
          layout_box_.StyleRef().Visibility() == EVisibility::kVisible);
   PhysicalRect rect = layout_box_.PhysicalSelfVisualOverflowRect();
   rect.Move(paint_offset);
-  return ToGfxRect(EnclosingIntRect(rect));
+  return ToEnclosingRect(rect);
 }
 
 }  // namespace blink

@@ -52,9 +52,7 @@ class MockManifestChangeNotifier : public ManifestChangeNotifier {
 class ManifestManagerTest : public PageTestBase {
  protected:
   ManifestManagerTest() : base_url_("http://internal.test/") {}
-  void SetUp() override {
-    PageTestBase::SetUp(IntSize());
-  }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
   void TearDown() override {
     ThreadState::Current()->CollectAllGarbageForTesting();

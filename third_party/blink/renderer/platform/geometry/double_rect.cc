@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
-DoubleRect::DoubleRect(const IntRect& r)
+DoubleRect::DoubleRect(const gfx::Rect& r)
     : location_(r.origin()), size_(r.size()) {}
 
 DoubleRect::DoubleRect(const FloatRect& r)
@@ -20,26 +20,23 @@ DoubleRect::DoubleRect(const FloatRect& r)
 DoubleRect::DoubleRect(const LayoutRect& r)
     : location_(r.Location()), size_(r.Size()) {}
 
-IntRect EnclosingIntRect(const DoubleRect& rect) {
+gfx::Rect ToEnclosingRect(const DoubleRect& rect) {
   gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
   gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());
 
-  return IntRect(location,
-                 IntSize(base::ClampSub(max_point.x(), location.x()),
-                         base::ClampSub(max_point.y(), location.y())));
+  return gfx::Rect(location,
+                   gfx::Size(base::ClampSub(max_point.x(), location.x()),
+                             base::ClampSub(max_point.y(), location.y())));
 }
 
-IntRect EnclosedIntRect(const DoubleRect& rect) {
+gfx::Rect ToEnclosedRect(const DoubleRect& rect) {
   gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
   gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
-  IntSize size(max_point - location);
-  size.ClampNegativeToZero();
-
-  return IntRect(location, size);
+  return gfx::BoundingRect(location, max_point);
 }
 
-IntRect RoundedIntRect(const DoubleRect& rect) {
-  return IntRect(ToRoundedPoint(rect.Location()), RoundedIntSize(rect.Size()));
+gfx::Rect RoundedIntRect(const DoubleRect& rect) {
+  return gfx::Rect(ToRoundedPoint(rect.Location()), ToRoundedSize(rect.Size()));
 }
 
 void DoubleRect::Scale(float sx, float sy) {

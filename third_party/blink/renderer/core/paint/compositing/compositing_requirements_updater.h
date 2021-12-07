@@ -27,11 +27,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_REQUIREMENTS_UPDATER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_REQUIREMENTS_UPDATER_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -67,7 +67,7 @@ class CompositingRequirementsUpdater {
                        RecursionData&,
                        bool& descendant_has3d_transform,
                        HeapVector<Member<PaintLayer>>& unclipped_descendants,
-                       IntRect& absolute_descendant_bounding_box);
+                       gfx::Rect& absolute_descendant_bounding_box);
 
   LayoutView& layout_view_;
 };

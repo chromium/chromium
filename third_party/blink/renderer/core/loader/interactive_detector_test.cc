@@ -51,7 +51,7 @@ class InteractiveDetectorTest : public testing::Test,
     auto test_task_runner = platform_->test_task_runner();
     auto* tick_clock = test_task_runner->GetMockTickClock();
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-        IntSize(), nullptr, nullptr, base::NullCallback(), tick_clock);
+        gfx::Size(), nullptr, nullptr, base::NullCallback(), tick_clock);
 
     Document* document = &dummy_page_holder_->GetDocument();
     detector_ = MakeGarbageCollected<InteractiveDetector>(

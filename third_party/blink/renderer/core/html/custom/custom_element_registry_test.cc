@@ -34,7 +34,7 @@ namespace blink {
 
 class CustomElementRegistryTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   CustomElementRegistry& Registry() {
     return *GetFrame().DomWindow()->customElements();

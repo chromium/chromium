@@ -29,7 +29,7 @@ using animation_test_helpers::EnsureInterpolatedValueCached;
 class AnimationEffectStackTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().GetAnimationClock().ResetTimeForTesting();
     timeline = GetDocument().Timeline();
     element = GetDocument().CreateElementForBinding("foo");

@@ -118,7 +118,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   // - checks for null LocalFrameView
   // - Replaces logical height with PageLogicalHeight() if using printing layout
   // - scrollbar exclusion is compatible with root layer scrolling
-  IntSize GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
+  gfx::Size GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 
   int ViewHeight(
       IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
@@ -318,7 +318,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   // Returns the coordinates of find-in-page scrollbar tickmarks.  These come
   // from DocumentMarkerController.
-  Vector<IntRect> GetTickmarks() const;
+  Vector<gfx::Rect> GetTickmarks() const;
   bool HasTickmarks() const;
 
   RecalcLayoutOverflowResult RecalcLayoutOverflow() final;

@@ -279,7 +279,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     RunSetUp(kViewportEnabled);
   }
 

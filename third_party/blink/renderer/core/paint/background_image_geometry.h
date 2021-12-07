@@ -60,7 +60,7 @@ class BackgroundImageGeometry {
   // also defines the subset of the image to be drawn. Both border-snapped
   // and unsnapped rectangles are available. The snapped rectangle matches the
   // inner border of the box when such information is available. This may
-  // may differ from the PixelSnappedIntRect of the unsnapped rectangle
+  // may differ from the ToPixelSnappedRect of the unsnapped rectangle
   // because both border widths and border locations are snapped. The
   // unsnapped rectangle is the size and location intended by the content
   // author, and is needed to correctly subset images when no background-size

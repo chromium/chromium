@@ -32,7 +32,7 @@ class VisualRectMappingTest : public PaintTestConfigurations,
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
-  enum Flags { kContainsEnclosingIntRect = 1 << 0 };
+  enum Flags { kContainsToEnclosingRect = 1 << 0 };
 
   void SetUp() override {
     EnableCompositing();
@@ -73,15 +73,15 @@ class VisualRectMappingTest : public PaintTestConfigurations,
       return;
     }
 
-    if (flags & kContainsEnclosingIntRect) {
+    if (flags & kContainsToEnclosingRect) {
       EXPECT_TRUE(
-          EnclosingIntRect(slow_map_rect)
-              .Contains(EnclosingIntRect(expected_visual_rect_in_ancestor)));
+          ToEnclosingRect(slow_map_rect)
+              .Contains(ToEnclosingRect(expected_visual_rect_in_ancestor)));
 
       if (object.FirstFragment().HasLocalBorderBoxProperties()) {
-        EXPECT_TRUE(gfx::ToEnclosingRect(geometry_mapper_rect.Rect())
-                        .Contains(ToGfxRect(EnclosingIntRect(
-                            expected_visual_rect_in_ancestor))));
+        EXPECT_TRUE(
+            gfx::ToEnclosingRect(geometry_mapper_rect.Rect())
+                .Contains(ToEnclosingRect(expected_visual_rect_in_ancestor)));
       }
     } else {
       EXPECT_EQ(expected_visual_rect_in_ancestor, slow_map_rect);
@@ -1033,7 +1033,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPreserve3d) {
       PhysicalRect::EnclosingRect(matrix.MapRect(FloatRect(original_rect)));
 
   CheckVisualRect(*target, *target->View(), original_rect, output,
-                  kContainsEnclosingIntRect);
+                  kContainsToEnclosingRect);
 }
 
 TEST_P(VisualRectMappingTest, ShouldAccountForPreserve3dNested) {
@@ -1095,7 +1095,7 @@ TEST_P(VisualRectMappingTest, ShouldAccountForPerspective) {
       PhysicalRect::EnclosingRect(matrix.MapRect(FloatRect(original_rect)));
 
   CheckVisualRect(*target, *target->View(), original_rect, output,
-                  kContainsEnclosingIntRect);
+                  kContainsToEnclosingRect);
 }
 
 TEST_P(VisualRectMappingTest, ShouldAccountForPerspectiveNested) {
@@ -1317,7 +1317,7 @@ TEST_P(VisualRectMappingTest, Perspective) {
 
   PhysicalRect rect(0, 0, 10, 10);
   child->MapToVisualRectInAncestorSpace(ancestor, rect);
-  EXPECT_EQ(IntRect(1, 0, 8, 10), EnclosingIntRect(rect));
+  EXPECT_EQ(gfx::Rect(1, 0, 8, 10), ToEnclosingRect(rect));
 }
 
 TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
@@ -1336,7 +1336,7 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
 
   PhysicalRect rect(0, 0, 10, 10);
   child->MapToVisualRectInAncestorSpace(ancestor, rect);
-  EXPECT_EQ(IntRect(1, -1, 8, 12), EnclosingIntRect(rect));
+  EXPECT_EQ(gfx::Rect(1, -1, 8, 12), ToEnclosingRect(rect));
 }
 
 }  // namespace blink

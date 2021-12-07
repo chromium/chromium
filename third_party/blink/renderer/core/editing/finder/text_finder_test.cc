@@ -190,7 +190,7 @@ TEST_F(TextFinderTest, FindTextAutosizing) {
   // Enforce autosizing
   GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
   GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-      IntSize(20, 20));
+      gfx::Size(20, 20));
   GetDocument().GetTextAutosizer()->UpdatePageInfo();
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 

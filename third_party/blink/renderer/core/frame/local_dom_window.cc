@@ -1403,14 +1403,14 @@ int LocalDOMWindow::outerWidth() const {
   return chrome_client.RootWindowRect(*frame).width();
 }
 
-IntSize LocalDOMWindow::GetViewportSize() const {
+gfx::Size LocalDOMWindow::GetViewportSize() const {
   LocalFrameView* view = GetFrame()->View();
   if (!view)
-    return IntSize();
+    return gfx::Size();
 
   Page* page = GetFrame()->GetPage();
   if (!page)
-    return IntSize();
+    return gfx::Size();
 
   // The main frame's viewport size depends on the page scale. If viewport is
   // enabled, the initial page scale depends on the content width and is set
@@ -1713,8 +1713,8 @@ void LocalDOMWindow::moveBy(int x, int y) const {
   if (!page)
     return;
 
-  IntRect window_rect = page->GetChromeClient().RootWindowRect(*frame);
-  window_rect.SaturatedMove(x, y);
+  gfx::Rect window_rect = page->GetChromeClient().RootWindowRect(*frame);
+  window_rect.Offset(x, y);
   // Security check (the spec talks about UniversalBrowserWrite to disable this
   // check...)
   page->GetChromeClient().SetWindowRectWithAdjustment(window_rect, *frame);
@@ -1729,7 +1729,7 @@ void LocalDOMWindow::moveTo(int x, int y) const {
   if (!page)
     return;
 
-  IntRect window_rect = page->GetChromeClient().RootWindowRect(*frame);
+  gfx::Rect window_rect = page->GetChromeClient().RootWindowRect(*frame);
   window_rect.set_origin(gfx::Point(x, y));
   // Security check (the spec talks about UniversalBrowserWrite to disable this
   // check...)
@@ -1745,9 +1745,9 @@ void LocalDOMWindow::resizeBy(int x, int y) const {
   if (!page)
     return;
 
-  IntRect fr = page->GetChromeClient().RootWindowRect(*frame);
-  IntSize dest = fr.size() + IntSize(x, y);
-  IntRect update(fr.origin(), dest);
+  gfx::Rect fr = page->GetChromeClient().RootWindowRect(*frame);
+  gfx::Size dest(fr.width() + x, fr.height() + y);
+  gfx::Rect update(fr.origin(), dest);
   page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame);
 }
 
@@ -1760,9 +1760,9 @@ void LocalDOMWindow::resizeTo(int width, int height) const {
   if (!page)
     return;
 
-  IntRect fr = page->GetChromeClient().RootWindowRect(*frame);
-  IntSize dest = IntSize(width, height);
-  IntRect update(fr.origin(), dest);
+  gfx::Rect fr = page->GetChromeClient().RootWindowRect(*frame);
+  gfx::Size dest = gfx::Size(width, height);
+  gfx::Rect update(fr.origin(), dest);
   page->GetChromeClient().SetWindowRectWithAdjustment(update, *frame);
 }
 
@@ -2097,9 +2097,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 
     // Coarsely measure whether coordinates may be requesting another screen.
     ChromeClient& chrome_client = GetFrame()->GetChromeClient();
-    const IntRect screen(chrome_client.GetScreenInfo(*GetFrame()).rect);
-    const IntRect window(window_features.x, window_features.y,
-                         window_features.width, window_features.height);
+    const gfx::Rect screen = chrome_client.GetScreenInfo(*GetFrame()).rect;
+    const gfx::Rect window(window_features.x, window_features.y,
+                           window_features.width, window_features.height);
     if (!screen.Contains(window)) {
       UseCounter::Count(
           *incumbent_window,

@@ -17,7 +17,7 @@ namespace {
 
 class LiveNodeListRegistryTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
  protected:
   const LiveNodeListBase* CreateNodeList() {

@@ -210,7 +210,7 @@ void NGTextPainter::PaintSelectedText(unsigned start_offset,
   // ink bounds of all glyphs of this text fragment, including characters before
   // |start_offset| or after |end_offset|. Computing exact bounds is expensive
   // that this code only checks bounds of all glyphs.
-  IntRect snapped_selection_rect(PixelSnappedIntRect(selection_rect));
+  gfx::Rect snapped_selection_rect(ToPixelSnappedRect(selection_rect));
   // Allowing 1px overflow is almost unnoticeable, while it can avoid two-pass
   // painting in most small text.
   snapped_selection_rect.Outset(1);
@@ -344,7 +344,7 @@ void NGTextPainter::PaintInternalFragment(unsigned from,
     graphics_context_.GetPaintController().SetTextPainted();
 
     if (!font_.ShouldSkipDrawing())
-      PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect_));
+      PaintTimingDetector::NotifyTextPaint(visual_rect_);
   }
 }
 

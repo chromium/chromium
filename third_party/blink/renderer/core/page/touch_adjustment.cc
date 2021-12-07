@@ -37,11 +37,11 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -65,7 +65,7 @@ class SubtargetGeometry {
 
   Node* GetNode() const { return node_; }
   FloatQuad Quad() const { return quad_; }
-  IntRect BoundingBox() const { return quad_.EnclosingBoundingBox(); }
+  gfx::Rect BoundingBox() const { return quad_.EnclosingBoundingBox(); }
 
  private:
   Member<Node> node_;
@@ -87,7 +87,7 @@ typedef HeapVector<SubtargetGeometry> SubtargetGeometryList;
 typedef bool (*NodeFilter)(Node*);
 typedef void (*AppendSubtargetsForNode)(Node*, SubtargetGeometryList&);
 typedef float (*DistanceFunction)(const gfx::Point&,
-                                  const IntRect&,
+                                  const gfx::Rect&,
                                   const SubtargetGeometry&);
 
 // Takes non-const |Node*| because |Node::WillRespondToMouseClickEvents()| is
@@ -331,20 +331,22 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
 // area.  This will prioritize largest intersection and smallest area, while
 // balancing the two against each other.
 float ZoomableIntersectionQuotient(const gfx::Point& touch_hotspot,
-                                   const IntRect& touch_area,
+                                   const gfx::Rect& touch_area,
                                    const SubtargetGeometry& subtarget) {
-  IntRect rect = subtarget.GetNode()->GetDocument().View()->ConvertToRootFrame(
-      subtarget.BoundingBox());
+  gfx::Rect rect =
+      subtarget.GetNode()->GetDocument().View()->ConvertToRootFrame(
+          subtarget.BoundingBox());
 
   // Check the rectangle is meaningful zoom target. It should at least contain
   // the hotspot.
   if (!rect.Contains(touch_hotspot))
     return std::numeric_limits<float>::infinity();
-  IntRect intersection = rect;
+  gfx::Rect intersection = rect;
   intersection.Intersect(touch_area);
 
   // Return the quotient of the intersection.
-  return rect.size().Area() / (float)intersection.size().Area();
+  return static_cast<float>(rect.size().Area64()) /
+         static_cast<float>(intersection.size().Area64());
 }
 
 // Uses a hybrid of distance to adjust and intersect ratio, normalizing each
@@ -355,20 +357,25 @@ float ZoomableIntersectionQuotient(const gfx::Point& touch_hotspot,
 // overlap can provide strong confidence in tapping on a small target, where the
 // overlap is often quite high, and works well for tightly packed controls.
 float HybridDistanceFunction(const gfx::Point& touch_hotspot,
-                             const IntRect& touch_rect,
+                             const gfx::Rect& touch_rect,
                              const SubtargetGeometry& subtarget) {
-  IntRect rect = subtarget.GetNode()->GetDocument().View()->ConvertToRootFrame(
-      subtarget.BoundingBox());
-
-  float radius_squared = 0.25f * (touch_rect.size().DiagonalLengthSquared());
+  gfx::RectF rect(subtarget.GetNode()->GetDocument().View()->ConvertToRootFrame(
+      subtarget.BoundingBox()));
+  float radius_squared =
+      0.25f *
+      gfx::Vector2dF(touch_rect.width(), touch_rect.height()).LengthSquared();
+  gfx::PointF hotspot_f(touch_hotspot);
   float distance_to_adjust_score =
-      rect.DistanceSquaredToPoint(touch_hotspot) / radius_squared;
+      (rect.ClosestPoint(hotspot_f) - hotspot_f).LengthSquared() /
+      radius_squared;
 
-  int max_overlap_width = std::min(touch_rect.width(), rect.width());
-  int max_overlap_height = std::min(touch_rect.height(), rect.height());
-  float max_overlap_area = std::max(max_overlap_width * max_overlap_height, 1);
-  rect.Intersect(touch_rect);
-  float intersect_area = rect.size().Area();
+  float max_overlap_width = std::min<float>(touch_rect.width(), rect.width());
+  float max_overlap_height =
+      std::min<float>(touch_rect.height(), rect.height());
+  float max_overlap_area =
+      std::max<float>(max_overlap_width * max_overlap_height, 1);
+  rect.Intersect(gfx::RectF(touch_rect));
+  float intersect_area = rect.size().GetArea();
   float intersection_score = 1 - intersect_area / max_overlap_area;
 
   float hybrid_score = intersection_score + distance_to_adjust_score;
@@ -385,7 +392,7 @@ gfx::PointF ConvertToRootFrame(LocalFrameView* view, gfx::PointF pt) {
 
 // Adjusts 'point' to the nearest point inside rect, and leaves it unchanged if
 // already inside.
-void AdjustPointToRect(gfx::PointF& point, const IntRect& rect) {
+void AdjustPointToRect(gfx::PointF& point, const gfx::Rect& rect) {
   if (point.x() < rect.x())
     point.set_x(rect.x());
   else if (point.x() > rect.right())
@@ -399,13 +406,13 @@ void AdjustPointToRect(gfx::PointF& point, const IntRect& rect) {
 
 bool SnapTo(const SubtargetGeometry& geom,
             const gfx::Point& touch_point,
-            const IntRect& touch_area,
+            const gfx::Rect& touch_area,
             gfx::Point& adjusted_point) {
   LocalFrameView* view = geom.GetNode()->GetDocument().View();
   FloatQuad quad = geom.Quad();
 
   if (quad.IsRectilinear()) {
-    IntRect bounds = view->ConvertToRootFrame(geom.BoundingBox());
+    gfx::Rect bounds = view->ConvertToRootFrame(geom.BoundingBox());
     if (bounds.Contains(touch_point)) {
       adjusted_point = touch_point;
       return true;
@@ -451,9 +458,9 @@ bool SnapTo(const SubtargetGeometry& geom,
 // instance be distance squared or area of intersection.
 bool FindNodeWithLowestDistanceMetric(Node*& target_node,
                                       gfx::Point& target_point,
-                                      IntRect& target_area,
+                                      gfx::Rect& target_area,
                                       const gfx::Point& touch_hotspot,
-                                      const IntRect& touch_area,
+                                      const gfx::Rect& touch_area,
                                       SubtargetGeometryList& subtargets,
                                       DistanceFunction distance_function) {
   target_node = nullptr;
@@ -501,9 +508,9 @@ bool FindNodeWithLowestDistanceMetric(Node*& target_node,
 bool FindBestClickableCandidate(Node*& target_node,
                                 gfx::Point& target_point,
                                 const gfx::Point& touch_hotspot,
-                                const IntRect& touch_area,
+                                const gfx::Rect& touch_area,
                                 const HeapVector<Member<Node>>& nodes) {
-  IntRect target_area;
+  gfx::Rect target_area;
   touch_adjustment::SubtargetGeometryList subtargets;
   touch_adjustment::CompileSubtargetList(
       nodes, subtargets, touch_adjustment::NodeRespondsToTapGesture,
@@ -516,9 +523,9 @@ bool FindBestClickableCandidate(Node*& target_node,
 bool FindBestContextMenuCandidate(Node*& target_node,
                                   gfx::Point& target_point,
                                   const gfx::Point& touch_hotspot,
-                                  const IntRect& touch_area,
+                                  const gfx::Rect& touch_area,
                                   const HeapVector<Member<Node>>& nodes) {
-  IntRect target_area;
+  gfx::Rect target_area;
   touch_adjustment::SubtargetGeometryList subtargets;
   touch_adjustment::CompileSubtargetList(
       nodes, subtargets, touch_adjustment::ProvidesContextMenuItems,

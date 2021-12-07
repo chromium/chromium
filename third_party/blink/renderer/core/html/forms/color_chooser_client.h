@@ -33,10 +33,10 @@
 
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -53,7 +53,7 @@ class CORE_EXPORT ColorChooserClient : public GarbageCollectedMixin {
   // Called when ColorChooser UI was closed by the user.
   virtual void DidEndChooser() = 0;
   virtual Element& OwnerElement() const = 0;
-  virtual IntRect ElementRectRelativeToViewport() const = 0;
+  virtual gfx::Rect ElementRectRelativeToViewport() const = 0;
   virtual Color CurrentColor() = 0;
   virtual bool ShouldShowSuggestions() const = 0;
   virtual Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const = 0;

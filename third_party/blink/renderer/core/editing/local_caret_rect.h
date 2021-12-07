@@ -46,14 +46,14 @@ CORE_EXPORT LocalCaretRect LocalCaretRectOfPosition(
 LocalCaretRect LocalSelectionRectOfPosition(const PositionWithAffinity&);
 
 // Bounds of (possibly transformed) caret in absolute coords
-CORE_EXPORT IntRect AbsoluteCaretBoundsOf(
+CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
     const PositionWithAffinity&,
     LayoutUnit* extra_width_to_end_of_line = nullptr,
     EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
-CORE_EXPORT IntRect
-AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity&);
+CORE_EXPORT gfx::Rect AbsoluteCaretBoundsOf(
+    const PositionInFlatTreeWithAffinity&);
 
-CORE_EXPORT IntRect AbsoluteSelectionBoundsOf(const VisiblePosition&);
+CORE_EXPORT gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition&);
 
 // Exposed to tests only. Implemented in local_caret_rect_test.cc.
 bool operator==(const LocalCaretRect&, const LocalCaretRect&);

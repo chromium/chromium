@@ -237,11 +237,11 @@ WebViewImpl* TouchActionTest::SetupTest(String file) {
   return web_view;
 }
 
-IntRect WindowClipRect(const LocalFrameView& frame_view) {
+gfx::Rect WindowClipRect(const LocalFrameView& frame_view) {
   PhysicalRect clip_rect(PhysicalOffset(), PhysicalSize(frame_view.Size()));
   frame_view.GetLayoutView()->MapToVisualRectInAncestorSpace(
       nullptr, clip_rect, 0, kDefaultVisualRectFlags);
-  return EnclosingIntRect(clip_rect);
+  return ToEnclosingRect(clip_rect);
 }
 
 void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
@@ -286,7 +286,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
     Persistent<DOMRect> r = rects->item(0);
     FloatRect client_float_rect =
         FloatRect(r->left(), r->top(), r->width(), r->height());
-    IntRect client_rect = EnclosedIntRect(client_float_rect);
+    gfx::Rect client_rect = ToEnclosedRect(client_float_rect);
     for (int loc_idx = 0; loc_idx < 3; loc_idx++) {
       gfx::Point frame_point;
       std::stringstream context_stream;
@@ -319,7 +319,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
       LocalFrame* main_frame =
           To<LocalFrame>(WebFrame::ToCoreFrame(*web_view->MainFrame()));
       LocalFrameView* main_frame_view = main_frame->View();
-      IntRect visible_rect = WindowClipRect(*main_frame_view);
+      gfx::Rect visible_rect = WindowClipRect(*main_frame_view);
       ASSERT_TRUE(visible_rect.Contains(window_point))
           << failure_context_pos
           << " Test point not contained in visible area: " << visible_rect.x()

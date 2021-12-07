@@ -52,7 +52,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
 
   VisibleSelection ComputeVisibleSelectionInDOMTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
-  bool ComputeAbsoluteBounds(IntRect& anchor, IntRect& focus) const;
+  bool ComputeAbsoluteBounds(gfx::Rect& anchor, gfx::Rect& focus) const;
   void SetSelectionAndEndTyping(const SelectionInDOMTree&);
 
   void DidAttachDocument(Document*);
@@ -115,8 +115,8 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor>,
   mutable bool cached_visible_selection_in_dom_tree_is_dirty_ = true;
   mutable bool cached_visible_selection_in_flat_tree_is_dirty_ = true;
 
-  mutable IntRect cached_anchor_bounds_;
-  mutable IntRect cached_focus_bounds_;
+  mutable gfx::Rect cached_anchor_bounds_;
+  mutable gfx::Rect cached_focus_bounds_;
   mutable bool cached_absolute_bounds_are_dirty_ = true;
   mutable bool has_selection_bounds_ = false;
 

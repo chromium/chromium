@@ -115,7 +115,7 @@ TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
                                GetCSSPropertyColor()));
 
   GetDocument().View()->SetLayoutSizeFixedToFrameSize(false);
-  GetDocument().View()->SetLayoutSize(IntSize(200, 500));
+  GetDocument().View()->SetLayoutSize(gfx::Size(200, 500));
   UpdateAllLifecyclePhasesForTest();
 
   GetDocument().SetAdoptedStyleSheets(adopted_sheets);
