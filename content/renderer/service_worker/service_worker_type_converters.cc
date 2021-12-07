@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace mojo {
 
