@@ -68,17 +68,16 @@ public final class ReadingListUtils {
      * @param bookmarksToMove The List of bookmarks to potentially type swap.
      * @param newParentId The new parentId to use, the {@link BookmarkType} of this is used to
      *         determine if type-swapping is necessary.
-     * @return The new list of bookmarks, some of which may have swapped types.
      */
-    public static List<BookmarkId> typeSwapBookmarksIfNecessary(BookmarkBridge bookmarkBridge,
+    public static void typeSwapBookmarksIfNecessary(BookmarkBridge bookmarkBridge,
             List<BookmarkId> bookmarksToMove, BookmarkId newParentId) {
-        if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) return bookmarksToMove;
+        if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping()) return;
 
-        List<BookmarkId> newList = new ArrayList<>();
-        for (int i = 0; i < bookmarksToMove.size(); i++) {
-            BookmarkId bookmarkId = bookmarksToMove.get(i);
+        List<BookmarkId> outputList = new ArrayList<>();
+        while (!bookmarksToMove.isEmpty()) {
+            BookmarkId bookmarkId = bookmarksToMove.remove(0);
             if (bookmarkId.getType() == newParentId.getType()) {
-                newList.add(bookmarkId);
+                outputList.add(bookmarkId);
                 continue;
             }
 
@@ -95,10 +94,11 @@ public final class ReadingListUtils {
 
             if (newBookmark != null) {
                 bookmarkBridge.deleteBookmark(bookmarkId);
-                newList.add(newBookmark);
+                outputList.add(newBookmark);
             }
         }
-        return newList;
+
+        bookmarksToMove.addAll(outputList);
     }
 
     /** For cases where GURLs are faked for testing (e.g. test pages). */
