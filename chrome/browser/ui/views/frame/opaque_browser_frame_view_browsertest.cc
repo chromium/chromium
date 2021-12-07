@@ -301,7 +301,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     InProcessBrowserTest::SetUp();
   }
 
-  void InstallAndLaunchWebAppWithWindowControlsOverlay() {
+  bool InstallAndLaunchWebAppWithWindowControlsOverlay() {
     GURL start_url = web_app_frame_toolbar_helper_
                          .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
                              embedded_test_server(), &temp_dir_);
@@ -327,12 +327,22 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
+    // Not all platform configurations use OpaqueBrowserFrameView for their
+    // browser windows, see |CreateBrowserNonClientFrameView()|.
+    bool is_opaque_browser_frame_view =
+        views::IsViewClass<OpaqueBrowserFrameView>(frame_view);
+
+    if (!is_opaque_browser_frame_view)
+      return false;
+
     opaque_browser_frame_view_ =
         static_cast<OpaqueBrowserFrameView*>(frame_view);
     auto* web_app_frame_toolbar =
         opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
+
+    return true;
   }
 
   void ToggleWindowControlsOverlayEnabledAndWait() {
@@ -354,7 +364,8 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CaptionButtonsTooltip) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    GTEST_SKIP() << "Skip test if it is not a OpaqueBrowserFrameView";
 
   auto* minimize_button = static_cast<const views::Button*>(
       opaque_browser_frame_view_->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
@@ -393,7 +404,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
                        CaptionButtonHitTest) {
-  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    GTEST_SKIP() << "Skip test if it is not a OpaqueBrowserFrameView";
 
   opaque_browser_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
 
