@@ -360,9 +360,9 @@ class SerializeIncludesTest(unittest.TestCase):
     ])
 
 
-class InsertHeaderIntoSourceTest(unittest.TestCase):
+class AddHeaderToSourceTest(unittest.TestCase):
   def testAddInclude(self):
-    source = add_header.InsertHeaderIntoSource(
+    source = add_header.AddHeaderToSource(
         'cow.cc', '\n'.join([
             '// Copyright info here.', '', '#include <utility>',
             '// For cow speech synthesis.',
@@ -388,13 +388,13 @@ class InsertHeaderIntoSourceTest(unittest.TestCase):
         '#include <memory>', '#include "cow.h"', 'namespace bovine {', '',
         '// TODO: Implement.', '}  // namespace bovine'
     ])
-    self.assertEqual(
-        add_header.InsertHeaderIntoSource('cow.cc', source, '<memory>'), source)
+    self.assertEqual(add_header.AddHeaderToSource('cow.cc', source, '<memory>'),
+                     None)
 
   def testConditionalIncludesLeftALone(self):
     # TODO(dcheng): Conditional header handling could probably be more clever.
     # But for the moment, this is probably Good Enough.
-    source = add_header.InsertHeaderIntoSource(
+    source = add_header.AddHeaderToSource(
         'cow.cc', '\n'.join([
             '// Copyright info here.', '', '#include "cow.h"',
             '#include <utility>', '// For cow speech synthesis.',
@@ -410,6 +410,28 @@ class InsertHeaderIntoSourceTest(unittest.TestCase):
             '#include "moo.h"  // TODO: Add Linux audio support.',
             '#if defined(USE_AURA)', '#include <memory>',
             '#endif  // defined(USE_AURA)', ''
+        ]))
+
+  def testRemoveInclude(self):
+    source = add_header.AddHeaderToSource(
+        'cow.cc',
+        '\n'.join([
+            '// Copyright info here.', '', '#include <memory>',
+            '#include <utility>', '// For cow speech synthesis.',
+            '#include "moo.h"  // TODO: Add Linux audio support.',
+            '#include <time.h>', '#include "cow.h"', 'namespace bovine {', '',
+            '// TODO: Implement.', '}  // namespace bovine'
+        ]),
+        '<utility>',
+        remove=True)
+    self.assertEqual(
+        source, '\n'.join([
+            '// Copyright info here.', '', '#include "cow.h"', '',
+            '#include <time.h>', '', '#include <memory>', '',
+            '// For cow speech synthesis.',
+            '#include "moo.h"  // TODO: Add Linux audio support.',
+            'namespace bovine {', '', '// TODO: Implement.',
+            '}  // namespace bovine', ''
         ]))
 
 
