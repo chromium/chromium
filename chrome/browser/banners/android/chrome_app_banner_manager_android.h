@@ -30,8 +30,9 @@ class ChromeAppBannerManagerAndroid
 
   // Returns false if the bottom sheet can't be shown. In that case an
   // alternative UI should be shown.
-  bool MaybeShowPwaBottomSheetController(bool expand_sheet,
-                                         WebappInstallSource install_source);
+  bool MaybeShowPwaBottomSheetController(
+      bool expand_sheet,
+      WebappInstallSource install_source) override;
 
  protected:
   // AppBannerManagerAndroid:

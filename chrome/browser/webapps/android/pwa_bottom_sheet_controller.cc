@@ -8,10 +8,11 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetControllerProvider_jni.h"
 #include "chrome/browser/webapps/android/jni_headers/PwaBottomSheetController_jni.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -45,8 +46,8 @@ jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     int install_trigger) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  auto* app_banner_manager =
-      ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
+  auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
+      WebappsClient::Get()->GetAppBannerManager(web_contents));
 
   WebappInstallSource install_source = InstallableMetrics::GetInstallSource(
       web_contents, static_cast<InstallTrigger>(install_trigger));
@@ -147,8 +148,8 @@ void PwaBottomSheetController::OnAddToHomescreen(
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
     return;
-  auto* app_banner_manager =
-      ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
+  auto* app_banner_manager = static_cast<AppBannerManagerAndroid*>(
+      WebappsClient::Get()->GetAppBannerManager(web_contents));
   if (!app_banner_manager)
     return;
 

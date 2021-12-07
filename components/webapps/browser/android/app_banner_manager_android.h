@@ -98,6 +98,10 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // Returns the appropriate app name based on whether we have a native/web app.
   std::u16string GetAppName() const override;
 
+  virtual bool MaybeShowPwaBottomSheetController(
+      bool expand_sheet,
+      WebappInstallSource install_source);
+
  protected:
   // AppBannerManager overrides.
   std::string GetAppIdentifier() override;

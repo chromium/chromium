@@ -479,6 +479,12 @@ std::u16string AppBannerManagerAndroid::GetAppName() const {
   return native_app_title_;
 }
 
+bool AppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
+    bool expand_sheet,
+    WebappInstallSource install_source) {
+  return false;
+}
+
 void AppBannerManagerAndroid::Install(
     const AddToHomescreenParams& a2hs_params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
