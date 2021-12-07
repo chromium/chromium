@@ -261,7 +261,7 @@ void ClearPrefs() {
       prefs::kContextualTooltips);
   base::DictionaryValue* nudges_dict = update.Get();
   if (nudges_dict && !nudges_dict->DictEmpty())
-    nudges_dict->Clear();
+    nudges_dict->DictClear();
 }
 
 void OverrideClockForTesting(base::Clock* test_clock) {

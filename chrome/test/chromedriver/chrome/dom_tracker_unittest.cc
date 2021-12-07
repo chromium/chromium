@@ -85,7 +85,7 @@ TEST(DomTracker, ChildNodeInserted) {
   ASSERT_TRUE(tracker.GetFrameIdForNode(1, &frame_id).IsError());
   ASSERT_TRUE(frame_id.empty());
 
-  params.Clear();
+  params.DictClear();
   params.Set("node", base::JSONReader::ReadDeprecated(
                          "{\"nodeId\":2,\"frameId\":\"f\"}"));
   ASSERT_EQ(kOk,

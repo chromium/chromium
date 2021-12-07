@@ -84,7 +84,7 @@ Status FrameTracker::OnConnected(DevToolsClient* client) {
   if (status.IsError())
     return status;
   // Enable runtime events to allow tracking execution context creation.
-  params.Clear();
+  params.DictClear();
   status = client->SendCommand("Runtime.enable", params);
   if (status.IsError())
     return status;

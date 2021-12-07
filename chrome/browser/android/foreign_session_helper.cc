@@ -217,7 +217,7 @@ jboolean ForeignSessionHelper::GetForeignSessions(
   base::DictionaryValue* pref_collapsed_sessions = pref_update.Get();
   std::unique_ptr<base::DictionaryValue> collapsed_sessions(
       pref_collapsed_sessions->DeepCopy());
-  pref_collapsed_sessions->Clear();
+  pref_collapsed_sessions->DictClear();
 
   ScopedJavaLocalRef<jobject> last_pushed_session;
 

@@ -226,7 +226,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   void ClearEventsDict() {
     base::DictionaryValue* mutable_dict;
     if (events_value_.GetAsDictionary(&mutable_dict))
-      mutable_dict->Clear();
+      mutable_dict->DictClear();
     else
       NOTREACHED();
   }

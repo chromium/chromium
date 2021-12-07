@@ -89,7 +89,7 @@ void StateStore::Transaction::ClearForType(IncidentType type) {
 void StateStore::Transaction::ClearAll() {
   // Clear the preference if it exists and contains any values.
   if (store_->incidents_sent_ && !store_->incidents_sent_->DictEmpty())
-    GetPrefDict()->Clear();
+    GetPrefDict()->DictClear();
 }
 
 base::DictionaryValue* StateStore::Transaction::GetPrefDict() {

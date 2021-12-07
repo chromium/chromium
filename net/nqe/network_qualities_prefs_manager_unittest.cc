@@ -35,7 +35,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
 
   ~TestPrefDelegate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    value_->Clear();
+    value_->DictClear();
     EXPECT_EQ(0U, value_->DictSize());
   }
 

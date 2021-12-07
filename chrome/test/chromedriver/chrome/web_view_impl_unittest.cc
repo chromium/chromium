@@ -33,7 +33,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
     status_ = status;
   }
   void set_result(const base::DictionaryValue& result) {
-    result_.Clear();
+    result_.DictClear();
     result_.MergeDictionary(&result);
   }
 

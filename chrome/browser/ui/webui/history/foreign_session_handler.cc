@@ -314,7 +314,7 @@ base::Value ForeignSessionHandler::GetForeignSessions() {
     base::DictionaryValue* current_collapsed_sessions = pref_update.Get();
     std::unique_ptr<base::DictionaryValue> collapsed_sessions(
         current_collapsed_sessions->DeepCopy());
-    current_collapsed_sessions->Clear();
+    current_collapsed_sessions->DictClear();
 
     // Note: we don't own the SyncedSessions themselves.
     for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {

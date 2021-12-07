@@ -1933,7 +1933,7 @@ Status ExecuteReleaseActions(Session* session,
   }
 
   session->input_cancel_list.clear();
-  session->input_state_table.Clear();
+  session->input_state_table.DictClear();
   session->active_input_sources.ClearList();
   session->mouse_position = WebPoint(0, 0);
   session->click_count = 0;

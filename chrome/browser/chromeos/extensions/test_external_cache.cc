@@ -33,7 +33,7 @@ void TestExternalCache::UpdateExtensionsList(
   DCHECK(prefs);
 
   configured_extensions_ = std::move(prefs);
-  cached_extensions_.Clear();
+  cached_extensions_.DictClear();
 
   if (configured_extensions_->DictEmpty()) {
     delegate_->OnExtensionListsUpdated(&cached_extensions_);

@@ -101,7 +101,7 @@ void GetRegisteredItems(OperationResult* result,
                         ValueStore* store) {
   ValueStore::ReadResult read = store->Get(kStoreKeyRegisteredItems);
 
-  values->Clear();
+  values->DictClear();
 
   if (!read.status().ok()) {
     *result = OperationResult::kFailed;

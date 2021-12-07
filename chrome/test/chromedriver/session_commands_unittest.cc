@@ -68,13 +68,13 @@ TEST(SessionCommandsTest, ExecuteSetTimeouts) {
   status = ExecuteSetTimeouts(&session, params, &value);
   ASSERT_EQ(kInvalidArgument, status.code());
 
-  params.Clear();
+  params.DictClear();
   params.SetInteger("unknown", 5000);
   status = ExecuteSetTimeouts(&session, params, &value);
   ASSERT_EQ(kOk, status.code());
 
   // Old pre-W3C format.
-  params.Clear();
+  params.DictClear();
   params.SetDoubleKey("ms", 5000.0);
   params.SetString("type", "page load");
   status = ExecuteSetTimeouts(&session, params, &value);
@@ -98,7 +98,7 @@ TEST(SessionCommandsTest, MergeCapabilities) {
   // non key collision should return true
   ASSERT_TRUE(MergeCapabilities(&primary, &secondary, &merged));
 
-  merged.Clear();
+  merged.DictClear();
   MergeCapabilities(&primary, &secondary, &merged);
   primary.MergeDictionary(&secondary);
 
@@ -371,7 +371,7 @@ TEST(SessionCommandsTest, MatchCapabilities) {
 
   ASSERT_FALSE(MatchCapabilities(&merged));
 
-  merged.Clear();
+  merged.DictClear();
   merged.SetString("browserName", "chrome");
 
   ASSERT_TRUE(MatchCapabilities(&merged));
@@ -388,7 +388,7 @@ TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticators) {
   EXPECT_FALSE(MatchCapabilities(&merged));
 
   // Don't match values other than bools.
-  merged.Clear();
+  merged.DictClear();
   merged.SetStringPath("webauthn:virtualAuthenticators", "not a bool");
   EXPECT_FALSE(MatchCapabilities(&merged));
 }
@@ -404,7 +404,7 @@ TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticatorsLargeBlob) {
   EXPECT_FALSE(MatchCapabilities(&merged));
 
   // Don't match values other than bools.
-  merged.Clear();
+  merged.DictClear();
   merged.SetStringPath("webauthn:extension:largeBlob", "not a bool");
   EXPECT_FALSE(MatchCapabilities(&merged));
 }

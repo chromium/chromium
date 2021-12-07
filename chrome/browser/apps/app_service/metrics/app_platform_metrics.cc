@@ -792,10 +792,10 @@ void AppPlatformMetrics::ClearRunningDuration() {
 
   DictionaryPrefUpdate running_duration_update(profile_->GetPrefs(),
                                                kAppRunningDuration);
-  running_duration_update->Clear();
+  running_duration_update->DictClear();
   DictionaryPrefUpdate activated_count_update(profile_->GetPrefs(),
                                               kAppActivatedCount);
-  activated_count_update->Clear();
+  activated_count_update->DictClear();
 }
 
 void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {

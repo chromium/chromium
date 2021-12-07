@@ -196,7 +196,7 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
   // The items which are to be written into |value| are also described in
   // chrome/browser/resources/ntp4/page_list_view.js in @typedef for AppInfo.
   // Please update it whenever you add or remove any keys here.
-  value->Clear();
+  value->DictClear();
 
   // Communicate the kiosk flag so the apps page can disable showing the
   // context menu in kiosk mode.
@@ -306,7 +306,7 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
   // The items which are to be written into |value| are also described in
   // chrome/browser/resources/ntp4/page_list_view.js in @typedef for AppInfo.
   // Please update it whenever you add or remove any keys here.
-  value->Clear();
+  value->DictClear();
 
   // Communicate the kiosk flag so the apps page can disable showing the
   // context menu in kiosk mode.

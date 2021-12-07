@@ -498,7 +498,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
   message.SetString("pin", "1234");
   WriteMessageToInputPipe(message);
 
-  message.Clear();
+  message.DictClear();
   message.SetInteger("id", next_id++);
   message.SetString("type", "generateKeyPair");
   WriteMessageToInputPipe(message);
@@ -527,7 +527,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
   message.SetString("type", "updateDaemonConfig");
   WriteMessageToInputPipe(message);
 
-  config.Clear();
+  config.DictClear();
   config.SetBoolean("start", true);
   message.Set("config", config.CreateDeepCopy());
   message.SetBoolean("consent", true);

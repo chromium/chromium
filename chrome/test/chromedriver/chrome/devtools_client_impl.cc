@@ -212,7 +212,7 @@ Status DevToolsClientImpl::SetUpDevTools() {
     if (status.IsError())
       return status;
 
-    params.Clear();
+    params.DictClear();
     params.SetString("expression", script);
     status = SendCommandAndIgnoreResponse("Runtime.evaluate", params);
     if (status.IsError())

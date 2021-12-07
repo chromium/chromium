@@ -92,7 +92,7 @@ void ExternalCacheImpl::UpdateExtensionsList(
     // If list of know extensions is empty, don't init cache on disk. It is
     // important shortcut for test to don't wait forever for cache dir
     // initialization that should happen outside of Chrome on real device.
-    cached_extensions_->Clear();
+    cached_extensions_->DictClear();
     UpdateExtensionLoader();
     return;
   }
@@ -259,7 +259,7 @@ void ExternalCacheImpl::CheckCache() {
         url_loader_factory_, this, extensions::GetExternalVerifierFormat());
   }
 
-  cached_extensions_->Clear();
+  cached_extensions_->DictClear();
   for (const auto entry : extensions_->DictItems()) {
     if (!entry.second.is_dict()) {
       LOG(ERROR) << "ExternalCacheImpl found bad entry with type "

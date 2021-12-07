@@ -178,7 +178,7 @@ void RemoveRecords(PrefService* prefs) {
   if (!urls_to_features)
     return;
   DictionaryPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
-  update->Clear();
+  update->DictClear();
 }
 
 void UpdateRecord(DailyInteraction& record, PrefService* prefs) {

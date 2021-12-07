@@ -126,7 +126,7 @@ HintsFetcher::~HintsFetcher() {
 void HintsFetcher::ClearHostsSuccessfullyFetched(PrefService* pref_service) {
   DictionaryPrefUpdate hosts_fetched_list(
       pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
-  hosts_fetched_list->Clear();
+  hosts_fetched_list->DictClear();
 }
 
 void HintsFetcher::SetTimeClockForTesting(const base::Clock* time_clock) {

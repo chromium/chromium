@@ -881,7 +881,7 @@ void ChromePasswordProtectionService::OnGaiaPasswordChanged(
     bool is_other_gaia_password) {
   DictionaryPrefUpdate unhandled_gaia_password_reuses(
       profile_->GetPrefs(), prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-  unhandled_gaia_password_reuses->Clear();
+  unhandled_gaia_password_reuses->DictClear();
   if (!is_other_gaia_password)
     MaybeLogPasswordCapture(/*did_log_in=*/true);
   for (auto& observer : observer_list_)
@@ -1580,7 +1580,7 @@ void ChromePasswordProtectionService::
   DictionaryPrefUpdate unhandled_sync_password_reuses(
       profile_->GetPrefs(), prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   if (all_history) {
-    unhandled_sync_password_reuses->Clear();
+    unhandled_sync_password_reuses->DictClear();
     return;
   }
 

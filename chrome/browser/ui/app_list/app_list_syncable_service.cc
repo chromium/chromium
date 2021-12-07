@@ -1153,7 +1153,7 @@ AppListSyncableService::MergeDataAndStartSyncing(
   // Reset local state and recreate from sync info.
   DictionaryPrefUpdate pref_update(profile_->GetPrefs(),
                                    prefs::kAppListLocalState);
-  pref_update->Clear();
+  pref_update->DictClear();
 
   sync_processor_ = std::move(sync_processor);
   sync_error_handler_ = std::move(error_handler);

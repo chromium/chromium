@@ -150,7 +150,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusRequestList(
   if (!EnsureServiceConnection())
     return;
 
-  audio_focus_data_.Clear();
+  audio_focus_data_.DictClear();
   request_state_.clear();
 
   // We should go backwards through the stack so the top of the stack is

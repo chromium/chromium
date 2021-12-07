@@ -544,7 +544,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     printer_->set_capture_text_only(false);
   printer_->reset();
 
-  accumulated_web_test_runtime_flags_changes_.Clear();
+  accumulated_web_test_runtime_flags_changes_.DictClear();
   web_test_runtime_flags_.Reset();
   main_window_render_view_hosts_.clear();
   main_window_render_process_hosts_.clear();
@@ -1222,9 +1222,9 @@ void WebTestControlHost::OnTestFinished() {
     main_window_->web_contents()->ExitFullscreen(/*will_cause_resize=*/false);
   devtools_bindings_.reset();
   devtools_protocol_test_bindings_.reset();
-  accumulated_web_test_runtime_flags_changes_.Clear();
+  accumulated_web_test_runtime_flags_changes_.DictClear();
   web_test_runtime_flags_.Reset();
-  work_queue_states_.Clear();
+  work_queue_states_.DictClear();
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();

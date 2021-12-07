@@ -244,7 +244,7 @@ TEST_F(ExtensionSettingsQuotaTest, RemovingNonexistentSettings) {
   EXPECT_TRUE(SettingsEqual(settings));
 
   // Max out key count.
-  to_set.Clear();
+  to_set.DictClear();
   to_set.SetKey("b1", byte_value_1_.Clone());
   to_set.SetKey("b2", byte_value_1_.Clone());
   storage_->Set(DEFAULTS, to_set);

@@ -136,7 +136,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 #endif
 
   // Activating the service again should not change anything.
-  fixture.changed_prefs()->Clear();
+  fixture.changed_prefs()->DictClear();
   service_.SetActive(true);
   EXPECT_EQ(0u, fixture.changed_prefs()->DictSize());
 
@@ -153,7 +153,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
   // kForceGoogleSafeSearch and kForceYouTubeRestrict can be configured by the
   // custodian, overriding the hardcoded default.
-  fixture.changed_prefs()->Clear();
+  fixture.changed_prefs()->DictClear();
   service_.SetLocalSetting(supervised_users::kForceSafeSearch,
                            std::make_unique<base::Value>(false));
   EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
@@ -174,7 +174,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   histogram_tester.ExpectTotalCount(
       "SupervisedUsers.ExtensionsMayRequestPermissions", 0);
 
-  fixture.changed_prefs()->Clear();
+  fixture.changed_prefs()->DictClear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
                            std::make_unique<base::Value>(false));
   EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());
@@ -187,7 +187,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   histogram_tester.ExpectTotalCount(
       "SupervisedUsers.ExtensionsMayRequestPermissions", 1);
 
-  fixture.changed_prefs()->Clear();
+  fixture.changed_prefs()->DictClear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
                            std::make_unique<base::Value>(true));
   EXPECT_EQ(1u, fixture.changed_prefs()->DictSize());

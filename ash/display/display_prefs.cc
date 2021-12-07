@@ -639,7 +639,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
 
   DictionaryPrefUpdate update(pref_service, prefs::kDisplayTouchAssociations);
   base::DictionaryValue* pref_data = update.Get();
-  pref_data->Clear();
+  pref_data->DictClear();
 
   const display::TouchDeviceManager::TouchAssociationMap& touch_associations =
       touch_device_manager->touch_associations();
@@ -690,7 +690,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
   DictionaryPrefUpdate update_port(pref_service,
                                    prefs::kDisplayTouchPortAssociations);
   pref_data = update_port.Get();
-  update_port->Clear();
+  update_port->DictClear();
 
   const display::TouchDeviceManager::PortAssociationMap& port_associations =
       touch_device_manager->port_associations();
@@ -730,7 +730,7 @@ void StoreDisplayMixedMirrorModeParams(
   DictionaryPrefUpdate update(pref_service,
                               prefs::kDisplayMixedMirrorModeParams);
   base::DictionaryValue* pref_data = update.Get();
-  pref_data->Clear();
+  pref_data->DictClear();
 
   if (!mixed_params)
     return;

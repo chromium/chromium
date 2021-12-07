@@ -129,7 +129,7 @@ void MoveAndClearDictionaryPrefs(PrefService* pref_service,
   base::DictionaryValue* pref_dict_dst = pref_update_dst.Get();
   DictionaryPrefUpdate pref_update_src(pref_service, pref_src);
   base::DictionaryValue* pref_dict_src = pref_update_src.Get();
-  pref_dict_dst->Clear();
+  pref_dict_dst->DictClear();
   pref_dict_dst->Swap(pref_dict_src);
   DCHECK(pref_dict_src->DictEmpty());
 }

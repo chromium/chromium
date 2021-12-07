@@ -742,14 +742,14 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
             base::Value::AsDictionaryValue(app_entry_value);
         if (!app_entry.GetString(kIdAttr, &app_id)) {
           LOG(ERROR) << "Wrong format of default application list";
-          prefs->Clear();
+          prefs->DictClear();
           break;
         }
         entry = app_entry.CreateDeepCopy();
         entry->RemoveKey(kIdAttr);
       } else {
         LOG(ERROR) << "Wrong format of default application list";
-        prefs->Clear();
+        prefs->DictClear();
         break;
       }
       if (!entry->FindKey(

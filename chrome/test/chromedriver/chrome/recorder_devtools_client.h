@@ -27,7 +27,7 @@ struct Command {
   }
   Command& operator=(const Command& command) {
     method = command.method;
-    params.Clear();
+    params.DictClear();
     params.MergeDictionary(&command.params);
     return *this;
   }

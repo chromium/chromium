@@ -430,7 +430,7 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
   CHECK(always_match);
   CHECK(first_match);
   CHECK(merged);
-  merged->Clear();
+  merged->DictClear();
 
   for (base::DictionaryValue::Iterator it(*first_match); !it.IsAtEnd();
        it.Advance()) {

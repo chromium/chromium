@@ -42,7 +42,7 @@ void DictionaryValueUpdate::Clear() {
     return;
 
   RecordSplitPath(std::vector<base::StringPiece>());
-  value_->Clear();
+  value_->DictClear();
 }
 
 void DictionaryValueUpdate::Set(base::StringPiece path,

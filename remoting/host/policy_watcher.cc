@@ -203,8 +203,8 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
 }
 
 void PolicyWatcher::SignalPolicyError() {
-  effective_policies_->Clear();
-  platform_policies_->Clear();
+  effective_policies_->DictClear();
+  platform_policies_->DictClear();
   policy_error_callback_.Run();
 }
 

@@ -106,13 +106,13 @@ void DevToolsSettings::Clear() {
                                    kSyncDevToolsPreferencesDefault);
   DictionaryPrefUpdate unsynced_update(profile_->GetPrefs(),
                                        prefs::kDevToolsPreferences);
-  unsynced_update.Get()->Clear();
+  unsynced_update.Get()->DictClear();
   DictionaryPrefUpdate sync_enabled_update(
       profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncEnabled);
-  sync_enabled_update.Get()->Clear();
+  sync_enabled_update.Get()->DictClear();
   DictionaryPrefUpdate sync_disabled_update(
       profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncDisabled);
-  sync_disabled_update.Get()->Clear();
+  sync_disabled_update.Get()->DictClear();
 }
 
 const char* DevToolsSettings::GetDictionaryNameForSettingsName(
@@ -156,5 +156,5 @@ void DevToolsSettings::DevToolsSyncPreferencesChanged() {
   target_update.Get()->MergeDictionary(
       profile_->GetPrefs()->GetDictionary(source_dictionary));
   DictionaryPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);
-  source_update.Get()->Clear();
+  source_update.Get()->DictClear();
 }

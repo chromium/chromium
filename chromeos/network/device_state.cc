@@ -122,7 +122,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     // If kIPConfigsProperty changes, clear any previous ip_configs_.
     // ShillPropertyhandler will request the IPConfig objects which will trigger
     // calls to IPConfigPropertiesChanged.
-    ip_configs_.Clear();
+    ip_configs_.DictClear();
     return false;  // No actual state change.
   } else if (key == shill::kLinkUpProperty) {
     return GetBooleanValue(key, value, &link_up_);

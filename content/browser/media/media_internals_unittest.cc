@@ -357,7 +357,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
         update_data_.FindKeyOfType("sessions", base::Value::Type::LIST)
             ->Clone();
 
-    update_data_.Clear();
+    update_data_.DictClear();
     run_loop_ = std::make_unique<base::RunLoop>();
     call_count_ = 0;
 
@@ -367,7 +367,7 @@ class MediaInternalsAudioFocusTest : public RenderViewHostTestHarness,
   void Reset() {
     base::AutoLock auto_lock(lock_);
 
-    update_data_.Clear();
+    update_data_.DictClear();
     run_loop_ = std::make_unique<base::RunLoop>();
     call_count_ = 0;
   }

@@ -99,7 +99,7 @@ void NetworkQualitiesPrefsManager::ClearPrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   LOCAL_HISTOGRAM_COUNTS_100("NQE.PrefsSizeOnClearing", prefs_->DictSize());
-  prefs_->Clear();
+  prefs_->DictClear();
   DCHECK_EQ(0u, prefs_->DictSize());
   pref_delegate_->SetDictionaryValue(*prefs_);
 }

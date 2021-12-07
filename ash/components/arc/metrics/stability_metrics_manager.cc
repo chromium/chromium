@@ -71,7 +71,7 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
 void StabilityMetricsManager::ResetMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DictionaryPrefUpdate update(local_state_, prefs::kStabilityMetrics);
-  update->Clear();
+  update->DictClear();
 }
 
 absl::optional<bool> StabilityMetricsManager::GetArcEnabledState() {

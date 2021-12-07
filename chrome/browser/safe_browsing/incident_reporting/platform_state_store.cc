@@ -182,12 +182,12 @@ PlatformStateStoreLoadResult DeserializeIncidentsSent(
     base::DictionaryValue* value_dict) {
   StateStoreData store_data;
   if (data.empty()) {
-    value_dict->Clear();
+    value_dict->DictClear();
     return PlatformStateStoreLoadResult::SUCCESS;
   }
   if (!store_data.ParseFromString(data))
     return PlatformStateStoreLoadResult::PARSE_ERROR;
-  value_dict->Clear();
+  value_dict->DictClear();
   RestoreFromProtobuf(store_data.type_to_incidents(), value_dict);
   return PlatformStateStoreLoadResult::SUCCESS;
 }

@@ -25,7 +25,7 @@ void AppTimeLimitsAllowlistPolicyBuilder::SetUp() {
 void AppTimeLimitsAllowlistPolicyBuilder::Clear() {
   base::DictionaryValue* dict_value;
   value_.GetAsDictionary(&dict_value);
-  dict_value->Clear();
+  dict_value->DictClear();
 }
 
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistUrlList(

@@ -127,7 +127,7 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   void ClearReportDict() {
     base::DictionaryValue* mutable_dict;
     if (value_report_.GetAsDictionary(&mutable_dict))
-      mutable_dict->Clear();
+      mutable_dict->DictClear();
     else
       NOTREACHED();
   }
