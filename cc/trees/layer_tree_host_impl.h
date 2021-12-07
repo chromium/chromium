@@ -196,6 +196,10 @@ class LayerTreeHostImplClient {
   virtual void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) = 0;
 
+  virtual void ClearHistory() = 0;
+
+  virtual size_t CommitDurationSampleCountForTesting() const = 0;
+
  protected:
   virtual ~LayerTreeHostImplClient() = default;
 };
@@ -349,6 +353,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const viz::BeginFrameArgs& commit_args,
       const BeginMainFrameMetrics* begin_main_frame_metrics);
   virtual void BeginCommit(int source_frame_number);
+  virtual void FinishCommit(CommitState& commit_state,
+                            ThreadUnsafeCommitState& unsafe_state);
   virtual void CommitComplete();
   virtual void UpdateAnimationState(bool start_ready_animations);
   void PullLayerTreeHostPropertiesFrom(const CommitState&);
@@ -821,6 +827,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Returns all of the transition request sequence ids that were finished.
   std::vector<uint32_t> TakeFinishedTransitionRequestSequenceIds();
 
+  void ClearHistory();
+  size_t CommitDurationSampleCountForTesting() const;
   void ClearCaches();
 
   void UpdateImageDecodingHints(

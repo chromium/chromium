@@ -51,6 +51,7 @@
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "cc/trees/tree_synchronizer.h"
 #include "components/viz/common/traced_value.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -553,6 +554,86 @@ void LayerTreeImpl::SetPropertyTrees(PropertyTrees& property_trees) {
     scrolling_node = scroll_tree.FindNodeFromElementId(scrolling_element_id);
   }
   SetCurrentlyScrollingNode(scrolling_node);
+}
+
+void LayerTreeImpl::PullPropertiesFrom(CommitState& commit_state,
+                                       ThreadUnsafeCommitState& unsafe_state) {
+  lifecycle().AdvanceTo(LayerTreeLifecycle::kBeginningSync);
+
+  if (commit_state.next_commit_forces_redraw)
+    ForceRedrawNextActivation();
+  if (commit_state.next_commit_forces_recalculate_raster_scales)
+    ForceRecalculateRasterScales();
+  if (!commit_state.pending_presentation_time_callbacks.empty()) {
+    AddPresentationCallbacks(
+        std::move(commit_state.pending_presentation_time_callbacks));
+  }
+
+  if (commit_state.needs_full_tree_sync)
+    TreeSynchronizer::SynchronizeTrees(unsafe_state, this);
+
+  if (commit_state.clear_caches_on_next_commit) {
+    host_impl_->ClearHistory();
+    host_impl_->ClearCaches();
+  }
+
+  TRACE_EVENT0("cc", "LayerTreeImpl::PullProperties");
+
+  PullPropertyTreesFrom(unsafe_state.root_layer.get(),
+                        unsafe_state.property_trees);
+  lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedPropertyTrees);
+
+  if (commit_state.needs_surface_ranges_sync) {
+    ClearSurfaceRanges();
+    SetSurfaceRanges(commit_state.SurfaceRanges());
+  }
+  TreeSynchronizer::PushLayerProperties(commit_state, unsafe_state, this);
+  lifecycle().AdvanceTo(LayerTreeLifecycle::kSyncedLayerProperties);
+
+  PullLayerTreePropertiesFrom(commit_state);
+
+  PassSwapPromises(std::move(commit_state.swap_promises));
+  AppendEventsMetricsFromMainThread(std::move(commit_state.event_metrics));
+
+  set_ui_resource_request_queue(commit_state.ui_resource_request_queue);
+
+  // This must happen after synchronizing property trees and after pushing
+  // properties, which updates the clobber_active_value flag.
+  // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
+  property_trees()->scroll_tree.PushScrollUpdatesFromMainThread(
+      &unsafe_state.property_trees, this,
+      settings().commit_fractional_scroll_deltas);
+
+  // This must happen after synchronizing property trees and after push
+  // properties, which updates property tree indices, but before animation
+  // host pushes properties as animation host push properties can change
+  // KeyframeModel::InEffect and we want the old InEffect value for updating
+  // property tree scrolling and animation.
+  // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
+  UpdatePropertyTreeAnimationFromMainThread();
+
+  TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");
+  DCHECK(mutator_host());
+  unsafe_state.mutator_host->PushPropertiesTo(mutator_host());
+
+  if (IsActiveTree() && property_trees()->changed) {
+    if (unsafe_state.root_layer) {
+      if (unsafe_state.property_trees.sequence_number ==
+          property_trees()->sequence_number) {
+        property_trees()->PushChangeTrackingTo(&unsafe_state.property_trees);
+      } else {
+        MoveChangeTrackingToLayers();
+      }
+    }
+  } else {
+    MoveChangeTrackingToLayers();
+  }
+
+  // Updating elements affects whether animations are in effect based on their
+  // properties so run after pushing updated animation properties.
+  host_impl_->UpdateElements(ElementListType::PENDING);
+
+  lifecycle().AdvanceTo(LayerTreeLifecycle::kNotSyncing);
 }
 
 void LayerTreeImpl::PullPropertyTreesFrom(Layer* root_layer,

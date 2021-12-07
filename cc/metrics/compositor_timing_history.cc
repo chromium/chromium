@@ -876,4 +876,8 @@ void CompositorTimingHistory::ClearHistory() {
   bmf_start_to_ready_to_commit_not_critical_history_.Clear();
   bmf_queue_to_activate_critical_history_.Clear();
 }
+
+size_t CompositorTimingHistory::CommitDurationSampleCountForTesting() const {
+  return commit_duration_history_.sample_count();
+}
 }  // namespace cc

@@ -58,6 +58,8 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) override {}
+  void ClearHistory() override {}
+  size_t CommitDurationSampleCountForTesting() const override;
 
   void reset_did_request_impl_side_invalidation() {
     did_request_impl_side_invalidation_ = false;

@@ -32,4 +32,9 @@ bool FakeLayerTreeHostImplClient::IsInSynchronousComposite() const {
   return is_synchronous_composite_;
 }
 
+size_t FakeLayerTreeHostImplClient::CommitDurationSampleCountForTesting()
+    const {
+  return 0;
+}
+
 }  // namespace cc

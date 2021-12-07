@@ -191,8 +191,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
       host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(host->host_impl(), *commit_state,
-                                   unsafe_state);
+    host->host_impl()->FinishCommit(*commit_state, unsafe_state);
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
@@ -222,8 +221,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   commit_state = host->WillCommit(/*completion=*/nullptr, /*has_updates=*/true);
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(host->host_impl(), *commit_state,
-                                   unsafe_state);
+    host->host_impl()->FinishCommit(*commit_state, unsafe_state);
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 

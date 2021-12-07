@@ -215,8 +215,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
 
     host_impl_->BeginCommit(commit_state->source_frame_number);
 
-    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get(), *commit_state,
-                                               unsafe_state);
+    host_impl_->FinishCommit(*commit_state, unsafe_state);
     completion_event->Signal();
 
     if (scheduler_on_impl_thread_) {
@@ -769,6 +768,12 @@ void SingleThreadProxy::ClearHistory() {
   DCHECK(task_runner_provider_->IsImplThread());
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->ClearHistory();
+}
+
+size_t SingleThreadProxy::CommitDurationSampleCountForTesting() const {
+  DCHECK(scheduler_on_impl_thread_);
+  return scheduler_on_impl_thread_
+      ->CommitDurationSampleCountForTesting();  // IN-TEST
 }
 
 void SingleThreadProxy::SetRenderFrameObserver(

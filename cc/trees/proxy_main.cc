@@ -380,13 +380,12 @@ void ProxyMain::BeginMainFrame(
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
     ImplThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
-                       base::Unretained(proxy_impl_.get()), completion_event,
-                       std::move(commit_state), &unsafe_state, layer_tree_host_,
-                       begin_main_frame_start_time,
-                       begin_main_frame_state->begin_frame_args,
-                       &commit_timestamps));
+        FROM_HERE, base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
+                                  base::Unretained(proxy_impl_.get()),
+                                  completion_event, std::move(commit_state),
+                                  &unsafe_state, begin_main_frame_start_time,
+                                  begin_main_frame_state->begin_frame_args,
+                                  &commit_timestamps));
     layer_tree_host_->WaitForCommitCompletion();
   }
 
@@ -729,13 +728,6 @@ void ProxyMain::SetUkmSmoothnessDestination(
       FROM_HERE, base::BindOnce(&ProxyImpl::SetUkmSmoothnessDestination,
                                 base::Unretained(proxy_impl_.get()),
                                 std::move(ukm_smoothness_data)));
-}
-
-void ProxyMain::ClearHistory() {
-  // Must only be called from the impl thread during commit.
-  DCHECK(task_runner_provider_->IsImplThread());
-  DCHECK(task_runner_provider_->IsMainThreadBlocked());
-  proxy_impl_->ClearHistory();
 }
 
 void ProxyMain::SetRenderFrameObserver(

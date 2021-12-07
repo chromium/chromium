@@ -271,6 +271,8 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   bool IsBeginMainFrameSent() const;
 
+  size_t CommitDurationSampleCountForTesting() const;
+
  protected:
   // Virtual for testing.
   virtual base::TimeTicks Now() const;

@@ -54,7 +54,6 @@ class FakeProxy : public Proxy {
   void SetSourceURL(ukm::SourceId source_id, const GURL& url) override {}
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data) override {}
-  void ClearHistory() override {}
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
   void SetEnableFrameRateThrottling(

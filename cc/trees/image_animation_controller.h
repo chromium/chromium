@@ -116,6 +116,7 @@ class CC_EXPORT ImageAnimationController {
   // Notifies the beginning of an impl frame with the given |args|.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args);
 
+  bool did_navigate() const { return did_navigate_; }
   void set_did_navigate() { did_navigate_ = true; }
 
   const base::flat_set<AnimationDriver*>& GetDriversForTesting(

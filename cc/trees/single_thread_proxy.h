@@ -77,7 +77,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   }
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data) override {}
-  void ClearHistory() override;
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
   void SetEnableFrameRateThrottling(
@@ -150,6 +149,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) override;
+  void ClearHistory() override;
+  size_t CommitDurationSampleCountForTesting() const override;
 
   void RequestNewLayerTreeFrameSink();
 

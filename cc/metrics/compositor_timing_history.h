@@ -97,6 +97,8 @@ class CC_EXPORT CompositorTimingHistory {
 
   void ClearHistory();
 
+  size_t CommitDurationSampleCountForTesting() const;
+
  protected:
   void DidBeginMainFrame(base::TimeTicks begin_main_frame_end_time);
 

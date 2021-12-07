@@ -10070,5 +10070,34 @@ class LayerTreeHostTestDebugStateDowngrade : public LayerTreeHostTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDebugStateDowngrade);
 
+class LayerTreeHostTestClearCaches : public LayerTreeHostTest {
+ protected:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillCommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    if (host_impl->sync_tree()->source_frame_number() == 1) {
+      EXPECT_TRUE(host_impl->image_animation_controller()->did_navigate());
+      EXPECT_EQ(1u, host_impl->CommitDurationSampleCountForTesting());
+    }
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_FALSE(host_impl->image_animation_controller()->did_navigate());
+  }
+
+  void DidCommit() override {
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 1:
+        layer_tree_host()->SetNeedsCommit();
+        layer_tree_host()->SetSourceURL(123, GURL("https://example.com"));
+        break;
+      case 2:
+        EndTest();
+        break;
+    }
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestClearCaches);
 }  // namespace
 }  // namespace cc

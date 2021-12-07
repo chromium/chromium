@@ -987,6 +987,11 @@ bool Scheduler::IsBeginMainFrameSent() const {
          SchedulerStateMachine::BeginMainFrameState::SENT;
 }
 
+size_t Scheduler::CommitDurationSampleCountForTesting() const {
+  return compositor_timing_history_
+      ->CommitDurationSampleCountForTesting();  // IN-TEST
+}
+
 viz::BeginFrameAck Scheduler::CurrentBeginFrameAckForActiveTree() const {
   return viz::BeginFrameAck(begin_main_frame_args_, true);
 }

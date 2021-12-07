@@ -72,14 +72,12 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void NotifyReadyToCommitOnImpl(CompletionEvent* completion_event,
                                  std::unique_ptr<CommitState> commit_state,
                                  ThreadUnsafeCommitState* unsafe_state,
-                                 LayerTreeHost* layer_tree_host,
                                  base::TimeTicks main_thread_start_time,
                                  const viz::BeginFrameArgs& commit_args,
                                  CommitTimestamps* commit_timestamps);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
-  void ClearHistory();
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
   void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
@@ -88,16 +86,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                            bool* main_frame_will_happen);
 
   void RequestBeginMainFrameNotExpected(bool new_state) override;
+  void ClearHistory() override;
+  size_t CommitDurationSampleCountForTesting() const override;
 
  private:
-  // The members of this struct should be accessed on the impl thread only when
-  // the main thread is blocked for a commit.
-  struct BlockedMainCommitOnly {
-    BlockedMainCommitOnly();
-    ~BlockedMainCommitOnly();
-    raw_ptr<LayerTreeHost> layer_tree_host;
-  };
-
   // LayerTreeHostImplClient implementation
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
@@ -217,10 +209,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   DelayedUniqueNotifier smoothness_priority_expiration_notifier_;
 
   std::unique_ptr<LayerTreeHostImpl> host_impl_;
-
-  // Use accessors instead of this variable directly.
-  BlockedMainCommitOnly main_thread_blocked_commit_vars_unsafe_;
-  BlockedMainCommitOnly& blocked_main_commit();
 
   bool is_jank_injection_enabled_ = false;
 

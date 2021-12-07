@@ -104,11 +104,6 @@ ProxyImpl::ProxyImpl(
   DCHECK_EQ(scheduler_->visible(), host_impl_->visible());
 }
 
-ProxyImpl::BlockedMainCommitOnly::BlockedMainCommitOnly()
-    : layer_tree_host(nullptr) {}
-
-ProxyImpl::BlockedMainCommitOnly::~BlockedMainCommitOnly() = default;
-
 ProxyImpl::~ProxyImpl() {
   TRACE_EVENT0("cc", "ProxyImpl::~ProxyImpl");
   DCHECK(IsImplThread());
@@ -275,7 +270,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     std::unique_ptr<CommitState> commit_state,
     ThreadUnsafeCommitState* unsafe_state,
-    LayerTreeHost* layer_tree_host,
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
     CommitTimestamps* commit_timestamps) {
@@ -306,9 +300,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   data_for_commit_ = std::make_unique<DataForCommit>(
       std::make_unique<ScopedCompletionEvent>(completion_event),
       std::move(commit_state), unsafe_state, commit_timestamps);
-
-  DCHECK(!blocked_main_commit().layer_tree_host);
-  blocked_main_commit().layer_tree_host = layer_tree_host;
 
   // Extract metrics data from the layer tree host and send them to the
   // scheduler to pass them to the compositor_timing_history object.
@@ -688,15 +679,8 @@ void ProxyImpl::ScheduledActionCommit() {
   auto* commit_state = data_for_commit_->commit_state.get();
   auto* unsafe_state = data_for_commit_->unsafe_state;
   host_impl_->BeginCommit(commit_state->source_frame_number);
-  blocked_main_commit().layer_tree_host->FinishCommitOnImplThread(
-      host_impl_.get(), *commit_state, *unsafe_state);
+  host_impl_->FinishCommit(*commit_state, *unsafe_state);
   data_for_commit_->commit_timestamps->finish = base::TimeTicks::Now();
-
-  // Remove the LayerTreeHost reference before the completion event is signaled
-  // and cleared. This is necessary since blocked_main_commit() allows access
-  // only while we have the completion event to ensure the main thread is
-  // blocked for a commit.
-  blocked_main_commit().layer_tree_host = nullptr;
 
   if (commit_state->commit_waits_for_activation) {
     // For some layer types in impl-side painting, the commit is held until the
@@ -839,11 +823,6 @@ bool ProxyImpl::IsMainThreadBlocked() const {
   return task_runner_provider_->IsMainThreadBlocked();
 }
 
-ProxyImpl::BlockedMainCommitOnly& ProxyImpl::blocked_main_commit() {
-  DCHECK(IsMainThreadBlocked() && data_for_commit_.get());
-  return main_thread_blocked_commit_vars_unsafe_;
-}
-
 base::SingleThreadTaskRunner* ProxyImpl::MainThreadTaskRunner() {
   return task_runner_provider_->MainThreadTaskRunner();
 }
@@ -862,8 +841,11 @@ void ProxyImpl::SetUkmSmoothnessDestination(
 
 void ProxyImpl::ClearHistory() {
   DCHECK(IsImplThread());
-  DCHECK(IsMainThreadBlocked());
   scheduler_->ClearHistory();
+}
+
+size_t ProxyImpl::CommitDurationSampleCountForTesting() const {
+  return scheduler_->CommitDurationSampleCountForTesting();  // IN-TEST
 }
 
 void ProxyImpl::SetRenderFrameObserver(

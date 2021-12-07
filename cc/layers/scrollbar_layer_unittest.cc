@@ -366,8 +366,7 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   {
     DebugScopedSetImplThread scoped_impl_thread(
         layer_tree_host_->GetTaskRunnerProvider());
-    layer_tree_host_->FinishCommitOnImplThread(layer_tree_host_->host_impl(),
-                                               *commit_state, unsafe_state);
+    layer_tree_host_->host_impl()->FinishCommit(*commit_state, unsafe_state);
   }
   layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 

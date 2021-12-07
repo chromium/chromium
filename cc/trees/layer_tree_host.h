@@ -638,8 +638,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   }
 
   void SetPropertyTreesNeedRebuild();
-  void MoveChangeTrackingToLayers(ThreadUnsafeCommitState& unsafe_state,
-                                  LayerTreeImpl* tree_impl);
 
   // Returns the layer with the given |element_id|. In layer-list mode, only
   // scrollable layers are registered in this map.
@@ -674,9 +672,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time);
   void AnimateLayers(base::TimeTicks monotonic_frame_begin_time);
   void RequestMainFrameUpdate(bool report_metrics);
-  void FinishCommitOnImplThread(LayerTreeHostImpl* host_impl,
-                                CommitState& commit_state,
-                                ThreadUnsafeCommitState& unsafe_state);
   // If has_updates is true, returns the CommitState that will drive the commit.
   // Otherwise, returns nullptr.
   std::unique_ptr<CommitState> WillCommit(
