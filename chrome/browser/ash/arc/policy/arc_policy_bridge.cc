@@ -312,7 +312,7 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
     filtered_policies.SetBoolKey(ArcPolicyBridge::kResetAndroidIdEnabled, true);
   }
 
-  if (profile->IsSupervised() &&
+  if (profile->IsChild() &&
       chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
     // Adds "playStoreMode" policy. The policy value is used to restrict the
     // user from being able to toggle between different accounts in ARC++.
