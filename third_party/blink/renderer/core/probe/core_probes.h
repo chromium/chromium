@@ -76,6 +76,34 @@ class CORE_EXPORT ProbeBase {
   mutable base::TimeTicks end_time_;
 };
 
+// Tracks scheduling and cancelation of a single async task.
+// An async task scheduled via `AsyncTaskContext` is guaranteed to be
+// canceled.
+class CORE_EXPORT AsyncTaskContext {
+ public:
+  AsyncTaskContext() = default;
+  ~AsyncTaskContext();
+
+  // Not copyable or movable. The address of the async_task_id_ is used
+  // to identify this task and corresponding runs/invocations via `AsyncTask`.
+  AsyncTaskContext(const AsyncTaskContext&) = delete;
+  AsyncTaskContext& operator=(const AsyncTaskContext&) = delete;
+
+  // Schedules this async task with the ThreadDebugger. `Schedule` can be called
+  // once and only once per AsyncTaskContext instance.
+  void Schedule(ExecutionContext* context, const WTF::StringView& name);
+
+  // Explicitly cancel this async task. No `AsyncTasks`s must be created with
+  // this context after `Cancel` was called.
+  void Cancel();
+
+ private:
+  friend class AsyncTask;
+
+  AsyncTaskId async_task_id_;
+  v8::Isolate* isolate_;
+};
+
 // Tracks execution of a (previously scheduled) asynchronous task. An instance
 // should exist for the full duration of the task's execution.
 class CORE_EXPORT AsyncTask {
@@ -101,6 +129,11 @@ class CORE_EXPORT AsyncTask {
   //   ad_tracking_type: Whether this is reported to the AdTracker.
   AsyncTask(ExecutionContext* context,
             AsyncTaskId* task,
+            const char* step = nullptr,
+            bool enabled = true,
+            AdTrackingType ad_tracking_type = AdTrackingType::kReport);
+  AsyncTask(ExecutionContext* execution_context,
+            AsyncTaskContext* async_context,
             const char* step = nullptr,
             bool enabled = true,
             AdTrackingType ad_tracking_type = AdTrackingType::kReport);
@@ -146,13 +179,19 @@ inline CoreProbeSink* ToCoreProbeSink(EventTarget* event_target) {
                       : nullptr;
 }
 
+// DEPRECATED: Use `AsyncTaskContext::Schedule` instead.
 CORE_EXPORT void AsyncTaskScheduled(ExecutionContext*,
                                     const StringView& name,
                                     AsyncTaskId*);
+// DEPRECATED: Use `AsyncTaskContext::Schedule` instead and manually call
+// `probes::BreakableLocation`.
 CORE_EXPORT void AsyncTaskScheduledBreakable(ExecutionContext*,
                                              const char* name,
                                              AsyncTaskId*);
+// DEPRECATED: Use `AsyncTaskContext::Cancel` instead.
 CORE_EXPORT void AsyncTaskCanceled(ExecutionContext*, AsyncTaskId*);
+// DEPRECATED: Use `AsyncTaskContext::Cancel` instead and manually call
+// `probes::BreakableLocation`.
 CORE_EXPORT void AsyncTaskCanceledBreakable(ExecutionContext*,
                                             const char* name,
                                             AsyncTaskId*);

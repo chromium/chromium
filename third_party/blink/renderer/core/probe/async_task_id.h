@@ -15,6 +15,7 @@ namespace blink {
 
 namespace probe {
 
+// DEPRECATED: Use `AsyncTaskContext` instead.
 // The core probes use this class as an identifier for an async task.
 class CORE_EXPORT AsyncTaskId {
  public:
