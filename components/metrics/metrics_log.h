@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file defines a set of user experience metrics data recorded by
-// the MetricsService.  This is the unit of data that is sent to the server.
+// This file defines a set of user experience metrics data recorded by the
+// MetricsService. This is the unit of data that is sent to the server.
 
 #ifndef COMPONENTS_METRICS_METRICS_LOG_H_
 #define COMPONENTS_METRICS_METRICS_LOG_H_
@@ -191,13 +191,22 @@ class MetricsLog {
   // version is different from the system_profile's app_version.
   void RecordLogWrittenByAppVersionIfNeeded();
 
-  // Record data from providers about the previous session into the log.
-  void RecordPreviousSessionData(DelegatingProvider* delegating_provider);
+  // Populates the log with data about the previous session.
+  // |delegating_provider| forwards the call to provide data to registered
+  // MetricsProviders. |local_state| is used to schedule a write because a side
+  // effect of providing some data is updating Local State prefs.
+  void RecordPreviousSessionData(DelegatingProvider* delegating_provider,
+                                 PrefService* local_state);
 
-  // Record data from providers about the current session into the log.
-  void RecordCurrentSessionData(DelegatingProvider* delegating_provider,
-                                base::TimeDelta incremental_uptime,
-                                base::TimeDelta uptime);
+  // Populates the log with data about the current session. The uptimes are used
+  // to populate the log with info about how long Chrome has been running.
+  // |delegating_provider| forwards the call to provide data to registered
+  // MetricsProviders. |local_state| is used to schedule a write because a side
+  // effect of providing some data is updating Local State prefs.
+  void RecordCurrentSessionData(base::TimeDelta incremental_uptime,
+                                base::TimeDelta uptime,
+                                DelegatingProvider* delegating_provider,
+                                PrefService* local_state);
 
   // Stop writing to this record and generate the encoded representation.
   // None of the Record* methods can be called after this is called.

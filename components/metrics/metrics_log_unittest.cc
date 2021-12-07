@@ -477,7 +477,8 @@ TEST_F(MetricsLogTest, InitialLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordPreviousSessionData(&delegating_provider);
+  TestingPrefServiceSimple prefs;
+  log.RecordPreviousSessionData(&delegating_provider, &prefs);
 
   // The test provider should have been called upon to provide initial
   // stability and regular stability metrics.
@@ -493,8 +494,9 @@ TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordCurrentSessionData(&delegating_provider, base::TimeDelta(),
-                               base::TimeDelta());
+  TestingPrefServiceSimple prefs;
+  log.RecordCurrentSessionData(base::TimeDelta(), base::TimeDelta(),
+                               &delegating_provider, &prefs);
 
   // The test provider should have been called upon to provide regular but not
   // initial stability metrics.
