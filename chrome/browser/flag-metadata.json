@@ -2426,7 +2426,7 @@
     "name": "enable-palm-suppression",
     "owners": [ "robsc", "napper", "hcutts", "chromeos-tango@google.com" ],
     // Added feature, for testing. expiry deep in future.
-    "expiry_milestone": 95
+    "expiry_milestone": 116
   },
   {
     "name": "enable-palm-tool-type-palm",
