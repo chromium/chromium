@@ -1189,6 +1189,8 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSNumber*)AXARIAPosInSet {
+  if (![self instanceActive])
+    return nil;
   absl::optional<int> posInSet = _node->GetPosInSet();
   if (!posInSet)
     return nil;
@@ -1196,6 +1198,8 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSNumber*)AXARIASetSize {
+  if (![self instanceActive])
+    return nil;
   absl::optional<int> setSize = _node->GetSetSize();
   if (!setSize)
     return nil;

@@ -169,6 +169,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIALive) {
   RunTypedTest<kMacAttributes>("ax-aria-live.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIASetSize) {
+  RunTypedTest<kMacAttributes>("ax-aria-set-size.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIAPosInSet) {
+  RunTypedTest<kMacAttributes>("ax-aria-pos-in-set.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXARIARelevant) {
   RunTypedTest<kMacAttributes>("ax-aria-relevant.html");
 }

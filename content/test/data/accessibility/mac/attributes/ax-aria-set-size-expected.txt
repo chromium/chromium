@@ -1,0 +1,4 @@
+item_numeric.AXARIASetSize=3
+item_null.AXARIASetSize=NULL
+set_null.AXARIASetSize=NULL
+not_applicable.AXARIASetSize=n/a

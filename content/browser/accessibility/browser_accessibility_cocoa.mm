@@ -61,8 +61,6 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityARIAPosInSetAttribute = @"AXARIAPosInSet";
-NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
 NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
 NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
@@ -772,8 +770,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     NSString* attribute;
     NSString* methodName;
   } attributeToMethodNameContainer[] = {
-      {NSAccessibilityARIAPosInSetAttribute, @"ariaPosInSet"},
-      {NSAccessibilityARIASetSizeAttribute, @"ariaSetSize"},
       {NSAccessibilityBlockQuoteLevelAttribute, @"blockQuoteLevel"},
       {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
@@ -881,24 +877,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   _owner = nullptr;
   [super detach];
-}
-
-- (NSNumber*)ariaPosInSet {
-  if (![self instanceActive])
-    return nil;
-  absl::optional<int> posInSet = _owner->node()->GetPosInSet();
-  if (!posInSet)
-    return nil;
-  return @(*posInSet);
-}
-
-- (NSNumber*)ariaSetSize {
-  if (![self instanceActive])
-    return nil;
-  absl::optional<int> setSize = _owner->node()->GetSetSize();
-  if (!setSize)
-    return nil;
-  return @(*setSize);
 }
 
 - (id)blockQuoteLevel {
@@ -3235,16 +3213,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       // NSAccessibilityValueAutofillTypeAttribute
     ]];
   }
-
-  // Position in set and Set size.
-  // Only add these attributes for roles that use posinset and setsize.
-  if (ui::IsItemLike(_owner->GetRole())) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityARIAPosInSetAttribute, NSAccessibilityARIASetSizeAttribute
-    ]];
-  }
-  if (ui::IsSetLike(_owner->GetRole()))
-    [ret addObject:NSAccessibilityARIASetSizeAttribute];
 
   std::string dropEffect;
   if (_owner->GetHtmlAttribute("aria-dropeffect", &dropEffect))

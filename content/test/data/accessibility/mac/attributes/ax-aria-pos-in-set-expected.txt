@@ -1,0 +1,3 @@
+item_numeric.AXARIAPosInSet=1
+item_null.AXARIAPosInSet=NULL
+not_applicable.AXARIAPosInSet=n/a

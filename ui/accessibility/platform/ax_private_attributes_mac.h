@@ -24,12 +24,16 @@ AX_EXPORT constexpr NSString* const NSAccessibilityARIACurrentAttribute =
     @"AXARIACurrent";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIALiveAttribute =
     @"AXARIALive";
+AX_EXPORT constexpr NSString* const NSAccessibilityARIAPosInSetAttribute =
+    @"AXARIAPosInSet";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIARelevantAttribute =
     @"AXARIARelevant";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIARowCountAttribute =
     @"AXARIARowCount";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIARowIndexAttribute =
     @"AXARIARowIndex";
+AX_EXPORT constexpr NSString* const NSAccessibilityARIASetSizeAttribute =
+    @"AXARIASetSize";
 AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
 AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
