@@ -20,6 +20,7 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -40,6 +41,27 @@ namespace {
 
 // The interval to send load updates.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
+
+bool LoadInfoIsMoreInteresting(uint32_t a_load_state,
+                               uint64_t a_upload_size,
+                               uint32_t b_load_state,
+                               uint64_t b_upload_size) {
+  // Set |*_uploading_size| to be the size of the corresponding upload body if
+  // it's currently being uploaded.
+
+  uint64_t a_uploading_size = 0;
+  if (a_load_state == net::LOAD_STATE_SENDING_REQUEST)
+    a_uploading_size = a_upload_size;
+
+  uint64_t b_uploading_size = 0;
+  if (b_load_state == net::LOAD_STATE_SENDING_REQUEST)
+    b_uploading_size = b_upload_size;
+
+  if (a_uploading_size != b_uploading_size)
+    return a_uploading_size > b_uploading_size;
+
+  return a_load_state > b_load_state;
+}
 
 }  // namespace
 
@@ -267,7 +289,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(url_loader_network_observer), std::move(devtools_observer),
       std::move(accept_ch_frame_observer));
 
-  cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
+  cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
 
 mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
@@ -314,15 +336,29 @@ void URLLoaderFactory::UpdateLoadInfo() {
   mojom::LoadInfoPtr most_interesting;
   URLLoader* most_interesting_url_loader = nullptr;
 
-  for (auto* request : *context_->url_request_context()->url_requests()) {
-    auto* loader = URLLoader::ForRequest(*request);
-    if (!loader || loader->url_loader_factory() != this)
-      continue;
-    mojom::LoadInfoPtr load_info = loader->CreateLoadInfo();
-    if (!most_interesting ||
-        LoadInfoIsMoreInteresting(*load_info, *most_interesting)) {
-      most_interesting = std::move(load_info);
-      most_interesting_url_loader = loader;
+  SCOPED_UMA_HISTOGRAM_TIMER("NetworkService.URLLoaderFactory.UpdateLoadInfo");
+
+  if (base::FeatureList::IsEnabled(features::kOptimizeUpdateLoadInfo)) {
+    for (auto& loader : cors_url_loader_factory_->url_loaders()) {
+      if (!most_interesting ||
+          LoadInfoIsMoreInteresting(
+              loader->GetLoadState(), loader->GetUploadProgress().size(),
+              most_interesting->load_state, most_interesting->upload_size)) {
+        most_interesting = loader->CreateLoadInfo();
+        most_interesting_url_loader = loader.get();
+      }
+    }
+  } else {
+    for (auto* request : *context_->url_request_context()->url_requests()) {
+      auto* loader = URLLoader::ForRequest(*request);
+      if (!loader || loader->url_loader_factory() != this)
+        continue;
+      mojom::LoadInfoPtr load_info = loader->CreateLoadInfo();
+      if (!most_interesting ||
+          LoadInfoIsMoreInteresting(*load_info, *most_interesting)) {
+        most_interesting = std::move(load_info);
+        most_interesting_url_loader = loader;
+      }
     }
   }
 

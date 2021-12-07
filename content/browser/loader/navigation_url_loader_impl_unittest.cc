@@ -132,7 +132,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   }
 
  private:
-  void DeleteURLLoader(network::mojom::URLLoader* url_loader) {
+  void DeleteURLLoader(network::URLLoader* url_loader) {
     DCHECK_EQ(url_loader_.get(), url_loader);
     url_loader_.reset();
   }

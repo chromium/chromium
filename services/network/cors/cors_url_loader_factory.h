@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
@@ -25,13 +26,13 @@
 
 namespace network {
 
-class NetworkContext;
 class ResourceSchedulerClient;
 class URLLoader;
 class URLLoaderFactory;
 struct ResourceRequest;
 
 namespace cors {
+class CorsURLLoader;
 
 // A factory class to create a URLLoader that supports CORS.
 // This class takes a network::mojom::URLLoaderFactory instance in the
@@ -64,8 +65,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   ~CorsURLLoaderFactory() override;
 
-  void OnLoaderCreated(std::unique_ptr<mojom::URLLoader> loader);
-  void DestroyURLLoader(mojom::URLLoader* loader);
+  void OnURLLoaderCreated(std::unique_ptr<URLLoader> loader);
+  void OnCorsURLLoaderCreated(std::unique_ptr<CorsURLLoader> loader);
+  void DestroyURLLoader(URLLoader* loader);
+  void DestroyCorsURLLoader(CorsURLLoader* loader);
 
   // Clears the bindings for this factory, but does not touch any in-progress
   // URLLoaders. Calling this may delete this factory and remove it from the
@@ -75,6 +78,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   int32_t process_id() const { return process_id_; }
   mojom::CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_ ? coep_reporter_.get() : nullptr;
+  }
+
+  std::set<std::unique_ptr<URLLoader>, base::UniquePtrComparator>&
+  url_loaders() {
+    return url_loaders_;
   }
 
  private:
@@ -103,6 +111,28 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
 
   mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(
       const ResourceRequest& resource_request) const;
+
+  template <class T>
+  void OnLoaderCreated(
+      std::unique_ptr<T> loader,
+      std::set<std::unique_ptr<T>, base::UniquePtrComparator>& loaders) {
+    if (context_)
+      context_->LoaderCreated(process_id_);
+    loaders.insert(std::move(loader));
+  }
+
+  template <class T>
+  void DestroyLoader(
+      T* loader,
+      std::set<std::unique_ptr<T>, base::UniquePtrComparator>& loaders) {
+    if (context_)
+      context_->LoaderDestroyed(process_id_);
+    auto it = loaders.find(loader);
+    DCHECK(it != loaders.end());
+    loaders.erase(it);
+
+    DeleteIfNeeded();
+  }
 
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
 
@@ -134,8 +164,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // Used when the network loader factory is overridden.
   std::unique_ptr<FactoryOverride> factory_override_;
 
-  std::set<std::unique_ptr<mojom::URLLoader>, base::UniquePtrComparator>
-      loaders_;
+  std::set<std::unique_ptr<URLLoader>, base::UniquePtrComparator> url_loaders_;
+  std::set<std::unique_ptr<CorsURLLoader>, base::UniquePtrComparator>
+      cors_url_loaders_;
 
   // Accessed by instances in `loaders_` too. Since the factory outlives them,
   // it's safe.

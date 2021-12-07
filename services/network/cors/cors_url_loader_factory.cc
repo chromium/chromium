@@ -16,7 +16,6 @@
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/preflight_controller.h"
-#include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
@@ -213,29 +212,35 @@ CorsURLLoaderFactory::~CorsURLLoaderFactory() {
   // Delete loaders one at a time, since deleting one loader can cause another
   // loader waiting on it to fail synchronously, which could result in the other
   // loader calling DestroyURLLoader().
-  while (!loaders_.empty()) {
+  while (!url_loaders_.empty()) {
     // No need to call context_->LoaderDestroyed(), since this method is only
     // called from the NetworkContext's destructor, or when there are no
     // remaining URLLoaders.
-    loaders_.erase(loaders_.begin());
+    url_loaders_.erase(url_loaders_.begin());
+  }
+
+  // Same as above for CorsURLLoaders.
+  while (!cors_url_loaders_.empty()) {
+    cors_url_loaders_.erase(cors_url_loaders_.begin());
   }
 }
 
-void CorsURLLoaderFactory::OnLoaderCreated(
-    std::unique_ptr<mojom::URLLoader> loader) {
-  if (context_)
-    context_->LoaderCreated(process_id_);
-  loaders_.insert(std::move(loader));
+void CorsURLLoaderFactory::OnURLLoaderCreated(
+    std::unique_ptr<URLLoader> loader) {
+  OnLoaderCreated(std::move(loader), url_loaders_);
 }
 
-void CorsURLLoaderFactory::DestroyURLLoader(mojom::URLLoader* loader) {
-  if (context_)
-    context_->LoaderDestroyed(process_id_);
-  auto it = loaders_.find(loader);
-  DCHECK(it != loaders_.end());
-  loaders_.erase(it);
+void CorsURLLoaderFactory::OnCorsURLLoaderCreated(
+    std::unique_ptr<CorsURLLoader> loader) {
+  OnLoaderCreated(std::move(loader), cors_url_loaders_);
+}
 
-  DeleteIfNeeded();
+void CorsURLLoaderFactory::DestroyURLLoader(URLLoader* loader) {
+  DestroyLoader(loader, url_loaders_);
+}
+
+void CorsURLLoaderFactory::DestroyCorsURLLoader(CorsURLLoader* loader) {
+  DestroyLoader(loader, cors_url_loaders_);
 }
 
 void CorsURLLoaderFactory::CreateLoaderAndStart(
@@ -284,7 +289,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
 
     auto loader = std::make_unique<CorsURLLoader>(
         std::move(receiver), process_id_, request_id, options,
-        base::BindOnce(&CorsURLLoaderFactory::DestroyURLLoader,
+        base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
                        base::Unretained(this)),
         resource_request, ignore_isolated_world_origin_,
         factory_override_ &&
@@ -297,7 +302,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         context_->cors_non_wildcard_request_headers_support(), isolation_info_,
         std::move(devtools_observer), client_security_state_.get());
     auto* raw_loader = loader.get();
-    OnLoaderCreated(std::move(loader));
+    OnCorsURLLoaderCreated(std::move(loader));
     raw_loader->Start();
   } else {
     inner_url_loader_factory->CreateLoaderAndStart(
@@ -320,7 +325,7 @@ void CorsURLLoaderFactory::ClearBindings() {
 void CorsURLLoaderFactory::DeleteIfNeeded() {
   if (!context_)
     return;
-  if (receivers_.empty() && loaders_.empty())
+  if (receivers_.empty() && url_loaders_.empty() && cors_url_loaders_.empty())
     context_->DestroyURLLoaderFactory(this);
 }
 

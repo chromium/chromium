@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     kMaxValue = kVia,
   };
 
-  using DeleteCallback = base::OnceCallback<void(mojom::URLLoader* loader)>;
+  using DeleteCallback = base::OnceCallback<void(URLLoader* loader)>;
 
   // Holds a sync and async implementation of URLLoaderClient. The sync
   // implementation can be used if present to avoid posting a task to call back
@@ -232,7 +232,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void ContinueWithoutCertificate() override;
   void CancelRequest() override;
 
-  net::LoadState GetLoadStateForTesting() const;
+  net::LoadState GetLoadState() const;
+  net::UploadProgress GetUploadProgress() const;
 
   int32_t GetProcessId() const;
   uint32_t GetResourceType() const;

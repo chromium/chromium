@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
     : public mojom::URLLoader,
       public mojom::URLLoaderClient {
  public:
-  using DeleteCallback = base::OnceCallback<void(mojom::URLLoader* loader)>;
+  using DeleteCallback = base::OnceCallback<void(CorsURLLoader* loader)>;
 
   // Raw pointer arguments must outlive the returned instance.
   CorsURLLoader(

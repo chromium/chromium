@@ -258,5 +258,9 @@ const base::Feature kCorsNonWildcardRequestHeadersSupport{
 const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Optimize the implementation of calling URLLoaderFactory::UpdateLoadInfo().
+const base::Feature kOptimizeUpdateLoadInfo{"OptimizeUpdateLoadInfo",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

@@ -3594,6 +3594,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.URLLoaderFactory.UpdateLoadInfo" units="ms"
+    expires_after="2022-03-30">
+  <owner>jam@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <summary>
+    The time it takes for each invocation of URLLoaderFactory.UpdateLoadInfo.
+  </summary>
+</histogram>
+
 <histogram name="NetworkTimeTracker.ClockDivergence.Negative" units="seconds"
     expires_after="M77">
   <owner>estark@chromium.org</owner>
