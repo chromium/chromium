@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/process/process_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -126,6 +127,10 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
 #if defined(OS_MAC)
   if (params_.main_thread_task_runner->BelongsToCurrentThread())
     task_runner = ui::WindowResizeHelperMac::Get()->task_runner();
+#endif
+
+#if defined(OS_ANDROID)
+  viz_main_->SetHostProcessId(base::GetCurrentProcId());
 #endif
 
   viz_main_->CreateGpuService(

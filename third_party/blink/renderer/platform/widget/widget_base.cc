@@ -574,6 +574,7 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
+  params.io_thread_id = Platform::Current()->GetIOThreadId();
   params.compositor_task_runner =
       Platform::Current()->CompositorThreadTaskRunner();
   if (for_web_tests && !params.compositor_task_runner) {

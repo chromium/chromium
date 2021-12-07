@@ -1618,6 +1618,10 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
   return gpu_->GetGpuChannel().get();
 }
 
+base::PlatformThreadId RenderThreadImpl::GetIOPlatformThreadId() const {
+  return ChildProcess::current()->io_thread_id();
+}
+
 void RenderThreadImpl::CreateAgentSchedulingGroup(
     mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {

@@ -169,9 +169,13 @@ gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
 
 RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
     blink::scheduler::WebThreadScheduler* main_thread_scheduler)
-    : BlinkPlatformImpl(RenderThreadImpl::current()
-                            ? RenderThreadImpl::current()->GetIOTaskRunner()
-                            : nullptr),
+    : BlinkPlatformImpl(
+          RenderThreadImpl::current()
+              ? RenderThreadImpl::current()->GetIOTaskRunner()
+              : nullptr,
+          RenderThreadImpl::current()
+              ? RenderThreadImpl::current()->GetIOPlatformThreadId()
+              : base::kInvalidThreadId),
       sudden_termination_disables_(0),
       is_locked_to_site_(false),
       main_thread_scheduler_(main_thread_scheduler) {

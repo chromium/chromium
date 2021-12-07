@@ -42,6 +42,7 @@ class StubSurfaceClient : public SurfaceClient {
                           const gfx::SwapTimings& swap_timings,
                           const gfx::PresentationFeedback& feedback) override {}
   bool IsVideoCaptureStarted() override;
+  base::flat_set<base::PlatformThreadId> GetThreadIds() override;
 
   base::WeakPtrFactory<StubSurfaceClient> weak_factory{this};
 };

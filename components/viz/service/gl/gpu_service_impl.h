@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/process/process_handle.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -349,6 +350,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   DawnContextProvider* dawn_context_provider() { return nullptr; }
 #endif
 
+  base::ProcessId host_process_id() const { return host_process_id_; }
+
+#if defined(OS_ANDROID)
+  void SetHostProcessId(base::ProcessId pid);
+#endif
+
   using VisibilityChangedCallback =
       base::RepeatingCallback<void(bool /*visible*/)>;
   void SetVisibilityChangedCallback(VisibilityChangedCallback);
@@ -474,6 +481,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   base::ObserverList<gpu::DisplayContext>::Unchecked display_contexts_;
 
   VisibilityChangedCallback visibility_changed_callback_;
+
+  base::ProcessId host_process_id_ = base::kNullProcessId;
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};

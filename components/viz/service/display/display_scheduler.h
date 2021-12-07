@@ -49,7 +49,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidSwapBuffers() override;
   void DidReceiveSwapBuffersAck() override;
   void OutputSurfaceLost() override;
-  void ReportFrameTime(base::TimeDelta frame_time) override;
+  void ReportFrameTime(
+      base::TimeDelta frame_time,
+      base::flat_set<base::PlatformThreadId> thread_ids) override;
 
   // DisplayDamageTrackerObserver implementation.
   void OnDisplayDamaged(SurfaceId surface_id) override;
@@ -108,7 +110,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   void DidFinishFrame(bool did_draw);
   // Updates |has_pending_surfaces_| and returns whether its value changed.
   bool UpdateHasPendingSurfaces();
-  void MaybeCreateHintSession();
+  void MaybeCreateHintSession(
+      base::flat_set<base::PlatformThreadId> thread_ids);
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
   raw_ptr<BeginFrameSource> begin_frame_source_;
@@ -138,6 +141,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool observing_begin_frame_source_;
 
   const raw_ptr<HintSessionFactory> hint_session_factory_;
+  base::flat_set<base::PlatformThreadId> current_thread_ids_;
   std::unique_ptr<HintSession> hint_session_;
 
   // If set, we are dynamically adjusting our frame deadline, by the percentile

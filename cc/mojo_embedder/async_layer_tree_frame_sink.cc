@@ -10,7 +10,9 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/base/histograms.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/power_scheduler/power_mode.h"
@@ -49,6 +51,9 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
                          params->gpu_memory_buffer_manager),
       synthetic_begin_frame_source_(
           std::move(params->synthetic_begin_frame_source)),
+#if defined(OS_ANDROID)
+      io_thread_id_(params->io_thread_id),
+#endif
       pipes_(std::move(params->pipes)),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
       power_mode_voter_("PowerModeVoter.Animation") {
@@ -94,6 +99,14 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 
   compositor_frame_sink_ptr_->InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType::kLayerTree);
+
+#if defined(OS_ANDROID)
+  std::vector<int32_t> thread_ids;
+  thread_ids.push_back(base::PlatformThread::CurrentId());
+  if (io_thread_id_ != base::kInvalidThreadId)
+    thread_ids.push_back(io_thread_id_);
+  compositor_frame_sink_ptr_->SetThreadIds(thread_ids);
+#endif
 
   return true;
 }

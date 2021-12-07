@@ -113,6 +113,7 @@ class VideoMockCompositorFrameSink
   MOCK_METHOD1(DidDeleteSharedBitmap, void(const gpu::Mailbox& id));
   MOCK_METHOD1(InitializeCompositorFrameSinkType,
                void(viz::mojom::CompositorFrameSinkType));
+  MOCK_METHOD1(SetThreadIds, void(const WTF::Vector<int32_t>&));
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSink> receiver_{this};

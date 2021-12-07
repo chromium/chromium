@@ -113,6 +113,9 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       SubmitCompositorFrameSyncCallback callback) override;
   void InitializeCompositorFrameSinkType(
       mojom::CompositorFrameSinkType type) override;
+#if defined(OS_ANDROID)
+  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+#endif
 
   base::ScopedClosureRunner GetCacheBackBufferCb();
 

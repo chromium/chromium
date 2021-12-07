@@ -6,8 +6,10 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_COMPOSITOR_FRAME_SINK_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -59,6 +61,9 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
   void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
   void InitializeCompositorFrameSinkType(
       mojom::CompositorFrameSinkType type) override;
+#if defined(OS_ANDROID)
+  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+#endif
 
  private:
   void SubmitCompositorFrameInternal(

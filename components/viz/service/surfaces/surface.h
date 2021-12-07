@@ -19,6 +19,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -212,6 +213,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // capture. We don't want to constantly switch between overlay and non-overlay
   // during video playback.
   bool IsVideoCaptureOnFromClient();
+  base::flat_set<base::PlatformThreadId> GetThreadIds();
 
   const base::flat_set<SurfaceId>& active_referenced_surfaces() const {
     return active_referenced_surfaces_;

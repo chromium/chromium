@@ -744,6 +744,13 @@ bool Surface::IsVideoCaptureOnFromClient() {
   return surface_client_->IsVideoCaptureStarted();
 }
 
+base::flat_set<base::PlatformThreadId> Surface::GetThreadIds() {
+  if (!surface_client_)
+    return {};
+
+  return surface_client_->GetThreadIds();
+}
+
 void Surface::UnrefFrameResourcesAndRunCallbacks(
     absl::optional<FrameData> frame_data) {
   if (!frame_data || !surface_client_)

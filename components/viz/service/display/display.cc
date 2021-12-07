@@ -286,9 +286,11 @@ void Display::PresentationGroupTiming::AddPresentationHelper(
 
 void Display::PresentationGroupTiming::OnDraw(
     base::TimeTicks frame_time,
-    base::TimeTicks draw_start_timestamp) {
+    base::TimeTicks draw_start_timestamp,
+    base::flat_set<base::PlatformThreadId> thread_ids) {
   frame_time_ = frame_time;
   draw_start_timestamp_ = draw_start_timestamp;
+  thread_ids_ = std::move(thread_ids);
 }
 
 void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
@@ -306,7 +308,7 @@ void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
   }
   // Can be nullptr in unittests.
   if (scheduler) {
-    scheduler->ReportFrameTime(frame_latency);
+    scheduler->ReportFrameTime(frame_latency, std::move(thread_ids_));
   }
 }
 
@@ -896,7 +898,17 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
     PresentationGroupTiming& presentation_group_timing =
         pending_presentation_group_timings_.emplace_back();
 
-    presentation_group_timing.OnDraw(frame_time, draw_timer->Begin());
+    base::flat_set<base::PlatformThreadId> thread_ids;
+    for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
+      surface = surface_manager_->GetSurfaceForId(id_entry.first);
+      if (surface) {
+        base::flat_set<base::PlatformThreadId> surface_thread_ids =
+            surface->GetThreadIds();
+        thread_ids.insert(surface_thread_ids.begin(), surface_thread_ids.end());
+      }
+    }
+    presentation_group_timing.OnDraw(frame_time, draw_timer->Begin(),
+                                     std::move(thread_ids));
 
     for (const auto& id_entry : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(id_entry.first);

@@ -239,6 +239,13 @@ void VizMainImpl::CreateInfoCollectionGpuService(
 }
 #endif
 
+#if defined(OS_ANDROID)
+void VizMainImpl::SetHostProcessId(int32_t pid) {
+  if (gpu_service_)
+    gpu_service_->SetHostProcessId(pid);
+}
+#endif
+
 void VizMainImpl::CreateFrameSinkManager(
     mojom::FrameSinkManagerParamsPtr params) {
   DCHECK(viz_compositor_thread_runner_);

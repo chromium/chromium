@@ -80,6 +80,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     bool run_all_compositor_stages_before_draw = false;
     bool log_capture_pipeline_in_webrtc = false;
     DebugRendererSettings debug_renderer_settings;
+    base::ProcessId host_process_id = base::kNullProcessId;
     raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
@@ -246,6 +247,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Called when video capture stops on the target frame sink with |id|.
   void OnCaptureStopped(const FrameSinkId& id);
 
+  // Returns true if thread IDs do not belong to this process or the host (ie
+  // browser) process. Note this also returns false on any unexpected errors.
+  // Only implemented on Android.
+  bool VerifySandboxedThreadIds(
+      base::flat_set<base::PlatformThreadId> thread_ids);
+
  private:
   friend class FrameSinkManagerTest;
 
@@ -341,6 +348,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // This is viz-global instance of DebugRendererSettings.
   DebugRendererSettings debug_settings_;
+
+  base::ProcessId host_process_id_;
 
   // Performance hint session factory of this viz instance.
   const raw_ptr<HintSessionFactory> hint_session_factory_;

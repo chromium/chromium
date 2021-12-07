@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -65,6 +66,10 @@ class FrameSinkBundleImpl : public mojom::FrameSinkBundle {
   void DidAllocateSharedBitmap(uint32_t sink_id,
                                base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id) override;
+#if defined(OS_ANDROID)
+  void SetThreadIds(uint32_t sink_id,
+                    const std::vector<int32_t>& thread_ids) override;
+#endif
 
   // Helpers used by each CompositorFrameSinkImpl to proxy their client messages
   // to this object for potentially batched communication.

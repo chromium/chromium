@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "build/build_config.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
@@ -184,6 +185,14 @@ void VideoFrameSinkBundle::DidDeleteSharedBitmap(uint32_t sink_id,
       viz::mojom::blink::BundledFrameSubmissionData::NewDidDeleteSharedBitmap(
           id)));
 }
+
+#if defined(OS_ANDROID)
+void VideoFrameSinkBundle::SetThreadIds(
+    uint32_t sink_id,
+    const WTF::Vector<int32_t>& thread_ids) {
+  bundle_->SetThreadIds(sink_id, thread_ids);
+}
+#endif
 
 void VideoFrameSinkBundle::FlushNotifications(
     WTF::Vector<viz::mojom::blink::BundledReturnedResourcesPtr> acks,

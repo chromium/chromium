@@ -1323,4 +1323,10 @@ void GpuServiceImpl::GetDawnInfoOnMain(GetDawnInfoCallback callback) {
                        base::BindOnce(std::move(callback), dawn_info_list));
 }
 
+#if defined(OS_ANDROID)
+void GpuServiceImpl::SetHostProcessId(base::ProcessId pid) {
+  host_process_id_ = pid;
+}
+#endif
+
 }  // namespace viz

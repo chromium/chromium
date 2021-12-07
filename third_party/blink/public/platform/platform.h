@@ -38,6 +38,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -471,6 +472,10 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Returns an interface to the IO task runner.
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() const {
     return nullptr;
+  }
+
+  virtual base::PlatformThreadId GetIOThreadId() const {
+    return base::kInvalidThreadId;
   }
 
   // Returns an interface to run nested message loop. Used for debugging.

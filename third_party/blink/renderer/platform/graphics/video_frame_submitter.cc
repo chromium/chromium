@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -137,6 +138,12 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     }
     bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
+
+#if defined(OS_ANDROID)
+  void SetThreadIds(const WTF::Vector<int32_t>& thread_ids) override {
+    bundle_->SetThreadIds(frame_sink_id_.sink_id(), thread_ids);
+  }
+#endif
 
  private:
   const base::WeakPtr<VideoFrameSinkBundle> bundle_;
@@ -502,6 +509,14 @@ void VideoFrameSubmitter::StartSubmitting() {
   compositor_frame_sink_->InitializeCompositorFrameSinkType(
       is_media_stream_ ? viz::mojom::CompositorFrameSinkType::kMediaStream
                        : viz::mojom::CompositorFrameSinkType::kVideo);
+
+#if defined(OS_ANDROID)
+  WTF::Vector<base::PlatformThreadId> thread_ids;
+  thread_ids.push_back(base::PlatformThread::CurrentId());
+  thread_ids.push_back(Platform::Current()->GetIOThreadId());
+  compositor_frame_sink_->SetThreadIds(thread_ids);
+#endif
+
   UpdateSubmissionState();
 }
 

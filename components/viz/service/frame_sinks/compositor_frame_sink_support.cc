@@ -305,6 +305,11 @@ bool CompositorFrameSinkSupport::IsVideoCaptureStarted() {
   return number_clients_capturing_ > 0;
 }
 
+base::flat_set<base::PlatformThreadId>
+CompositorFrameSinkSupport::GetThreadIds() {
+  return thread_ids_;
+}
+
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
   pending_surfaces_.erase(surface);
 
@@ -431,6 +436,15 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
     return;
   }
   frame_sink_type_ = type;
+}
+
+void CompositorFrameSinkSupport::SetThreadIds(
+    bool from_untrusted_client,
+    base::flat_set<base::PlatformThreadId> unverified_thread_ids) {
+  if (!from_untrusted_client ||
+      frame_sink_manager_->VerifySandboxedThreadIds(unverified_thread_ids)) {
+    thread_ids_ = unverified_thread_ids;
+  }
 }
 
 base::TimeDelta CompositorFrameSinkSupport::GetPreferredFrameInterval(

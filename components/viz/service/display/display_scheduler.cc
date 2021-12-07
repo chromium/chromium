@@ -5,6 +5,7 @@
 #include "components/viz/service/display/display_scheduler.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
@@ -150,21 +151,26 @@ void DisplayScheduler::OutputSurfaceLost() {
   ScheduleBeginFrameDeadline();
 }
 
-void DisplayScheduler::MaybeCreateHintSession() {
+void DisplayScheduler::MaybeCreateHintSession(
+    base::flat_set<base::PlatformThreadId> thread_ids) {
   if (!hint_session_factory_)
     return;
 
-  if (!hint_session_) {
+  if (!hint_session_ || current_thread_ids_ != thread_ids) {
+    hint_session_.reset();
     int target_ms = features::kAdpfTargetDurationMs.Get();
     if (target_ms <= 0 || target_ms > 1000)
       target_ms = 12;
-    hint_session_ =
-        hint_session_factory_->CreateSession({}, base::Milliseconds(target_ms));
+    current_thread_ids_ = std::move(thread_ids);
+    hint_session_ = hint_session_factory_->CreateSession(
+        current_thread_ids_, base::Milliseconds(target_ms));
   }
 }
 
-void DisplayScheduler::ReportFrameTime(base::TimeDelta frame_time) {
-  MaybeCreateHintSession();
+void DisplayScheduler::ReportFrameTime(
+    base::TimeDelta frame_time,
+    base::flat_set<base::PlatformThreadId> thread_ids) {
+  MaybeCreateHintSession(std::move(thread_ids));
   if (hint_session_)
     hint_session_->ReportCpuCompletionTime(frame_time);
 }

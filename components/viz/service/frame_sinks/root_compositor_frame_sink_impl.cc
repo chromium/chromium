@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -436,6 +438,14 @@ void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
     mojom::CompositorFrameSinkType type) {
   support_->InitializeCompositorFrameSinkType(type);
 }
+
+#if defined(OS_ANDROID)
+void RootCompositorFrameSinkImpl::SetThreadIds(
+    const std::vector<int32_t>& thread_ids) {
+  support_->SetThreadIds(/*from_untrusted_client=*/false,
+                         base::MakeFlatSet<base::PlatformThreadId>(thread_ids));
+}
+#endif
 
 RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     FrameSinkManagerImpl* frame_sink_manager,

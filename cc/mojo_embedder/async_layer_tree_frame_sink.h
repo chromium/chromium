@@ -13,6 +13,8 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/power_scheduler/power_mode_voter.h"
@@ -68,6 +70,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     UnboundMessagePipes pipes;
     bool wants_animate_only_begin_frames = false;
     const char* client_name = nullptr;
+    base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
   };
 
   AsyncLayerTreeFrameSink(
@@ -122,6 +125,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   viz::LocalSurfaceId local_surface_id_;
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::SyntheticBeginFrameSource> synthetic_begin_frame_source_;
+#if defined(OS_ANDROID)
+  base::PlatformThreadId io_thread_id_;
+#endif
 
   // Message pipes that will be bound when BindToClient() is called.
   UnboundMessagePipes pipes_;

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -235,7 +236,8 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     void AddPresentationHelper(
         std::unique_ptr<Surface::PresentationHelper> helper);
     void OnDraw(base::TimeTicks frame_time,
-                base::TimeTicks draw_start_timestamp);
+                base::TimeTicks draw_start_timestamp,
+                base::flat_set<base::PlatformThreadId> thread_ids);
     void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
     void OnPresent(const gfx::PresentationFeedback& feedback);
@@ -247,6 +249,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
    private:
     base::TimeTicks frame_time_;
     base::TimeTicks draw_start_timestamp_;
+    base::flat_set<base::PlatformThreadId> thread_ids_;
     gfx::SwapTimings swap_timings_;
     std::vector<std::unique_ptr<Surface::PresentationHelper>>
         presentation_helpers_;

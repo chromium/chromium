@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -102,6 +103,9 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
                                base::ReadOnlySharedMemoryRegion region,
                                const gpu::Mailbox& id);
   void DidDeleteSharedBitmap(uint32_t sink_id, const gpu::Mailbox& id);
+#if defined(OS_ANDROID)
+  void SetThreadIds(uint32_t sink_id, const WTF::Vector<int32_t>& thread_ids);
+#endif
 
   // viz::mojom::blink::FrameSinkBundleClient implementation:
   void FlushNotifications(

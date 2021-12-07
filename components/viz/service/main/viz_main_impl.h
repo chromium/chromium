@@ -127,6 +127,9 @@ class VizMainImpl : public mojom::VizMain,
       mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver)
       override;
 #endif
+#if defined(OS_ANDROID)
+  void SetHostProcessId(int32_t pid) override;
+#endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   void FilterDebugStream(base::Value filter_data) override;

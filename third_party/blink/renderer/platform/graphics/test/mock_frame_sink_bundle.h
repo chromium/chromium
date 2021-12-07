@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "gpu/ipc/common/mailbox.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +45,9 @@ class MockFrameSinkBundle : public viz::mojom::blink::FrameSinkBundle {
                void(uint32_t,
                     base::ReadOnlySharedMemoryRegion,
                     const gpu::Mailbox&));
+#if defined(OS_ANDROID)
+  MOCK_METHOD2(SetThreadIds, void(uint32_t, const WTF::Vector<int32_t>&));
+#endif
 
  private:
   mojo::Receiver<viz::mojom::blink::FrameSinkBundle> receiver_{this};

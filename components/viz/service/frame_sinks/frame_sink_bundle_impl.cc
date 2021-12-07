@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "build/build_config.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -270,6 +271,15 @@ void FrameSinkBundleImpl::DidAllocateSharedBitmap(
     sink->DidAllocateSharedBitmap(std::move(region), id);
   }
 }
+
+#if defined(OS_ANDROID)
+void FrameSinkBundleImpl::SetThreadIds(uint32_t sink_id,
+                                       const std::vector<int32_t>& thread_ids) {
+  if (auto* sink = GetFrameSink(sink_id)) {
+    sink->SetThreadIds(thread_ids);
+  }
+}
+#endif
 
 void FrameSinkBundleImpl::EnqueueDidReceiveCompositorFrameAck(
     uint32_t sink_id,

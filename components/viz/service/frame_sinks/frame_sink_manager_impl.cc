@@ -23,6 +23,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_impl.h"
+#include "components/viz/service/performance_hint/utils.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 
 namespace viz {
@@ -70,6 +71,7 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
           params.run_all_compositor_stages_before_draw),
       log_capture_pipeline_in_webrtc_(params.log_capture_pipeline_in_webrtc),
       debug_settings_(params.debug_renderer_settings),
+      host_process_id_(params.host_process_id),
       hint_session_factory_(params.hint_session_factory) {
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
@@ -661,6 +663,12 @@ void FrameSinkManagerImpl::OnCaptureStarted(const FrameSinkId& id) {
 void FrameSinkManagerImpl::OnCaptureStopped(const FrameSinkId& id) {
   captured_frame_sink_ids_.erase(id);
   UpdateThrottling();
+}
+
+bool FrameSinkManagerImpl::VerifySandboxedThreadIds(
+    base::flat_set<base::PlatformThreadId> thread_ids) {
+  return CheckThreadIdsDoNotBelongToProcessIds(
+      {host_process_id_, base::GetCurrentProcId()}, std::move(thread_ids));
 }
 
 void FrameSinkManagerImpl::CacheBackBuffer(

@@ -203,6 +203,7 @@ class StubCompositorFrameSink
       SubmitCompositorFrameSyncCallback callback) override {}
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
+  void SetThreadIds(const std::vector<int32_t>& thread_ids) override {}
 
   // mojom::ExternalBeginFrameController implementation.
   void IssueExternalBeginFrame(

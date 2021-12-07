@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_BASE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_BASE_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/viz/service/display/display_damage_tracker.h"
 #include "components/viz/service/viz_service_export.h"
@@ -49,7 +51,9 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   virtual void DidSwapBuffers() = 0;
   virtual void DidReceiveSwapBuffersAck() = 0;
   virtual void OutputSurfaceLost() = 0;
-  virtual void ReportFrameTime(base::TimeDelta frame_time) = 0;
+  virtual void ReportFrameTime(
+      base::TimeDelta frame_time,
+      base::flat_set<base::PlatformThreadId> thread_ids) = 0;
 
  protected:
   raw_ptr<DisplaySchedulerClient> client_ = nullptr;
