@@ -37,7 +37,10 @@ AppDownloadingScreenHandler::AppDownloadingScreenHandler(
   set_user_acted_method_path("login.AppDownloadingScreen.userActed");
 }
 
-AppDownloadingScreenHandler::~AppDownloadingScreenHandler() {}
+AppDownloadingScreenHandler::~AppDownloadingScreenHandler() {
+  if (screen_)
+    screen_->OnViewDestroyed(this);
+}
 
 void AppDownloadingScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
