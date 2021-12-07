@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.metrics.UmaUtils;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.version_info.VersionConstants;
@@ -153,14 +152,6 @@ public class SplitCompatApplication extends Application {
         AsyncTask.takeOverAndroidThreadPool();
         JNIUtils.setClassLoader(getClassLoader());
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
-
-        // Temporarily disallow a LibraryLoader feature while a performance regression associated
-        // with it is being investigated. See http://crbug.com/1154224#c55.
-        if (!ChromeVersionInfo.isCanaryBuild() && !ChromeVersionInfo.isDevBuild()
-                && !ChromeVersionInfo.isLocalBuild()) {
-            LibraryLoader.setDisallowChromiumLinkerInZygote();
-        }
-
         LibraryLoader.getInstance().setLinkerImplementation(
                 ProductConfig.USE_CHROMIUM_LINKER, ProductConfig.USE_MODERN_LINKER);
         LibraryLoader.getInstance().enableJniChecks();

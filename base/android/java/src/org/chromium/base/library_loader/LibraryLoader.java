@@ -163,25 +163,10 @@ public class LibraryLoader {
         int CHILD_WITHOUT_ZYGOTE = 2;
     }
 
-    // Used to override ALLOW_CHROMIUM_LINKER_IN_ZYGOTE outside Local/Dev/Canary.
-    private static boolean sChannelAllowsLinkerInZygote = true;
-
-    /**
-     * Disallow attempts to share RELRO between the App Zygote and the other processes. Must be
-     * called in both the zygote and the browser process because it affects the communication
-     * protocol on both sides. Must be called early to avoid data races - before the LibraryLoader
-     * starts being called from different threads.
-     */
-    public static void setDisallowChromiumLinkerInZygote() {
-        sChannelAllowsLinkerInZygote = false;
-    }
-
     // Returns true when sharing RELRO between the browser process and the app zygote should *not*
-    // be attempted. In other words, returns true iff the zygote is not allowed to load the library
-    // with the Chromium linker.
+    // be attempted.
     public static boolean mainProcessIntendsToProvideRelroFd() {
-        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
-                || !sChannelAllowsLinkerInZygote;
+        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R;
     }
 
     /**
