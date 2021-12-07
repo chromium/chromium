@@ -906,8 +906,6 @@ component("ash") {
     "style/default_color_constants.h",
     "style/default_colors.cc",
     "style/default_colors.h",
-    "style/element_style.cc",
-    "style/element_style.h",
     "style/highlight_border.cc",
     "style/highlight_border.h",
     "style/icon_button.cc",

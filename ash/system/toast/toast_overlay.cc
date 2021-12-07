@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/element_style.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_toast_style.h"
 #include "ash/wm/work_area_insets.h"
