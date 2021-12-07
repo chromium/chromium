@@ -64,10 +64,9 @@ class PrivacyReviewHandlerTest : public testing::Test {
   PrivacyReviewHandler* handler() { return handler_.get(); }
   TestingProfile* profile() { return &profile_; }
 
- protected:
+ private:
   content::BrowserTaskEnvironment browser_task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_ =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -75,27 +74,15 @@ class PrivacyReviewHandlerTest : public testing::Test {
   std::unique_ptr<PrivacyReviewHandler> handler_;
 };
 
-class PrivacyReviewHandlerDisabledTest : public PrivacyReviewHandlerTest {
- public:
-  PrivacyReviewHandlerDisabledTest() {
-    feature_list_.InitAndDisableFeature(features::kPrivacyReview);
-  }
-};
-
-class PrivacyReviewHandlerEnabledTest : public PrivacyReviewHandlerTest {
- public:
-  PrivacyReviewHandlerEnabledTest() {
-    feature_list_.InitAndEnableFeature(features::kPrivacyReview);
-  }
-};
-
-TEST_F(PrivacyReviewHandlerDisabledTest, IsPrivacyReviewAvailable) {
+TEST_F(PrivacyReviewHandlerTest, IsPrivacyReviewAvailable) {
   // Privacy review is not available when the experimental flag is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPrivacyReview);
   ValidateIsPrivacyReviewAvailable(false);
-}
 
-TEST_F(PrivacyReviewHandlerEnabledTest, IsPrivacyReviewAvailable) {
-  // Privacy review is available when the experimental flag is enabled.
+  // Once the flag is enabled, privacy review is available.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(features::kPrivacyReview);
   ValidateIsPrivacyReviewAvailable(true);
 
   // If the browser is managed, then privacy review is not available.
