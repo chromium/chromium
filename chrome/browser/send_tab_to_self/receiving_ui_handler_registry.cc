@@ -16,7 +16,7 @@
 #include "components/send_tab_to_self/features.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+    defined(OS_WIN) || defined(OS_FUCHSIA)
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #endif
@@ -39,7 +39,7 @@ ReceivingUiHandlerRegistry* ReceivingUiHandlerRegistry::GetInstance() {
 void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
     Profile* profile) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+    defined(OS_WIN) || defined(OS_FUCHSIA)
 
   // If STTS 2.0 is enabled the handler will be created when the toolbar
   // button registers itself as the delegate.
@@ -59,7 +59,7 @@ SendTabToSelfToolbarIconController*
 ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
     Profile* profile) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+    defined(OS_WIN) || defined(OS_FUCHSIA)
   for (const std::unique_ptr<ReceivingUiHandler>& handler :
        applicable_handlers_) {
     auto* button_controller =
@@ -76,10 +76,8 @@ ReceivingUiHandlerRegistry::GetToolbarButtonControllerForProfile(
   return button_controller;
 #elif defined(OS_ANDROID)
   return nullptr;
-#elif defined(OS_FUCHSIA)
-  // TODO(crbug.com/1235293)
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+#else
+#error Unknown platform.
 #endif
 }
 
