@@ -25,7 +25,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill_assistant/browser/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
@@ -91,15 +90,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableSupportForHonorificPrefixes,
     &autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
     &autofill::features::kAutofillEnableSupportForMoreStructureInNames,
-    &autofill_assistant::features::kAutofillAssistant,
-    &autofill_assistant::features::kAutofillAssistantChromeEntry,
-    &autofill_assistant::features::kAutofillAssistantDirectActions,
-    &autofill_assistant::features::kAutofillAssistantDisableOnboardingFlow,
-    &autofill_assistant::features::kAutofillAssistantFeedbackChip,
-    &autofill_assistant::features::kAutofillAssistantLoadDFMForTriggerScripts,
-    &autofill_assistant::features::kAutofillAssistantProactiveHelp,
-    &autofill_assistant::features::
-        kAutofillAssistantDisableProactiveHelpTiedToMSBB,
     &blink::features::kPrerender2,
     &blink::features::kForceWebContentsDarkMode,
     &commerce::kCommerceMerchantViewer,

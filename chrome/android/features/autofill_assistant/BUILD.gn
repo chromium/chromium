@@ -229,7 +229,10 @@ generate_jni("jni_headers") {
 }
 
 generate_jni("jni_headers_public") {
-  sources = [ "public/java/src/org/chromium/chrome/browser/autofill_assistant/Starter.java" ]
+  sources = [
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantFeatures.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/Starter.java",
+  ]
 }
 
 generate_jni("test_support_jni_headers") {

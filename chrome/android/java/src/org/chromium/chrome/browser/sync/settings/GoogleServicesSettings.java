@@ -17,6 +17,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -121,7 +122,7 @@ public class GoogleServicesSettings
         Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
         // Assistant autofill/voicesearch both live in the sub-section. If either one of them is
         // enabled, then the subsection should show.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+        if (AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP.isEnabled()
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)) {
             removePreference(getPreferenceScreen(), mAutofillAssistant);
             mAutofillAssistant = null;
@@ -265,7 +266,7 @@ public class GoogleServicesSettings
      *  will the AA switch be assigned a value).
      */
     private boolean shouldShowAutofillAssistantPreference() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT)
+        return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
                 && mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED);
     }

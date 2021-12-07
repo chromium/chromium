@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -37,7 +36,7 @@ public class AutofillAssistantPreferencesUtil {
      * off. Use {@link #isProactiveHelpOn()} to determine whether to trigger proactive help.
      */
     private static boolean isProactiveHelpSwitchOn() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
+        if (!AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP.isEnabled()) {
             return false;
         }
 
@@ -109,8 +108,7 @@ public class AutofillAssistantPreferencesUtil {
 
     /** Checks whether the Autofill Assistant onboarding screen should be shown. */
     public static boolean getShowOnboarding() {
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW)) {
+        if (AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW.isEnabled()) {
             return false;
         }
         return !isAutofillAssistantSwitchOn() || !isAutofillOnboardingAccepted();

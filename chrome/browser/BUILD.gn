@@ -2607,6 +2607,7 @@ static_library("browser") {
       "android/autofill_assistant/assistant_overlay_delegate.h",
       "android/autofill_assistant/client_android.cc",
       "android/autofill_assistant/client_android.h",
+      "android/autofill_assistant/features_android.cc",
       "android/autofill_assistant/generic_ui_events_android.cc",
       "android/autofill_assistant/generic_ui_events_android.h",
       "android/autofill_assistant/generic_ui_interactions_android.cc",

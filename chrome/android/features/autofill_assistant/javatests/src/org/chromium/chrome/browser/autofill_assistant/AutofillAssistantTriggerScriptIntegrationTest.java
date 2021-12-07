@@ -61,14 +61,14 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -138,7 +138,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableIf.
     Build(message = "See https://crbug.com/1199849", sdk_is_greater_than = VERSION_CODES.O_MR1)
     @FlakyTest(message = "crbug.com/1199416")
@@ -181,7 +181,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void setCancelForeverFlag() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -213,9 +213,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     // Disable translate to prevent the popup from covering part of the website.
-    @Features.DisableFeatures("Translate")
+    @DisableFeatures("Translate")
     public void elementCondition() throws Exception {
         SelectorProto touch_area_four = toCssSelector("#touch_area_one");
         TriggerScriptProto.Builder buttonVisibleTriggerScript =
@@ -253,7 +253,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
@@ -306,8 +306,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @Features.DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
+    @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW_NAME)
     public void transitionToRegularScriptWithoutOnboarding() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -351,7 +351,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void base64TriggerScriptsDontRequireMSBB() {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -381,7 +381,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void dontShowOnboardingIfAcceptedInDifferentTab() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
@@ -429,8 +429,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME})
     public void
     transitionToRegularScriptWithoutOnboardingWithDisableOnboardingFlowFeatureOn()
             throws Exception {
@@ -474,11 +474,12 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     @DisableIf.
     Build(message = "Fails on Lollipop and Marshmallow Tablet Tester, https://crbug.com/1158435",
             sdk_is_less_than = VERSION_CODES.N)
-    public void switchToNewTabAndThenBack() {
+    public void
+    switchToNewTabAndThenBack() {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto
                         .newBuilder()
@@ -507,8 +508,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    @EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_ONBOARDING_FLOW_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME})
     @DisabledTest(message = "https://crbug.com/1232703")
     public void
     testScrollToHide() throws Exception {
@@ -585,7 +586,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP,
+    @EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME,
             "AutofillAssistantDialogOnboarding"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
@@ -647,8 +648,8 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
-    @Features.DisableFeatures("AutofillAssistantDialogOnboarding")
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
+    @DisableFeatures("AutofillAssistantDialogOnboarding")
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1154682",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
@@ -699,7 +700,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    @EnableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void triggerScriptHidesAndShowsForKeyboard() throws Exception {
         TriggerScriptProto.Builder triggerScript =
                 TriggerScriptProto.newBuilder()

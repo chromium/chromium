@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -107,9 +107,8 @@ public class DirectActionsIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingAndStart() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(false);
@@ -152,9 +151,8 @@ public class DirectActionsIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingAndStartShowsErrorMessageIfRequested() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(false);
@@ -188,9 +186,8 @@ public class DirectActionsIntegrationTest {
      */
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     public void
     testOnboardingTwice() {
         AutofillAssistantPreferencesUtil.setInitialPreferences(false);
@@ -243,9 +240,8 @@ public class DirectActionsIntegrationTest {
      */
     @Test
     @MediumTest
-    @Features.
-    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    @EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME})
     @DisabledTest(message = "https://crbug.com/1272997")
     public void
     testStatusMessageResetsBetweenRuns() {

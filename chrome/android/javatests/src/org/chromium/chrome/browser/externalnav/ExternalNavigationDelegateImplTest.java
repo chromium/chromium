@@ -20,7 +20,7 @@ import org.chromium.base.Function;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.autofill_assistant.AssistantFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,8 +41,8 @@ import org.chromium.url.Origin;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures(
-        {ChromeFeatureList.AUTOFILL_ASSISTANT, ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+@Features.DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+        AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
 public class ExternalNavigationDelegateImplTest {
     private static final String AUTOFILL_ASSISTANT_INTENT_URL =
             "intent://www.example.com#Intent;scheme=https;"
@@ -261,8 +261,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_TriggersFromSearch() {
         ExternalNavigationParams params =
@@ -277,8 +277,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_DoesNotTriggerFromSearchInIncognito() {
         ExternalNavigationParams params =
@@ -293,8 +293,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_DoesNotTriggerFromDifferentOrigin() {
         ExternalNavigationParams params =
@@ -309,8 +309,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.DisableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_DoesNotTriggerWhenFeatureDisabled() {
         ExternalNavigationParams params =
@@ -325,8 +325,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_DoesNotAllowAppOverrideIfNotSpecified() {
         ExternalNavigationParams params =
@@ -344,8 +344,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_AllowAppOverrideIfSpecified() {
         ExternalNavigationParams params =
@@ -364,8 +364,8 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY})
+    @Features.EnableFeatures({AssistantFeatures.AUTOFILL_ASSISTANT_NAME,
+            AssistantFeatures.AUTOFILL_ASSISTANT_CHROME_ENTRY_NAME})
     public void
     testHandleWithAutofillAssistant_DoesNotAllowAppOverrideIfSpecifiedInIncognito() {
         ExternalNavigationParams params =

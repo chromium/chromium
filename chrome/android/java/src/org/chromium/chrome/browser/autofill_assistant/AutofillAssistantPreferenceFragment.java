@@ -125,13 +125,13 @@ public class AutofillAssistantPreferenceFragment extends PreferenceFragmentCompa
     }
 
     private boolean shouldShowAutofillAssistantPreference() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT)
+        return AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
                 && mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED);
     }
 
     private boolean shouldShowAutofillAssistantProactiveHelpPreference() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP);
+        return AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP.isEnabled();
     }
 
     private boolean shouldShowWebAssistanceCategory() {
@@ -154,8 +154,7 @@ public class AutofillAssistantPreferenceFragment extends PreferenceFragmentCompa
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_PROACTIVE_HELP, true);
         boolean proactive_toggle_enabled;
         boolean show_disclaimer;
-        if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB)) {
+        if (AssistantFeatures.AUTOFILL_ASSISTANT_DISABLE_PROACTIVE_HELP_TIED_TO_MSBB.isEnabled()) {
             proactive_toggle_enabled = assistant_switch_on_or_missing;
             show_disclaimer = false;
         } else {
