@@ -103,7 +103,7 @@ DroppedFrameCounter::~DroppedFrameCounter() = default;
 uint32_t DroppedFrameCounter::GetAverageThroughput() const {
   size_t good_frames = 0;
   for (auto it = --end(); it; --it) {
-    if (**it == kFrameStateComplete)
+    if (**it == kFrameStateComplete || **it == kFrameStatePartial)
       ++good_frames;
   }
   double throughput = 100. * good_frames / ring_buffer_.BufferSize();
