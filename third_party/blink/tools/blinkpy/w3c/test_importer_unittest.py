@@ -529,17 +529,22 @@ class TestImporterTest(LoggingTestCase):
         self.assertEqual(importer.chromium_git.added_paths,
                          {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME})
 
-    def test_only_wpt_manifest_changed(self):
+    def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
             RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
-        self.assertFalse(importer._only_wpt_manifest_changed())
+        self.assertTrue(importer._has_wpt_changes())
+
+        importer.chromium_git.changed_files = lambda: [
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
+            RELATIVE_WEB_TESTS + 'TestExpectations']
+        self.assertFalse(importer._has_wpt_changes())
 
         importer.chromium_git.changed_files = lambda: [
             RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
-        self.assertTrue(importer._only_wpt_manifest_changed())
+        self.assertFalse(importer._has_wpt_changes())
 
     def test_need_sheriff_attention(self):
         host = self.mock_host()
