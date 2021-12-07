@@ -70,11 +70,16 @@ bool CompositorFrameReportingController::HasReporterAt(
 
 void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
     const viz::BeginFrameArgs& args) {
-  if (previous_frame_.IsValid() &&
-      previous_frame_.frame_id.source_id == args.frame_id.source_id) {
-    CreateReportersForDroppedFrames(previous_frame_, args);
+  const auto& previous_frame = last_started_compositor_frame_.args;
+  if (previous_frame.IsValid() &&
+      previous_frame.frame_id.source_id == args.frame_id.source_id) {
+    CreateReportersForDroppedFrames(previous_frame, args);
   }
-  previous_frame_ = args;
+
+  last_started_compositor_frame_.args = args;
+  last_started_compositor_frame_.scrolling_thread = scrolling_thread_;
+  last_started_compositor_frame_.active_trackers = active_trackers_;
+  last_started_compositor_frame_.smooth_thread = GetSmoothThread();
 }
 
 void CompositorFrameReportingController::WillBeginImplFrame(
@@ -125,10 +130,22 @@ void CompositorFrameReportingController::WillBeginMainFrame(
   } else {
     // In this case we have already submitted the ImplFrame, but we received
     // beginMain frame before next BeginImplFrame (Not reached the ImplFrame
-    // deadline yet). So will start a new reporter at BeginMainFrame.
+    // deadline yet). So will start a new reporter at BeginMainFrame, and use
+    // the state(s) from the ImplFrame where necessary.
+    auto scrolling_thread = scrolling_thread_;
+    auto active_trackers = active_trackers_;
+    auto smooth_thread = GetSmoothThread();
+    if (args.frame_id == last_started_compositor_frame_.args.frame_id) {
+      // TODO(1277547): Instead of replacing all current information with the
+      // older information from when the impl-frame started, merge the two sets
+      // of information that makes sense.
+      scrolling_thread = last_started_compositor_frame_.scrolling_thread;
+      active_trackers = last_started_compositor_frame_.active_trackers;
+      smooth_thread = last_started_compositor_frame_.smooth_thread;
+    }
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers_, args, should_report_metrics_, GetSmoothThread(),
-        scrolling_thread_, layer_tree_host_id_, global_trackers_);
+        active_trackers, args, should_report_metrics_, smooth_thread,
+        scrolling_thread, layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
     reporters_[PipelineStage::kBeginMainFrame] = std::move(reporter);
@@ -522,7 +539,7 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
                                     now);
     }
   }
-  previous_frame_ = {};
+  last_started_compositor_frame_ = {};
 }
 
 void CompositorFrameReportingController::NotifyReadyToCommit(

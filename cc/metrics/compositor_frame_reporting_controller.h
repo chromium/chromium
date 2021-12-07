@@ -189,8 +189,18 @@ class CC_EXPORT CompositorFrameReportingController {
   // must outlive the objects in |submitted_compositor_frames_|.
   base::circular_deque<SubmittedCompositorFrame> submitted_compositor_frames_;
 
-  // The latest frame that was started.
-  viz::BeginFrameArgs previous_frame_;
+  // Contains information about the latest frame that was started, and the state
+  // during that frame. This is used to process skipped frames, as well as
+  // making sure a CompositorFrameReporter object for a delayed main-frame is
+  // created with the correct state.
+  struct {
+    viz::BeginFrameArgs args;
+    FrameSequenceMetrics::ThreadType scrolling_thread =
+        FrameSequenceMetrics::ThreadType::kUnknown;
+    ActiveTrackers active_trackers;
+    CompositorFrameReporter::SmoothThread smooth_thread =
+        CompositorFrameReporter::SmoothThread::kSmoothNone;
+  } last_started_compositor_frame_;
 
   base::TimeTicks begin_main_frame_start_time_;
 
@@ -212,6 +222,7 @@ class CC_EXPORT CompositorFrameReportingController {
   // interval of last begin frame args.
   base::TimeDelta last_interval_;
 };
+
 }  // namespace cc
 
 #endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTING_CONTROLLER_H_

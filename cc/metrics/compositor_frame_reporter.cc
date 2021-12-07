@@ -558,6 +558,13 @@ CompositorFrameReporter::CompositorFrameReporter(
       args, IsScrollActive(active_trackers_));
   DCHECK(IsScrollActive(active_trackers_) ||
          scrolling_thread_ == FrameSequenceMetrics::ThreadType::kUnknown);
+  if (scrolling_thread_ == FrameSequenceMetrics::ThreadType::kCompositor) {
+    DCHECK(smooth_thread_ == SmoothThread::kSmoothCompositor ||
+           smooth_thread_ == SmoothThread::kSmoothBoth);
+  } else if (scrolling_thread_ == FrameSequenceMetrics::ThreadType::kMain) {
+    DCHECK(smooth_thread_ == SmoothThread::kSmoothMain ||
+           smooth_thread_ == SmoothThread::kSmoothBoth);
+  }
 }
 
 std::unique_ptr<CompositorFrameReporter>
