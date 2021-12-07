@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/performance_hint/hint_session.h"
@@ -171,8 +172,12 @@ void DisplayScheduler::ReportFrameTime(
     base::TimeDelta frame_time,
     base::flat_set<base::PlatformThreadId> thread_ids) {
   MaybeCreateHintSession(std::move(thread_ids));
-  if (hint_session_)
+  if (hint_session_) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("Compositing.Display.AdpfHintUs",
+                                            frame_time, base::Microseconds(1),
+                                            base::Milliseconds(50), 50);
     hint_session_->ReportCpuCompletionTime(frame_time);
+  }
 }
 
 bool DisplayScheduler::DrawAndSwap() {

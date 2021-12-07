@@ -272,6 +272,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.AdpfHintUs" units="microseconds"
+    expires_after="2022-06-30">
+  <owner>boliu@chromium.org</owner>
+  <owner>vasilyt@chromium.org</owner>
+  <summary>
+    This is logged once for every ADPF performance hint report, which is
+    generally once every frame on Android device that supports ADPF and ADPF is
+    enabled. It's the interval reported to ADPF, which is currently implemented
+    as the wall clock time from vsync frame time to swap_start. Only reported
+    for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.Draw.Occlusion.Calculation.Time"
     units="microseconds" expires_after="2022-04-10">
   <owner>yiyix@chromium.org</owner>
