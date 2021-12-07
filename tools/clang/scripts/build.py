@@ -997,10 +997,14 @@ def main():
       cflags = [
           '--target=' + target_triple,
           '--sysroot=%s/sysroot' % toolchain_dir,
+
+          # pylint: disable=line-too-long
           # android_ndk/toolchains/llvm/prebuilt/linux-x86_64/aarch64-linux-android/bin/ld
           # depends on a newer version of libxml2.so than what's available on
           # the bots. To make things work, use our just-built lld as linker.
+          # pylint: enable=line-too-long
           '-fuse-ld=lld',
+
           # We don't have an unwinder ready, and don't need it either.
           '--unwindlib=none',
       ]
