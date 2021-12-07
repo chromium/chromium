@@ -33,11 +33,11 @@ void WarnOnForcedUpdateInNonActivatableContext(Document& document) {
   if (!v8::Isolate::GetCurrent()->InContext())
     return;
   String message =
-      "Rendering update in content-visibility:hidden subtree precluded "
-      "rendering optimizations.";
-  // Note that this is a verbose level message, since it can happen frequently
-  // and is not necessarily a problem if the developer is accessing
-  // content-visibility: hidden subtrees intentionally.
+      "Rendering was performed in a subtree hidden by "
+      "content-visibility:hidden.";
+  // Note that this is a verbose level message, since it can happen
+  // frequently and is not necessarily a problem if the developer is
+  // accessing content-visibility: hidden subtrees intentionally.
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kVerbose, message));
