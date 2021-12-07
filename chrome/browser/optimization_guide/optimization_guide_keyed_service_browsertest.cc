@@ -590,13 +590,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_hints()));
-  EXPECT_EQ(optimization_guide::RetryForHistogramUntilCountReached(
-                &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1),
-            1);
-  // There were no hints that match this URL, but there should still be an
-  // attempt to load a hint but still fail.
-  histogram_tester.ExpectUniqueSample("OptimizationGuide.LoadedHint.Result",
-                                      false, 1);
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "OptimizationGuide.LoadedHint.Result", 1);
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   base::flat_set<GURL> received_callbacks;
