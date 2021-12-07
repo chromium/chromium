@@ -779,6 +779,9 @@ void HTMLSelectMenuElement::UpdateSelectedValuePartContents() {
 
 void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
+  if (event->defaultPrevented())
+    return;
+
   if (event->type() == event_type_names::kClick &&
       !select_menu_element_->open()) {
     select_menu_element_->OpenListbox();
@@ -805,6 +808,9 @@ void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
 
 void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
+  if (event->defaultPrevented())
+    return;
+
   if (event->type() == event_type_names::kClick) {
     auto* target_element =
         DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
