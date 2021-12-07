@@ -127,12 +127,12 @@
   {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 101
   },
   {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 101
   },
   {
     "name": "android-picture-in-picture-api",
@@ -1105,12 +1105,12 @@
   {
     "name": "desktop-detailed-language-settings",
     "owners": [ "chrome-language@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "desktop-restructured-language-settings",
     "owners": [ "chrome-language@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "destroy-profile-on-browser-close",
