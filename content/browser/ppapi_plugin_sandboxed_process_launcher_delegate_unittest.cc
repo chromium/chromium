@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/renderer_sandboxed_process_launcher_delegate.h"
+#include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -33,44 +33,36 @@ namespace sandbox {
 namespace policy {
 
 #if defined(OS_WIN)
-class RendererFeatureSandboxWinTest
+class PpapiPluginFeatureSandboxWinTest
     : public ::sandbox::policy::SandboxFeatureTest {
  public:
-  RendererFeatureSandboxWinTest() = default;
+  PpapiPluginFeatureSandboxWinTest() = default;
 
-  // App Containers are only available in Windows 8 and up
-  ::sandbox::AppContainerType GetExpectedAppContainerType() override {
-    if (base::win::GetVersion() >= base::win::Version::WIN8 &&
-        ::testing::get<0>(GetParam()))
-      return ::sandbox::AppContainerType::kLowbox;
-
-    return ::sandbox::AppContainerType::kNone;
-  }
-
-  ::sandbox::MitigationFlags GetExpectedMitigationFlags() override {
-    // Mitigation flags are set on the policy regardless of the OS version
-    return SandboxFeatureTest::GetExpectedMitigationFlags() |
-           ::sandbox::MITIGATION_CET_DISABLED;
+  ::sandbox::MitigationFlags GetExpectedDelayedMitigationFlags() override {
+    ::sandbox::MitigationFlags flags =
+        SandboxFeatureTest::GetExpectedDelayedMitigationFlags() |
+        ::sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+    return flags;
   }
 
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
+TEST_P(PpapiPluginFeatureSandboxWinTest, PpapiGeneratedPolicyTest) {
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   base::HandlesToInheritVector handles_to_inherit;
   ::sandbox::BrokerServices* broker =
       ::sandbox::SandboxFactory::GetBrokerServices();
   scoped_refptr<::sandbox::TargetPolicy> policy = broker->CreatePolicy();
 
-  content::RendererSandboxedProcessLauncherDelegateWin test_renderer_delegate(
-      &cmd_line, /* is_jit_disabled */ false);
+  ppapi::PpapiPermissions permissions(ppapi::Permission::PERMISSION_NONE);
+  PpapiPluginSandboxedProcessLauncherDelegate test_ppapi_delegate(permissions);
 
   // PreSpawn
   ::sandbox::ResultCode result =
       ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
-          cmd_line, ::sandbox::policy::switches::kRendererProcess,
-          handles_to_inherit, &test_renderer_delegate, policy);
+          cmd_line, ::sandbox::policy::switches::kPpapiSandbox,
+          handles_to_inherit, &test_ppapi_delegate, policy);
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
   EXPECT_EQ(policy->GetIntegrityLevel(),
@@ -83,23 +75,13 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
   EXPECT_EQ(policy->GetDelayedProcessMitigations(),
             GetExpectedDelayedMitigationFlags());
 
-  if (GetExpectedAppContainerType() == ::sandbox::AppContainerType::kLowbox) {
-    EXPECT_EQ(GetExpectedAppContainerType(),
-              policy->GetAppContainer()->GetAppContainerType());
-
-    ::sandbox::policy::EqualSidList(
-        static_cast<::sandbox::PolicyBase*>(policy.get())
-            ->GetAppContainerBase()
-            ->GetCapabilities(),
-        {});
-  } else {
-    EXPECT_EQ(policy->GetAppContainer().get(), nullptr);
-  }
+  // PPapi shouldn't ever have an app container
+  EXPECT_EQ(policy->GetAppContainer().get(), nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    RendererSandboxSettings,
-    RendererFeatureSandboxWinTest,
+    PpapiPluginSandboxSettings,
+    PpapiPluginFeatureSandboxWinTest,
     ::testing::Combine(
         /* renderer app container feature */ ::testing::Bool(),
         /* ktm mitigation feature */ ::testing::Bool()));

@@ -3903,7 +3903,6 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::mojom::Sandbox::kGpu:
       return std::wstring();
     case sandbox::mojom::Sandbox::kPpapi:
-      return std::wstring(install_static::GetSandboxSidPrefix()) + L"129201925";
     case sandbox::mojom::Sandbox::kNoSandbox:
     case sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges:
     case sandbox::mojom::Sandbox::kXrCompositing:

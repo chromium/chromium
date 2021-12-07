@@ -17,7 +17,7 @@
 
 namespace content {
 // NOTE: changes to this class need to be reviewed by the security team.
-class PpapiPluginSandboxedProcessLauncherDelegate
+class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
     : public content::SandboxedProcessLauncherDelegate {
  public:
   explicit PpapiPluginSandboxedProcessLauncherDelegate(

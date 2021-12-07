@@ -207,11 +207,15 @@ source_set("sandbox_test_utils") {
 
   if (is_win) {
     sources = [
+      "win/sandbox_policy_feature_test.cc",
+      "win/sandbox_policy_feature_test.h",
       "win/sandbox_test_utils.cc",
       "win/sandbox_test_utils.h",
     ]
 
     deps = [
+      ":policy",
+      "//base/test:test_support",
       "//sandbox/win:sandbox",
       "//testing/gtest",
     ]

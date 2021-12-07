@@ -4,8 +4,6 @@
 
 #include "content/browser/ppapi_plugin_sandboxed_process_launcher_delegate.h"
 
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
@@ -41,8 +39,6 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
-  content::ContentBrowserClient* browser_client = GetContentClient()->browser();
-
 #if !defined(NACL_WIN64)
   // We don't support PPAPI win32k lockdown prior to Windows 10.
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
@@ -51,10 +47,6 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
       return false;
   }
 #endif  // !defined(NACL_WIN64)
-  const std::wstring& sid =
-      browser_client->GetAppContainerSidForSandboxType(GetSandboxType());
-  if (!sid.empty())
-    sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
 
   // No plugins can generate executable code.
   sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
