@@ -19,7 +19,7 @@ _PM_SERVE_LISTEN_TIMEOUT_SECS = 10
 # Amount of time to sleep in between busywaits for "pm serve"'s port file.
 _PM_SERVE_POLL_INTERVAL = 0.1
 
-_MANAGED_REPO_NAME = 'chrome-runner'
+_MANAGED_REPO_NAME = 'chromium-test-package-server'
 
 
 class PkgRepo(object):
