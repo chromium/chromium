@@ -5,21 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_DEPENDENCY_INSTALLATION_OBSERVER_H_
 
-#import <Foundation/Foundation.h>
-#import <memory>
-
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-
-// Objective-C version of DependencyInstaller; see docs for that class.
-@protocol DependencyInstalling <NSObject>
-@optional
-
-- (void)installDependencyForWebState:(web::WebState*)web_state;
-- (void)uninstallDependencyForWebState:(web::WebState*)web_state;
-
-@end
 
 // Interface for classes wishing to install and/or uninstall dependencies
 // (delegates, etc) for each WebState using
@@ -33,25 +21,6 @@ class DependencyInstaller {
   // is no longer needed.
   virtual void UninstallDependency(web::WebState* web_state) {}
   virtual ~DependencyInstaller() {}
-};
-
-// Bridge allowing Objective-C classes to act as DependencyInstaller for a
-// WebStateDependencyInstallationObserver.
-class DependencyInstallerBridge : public DependencyInstaller {
- public:
-  DependencyInstallerBridge(id<DependencyInstalling> installing);
-  ~DependencyInstallerBridge() override {}
-  void InstallDependency(web::WebState* web_state) override;
-  void UninstallDependency(web::WebState* web_state) override;
-
-  DependencyInstallerBridge(const DependencyInstallerBridge&) = delete;
-  DependencyInstallerBridge& operator=(const DependencyInstallerBridge&) =
-      delete;
-
- private:
-  // The Objective-C class which installs/uninstalls dependencies in response to
-  // forwarded messages.
-  id<DependencyInstalling> installing_;
 };
 
 // Classes wishing to install/uninstall dependencies (such as delegates) for

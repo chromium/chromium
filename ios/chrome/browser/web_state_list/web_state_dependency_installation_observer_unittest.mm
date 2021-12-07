@@ -57,6 +57,9 @@ class WebStateDependencyInstallationObserverTest : public PlatformTest,
   FakeDependencyInstaller installer_;
 };
 
+// Verifies that the WebStateDependencyInstallationObserver triggers the
+// appropriate install/uninstall methods when a WebState is inserted, replaced,
+// or removed.
 TEST_F(WebStateDependencyInstallationObserverTest,
        InsertReplaceAndRemoveWebState) {
   WebStateDependencyInstallationObserver observer(&web_state_list_,
@@ -78,6 +81,9 @@ TEST_F(WebStateDependencyInstallationObserverTest,
   EXPECT_TRUE(installer_.WasInstalled(web_state_2_raw));
 }
 
+// Verifies that the WebStateDependencyInstallationObserver triggers the
+// appropriate install method for any WebStates that were already in the
+// WebStateList prior to its construction.
 TEST_F(WebStateDependencyInstallationObserverTest,
        RespectsPreexistingWebState) {
   auto web_state = std::make_unique<web::FakeWebState>();

@@ -22,6 +22,8 @@ source_set("web_state_list") {
     "all_web_state_observation_forwarder.mm",
     "web_state_dependency_installation_observer.h",
     "web_state_dependency_installation_observer.mm",
+    "web_state_dependency_installer_bridge.h",
+    "web_state_dependency_installer_bridge.mm",
     "web_state_list.h",
     "web_state_list.mm",
     "web_state_list_delegate.h",

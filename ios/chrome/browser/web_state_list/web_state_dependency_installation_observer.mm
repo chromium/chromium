@@ -8,23 +8,6 @@
 
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
 
-DependencyInstallerBridge::DependencyInstallerBridge(
-    id<DependencyInstalling> installing)
-    : installing_(installing) {}
-
-void DependencyInstallerBridge::InstallDependency(web::WebState* web_state) {
-  if ([installing_
-          respondsToSelector:@selector(installDependencyForWebState:)]) {
-    [installing_ installDependencyForWebState:web_state];
-  }
-}
-void DependencyInstallerBridge::UninstallDependency(web::WebState* web_state) {
-  if ([installing_
-          respondsToSelector:@selector(uninstallDependencyForWebState:)]) {
-    [installing_ uninstallDependencyForWebState:web_state];
-  }
-}
-
 WebStateDependencyInstallationObserver::WebStateDependencyInstallationObserver(
     WebStateList* web_state_list,
     DependencyInstaller* dependency_installer)
