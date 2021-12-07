@@ -261,6 +261,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:tricium_simple",
+    use_python3 = True,
 )
 
 build_recipe(
