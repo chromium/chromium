@@ -54,6 +54,8 @@ source_set("platform") {
     "system_clock.cc",
     "webrtc.cc",
     "webrtc.h",
+    "wifi_lan_medium.cc",
+    "wifi_lan_medium.h",
     "wifi_lan_server_socket.cc",
     "wifi_lan_server_socket.h",
     "wifi_lan_socket.cc",
@@ -95,6 +97,8 @@ source_set("unit_tests") {
     "condition_variable_unittest.cc",
     "count_down_latch_unittest.cc",
     "crypto_unittest.cc",
+    "fake_network_context.cc",
+    "fake_network_context.h",
     "fake_tcp_connected_socket.cc",
     "fake_tcp_connected_socket.h",
     "fake_tcp_server_socket.cc",
@@ -108,6 +112,7 @@ source_set("unit_tests") {
     "scheduled_executor_unittest.cc",
     "single_thread_executor_unittest.cc",
     "webrtc_test.cc",
+    "wifi_lan_medium_unittest.cc",
     "wifi_lan_server_socket_unittest.cc",
     "wifi_lan_socket_unittest.cc",
   ]
@@ -118,6 +123,7 @@ source_set("unit_tests") {
     "//chrome/services/sharing/nearby/test_support",
     "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
+    "//services/network:test_support",
     "//services/network/public/mojom",
     "//testing/gtest",
   ]
