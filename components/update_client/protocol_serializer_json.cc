@@ -58,6 +58,13 @@ std::string ProtocolSerializerJSON::Serialize(
   // HW platform information.
   auto* hw_node = request_node->SetKey("hw", Value(Value::Type::DICTIONARY));
   hw_node->SetKey("physmemory", Value(static_cast<int>(request.hw.physmemory)));
+  hw_node->SetKey("sse", Value(request.hw.sse));
+  hw_node->SetKey("sse2", Value(request.hw.sse2));
+  hw_node->SetKey("sse3", Value(request.hw.sse3));
+  hw_node->SetKey("sse41", Value(request.hw.sse41));
+  hw_node->SetKey("sse42", Value(request.hw.sse42));
+  hw_node->SetKey("ssse3", Value(request.hw.ssse3));
+  hw_node->SetKey("avx", Value(request.hw.avx));
 
   // OS version and platform information.
   auto* os_node = request_node->SetKey("os", Value(Value::Type::DICTIONARY));

@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/cpu.h"
 #include "base/guid.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -142,7 +143,15 @@ protocol_request::Request MakeProtocolRequest(
   }
 
   // HW platform information.
+  base::CPU cpu;
   request.hw.physmemory = GetPhysicalMemoryGB();
+  request.hw.sse = cpu.has_sse();
+  request.hw.sse2 = cpu.has_sse2();
+  request.hw.sse3 = cpu.has_sse3();
+  request.hw.ssse3 = cpu.has_ssse3();
+  request.hw.sse41 = cpu.has_sse41();
+  request.hw.sse42 = cpu.has_sse42();
+  request.hw.avx = cpu.has_avx();
 
   // OS version and platform information.
   request.os.platform = os_long_name;
