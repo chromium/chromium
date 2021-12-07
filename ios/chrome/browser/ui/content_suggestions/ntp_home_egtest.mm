@@ -974,6 +974,10 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   // Scroll back to top of NTP.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Usually a fast swipe scrolls back up, but in case it doesn't, make sure
+  // by slowly scrolling to the top.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 }
 
 - (void)showFeedFromNTPMenu {
