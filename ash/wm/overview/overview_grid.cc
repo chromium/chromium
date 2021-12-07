@@ -35,6 +35,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
@@ -1699,6 +1700,13 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
     overview_mode_item->HideForDesksTemplatesGrid();
 
   desks_templates_grid_widget_->Show();
+
+  // Fade in the widget from its current opacity.
+  // TODO(crbug.com/1277160): Consider adding animate flag to determine whether
+  // to disable animations.
+  PerformFadeInDesksTemplatesGridView(desks_templates_grid_widget_->GetLayer());
+
+  UpdateSaveDeskAsTemplateButton();
 
   if (was_zero_state) {
     desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
