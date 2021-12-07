@@ -67,24 +67,46 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
 // Removes duplicate NTP tabs in |browser|'s WebStateList.
 - (void)removeExcessNTPsInBrowser:(Browser*)browser {
   WebStateList* webStateList = browser->GetWebStateList();
+  web::WebState* activeWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+  int activeWebStateIndex = webStateList->GetIndexOfWebState(activeWebState);
   NSMutableArray<NSNumber*>* emptyNtpIndices = [[NSMutableArray alloc] init];
+  NSMutableArray<NSNumber*>* ntpWithNavHistoryIndices =
+      [[NSMutableArray alloc] init];
   BOOL keepOneNTP = YES;
+  BOOL activeWebStateIsEmptyNTP = NO;
   for (int i = 0; i < webStateList->count(); i++) {
     web::WebState* webState = webStateList->GetWebStateAt(i);
     if (IsURLNtp(webState->GetVisibleURL())) {
+      // Check if there is navigation history for this WebState that is showing
+      // the NTP. If there is, then set |keepOneNTP| to NO, indicating that all
+      // WebStates in NTPs with no navigation history will get removed.
       if (webState->GetNavigationManager()->GetItemCount() <= 1) {
+        // Keep track if active WebState is showing an NTP and has no navigation
+        // history since it may get removed if |keepOneNTP| is NO.
+        if (i == activeWebStateIndex) {
+          activeWebStateIsEmptyNTP = YES;
+        }
         // Insert at the front so that iterating through the array will remove
         // WebStates in descending index order, preventing WebState indices from
         // changing during removal.
         [emptyNtpIndices insertObject:@(i) atIndex:0];
       } else {
         keepOneNTP = NO;
+        [ntpWithNavHistoryIndices addObject:@(i)];
       }
     }
   }
   if (keepOneNTP) {
-    // Remove last index as the one NTP to keep.
-    [emptyNtpIndices removeLastObject];
+    // If the current active tab may be removed because it is showing the NTP
+    // and has no navigation history, then save that tab. Otherwise, keep the
+    // first index to save the most recently created tab.
+    NSNumber* tabIndexToSave = [emptyNtpIndices firstObject];
+    if (activeWebStateIsEmptyNTP &&
+        [[emptyNtpIndices lastObject] intValue] != activeWebStateIndex) {
+      tabIndexToSave = @(activeWebStateIndex);
+    }
+    [emptyNtpIndices removeObject:tabIndexToSave];
   }
   UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, [emptyNtpIndices count]);
   // Removal starts from higher indices to ensure tab indices stay fixed
@@ -93,8 +115,17 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
     web::WebState* webState =
         browser->GetWebStateList()->GetWebStateAt([index intValue]);
     DCHECK(IsURLNtp(webState->GetVisibleURL()));
-    browser->GetWebStateList()->CloseWebStateAt([index intValue],
-                                                WebStateList::CLOSE_NO_FLAGS);
+    webStateList->CloseWebStateAt([index intValue],
+                                  WebStateList::CLOSE_NO_FLAGS);
+  }
+  // If the active WebState was removed because it was showing the NTP and had
+  // no navigation history, switch to another NTP. This only is needed if there
+  // were tabs showing the NTP that had navigation histories. Otherwise, code
+  // above already saves the current active WebState right before empty NTPs are
+  // removed.
+  if (activeWebStateIsEmptyNTP && !keepOneNTP) {
+    int ntpToSwitchTo = [[ntpWithNavHistoryIndices lastObject] intValue];
+    webStateList->ActivateWebStateAt(ntpToSwitchTo);
   }
 }
 
