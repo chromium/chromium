@@ -611,6 +611,8 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
   CheckDelegateCalls();
 }
 
+// TODO(https://crbug.com/1260291): Enable this test on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that the login error is displayed and that the account is removed.
 TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   // Set expectations.
@@ -627,6 +629,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
+#endif
 
 // Tests that the sync disabled message is displayed and that the account is
 // removed upon the ABORT_SYNC action.
@@ -718,6 +721,8 @@ TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledManagedContinueKeepAccount) {
   CheckDelegateCalls();
 }
 
+// TODO(https://crbug.com/1260291): Enable this test on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Aborts the flow after the cross account dialog.
 TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbort) {
   // Set expectations.
@@ -735,6 +740,7 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountAbort) {
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
+#endif
 
 // Merge data after the cross account dialog.
 TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinue) {
@@ -755,6 +761,8 @@ TEST_F(DiceTurnSyncOnHelperTest, CrossAccountContinue) {
   CheckDelegateCalls();
 }
 
+// TODO(https://crbug.com/1260291): Enable these tests on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Create a new profile after the cross account dialog and show the signin page.
 TEST_F(DiceTurnSyncOnHelperTest, CrossAccountNewProfile) {
   // Set expectations.
@@ -796,6 +804,7 @@ TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationAbort) {
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
+#endif
 
 // Continue after the enterprise confirmation prompt.
 TEST_F(DiceTurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
@@ -816,6 +825,8 @@ TEST_F(DiceTurnSyncOnHelperTest, DISABLED_EnterpriseConfirmationContinue) {
   CheckDelegateCalls();
 }
 
+// TODO(https://crbug.com/1260291): Enable this test on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Continue with a new profile after the enterprise confirmation prompt.
 TEST_F(DiceTurnSyncOnHelperTest, EnterpriseConfirmationNewProfile) {
   // Set expectations.
@@ -873,6 +884,7 @@ TEST_F(DiceTurnSyncOnHelperTest, SignedInAccountUndoSyncKeepAccount) {
                               signin::ConsentLevel::kSignin));
   CheckDelegateCalls();
 }
+#endif
 
 // Tests that the sync confirmation is shown and the user can abort.
 TEST_F(DiceTurnSyncOnHelperTest, UndoSync) {

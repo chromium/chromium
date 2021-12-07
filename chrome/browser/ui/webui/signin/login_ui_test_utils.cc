@@ -442,7 +442,7 @@ void ExecuteJsToSigninInSigninFrame(Browser* browser,
 bool SignInWithUI(Browser* browser,
                   const std::string& username,
                   const std::string& password) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   NOTREACHED();
   return false;
 #else
