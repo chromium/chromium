@@ -46,11 +46,7 @@ def main():
       action='store',
       choices=["wakeups", "cpu_time"],
       help="Profile the application in one of two modes: wakeups, cpu_time.")
-  parser.add_argument("--power_sampler",
-                      help="Path to power sampler binary",
-                      default=os.path.join(
-                          utils.FindChromiumSrcDir(os.path.dirname(__file__)),
-                          "out", "Default", "power_sampler"))
+  parser.add_argument("--power_sampler", help="Path to power sampler binary")
   parser.add_argument(
       '--scenarios',
       dest='scenarios',

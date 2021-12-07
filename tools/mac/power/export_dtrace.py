@@ -7,6 +7,7 @@
 from collections import defaultdict
 import argparse
 import itertools
+import json
 import logging
 import os
 import re
@@ -69,6 +70,9 @@ class ProfileBuilder:
     line = location.line.add()
     line.function_id = function_id
     return function_id
+
+  def AddComment(self, comment: str):
+    self._profile.comment.append(self.GetStringId(comment))
 
   def AddSampleType(self, type: str, unit: str):
     """
@@ -292,8 +296,7 @@ if __name__ == "__main__":
                       help="Collapsed stack file.",
                       required=True)
   parser.add_argument("--output",
-                      help="The file to write the collapsed stacks into.",
-                      required=True)
+                      help="The file to write the collapsed stacks into.")
   parser.add_argument('--format',
                       dest='format',
                       action='store',
@@ -304,6 +307,7 @@ if __name__ == "__main__":
                       action='store_true',
                       help="Shorten stacks by removing.")
   args = parser.parse_args()
+  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
   profile_mode = 'cpu_time'
   if 'wakeups' in args.stack_dir:
@@ -313,11 +317,27 @@ if __name__ == "__main__":
   if args.shorten:
     parser.ShortenStackSamples()
 
+  data_dir = os.path.abspath(os.path.join(args.stack_dir, os.pardir))
+  metadata_path = os.path.join(data_dir, "metadata.json")
+  if not os.path.isfile(metadata_path):
+    logging.error(f"Could not find metadata.json.")
+    sys.exit(-1)
+  with open(metadata_path, 'r') as metadata_file:
+    metadata = json.load(metadata_file)
+
+  output_filename = args.output
   if args.format == "pprof":
     profile_builder = ProfileBuilder()
+    profile_builder.AddComment(json.dumps(metadata, indent=2))
+    profile_builder.AddComment(f"Profile mode: {profile_mode}")
     parser.ConvertToPprof(profile_builder)
-
-    with open(args.output_filename, "wb") as output_file:
+    if output_filename is None:
+      output_filename = os.path.join(data_dir, f"profile_{profile_mode}.pb")
+    with open(output_filename, "wb") as output_file:
       output_file.write(profile_builder.SerializeToString())
   else:
-    parser.ConvertToCollapse(args.output_filename)
+    if output_filename is None:
+      output_filename = os.path.join(data_dir,
+                                     f"profile_{profile_mode}.collapsed")
+    parser.ConvertToCollapse(output_filename)
+  logging.info(f'Outputing profile in {os.path.abspath(output_filename)}')
