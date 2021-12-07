@@ -22,9 +22,8 @@
 namespace {
 
 const char kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl[] =
-    "https://secureconnect-pa.googleapis.com/"
+    "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction";
-
 }
 
 namespace policy {

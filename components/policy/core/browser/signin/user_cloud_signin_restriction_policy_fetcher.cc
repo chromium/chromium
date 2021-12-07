@@ -28,7 +28,7 @@ namespace {
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kProtobufferContentType[] = "application/x-protobuf";
 const char kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl[] =
-    "https://secureconnect-pa.googleapis.com/"
+    "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction";
 
 std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
