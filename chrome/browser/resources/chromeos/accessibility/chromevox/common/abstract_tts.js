@@ -329,7 +329,7 @@ AbstractTts.PUNCTUATION_ECHOES = [
   {
     name: 'some',
     msg: 'some_punctuation',
-    regexp: /[$#"*<>\\\/\{\}+=~`%\u2022]/g,
+    regexp: /[$#"*<>\\\/\{\}+=~`%\u2022\u25e6\u25a0]/g,
     clear: false
   },
 
@@ -337,7 +337,7 @@ AbstractTts.PUNCTUATION_ECHOES = [
   {
     name: 'all',
     msg: 'all_punctuation',
-    regexp: /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022]/g,
+    regexp: /[-$#"()*;:<>\n\\\/\{\}\[\]+='~`!@_.,?%\u2022\u25e6\u25a0]/g,
     clear: false
   }
 ];
@@ -489,7 +489,9 @@ AbstractTts.CHARACTER_DICTIONARY = {
   '\r': 'return',
   '\n': 'new_line',
   '\\': 'backslash',
-  '\u2022': 'bullet'
+  '\u2022': 'bullet',
+  '\u25e6': 'white_bullet',
+  '\u25a0': 'square_bullet'
 };
 
 
@@ -568,7 +570,7 @@ AbstractTts.substitutionDictionaryRegexp_;
  * @private
  */
 AbstractTts.repetitionRegexp_ =
-    /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022])\1{2,}/g;
+    /([-\/\\|!@#$%^&*\(\)=_+\[\]\{\}.?;'":<>\u2022\u25e6\u25a0])\1{2,}/g;
 
 /** TTS phonetic-characters property. @type {string} */
 AbstractTts.PHONETIC_CHARACTERS = 'phoneticCharacters';

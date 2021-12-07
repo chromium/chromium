@@ -1888,6 +1888,12 @@
   <message desc="BULLET (•) character description." name="IDS_CHROMEVOX_BULLET">
     {COUNT, plural, =1 {bullet}other {# bullets}}
   </message>
+  <message desc="Second level bullet (◦) character description." name="IDS_CHROMEVOX_WHITE_BULLET">
+    {COUNT, plural, =1 {white bullet}other {# white bullets}}
+  </message>
+  <message desc="Third level bullet (■) character description." name="IDS_CHROMEVOX_SQUARE_BULLET">
+    {COUNT, plural, =1 {square bullet}other {# square bullets}}
+  </message>
   <message desc="Describes the braille click command. Displayed in the options page." name="IDS_CHROMEVOX_BRAILLE_ROUTING">
     Click the item under routing key <ph name="ROUTING_KEY_NUMBER">$1</ph>
   </message>

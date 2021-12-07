@@ -75,6 +75,14 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Preprocess', function() {
   assertEquals('-1,123.58 dollar', preprocess('-$1,123.58'));
   assertEquals('-1,123,581.3 dollar', preprocess('-$1,123,581.3'));
   assertEquals('-1,123.58 pound sterling', preprocess('-£1,123.58'));
+
+  // Bullets
+  assertEquals('bullet', preprocess('\u2022'));
+  assertEquals('3 bullets', preprocess('\u2022\u2022\u2022'));
+  assertEquals('white bullet', preprocess('\u25e6'));
+  assertEquals('3 white bullets', preprocess('\u25e6\u25e6\u25e6'));
+  assertEquals('square bullet', preprocess('\u25a0'));
+  assertEquals('3 square bullets', preprocess('\u25a0\u25a0\u25a0'));
 });
 
 TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
