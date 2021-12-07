@@ -127,9 +127,6 @@ extern const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName[];
 extern const char
     kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription[];
 
-extern const char kEnableSignedExchangeSubresourcePrefetchName[];
-extern const char kEnableSignedExchangeSubresourcePrefetchDescription[];
-
 extern const char kEnableSignedExchangePrefetchCacheForNavigationsName[];
 extern const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[];
 

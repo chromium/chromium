@@ -5398,11 +5398,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCrOSEnforceSystemAecNs)},
 #endif
 
-    {"enable-sxg-subresource-prefetching",
-     flag_descriptions::kEnableSignedExchangeSubresourcePrefetchName,
-     flag_descriptions::kEnableSignedExchangeSubresourcePrefetchDescription,
-     kOsAll, FEATURE_VALUE_TYPE(features::kSignedExchangeSubresourcePrefetch)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-zero-state-app-reinstall-suggestions",
      flag_descriptions::kEnableAppReinstallZeroStateName,

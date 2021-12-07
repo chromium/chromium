@@ -2689,11 +2689,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-sxg-subresource-prefetching",
-    "owners": [ "horo", "//content/browser/web_package/OWNERS" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-sync-requires-policies-loaded",
     "owners": ["ydago"],
     "expiry_milestone": 95
