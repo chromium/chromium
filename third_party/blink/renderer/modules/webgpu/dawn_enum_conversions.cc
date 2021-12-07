@@ -855,9 +855,6 @@ WGPUTextureAspect AsDawnEnum<WGPUTextureAspect>(
 
 template <>
 WGPUErrorFilter AsDawnEnum<WGPUErrorFilter>(const WTF::String& webgpu_enum) {
-  if (webgpu_enum == "none") {
-    return WGPUErrorFilter_None;
-  }
   if (webgpu_enum == "out-of-memory") {
     return WGPUErrorFilter_OutOfMemory;
   }
