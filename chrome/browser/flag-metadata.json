@@ -3255,7 +3255,7 @@
   {
     "name": "force-show-continue-section",
     "owners":["anasalazar@chromium.org", "gzadina@google.com"],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "force-show-update-menu-badge",
