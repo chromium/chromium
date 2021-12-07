@@ -390,6 +390,12 @@ need to be translated for each locale.-->
       <message name="IDS_CLIPBOARD_MENU_DELETE_ALL" desc="Used to indicate to a user that all clipboard items will be deleted if selected">
         Delete All
       </message>
+      <message name="IDS_EXTENSION_PINNED" desc="Used to indicate to a screen reader user that an extension icon has been pinned.">
+        Extension pinned
+      </message>
+      <message name="IDS_EXTENSION_UNPINNED" desc="Used to indicate to a screen reader user that an extension icon has been unpinned.">
+        Extension unpinned
+      </message>
 
       <!-- New Badge (user education) -->
       <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features">

@@ -25,6 +25,8 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/border.h"
@@ -187,6 +189,8 @@ void ExtensionsMenuItemView::PinButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
   model_->SetActionVisibility(controller_->GetId(), !IsPinned());
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      IsPinned() ? IDS_EXTENSION_PINNED : IDS_EXTENSION_UNPINNED));
 }
 
 ExtensionsMenuButton*

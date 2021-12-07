@@ -37,6 +37,7 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -666,6 +667,27 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   for (views::View* child : extensions_container()->children())
     EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
   EXPECT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
+}
+
+TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
+  base::UserActionTester user_action_tester;
+  InstallExtensionAndLayout("Test Extension");
+  ExtensionsMenuItemView* menu_item = GetOnlyMenuItem();
+  ASSERT_NE(nullptr, menu_item);
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";
+
+  // Verify behavior before pin, after pin, and after unpin.
+  for (int i = 0; i < 3; i++) {
+    EXPECT_EQ(i, user_action_tester.GetActionCount(kPinButtonUserAction));
+#if defined(OS_MAC)
+    // TODO(crbug.com/1045212): No Mac animations in unit tests cause errors.
+#else
+    EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kAlert));
+    EXPECT_EQ(i, counter.GetCount(ax::mojom::Event::kTextChanged));
+#endif
+    ClickPinButton(menu_item);
+  }
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
