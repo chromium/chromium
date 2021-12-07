@@ -204,10 +204,21 @@ source_set("browser_tests") {
     ]
   }
 
+  if (is_linux || is_mac || is_win) {
+    sources += [ "test/audio_sandbox_enabled_browsertest.cc" ]
+  }
+
   if (is_mac) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "test/audio_process_high_priority_enabled_browsertest.cc",
+      "test/network_service_sandbox_enabled_browsertest.cc",
     ]
   }
 

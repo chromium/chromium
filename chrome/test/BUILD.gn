@@ -2209,9 +2209,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
         "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
-        "../browser/policy/test/audio_process_high_priority_enabled_browsertest.cc",
         "../browser/policy/test/locale_policy_browsertest.cc",
-        "../browser/policy/test/network_service_sandbox_enabled_browsertest.cc",
         "../browser/printing/pdf_to_emf_converter_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",
@@ -3902,7 +3900,6 @@ if (!is_android && !is_fuchsia) {
         sources += [
           "../browser/browser_switcher/browser_switcher_browsertest.cc",
           "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
-          "../browser/policy/test/audio_sandbox_enabled_browsertest.cc",
         ]
       }
     }
