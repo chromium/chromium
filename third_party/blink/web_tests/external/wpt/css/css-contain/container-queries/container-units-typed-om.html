@@ -4,8 +4,11 @@
 <link rel="help" href="https://drafts.css-houdini.org/css-typed-om-1/#stylepropertymap">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <div id=element></div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   const units = ['qw', 'qh', 'qi', 'qb', 'qmin', 'qmax'];
   const functions = {
     qw: CSS.qw,

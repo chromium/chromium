@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-lengths">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #container {
     container-type: size;
@@ -41,6 +42,8 @@
   <div id=element_qmax></div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   const units = ['qw', 'qh', 'qi', 'qb', 'qmin', 'qmax'];
 
   for (let unit of units) {

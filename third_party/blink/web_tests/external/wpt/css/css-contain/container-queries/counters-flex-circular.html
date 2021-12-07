@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="/fonts/ahem.css">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #flex {
     width: 200px;
@@ -48,6 +49,8 @@
   <div id="item2"></div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   const item1_width = parseInt(getComputedStyle(item1).width);
   const item2_width = parseInt(getComputedStyle(item2).width);
   const container_width = parseInt(getComputedStyle(container).width);

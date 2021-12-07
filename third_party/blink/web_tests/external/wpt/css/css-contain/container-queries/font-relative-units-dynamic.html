@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   :root { font-size: 10px; }
   :root.larger { font-size: 50px; }
@@ -32,6 +33,8 @@
   <div id="ch_test"></div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   const green = "rgb(0, 128, 0)";
   const red = "rgb(255, 0, 0)";
 

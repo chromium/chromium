@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
 
   main { background-color: lightgray; }
@@ -100,6 +101,7 @@
 </main>
 
 <script>
+  setup(() => assert_implements_container_queries());
 
   function test_query(prelude, selector, expected) {
     test(t => {

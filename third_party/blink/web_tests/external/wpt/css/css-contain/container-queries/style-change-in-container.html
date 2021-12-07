@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-queries">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #container { container-type: size; }
   @container size(min-width: 1px) {
@@ -13,6 +14,8 @@
   <div id="content"></div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(() => {
     assert_equals(getComputedStyle(content).color, "rgb(0, 128, 0)");
 

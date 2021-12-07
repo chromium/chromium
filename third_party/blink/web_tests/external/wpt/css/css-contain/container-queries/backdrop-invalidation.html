@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   :root {
     color: black;
@@ -28,6 +29,8 @@
   <dialog>test</dialog>
 </main>
 <script>
+  setup(() => assert_implements_container_queries());
+
   let dialog = document.querySelector('dialog');
 
   test(function() {

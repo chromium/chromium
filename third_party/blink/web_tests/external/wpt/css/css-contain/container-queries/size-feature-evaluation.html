@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 
 <div id=container>
   <div id=target>
@@ -11,6 +12,7 @@
 </div>
 
 <script>
+setup(() => assert_implements_container_queries());
 
 function test_evaluation(container_class, query, expected) {
   test(function(t) {

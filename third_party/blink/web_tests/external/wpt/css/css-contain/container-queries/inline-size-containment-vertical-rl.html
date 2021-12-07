@@ -21,7 +21,10 @@
 </div>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(()=> {
     ancestry.style.height = "100px";
     assert_equals(keg.offsetWidth, 400);

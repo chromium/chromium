@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #container {
     container-type: inline-size;
@@ -18,6 +19,8 @@
   <div id="child"><span id="inner">XXX</span></div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(() => {
     container.offsetTop;
     assert_equals(getComputedStyle(child).color, "rgb(255, 0, 0)");

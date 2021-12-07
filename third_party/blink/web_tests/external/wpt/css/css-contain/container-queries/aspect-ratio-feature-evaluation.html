@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#aspect-ratio">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   .container {
     width: 100px;
@@ -21,6 +22,8 @@
 <div id="inline-size" class="container"><span></span></div>
 <div id="size" class="container"><span></span></div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   const red = "rgb(255, 0, 0)";
   const green = "rgb(0, 128, 0)";
   const lime = "rgb(0, 255, 0)";

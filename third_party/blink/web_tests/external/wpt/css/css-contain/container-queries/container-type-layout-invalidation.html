@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#size-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #div {
     width: fit-content;
@@ -12,6 +13,8 @@
   content
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(function(t) {
     t.add_cleanup(() => { div.style = ''; });
 

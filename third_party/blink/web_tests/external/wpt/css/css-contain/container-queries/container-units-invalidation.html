@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-lengths">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   #inline { container-type: inline-size; }
   #size, #outer { container-type: size; }
@@ -24,6 +25,7 @@
   </div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
 
   function assert_qi_equals(element, expected) {
     assert_equals(getComputedStyle(element).paddingLeft, expected);

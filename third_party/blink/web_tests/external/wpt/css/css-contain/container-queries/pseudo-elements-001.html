@@ -3,6 +3,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-3/#query-container">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   :root {
     color: black;
@@ -29,6 +30,8 @@
   </ol>
 </main>
 <script>
+  setup(() => assert_implements_container_queries());
+
   test(function() {
     let div = document.querySelector('#container1 > div');
     assert_equals(getComputedStyle(div, '::before').content, 'none');

@@ -3,6 +3,7 @@
 <link rel="help" href="https://github.com/w3c/csswg-drafts/issues/6711">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
 <style>
   .container { container-type: inline-size; }
   #target { display: list-item; }
@@ -33,6 +34,8 @@
   </div>
 </div>
 <script>
+  setup(() => assert_implements_container_queries());
+
   const green = "rgb(0, 128, 0)";
   const lime = "rgb(0, 255, 0)";
 

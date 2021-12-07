@@ -4,6 +4,10 @@
 <link rel="help" href="https://drafts.csswg.org/css-contain-2/#containment-size">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="support/testcommon.js"></script>
+<script>
+  setup(() => assert_implements_container_queries());
+</script>
 <style>
   .container {
     container-type: inline-size;
