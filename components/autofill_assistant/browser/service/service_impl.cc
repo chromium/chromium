@@ -122,7 +122,6 @@ void ServiceImpl::OnFetchPaymentsClientToken(
     const std::string& script_payload,
     ResponseCallback callback,
     const std::string& client_token) {
-  DCHECK(!client_token.empty());
   client_context_->SetPaymentsClientToken(client_token);
   SendGetActions(script_path, url, *trigger_context, global_payload,
                  script_payload, std::move(callback));
