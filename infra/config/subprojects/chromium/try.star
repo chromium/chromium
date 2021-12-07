@@ -1914,6 +1914,9 @@ try_.chromium_win_builder(
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
+    builderless = False,
+    cores = 16,
+    ssd = True,
 )
 
 try_.chromium_win_builder(
