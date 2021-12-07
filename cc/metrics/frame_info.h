@@ -5,6 +5,7 @@
 #ifndef CC_METRICS_FRAME_INFO_H_
 #define CC_METRICS_FRAME_INFO_H_
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 
 namespace cc {
@@ -44,7 +45,15 @@ struct CC_EXPORT FrameInfo {
   };
   SmoothThread smooth_thread = SmoothThread::kSmoothNone;
 
+  enum class SmoothEffectDrivingThread { kMain, kCompositor, kUnknown };
+  SmoothEffectDrivingThread scroll_thread = SmoothEffectDrivingThread::kUnknown;
+
   bool has_missing_content = false;
+
+  // The total latency for the frame. If the frame had to be 'split' (i.e.
+  // compositor-thread update and main-thread updates were presented in separate
+  // frames), then this contains the maximum latency of the two updates.
+  base::TimeDelta total_latency;
 
   bool IsDroppedAffectingSmoothness() const;
   void MergeWith(const FrameInfo& info);

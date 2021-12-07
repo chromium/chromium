@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/frame_info.h"
 
 namespace cc {
 class ThroughputUkmReporter;
@@ -71,7 +72,8 @@ class CC_EXPORT FrameSequenceMetrics {
   FrameSequenceMetrics(const FrameSequenceMetrics&) = delete;
   FrameSequenceMetrics& operator=(const FrameSequenceMetrics&) = delete;
 
-  enum class ThreadType { kMain, kCompositor, kUnknown };
+  // TODO(sad): Replace all usage of |ThreadType| with the new type.
+  using ThreadType = FrameInfo::SmoothEffectDrivingThread;
 
   struct ThroughputData {
     static std::unique_ptr<base::trace_event::TracedValue> ToTracedValue(

@@ -229,7 +229,7 @@ class CC_EXPORT CompositorFrameReporter {
                           const viz::BeginFrameArgs& args,
                           bool should_report_metrics,
                           SmoothThread smooth_thread,
-                          FrameSequenceMetrics::ThreadType scrolling_thread,
+                          FrameInfo::SmoothEffectDrivingThread scrolling_thread,
                           int layer_tree_host_id,
                           const GlobalMetricsTrackers& trackers);
   ~CompositorFrameReporter();
@@ -402,7 +402,7 @@ class CC_EXPORT CompositorFrameReporter {
       FrameTerminationStatus::kUnknown;
 
   const ActiveTrackers active_trackers_;
-  const FrameSequenceMetrics::ThreadType scrolling_thread_;
+  const FrameInfo::SmoothEffectDrivingThread scrolling_thread_;
 
   // Indicates if work on Impl frame is finished.
   bool did_finish_impl_frame_ = false;

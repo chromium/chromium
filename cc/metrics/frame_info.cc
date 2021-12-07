@@ -4,6 +4,8 @@
 
 #include "cc/metrics/frame_info.h"
 
+#include <algorithm>
+
 namespace cc {
 
 namespace {
@@ -49,6 +51,10 @@ bool FrameInfo::IsDroppedAffectingSmoothness() const {
 }
 
 void FrameInfo::MergeWith(const FrameInfo& info) {
+  // The |scroll_thread| information cannot change once the frame starts. So
+  // it should not need to be updated during merge.
+  DCHECK_EQ(scroll_thread, info.scroll_thread);
+
   if (info.has_missing_content)
     has_missing_content = true;
   if (info.final_state == FrameFinalState::kDropped)
@@ -67,6 +73,8 @@ void FrameInfo::MergeWith(const FrameInfo& info) {
   } else {
     smooth_thread = SmoothThread::kSmoothNone;
   }
+
+  total_latency = std::max(total_latency, info.total_latency);
 }
 
 }  // namespace cc

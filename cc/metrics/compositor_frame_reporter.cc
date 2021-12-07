@@ -544,7 +544,7 @@ CompositorFrameReporter::CompositorFrameReporter(
     const viz::BeginFrameArgs& args,
     bool should_report_metrics,
     SmoothThread smooth_thread,
-    FrameSequenceMetrics::ThreadType scrolling_thread,
+    FrameInfo::SmoothEffectDrivingThread scrolling_thread,
     int layer_tree_host_id,
     const GlobalMetricsTrackers& trackers)
     : should_report_metrics_(should_report_metrics),
@@ -557,11 +557,11 @@ CompositorFrameReporter::CompositorFrameReporter(
   global_trackers_.dropped_frame_counter->OnBeginFrame(
       args, IsScrollActive(active_trackers_));
   DCHECK(IsScrollActive(active_trackers_) ||
-         scrolling_thread_ == FrameSequenceMetrics::ThreadType::kUnknown);
-  if (scrolling_thread_ == FrameSequenceMetrics::ThreadType::kCompositor) {
+         scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kUnknown);
+  if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     DCHECK(smooth_thread_ == SmoothThread::kSmoothCompositor ||
            smooth_thread_ == SmoothThread::kSmoothBoth);
-  } else if (scrolling_thread_ == FrameSequenceMetrics::ThreadType::kMain) {
+  } else if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kMain) {
     DCHECK(smooth_thread_ == SmoothThread::kSmoothMain ||
            smooth_thread_ == SmoothThread::kSmoothBoth);
   }
@@ -1087,14 +1087,14 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
         }
         reporter->set_affects_smoothness(info.IsDroppedAffectingSmoothness());
         ChromeFrameReporter::ScrollState scroll_state;
-        switch (scrolling_thread_) {
-          case FrameSequenceMetrics::ThreadType::kMain:
+        switch (info.scroll_thread) {
+          case FrameInfo::SmoothEffectDrivingThread::kMain:
             scroll_state = ChromeFrameReporter::SCROLL_MAIN_THREAD;
             break;
-          case FrameSequenceMetrics::ThreadType::kCompositor:
+          case FrameInfo::SmoothEffectDrivingThread::kCompositor:
             scroll_state = ChromeFrameReporter::SCROLL_COMPOSITOR_THREAD;
             break;
-          case FrameSequenceMetrics::ThreadType::kUnknown:
+          case FrameInfo::SmoothEffectDrivingThread::kUnknown:
             scroll_state = ChromeFrameReporter::SCROLL_NONE;
             break;
         }
@@ -1423,6 +1423,18 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   info.final_state = final_state;
   info.smooth_thread = smooth_thread_;
   info.has_missing_content = has_missing_content_;
+
+  if (!stage_history_.empty()) {
+    const auto& stage = stage_history_.back();
+    if (stage.stage_type == StageType::kTotalLatency) {
+      DCHECK_EQ(frame_termination_time_ - args_.frame_time,
+                stage.end_time - stage.start_time);
+      info.total_latency = frame_termination_time_ - args_.frame_time;
+    }
+  }
+
+  info.scroll_thread = scrolling_thread_;
+
   return info;
 }
 
