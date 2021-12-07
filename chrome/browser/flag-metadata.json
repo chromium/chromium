@@ -3528,8 +3528,8 @@
   },
   {
     "name": "incognito-screenshot",
-    "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
-    "expiry_milestone": 97
+    "owners": [ "roagarwal", "sideyilmaz", "chrome-incognito@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "inherit-native-theme-from-parent-widget",
@@ -5459,8 +5459,8 @@
   },
   {
     "name": "update-history-entry-points-in-incognito",
-    "owners": [ "sideyilmaz", "rhalavati", "chrome-privacy-core@google.com" ],
-    "expiry_milestone": 97
+    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
+    "expiry_milestone": 99
   },
   {
     "name": "update-menu-item-custom-summary",
