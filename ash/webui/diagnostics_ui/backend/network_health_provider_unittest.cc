@@ -14,13 +14,11 @@
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/onc/network_onc_utils.h"
@@ -145,16 +143,13 @@ class NetworkHealthProviderTest : public testing::Test {
     NetworkCertLoader::Initialize();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
-    ClearDevicesAndServices();
+    network_handler_test_helper_->RegisterPrefs(user_prefs_.registry(),
+                                                local_state_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+
+    network_handler_test_helper_->InitializePrefs(&user_prefs_, &local_state_);
+    ClearDevicesAndServices();
 
     cros_network_config_ =
         std::make_unique<network_config::CrosNetworkConfig>();

@@ -9,7 +9,6 @@
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"

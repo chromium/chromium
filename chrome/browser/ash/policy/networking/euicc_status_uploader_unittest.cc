@@ -10,7 +10,6 @@
 #include "base/test/values_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_ui_data.h"
@@ -137,10 +136,8 @@ class EuiccStatusUploaderTest : public testing::Test {
     helper_ = std::make_unique<ash::NetworkHandlerTestHelper>();
 
     EuiccStatusUploader::RegisterLocalStatePrefs(local_state_.registry());
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    chromeos::NetworkHandler::Get()->InitializePrefServices(nullptr,
-                                                            &local_state_);
+    helper_->RegisterPrefs(nullptr, local_state_.registry());
+    helper_->InitializePrefs(nullptr, &local_state_);
   }
 
   std::unique_ptr<EuiccStatusUploader> CreateStatusUploader() {

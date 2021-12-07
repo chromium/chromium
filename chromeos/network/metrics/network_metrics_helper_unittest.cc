@@ -10,7 +10,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,10 +60,11 @@ class NetworkMetricsHelperTest : public testing::Test {
     shill_service_client_->ClearServices();
     base::RunLoop().RunUntilIdle();
 
-    CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
-                                                            &local_state_);
+    network_handler_test_helper_->RegisterPrefs(profile_prefs_.registry(),
+                                                local_state_.registry());
+
+    network_handler_test_helper_->InitializePrefs(&profile_prefs_,
+                                                  &local_state_);
   }
 
   void TearDown() override {

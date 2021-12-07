@@ -222,6 +222,7 @@ source_set("test_support") {
     "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
+    "//components/onc",
     "//components/sync_preferences:test_support",
     "//dbus",
     "//net:test_support",

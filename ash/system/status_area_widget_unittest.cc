@@ -33,11 +33,9 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/network/network_metadata_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/event.h"
@@ -277,11 +275,12 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
   void SetUp() override {
     // Initializing NetworkHandler before ash is more like production.
     AshTestBase::SetUp();
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    chromeos::NetworkMetadataStore::RegisterPrefs(profile_prefs_.registry());
-    chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
-                                                            &local_state_);
+    network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
+                                               local_state_.registry());
+
+    network_handler_test_helper_.InitializePrefs(&profile_prefs_,
+                                                 &local_state_);
+
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
   }

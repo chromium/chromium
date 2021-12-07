@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/fake_stub_cellular_networks_provider.h"
@@ -34,7 +33,6 @@
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -117,15 +115,11 @@ class CrosNetworkConfigTest : public testing::Test {
     helper_->AddDefaultProfiles();
     helper_->ResetDevicesAndServices();
 
+    helper_->RegisterPrefs(user_prefs_.registry(), local_state_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+
+    helper_->InitializePrefs(&user_prefs_, &local_state_);
 
     NetworkHandler* network_handler = NetworkHandler::Get();
     cros_network_config_ = std::make_unique<CrosNetworkConfig>(
