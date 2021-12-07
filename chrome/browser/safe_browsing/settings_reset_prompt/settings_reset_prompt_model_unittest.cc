@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
@@ -56,9 +57,9 @@ bool ListValueContainsUrl(const base::ListValue* list, const GURL& url) {
   if (!list)
     return false;
 
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    std::string url_text;
-    if (list->GetString(i, &url_text) && url == url_text)
+  for (const base::Value& i : list->GetList()) {
+    const std::string* url_text = i.GetIfString();
+    if (url_text && url == *url_text)
       return true;
   }
   return false;
