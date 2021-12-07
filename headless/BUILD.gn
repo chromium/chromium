@@ -187,7 +187,10 @@ foreach(domain, devtools_domains) {
 
 action("gen_devtools_client_api") {
   script = "lib/browser/devtools_api/client_api_generator.py"
-  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  deps = [
+    ":protocol_sources",
+    "//third_party/blink/public/devtools_protocol:protocol_version",
+  ]
   inputs = [
     "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
   ]
@@ -229,7 +232,10 @@ if (headless_fontconfig_utils && !is_fuchsia) {
 }
 
 inspector_protocol_generate("protocol_sources") {
-  visibility = [ "//headless:backend_cdp_bindings" ]
+  visibility = [
+    ":backend_cdp_bindings",
+    ":gen_devtools_client_api",
+  ]
   deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
   _blink_protocol_path = rebase_path(
           "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
