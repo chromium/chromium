@@ -69,6 +69,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -730,7 +731,8 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
                      output_surface,
                      resource_provider,
                      overlay_processor),
-      skia_output_surface_(skia_output_surface) {
+      skia_output_surface_(skia_output_surface),
+      is_using_raw_draw_(features::IsUsingRawDraw()) {
   DCHECK(skia_output_surface_);
   lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
 
@@ -1477,6 +1479,11 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
       quad->material == DrawQuad::Material::kPictureContent)
     return nullptr;
 
+  // TODO(penghuang): support composite TileDrawQuad in a sub render pass for
+  // raw draw directly.
+  if (is_using_raw_draw_ && quad->material == DrawQuad::Material::kTiledContent)
+    return nullptr;
+
   // If the quad specifies nearest-neighbor scaling then there could be two
   // scaling operations at different quality levels. This requires drawing to an
   // intermediate render pass. See https://crbug.com/1155338.
@@ -1860,7 +1867,6 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
 void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
                                      const absl::optional<SkColor>& clear_color,
                                      const TileDrawQuad* quad,
-                                     const DrawRPDQParams* rpdq_params,
                                      const DrawQuadParams* params) {
   if (!batched_quads_.empty())
     FlushBatchedQuads();
@@ -1877,14 +1883,11 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
     current_canvas_->clipPath(params->draw_region_in_path(), aa);
   }
 
-  absl::optional<int> restore_count;
-  sk_sp<SkColorFilter> color_filter =
-      rpdq_params ? GetContentColorFilter() : nullptr;
-  if (quad->ShouldDrawWithBlending() || color_filter) {
-    auto paint = params->paint(color_filter);
+  if (quad->ShouldDrawWithBlending()) {
+    auto paint = params->paint(nullptr);
     // TODO(penghuang): saveLayer() is expensive, try to avoid it as much as
     // possible.
-    restore_count = current_canvas_->saveLayer(&visible_rect, &paint);
+    current_canvas_->saveLayer(&visible_rect, &paint);
   }
 
   if (clear_color)
@@ -1903,10 +1906,6 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
 
   cc::PlaybackParams playback_params(nullptr, SkM44());
   buffer->Playback(current_canvas_, playback_params);
-
-  if (restore_count) {
-    current_canvas_->restoreToCount(*restore_count);
-  }
 }
 
 void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
@@ -2210,8 +2209,9 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
   if (builder.paint_op_buffer()) {
+    DCHECK(!rpdq_params);
     DrawPaintOpBuffer(builder.paint_op_buffer(), builder.clear_color(), quad,
-                      rpdq_params, params);
+                      params);
     return;
   }
 

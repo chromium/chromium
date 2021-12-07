@@ -195,7 +195,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
                          const absl::optional<SkColor>& clear_color,
                          const TileDrawQuad* quad,
-                         const DrawRPDQParams* rpdq_params,
                          const DrawQuadParams* params);
 
   // RPDQ, DebugBorder and picture quads cannot be batched. They
@@ -313,7 +312,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   std::vector<SkMatrix> batched_cdt_matrices_;
 
   // Specific for SkDDL.
-  const raw_ptr<SkiaOutputSurface> skia_output_surface_ = nullptr;
+  const raw_ptr<SkiaOutputSurface> skia_output_surface_;
+
+  const bool is_using_raw_draw_;
 
   // Lock set for resources that are used for the current frame. All resources
   // in this set will be unlocked with a sync token when the frame is done in
