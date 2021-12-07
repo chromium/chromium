@@ -298,6 +298,8 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
                     count, ValueRestriction::ABOVE_ZERO);
   CheckMemoryMetric("Memory.Total.RendererPrivateMemoryFootprint",
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO);
+  CheckMemoryMetric("Memory.Total.RendererMalloc", histogram_tester, count,
+                    ValueRestriction::ABOVE_ZERO);
   // Shared memory footprint can be below 1 MB, which is reported as zero.
   CheckMemoryMetric("Memory.Total.SharedMemoryFootprint", histogram_tester,
                     count, ValueRestriction::NONE);

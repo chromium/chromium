@@ -970,6 +970,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   uint32_t private_footprint_total_kb = 0;
   uint32_t renderer_private_footprint_total_kb = 0;
+  uint32_t renderer_malloc_total_kb = 0;
   uint32_t shared_footprint_total_kb = 0;
   uint32_t resident_set_total_kb = 0;
   bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
@@ -1023,6 +1024,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
             single_page_info = &process_info.page_infos[0];
           }
         }
+        renderer_malloc_total_kb +=
+            pmd.GetMetric("malloc", "effective_size").value_or(0) / kKiB;
 
         int number_of_extensions = GetNumberOfExtensions(pmd.pid());
         EmitRendererMemoryMetrics(
@@ -1113,6 +1116,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
             static_cast<double>(private_footprint_total_kb) / kKiB));
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
                                   renderer_private_footprint_total_kb / kKiB);
+    UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererMalloc",
+                                  renderer_malloc_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",
                                   shared_footprint_total_kb / kKiB);
 

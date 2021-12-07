@@ -2682,6 +2682,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Total.RendererMalloc" units="MB"
+    expires_after="2022-10-01">
+  <owner>keishi@chromium.org</owner>
+  <owner>bartekn@chromium.org</owner>
+  <summary>
+    A rough estimate of memory allocated by malloc in all renderer processes.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android and 30 minutes on other platforms.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Total.RendererPrivateMemoryFootprint" units="MB"
     expires_after="2022-04-03">
   <owner>tommckee@chromium.org</owner>
