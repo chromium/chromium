@@ -32,9 +32,6 @@ namespace paint_preview {
 
 namespace {
 
-// The 95%ile allocation size in the experiment for discardable memory is 2 MB.
-constexpr size_t kTestAllocationSize = 2 * 1000L * 1000L;
-
 // Returns |nullopt| if |proto_memory| cannot be mapped or parsed.
 absl::optional<PaintPreviewProto> ParsePaintPreviewProto(
     const base::ReadOnlySharedMemoryRegion& proto_memory) {
@@ -150,41 +147,6 @@ absl::optional<SkBitmap> CreateBitmap(
   SkMatrix matrix;
   matrix.setScaleTranslate(scale_factor, scale_factor, -clip_rect.x(),
                            -clip_rect.y());
-
-  {
-    // For context see: https://crbug.com/1199857
-    //
-    // SkCanvas::drawPicture may attempt to invoke discardable memory allocation
-    // this can fail for several reasons:
-    // * Browser-side limits on discardable memory allocation per-process.
-    // * Lost connection to the browser-process.
-    // * An actual out-of-memory.
-    //
-    // An allocation failure in SkCanvas::drawPicture will result in an OOM
-    // crash. This is by design as clients would have no way to recover and
-    // proceeding could be dangerous.
-    //
-    // Attempt to mitigate OOM crashes caused by an allocation failure by
-    // pre-allocating a chunk of discardable memory and immediately discarding
-    // it. This determines if it is "probable" future allocations in
-    // SkCanvas::drawPicture will succeed if so we can proceed.
-    //
-    // This is imperfect and can still lead to crashes and other issues as:
-    // * Locking during this segment is avoided for performance reasons and it
-    // is possible there are multiple in-flight requests so success here does
-    // not guarantee success later.
-    // * It isn't possible to know precisely how much memory
-    // SkCanvas::drawPicture will allocate. As such, it is possible more memory
-    // will be allocated still resulting in an OOM. Alternatively, less memory
-    // may be allocated resulting in an unnecessary abort albeit unlikely.
-    auto* allocator = base::DiscardableMemoryAllocator::GetInstance();
-    auto test_memory =
-        allocator->AllocateLockedDiscardableMemory(kTestAllocationSize);
-    if (!test_memory) {
-      return absl::nullopt;
-    }
-    test_memory.reset();
-  }
   canvas.drawPicture(skp, &matrix, nullptr);
   return bitmap;
 }

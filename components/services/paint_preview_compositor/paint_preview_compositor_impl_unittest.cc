@@ -984,38 +984,4 @@ class NoOpDiscardableAllocator : public base::DiscardableMemoryAllocator {
   void ReleaseFreeMemory() override {}
 };
 
-TEST_F(PaintPreviewCompositorTest, TestNoDiscardableMemory) {
-  GURL url("https://www.chromium.org");
-  const base::UnguessableToken kRootFrameID = base::UnguessableToken::Create();
-  gfx::Size root_frame_scroll_extent(100, 200);
-  PaintPreviewProto proto;
-  proto.mutable_metadata()->set_url(url.spec());
-  base::flat_map<base::UnguessableToken, mojom::FrameDataPtr> expected_data;
-  PopulateFrameProto(proto.mutable_root_frame(), kRootFrameID, true,
-                     temp_dir_.GetPath().AppendASCII("root.skp"),
-                     root_frame_scroll_extent, {}, &expected_data);
-  mojom::PaintPreviewBeginCompositeRequestPtr request =
-      mojom::PaintPreviewBeginCompositeRequest::New();
-  request->recording_map = RecordingMapFromPaintPreviewProto(proto);
-  request->proto = ToReadOnlySharedMemory(proto);
-  compositor_.BeginSeparatedFrameComposite(
-      std::move(request),
-      base::BindOnce(
-          &BeginCompositeCallbackImpl,
-          mojom::PaintPreviewCompositor::BeginCompositeStatus::kSuccess,
-          kRootFrameID, std::move(expected_data)));
-  float scale_factor = 2;
-  gfx::Rect rect = gfx::ScaleToEnclosingRect(
-      gfx::Rect(root_frame_scroll_extent), scale_factor);
-  NoOpDiscardableAllocator no_op_allocator;
-  base::DiscardableMemoryAllocator::SetInstance(nullptr);
-  base::DiscardableMemoryAllocator::SetInstance(&no_op_allocator);
-  compositor_.BitmapForSeparatedFrame(
-      kRootFrameID, rect, scale_factor,
-      base::BindOnce(&BitmapCallbackImpl,
-                     mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed,
-                     SkBitmap()));
-  task_environment_.RunUntilIdle();
-}
-
 }  // namespace paint_preview

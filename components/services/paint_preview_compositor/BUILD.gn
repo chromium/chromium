@@ -18,6 +18,7 @@ static_library("paint_preview_compositor") {
 
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key_lib",
     "//components/discardable_memory/client",
     "//components/paint_preview/common",
     "//components/paint_preview/common/proto",

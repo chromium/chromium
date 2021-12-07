@@ -43,7 +43,7 @@ constexpr std::
         kMaxParallelBitmapRequests = {3, 2, 0};
 constexpr std::
     array<size_t, PlayerCompositorDelegateAndroid::PressureLevelCount::kLevels>
-        kMaxParallelBitmapRequestsLowMemory = {1, 0, 0};
+        kMaxParallelBitmapRequestsLowMemory = {2, 1, 0};
 
 ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
     JNIEnv* env,

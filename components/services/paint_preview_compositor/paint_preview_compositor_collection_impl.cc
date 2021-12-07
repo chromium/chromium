@@ -11,6 +11,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/utility/utility_thread.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -24,12 +25,23 @@
 
 namespace paint_preview {
 
+namespace {
+// Record whether the compositor is in shutdown. Discardable memory allocations
+// manifest as OOMs during shutdown due to failure to send IPC messages. By
+// recording whether the process is shutting down it is possible to determine if
+// the OOM is actionable or just a consequence of the process no longer having
+// IPC access.
+crash_reporter::CrashKeyString<32> g_in_shutdown_key(
+    "paint-preview-compositor-in-shutdown");
+}  // namespace
+
 PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
     mojo::PendingReceiver<mojom::PaintPreviewCompositorCollection> receiver,
     bool initialize_environment,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : initialize_environment_(initialize_environment),
       io_task_runner_(std ::move(io_task_runner)) {
+  g_in_shutdown_key.Set("false");
   if (receiver)
     receiver_.Bind(std::move(receiver));
 
@@ -87,6 +99,7 @@ PaintPreviewCompositorCollectionImpl::PaintPreviewCompositorCollectionImpl(
 }
 
 PaintPreviewCompositorCollectionImpl::~PaintPreviewCompositorCollectionImpl() {
+  g_in_shutdown_key.Set("true");
 #if defined(OS_WIN)
   content::UninitializeDWriteFontProxy();
 #endif
@@ -120,11 +133,6 @@ void PaintPreviewCompositorCollectionImpl::CreateCompositor(
 
 void PaintPreviewCompositorCollectionImpl::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level >=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    receiver_.reset();
-    return;
-  }
   if (memory_pressure_level >=
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
     SkGraphics::PurgeAllCaches();
