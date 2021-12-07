@@ -87,6 +87,11 @@ def ReadPowerMetricsData(scenario_dir, browser_identifier: str):
     return results
 
 
+def NormalizeMicrosecondsSampleTime(sample_time: pd.Series):
+  # Round sample time to .1s to aggregate similar rows across different sources.
+  return (sample_time / 1000000.0).round(1)
+
+
 def main():
   parser = argparse.ArgumentParser(
       description='Parses, aggregates and summarizes power results')
@@ -120,9 +125,37 @@ def main():
     else:
       browser_identifier = None
     powermetrics_data = ReadPowerMetricsData(subdir, browser_identifier)
-    scenario_data = pd.DataFrame.from_records(powermetrics_data)
+    powermetrics_dataframe = pd.DataFrame.from_records(powermetrics_data)
+    # Add sample_time to powermetrics.
+    powermetrics_dataframe["sample_time"] = NormalizeMicrosecondsSampleTime(
+        powermetrics_dataframe['elapsed_ns'].cumsum() / 1000.0)
+    powermetrics_dataframe.set_index('sample_time', inplace=True)
 
-    summary_path = os.path.join(subdir, 'powermetrics_summary.csv')
+    with open(os.path.join(subdir, "power_sampler.json")) as power_file:
+      power_data = json.load(power_file)
+    power_dataframe = pd.DataFrame.from_records(
+        power_data['data_rows'],
+        columns=[key for key in power_data['column_labels']] + ["sample_time"])
+    power_dataframe['sample_time'] = NormalizeMicrosecondsSampleTime(
+        power_dataframe['sample_time'])
+    power_dataframe.set_index('sample_time', inplace=True)
+
+    with open(os.path.join(subdir,
+                           "power_sampler_battery.json")) as battery_file:
+      battery_data = json.load(battery_file)
+    battery_dataframe = pd.DataFrame.from_records(
+        battery_data['data_rows'],
+        columns=[key
+                 for key in battery_data['column_labels']] + ["sample_time"])
+    battery_dataframe['sample_time'] = NormalizeMicrosecondsSampleTime(
+        battery_dataframe['sample_time'])
+    battery_dataframe.set_index('sample_time', inplace=True)
+
+    # Join all data sources by sample_time.
+    scenario_data = powermetrics_dataframe.join(
+        power_dataframe, how='outer').join(battery_dataframe, how='outer')
+
+    summary_path = os.path.join(subdir, 'summary.csv')
     logging.info(f'Outputing results in {os.path.abspath(summary_path)}')
     scenario_data.to_csv(summary_path)
 
