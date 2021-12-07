@@ -58,7 +58,7 @@
         --cr-checkbox-checked-box-color: var(--cros-icon-color-prominent);
         --cr-checkbox-label-color: var(--cros-textfield-label-color);
         --cr-checkbox-mark-color: var(--cros-bg-color);
-        --cr-checkbox-ripple-checked-color: var(--cros-ripple-color-prominent);
+        --cr-checkbox-ripple-checked-color: var(--cros-focus-aura-color);
         --cr-checkbox-ripple-opacity: 1;
         --cr-checkbox-ripple-unchecked-color: var(--cros-ripple-color);
         --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
@@ -89,7 +89,7 @@
                               var(--cros-button-background-color-primary);
         --hover-bg-color: var(--cros-button-background-color-secondary-hover);
         --hover-border-color: var(--cros-button-stroke-color-secondary-hover);
-        --ink-color-action: var(--cros-button-ripple-color-primary);
+        --ink-color: var(--cros-button-ripple-color-secondary);
         --ripple-opacity-action: var(--cros-button-primary-ripple-opacity);
         --ripple-opacity: var(--cros-button-secondary-ripple-opacity);
         --text-color-action: var(--cros-button-label-color-primary);
@@ -97,11 +97,8 @@
         position: relative;
       }
 
-      cr-button:not(.action-button) {
-        /* passing --ink-color for all cr-button will incorrectly shadow
-         * --ink-color-action
-         */
-        --ink-color: var(--cros-button-ripple-color-secondary);
+      cr-button.action-button {
+        --ink-color: var(--cros-button-ripple-color-primary);
       }
 
       :host-context(.focus-outline-visible) cr-button:focus {

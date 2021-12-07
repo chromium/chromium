@@ -1086,10 +1086,10 @@ html[dir='rtl'] #search-box .clear {
 
 .dialog-header.files-ng cr-toggle {
   --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
-  /* bar color above already defines the opacity, so use 1 here */
-  --cr-toggle-checked-bar-opacity: 1;
+  /* bar color above already defines the opacity, so use 100% here */
+  --cr-toggle-checked-bar-opacity: 100%;
   --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
-  --cr-toggle-checked-ripple-color: var(--cros-ripple-color-prominent);
+  --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
   --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
   --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
   --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
