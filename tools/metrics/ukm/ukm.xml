@@ -14938,7 +14938,7 @@ be describing additional metrics about the same event.
   <summary>
     Page level pop-up statistics.
   </summary>
-  <metric name="Allowed">
+  <metric name="Allowed" enum="Boolean">
     <summary>
       Whether a user has, explicitly, allowed all popups on the last committed
       url of a page. The user's site level popup content setting is queried when
