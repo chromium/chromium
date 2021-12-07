@@ -33,6 +33,9 @@
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/tpm/install_attributes.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
+#include "chromeos/lacros/lacros_service.h"        // nogncheck
 #endif
 
 namespace content {
@@ -147,6 +150,9 @@ bool IsEnterpriseManaged() {
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::InstallAttributes::IsInitialized() &&
          chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  return lacros_service->init_params()->is_device_enterprised_managed;
 #else
   return false;
 #endif

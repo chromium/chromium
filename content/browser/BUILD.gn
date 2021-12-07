@@ -2493,11 +2493,14 @@ source_set("browser") {
         "media/capture/desktop_capturer_lacros.cc",
         "media/capture/desktop_capturer_lacros.h",
       ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
     }
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   }
 
   if (is_win) {
