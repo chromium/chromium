@@ -75,7 +75,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // Indicates if this resource is backed by an Android SurfaceTexture, and thus
   // can't really be promoted to an overlay.
   bool IsBackedBySurfaceTexture(ResourceId id);
+#endif
 
+#if defined(OS_ANDROID) || defined(OS_WIN)
   // Indicates if this resource wants to receive promotion hints.
   bool DoesResourceWantPromotionHint(ResourceId id);
 #endif

@@ -32,10 +32,15 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   out->read_lock_fences_enabled = data.read_lock_fences_enabled();
   out->is_software = data.is_software();
   out->is_overlay_candidate = data.is_overlay_candidate();
+
 #if defined(OS_ANDROID)
   out->is_backed_by_surface_texture = data.is_backed_by_surface_texture();
+#endif
+
+#if defined(OS_ANDROID) || defined(OS_WIN)
   out->wants_promotion_hint = data.wants_promotion_hint();
 #endif
+
   return true;
 }
 

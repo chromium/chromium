@@ -67,7 +67,7 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
   }
 
   static bool wants_promotion_hint(const viz::TransferableResource& resource) {
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_WIN)
     // TransferableResource has this in an #ifdef, but mojo doesn't let us.
     // TODO(https://crbug.com/671901)
     return resource.wants_promotion_hint;

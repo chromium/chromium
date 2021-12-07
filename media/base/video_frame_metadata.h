@@ -119,8 +119,8 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // instead.  This lets us figure out when SurfaceViews are appropriate.
   bool texture_owner = false;
 
-  // Android only: if set, then this frame's resource would like to be
-  // notified about its promotability to an overlay.
+  // Android & Windows only: if set, then this frame's resource would like to
+  // be notified about its promotability to an overlay.
   bool wants_promotion_hint = false;
 
   // Windows only: set when frame is backed by a dcomp surface handle.

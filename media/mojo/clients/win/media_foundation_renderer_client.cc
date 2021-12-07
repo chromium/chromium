@@ -327,8 +327,13 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(has_video_);
 
-  video_frame->metadata().protected_video = true;
   video_frame->metadata().allow_overlay = true;
+
+  if (cdm_context_) {
+    video_frame->metadata().protected_video = true;
+  } else {
+    video_frame->metadata().wants_promotion_hint = true;
+  }
 
   dcomp_video_frame_ = video_frame;
   sink_->PaintSingleFrame(dcomp_video_frame_, true);
