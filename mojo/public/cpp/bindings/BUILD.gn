@@ -33,6 +33,7 @@ component("bindings_base") {
   sources = [
     "array_data_view.h",
     "array_traits.h",
+    "array_traits_protobuf.h",
     "array_traits_span.h",
     "array_traits_stl.h",
     "associated_group.h",
@@ -118,6 +119,7 @@ component("bindings_base") {
     ":mojo_buildflags",
     "//base",
     "//mojo/public/cpp/system",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   if (enable_ipc_fuzzer) {
