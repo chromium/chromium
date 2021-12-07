@@ -698,9 +698,8 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
                            fragment_.Size());
     TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,
                                        cell_rect);
-    BoxModelObjectPainter(layout_table_cell)
-        .PaintFillLayers(paint_info, color, background_layers, cell_rect,
-                         geometry);
+    NGBoxFragmentPainter(fragment_).PaintFillLayers(
+        paint_info, color, background_layers, cell_rect, geometry);
   }
 }
 
