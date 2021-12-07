@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/inspector_indexed_db_agent.h"
 #include "third_party/blink/renderer/modules/installation/installation_service_impl.h"
-#include "third_party/blink/renderer/modules/launch/file_handling_expiry_impl.h"
 #include "third_party/blink/renderer/modules/launch/web_launch_service_impl.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
@@ -218,8 +217,6 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   }
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
-  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-      &FileHandlingExpiryImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));

@@ -195,7 +195,6 @@ mojom("mojom_platform") {
     "user_agent/user_agent_metadata.mojom",
     "v8_cache_options.mojom",
     "wake_lock/wake_lock.mojom",
-    "web_launch/file_handling_expiry.mojom",
     "web_launch/web_launch.mojom",
     "webaudio/audio_context_manager.mojom",
     "webdatabase/web_database.mojom",
