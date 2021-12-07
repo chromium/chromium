@@ -98,7 +98,7 @@ let CrosButton = class CrosButton extends MwcButton {
         --active-shadow-color-ambient: var(--cros-button-active-shadow-color-ambient-primary);
         --mdc-ripple-press-opacity: var(--cros-button-primary-ripple-opacity);
         --mdc-ripple-color: var(--cros-button-ripple-color-primary);
-        --hover-color: var(--cros-button-background-color-primary-hover-overlay);
+        --hover-color: var(--cros-button-background-color-primary-hover);
       }
 
       :host([pill]) {
