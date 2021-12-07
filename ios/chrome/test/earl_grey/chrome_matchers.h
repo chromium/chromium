@@ -132,9 +132,6 @@ id<GREYMatcher> LocationViewContainingText(const std::string& text);
 // Matcher for Tools menu button.
 id<GREYMatcher> ToolsMenuButton();
 
-// Matcher for the New Tab button, which can be long-pressed for a menu.
-id<GREYMatcher> NewTabButton();
-
 // Matcher for the Share menu button.
 id<GREYMatcher> ShareButton();
 
@@ -342,12 +339,6 @@ id<GREYMatcher> NTPCollectionView();
 
 // Returns matcher for the NTP view when the user is in incognito mode.
 id<GREYMatcher> NTPIncognitoView();
-
-// Returns matcher for the NTP Feed menu button which enables the feed.
-id<GREYMatcher> NTPFeedMenuEnableButton();
-
-// Returns matcher for the NTP Feed menu button which disables the feed.
-id<GREYMatcher> NTPFeedMenuDisableButton();
 
 // Returns matcher for the warning message while filling in payment requests.
 id<GREYMatcher> WarningMessageView();
