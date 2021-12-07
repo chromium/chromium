@@ -12196,7 +12196,8 @@
       },
       {
         "args": [
-          "--extra-browser-args=--enable-crashpad"
+          "--extra-browser-args=--enable-crashpad",
+          "--gtest_filter=-benchmarks.benchmark_smoke_unittest.load_tests.<locals>.BenchmarkSmokeTest.memory.desktop:benchmarks.system_health_smoke_test._GenerateSmokeTestCase.<locals>.SystemHealthBenchmarkSmokeTest.system_health.memory_desktop/*"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
