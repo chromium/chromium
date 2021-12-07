@@ -1182,11 +1182,13 @@ void ImageCapture::UpdateMediaTrackCapabilities(
 
 void ImageCapture::OnServiceConnectionError() {
   service_.reset();
-  for (ScriptPromiseResolver* resolver : service_requests_) {
+
+  HeapHashSet<Member<ScriptPromiseResolver>> resolvers;
+  resolvers.swap(service_requests_);
+  for (ScriptPromiseResolver* resolver : resolvers) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoServiceError));
   }
-  service_requests_.clear();
 }
 
 void ImageCapture::ResolveWithNothing(ScriptPromiseResolver* resolver) {
