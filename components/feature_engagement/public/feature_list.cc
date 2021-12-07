@@ -56,7 +56,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHKeyboardAccessoryPasswordFillingFeature,
     &kIPHKeyboardAccessoryPaymentFillingFeature,
     &kIPHKeyboardAccessoryPaymentOfferFeature,
-    &kIPHKeyboardAccessoryPaymentVirtualCardFeature,
     &kIPHMicToolbarFeature,
     &kIPHNewTabPageHomeButtonFeature,
     &kIPHPageInfoFeature,
@@ -123,6 +122,13 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopSharedHighlightingFeature,
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+
+#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+    &kIPHAutofillVirtualCardSuggestionFeature,
+#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
+        // defined(OS_CHROMEOS) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+
 };
 }  // namespace
 

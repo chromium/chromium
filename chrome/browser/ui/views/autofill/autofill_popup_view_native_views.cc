@@ -19,16 +19,21 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_utils.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -338,6 +343,7 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   ~AutofillPopupItemView() override = default;
 
   // views::View:
+  void AddedToWidget() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -388,6 +394,9 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // Returns the minimum cross axis size depending on the length of
   // GetSubtexts();
   void UpdateLayoutSize(views::BoxLayout* layout_manager, int64_t num_subtexts);
+
+  // Manipulate the in-product-help promo anchored to this bubble.
+  void MaybeShowIphPromo();
 
   const int frontend_id_;
 
@@ -571,6 +580,11 @@ BEGIN_METADATA(AutofillPopupWarningView, AutofillPopupRowView)
 END_METADATA
 
 /************** AutofillPopupItemView **************/
+
+void AutofillPopupItemView::AddedToWidget() {
+  AutofillPopupRowView::AddedToWidget();
+  MaybeShowIphPromo();
+}
 
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   AutofillPopupController* controller = popup_view()->controller();
@@ -888,6 +902,46 @@ void AutofillPopupItemView::AddSpacerWithSize(int spacer_width,
   layout->SetFlexForView(AddChildView(std::move(spacer)),
                          /*flex=*/resize ? 1 : 0,
                          /*use_min_size=*/true);
+}
+
+void AutofillPopupItemView::MaybeShowIphPromo() {
+  content::WebContents* web_contents =
+      popup_view()->controller()->GetWebContents();
+  // In unittests the web_contents is missing.
+  if (!web_contents)
+    return;
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  DCHECK(browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  DCHECK(browser_view);
+  FeaturePromoControllerViews* promo_controller =
+      browser_view->feature_promo_controller();
+  if (!promo_controller)
+    return;
+
+  std::string feature_name = popup_view()
+                                 ->controller()
+                                 ->GetSuggestionAt(GetLineNumber())
+                                 .feature_for_iph;
+  if (feature_name.empty())
+    return;
+
+  absl::optional<FeaturePromoSpecification> promo_spec;
+  if (feature_name == "IPH_AutofillVirtualCardSuggestion") {
+    promo_spec = FeaturePromoSpecification::CreateForToastPromo(
+        feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+        ui::ElementIdentifier(),
+        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
+        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL,
+        FeaturePromoSpecification::AcceleratorInfo());
+    promo_spec->SetBubbleArrow(
+        FeaturePromoSpecification::BubbleArrow::kLeftCenter);
+  }
+
+  if (promo_spec.has_value()) {
+    promo_controller->MaybeShowPromoFromSpecification(*promo_spec, this);
+  }
 }
 
 /************** AutofillPopupSuggestionView **************/
