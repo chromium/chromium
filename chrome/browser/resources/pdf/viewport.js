@@ -65,25 +65,24 @@ function vectorDelta(p1, p2) {
   return {x: p2.x - p1.x, y: p2.y - p1.y};
 }
 
+// TODO(crbug.com/1276456): Would Viewport be better as a Polymer element?
 export class Viewport {
   /**
-   * @param {!HTMLElement} scrollParent
+   * @param {!HTMLElement} container The element which contains the scrollable
+   *     content.
    * @param {!HTMLDivElement} sizer The element which represents the size of the
-   *     document in the viewport
+   *     scrollable content in the viewport
    * @param {!HTMLDivElement} content The element which is the parent of the
    *     plugin in the viewer.
    * @param {number} scrollbarWidth The width of scrollbars on the page
    * @param {number} defaultZoom The default zoom level.
    */
-  constructor(scrollParent, sizer, content, scrollbarWidth, defaultZoom) {
+  constructor(container, sizer, content, scrollbarWidth, defaultZoom) {
     /** @private {!HTMLElement} */
-    this.window_ = scrollParent;
+    this.window_ = container;
 
-    /** @private {!HTMLDivElement} */
-    this.sizer_ = sizer;
-
-    /** @private {!HTMLDivElement} */
-    this.content_ = content;
+    /** @private {!ScrollContent} */
+    this.scrollContent_ = new ScrollContent(this.window_, sizer, content);
 
     /** @private {number} */
     this.scrollbarWidth_ = scrollbarWidth;
@@ -153,7 +152,7 @@ export class Viewport {
     this.tracker_ = new EventTracker();
 
     /** @private {!GestureDetector} */
-    this.gestureDetector_ = new GestureDetector(this.content_);
+    this.gestureDetector_ = new GestureDetector(content);
 
     /** @private {boolean} */
     this.sentPinchEvent_ = false;
@@ -205,20 +204,7 @@ export class Viewport {
    *     viewport.
    */
   setContent(content) {
-    if (content === null) {
-      this.sizer_.style.display = 'none';
-      return;
-    }
-
-    // We don't actually replace the content in the DOM, as the controller
-    // implementations take care of "removal" in controller-specific ways:
-    //
-    // 1. Plugin content gets added once, then hidden and revealed using CSS.
-    // 2. Ink content gets removed directly from the DOM on unload.
-    if (!content.parentNode) {
-      this.content_.appendChild(content);
-    }
-    assert(content.parentNode === this.content_);
+    this.scrollContent_.setContent(content);
   }
 
   /** @param {function():void} viewportChangedCallback */
@@ -416,8 +402,8 @@ export class Viewport {
   contentSizeChanged_() {
     const zoomedDimensions = this.getZoomedDocumentDimensions_(this.getZoom());
     if (zoomedDimensions) {
-      this.sizer_.style.width = zoomedDimensions.width + 'px';
-      this.sizer_.style.height = zoomedDimensions.height + 'px';
+      this.scrollContent_.setSize(
+          zoomedDimensions.width, zoomedDimensions.height);
     }
   }
 
@@ -467,7 +453,10 @@ export class Viewport {
 
   /** @return {!Point} The scroll position of the viewport. */
   get position() {
-    return {x: this.window_.scrollLeft, y: this.window_.scrollTop};
+    return {
+      x: this.scrollContent_.scrollLeft,
+      y: this.scrollContent_.scrollTop,
+    };
   }
 
   /**
@@ -475,10 +464,10 @@ export class Viewport {
    * @param {!Point} position The position to scroll to.
    */
   setPosition(position) {
-    this.window_.scrollTo(position.x, position.y);
+    this.scrollContent_.scrollTo(position.x, position.y);
   }
 
-  /** @return {!Size} the size of the viewport excluding scrollbars. */
+  /** @return {!Size} The size of the viewport. */
   get size() {
     return {
       width: this.window_.offsetWidth,
@@ -1312,8 +1301,8 @@ export class Viewport {
     spaceOnLeft = Math.max(spaceOnLeft, 0);
 
     return {
-      x: x * zoom + spaceOnLeft - this.window_.scrollLeft,
-      y: insetDimensions.y * zoom - this.window_.scrollTop,
+      x: x * zoom + spaceOnLeft - this.scrollContent_.scrollLeft,
+      y: insetDimensions.y * zoom - this.scrollContent_.scrollTop,
       width: insetDimensions.width * zoom,
       height: insetDimensions.height * zoom
     };
@@ -1551,3 +1540,84 @@ export const PAGE_SHADOW = {
   left: 5,
   right: 5
 };
+
+/**
+ * A wrapper around the viewport's scrollable content. This abstraction isolates
+ * details concerning internal vs. external scrolling behavior.
+ */
+class ScrollContent {
+  /**
+   * @param {!Element} container The element which contains the scrollable
+   *     content.
+   * @param {!Element} sizer The element which represents the size of the
+   *     scrollable content.
+   * @param {!Element} content The element which is the parent of the scrollable
+   *     content.
+   */
+  constructor(container, sizer, content) {
+    /** @private @const {!Element} */
+    this.container_ = container;
+
+    /** @private @const {!Element} */
+    this.sizer_ = sizer;
+
+    /** @private @const {!Element} */
+    this.content_ = content;
+  }
+
+  /**
+   * Sets the content.
+   * @param {?Node} content The new contents, or null to clear.
+   */
+  setContent(content) {
+    if (content === null) {
+      this.sizer_.style.display = 'none';
+      return;
+    }
+
+    // We don't actually replace the content in the DOM, as the controller
+    // implementations take care of "removal" in controller-specific ways:
+    //
+    // 1. Plugin content gets added once, then hidden and revealed using CSS.
+    // 2. Ink content gets removed directly from the DOM on unload.
+    if (!content.parentNode) {
+      this.content_.appendChild(content);
+    }
+    assert(content.parentNode === this.content_);
+  }
+
+  /**
+   * Sets the content size.
+   * @param {number} width
+   * @param {number} height
+   */
+  setSize(width, height) {
+    this.sizer_.style.width = `${width}px`;
+    this.sizer_.style.height = `${height}px`;
+  }
+
+  /**
+   * Gets the scroll offset from the left edge.
+   * @return {number}
+   */
+  get scrollLeft() {
+    return this.container_.scrollLeft;
+  }
+
+  /**
+   * Gets the scroll offset from the top edge.
+   * @return {number}
+   */
+  get scrollTop() {
+    return this.container_.scrollTop;
+  }
+
+  /**
+   * Scrolls to the given coordinates.
+   * @param {number} x
+   * @param {number} y
+   */
+  scrollTo(x, y) {
+    this.container_.scrollTo(x, y);
+  }
+}
