@@ -378,8 +378,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 }
 
 // Validate that OOPIFs receive presentation feedbacks.
+// TODO(crbug.com/1270981): Flaky.
+#if defined(OS_LINUX) || defined(OS_MAC)
+#define MAYBE_PresentationFeedback DISABLED_PresentationFeedback
+#else
+#define MAYBE_PresentationFeedback PresentationFeedback
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       PresentationFeedback) {
+                       MAYBE_PresentationFeedback) {
   base::HistogramTester histogram_tester;
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -411,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     GiveItSomeTime();
   } while (histogram_tester
                .GetTotalCountsForPrefix("Browser.Tabs.TotalSwitchDuration")
-               .size() < 1);
+               .size() != 1);
 }
 
 // Auto-resize is only implemented for Ash and GuestViews. So we need to inject
