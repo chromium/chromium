@@ -224,6 +224,10 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // Background painter for the window frame.
   std::unique_ptr<views::FrameBackground> frame_background_;
 
+#if defined(OS_LINUX)
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+#endif
+
   // PlaceholderContainer beneath the controls button for PWAs with window
   // controls overlay display override.
   raw_ptr<CaptionButtonPlaceholderContainer>

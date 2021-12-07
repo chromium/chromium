@@ -39,6 +39,9 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
 
   bool Activate(const ui::Event* event);
 
+  // Button:
+  void SetCallback(PressedCallback callback) override;
+
  protected:
   // Button:
   void NotifyClick(const ui::Event& event) final;

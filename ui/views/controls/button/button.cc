@@ -171,6 +171,10 @@ std::u16string Button::GetTooltipText() const {
   return tooltip_text_;
 }
 
+void Button::SetCallback(PressedCallback callback) {
+  callback_ = std::move(callback);
+}
+
 void Button::SetAccessibleName(const std::u16string& name) {
   if (name == accessible_name_)
     return;

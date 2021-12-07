@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_CONTROLLER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -79,6 +80,10 @@ class VIEWS_EXPORT MenuButtonController : public ButtonController {
   // last menu open time) to determine if an event is valid to activate the
   // menu, this is distinct from IsTriggerableEvent().
   bool IsTriggerableEventType(const ui::Event& event);
+
+  void SetCallback(Button::PressedCallback callback) {
+    callback_ = std::move(callback);
+  }
 
  private:
   // Increment/decrement the number of "pressed" locks this button has, and
