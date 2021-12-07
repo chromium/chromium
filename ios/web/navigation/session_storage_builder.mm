@@ -128,10 +128,6 @@ void SessionStorageBuilder::ExtractSessionState(
   SerializableUserDataManager::FromWebState(&web_state)
       ->AddSerializableUserData(session_storage.userData);
   UserAgentType user_agent_type = session_storage.userAgentType;
-  if (user_agent_type == UserAgentType::AUTOMATIC &&
-      !features::UseWebClientDefaultUserAgent()) {
-    user_agent_type = UserAgentType::MOBILE;
-  }
   web_state.SetUserAgent(user_agent_type);
 }
 

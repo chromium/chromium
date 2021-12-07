@@ -404,7 +404,6 @@ bool ChromeWebClient::EnableLongPressUIContextMenu() const {
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
     id<UITraitEnvironment> web_view,
     const GURL& url) {
-  DCHECK(web::features::UseWebClientDefaultUserAgent());
   return web::UserAgentType::MOBILE;
 }
 

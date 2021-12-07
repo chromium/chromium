@@ -111,8 +111,6 @@ TEST_F(CRWNSessionStorageTest, EncodeDecode) {
 // Tests that unarchiving CRWSessionStorage data results in an equivalent
 // storage when the user agent is automatic.
 TEST_F(CRWNSessionStorageTest, EncodeDecodeAutomatic) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(web::features::kUseDefaultUserAgentInWebClient);
   session_storage_.userAgentType = web::UserAgentType::AUTOMATIC;
   NSKeyedArchiver* archiver =
       [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];

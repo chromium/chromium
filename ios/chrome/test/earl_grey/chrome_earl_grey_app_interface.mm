@@ -990,9 +990,6 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
 }
 
 + (BOOL)isMobileModeByDefault {
-  if (!web::features::UseWebClientDefaultUserAgent())
-    return YES;
-
   web::UserAgentType webClientUserAgent =
       web::GetWebClient()->GetDefaultUserAgent(
           chrome_test_util::GetCurrentWebState()->GetView(), GURL());

@@ -4500,21 +4500,6 @@
             ]
         }
     ],
-    "IOSUserAgentInWebClient": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseDefaultUserAgentInWebClient"
-                    ]
-                }
-            ]
-        }
-    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [

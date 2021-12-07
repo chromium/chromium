@@ -486,10 +486,6 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
 
 // Tests the default user agent for different views.
 TEST_F(ChromeWebClientTest, DefaultUserAgent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {web::features::kUseDefaultUserAgentInWebClient}, {});
-
   ChromeWebClient web_client;
   const GURL google_url = GURL("https://www.google.com/search?q=test");
   const GURL non_google_url = GURL("http://wikipedia.org");

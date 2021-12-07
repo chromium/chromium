@@ -27,12 +27,6 @@ class CRWKNavigationHandlerIntTest : public WebIntTest {
     net::test_server::RegisterDefaultHandlers(&server_);
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kUseDefaultUserAgentInWebClient}, {});
-    WebIntTest::SetUp();
-  }
-
   FakeWebClient* GetWebClient() override {
     return static_cast<FakeWebClient*>(WebIntTest::GetWebClient());
   }

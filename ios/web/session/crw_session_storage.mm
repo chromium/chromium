@@ -92,11 +92,7 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
           web::GetUserAgentTypeWithDescription(userAgentDescription);
     } else {
       // Prior to M85, the UserAgent wasn't stored.
-      if (web::features::UseWebClientDefaultUserAgent()) {
-        _userAgentType = web::UserAgentType::AUTOMATIC;
-      } else {
-        _userAgentType = web::UserAgentType::MOBILE;
-      }
+      _userAgentType = web::UserAgentType::AUTOMATIC;
     }
   }
   return self;
@@ -116,10 +112,6 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
   if (_userData)
     _userData->Encode(coder);
   web::UserAgentType userAgentType = _userAgentType;
-  if (userAgentType == web::UserAgentType::AUTOMATIC &&
-      !web::features::UseWebClientDefaultUserAgent()) {
-    userAgentType = web::UserAgentType::MOBILE;
-  }
   web::nscoder_util::EncodeString(
       coder, kUserAgentKey, web::GetUserAgentTypeDescription(userAgentType));
 }

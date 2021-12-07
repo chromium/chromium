@@ -31,9 +31,6 @@ const base::Feature kClearOldNavigationRecordsWorkaround{
 const base::Feature kEnablePersistentDownloads{
     "EnablePersistentDownloads", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kUseDefaultUserAgentInWebClient{
-    "UseDefaultUserAgentInWebClient", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPreserveScrollViewProperties{
     "PreserveScrollViewProperties", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -67,10 +64,6 @@ const base::Feature kSynthesizedRestoreSession{
 
 const base::Feature kEnableUnrealizedWebStates{
     "EnableUnrealizedWebStates", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool UseWebClientDefaultUserAgent() {
-  return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
-}
 
 bool UseWebViewNativeContextMenuWeb() {
   return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);

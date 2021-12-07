@@ -33,12 +33,6 @@ extern const base::Feature kClearOldNavigationRecordsWorkaround;
 // Feature flag enabling persistent downloads.
 extern const base::Feature kEnablePersistentDownloads;
 
-// When enabled, for each navigation, the default user agent is chosen by the
-// WebClient GetDefaultUserAgent() method. If it is disabled, the mobile version
-// is requested by default.
-// Use UseWebClientDefaultUserAgent() instead of checking this variable.
-extern const base::Feature kUseDefaultUserAgentInWebClient;
-
 // When enabled, preserves properties of the UIScrollView using CRWPropertyStore
 // when the scroll view is recreated. When disabled, only preserve a small set
 // of properties using hard coded logic.
@@ -80,11 +74,6 @@ extern const base::Feature kSynthesizedRestoreSession;
 // Enable support for unrealized WebState upon session restoration.
 // See //docs/ios/unrealized_web_state.md for more information.
 extern const base::Feature kEnableUnrealizedWebStates;
-
-// When true, for each navigation, the default user agent is chosen by the
-// WebClient GetDefaultUserAgent() method. If it is false, the mobile version
-// is requested by default.
-bool UseWebClientDefaultUserAgent();
 
 // When true, the native context menu for the web content are used.
 bool UseWebViewNativeContextMenuWeb();

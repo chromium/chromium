@@ -479,11 +479,6 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kURLBlocklistIOSName[];
 extern const char kURLBlocklistIOSDescription[];
 
-// Title and description for the flag to have the web client choosing the
-// default user agent.
-extern const char kUseDefaultUserAgentInWebClientName[];
-extern const char kUseDefaultUserAgentInWebClientDescription[];
-
 // Title and description for the flag to enable using Lens to search for an
 // image from the long press context menu.
 extern const char kUseLensToSearchForImageName[];

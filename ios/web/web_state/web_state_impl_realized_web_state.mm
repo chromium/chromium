@@ -54,9 +54,7 @@ namespace web {
 WebStateImpl::RealizedWebState::RealizedWebState(WebStateImpl* owner)
     : owner_(owner),
       interface_binder_(owner),
-      user_agent_type_(features::UseWebClientDefaultUserAgent()
-                           ? UserAgentType::AUTOMATIC
-                           : UserAgentType::MOBILE) {
+      user_agent_type_(UserAgentType::AUTOMATIC) {
   DCHECK(owner_);
 }
 

@@ -536,12 +536,6 @@ const char kURLBlocklistIOSDescription[] =
     "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
     "enterprise policies.";
 
-const char kUseDefaultUserAgentInWebClientName[] =
-    "[Refactoring] Let the client choose default mode";
-const char kUseDefaultUserAgentInWebClientDescription[] =
-    "When enabled, the web client will choose the default mode. It is a "
-    "refactoring, no visible impact.";
-
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";
 const char kUseLensToSearchForImageDescription[] =
