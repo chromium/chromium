@@ -241,6 +241,9 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
                                            std::move(event));
   }
 
+  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
+      ash::WallpaperType::kThirdParty);
+
   Respond(params_->details.thumbnail
               ? OneArgument(Value(std::move(thumbnail_data)))
               : NoArguments());

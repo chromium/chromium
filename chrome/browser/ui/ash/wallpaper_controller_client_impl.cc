@@ -18,6 +18,7 @@
 #include "base/hash/sha1.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -775,4 +776,10 @@ void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser(
 
   volume_manager_observation_.Observe(
       file_manager::VolumeManager::Get(profile));
+}
+
+void WallpaperControllerClientImpl::RecordWallpaperSourceUMA(
+    const ash::WallpaperType type) {
+  base::UmaHistogramEnumeration("Ash.Wallpaper.Source2", type,
+                                ash::WallpaperType::kCount);
 }

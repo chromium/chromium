@@ -345,6 +345,8 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 
   SetMinimizedWindowStateForPreview(preview_mode);
 
+  client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnline);
+
   client->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
           GetAccountId(profile_), absl::make_optional(image_asset_id),
@@ -371,6 +373,9 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
   pending_select_local_image_callback_ = std::move(callback);
 
   SetMinimizedWindowStateForPreview(preview_mode);
+
+  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
+      ash::WallpaperType::kCustomized);
 
   WallpaperController::Get()->SetCustomWallpaper(
       GetAccountId(profile_), path, layout, preview_mode,
@@ -403,6 +408,9 @@ void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
     std::move(pending_update_daily_refresh_wallpaper_callback_)
         .Run(/*success=*/false);
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
+
+  WallpaperControllerClientImpl::Get()->RecordWallpaperSourceUMA(
+      ash::WallpaperType::kDaily);
 
   WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnDailyRefreshWallpaperUpdated,

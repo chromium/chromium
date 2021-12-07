@@ -661,13 +661,8 @@ void WallpaperPrivateGetOfflineWallpaperListFunction::
 
 ExtensionFunction::ResponseAction
 WallpaperPrivateRecordWallpaperUMAFunction::Run() {
-  std::unique_ptr<record_wallpaper_uma::Params> params(
-      record_wallpaper_uma::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  ash::WallpaperType source = GetWallpaperType(params->source);
-  UMA_HISTOGRAM_ENUMERATION("Ash.Wallpaper.Source", source,
-                            ash::WallpaperType::kCount);
+  // Removed UMA recording code for Ash.Wallpaper.Source metric
+  // to not be triggered by the old Wallpaper Picker
   return RespondNow(NoArguments());
 }
 

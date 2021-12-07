@@ -3474,11 +3474,29 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Wallpaper.Source" enum="WallpaperType"
     expires_after="2022-04-24">
+  <obsolete>
+    Replaced 12/2021 by Ash.Wallpaper.Source2
+  </obsolete>
   <owner>xdai@chromium.org</owner>
   <summary>
     Recorded when a new wallpaper is set, either by the built-in Wallpaper
     Picker App, or by a third party App. Note the wallpaper change triggered by
-    Sync file system event doesn't count.
+    Sync file system event doesn't count. b/205163106: Ash.Wallpaper.Source
+    metric was captured incorrectly. The metric was only triggered by the
+    deprecated Wallpaper Picker. Fixed by creating a new Ash.Wallpaper.Source2
+    metric that is recorded by the new Wallpaper App. Affected milestones: 94,
+    96, 97 and 98.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.Source2" enum="WallpaperType"
+    expires_after="2022-12-03">
+  <owner>thuongphan@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Recorded when a user attempts to set a wallpaper, either by the built-in
+    Wallpaper App, or by a third party App. Note the wallpaper change triggered
+    by Sync file system event doesn't count.
   </summary>
 </histogram>
 

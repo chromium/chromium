@@ -137,6 +137,9 @@ class WallpaperControllerClientImpl
   void MigrateCollectionIdFromValueStoreForTesting(
       const AccountId& account_id,
       value_store::ValueStore* storage);
+  // Record Ash.Wallpaper.Source metric when a new wallpaper is set,
+  // either by built-in Wallpaper app or a third party extension/app.
+  void RecordWallpaperSourceUMA(const ash::WallpaperType type);
 
  private:
   // Initialize the controller for this client and some wallpaper directories.
