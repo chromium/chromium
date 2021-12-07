@@ -4966,7 +4966,7 @@
   {
     "name": "shared-highlighting-ios",
     "owners": ["tmartino"],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "shared-highlighting-use-blocklist",
