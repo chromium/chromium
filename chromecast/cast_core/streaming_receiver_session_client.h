@@ -183,7 +183,7 @@ class StreamingReceiverSessionClient
 
   // The AssociatedRemote that must be provided when starting the
   // |receiver_session_|.
-  mojo::AssociatedRemote<::mojom::CastStreamingReceiver>
+  mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
       cast_streaming_receiver_;
 
   // Responsible for managing the streaming session.

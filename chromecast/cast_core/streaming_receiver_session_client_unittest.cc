@@ -9,6 +9,7 @@
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
+#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +30,8 @@ class MockReceiverSession : public cast_streaming::ReceiverSession {
   ~MockReceiverSession() override = default;
 
   MOCK_METHOD1(SetCastStreamingReceiver,
-               void(mojo::AssociatedRemote<::mojom::CastStreamingReceiver>));
+               void(mojo::AssociatedRemote<
+                    cast_streaming::mojom::CastStreamingReceiver>));
 };
 
 class MockStreamingReceiverSessionHandler

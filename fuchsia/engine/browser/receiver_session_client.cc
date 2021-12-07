@@ -21,7 +21,7 @@ ReceiverSessionClient::ReceiverSessionClient(
 ReceiverSessionClient::~ReceiverSessionClient() = default;
 
 void ReceiverSessionClient::SetCastStreamingReceiver(
-    mojo::AssociatedRemote<mojom::CastStreamingReceiver>
+    mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
         cast_streaming_receiver) {
   DCHECK(message_port_request_);
 
