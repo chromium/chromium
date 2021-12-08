@@ -5,9 +5,15 @@
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "base/time/default_clock.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/feature_guide/notifications/internal/feature_notification_guide_service_impl.h"
-#include "components/keyed_service/core/simple_dependency_manager.h"
+#include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_context.h"
 
 namespace feature_guide {
 
@@ -19,20 +25,33 @@ FeatureNotificationGuideServiceFactory::GetInstance() {
 
 // static
 FeatureNotificationGuideService*
-FeatureNotificationGuideServiceFactory::GetForKey(SimpleFactoryKey* key) {
+FeatureNotificationGuideServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<FeatureNotificationGuideService*>(
-      GetInstance()->GetServiceForKey(key, /*create=*/true));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 FeatureNotificationGuideServiceFactory::FeatureNotificationGuideServiceFactory()
-    : SimpleKeyedServiceFactory("FeatureNotificationGuideService",
-                                SimpleDependencyManager::GetInstance()) {}
+    : BrowserContextKeyedServiceFactory(
+          "FeatureNotificationGuideService",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(NotificationScheduleServiceFactory::GetInstance());
+}
 
-std::unique_ptr<KeyedService>
-FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
-    SimpleFactoryKey* key) const {
-  auto service = std::make_unique<FeatureNotificationGuideServiceImpl>();
-  return std::move(service);
+KeyedService* FeatureNotificationGuideServiceFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto* notification_scheduler =
+      NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+  DCHECK(notification_scheduler);
+  DCHECK(tracker);
+  // TODO(shaktisahu): Hookup dependencies.
+  return new FeatureNotificationGuideServiceImpl();
+}
+
+bool FeatureNotificationGuideServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace feature_guide

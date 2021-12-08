@@ -5,25 +5,28 @@
 #ifndef CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_FEATURE_NOTIFICATION_GUIDE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_FEATURE_NOTIFICATION_GUIDE_SERVICE_FACTORY_H_
 
-#include <memory>
-
-#include "components/keyed_service/core/simple_factory_key.h"
-#include "components/keyed_service/core/simple_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+class Profile;
+
 namespace feature_guide {
 class FeatureNotificationGuideService;
 
 // A factory to create one unique FeatureNotificationGuideService.
 class FeatureNotificationGuideServiceFactory
-    : public SimpleKeyedServiceFactory {
+    : public BrowserContextKeyedServiceFactory {
  public:
   static FeatureNotificationGuideServiceFactory* GetInstance();
-  static FeatureNotificationGuideService* GetForKey(SimpleFactoryKey* key);
+  static FeatureNotificationGuideService* GetForProfile(Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<
@@ -32,8 +35,9 @@ class FeatureNotificationGuideServiceFactory
   FeatureNotificationGuideServiceFactory();
   ~FeatureNotificationGuideServiceFactory() override = default;
 
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      SimpleFactoryKey* key) const override;
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace feature_guide

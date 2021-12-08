@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_FEATURE_NOTIFICATION_GUIDE_SERVICE_H_
 
 #include "base/feature_list.h"
+#include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace feature_guide {
@@ -18,7 +19,8 @@ extern const base::Feature kFeatureNotificationGuide;
 
 // The central class responsible for managing feature notification guide in
 // chrome.
-class FeatureNotificationGuideService : public KeyedService {
+class FeatureNotificationGuideService : public KeyedService,
+                                        public base::SupportsUserData {
  public:
   FeatureNotificationGuideService();
   ~FeatureNotificationGuideService() override;
