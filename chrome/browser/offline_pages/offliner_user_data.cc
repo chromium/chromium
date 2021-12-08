@@ -8,12 +8,10 @@
 
 namespace offline_pages {
 
-void OfflinerUserData::AddToWebContents(content::WebContents* webcontents,
-                                        BackgroundLoaderOffliner* offliner) {
-  DCHECK(offliner);
-  webcontents->SetUserData(UserDataKey(),
-                           std::make_unique<OfflinerUserData>(offliner));
-}
+OfflinerUserData::OfflinerUserData(content::WebContents* web_contents,
+                                   BackgroundLoaderOffliner* offliner)
+    : content::WebContentsUserData<OfflinerUserData>(*web_contents),
+      offliner_(offliner) {}
 
 // static - gets the data pointer as a BackgroundLoaderOffliner
 BackgroundLoaderOffliner* OfflinerUserData::OfflinerFromWebContents(
