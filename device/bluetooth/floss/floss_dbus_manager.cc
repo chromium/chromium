@@ -52,7 +52,7 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
   GetSystemBus()
       ->GetObjectProxy(kFlossObjectManagerServiceName, dbus::ObjectPath("/"))
       ->CallMethodWithErrorCallback(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+          &method_call, kDBusTimeoutMs,
           base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,

@@ -11,6 +11,9 @@
 
 namespace floss {
 
+// All Floss D-Bus methods return immediately, so the timeout can be very short.
+int kDBusTimeoutMs = 2000;
+
 namespace {
 
 template <typename T>
