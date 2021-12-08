@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/hps/hps_configuration.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/time/default_tick_clock.h"
@@ -104,6 +105,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kPowerSmartDimEnabled, true);
   registry->RegisterBooleanPref(prefs::kPowerAlsLoggingEnabled, false);
+  registry->RegisterBooleanPref(prefs::kPowerQuickDimEnabled, false);
 
   registry->RegisterBooleanPref(prefs::kAllowScreenLock, true);
   registry->RegisterBooleanPref(
@@ -285,6 +287,13 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
         prefs->GetDouble(prefs::kPowerUserActivityScreenDimDelayFactor);
   }
 
+  if (prefs->GetBoolean(prefs::kPowerQuickDimEnabled)) {
+    values.battery_quick_dim_delay_ms =
+        ash::GetQuickDimDelay().InMilliseconds();
+    values.ac_quick_dim_delay_ms = ash::GetQuickDimDelay().InMilliseconds();
+    values.send_feedback_if_undimmed = ash::GetQuickDimFeedbackEnabled();
+  }
+
   values.wait_for_initial_user_activity =
       prefs->GetBoolean(prefs::kPowerWaitForInitialUserActivity);
   values.force_nonzero_brightness_for_user_activity =
@@ -412,6 +421,7 @@ void PowerPrefs::ObservePrefs(PrefService* prefs) {
   profile_registrar_->Add(prefs::kPowerFastSuspendWhenBacklightsForcedOff,
                           update_callback);
   profile_registrar_->Add(prefs::kPowerAlsLoggingEnabled, update_callback);
+  profile_registrar_->Add(prefs::kPowerQuickDimEnabled, update_callback);
 
   UpdatePowerPolicyFromPrefs();
 }

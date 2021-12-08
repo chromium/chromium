@@ -42,6 +42,7 @@ PowerPolicyController* g_power_policy_controller = nullptr;
 #define APPEND_DELAYS(str, delays, prefix)                                 \
   {                                                                        \
     APPEND_DELAY(str, delays, screen_dim_ms, prefix "_screen_dim_ms");     \
+    APPEND_DELAY(str, delays, quick_dim_ms, prefix "_quick_dim_ms");       \
     APPEND_DELAY(str, delays, screen_off_ms, prefix "_screen_off_ms");     \
     APPEND_DELAY(str, delays, screen_lock_ms, prefix "_screen_lock_ms");   \
     APPEND_DELAY(str, delays, idle_warning_ms, prefix "_idle_warning_ms"); \
@@ -351,6 +352,11 @@ std::string PowerPolicyController::GetPolicyDebugString(
     StringAppendF(&str, "usb_power_share=%d ", policy.usb_power_share());
   }
 
+  if (policy.has_send_feedback_if_undimmed()) {
+    StringAppendF(&str, "send_feedback_if_undimmed=%d ",
+                  policy.send_feedback_if_undimmed());
+  }
+
   if (policy.has_reason())
     StringAppendF(&str, "reason=\"%s\" ", policy.reason().c_str());
   base::TrimWhitespaceASCII(str, base::TRIM_TRAILING, &str);
@@ -454,6 +460,20 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
   delays->set_screen_lock_ms(values.battery_screen_lock_delay_ms);
   delays->set_idle_warning_ms(values.battery_idle_warning_delay_ms);
   delays->set_idle_ms(values.battery_idle_delay_ms);
+
+  // Sets quick_dim_ms and send_feedback_if_undimmed for prefs_policy_.
+  if (values.battery_quick_dim_delay_ms > 0) {
+    prefs_policy_.mutable_battery_delays()->set_quick_dim_ms(
+        values.battery_quick_dim_delay_ms);
+  }
+  if (values.ac_quick_dim_delay_ms > 0) {
+    prefs_policy_.mutable_ac_delays()->set_quick_dim_ms(
+        values.ac_quick_dim_delay_ms);
+  }
+  if (values.send_feedback_if_undimmed.has_value()) {
+    prefs_policy_.set_send_feedback_if_undimmed(
+        values.send_feedback_if_undimmed.value());
+  }
 
   lock_ms = delays->screen_off_ms() + kScreenLockAfterOffDelayMs;
   if (values.enable_auto_screen_lock && delays->screen_off_ms() > 0 &&

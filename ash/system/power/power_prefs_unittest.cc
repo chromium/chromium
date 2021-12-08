@@ -14,6 +14,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
+#include "ash/system/hps/hps_configuration.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -532,6 +533,21 @@ TEST_F(PowerPrefsTest, AlsLoggingEnabled) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
   EXPECT_FALSE(prefs->GetBoolean(prefs::kPowerAlsLoggingEnabled));
+}
+
+TEST_F(PowerPrefsTest, SetQuickDimParams) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  // This will trigger UpdatePowerPolicyFromPrefs and set correct parameters.
+  prefs->SetBoolean(prefs::kPowerQuickDimEnabled, true);
+
+  const auto policy = power_manager_client()->policy();
+  EXPECT_EQ(policy.ac_delays().quick_dim_ms(),
+            ash::GetQuickDimDelay().InMilliseconds());
+  EXPECT_EQ(policy.battery_delays().quick_dim_ms(),
+            ash::GetQuickDimDelay().InMilliseconds());
+  EXPECT_EQ(policy.send_feedback_if_undimmed(),
+            ash::GetQuickDimFeedbackEnabled());
 }
 
 }  // namespace ash

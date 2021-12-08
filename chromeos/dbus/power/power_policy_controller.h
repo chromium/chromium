@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -70,11 +71,13 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
     // the other fields, unfortunately (but the default values would only reach
     // powerd if Chrome failed to override them with the pref-assigned values).
     int ac_screen_dim_delay_ms = -1;
+    int ac_quick_dim_delay_ms = -1;
     int ac_screen_off_delay_ms = -1;
     int ac_screen_lock_delay_ms = -1;
     int ac_idle_warning_delay_ms = -1;
     int ac_idle_delay_ms = -1;
     int battery_screen_dim_delay_ms = -1;
+    int battery_quick_dim_delay_ms = -1;
     int battery_screen_off_delay_ms = -1;
     int battery_screen_lock_delay_ms = -1;
     int battery_idle_warning_delay_ms = -1;
@@ -109,6 +112,7 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
             power_manager::PowerManagementPolicy::BatteryChargeMode::ADAPTIVE;
     int custom_charge_start = -1;
     int custom_charge_stop = -1;
+    absl::optional<bool> send_feedback_if_undimmed;
   };
 
   // Converts |base::DictionaryValue| to |std::vector<PeakShiftDayConfig>| and
