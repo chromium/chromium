@@ -239,6 +239,11 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
     base::OnceClosure done_cb) {
   blink::mojom::PageLifecycleStatePtr old_state =
       std::move(last_acknowledged_state_);
+  if (acknowledged_state->should_dispatch_pageshow_for_debugging) {
+    blink::RecordUMAEventPageShowPersisted(
+        blink::EventPageShowPersisted::kYesInBrowserAck);
+  }
+
   last_acknowledged_state_ = std::move(acknowledged_state);
 
   if (last_acknowledged_state_->is_in_back_forward_cache)
