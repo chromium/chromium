@@ -4821,11 +4821,6 @@ const char kVirtualKeyboardDarkModeDescription[] =
     "Enable dark mode colors for the virtual keyboard when dark mode is "
     "active.";
 
-const char kImeEmojiSuggestAdditionName[] =
-    "Enable emoji suggestion (addition)";
-const char kImeEmojiSuggestAdditionDescription[] =
-    "Enable emoji suggestion as addition to the text written for native IME.";
-
 const char kImeMozcProtoName[] = "Enable protobuf on Japanese IME";
 const char kImeMozcProtoDescription[] =
     "Enable Japanese IME to use protobuf as interactive message format to "

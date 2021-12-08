@@ -208,7 +208,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
         features::kAssistPersonalInfo,
         features::kAssistPersonalInfoEmail,
         features::kAssistPersonalInfoName,
-        features::kEmojiSuggestAddition,
     });
   }
 
@@ -217,7 +216,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
         features::kAssistPersonalInfo,
         features::kAssistPersonalInfoEmail,
         features::kAssistPersonalInfoName,
-        features::kEmojiSuggestAddition,
         features::kAssistMultiWord,
     });
   }
@@ -227,7 +225,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
         features::kAssistPersonalInfo,
         features::kAssistPersonalInfoEmail,
         features::kAssistPersonalInfoName,
-        features::kEmojiSuggestAddition,
         features::kAssistMultiWord,
         features::kLacrosSupport,
     });
@@ -714,8 +711,7 @@ class NativeInputMethodEngineWithRenderViewHostTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistPersonalInfo,
                               features::kAssistPersonalInfoEmail,
-                              features::kAssistPersonalInfoName,
-                              features::kEmojiSuggestAddition},
+                              features::kAssistPersonalInfoName},
         /*disabled_features=*/{});
 
     // Needed by NativeInputMethodEngine to interact with the input field.

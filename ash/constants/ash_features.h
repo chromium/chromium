@@ -181,8 +181,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWAResizing;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWADebugMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kEmojiSuggestAddition;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableBackgroundBlur;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableDesksTrackpadSwipeImprovements;

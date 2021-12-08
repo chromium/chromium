@@ -457,10 +457,6 @@ const base::Feature kEcheSWAResizing{"EcheSWAResizing",
 const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, emoji suggestion will be shown when user type "space".
-const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.

@@ -103,6 +103,9 @@ class AssistiveSuggesterTest : public testing::Test {
                                          true, 1);
     histogram_tester_.ExpectUniqueSample(
         "InputMethod.Assistive.UserPref.MultiWord", true, 1);
+    // Emoji is default to true now, so need to set emoji pref false to test
+    // IsAssistiveFeatureEnabled correctly.
+    profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
     ui::IMEBridge::Initialize();
   }
 
@@ -113,11 +116,10 @@ class AssistiveSuggesterTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(AssistiveSuggesterTest,
-       EmojiSuggestionPrefFalseFeatureFlagTrue_UserPrefEnabledFalse) {
+TEST_F(AssistiveSuggesterTest, EmojiSuggestion_UserPrefEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
@@ -127,11 +129,10 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest,
-       EmojiSuggestionPrefFalseFeatureFlagTrue_EnterprisePrefEnabledFalse) {
+TEST_F(AssistiveSuggesterTest, EmojiSuggestion_EnterprisePrefEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
@@ -141,11 +142,10 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest,
-       EmojiSuggestionPrefTrueFeatureFlagTrue_BothPrefsEnabledTrue) {
+TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledTrue) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
@@ -155,11 +155,10 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest,
-       EmojiSuggestionPrefTrueFeatureFlagTrue_BothPrefsEnabledFalse) {
+TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kEmojiSuggestAddition},
+      /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
@@ -175,8 +174,7 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistEmojiEnhanced},
       /*disabled_features=*/{features::kAssistPersonalInfo,
-                             features::kAssistMultiWord,
-                             features::kEmojiSuggestAddition});
+                             features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
                                    false);
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
@@ -185,26 +183,10 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
-       EnhancedEmojiSuggestDisabledWhenStandardEmojiDisabledAndPrefsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistEmojiEnhanced},
-      /*disabled_features=*/{features::kAssistPersonalInfo,
-                             features::kAssistMultiWord,
-                             features::kEmojiSuggestAddition});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   true);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
        EnhancedEmojiSuggestEnabledWhenStandardEmojiEnabledAndPrefsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistEmojiEnhanced,
-                            features::kEmojiSuggestAddition},
+      /*enabled_features=*/{features::kAssistEmojiEnhanced},
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
@@ -220,8 +202,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistPersonalInfo},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistMultiWord});
+      /*disabled_features=*/{features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPersonalInfoEnabled, false);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -233,8 +214,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistPersonalInfo},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistMultiWord});
+      /*disabled_features=*/{features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPersonalInfoEnabled, true);
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -245,8 +225,7 @@ TEST_F(AssistiveSuggesterTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistPersonalInfo});
+      /*disabled_features=*/{features::kAssistPersonalInfo});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    true);
 
@@ -258,8 +237,7 @@ TEST_F(AssistiveSuggesterTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistPersonalInfo});
+      /*disabled_features=*/{features::kAssistPersonalInfo});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    false);
 
@@ -271,8 +249,7 @@ TEST_F(AssistiveSuggesterTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistPersonalInfo,
+      /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    false);
@@ -284,8 +261,7 @@ TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistPersonalInfo});
+      /*disabled_features=*/{features::kAssistPersonalInfo});
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -696,27 +672,10 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
       chrome_keyboard_controller_client_;
 };
 
-TEST_F(AssistiveSuggesterEmojiTest,
-       ShouldReturnPrefixBasedEmojiSuggestionsWhenStandardFlagEnabledOnly) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEmojiSuggestAddition},
-      /*disabled_features=*/{});
-
+TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
   assistive_suggester_->OnFocus(5);
 
   EXPECT_TRUE(assistive_suggester_->OnSurroundingTextChanged(u"happy ", 6, 6));
-}
-
-TEST_F(AssistiveSuggesterEmojiTest,
-       ShouldNotReturnPrefixBasedEmojiSuggestionsWhenBothEmojiFlagsAreEnabled) {
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEmojiSuggestAddition,
-                            features::kAssistEmojiEnhanced},
-      /*disabled_features=*/{});
-
-  assistive_suggester_->OnFocus(5);
-
-  EXPECT_FALSE(assistive_suggester_->OnSurroundingTextChanged(u"happy ", 6, 6));
 }
 
 }  // namespace input_method

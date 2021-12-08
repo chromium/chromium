@@ -208,8 +208,7 @@ bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
 }
 
 bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
-  return base::FeatureList::IsEnabled(features::kEmojiSuggestAddition) &&
-         profile_->GetPrefs()->GetBoolean(
+  return profile_->GetPrefs()->GetBoolean(
              prefs::kEmojiSuggestionEnterpriseAllowed) &&
          profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
 }
@@ -244,9 +243,6 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
-  if (!base::FeatureList::IsEnabled(features::kEmojiSuggestAddition)) {
-    return DisabledReason::kFeatureFlagOff;
-  }
   if (!profile_->GetPrefs()->GetBoolean(
           prefs::kEmojiSuggestionEnterpriseAllowed)) {
     return DisabledReason::kEnterpriseSettingsOff;

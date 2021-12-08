@@ -565,10 +565,8 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 bool LanguagesSection::IsEmojiSuggestionAllowed() const {
-  return base::FeatureList::IsEnabled(
-             ::chromeos::features::kEmojiSuggestAddition) &&
-         pref_service_->GetBoolean(
-             ::chromeos::prefs::kEmojiSuggestionEnterpriseAllowed);
+  return pref_service_->GetBoolean(
+      ::chromeos::prefs::kEmojiSuggestionEnterpriseAllowed);
 }
 
 bool LanguagesSection::IsSpellCheckEnabled() const {

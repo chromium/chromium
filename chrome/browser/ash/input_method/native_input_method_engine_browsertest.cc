@@ -131,7 +131,6 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
         /*enabled_features=*/{features::kAssistPersonalInfo,
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
-                              features::kEmojiSuggestAddition,
                               features::kMultilingualTyping,
                               features::kOnDeviceGrammarCheck},
         /*disabled_features=*/{});
@@ -1127,8 +1126,7 @@ class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
   NativeInputMethodEngineAssistiveOff() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistPersonalInfoName},
-        /*disabled_features=*/{features::kAssistPersonalInfo,
-                               features::kEmojiSuggestAddition});
+        /*disabled_features=*/{features::kAssistPersonalInfo});
   }
   ~NativeInputMethodEngineAssistiveOff() override = default;
 
@@ -1181,19 +1179,5 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
       DisabledReason::kFeatureFlagOff, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
-                       EmojiSuggestionDisabledReasonkFeatureFlagOff) {
-  base::HistogramTester histogram_tester;
-  engine_->get_assistive_suggester_for_testing()
-      ->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting(kEmojiData);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
-
-  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                      DisabledReason::kFeatureFlagOff, 1);
-}  // namespace
 }  // namespace input_method
 }  // namespace ash

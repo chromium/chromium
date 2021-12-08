@@ -42,7 +42,7 @@ constexpr char kEmojiSuggesterShowSettingCount[] =
 const int kMaxCandidateSize = 5;
 const char kSpaceChar = ' ';
 constexpr char kTrimLeadingChars[] = "(";
-constexpr char kEmojiMapFilePathTemplateName[] = "/emoji/emoji-map%s.csv";
+constexpr char kEmojiMapFilePathName[] = "/emoji/emoji-map.csv";
 const int kMaxSuggestionIndex = 31;
 const int kMaxSuggestionSize = kMaxSuggestionIndex + 1;
 const int kNoneHighlighted = -1;
@@ -53,11 +53,7 @@ std::string ReadEmojiDataFromFile() {
 
   std::string emoji_data;
   base::FilePath::StringType path(ime::kBundledInputMethodsDirPath);
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      features::kEmojiSuggestAddition, "map");
-  std::string file_path =
-      base::StringPrintf(kEmojiMapFilePathTemplateName, value.c_str());
-  path.append(FILE_PATH_LITERAL(file_path));
+  path.append(FILE_PATH_LITERAL(kEmojiMapFilePathName));
   if (!base::ReadFileToString(base::FilePath(path), &emoji_data))
     LOG(WARNING) << "Emoji map file missing.";
   return emoji_data;
