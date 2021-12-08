@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_MAP_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_MAP_MODE_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_map_mode.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -14,8 +15,8 @@ class GPUMapMode : public ScriptWrappable {
 
  public:
   // gpu_map_mode.idl
-  static constexpr uint32_t kRead = 1;
-  static constexpr uint32_t kWrite = 2;
+  static constexpr uint32_t kRead = V8GPUMapMode::Constant::kRead;
+  static constexpr uint32_t kWrite = V8GPUMapMode::Constant::kWrite;
 
   GPUMapMode(const GPUMapMode&) = delete;
   GPUMapMode& operator=(const GPUMapMode&) = delete;

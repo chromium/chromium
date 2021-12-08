@@ -1731,12 +1731,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_usage.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_usage.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_context.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_context.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_write.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_write.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_buffer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_command_encoder.cc",
@@ -1755,8 +1751,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_lost_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_map_mode.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_map_mode.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_out_of_memory_error.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_out_of_memory_error.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_pipeline_layout.cc",
@@ -1777,16 +1771,12 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_features.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_features.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_limits.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_supported_limits.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event.cc",
@@ -2497,7 +2487,18 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_xr_webgl_layer.h",
 ]
 
-generated_namespace_sources_in_modules = []
+generated_namespace_sources_in_modules = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_usage.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_usage.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_write.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_color_write.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_map_mode.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_map_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_stage.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_usage.h",
+]
 
 generated_observable_array_sources_in_modules = []
 
