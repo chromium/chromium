@@ -63,7 +63,7 @@ def LoadGenerators(generators_string):
       generator_name = os.path.join(script_dir,
                                     _BUILTIN_GENERATORS[language])
     else:
-      print "Unknown generator name %s" % generator_name
+      print("Unknown generator name %s" % generator_name)
       sys.exit(1)
     generator_module = imp.load_source(os.path.basename(generator_name)[:-3],
                                        generator_name)
@@ -161,7 +161,7 @@ class MojomProcessor(object):
       with open(filename) as f:
         typemaps = json.loads("".join([l for l in f.readlines()
                                        if no_comments(l)]))
-        for language, typemap in typemaps.iteritems():
+        for language, typemap in typemaps.items():
           language_map = self._typemap.get(language, {})
           language_map.update(typemap)
           self._typemap[language] = language_map
@@ -205,7 +205,7 @@ class MojomProcessor(object):
 
     if self._should_generate(rel_filename.path):
       AddComputedData(module)
-      for language, generator_module in generator_modules.iteritems():
+      for language, generator_module in generator_modules.items():
         generator = generator_module.Generator(
             module, args.output_dir, typemap=self._typemap.get(language, {}),
             variant=args.variant, bytecode_path=args.bytecode_path,
@@ -232,23 +232,23 @@ class MojomProcessor(object):
       return
 
     if rel_filename.path in imported_filename_stack:
-      print "%s: Error: Circular dependency" % rel_filename.path + \
-          MakeImportStackMessage(imported_filename_stack + [rel_filename.path])
+      print("%s: Error: Circular dependency" % rel_filename.path + \
+          MakeImportStackMessage(imported_filename_stack + [rel_filename.path]))
       sys.exit(1)
 
     try:
       with open(rel_filename.path) as f:
         source = f.read()
     except IOError as e:
-      print "%s: Error: %s" % (rel_filename.path, e.strerror) + \
-          MakeImportStackMessage(imported_filename_stack + [rel_filename.path])
+      print("%s: Error: %s" % (rel_filename.path, e.strerror) + \
+          MakeImportStackMessage(imported_filename_stack + [rel_filename.path]))
       sys.exit(1)
 
     try:
       tree = Parse(source, rel_filename.path)
     except Error as e:
       full_stack = imported_filename_stack + [rel_filename.path]
-      print str(e) + MakeImportStackMessage(full_stack)
+      print(str(e) + MakeImportStackMessage(full_stack))
       sys.exit(1)
 
     dirname = os.path.split(rel_filename.path)[0]
@@ -285,13 +285,13 @@ def _Generate(args, remaining_args):
     with open(args.depfile, 'w') as f:
       f.write('%s: %s' % (
           args.depfile_target,
-          ' '.join(processor._parsed_files.keys())))
+          ' '.join(list(processor._parsed_files.keys()))))
 
   return 0
 
 
 def _Precompile(args, _):
-  generator_modules = LoadGenerators(",".join(_BUILTIN_GENERATORS.keys()))
+  generator_modules = LoadGenerators(",".join(list(_BUILTIN_GENERATORS.keys())))
 
   template_expander.PrecompileTemplates(generator_modules, args.output_dir)
   return 0

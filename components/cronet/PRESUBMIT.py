@@ -10,6 +10,9 @@ for more details about the presubmit API built into depot_tools.
 
 import os
 
+USE_PYTHON3 = True
+
+
 def _PyLintChecks(input_api, output_api):
   pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api,
           extra_paths_list=_GetPathsToPrepend(input_api), pylintrc='pylintrc')

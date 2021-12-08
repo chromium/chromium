@@ -47,7 +47,7 @@ import shutil
 import sys
 import tempfile
 import time
-import urllib
+import six.moves.urllib_parse # pylint: disable=import-error
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..', '..'))
@@ -87,7 +87,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
     self._device = device
     config = perf_test_utils.GetConfig(device)
     device.RemovePath(config['DONE_FILE'], force=True)
-    self.url ='http://dummy/?'+urllib.urlencode(config)
+    self.url ='http://dummy/?' + six.moves.urllib_parse.urlencode(config)
     start_intent = intent.Intent(
         package=perf_test_utils.APP_PACKAGE,
         activity=perf_test_utils.APP_ACTIVITY,

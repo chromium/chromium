@@ -7,13 +7,13 @@
 
 
 import contextlib
-from cStringIO import StringIO
-import md5
+import hashlib
 import os
 import shutil
 import sys
 import tempfile
 import unittest
+import six
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..'))
@@ -58,7 +58,7 @@ def capture_output():
 
   oldout,olderr = sys.stdout, sys.stderr
   try:
-    out=[StringIO(), StringIO()]
+    out=[six.StringIO(), six.StringIO()]
     sys.stdout,sys.stderr = out
     yield out
   finally:
@@ -147,9 +147,9 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
     api_stamp = api.split('\n')[-2]
     stamp_length = len('Stamp: 78418460c193047980ae9eabb79293f2\n')
     api = api[:-stamp_length]
-    api_hash = md5.new()
+    api_hash = hashlib.md5()
     api_hash.update(api)
-    self.assertEquals(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
+    self.assertEqual(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
 
     return [return_code == 0, output, api, api_version]
 
