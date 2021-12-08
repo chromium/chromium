@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -89,6 +90,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "content/public/test/find_test_utils.h"
@@ -108,7 +110,9 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/identifiability_metrics.h"
@@ -5042,4 +5046,85 @@ IN_PROC_BROWSER_TEST_F(WebViewPPAPITest, Shim_TestPlugin) {
 
 IN_PROC_BROWSER_TEST_F(WebViewPPAPITest, Shim_TestPluginLoadPermission) {
   TestHelper("testPluginLoadPermission", "web_view/shim", NO_TEST_SERVER);
+}
+
+// Helper class to set up a fake Chrome Web Store URL which can be loaded in
+// tests.
+class WebstoreWebViewTest : public WebViewTest {
+ public:
+  WebstoreWebViewTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  WebstoreWebViewTest(const WebstoreWebViewTest&) = delete;
+  WebstoreWebViewTest& operator=(const WebstoreWebViewTest&) = delete;
+
+  ~WebstoreWebViewTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+
+    // Override the webstore URL.
+    command_line->AppendSwitchASCII(
+        ::switches::kAppsGalleryURL,
+        https_server()->GetURL("chrome.foo.com", "/frame_tree").spec());
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+    WebViewTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    https_server_.StartAcceptingConnections();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    WebViewTest::SetUpOnMainThread();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebViewTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    WebViewTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  net::EmbeddedTestServer https_server_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
+// Ensure that an attempt to load Chrome Web Store in a <webview> is blocked
+// and does not result in a renderer kill.  See https://crbug.com/1197674.
+IN_PROC_BROWSER_TEST_F(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+
+  // Navigate <webview> to a Chrome Web Store URL.  This should result in an
+  // error and shouldn't lead to a renderer kill.
+  const GURL webstore_url =
+      https_server()->GetURL("chrome.foo.com", "/frame_tree/simple.htm");
+  content::TestNavigationObserver error_observer(
+      guest, content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/false);
+  EXPECT_TRUE(
+      ExecuteScript(guest, "location.href = '" + webstore_url.spec() + "';"));
+  error_observer.Wait();
+  EXPECT_FALSE(error_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
+
+  content::RenderFrameHost* guest_rfh = guest->GetMainFrame();
+  EXPECT_TRUE(guest_rfh->IsRenderFrameLive());
+
+  // Double-check that after the attempted navigation the <webview> is not
+  // considered an extension process and does not have privileged webstore
+  // APIs.
+  auto* process_map = extensions::ProcessMap::Get(guest->GetBrowserContext());
+  EXPECT_FALSE(process_map->Contains(guest_rfh->GetProcess()->GetID()));
+  EXPECT_TRUE(
+      process_map->GetExtensionsInProcess(guest_rfh->GetProcess()->GetID())
+          .empty());
+  EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.webstorePrivate"));
+  EXPECT_EQ(false, content::EvalJs(guest, "!!chrome.dashboardPrivate"));
 }
