@@ -565,18 +565,12 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckPrintingRestriction(
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
@@ -587,10 +581,8 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .Contains(web_contents.get()));
+  EXPECT_TRUE(helper_.HasContentCachedForRestriction(
+      web_contents.get(), DlpRulesManager::Restriction::kPrinting));
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -606,10 +598,8 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedContinued) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .Contains(web_contents.get()));
+  EXPECT_TRUE(helper_.HasContentCachedForRestriction(
+      web_contents.get(), DlpRulesManager::Restriction::kPrinting));
   EXPECT_EQ(events_.size(), 3u);
   EXPECT_THAT(events_[2],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
@@ -644,18 +634,12 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckPrintingRestriction(
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_TRUE(events_.empty());
 
   // Warn restriction is enforced: reject since the user canceled.
@@ -666,10 +650,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -681,10 +662,7 @@ TEST_F(DlpContentManagerCheckRestrictionTest, PrintingWarnedCancelled) {
       web_contents.get(),
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kPrinting)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -764,17 +742,11 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedContinued) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
@@ -783,19 +755,15 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedContinued) {
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .Contains(web_contents.get()));
+  EXPECT_TRUE(helper_.HasContentCachedForRestriction(
+      web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .Contains(web_contents.get()));
+  EXPECT_TRUE(helper_.HasContentCachedForRestriction(
+      web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -817,17 +785,11 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedCancelled) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Warn restriction is enforced: reject since the user canceled.
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
@@ -836,19 +798,13 @@ TEST_F(DlpContentManagerCheckRestrictionTest, CaptureModeInitWarnedCancelled) {
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckCaptureModeInitRestriction(
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -929,18 +885,12 @@ TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedContinued) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
@@ -950,20 +900,16 @@ TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedContinued) {
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .Contains(web_contents.get()));
+  EXPECT_TRUE(helper_.HasContentCachedForRestriction(
+      web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .Contains(web_contents.get()));
+  EXPECT_TRUE(helper_.HasContentCachedForRestriction(
+      web_contents.get(), DlpRulesManager::Restriction::kScreenshot));
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());
@@ -988,18 +934,12 @@ TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedCancelled) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(true /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Warn restriction is enforced: reject since the user canceled.
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
@@ -1009,20 +949,14 @@ TEST_F(DlpContentManagerCheckRestrictionTest, ScreenshotWarnedCancelled) {
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Check again: since the user previously cancelled, dialog is shown again.
   GetManager()->CheckScreenshotRestriction(
       area,
       base::BindOnce(on_dlp_restriction_checked_callback, &is_action_allowed_));
   VerifyAndResetActionAllowed(false /*expected*/);
-  EXPECT_TRUE(helper_
-                  .GetUserAllowedContentsForRestriction(
-                      DlpRulesManager::Restriction::kScreenshot)
-                  .IsEmpty());
+  EXPECT_FALSE(helper_.HasAnyContentCached());
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());

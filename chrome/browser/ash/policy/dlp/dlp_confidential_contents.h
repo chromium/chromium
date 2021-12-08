@@ -62,6 +62,9 @@ class DlpConfidentialContents {
   ~DlpConfidentialContents();
 
   // Returns a reference to the underlying content container.
+  base::flat_set<DlpConfidentialContent>& GetContents();
+
+  // Returns a const reference to the underlying content container.
   const base::flat_set<DlpConfidentialContent>& GetContents() const;
 
   // Converts |web_contents| to a DlpConfidentialContent and adds it to the
@@ -74,23 +77,12 @@ class DlpConfidentialContents {
   // |web_contents| converted to a DlpConfidentialContent.
   void ClearAndAdd(content::WebContents* web_contents);
 
-  // Removes the content corresponding to |web_contents| if it exists and no-op
-  // otherwise.
-  void Remove(content::WebContents* web_contents);
-
-  // Returns true if the underlying container contains DlpConfidentialContent
-  // that is created from |web_contents|.
-  bool Contains(content::WebContents* web_contents) const;
-
   // Returns whether there is any content stored or not.
   bool IsEmpty() const;
 
   // Adds all content stored in |other| to the underlying container, without
   // duplicates.
   void UnionWith(const DlpConfidentialContents& other);
-
-  // Removes all content that also exists in |other|.
-  void DifferenceWith(const DlpConfidentialContents& other);
 
  private:
   base::flat_set<DlpConfidentialContent> contents_;
@@ -118,6 +110,8 @@ class DlpConfidentialContentsCache {
 
   // Returns true if there is a cached entry corresponding to |web_contents| and
   // |restriction|.
+  // Useful to avoid converting |web_contents| to a DlpConfidentialContent
+  // unnecessarily.
   bool Contains(content::WebContents* web_contents,
                 DlpRulesManager::Restriction restriction) const;
 
@@ -128,11 +122,6 @@ class DlpConfidentialContentsCache {
 
   // Returns the number of cached entries, useful for testing.
   int GetSizeForTesting() const;
-
-  // Returns DlpConfidentialContents for the given |restriction|.
-  // Used to pass the list of allowed contents when creating a warning dialog.
-  DlpConfidentialContents GetDlpConfidentialContentsForRestriction(
-      DlpRulesManager::Restriction restriction);
 
   // Returns the duration for which the entries are kept in the cache.
   static base::TimeDelta GetCacheTimeout();

@@ -83,6 +83,10 @@ DlpConfidentialContents::GetContents() const {
   return contents_;
 }
 
+base::flat_set<DlpConfidentialContent>& DlpConfidentialContents::GetContents() {
+  return contents_;
+}
+
 void DlpConfidentialContents::Add(content::WebContents* web_contents) {
   contents_.insert(DlpConfidentialContent(web_contents));
 }
@@ -96,34 +100,12 @@ void DlpConfidentialContents::ClearAndAdd(content::WebContents* web_contents) {
   Add(web_contents);
 }
 
-void DlpConfidentialContents::Remove(content::WebContents* web_contents) {
-  base::EraseIf(contents_, [&](const DlpConfidentialContent& content) {
-    return content.url.EqualsIgnoringRef(web_contents->GetLastCommittedURL());
-  });
-}
-
-bool DlpConfidentialContents::Contains(
-    content::WebContents* web_contents) const {
-  return (std::find_if(contents_.begin(), contents_.end(),
-                       [&](const DlpConfidentialContent& content) {
-                         return content.url.EqualsIgnoringRef(
-                             web_contents->GetLastCommittedURL());
-                       })) != contents_.end();
-}
-
 bool DlpConfidentialContents::IsEmpty() const {
   return contents_.empty();
 }
 
 void DlpConfidentialContents::UnionWith(const DlpConfidentialContents& other) {
   contents_.insert(other.contents_.begin(), other.contents_.end());
-}
-
-void DlpConfidentialContents::DifferenceWith(
-    const DlpConfidentialContents& other) {
-  base::EraseIf(contents_, [&other](const DlpConfidentialContent& content) {
-    return other.contents_.contains(content);
-  });
 }
 
 DlpConfidentialContentsCache::Entry::Entry(
@@ -182,17 +164,6 @@ bool DlpConfidentialContentsCache::Contains(
 
 int DlpConfidentialContentsCache::GetSizeForTesting() const {
   return entries_.size();
-}
-
-DlpConfidentialContents
-DlpConfidentialContentsCache::GetDlpConfidentialContentsForRestriction(
-    DlpRulesManager::Restriction restriction) {
-  DlpConfidentialContents contents;
-  for (auto& entry : entries_) {
-    if (entry->restriction == restriction)
-      contents.Add(entry->content);
-  }
-  return contents;
 }
 
 // static

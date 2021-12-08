@@ -55,6 +55,19 @@ class DlpConfidentialContentsTest : public testing::Test {
     return DlpConfidentialContent(CreateWebContents(title, url).get());
   }
 
+  // Helper to check whether |contents| has an element corresponding to
+  // |web_contents|.
+  bool Contains(const DlpConfidentialContents& contents,
+                content::WebContents* web_contents) {
+    auto iter = std::find_if(contents.GetContents().begin(),
+                             contents.GetContents().end(),
+                             [&](const DlpConfidentialContent& content) {
+                               return content.url.EqualsIgnoringRef(
+                                   web_contents->GetLastCommittedURL());
+                             });
+    return iter != contents.GetContents().end();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
@@ -72,7 +85,7 @@ TEST_F(DlpConfidentialContentsTest, DuplicateConfidentialDataAdded) {
   contents.Add(web_contents.get());
   contents.Add(web_contents.get());
   EXPECT_EQ(contents.GetContents().size(), 1);
-  EXPECT_TRUE(contents.Contains(web_contents.get()));
+  EXPECT_TRUE(Contains(contents, web_contents.get()));
 }
 
 TEST_F(DlpConfidentialContentsTest, ClearAndAdd) {
@@ -88,9 +101,9 @@ TEST_F(DlpConfidentialContentsTest, ClearAndAdd) {
 
   contents.ClearAndAdd(CreateWebContents(title3, url3).get());
   EXPECT_EQ(contents.GetContents().size(), 1);
-  EXPECT_FALSE(contents.Contains(web_contents1.get()));
-  EXPECT_FALSE(contents.Contains(web_contents2.get()));
-  EXPECT_TRUE(contents.Contains(web_contents3.get()));
+  EXPECT_FALSE(Contains(contents, web_contents1.get()));
+  EXPECT_FALSE(Contains(contents, web_contents2.get()));
+  EXPECT_TRUE(Contains(contents, web_contents3.get()));
 }
 
 TEST_F(DlpConfidentialContentsTest, UnionShouldAddUniqueItems) {
@@ -109,66 +122,13 @@ TEST_F(DlpConfidentialContentsTest, UnionShouldAddUniqueItems) {
 
   EXPECT_EQ(contents1.GetContents().size(), 2);
   EXPECT_EQ(contents2.GetContents().size(), 2);
-  EXPECT_FALSE(contents1.Contains(web_contents3.get()));
+  EXPECT_FALSE(Contains(contents1, web_contents3.get()));
 
   contents1.UnionWith(contents2);
 
   EXPECT_EQ(contents1.GetContents().size(), 3);
   EXPECT_EQ(contents2.GetContents().size(), 2);
-  EXPECT_TRUE(contents1.Contains(web_contents3.get()));
-}
-
-TEST_F(DlpConfidentialContentsTest, DifferenceShouldRemoveMatchedItems) {
-  DlpConfidentialContents contents1;
-  DlpConfidentialContents contents2;
-
-  auto web_contents1 = CreateWebContents(title1, url1);
-
-  contents1.Add(web_contents1.get());
-  contents1.Add(CreateWebContents(title2, url2).get());
-
-  contents2.Add(web_contents1.get());
-  contents2.Add(CreateWebContents(title3, url3).get());
-
-  EXPECT_EQ(contents1.GetContents().size(), 2);
-  EXPECT_EQ(contents2.GetContents().size(), 2);
-  EXPECT_TRUE(contents1.Contains(web_contents1.get()));
-
-  contents1.DifferenceWith(contents2);
-
-  EXPECT_EQ(contents1.GetContents().size(), 1);
-  EXPECT_FALSE(contents1.Contains(web_contents1.get()));
-  EXPECT_EQ(contents2.GetContents().size(), 2);
-}
-
-TEST_F(DlpConfidentialContentsTest, RemoveExistingContents) {
-  DlpConfidentialContents contents;
-
-  auto web_contents1 = CreateWebContents(title1, url1);
-
-  contents.Add(web_contents1.get());
-  contents.Add(CreateWebContents(title2, url2).get());
-
-  EXPECT_EQ(contents.GetContents().size(), 2);
-  EXPECT_TRUE(contents.Contains(web_contents1.get()));
-
-  contents.Remove(web_contents1.get());
-
-  EXPECT_EQ(contents.GetContents().size(), 1);
-  EXPECT_FALSE(contents.Contains(web_contents1.get()));
-}
-
-TEST_F(DlpConfidentialContentsTest, RemoveNonexistingContents) {
-  DlpConfidentialContents contents;
-
-  contents.Add(CreateWebContents(title1, url1).get());
-  contents.Add(CreateWebContents(title2, url2).get());
-
-  EXPECT_EQ(contents.GetContents().size(), 2);
-
-  contents.Remove(CreateWebContents(title3, url3).get());
-
-  EXPECT_EQ(contents.GetContents().size(), 2);
+  EXPECT_TRUE(Contains(contents1, web_contents3.get()));
 }
 
 TEST_F(DlpConfidentialContentsTest, CacheEvictsAfterTimeout) {
@@ -186,10 +146,7 @@ TEST_F(DlpConfidentialContentsTest, CacheEvictsAfterTimeout) {
 }
 
 TEST_F(DlpConfidentialContentsTest, CacheEvictsWhenFull) {
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   DlpConfidentialContentsCache cache;
-  cache.SetTaskRunnerForTesting(task_runner);
   cache.SetCacheSizeLimitForTesting(1);
 
   DlpConfidentialContent content1 = CreateConfidentialContent(title1, url1);
@@ -203,10 +160,7 @@ TEST_F(DlpConfidentialContentsTest, CacheEvictsWhenFull) {
 }
 
 TEST_F(DlpConfidentialContentsTest, CacheRemovesDuplicates) {
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   DlpConfidentialContentsCache cache;
-  cache.SetTaskRunnerForTesting(task_runner);
 
   DlpConfidentialContent content = CreateConfidentialContent(title1, url1);
 

@@ -38,8 +38,11 @@ class DlpContentManagerTestHelper {
 
   void ResetWarnNotifierForTesting();
 
-  const DlpConfidentialContents& GetUserAllowedContentsForRestriction(
+  bool HasContentCachedForRestriction(
+      content::WebContents* web_contents,
       DlpRulesManager::Restriction restriction) const;
+
+  bool HasAnyContentCached() const;
 
   base::TimeDelta GetPrivacyScreenOffDelay() const;
 

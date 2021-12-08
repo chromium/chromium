@@ -332,9 +332,10 @@ class DlpContentManager : public DlpContentObserver,
   void ReportWarningEvent(const RestrictionLevelAndUrl& restriction_info,
                           DlpRulesManager::Restriction restriction);
 
-  // Returns the set of cached user allowed contents for given |restriction|.
-  DlpConfidentialContents& GetUserAllowedContents(
-      DlpRulesManager::Restriction restriction);
+  // Removes all elements of |contents| that the user has recently already
+  // acknowledged the warning for.
+  void RemoveAllowedContents(DlpConfidentialContents& contents,
+                             DlpRulesManager::Restriction restriction);
 
   // Map from currently known confidential WebContents to the restrictions.
   base::flat_map<content::WebContents*, DlpContentRestrictionSet>
@@ -355,9 +356,7 @@ class DlpContentManager : public DlpContentObserver,
 
   // Keeps track of the contents for which the user allowed the action after
   // being shown a warning for each type of restriction.
-  // TODO(crbug.com/1264803): Change to DlpConfidentialContentsCache
-  base::flat_map<DlpRulesManager::Restriction, DlpConfidentialContents>
-      user_allowed_contents_;
+  DlpConfidentialContentsCache user_allowed_contents_cache_;
 
   DlpReportingManager* reporting_manager_;
 
