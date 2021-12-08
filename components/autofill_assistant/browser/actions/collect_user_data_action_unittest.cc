@@ -114,7 +114,6 @@ void AddCompleteCardEntriesToMap(
     const std::string& name,
     google::protobuf::Map<int32_t, AutofillEntryProto>* values) {
   (*values)[51] = MakeAutofillEntry(name);
-  (*values)[58] = MakeAutofillEntry("Visa");
   (*values)[53] = MakeAutofillEntry("8");
   (*values)[55] = MakeAutofillEntry("2050");
 }
@@ -2665,7 +2664,10 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
                                   Pair(field_formatter::Key(55), "2050"),
                                   Pair(field_formatter::Key(54), "50"),
                                   Pair(field_formatter::Key(56), "08/50"),
-                                  Pair(field_formatter::Key(57), "08/2050")}));
+                                  Pair(field_formatter::Key(57), "08/2050"),
+                                  Pair(field_formatter::Key(58), "Visa"),
+                                  Pair(field_formatter::Key(-2), "visa"),
+                                  Pair(field_formatter::Key(-5), "Visa")}));
         auto address_mappings = field_formatter::CreateAutofillMappings(
             *user_data_.available_payment_instruments_[0]->billing_address,
             "en-US");
@@ -2694,6 +2696,7 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
                                  ->add_available_payment_instruments();
   AddCompleteCardEntriesToMap("John Doe",
                               payment_instrument->mutable_card_values());
+  payment_instrument->set_network("visaCC");
   AddCompleteAddressEntriesToMap("John Doe",
                                  payment_instrument->mutable_address_values());
 

@@ -1513,6 +1513,9 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       credit_card->set_record_type(autofill::CreditCard::MASKED_SERVER_CARD);
       AddProtoDataToAutofillDataModel(payment_data.card_values(),
                                       proto_data.locale(), credit_card.get());
+      if (!payment_data.network().empty()) {
+        credit_card->SetNetworkForMaskedCard(payment_data.network());
+      }
       // Note: If the incoming card did not set a network GetPaymentRequestData
       // will fall back to "generic".
       if (!collect_user_data_options_->supported_basic_card_networks.empty() &&

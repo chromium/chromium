@@ -2405,6 +2405,8 @@ message ProfileProto {
 message PaymentInstrumentProto {
   // The values for the card, where the key is one of autofill::ServerFieldType.
   map<int32, AutofillEntryProto> card_values = 2;
+  // The network of the card.
+  optional string network = 5;
   // The values for the billing address, where the key is one of
   // autofill::ServerFieldType.
   map<int32, AutofillEntryProto> address_values = 3;
