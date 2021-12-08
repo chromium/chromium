@@ -1348,6 +1348,14 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Failed to enable (need powerwash)"/>
 </enum>
 
+<enum name="AddCredentialFromSettingsUserInteractions">
+  <int value="0" label="Add Credential Dialog is opened"/>
+  <int value="1" label="Add Credential Dialog is closed"/>
+  <int value="2" label="Credential got added"/>
+  <int value="3" label="Duplicate Credential is entered"/>
+  <int value="4" label="Duplicate Credential is viewed"/>
+</enum>
+
 <enum name="AddIceCandidateResult">
   <int value="0" label="Success"/>
   <int value="1" label="Closed"/>

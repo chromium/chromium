@@ -54,6 +54,31 @@ enum PasswordDialogMode {
   ADD = 'add',
 }
 
+/**
+ * Represents different user interactions related to adding credential from the
+ * settings. Should be kept in sync with
+ * |metrics_util::AddCredentialFromSettingsUserInteractions|. These values are
+ * persisted to logs. Entries should not be renumbered and numeric values should
+ * never be reused.
+ */
+export enum AddCredentialFromSettingsUserInteractions {
+  // Used when the add credential dialog is opened from the settings.
+  Add_Dialog_Opened = 0,
+  // Used when the add credential dialog is closed from the settings.
+  Add_Dialog_Closed = 1,
+  // Used when a new credential is added from the settings .
+  Credential_Added = 2,
+  // Used when a new credential is being added from the add credential dialog in
+  // settings and another credential exists with the same username/website
+  // combination.
+  Duplicated_Credential_Entered = 3,
+  // Used when an existing credential is viewed while adding a new credential
+  // from the settings.
+  Duplicate_Credential_Viewed = 4,
+  // Must be last.
+  COUNT = 5,
+}
+
 /* TODO(crbug.com/1255127): Revisit usage for 3 different modes. */
 export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   static get is() {
@@ -494,6 +519,10 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   private onViewExistingPasswordClick_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'AddCredentialFromSettingsUserInteractions',
+        AddCredentialFromSettingsUserInteractions.Duplicate_Credential_Viewed,
+        AddCredentialFromSettingsUserInteractions.COUNT);
     const existingEntry = this.savedPasswords.find(entry => {
       return entry.urls.origin === this.websiteUrls_!.origin &&
           entry.username === this.username_;
@@ -540,9 +569,19 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       return false;
     }
     // TODO(crbug.com/1264468): Consider moving duplication check to backend.
-    return this.usernamesByOrigin_.has(this.websiteUrls_.origin) &&
+    const isDuplicate = this.usernamesByOrigin_.has(this.websiteUrls_.origin) &&
         this.usernamesByOrigin_.get(this.websiteUrls_.origin)!.has(
             this.username_);
+
+    if (isDuplicate && this.dialogMode_ === PasswordDialogMode.ADD) {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'AddCredentialFromSettingsUserInteractions',
+          AddCredentialFromSettingsUserInteractions
+              .Duplicated_Credential_Entered,
+          AddCredentialFromSettingsUserInteractions.COUNT);
+    }
+
+    return isDuplicate;
   }
 
   /**

@@ -451,6 +451,28 @@ enum class PasswordCheckInteraction {
   kMaxValue = kShowPassword,
 };
 
+// Represents different user interactions related to adding credential from the
+// setting. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused. Always keep this enum in sync with
+// the corresponding PasswordCheckInteraction in enums.xml and
+// password_manager_proxy.js.
+enum class AddCredentialFromSettingsUserInteractions {
+  // Used when the add credential dialog is opened from the settings.
+  kAddDialogOpened = 0,
+  // Used when the add credential dialog is closed from the settings.
+  kAddDialogClosed = 1,
+  // Used when a new credential is added from the settings .
+  kCredentialAdded = 2,
+  // Used when a new credential is being added from the add credential dialog in
+  // settings and another credential exists with the same username/website
+  // combination.
+  kDuplicatedCredentialEntered = 3,
+  // Used when an existing credential is viewed while adding a new credential
+  // from the settings.
+  kDuplicateCredentialViewed = 4,
+  kMaxValue = kDuplicateCredentialViewed
+};
+
 // Metrics: PasswordManager.MoveToAccountStoreTrigger.
 // This must be kept in sync with the enum in password_move_to_account_dialog.js
 // (in chrome/browser/resources/settings/autofill_page).
@@ -664,6 +686,11 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
 // Log the result of the password edit action.
 void LogPasswordEditResult(IsUsernameChanged password_changed,
                            IsPasswordChanged username_changed);
+
+// Log the user interaction events when creating a new credential from settings.
+void LogUserInteractionsWhenAddingCredentialFromSettings(
+    AddCredentialFromSettingsUserInteractions
+        add_credential_from_settings_user_interaction);
 
 }  // namespace metrics_util
 

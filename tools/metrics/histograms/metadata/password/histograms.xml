@@ -626,6 +626,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.AddCredentialFromSettings.UserAction"
+    enum="AddCredentialFromSettingsUserInteractions" expires_after="M104">
+  <owner>vidhanj@google.com</owner>
+  <owner>lizapopova@google.com</owner>
+  <summary>
+    Records the user actions performed when a new credential is added from
+    Settings. Only applicable to Desktop and iOS platforms.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AffiliationBackend.FetchSize" units="facets"
     expires_after="2022-04-10">
   <owner>vsemeniuk@google.com</owner>

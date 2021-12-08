@@ -117,6 +117,9 @@ bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
     account_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
 
   GetStoreFor(form).AddLogin(form);
+  metrics_util::LogUserInteractionsWhenAddingCredentialFromSettings(
+      metrics_util::AddCredentialFromSettingsUserInteractions::
+          kCredentialAdded);
   return true;
 }
 
