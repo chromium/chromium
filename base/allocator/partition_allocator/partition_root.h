@@ -1071,8 +1071,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     PCScan::JoinScanIfNeeded();
     if (LIKELY(internal::IsManagedByNormalBuckets(
             reinterpret_cast<uintptr_t>(ptr)))) {
-      PCScan::MoveToQuarantine(memory::UnmaskPtr(slot_start),
-                               slot_span->GetUsableSize(root),
+      PCScan::MoveToQuarantine(ptr, slot_span->GetUsableSize(root), slot_start,
                                slot_span->bucket->slot_size);
       return;
     }
@@ -1128,9 +1127,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   if (UNLIKELY(IsQuarantineEnabled())) {
     if (LIKELY(internal::IsManagedByNormalBuckets(
             reinterpret_cast<uintptr_t>(ptr)))) {
+      auto* unmasked_slot_start = memory::UnmaskPtr(slot_start);
       // Mark the state in the state bitmap as freed.
-      internal::StateBitmapFromPointer(slot_start)
-          ->Free(reinterpret_cast<uintptr_t>(slot_start));
+      internal::StateBitmapFromPointer(unmasked_slot_start)
+          ->Free(reinterpret_cast<uintptr_t>(unmasked_slot_start));
     }
   }
 
@@ -1690,9 +1690,10 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   if (UNLIKELY(is_quarantine_enabled)) {
     if (LIKELY(internal::IsManagedByNormalBuckets(
             reinterpret_cast<uintptr_t>(ret)))) {
+      auto* unmasked_slot_start = memory::UnmaskPtr(slot_start);
       // Mark the corresponding bits in the state bitmap as allocated.
-      internal::StateBitmapFromPointer(ret)->Allocate(
-          reinterpret_cast<uintptr_t>(slot_start));
+      internal::StateBitmapFromPointer(unmasked_slot_start)
+          ->Allocate(reinterpret_cast<uintptr_t>(unmasked_slot_start));
     }
   }
 

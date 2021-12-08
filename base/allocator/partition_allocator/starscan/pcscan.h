@@ -101,6 +101,7 @@ class BASE_EXPORT PCScan final {
 
   ALWAYS_INLINE static void MoveToQuarantine(void* ptr,
                                              size_t usable_size,
+                                             void* slot_start,
                                              size_t slot_size);
 
   // Performs scanning unconditionally.
@@ -233,8 +234,8 @@ ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
 
 ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
                                             size_t usable_size,
+                                            void* slot_start,
                                             size_t slot_size) {
-  PA_DCHECK(ptr == memory::UnmaskPtr(ptr));
   PCScan& instance = Instance();
   if (instance.clear_type_ == ClearType::kEager) {
     // We need to distinguish between usable_size and slot_size in this context:
@@ -246,12 +247,13 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
     SecureMemset(ptr, 0, usable_size);
   }
 
-  auto* state_bitmap = StateBitmapFromPointer(ptr);
+  auto* unmasked_slot = memory::UnmaskPtr(slot_start);
+  auto* state_bitmap = StateBitmapFromPointer(unmasked_slot);
 
   // Mark the state in the state bitmap as quarantined. Make sure to do it after
   // the clearing to avoid racing with *Scan Sweeper.
   const bool succeeded = state_bitmap->Quarantine(
-      reinterpret_cast<uintptr_t>(ptr), instance.epoch());
+      reinterpret_cast<uintptr_t>(unmasked_slot), instance.epoch());
 #if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
   if (UNLIKELY(!succeeded))
     DoubleFreeAttempt();

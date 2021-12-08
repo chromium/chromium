@@ -906,7 +906,8 @@ struct SweepStat {
 
 void UnmarkInCardTable(void* object, SlotSpanMetadata<ThreadSafe>* slot_span) {
 #if PA_STARSCAN_USE_CARD_TABLE
-  const uintptr_t object_as_uintptr = reinterpret_cast<uintptr_t>(object);
+  const uintptr_t object_as_uintptr =
+      reinterpret_cast<uintptr_t>(memory::UnmaskPtr(object));
   // Reset card(s) for this quarantined object. Please note that the
   // cards may still contain quarantined objects (which were
   // promoted in this scan cycle), but
@@ -992,7 +993,7 @@ void UnmarkInCardTable(void* object, SlotSpanMetadata<ThreadSafe>* slot_span) {
   size_t freelist_entries = 0;
 
   const auto bitmap_iterator = [&](uintptr_t ptr) {
-    auto* ptr_void = reinterpret_cast<void*>(ptr);
+    auto* ptr_void = memory::RemaskPtr(reinterpret_cast<void*>((ptr)));
     SlotSpan* current_slot_span = SlotSpan::FromSlotStartPtr(ptr_void);
     auto* entry = new (ptr_void) PartitionFreelistEntry();
 

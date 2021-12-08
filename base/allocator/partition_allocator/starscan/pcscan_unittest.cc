@@ -88,8 +88,9 @@ class PartitionAllocPCScanTest : public testing::Test {
   void FinishPCScanAsScanner() { PCScan::FinishScanForTesting(); }
 
   bool IsInQuarantine(void* ptr) const {
-    return StateBitmapFromPointer(ptr)->IsQuarantined(
-        reinterpret_cast<uintptr_t>(ptr));
+    auto* unmasked = memory::UnmaskPtr(ptr);
+    return StateBitmapFromPointer(unmasked)->IsQuarantined(
+        reinterpret_cast<uintptr_t>(unmasked));
   }
 
   ThreadSafePartitionRoot& root() { return *allocator_.root(); }

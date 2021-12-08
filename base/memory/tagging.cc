@@ -77,8 +77,8 @@ void ChangeMemoryTaggingModeForAllThreadsPerProcess(
     FilePath library_path = module_path.Append("libc.so");
     NativeLibrary library = LoadNativeLibrary(library_path, &load_error);
     if (!library) {
-      LOG(FATAL) << "ChangeMemoryTaggingModeForAllThreadsPerProcess: dlsym "
-                    "mallopt failure"
+      LOG(FATAL) << "ChangeMemoryTaggingModeForAllThreadsPerProcess: dlopen "
+                    "libc failure"
                  << load_error.ToString();
     }
     void* func_ptr = GetFunctionPointerFromNativeLibrary(library, "mallopt");

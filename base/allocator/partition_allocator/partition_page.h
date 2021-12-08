@@ -161,6 +161,9 @@ struct __attribute__((packed)) SlotSpanMetadata {
   BASE_EXPORT NOINLINE void FreeSlowPath(size_t number_of_freed);
   ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
   ALWAYS_INLINE void Free(void* ptr);
+  // Appends the passed freelist to the slot-span's freelist. Please note that
+  // the function doesn't increment the tags of the passed freelist entries,
+  // since FreeNoHooks() did it already.
   ALWAYS_INLINE void AppendFreeList(PartitionFreelistEntry* head,
                                     PartitionFreelistEntry* tail,
                                     size_t number_of_freed);
@@ -684,11 +687,11 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
     size_t number_of_entries = 0;
     for (auto* entry = head; entry;
          entry = entry->GetNext(bucket->slot_size), ++number_of_entries) {
+      auto* unmasked_entry = reinterpret_cast<char*>(memory::UnmaskPtr(entry));
       // Check that all entries belong to this slot span.
-      PA_DCHECK(ToSlotSpanStartPtr(this) <= entry);
-      PA_DCHECK(reinterpret_cast<char*>(entry) <
-                (static_cast<char*>(ToSlotSpanStartPtr(this)) +
-                 bucket->get_bytes_per_span()));
+      PA_DCHECK(ToSlotSpanStartPtr(this) <= unmasked_entry);
+      PA_DCHECK(unmasked_entry < (static_cast<char*>(ToSlotSpanStartPtr(this)) +
+                                  bucket->get_bytes_per_span()));
     }
     PA_DCHECK(number_of_entries == number_of_freed);
   }
