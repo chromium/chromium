@@ -13,6 +13,9 @@
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_device_list_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
 #include "base/run_loop.h"
@@ -101,9 +104,11 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
 
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+
     bluetooth_detailed_view_controller_ =
         std::make_unique<BluetoothDetailedViewController>(
-            /*tray_controller=*/nullptr);
+            GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test());
 
     BluetoothDetailedView::Factory::SetFactoryForTesting(
         &bluetooth_detailed_view_factory_);

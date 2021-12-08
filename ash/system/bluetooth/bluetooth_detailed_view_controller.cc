@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -26,7 +27,8 @@ using chromeos::bluetooth_config::mojom::DeviceConnectionState;
 BluetoothDetailedViewController::BluetoothDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
     : detailed_view_delegate_(
-          std::make_unique<DetailedViewDelegate>(tray_controller)) {
+          std::make_unique<DetailedViewDelegate>(tray_controller)),
+      tray_controller_(tray_controller) {
   DCHECK(ash::features::IsBluetoothRevampEnabled());
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
@@ -94,6 +96,7 @@ void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
 }
 
 void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
+  tray_controller_->CloseBubble();  // Deletes |this|.
   Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
       /*device_address=*/absl::nullopt);
 }
@@ -101,8 +104,11 @@ void BluetoothDetailedViewController::OnPairNewDeviceRequested() {
 void BluetoothDetailedViewController::OnDeviceListItemSelected(
     const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
         device) {
-  Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings(
-      device->device_properties->id);
+  // When CloseBubble() is called |device| will be deleted so we need to make a
+  // copy of the device ID that was selected.
+  const std::string device_id = device->device_properties->id;
+  tray_controller_->CloseBubble();  // Deletes |this|.
+  Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings(device_id);
 }
 
 void BluetoothDetailedViewController::BluetoothEnabledStateChanged() {
