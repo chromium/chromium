@@ -652,10 +652,17 @@ void VideoEncoder::ProcessEncode(Request* request) {
       // HasPendingActivity() keeps the VideoEncoder alive long enough.
       auto blit_done_callback = [](VideoEncoder* self, bool keyframe,
                                    uint32_t reset_count,
+                                   base::TimeDelta timestamp,
+                                   media::VideoFrameMetadata metadata,
                                    media::VideoEncoder::StatusCB done_callback,
                                    scoped_refptr<media::VideoFrame> frame) {
         if (!self || self->reset_count_ != reset_count || !frame)
           return;
+
+        // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
+        // so we must manually copy over properties relevant to the encoder.
+        frame->set_timestamp(timestamp);
+        frame->set_metadata(metadata);
 
         DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
         --self->requested_encodes_;
@@ -696,7 +703,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
               format, frame->coded_size(), frame->ColorSpace(), origin,
               frame->mailbox_holder(0), dst_color_space,
               WTF::Bind(blit_done_callback, WrapWeakPersistent(this), keyframe,
-                        reset_count_,
+                        reset_count_, frame->timestamp(), frame->metadata(),
                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
                             done_callback, WrapCrossThreadWeakPersistent(this),
                             WrapCrossThreadPersistent(request)))))) {

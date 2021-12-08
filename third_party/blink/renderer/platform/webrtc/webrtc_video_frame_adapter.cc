@@ -229,6 +229,11 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
       return nullptr;
     }
 
+    // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames, so we
+    // must manually copy over properties relevant to the encoder.
+    dst_frame->set_timestamp(source_frame->timestamp());
+    dst_frame->set_metadata(source_frame->metadata());
+
     // TODO(crbug.com/1224279): We should remove this wait by internalizing
     // it into VideoFrame::Map().
     raster_context_provider->RasterInterface()->Finish();
