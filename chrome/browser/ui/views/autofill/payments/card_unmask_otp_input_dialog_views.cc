@@ -81,6 +81,7 @@ void CardUnmaskOtpInputDialogViews::ShowInvalidState(
   otp_input_textfield_invalid_label_->SetVisible(true);
   otp_input_textfield_invalid_label_->SetText(invalid_label_text);
   otp_input_textfield_invalid_label_padding_->SetVisible(false);
+  otp_input_textfield_->SetAssociatedLabel(otp_input_textfield_invalid_label_);
 }
 
 void CardUnmaskOtpInputDialogViews::Dismiss(
@@ -191,6 +192,8 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
       gfx::HorizontalAlignment::ALIGN_LEFT);
   otp_input_textfield_invalid_label_->SetVisible(false);
   otp_input_textfield_invalid_label_->SetMultiLine(true);
+  // Disable the label so that its accessibility data will not be read.
+  otp_input_textfield_invalid_label_->SetEnabled(false);
 
   // Adds padding between the textfield and footer text while textfield label
   // is not visible, so that the initial dialog layout allows room for the error
@@ -250,7 +253,9 @@ void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
 void CardUnmaskOtpInputDialogViews::HideInvalidState() {
   DCHECK(otp_input_textfield_->GetInvalid());
   otp_input_textfield_->SetInvalid(false);
+  otp_input_textfield_invalid_label_->SetText(std::u16string());
   otp_input_textfield_invalid_label_->SetVisible(false);
+  otp_input_textfield_->SetAssociatedLabel(otp_input_textfield_invalid_label_);
   otp_input_textfield_invalid_label_padding_->SetVisible(true);
 }
 
