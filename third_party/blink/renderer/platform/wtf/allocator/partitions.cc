@@ -83,7 +83,9 @@ bool Partitions::InitializeOnce() {
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
-          base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
+          base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer &&
+      base::features::kBackupRefPtrModeParam.Get() ==
+          base::features::BackupRefPtrMode::kEnabled;
 #else
       false;
 #endif

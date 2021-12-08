@@ -881,9 +881,9 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
   // Make sure the thread cache is enabled in the main partition.
   allocator::ConfigurePartitions(
-      allocator::EnableBrp(false),
-      allocator::ThreadCacheOnNonQuarantinablePartition(false),
-      allocator::ForceSplitPartitions(false));
+      allocator::EnableBrp(false), allocator::SplitMainPartition(false),
+      allocator::UseDedicatedAlignedPartition(false),
+      allocator::ThreadCacheOnNonQuarantinablePartition(false));
 
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();

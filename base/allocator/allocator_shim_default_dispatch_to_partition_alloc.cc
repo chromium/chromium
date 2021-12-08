@@ -499,12 +499,23 @@ alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_aligned_alloc_partition[sizeof(
         base::ThreadSafePartitionRoot)];
 
-void ConfigurePartitions(EnableBrp enable_brp,
-                         ThreadCacheOnNonQuarantinablePartition
-                             thread_cache_on_non_quarantinable_partition,
-                         ForceSplitPartitions force_split_partitions) {
+void ConfigurePartitions(
+    EnableBrp enable_brp,
+    SplitMainPartition split_main_partition,
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    ThreadCacheOnNonQuarantinablePartition
+        thread_cache_on_non_quarantinable_partition) {
   // |thread_cache_on_non_quarantinable_partition| can't be enabled with BRP.
   PA_CHECK(!enable_brp || !thread_cache_on_non_quarantinable_partition);
+  // BRP cannot be enabled without splitting the main partition. Furthermore, in
+  // the "before allocation" mode, it can't be enabled without further splitting
+  // out the aligned partition.
+  PA_CHECK(!enable_brp || split_main_partition);
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+  PA_CHECK(!enable_brp || use_dedicated_aligned_partition);
+#endif
+  // Can't split out the aligned partition, without splitting the main one.
+  PA_CHECK(!use_dedicated_aligned_partition || split_main_partition);
 
   static bool configured = false;
   PA_CHECK(!configured);
@@ -518,7 +529,9 @@ void ConfigurePartitions(EnableBrp enable_brp,
 
   // When there is no need to split partition, simply enable thread cache in the
   // existing root.
-  if (!enable_brp && !force_split_partitions) {
+  if (!split_main_partition) {
+    PA_DCHECK(!enable_brp);
+    PA_DCHECK(!use_dedicated_aligned_partition);
     PA_DCHECK(!current_root->with_thread_cache);
     auto* root_with_thread_cache =
         thread_cache_on_non_quarantinable_partition
@@ -531,28 +544,9 @@ void ConfigurePartitions(EnableBrp enable_brp,
   current_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                             PartitionPurgeDiscardUnusedSystemPages);
 
-  // AlignedAlloc relies on natural alignment offered by the allocator (see the
-  // comment inside PartitionRoot::AlignedAllocFlags). Any extras in front of
-  // the allocation will mess up that alignment. Such extras are used when
-  // BackupRefPtr is on, in which case, we need a separate partition, dedicated
-  // to handle only aligned allocations, where those extras are disabled.
-  // However, if the "previous slot" variant is used, no dedicated partition is
-  // needed, as the extras won't interfere with the alignment requirements.
-  //
-  // Regardless of everything said above, force_split_partitions==true will
-  // force creating a dedicated partition for aligned allocations.
-  const bool use_dedicated_partition_for_aligned_alloc =
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-      force_split_partitions;
-#else
-      true;
-#endif
-  const bool allow_aligned_alloc_in_main_root =
-      !use_dedicated_partition_for_aligned_alloc;
-
   auto* new_root = new (g_allocator_buffer_for_new_main_partition)
       base::ThreadSafePartitionRoot({
-          allow_aligned_alloc_in_main_root
+          !use_dedicated_aligned_partition
               ? base::PartitionOptions::AlignedAlloc::kAllowed
               : base::PartitionOptions::AlignedAlloc::kDisallowed,
           thread_cache_on_non_quarantinable_partition
@@ -574,7 +568,7 @@ void ConfigurePartitions(EnableBrp enable_brp,
   g_original_root = current_root;
 
   base::ThreadSafePartitionRoot* new_aligned_root;
-  if (use_dedicated_partition_for_aligned_alloc) {
+  if (use_dedicated_aligned_partition) {
     // TODO(bartekn): Use the original root instead of creating a new one. It'd
     // result in one less partition, but come at a cost of commingling types.
     new_aligned_root = new (g_allocator_buffer_for_aligned_alloc_partition)

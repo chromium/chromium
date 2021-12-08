@@ -175,17 +175,19 @@ BASE_EXPORT void ReconfigurePartitionAllocLazyCommit(bool enabled);
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
 using ThreadCacheOnNonQuarantinablePartition =
     base::StrongAlias<class ThreadCacheOnNonQuarantinablePartitionTag, bool>;
-using ForceSplitPartitions =
-    base::StrongAlias<class ForceSplitPartitionsTag, bool>;
+using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
+using UseDedicatedAlignedPartition =
+    base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
 
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
 // thread-cache on the main (malloc) partition will be disabled.
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
+    SplitMainPartition split_main_partition,
+    UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     ThreadCacheOnNonQuarantinablePartition
-        thread_cache_on_non_quarantinable_partition,
-    ForceSplitPartitions force_split_partitions);
+        thread_cache_on_non_quarantinable_partition);
 
 #if defined(PA_ALLOW_PCSCAN)
 BASE_EXPORT void EnablePCScan(base::internal::PCScan::InitConfig);

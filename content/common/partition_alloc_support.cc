@@ -214,37 +214,55 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
+  bool split_main_partition = false;
+  ALLOW_UNUSED_LOCAL(split_main_partition);
+  bool use_dedicated_aligned_partition = false;
+  ALLOW_UNUSED_LOCAL(use_dedicated_aligned_partition);
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+  bool process_affected_by_brp_flag = false;
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
-    enable_brp = process_type.empty();
+    process_affected_by_brp_flag = process_type.empty();
     if (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
         base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) {
-      enable_brp |= process_type == switches::kRendererProcess;
+      process_affected_by_brp_flag |=
+          process_type == switches::kRendererProcess;
     }
     if (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
         base::features::BackupRefPtrEnabledProcesses::kAllProcesses) {
-      enable_brp = true;
+      process_affected_by_brp_flag = true;
+    }
+  }
+
+  if (process_affected_by_brp_flag) {
+    switch (base::features::kBackupRefPtrModeParam.Get()) {
+      case base::features::BackupRefPtrMode::kEnabled:
+        enable_brp = true;
+        split_main_partition = true;
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        // AlignedAlloc relies on natural alignment offered by the allocator
+        // (see the comment inside PartitionRoot::AlignedAllocFlags). Any extras
+        // in front of the allocation will mess up that alignment. Such extras
+        // are used when BackupRefPtr is on, in which case, we need a separate
+        // partition, dedicated to handle only aligned allocations, where those
+        // extras are disabled. However, if the "previous slot" variant is used,
+        // no dedicated partition is needed, as the extras won't interfere with
+        // the alignment requirements.
+        use_dedicated_aligned_partition = true;
+#endif
+        break;
+      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
+        split_main_partition = true;
+        break;
+      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
+        split_main_partition = true;
+        use_dedicated_aligned_partition = true;
+        break;
     }
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-
-  bool force_split_partitions = false;
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSimulateBRPPartitionSplit)) {
-    // No specified process type means this is the Browser process.
-    force_split_partitions = process_type.empty();
-    if (base::features::kSimulateBRPPartitionSplitProcessesParam.Get() ==
-        base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) {
-      force_split_partitions |= process_type == switches::kRendererProcess;
-    }
-    if (base::features::kSimulateBRPPartitionSplitProcessesParam.Get() ==
-        base::features::BackupRefPtrEnabledProcesses::kAllProcesses) {
-      force_split_partitions = true;
-    }
-  }
 
   base::allocator::ReconfigurePartitionAllocLazyCommit(
       base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit));
@@ -291,9 +309,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       scan_enabled && process_type == switches::kRendererProcess;
   base::allocator::ConfigurePartitions(
       base::allocator::EnableBrp(enable_brp),
+      base::allocator::SplitMainPartition(split_main_partition),
+      base::allocator::UseDedicatedAlignedPartition(
+          use_dedicated_aligned_partition),
       base::allocator::ThreadCacheOnNonQuarantinablePartition(
-          enable_thread_cache_on_v8_partition),
-      base::allocator::ForceSplitPartitions(force_split_partitions));
+          enable_thread_cache_on_v8_partition));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 

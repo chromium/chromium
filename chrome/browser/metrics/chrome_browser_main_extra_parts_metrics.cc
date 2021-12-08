@@ -624,7 +624,10 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // only at cases where one isn't affected by the other.
   bool brp_enabled =
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-      base::FeatureList::IsEnabled(base::features::kPartitionAllocBackupRefPtr);
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr) &&
+      (base::features::kBackupRefPtrModeParam.Get() ==
+       base::features::BackupRefPtrMode::kEnabled);
 #else
       false;
 #endif
