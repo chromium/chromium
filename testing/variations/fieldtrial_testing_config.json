@@ -5026,6 +5026,21 @@
             ]
         }
     ],
+    "MixedContentDownloadDialog": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableMixedContentDownloadDialog"
+                    ]
+                }
+            ]
+        }
+    ],
     "MixedFormInterstitial": [
         {
             "platforms": [
