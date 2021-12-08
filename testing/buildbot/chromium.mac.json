@@ -10299,7 +10299,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 25
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },

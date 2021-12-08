@@ -265,6 +265,16 @@
           'shards': 25,
         },
       },
+      'Mac11 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 25,
+        },
+      },
       'Mac11 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
