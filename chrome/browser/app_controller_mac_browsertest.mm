@@ -935,8 +935,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(nullptr, [ac bookmarkMenuBridge]);
 }
 
+// Disabled because of flakiness. See crbug.com/1278031.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       ReloadingDestroyedProfileDoesNotCrash) {
+                       DISABLED_ReloadingDestroyedProfileDoesNotCrash) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   AppController* ac =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
