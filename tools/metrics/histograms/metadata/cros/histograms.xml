@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CrosDisksClient.MountCompletedError"
     enum="CrosDisksClientMountError" expires_after="2022-10-19">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error code of disk mount signals received from the Chrome OS cros-disks
     daemon.
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CrosDisksClient.MountErrorMountType"
     enum="CrosDisksMountTypeError" expires_after="2022-10-19">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The {mount type}x{mount error code} received from the Chrome OS cros-disks
     daemon.
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CrosDisksClient.MountTime" units="ms"
     expires_after="2022-10-19">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken by the Chrome OS cros-disks daemon to perform a Mount operation.
   </summary>
@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CrosDisksClient.UnmountError" enum="CrosDisksClientMountError"
     expires_after="2022-10-19">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error code of disk unmount operations returned from the Chrome OS
     cros-disks daemon.
@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="CrosDisksClient.UnmountTime" units="ms"
     expires_after="2022-10-19">
   <owner>fdegros@chromium.org</owner>
-  <owner>chromeos-files-app@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Time taken by the Chrome OS cros-disks daemon to perform an Unmount
     operation.

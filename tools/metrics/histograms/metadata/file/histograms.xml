@@ -139,14 +139,14 @@ chromium-metrics-reviews@google.com.
 <histogram name="FileBrowser.DriveHostedFilePinSuccess" enum="BooleanSuccess"
     expires_after="2022-04-24">
   <owner>austinct@chromium.org</owner>
-  <owner>dats@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Tracks success rate of pinning hosted files in Drive.</summary>
 </histogram>
 
 <histogram name="FileBrowser.DrivePinSuccess" enum="BooleanSuccess"
     expires_after="2022-04-24">
   <owner>austinct@chromium.org</owner>
-  <owner>dats@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Tracks success rate of pinning files in Drive.</summary>
 </histogram>
 
