@@ -654,7 +654,7 @@ void SharesheetBubbleView::TargetButtonPressed(TargetInfo target) {
   } else {
     intent_->activity_name = target.activity_name;
   }
-  delegator_->OnTargetSelected(target.launch_name, type, intent_->Clone(),
+  delegator_->OnTargetSelected(target.launch_name, type, std::move(intent_),
                                share_action_view_);
   if (delivered_callback_) {
     std::move(delivered_callback_)

@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -82,6 +83,10 @@ void CopyToClipboardShareAction::LaunchAction(
       }
     }
     clipboard_writer.WriteFilenames(ui::FileInfosToURIList(file_infos));
+  }
+
+  if (controller) {
+    controller->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
   }
 
   ToastData toast(kToastId,
