@@ -23,7 +23,7 @@ struct DropData;
 // them.
 class WebContentsView {
  public:
-  virtual ~WebContentsView() {}
+  virtual ~WebContentsView() = default;
 
   // Returns the native widget that contains the contents of the tab.
   virtual gfx::NativeView GetNativeView() const = 0;

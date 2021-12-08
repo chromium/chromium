@@ -1857,7 +1857,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   EXPECT_TRUE(notifications_.empty());
 
   WebContents::CreateParams create_params(
-      ShellContentBrowserClient::Get()->browser_context(), nullptr);
+      ShellContentBrowserClient::Get()->browser_context());
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContents::Create(create_params));
   EXPECT_TRUE(notifications_.empty());

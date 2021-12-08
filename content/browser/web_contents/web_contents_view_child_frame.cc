@@ -28,7 +28,7 @@ WebContentsViewChildFrame::WebContentsViewChildFrame(
   *delegate_view = this;
 }
 
-WebContentsViewChildFrame::~WebContentsViewChildFrame() {}
+WebContentsViewChildFrame::~WebContentsViewChildFrame() = default;
 
 WebContentsView* WebContentsViewChildFrame::GetOuterView() {
   return web_contents_->GetOuterWebContents()->GetView();

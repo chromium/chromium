@@ -526,7 +526,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestReplaceTab) {
             expected_metrics);
 
   // Replace the tab.
-  content::WebContents::CreateParams web_contents_params(profile(), nullptr);
+  content::WebContents::CreateParams web_contents_params(profile());
   std::unique_ptr<content::WebContents> new_contents = base::WrapUnique(
       content::WebContentsTester::CreateTestWebContents(web_contents_params));
   std::unique_ptr<content::WebContents> old_contents =

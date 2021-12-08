@@ -127,7 +127,7 @@ void ResizeWebContentsView(Shell* shell,
 
 class WebContentsImplBrowserTest : public ContentBrowserTest {
  public:
-  WebContentsImplBrowserTest() {}
+  WebContentsImplBrowserTest() = default;
   void SetUp() override {
     RenderWidgetHostImpl::DisableResizeAckCheckForTesting();
     ContentBrowserTest::SetUp();
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, LoadProgress) {
   const std::vector<double>& progresses = delegate->progresses;
   // All updates should be in order ...
   if (std::adjacent_find(progresses.begin(), progresses.end(),
-                         std::greater<double>()) != progresses.end()) {
+                         std::greater<>()) != progresses.end()) {
     ADD_FAILURE() << "Progress values should be in order: "
                   << ::testing::PrintToString(progresses);
   }
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, LoadProgressWithFrames) {
   const std::vector<double>& progresses = delegate->progresses;
   // All updates should be in order ...
   if (std::adjacent_find(progresses.begin(), progresses.end(),
-                         std::greater<double>()) != progresses.end()) {
+                         std::greater<>()) != progresses.end()) {
     ADD_FAILURE() << "Progress values should be in order: "
                   << ::testing::PrintToString(progresses);
   }
@@ -3671,7 +3671,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetVisibilityBeforeLoad) {
   // Create a WebContents detached from native windows so that visibility of
   // the WebContents is fully controlled by the app.
   WebContents::CreateParams create_params(
-      attached_web_contents->GetBrowserContext(), nullptr /* site_instance */);
+      attached_web_contents->GetBrowserContext());
   std::unique_ptr<WebContents> web_contents =
       WebContents::Create(create_params);
   EXPECT_EQ(Visibility::VISIBLE, web_contents->GetVisibility());
@@ -3772,7 +3772,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   WebContents* attached_web_contents = shell()->web_contents();
 
   WebContents::CreateParams create_params(
-      attached_web_contents->GetBrowserContext(), /*site_instance=*/nullptr);
+      attached_web_contents->GetBrowserContext());
   std::unique_ptr<WebContents> public_web_contents =
       WebContents::Create(create_params);
   auto* web_contents = static_cast<WebContentsImpl*>(public_web_contents.get());
@@ -4923,7 +4923,7 @@ IN_PROC_BROWSER_TEST_F(
 
 class RenderFrameCreatedObserver : public WebContentsObserver {
  public:
-  RenderFrameCreatedObserver(WebContents* web_contents)
+  explicit RenderFrameCreatedObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
   ~RenderFrameCreatedObserver() override = default;
 

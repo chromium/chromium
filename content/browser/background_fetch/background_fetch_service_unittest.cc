@@ -302,7 +302,7 @@ class BackgroundFetchServiceTest
     devtools_context()->AddObserver(this);
 
     web_contents_ = base::WrapUnique(WebContentsTester::CreateTestWebContents(
-        WebContents::CreateParams(browser_context(), nullptr)));
+        WebContents::CreateParams(browser_context())));
     std::unique_ptr<MockPermissionManager> mock_permission_manager(
         new testing::NiceMock<MockPermissionManager>());
     ON_CALL(*mock_permission_manager,

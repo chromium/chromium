@@ -16,7 +16,7 @@ namespace content {
 class WebContentsAttachedClass1
     : public WebContentsUserData<WebContentsAttachedClass1> {
  public:
-  ~WebContentsAttachedClass1() override {}
+  ~WebContentsAttachedClass1() override = default;
 
  private:
   explicit WebContentsAttachedClass1(WebContents* contents)
@@ -30,7 +30,7 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsAttachedClass1);
 class WebContentsAttachedClass2
     : public WebContentsUserData<WebContentsAttachedClass2> {
  public:
-  ~WebContentsAttachedClass2() override {}
+  ~WebContentsAttachedClass2() override = default;
 
  private:
   explicit WebContentsAttachedClass2(WebContents* contents)

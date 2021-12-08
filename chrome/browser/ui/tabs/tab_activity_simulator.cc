@@ -51,7 +51,7 @@ void TabActivitySimulator::Navigate(content::WebContents* web_contents,
 std::unique_ptr<content::WebContents> TabActivitySimulator::CreateWebContents(
     content::BrowserContext* browser_context,
     bool initially_visible) {
-  content::WebContents::CreateParams params(browser_context, nullptr);
+  content::WebContents::CreateParams params(browser_context);
   params.initially_hidden = !initially_visible;
   std::unique_ptr<content::WebContents> test_contents(
       content::WebContentsTester::CreateTestWebContents(params));

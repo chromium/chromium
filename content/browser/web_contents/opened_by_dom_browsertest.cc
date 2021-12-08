@@ -23,7 +23,7 @@ namespace {
 // requested it.
 class CloseTrackingDelegate : public WebContentsDelegate {
  public:
-  CloseTrackingDelegate() : close_contents_called_(false) {}
+  CloseTrackingDelegate() = default;
 
   CloseTrackingDelegate(const CloseTrackingDelegate&) = delete;
   CloseTrackingDelegate& operator=(const CloseTrackingDelegate&) = delete;
@@ -35,7 +35,7 @@ class CloseTrackingDelegate : public WebContentsDelegate {
   }
 
  private:
-  bool close_contents_called_;
+  bool close_contents_called_ = false;
 };
 
 }  // namespace

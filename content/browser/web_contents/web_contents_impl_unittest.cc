@@ -263,7 +263,7 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
   FakeFullscreenDelegate(const FakeFullscreenDelegate&) = delete;
   FakeFullscreenDelegate& operator=(const FakeFullscreenDelegate&) = delete;
 
-  ~FakeFullscreenDelegate() override {}
+  ~FakeFullscreenDelegate() override = default;
 
   void EnterFullscreenModeForTab(
       RenderFrameHost* requesting_frame,
@@ -285,12 +285,12 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
 
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
-  FakeWebContentsDelegate() : loading_state_changed_was_called_(false) {}
+  FakeWebContentsDelegate() = default;
 
   FakeWebContentsDelegate(const FakeWebContentsDelegate&) = delete;
   FakeWebContentsDelegate& operator=(const FakeWebContentsDelegate&) = delete;
 
-  ~FakeWebContentsDelegate() override {}
+  ~FakeWebContentsDelegate() override = default;
 
   void LoadingStateChanged(WebContents* source,
                            bool should_show_loading_ui) override {
@@ -302,7 +302,7 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
   }
 
  private:
-  bool loading_state_changed_was_called_;
+  bool loading_state_changed_was_called_ = false;
 };
 
 class FakeImageDownloader : public blink::mojom::ImageDownloader {
@@ -2111,10 +2111,7 @@ TEST_F(WebContentsImplTest, GetLastActiveTime) {
 
 class ContentsZoomChangedDelegate : public WebContentsDelegate {
  public:
-  ContentsZoomChangedDelegate() :
-    contents_zoom_changed_call_count_(0),
-    last_zoom_in_(false) {
-  }
+  ContentsZoomChangedDelegate() = default;
 
   ContentsZoomChangedDelegate(const ContentsZoomChangedDelegate&) = delete;
   ContentsZoomChangedDelegate& operator=(const ContentsZoomChangedDelegate&) =
@@ -2137,8 +2134,8 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
   }
 
  private:
-  int contents_zoom_changed_call_count_;
-  bool last_zoom_in_;
+  int contents_zoom_changed_call_count_ = 0;
+  bool last_zoom_in_ = false;
 };
 
 // Tests that some mouseehweel events get turned into browser zoom requests.
@@ -2376,7 +2373,7 @@ class LoadingWebContentsObserver : public WebContentsObserver {
   LoadingWebContentsObserver& operator=(const LoadingWebContentsObserver&) =
       delete;
 
-  ~LoadingWebContentsObserver() override {}
+  ~LoadingWebContentsObserver() override = default;
 
   // The assertions on these messages ensure that they are received in order.
   void DidStartLoading() override {
@@ -2685,13 +2682,13 @@ namespace {
 
 class TestJavaScriptDialogManager : public JavaScriptDialogManager {
  public:
-  TestJavaScriptDialogManager() {}
+  TestJavaScriptDialogManager() = default;
 
   TestJavaScriptDialogManager(const TestJavaScriptDialogManager&) = delete;
   TestJavaScriptDialogManager& operator=(const TestJavaScriptDialogManager&) =
       delete;
 
-  ~TestJavaScriptDialogManager() override {}
+  ~TestJavaScriptDialogManager() override = default;
 
   size_t reset_count() { return reset_count_; }
 

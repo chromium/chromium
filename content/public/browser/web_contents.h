@@ -36,6 +36,7 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
 #include "services/data_decoder/public/mojom/web_bundler.mojom.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
@@ -128,11 +129,11 @@ class WebContents : public PageNavigator,
     explicit CreateParams(
         BrowserContext* context,
         base::Location creator_location = base::Location::Current());
-    CreateParams(const CreateParams& other);
-    ~CreateParams();
     CreateParams(BrowserContext* context,
                  scoped_refptr<SiteInstance> site,
                  base::Location creator_location = base::Location::Current());
+    CreateParams(const CreateParams& other);
+    ~CreateParams();
 
     raw_ptr<BrowserContext> browser_context;
 
@@ -142,20 +143,20 @@ class WebContents : public PageNavigator,
     scoped_refptr<SiteInstance> site_instance;
 
     // The process id of the frame initiating the open.
-    int opener_render_process_id;
+    int opener_render_process_id = content::ChildProcessHost::kInvalidUniqueID;
 
     // The routing id of the frame initiating the open.
-    int opener_render_frame_id;
+    int opener_render_frame_id = MSG_ROUTING_NONE;
 
     // If the opener is suppressed, then the new WebContents doesn't hold a
     // reference to its opener.
-    bool opener_suppressed;
+    bool opener_suppressed = false;
 
     // Indicates whether this WebContents was created by another window.
     // This is used when determining whether the WebContents is allowed to be
     // closed via window.close(). This may be true even with a null |opener|
     // (e.g., for blocked popups), or when the window is opened with "noopener".
-    bool opened_by_another_window;
+    bool opened_by_another_window = false;
 
     // The name of the top-level frame of the new window. It is non-empty
     // when creating a named window (e.g. <a target="foo"> or
@@ -169,20 +170,20 @@ class WebContents : public PageNavigator,
     GURL initial_popup_url;
 
     // True if the contents should be initially hidden.
-    bool initially_hidden;
+    bool initially_hidden = false;
 
     // If non-null then this WebContents will be hosted by a BrowserPlugin.
-    raw_ptr<BrowserPluginGuestDelegate> guest_delegate;
+    raw_ptr<BrowserPluginGuestDelegate> guest_delegate = nullptr;
 
     // Used to specify the location context which display the new view should
     // belong. This can be nullptr if not needed.
-    gfx::NativeView context;
+    gfx::NativeView context = nullptr;
 
     // Used to specify that the new WebContents creation is driven by the
     // renderer process. In this case, the renderer-side objects, such as
     // RenderFrame, have already been created on the renderer side, and
     // WebContents construction should take this into account.
-    bool renderer_initiated_creation;
+    bool renderer_initiated_creation = false;
 
     // Used to specify how far WebContents::Create can initialize a renderer
     // process.
@@ -227,10 +228,11 @@ class WebContents : public PageNavigator,
       // WebContents and/or 2) speculative RenderFrameHost used internally
       // during a navigation.
       kInitializeAndWarmupRendererProcess,
-    } desired_renderer_state;
+    } desired_renderer_state = kOkayToHaveRendererProcess;
 
     // Sandboxing flags set on the new WebContents.
-    network::mojom::WebSandboxFlags starting_sandbox_flags;
+    network::mojom::WebSandboxFlags starting_sandbox_flags =
+        network::mojom::WebSandboxFlags::kNone;
 
     // Value used to set the last time the WebContents was made active, this is
     // the value that'll be returned by GetLastActiveTime(). If this is left
@@ -242,7 +244,7 @@ class WebContents : public PageNavigator,
     // first time it is shown. Some WebContents are never shown though.
     // Setting this to true will invoke the WebContents delayed initialization
     // that doesn't require visibility.
-    bool is_never_visible;
+    bool is_never_visible = false;
 
     // Code location responsible for creating the CreateParams.  This is used
     // mostly for debugging (e.g. to help attribute specific scenarios or
@@ -251,7 +253,7 @@ class WebContents : public PageNavigator,
 
     // Enables contents to hold wake locks, for example, to keep the screen on
     // while playing video.
-    bool enable_wake_locks;
+    bool enable_wake_locks = true;
   };
 
   // Creates a new WebContents.
@@ -316,7 +318,7 @@ class WebContents : public PageNavigator,
   CONTENT_EXPORT static void SetScreenOrientationDelegate(
       ScreenOrientationDelegate* delegate);
 
-  ~WebContents() override {}
+  ~WebContents() override = default;
 
   // Intrinsic tab state -------------------------------------------------------
 
@@ -1345,7 +1347,7 @@ class WebContents : public PageNavigator,
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;
-  WebContents() {}
+  WebContents() = default;
 };
 
 }  // namespace content

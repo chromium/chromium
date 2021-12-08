@@ -245,8 +245,7 @@ class HeadlessWebContentsImpl::PendingFrame
 // static
 std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
     HeadlessWebContents::Builder* builder) {
-  content::WebContents::CreateParams create_params(builder->browser_context_,
-                                                   nullptr);
+  content::WebContents::CreateParams create_params(builder->browser_context_);
   auto headless_web_contents = base::WrapUnique(new HeadlessWebContentsImpl(
       content::WebContents::Create(create_params), builder->browser_context_));
 

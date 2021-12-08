@@ -450,7 +450,7 @@ std::unique_ptr<content::WebContents> WebView::CreateWebContents(
   }
 
   if (!contents) {
-    content::WebContents::CreateParams create_params(browser_context, nullptr,
+    content::WebContents::CreateParams create_params(browser_context,
                                                      creator_location);
     return content::WebContents::Create(create_params);
   }

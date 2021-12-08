@@ -200,7 +200,7 @@ TEST_F(PermissionControllerImplTest,
        /*expect_death=*/true}};
 
   auto web_contents = base::WrapUnique(WebContentsTester::CreateTestWebContents(
-      WebContents::CreateParams(browser_context(), nullptr)));
+      WebContents::CreateParams(browser_context())));
   RenderFrameHost* rfh = web_contents->GetMainFrame();
   for (const auto& test_case : kTestCases) {
     // Need to reset overrides for each case to ensure delegation is as

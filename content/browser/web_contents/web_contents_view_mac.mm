@@ -111,7 +111,7 @@ gfx::NativeView WebContentsViewMac::GetNativeView() const {
 gfx::NativeView WebContentsViewMac::GetContentNativeView() const {
   RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
   if (!rwhv)
-    return NULL;
+    return nullptr;
   return rwhv->GetNativeView();
 }
 

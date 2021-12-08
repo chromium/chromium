@@ -62,7 +62,7 @@ namespace {
 
 class ServiceWorkerAccessObserver : public WebContentsObserver {
  public:
-  ServiceWorkerAccessObserver(WebContentsImpl* web_contents)
+  explicit ServiceWorkerAccessObserver(WebContentsImpl* web_contents)
       : WebContentsObserver(web_contents) {}
 
   MOCK_METHOD3(OnServiceWorkerAccessed,
@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                               testing::Matcher<NavigationHandle*>(NotNull()),
                               service_worker_scope,
                               AllowServiceWorkerResult::FromPolicy(
-                                  /* javascript_blocked=*/true,
-                                  /* cookies_blocked=*/false)))
+                                  /* javascript_blocked_by_policy=*/true,
+                                  /* cookies_blocked_by_policy=*/false)))
         .WillOnce([&]() { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(
         web_contents(),
@@ -206,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                               testing::Matcher<NavigationHandle*>(NotNull()),
                               service_worker_scope,
                               AllowServiceWorkerResult::FromPolicy(
-                                  /* javascript_blocked=*/false,
-                                  /* cookies_blocked=*/true)))
+                                  /* javascript_blocked_by_policy=*/false,
+                                  /* cookies_blocked_by_policy=*/true)))
         .WillOnce([&]() { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(
         web_contents(),
