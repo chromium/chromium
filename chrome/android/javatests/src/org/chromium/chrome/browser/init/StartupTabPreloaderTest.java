@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -190,10 +189,16 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1271158")
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabTaken()
             throws Exception {
+        // Force the browser to regard itself as being in the foreground to work around the
+        // fact that the navigation here can happen before ChromeActivity records the
+        // browser as being in the foreground, in which case startup metrics are erroneously
+        // not recorded. TODO(crbug.com/1273097): Eliminate this call when we fix startup
+        // metrics to be recorded in this case.
+        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTime());
+
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityRule.startMainActivityFromIntent(
@@ -228,10 +233,16 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1271158")
     @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabDropped()
             throws Exception {
+        // Force the browser to regard itself as being in the foreground to work around the
+        // fact that the navigation here can happen before ChromeActivity records the
+        // browser as being in the foreground, in which case startup metrics are erroneously
+        // not recorded. TODO(crbug.com/1273097): Eliminate this call when we fix startup
+        // metrics to be recorded in this case.
+        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTime());
+
         StartupTabPreloader.failNextTabMatchForTesting();
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -314,11 +325,17 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1271158")
     @EnableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void
     testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabWouldBeTakenIfNotPreventedByFeature()
             throws Exception {
+        // Force the browser to regard itself as being in the foreground to work around the
+        // fact that the navigation here can happen before ChromeActivity records the
+        // browser as being in the foreground, in which case startup metrics are erroneously
+        // not recorded. TODO(crbug.com/1273097): Eliminate this call when we fix startup
+        // metrics to be recorded in this case.
+        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTime());
+
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         mActivityRule.startMainActivityFromIntent(
@@ -355,11 +372,17 @@ public class StartupTabPreloaderTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1271158")
     @EnableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void
     testStartupTabPreloaderStartupLoadingMetricsRecordedWhenTabWouldBeDroppedIfNotPreventedByFeature()
             throws Exception {
+        // Force the browser to regard itself as being in the foreground to work around the
+        // fact that the navigation here can happen before ChromeActivity records the
+        // browser as being in the foreground, in which case startup metrics are erroneously
+        // not recorded. TODO(crbug.com/1273097): Eliminate this call when we fix startup
+        // metrics to be recorded in this case.
+        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTime());
+
         StartupTabPreloader.failNextTabMatchForTesting();
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
