@@ -123,12 +123,13 @@ const base::Feature kClobberTriggersSRPZeroSuggest{
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Used to force enable/disable trending zero-prefix suggestions on the NTP
-// (Omnibox and NTP realbox). This feature triggers a server-side behavior only
-// and has no direct impact on the client behavior.
+// Used to enable/disable remote zero-prefix suggestions on the NTP
+// (Omnibox and NTP realbox). Enabling this feature permits the code to issue
+// suggestions request to the server on the new tab page for users who decided
+// not to sign in.
 const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
-    enabled_by_default_desktop_only};
+    enabled_by_default_desktop_android};
 
 // Enables on-focus suggestions on the Open Web, that are contextual to the
 // current URL. Will only work if user is signed-in and syncing, or is
