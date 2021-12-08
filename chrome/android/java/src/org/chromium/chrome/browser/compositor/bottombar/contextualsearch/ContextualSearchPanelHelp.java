@@ -13,7 +13,6 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchHelpSectionHost;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -85,8 +85,8 @@ public class ContextualSearchPanelHelp {
         mIsEnabled = helpSectionHost.isPanelHelpEnabled();
         mDpToPx = context.getResources().getDisplayMetrics().density;
         // We match the Opt-in promo background color so the views are seamless when together.
-        mContainerBackgroundColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.contextual_search_promo_background_color);
+        mContainerBackgroundColor =
+                ChromeSemanticColorUtils.getContextualSearchPromoBackgroundColor(context);
 
         mOverlayPanel = panel;
         mContext = context;

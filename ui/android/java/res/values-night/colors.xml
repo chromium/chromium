@@ -28,7 +28,6 @@
     <color name="default_bg_color">@color/default_bg_color_baseline</color>
     <color name="default_bg_color_baseline">@color/default_bg_color_dark</color>
     <color name="default_bg_color_secondary">@color/default_bg_color_secondary_dark</color>
-    <color name="default_bg_color_elev_0">@color/default_bg_color_dark</color>
     <color name="default_bg_color_elev_1">@color/default_bg_color_dark_elev_1</color>
     <color name="default_bg_color_elev_2">@color/default_bg_color_dark_elev_2</color>
     <color name="default_bg_color_elev_3">@color/default_bg_color_dark_elev_3</color>
