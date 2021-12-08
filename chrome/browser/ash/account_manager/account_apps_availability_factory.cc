@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,13 +33,25 @@ AccountAppsAvailability* AccountAppsAvailabilityFactory::GetForProfile(
 AccountAppsAvailabilityFactory::AccountAppsAvailabilityFactory()
     : BrowserContextKeyedServiceFactory(
           "AccountAppsAvailability",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 AccountAppsAvailabilityFactory::~AccountAppsAvailabilityFactory() = default;
 
 KeyedService* AccountAppsAvailabilityFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new AccountAppsAvailability();
+  Profile* profile = Profile::FromBrowserContext(context);
+  DCHECK(profile);
+  if (!IsAccountManagerAvailable(profile))
+    return nullptr;
+
+  if (!AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+    return nullptr;
+
+  return new AccountAppsAvailability(
+      ::GetAccountManagerFacade(profile->GetPath().value()),
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
 
 bool AccountAppsAvailabilityFactory::ServiceIsCreatedWithBrowserContext()

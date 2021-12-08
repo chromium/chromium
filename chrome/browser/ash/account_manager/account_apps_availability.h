@@ -7,9 +7,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace ash {
@@ -48,7 +50,12 @@ class AccountAppsAvailability
         const account_manager::Account& account) {}
   };
 
-  AccountAppsAvailability();
+  // The parameters are not owned pointers, and should outlive this class
+  // instance.
+  AccountAppsAvailability(
+      account_manager::AccountManagerFacade* account_manager_facade,
+      signin::IdentityManager* identity_manager,
+      PrefService* prefs);
   ~AccountAppsAvailability() override;
 
   AccountAppsAvailability(const AccountAppsAvailability&) = delete;
@@ -57,6 +64,8 @@ class AccountAppsAvailability
   // Returns `true` if `kArcAccountRestrictions` and `kLacrosSupport` are
   // enabled.
   static bool IsArcAccountRestrictionsEnabled();
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Registers an observer.
   void AddObserver(Observer* observer);
@@ -70,11 +79,22 @@ class AccountAppsAvailability
 
   // Calls the `callback` with the set of accounts that should be
   // available in ARC.
+  // If the class is not initialized yet (`IsInitialized()` is `false`), waits
+  // for initialization to complete.
   void GetAccountsAvailableInArc(
       base::OnceCallback<void(const base::flat_set<account_manager::Account>&)>
           callback);
 
+  // Returns `true` if the class is initialized.
+  bool IsInitialized() const;
+
  private:
+  enum InitializationState {
+    kUninitialized,
+    kInProgress,
+    kInitialized,
+  };
+
   // `IdentityManager::Observer`:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
@@ -83,7 +103,43 @@ class AccountAppsAvailability
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
+  // Initialize the prefs: add all Gaia accounts from Account Manager with
+  // is_available_in_arc=true.
+  void InitAccountsAvailableInArcPref(
+      const std::vector<account_manager::Account>& accounts);
+
+  // Call `OnAccountAvailableInArc` if `is_available_in_arc` is `true`.
+  // Otherwise call `OnAccountUnavailableInArc`.
+  void NotifyObservers(const account_manager::Account& account,
+                       bool is_available_in_arc);
+
+  InitializationState initialization_state_ =
+      InitializationState::kUninitialized;
+
+  // Callbacks waiting on class initialization.
+  std::vector<base::OnceClosure> initialization_callbacks_;
+
+  // Non-owning pointers:
+  account_manager::AccountManagerFacade* const account_manager_facade_;
+  signin::IdentityManager* const identity_manager_;
+  PrefService* const prefs_;
+
+  // A list of observers registered via `AddObserver`.
   base::ObserverList<Observer> observer_list_;
+
+  // An observer for `IdentityManager`. Automatically deregisters when
+  // `this` is destructed.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+
+  // An observer for `AccountManagerFacade`. Automatically deregisters when
+  // `this` is destructed.
+  base::ScopedObservation<account_manager::AccountManagerFacade,
+                          account_manager::AccountManagerFacade::Observer>
+      account_manager_facade_observation_{this};
+
+  base::WeakPtrFactory<AccountAppsAvailability> weak_factory_{this};
 };
 }  // namespace ash
 

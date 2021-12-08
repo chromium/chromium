@@ -3865,6 +3865,7 @@ source_set("unit_tests") {
 
   sources = [
     # TODO(lukasza): Move Drive tests outside of CrOS (crbug.com/498951).
+    "../ash/account_manager/account_apps_availability_unittest.cc",
     "../ash/account_manager/account_manager_edu_coexistence_controller_unittest.cc",
     "../ash/android_sms/android_sms_app_manager_impl_unittest.cc",
     "../ash/android_sms/android_sms_app_setup_controller_impl_unittest.cc",
@@ -4765,6 +4766,7 @@ source_set("unit_tests") {
     "//chromeos/tpm",
     "//chromeos/tpm:test_support",
     "//chromeos/ui/frame:test_support",
+    "//components/account_manager_core:test_support",
     "//components/arc",
     "//components/component_updater:test_support",
     "//components/content_settings/core/browser",
