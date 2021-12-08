@@ -283,6 +283,7 @@ void GpuArcVideoDecoder::ImportBufferForPicture(
   }
   const uint64_t modifier =
       modifier_ptr ? modifier_ptr->val : gfx::NativePixmapHandle::kNoModifier;
+  // TODO(b/203240043) Assign an ID to the gmb_handle.
   gfx::GpuMemoryBufferHandle gmb_handle =
       CreateGpuMemoryHandle(std::move(fd), planes, pixel_format, modifier);
   if (gmb_handle.is_null()) {

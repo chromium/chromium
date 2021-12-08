@@ -23,6 +23,7 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -86,8 +87,6 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
                      ImportFrameCb import_frame_cb) override;
 
  private:
-  using DmabufId = DmabufVideoFramePool::DmabufId;
-
   VdVideoDecodeAccelerator(
       CreateVideoDecoderCb create_vd_cb,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -139,8 +138,9 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   gfx::Size coded_size_;
   absl::optional<VideoFrameLayout> layout_;
 
-  // Mapping from VideoFrame's DmabufId to picture buffer id.
-  std::map<DmabufId, int32_t /* picture_buffer_id */> frame_id_to_picture_id_;
+  // Mapping from VideoFrame's GpuMemoryBufferId to picture buffer id.
+  std::map<gfx::GpuMemoryBufferId, int32_t /* picture_buffer_id */>
+      frame_id_to_picture_id_;
   // Record how many times the picture is sent to the client, and keep a refptr
   // of corresponding VideoFrame when the client owns the buffers.
   std::map<int32_t /* picture_buffer_id */,

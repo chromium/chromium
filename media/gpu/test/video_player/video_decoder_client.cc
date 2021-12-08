@@ -204,7 +204,8 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
           // |*this|. The lifetime of |decoder_| must be shorter than |*this|.
           base::BindRepeating(&VideoDecoderClient::ResolutionChangeTask,
                               base::Unretained(this)),
-          gfx::ColorSpace(), frame_renderer_.get(), gpu_memory_buffer_factory_);
+          gfx::ColorSpace(), frame_renderer_.get(), gpu_memory_buffer_factory_,
+          decoder_client_config_.linear_output);
       break;
   }
 

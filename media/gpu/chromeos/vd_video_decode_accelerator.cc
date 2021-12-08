@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "media/base/format_utils.h"
 #include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder_config.h"
@@ -20,6 +23,8 @@
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace media {
@@ -44,13 +49,6 @@ std::vector<ColorPlaneLayout> ExtractColorPlaneLayout(
   for (const auto& plane : gmb_handle.native_pixmap_handle.planes)
     planes.emplace_back(plane.stride, plane.offset, plane.size);
   return planes;
-}
-
-std::vector<base::ScopedFD> ExtractFds(gfx::GpuMemoryBufferHandle gmb_handle) {
-  std::vector<base::ScopedFD> fds;
-  for (auto& plane : gmb_handle.native_pixmap_handle.planes)
-    fds.push_back(std::move(plane.fd));
-  return fds;
 }
 
 // TODO(akahuang): Move this function to a utility file.
@@ -405,19 +403,39 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
 
   CHECK(media::VerifyGpuMemoryBufferHandle(pixel_format, layout_->coded_size(),
                                            gmb_handle));
+  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
+  CHECK(buffer_format);
+  // Usage is SCANOUT_VDA_WRITE because we are just wrapping the dmabuf in a
+  // GpuMemoryBuffer. This buffer is just for decoding purposes, so having
+  // the dmabufs mmapped is not necessary.
+  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+      gpu::GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
+          std::move(gmb_handle), layout_->coded_size(), *buffer_format,
+          gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+  if (!gpu_memory_buffer) {
+    VLOGF(1) << "Failed to create GpuMemoryBuffer. format: "
+             << gfx::BufferFormatToString(*buffer_format)
+             << ", coded_size: " << layout_->coded_size().ToString();
+    return;
+  }
+
+  const gpu::MailboxHolder mailbox_holder[VideoFrame::kMaxPlanes] = {};
   // VideoFrame::WrapVideoFrame() will check whether the updated visible_rect
   // is sub rect of the original visible_rect. Therefore we set visible_rect
   // as large as coded_size to guarantee this condition.
-  scoped_refptr<VideoFrame> origin_frame = VideoFrame::WrapExternalDmabufs(
-      *layout_, gfx::Rect(layout_->coded_size()), layout_->coded_size(),
-      ExtractFds(std::move(gmb_handle)), base::TimeDelta());
-  DmabufId dmabuf_id = DmabufVideoFramePool::GetDmabufId(*origin_frame);
-  auto res = frame_id_to_picture_id_.emplace(dmabuf_id, picture_buffer_id);
-  // |dmabuf_id| should not be inside the map before insertion.
+  scoped_refptr<VideoFrame> origin_frame =
+      VideoFrame::WrapExternalGpuMemoryBuffer(
+          gfx::Rect(layout_->coded_size()), layout_->coded_size(),
+          std::move(gpu_memory_buffer), mailbox_holder, base::NullCallback(),
+          base::TimeDelta());
+
+  auto res = frame_id_to_picture_id_.emplace(
+      origin_frame->GetGpuMemoryBuffer()->GetId(), picture_buffer_id);
+  // The frame ID should not be inside the map before insertion.
   DCHECK(res.second);
 
   // |wrapped_frame| is used to keep |origin_frame| alive until everyone
-  // released |wrapped_frame|. Then DmabufId will be available at
+  // released |wrapped_frame|. Then GpuMemoryBufferId will be available at
   // OnFrameReleased().
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       origin_frame, origin_frame->format(), origin_frame->visible_rect(),
@@ -444,8 +462,7 @@ absl::optional<Picture> VdVideoDecodeAccelerator::GetPicture(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it =
-      frame_id_to_picture_id_.find(DmabufVideoFramePool::GetDmabufId(frame));
+  auto it = frame_id_to_picture_id_.find(frame.GetGpuMemoryBuffer()->GetId());
   if (it == frame_id_to_picture_id_.end()) {
     VLOGF(1) << "Failed to find the picture buffer id.";
     return absl::nullopt;
@@ -475,8 +492,8 @@ void VdVideoDecodeAccelerator::OnFrameReleased(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  auto it = frame_id_to_picture_id_.find(
-      DmabufVideoFramePool::GetDmabufId(*origin_frame));
+  auto it =
+      frame_id_to_picture_id_.find(origin_frame->GetGpuMemoryBuffer()->GetId());
   DCHECK(it != frame_id_to_picture_id_.end());
   int32_t picture_buffer_id = it->second;
   frame_id_to_picture_id_.erase(it);

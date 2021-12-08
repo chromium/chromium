@@ -44,13 +44,15 @@ TestVDAVideoDecoder::TestVDAVideoDecoder(
     OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
     const gfx::ColorSpace& target_color_space,
     FrameRenderer* const frame_renderer,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory)
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+    bool linear_output)
     : use_vd_vda_(use_vd_vda),
       on_provide_picture_buffers_cb_(std::move(on_provide_picture_buffers_cb)),
       target_color_space_(target_color_space),
       frame_renderer_(frame_renderer),
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       gpu_memory_buffer_factory_(gpu_memory_buffer_factory),
+      linear_output_(linear_output),
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decode_start_timestamps_(kTimestampCacheSize) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
@@ -242,10 +244,11 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     scoped_refptr<VideoFrame> video_frame;
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-    video_frame = CreatePlatformVideoFrame(
+    video_frame = CreateGpuMemoryBufferVideoFrame(
         gpu_memory_buffer_factory_, format, dimensions, visible_rect,
         visible_rect.size(), base::TimeDelta(),
-        gfx::BufferUsage::SCANOUT_VDA_WRITE);
+        linear_output_ ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+                       : gfx::BufferUsage::SCANOUT_VDA_WRITE);
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
     ASSERT_TRUE(video_frame) << "Failed to create video frame";

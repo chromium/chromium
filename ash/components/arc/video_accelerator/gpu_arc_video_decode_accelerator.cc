@@ -21,6 +21,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/vd_video_decode_accelerator.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
@@ -670,6 +671,7 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     }
     gmb_handle = std::move(buffer_handle).value();
   }
+  gmb_handle.id = media::GetNextGpuMemoryBufferId();
 
   // This is the first time of ImportBufferForPicture() after
   // AssignPictureBuffers() is called. Call VDA::AssignPictureBuffers() here.

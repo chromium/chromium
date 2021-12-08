@@ -30,6 +30,7 @@ if (use_v4l2_codec || use_vaapi) {
       "//ash/components/arc/mojom:media",
       "//gpu/ipc/common:common",
       "//media",
+      "//media/gpu/chromeos:common",
     ]
   }
 }

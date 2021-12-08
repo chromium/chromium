@@ -10,17 +10,18 @@
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
-
-namespace gfx {
-struct GpuMemoryBufferHandle;
-}  // namespace gfx
 
 namespace gpu {
 class GpuMemoryBufferFactory;
 }  // namespace gpu
 
 namespace media {
+
+// Returns a GpuMemoryBufferId that's guaranteed to be different from those
+// returned by previous calls. This function is thread safe.
+MEDIA_GPU_EXPORT gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId();
 
 // Create GpuMemoryBuffer-based media::VideoFrame with |buffer_usage|.
 // See //media/base/video_frame.h for other parameters.

@@ -27,6 +27,7 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     const base::FilePath& video_metadata_path,
     ValidatorType validator_type,
     const DecoderImplementation implementation,
+    bool linear_output,
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config) {
   auto video = std::make_unique<media::test::Video>(
@@ -38,14 +39,15 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
   }
 
   return new VideoPlayerTestEnvironment(std::move(video), validator_type,
-                                        implementation, output_folder,
-                                        frame_output_config);
+                                        implementation, linear_output,
+                                        output_folder, frame_output_config);
 }
 
 VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
     std::unique_ptr<media::test::Video> video,
     ValidatorType validator_type,
     const DecoderImplementation implementation,
+    bool linear_output,
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config)
     : VideoTestEnvironment(
@@ -69,6 +71,7 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
       video_(std::move(video)),
       validator_type_(validator_type),
       implementation_(implementation),
+      linear_output_(linear_output),
       frame_output_config_(frame_output_config),
       output_folder_(output_folder),
       gpu_memory_buffer_factory_(
@@ -98,6 +101,10 @@ VideoPlayerTestEnvironment::GetValidatorType() const {
 DecoderImplementation VideoPlayerTestEnvironment::GetDecoderImplementation()
     const {
   return implementation_;
+}
+
+bool VideoPlayerTestEnvironment::ShouldOutputLinearBuffers() const {
+  return linear_output_;
 }
 
 FrameOutputMode VideoPlayerTestEnvironment::GetFrameOutputMode() const {

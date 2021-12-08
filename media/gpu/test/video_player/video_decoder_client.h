@@ -43,6 +43,7 @@ struct VideoDecoderClientConfig {
   // without waiting for the result of the previous decode requests.
   size_t max_outstanding_decode_requests = 1;
   DecoderImplementation implementation = DecoderImplementation::kVDA;
+  bool linear_output = false;
 };
 
 // The video decoder client is responsible for the communication between the

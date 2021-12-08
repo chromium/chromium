@@ -43,15 +43,6 @@
 namespace media {
 
 namespace {
-
-gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
-  static base::NoDestructor<base::Lock> id_lock;
-  static int next_gpu_memory_buffer_id = 0;
-  base::AutoLock lock(*id_lock);
-  CHECK_LT(next_gpu_memory_buffer_id, std::numeric_limits<int>::max());
-  return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
-}
-
 // GbmDeviceWrapper is a singleton that provides thread-safe access to a
 // ui::GbmDevice for the purposes of creating native BOs. The ui::GbmDevice is
 // initialized with the first non-vgem render node found that works starting at
@@ -195,6 +186,14 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
   return gmb_handle;
 }
 }  // namespace
+
+gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
+  static base::NoDestructor<base::Lock> id_lock;
+  static int next_gpu_memory_buffer_id = 0;
+  base::AutoLock lock(*id_lock);
+  CHECK_LT(next_gpu_memory_buffer_id, std::numeric_limits<int>::max());
+  return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
+}
 
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     gpu::GpuMemoryBufferFactory* factory,

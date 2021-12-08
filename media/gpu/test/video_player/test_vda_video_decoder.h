@@ -37,7 +37,8 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
                       OnProvidePictureBuffersCB on_provide_picture_buffers_cb,
                       const gfx::ColorSpace& target_color_space,
                       FrameRenderer* const frame_renderer,
-                      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory);
+                      gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
+                      bool linear_output = false);
 
   TestVDAVideoDecoder(const TestVDAVideoDecoder&) = delete;
   TestVDAVideoDecoder& operator=(const TestVDAVideoDecoder&) = delete;
@@ -118,6 +119,9 @@ class TestVDAVideoDecoder : public media::VideoDecoder,
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   // Owned by VideoDecoderClient.
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  // Whether the decoder output buffers should be allocated with a linear
+  // layout.
+  const bool linear_output_;
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   // Map of video frames the decoder uses as output, keyed on picture buffer id.
