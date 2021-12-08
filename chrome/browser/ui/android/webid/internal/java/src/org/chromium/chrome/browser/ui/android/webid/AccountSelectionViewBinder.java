@@ -241,10 +241,11 @@ class AccountSelectionViewBinder {
         } else if (key == ContinueButtonProperties.ACCOUNT) {
             Account account = model.get(ContinueButtonProperties.ACCOUNT);
             // Prefers to use given name if it is provided otherwise falls back to using the name.
-            String name =
-                    account.getGivenName() != null ? account.getGivenName() : account.getName();
-            String btnText =
-                    String.format(context.getString(R.string.account_selection_continue), name);
+            String givenName = account.getGivenName();
+            String displayedName =
+                    givenName != null && !givenName.isEmpty() ? givenName : account.getName();
+            String btnText = String.format(
+                    context.getString(R.string.account_selection_continue), displayedName);
             Button button = view.findViewById(R.id.account_selection_continue_btn);
             button.setText(btnText);
         } else if (key == ContinueButtonProperties.ON_CLICK_LISTENER) {
