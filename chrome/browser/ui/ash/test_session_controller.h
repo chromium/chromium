@@ -56,7 +56,6 @@ class TestSessionController : public ash::SessionController {
   void UpdateUserSession(const ash::UserSession& user_session) override;
   void SetUserSessionOrder(
       const std::vector<uint32_t>& user_session_order) override;
-  void PrepareForLock(PrepareForLockCallback callback) override;
   void StartLock(StartLockCallback callback) override;
   void NotifyChromeLockAnimationsComplete() override;
   void RunUnlockAnimation(RunUnlockAnimationCallback callback) override;

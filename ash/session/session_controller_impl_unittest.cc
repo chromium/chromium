@@ -19,7 +19,6 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -182,7 +181,6 @@ class SessionControllerImplWithShellTest : public AshTestBase {
     window_ = CreateTestWindow();
     window_->SetProperty(aura::client::kShowStateKey,
                          ui::SHOW_STATE_FULLSCREEN);
-    window_state_ = WindowState::Get(window_.get());
   }
 
   bool IsNotificationVisible() const {
@@ -197,9 +195,6 @@ class SessionControllerImplWithShellTest : public AshTestBase {
     return Shell::Get()->session_controller();
   }
   const TestSessionObserver* observer() const { return &observer_; }
-
- protected:
-  WindowState* window_state_ = nullptr;
 
  private:
   TestSessionObserver observer_;
@@ -853,15 +848,6 @@ TEST_F(SessionControllerImplUnblockTest, ActiveWindowAfterUnblocking) {
   // |widget| should now be active as SessionControllerImpl no longer is
   // blocking windows from becoming active.
   EXPECT_TRUE(widget->IsActive());
-}
-
-TEST_F(SessionControllerImplWithShellTest, ExitFullscreenBeforeLock) {
-  CreateFullscreenWindow();
-  EXPECT_TRUE(window_state_->IsFullscreen());
-
-  base::RunLoop run_loop;
-  Shell::Get()->session_controller()->PrepareForLock(run_loop.QuitClosure());
-  EXPECT_FALSE(window_state_->IsFullscreen());
 }
 
 // Test that no full screen notification is shown on session lock or unlock when

@@ -620,12 +620,10 @@ void ScreenLocker::Show() {
   }
 
   if (!screen_locker_) {
-    SessionControllerClientImpl::Get()->PrepareForLock(base::BindOnce([]() {
-      ScreenLocker* locker =
-          new ScreenLocker(user_manager::UserManager::Get()->GetUnlockUsers());
-      VLOG(1) << "Created ScreenLocker " << locker;
-      locker->Init();
-    }));
+    ScreenLocker* locker =
+        new ScreenLocker(user_manager::UserManager::Get()->GetUnlockUsers());
+    VLOG(1) << "Created ScreenLocker " << locker;
+    locker->Init();
   } else {
     VLOG(1) << "ScreenLocker " << screen_locker_ << " already exists; "
             << " calling session manager's HandleLockScreenShown D-Bus method";

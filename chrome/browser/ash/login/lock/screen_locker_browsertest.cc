@@ -7,6 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/session/fullscreen_controller.h"
+#include "ash/session/fullscreen_notification_bubble.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -30,6 +34,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -82,6 +87,16 @@ class ScreenLockerTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  bool IsFullscreenNotificationShowing() {
+    ash::FullscreenController* ash_fullscreen_controller =
+        Shell::Get()->session_controller()->fullscreen_controller_for_test();
+    return ash_fullscreen_controller->bubble_for_test() &&
+           ash_fullscreen_controller->bubble_for_test()->widget_for_test() &&
+           ash_fullscreen_controller->bubble_for_test()
+               ->widget_for_test()
+               ->IsVisible();
+  }
+
  private:
   void OnStartSession(const dbus::ObjectPath& path) {}
 
@@ -109,71 +124,116 @@ IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {
       1, session_manager_client()->notify_lock_screen_dismissed_call_count());
 }
 
-// Test how locking the screen affects an active fullscreen window.
-IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestFullscreenExit) {
-  // 1) If the active browser window is in fullscreen and the fullscreen window
-  // does not have all the pixels (e.g. the shelf is auto hidden instead of
-  // hidden), locking the screen should exit fullscreen. The shelf is
-  // auto hidden when in immersive fullscreen.
+// Test that locking/unlocking the screen does not exit full screen if the
+// active window is in full screen mode and the full screen window does not have
+// all the pixels (e.g. immersive full screen where the shelf is auto hidden
+// instead of hidden).
+IN_PROC_BROWSER_TEST_F(ScreenLockerTest, BrowserFullscreenMode) {
   ScreenLockerTester tester;
   BrowserWindow* browser_window = browser()->window();
   auto* window_state = WindowState::Get(browser_window->GetNativeWindow());
-  {
-    FullscreenNotificationObserver fullscreen_waiter(browser());
-    browser()
-        ->exclusive_access_manager()
-        ->fullscreen_controller()
-        ->ToggleBrowserFullscreenMode();
-    fullscreen_waiter.Wait();
-    EXPECT_TRUE(browser_window->IsFullscreen());
-    EXPECT_FALSE(window_state->GetHideShelfWhenFullscreen());
-    EXPECT_FALSE(tester.IsLocked());
-  }
-  {
-    tester.Lock();
-    EXPECT_FALSE(browser_window->IsFullscreen());
-    EXPECT_TRUE(window_state->GetHideShelfWhenFullscreen());
-    EXPECT_TRUE(tester.IsLocked());
-  }
+
+  ::FullscreenController* fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  FullscreenNotificationObserver fullscreen_waiter(browser());
+
+  // Enter browser full screen mode.
+  fullscreen_controller->ToggleBrowserFullscreenMode();
+  fullscreen_waiter.Wait();
+  EXPECT_TRUE(browser_window->IsFullscreen());
+  EXPECT_FALSE(window_state->GetHideShelfWhenFullscreen());
+  EXPECT_FALSE(IsFullscreenNotificationShowing());
+
+  // Lock and unlock screen.
+  EXPECT_FALSE(tester.IsLocked());
+  tester.Lock();
+  EXPECT_TRUE(tester.IsLocked());
   tester.SetUnlockPassword(user_manager::StubAccountId(), "pass");
   tester.UnlockWithPassword(user_manager::StubAccountId(), "pass");
   EXPECT_FALSE(tester.IsLocked());
-  EXPECT_FALSE(browser_window->IsFullscreen());
 
   // Browser window should be activated after screen locker is gone. Otherwise,
   // the rest of the test would fail.
   ASSERT_EQ(window_state, WindowState::ForActiveWindow());
 
-  // 2) Similar to 1) if the active browser window is in fullscreen and the
-  // fullscreen window has all of the pixels, locking the screen should exit
-  // fullscreen. The fullscreen window has all of the pixels when in tab
-  // fullscreen.
-  {
-    FullscreenNotificationObserver fullscreen_waiter(browser());
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    browser()
-        ->exclusive_access_manager()
-        ->fullscreen_controller()
-        ->EnterFullscreenModeForTab(web_contents->GetMainFrame());
-    fullscreen_waiter.Wait();
-    EXPECT_TRUE(browser_window->IsFullscreen());
-    EXPECT_TRUE(window_state->GetHideShelfWhenFullscreen());
-    EXPECT_FALSE(tester.IsLocked());
-  }
-  {
-    tester.Lock();
-    EXPECT_FALSE(browser_window->IsFullscreen());
-    EXPECT_TRUE(tester.IsLocked());
-  }
+  // The browser window is still in full screen and a full screen notification
+  // is shown.
+  EXPECT_TRUE(browser_window->IsFullscreen());
+  EXPECT_FALSE(window_state->GetHideShelfWhenFullscreen());
+  EXPECT_TRUE(IsFullscreenNotificationShowing());
 
+  // Exiting full screen mode hides the notification.
+  fullscreen_controller->ToggleBrowserFullscreenMode();
+  fullscreen_waiter.Wait();
+  EXPECT_FALSE(browser_window->IsFullscreen());
+  EXPECT_FALSE(IsFullscreenNotificationShowing());
+
+  // Re-entering full screen mode does not re-show the full screen notification.
+  fullscreen_controller->ToggleBrowserFullscreenMode();
+  fullscreen_waiter.Wait();
+  EXPECT_TRUE(browser_window->IsFullscreen());
+  EXPECT_FALSE(IsFullscreenNotificationShowing());
+
+  EXPECT_EQ(1, session_manager_client()->notify_lock_screen_shown_call_count());
+  EXPECT_EQ(
+      1, session_manager_client()->notify_lock_screen_dismissed_call_count());
+}
+
+// Test that locking/unlocking the screen does not exit full screen if the
+// active window is in full screen mode and the full screen window has all of
+// the pixels (e.g. tab-initiated full screen mode).
+IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TabInitiatedFullscreenMode) {
+  ScreenLockerTester tester;
+  BrowserWindow* browser_window = browser()->window();
+  auto* window_state = WindowState::Get(browser_window->GetNativeWindow());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ::FullscreenController* fullscreen_controller =
+      browser()->exclusive_access_manager()->fullscreen_controller();
+  FullscreenNotificationObserver fullscreen_waiter(browser());
+
+  // Enter tab-initiated full screen mode.
+  fullscreen_controller->EnterFullscreenModeForTab(
+      web_contents->GetMainFrame());
+  fullscreen_waiter.Wait();
+  EXPECT_TRUE(browser_window->IsFullscreen());
+  EXPECT_TRUE(window_state->GetHideShelfWhenFullscreen());
+  EXPECT_FALSE(IsFullscreenNotificationShowing());
+
+  // Lock and unlock screen.
+  EXPECT_FALSE(tester.IsLocked());
+  tester.Lock();
+  EXPECT_TRUE(tester.IsLocked());
   tester.SetUnlockPassword(user_manager::StubAccountId(), "pass");
   tester.UnlockWithPassword(user_manager::StubAccountId(), "pass");
   EXPECT_FALSE(tester.IsLocked());
 
-  EXPECT_EQ(2, session_manager_client()->notify_lock_screen_shown_call_count());
+  // Browser window should be activated after screen locker is gone. Otherwise,
+  // the rest of the test would fail.
+  ASSERT_EQ(window_state, WindowState::ForActiveWindow());
+
+  // The browser window is still in full screen and a full screen notification
+  // is shown.
+  EXPECT_TRUE(browser_window->IsFullscreen());
+  EXPECT_TRUE(window_state->GetHideShelfWhenFullscreen());
+  EXPECT_TRUE(IsFullscreenNotificationShowing());
+
+  // Exiting full screen mode hides the notification.
+  fullscreen_controller->ExitFullscreenModeForTab(web_contents);
+  fullscreen_waiter.Wait();
+  EXPECT_FALSE(browser_window->IsFullscreen());
+  EXPECT_FALSE(IsFullscreenNotificationShowing());
+
+  // Re-entering full screen mode does not re-show the full screen notification.
+  fullscreen_controller->ToggleBrowserFullscreenMode();
+  fullscreen_waiter.Wait();
+  EXPECT_TRUE(browser_window->IsFullscreen());
+  EXPECT_FALSE(IsFullscreenNotificationShowing());
+
+  EXPECT_EQ(1, session_manager_client()->notify_lock_screen_shown_call_count());
   EXPECT_EQ(
-      2, session_manager_client()->notify_lock_screen_dismissed_call_count());
+      1, session_manager_client()->notify_lock_screen_dismissed_call_count());
 }
 
 IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestShowTwice) {
