@@ -18,6 +18,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview_export.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -204,6 +205,20 @@ class WEBVIEW_EXPORT WebView : public View,
   gfx::Size max_size_;
 };
 
+BEGIN_VIEW_BUILDER(WEBVIEW_EXPORT, WebView, View)
+VIEW_BUILDER_PROPERTY(content::BrowserContext*, BrowserContext)
+VIEW_BUILDER_PROPERTY(content::WebContents*, WebContents)
+VIEW_BUILDER_PROPERTY(bool, FastResize)
+VIEW_BUILDER_METHOD(EnableSizingFromWebContents,
+                    const gfx::Size&,
+                    const gfx::Size&)
+VIEW_BUILDER_PROPERTY(View*, CrashedOverlayView)
+VIEW_BUILDER_METHOD(set_is_primary_web_contents_for_window, bool)
+VIEW_BUILDER_METHOD(set_allow_accelerators, bool)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(WEBVIEW_EXPORT, WebView)
 
 #endif  // UI_VIEWS_CONTROLS_WEBVIEW_WEBVIEW_H_

@@ -7,8 +7,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
@@ -34,10 +36,13 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -77,7 +82,8 @@ struct ShellPlatformDelegate::PlatformData {
 namespace {
 
 // Maintain the UI controls and web view for content shell
-class ShellView : public views::View, public views::TextfieldController {
+class ShellView : public views::BoxLayoutView,
+                  public views::TextfieldController {
  public:
   METADATA_HEADER(ShellView);
 
@@ -94,20 +100,20 @@ class ShellView : public views::View, public views::TextfieldController {
   }
 
   void SetWebContents(WebContents* web_contents, const gfx::Size& size) {
-    contents_view_->SetLayoutManager(std::make_unique<views::FillLayout>());
     // If there was a previous WebView in this Shell it should be removed and
     // deleted.
-    if (web_view_) {
-      contents_view_->RemoveChildView(web_view_);
-      delete web_view_;
-    }
-    auto web_view =
-        std::make_unique<views::WebView>(web_contents->GetBrowserContext());
-    web_view->SetWebContents(web_contents);
-    web_view->SetPreferredSize(size);
+    if (web_view_)
+      contents_view_->RemoveChildViewT(web_view_.get());
+
+    views::Builder<views::View>(contents_view_)
+        .AddChild(views::Builder<views::WebView>()
+                      .CopyAddressTo(&web_view_)
+                      .SetBrowserContext(web_contents->GetBrowserContext())
+                      .SetWebContents(web_contents)
+                      .SetPreferredSize(size))
+        .BuildChildren();
     web_contents->Focus();
-    web_view_ = contents_view_->AddChildView(std::move(web_view));
-    Layout();
+    web_view_->SizeToPreferredSize();
 
     // Resize the widget, keeping the same origin.
     gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
@@ -137,105 +143,98 @@ class ShellView : public views::View, public views::TextfieldController {
  private:
   // Initialize the UI control contained in shell window
   void InitShellWindow() {
-    SetBackground(
-        CreateThemedSolidBackground(this, ui::kColorWindowBackground));
+    auto toolbar_button_rule = [](const views::View* view,
+                                  const views::SizeBounds& size_bounds) {
+      gfx::Size preferred_size = view->GetPreferredSize();
+      if (size_bounds != views::SizeBounds() &&
+          size_bounds.width().is_bounded()) {
+        preferred_size.set_width(std::max(
+            std::min(size_bounds.width().value(), preferred_size.width()),
+            preferred_size.width() / 2));
+      }
+      return preferred_size;
+    };
 
-    auto contents_view = std::make_unique<views::View>();
-    auto toolbar_view = std::make_unique<views::View>();
+    auto builder =
+        views::Builder<views::BoxLayoutView>(this)
+            .SetBackground(
+                CreateThemedSolidBackground(this, ui::kColorWindowBackground))
+            .SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-    views::GridLayout* layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>());
-
-    using ColumnSize = views::GridLayout::ColumnSize;
-    views::ColumnSet* column_set = layout->AddColumnSet(0);
-    if (!Shell::ShouldHideToolbar())
-      column_set->AddPaddingColumn(0, 2);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1,
-                          ColumnSize::kUsePreferred, 0, 0);
-    if (!Shell::ShouldHideToolbar())
-      column_set->AddPaddingColumn(0, 2);
-
-    // Add toolbar buttons and URL text field
     if (!Shell::ShouldHideToolbar()) {
-      layout->AddPaddingRow(0, 2);
-      layout->StartRow(0, 0);
-      views::GridLayout* toolbar_layout =
-          toolbar_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-      views::ColumnSet* toolbar_column_set = toolbar_layout->AddColumnSet(0);
-      // Back button
-      // Using Unretained (here and below) is safe since the View itself has the
-      // same lifetime as |shell_| (both are torn down implicitly during
-      // destruction).
-      auto back_button = std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&Shell::GoBackOrForward,
-                              base::Unretained(shell_.get()), -1),
-          u"Back");
-      gfx::Size back_button_size = back_button->GetPreferredSize();
-      toolbar_column_set->AddColumn(
-          views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-          ColumnSize::kFixed, back_button_size.width(),
-          back_button_size.width() / 2);
-      // Forward button
-      auto forward_button = std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&Shell::GoBackOrForward,
-                              base::Unretained(shell_.get()), 1),
-          u"Forward");
-      gfx::Size forward_button_size = forward_button->GetPreferredSize();
-      toolbar_column_set->AddColumn(
-          views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-          ColumnSize::kFixed, forward_button_size.width(),
-          forward_button_size.width() / 2);
-      // Refresh button
-      auto refresh_button = std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&Shell::Reload, base::Unretained(shell_.get())),
-          u"Refresh");
-      gfx::Size refresh_button_size = refresh_button->GetPreferredSize();
-      toolbar_column_set->AddColumn(
-          views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-          ColumnSize::kFixed, refresh_button_size.width(),
-          refresh_button_size.width() / 2);
-      // Stop button
-      auto stop_button = std::make_unique<views::MdTextButton>(
-          base::BindRepeating(&Shell::Stop, base::Unretained(shell_.get())),
-          u"Stop");
-      gfx::Size stop_button_size = stop_button->GetPreferredSize();
-      toolbar_column_set->AddColumn(
-          views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-          ColumnSize::kFixed, stop_button_size.width(),
-          stop_button_size.width() / 2);
-      toolbar_column_set->AddPaddingColumn(0, 2);
-      // URL entry
-      auto url_entry = std::make_unique<views::Textfield>();
-      url_entry->SetAccessibleName(u"Enter URL");
-      url_entry->set_controller(this);
-      url_entry->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
-      toolbar_column_set->AddColumn(views::GridLayout::FILL,
-                                    views::GridLayout::FILL, 1,
-                                    ColumnSize::kUsePreferred, 0, 0);
-      toolbar_column_set->AddPaddingColumn(0, 2);
-
-      // Fill up the first row
-      toolbar_layout->StartRow(0, 0);
-      back_button_ = toolbar_layout->AddView(std::move(back_button));
-      forward_button_ = toolbar_layout->AddView(std::move(forward_button));
-      refresh_button_ = toolbar_layout->AddView(std::move(refresh_button));
-      stop_button_ = toolbar_layout->AddView(std::move(stop_button));
-      url_entry_ = toolbar_layout->AddView(std::move(url_entry));
-
-      toolbar_view_ = layout->AddView(std::move(toolbar_view));
-
-      layout->AddPaddingRow(0, 5);
+      builder.AddChild(
+          views::Builder<views::FlexLayoutView>()
+              .CopyAddressTo(&toolbar_view_)
+              .SetOrientation(views::LayoutOrientation::kHorizontal)
+              // Top padding = 2, Bottom padding = 5
+              .SetProperty(views::kMarginsKey, gfx::Insets(2, 0, 5, 0))
+              .AddChildren(
+                  views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&back_button_)
+                      .SetText(u"Back")
+                      .SetCallback(base::BindRepeating(
+                          &Shell::GoBackOrForward,
+                          base::Unretained(shell_.get()), -1))
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   views::FlexSpecification(base::BindRepeating(
+                                       toolbar_button_rule))),
+                  views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&forward_button_)
+                      .SetText(u"Forward")
+                      .SetCallback(base::BindRepeating(
+                          &Shell::GoBackOrForward,
+                          base::Unretained(shell_.get()), 1))
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   views::FlexSpecification(base::BindRepeating(
+                                       toolbar_button_rule))),
+                  views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&refresh_button_)
+                      .SetText(u"Refresh")
+                      .SetCallback(base::BindRepeating(
+                          &Shell::Reload, base::Unretained(shell_.get())))
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   views::FlexSpecification(base::BindRepeating(
+                                       toolbar_button_rule))),
+                  views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&stop_button_)
+                      .SetText(u"Stop")
+                      .SetCallback(base::BindRepeating(
+                          &Shell::Stop, base::Unretained(shell_.get())))
+                      .SetProperty(views::kFlexBehaviorKey,
+                                   views::FlexSpecification(base::BindRepeating(
+                                       toolbar_button_rule))),
+                  views::Builder<views::Textfield>()
+                      .CopyAddressTo(&url_entry_)
+                      .SetAccessibleName(u"Enter URL")
+                      .SetController(this)
+                      .SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL)
+                      .SetProperty(
+                          views::kFlexBehaviorKey,
+                          views::FlexSpecification(
+                              views::MinimumFlexSizeRule::kScaleToMinimum,
+                              views::MaximumFlexSizeRule::kUnbounded))
+                      // Left padding  = 2, Right padding = 2
+                      .SetProperty(views::kMarginsKey,
+                                   gfx::Insets(0, 2, 0, 2))));
     }
 
-    // Add web contents view as the second row
-    {
-      layout->StartRow(1, 0);
-      contents_view_ = layout->AddView(std::move(contents_view));
+    builder.AddChild(views::Builder<views::View>()
+                         .CopyAddressTo(&contents_view_)
+                         .SetUseDefaultFillLayout(true)
+                         .CustomConfigure(base::BindOnce([](views::View* view) {
+                           if (!Shell::ShouldHideToolbar()) {
+                             view->SetProperty(views::kMarginsKey,
+                                               gfx::Insets(0, 2, 0, 2));
+                           }
+                         })));
+
+    if (!Shell::ShouldHideToolbar()) {
+      builder.AddChild(views::Builder<views::View>().SetProperty(
+          views::kMarginsKey, gfx::Insets(0, 0, 5, 0)));
     }
 
-    if (!Shell::ShouldHideToolbar())
-      layout->AddPaddingRow(0, 5);
+    std::move(builder).BuildChildren();
+    SetFlexForView(contents_view_, 1);
   }
   void InitAccelerators() {
     // This function must be called when part of the widget hierarchy.
@@ -299,7 +298,7 @@ class ShellView : public views::View, public views::TextfieldController {
   std::u16string title_;
 
   // Toolbar view contains forward/backward/reload button and URL entry
-  raw_ptr<View> toolbar_view_ = nullptr;
+  raw_ptr<views::View> toolbar_view_ = nullptr;
   raw_ptr<views::Button> back_button_ = nullptr;
   raw_ptr<views::Button> forward_button_ = nullptr;
   raw_ptr<views::Button> refresh_button_ = nullptr;
@@ -307,7 +306,7 @@ class ShellView : public views::View, public views::TextfieldController {
   raw_ptr<views::Textfield> url_entry_ = nullptr;
 
   // Contents view contains the web contents view
-  raw_ptr<View> contents_view_ = nullptr;
+  raw_ptr<views::View> contents_view_ = nullptr;
   raw_ptr<views::WebView> web_view_ = nullptr;
 };
 
