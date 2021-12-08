@@ -51,6 +51,10 @@ class COMPONENT_EXPORT(IPC) Listener {
   virtual void OnChannelListenError() {}
 #endif  // OS_POSIX || OS_FUCHSIA
 
+  // Debugging helper for identifying what kind of a Listener this is.
+  // TODO(https://crbug.com/1113159): Remove this method once the bug is fixed.
+  virtual std::string ToDebugString();
+
  protected:
   virtual ~Listener() {}
 };

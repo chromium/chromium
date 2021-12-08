@@ -2222,8 +2222,13 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
   if (worker_ref_count_ != 0)
     ret += " wrc=" + base::NumberToString(worker_ref_count_);
 
-  if (!listeners_.IsEmpty())
+  if (!listeners_.IsEmpty()) {
     ret += " lsn=" + base::NumberToString(listeners_.size());
+
+    base::IDMap<IPC::Listener*>::Iterator<IPC::Listener> it(&listeners_);
+    IPC::Listener* example_listener = it.GetCurrentValue();
+    ret += "[" + example_listener->ToDebugString() + "]";
+  }
 
   if (deleting_soon_)
     ret += " ds";

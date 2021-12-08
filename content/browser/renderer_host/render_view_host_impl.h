@@ -355,6 +355,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& msg) override;
+  std::string ToDebugString() override;
 
   void RenderViewReady();
 

@@ -2526,6 +2526,11 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
   }
 }
 
+std::string RenderFrameHostImpl::ToDebugString() {
+  return "RFHI:" +
+         render_view_host_->GetDelegate()->GetCreatorLocation().ToString();
+}
+
 void RenderFrameHostImpl::AccessibilityPerformAction(
     const ui::AXActionData& action_data) {
   // Don't perform any Accessibility action on an inactive frame.

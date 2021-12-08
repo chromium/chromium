@@ -156,6 +156,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // IPC::Listener
   bool OnMessageReceived(const IPC::Message& msg) override;
+  std::string ToDebugString() override;
 
   CrossProcessFrameConnector* cross_process_frame_connector() {
     return cross_process_frame_connector_.get();

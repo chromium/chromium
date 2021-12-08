@@ -123,6 +123,8 @@ class RenderViewHostDelegate {
   // default color should be used.
   virtual absl::optional<SkColor> GetBaseBackgroundColor();
 
+  virtual const base::Location& GetCreatorLocation() = 0;
+
  protected:
   virtual ~RenderViewHostDelegate() {}
 };

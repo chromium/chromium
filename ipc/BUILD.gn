@@ -46,6 +46,7 @@ component("ipc") {
       "ipc_channel_proxy.h",
       "ipc_channel_reader.cc",
       "ipc_channel_reader.h",
+      "ipc_listener.cc",
       "ipc_listener.h",
       "ipc_logging.cc",
       "ipc_logging.h",

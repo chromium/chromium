@@ -782,6 +782,10 @@ bool RenderViewHostImpl::OnMessageReceived(const IPC::Message& msg) {
   return false;
 }
 
+std::string RenderViewHostImpl::ToDebugString() {
+  return "RVHI:" + delegate_->GetCreatorLocation().ToString();
+}
+
 void RenderViewHostImpl::OnTakeFocus(bool reverse) {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view)

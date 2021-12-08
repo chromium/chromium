@@ -500,6 +500,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
+  std::string ToDebugString() override;
 
   // BrowserAccessibilityDelegate
   void AccessibilityPerformAction(const ui::AXActionData& data) override;
