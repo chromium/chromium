@@ -986,6 +986,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Intents.IntentPickerIconEvent"
+    enum="IntentPickerIconEvent" expires_after="2022-06-01">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records events associated with the intent picker icon in the omnibox.
+    Recorded when the icon is shown or interacted with.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.IsLacrosBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: Used to identify lacros binary in metrics backend. -->
 

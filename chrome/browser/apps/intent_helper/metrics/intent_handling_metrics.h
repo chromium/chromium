@@ -96,6 +96,19 @@ class IntentHandlingMetrics {
     kMaxValue = MAC_OS,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IntentPickerIconEvent {
+    // The intent picker icon was shown in the Omnibox.
+    kIconShown = 0,
+    // The intent picker icon in the Omnibox was clicked.
+    kIconClicked = 1,
+    // The intent picker dialog automatically popped out. This has the same
+    // effect as kIconClicked, but without the user interaction.
+    kAutoPopOut = 2,
+    kMaxValue = kAutoPopOut,
+  };
+
   IntentHandlingMetrics();
 
   // Records metrics for the outcome of a user selection in the http/https
@@ -110,6 +123,10 @@ class IntentHandlingMetrics {
   // Records metrics for when a link is clicked which can handle a preferred
   // app, as the result of a user previously setting a preference for that app.
   static void RecordPreferredAppLinkClickMetrics(Platform platform);
+
+  // Records metrics for usage of the intent picker icon which appears in the
+  // Omnibox.
+  static void RecordIntentPickerIconEvent(IntentPickerIconEvent event);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static void RecordExternalProtocolMetrics(arc::Scheme scheme,

@@ -21,6 +21,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
 #endif  // defined(OS_CHROMEOS)
@@ -157,6 +158,12 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
   std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
   if (apps.empty())
     return;
+
+#if defined(OS_CHROMEOS)
+  apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
+      apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconClicked);
+#endif
+
   IntentPickerTabHelper::LoadAppIcons(
       web_contents, std::move(apps),
       base::BindOnce(&OnAppIconsLoaded, web_contents,

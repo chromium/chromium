@@ -23,6 +23,10 @@
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
+#endif
+
 namespace {
 
 apps::mojom::AppType GetAppType(apps::PickerEntryType picker_entry_type) {
@@ -63,6 +67,17 @@ void IntentPickerTabHelper::SetShouldShowIcon(
   IntentPickerTabHelper* tab_helper = FromWebContents(web_contents);
   if (!tab_helper)
     return;
+
+#if defined(OS_CHROMEOS)
+  if (should_show_icon && !tab_helper->should_show_icon_) {
+    // This point doesn't exactly match when the icon is shown in the UI (e.g.
+    // if the tab is not active), but recording here corresponds more closely to
+    // navigations which cause the icon to appear.
+    apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
+        apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconShown);
+  }
+#endif
+
   tab_helper->should_show_icon_ = should_show_icon;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)

@@ -45132,6 +45132,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="PWA selected and preferred"/>
 </enum>
 
+<enum name="IntentPickerIconEvent">
+  <int value="0" label="Intent picker icon shown in Omnibox"/>
+  <int value="1" label="Intent picker icon clicked in Omnibox"/>
+  <int value="2" label="Intent picker dialog shown automatically"/>
+</enum>
+
 <enum name="InterceptionType">
   <int value="0" label="Not intercepted"/>
   <int value="1" label="Other"/>

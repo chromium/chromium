@@ -169,6 +169,11 @@ void IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
   RecordDestinationPlatformMetric(platform);
 }
 
+void IntentHandlingMetrics::RecordIntentPickerIconEvent(
+    IntentPickerIconEvent event) {
+  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Intents.IntentPickerIconEvent", event);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void IntentHandlingMetrics::RecordExternalProtocolMetrics(
     arc::Scheme scheme,

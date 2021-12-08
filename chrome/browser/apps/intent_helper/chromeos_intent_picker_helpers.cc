@@ -128,6 +128,10 @@ void MaybeShowIntentPickerBubble(content::NavigationHandle* navigation_handle,
                           PickerShowState::kOmnibox) {
     return;
   }
+
+  IntentHandlingMetrics::RecordIntentPickerIconEvent(
+      IntentHandlingMetrics::IntentPickerIconEvent::kAutoPopOut);
+
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   IntentPickerAutoDisplayService* ui_auto_display_service =
       IntentPickerAutoDisplayService::Get(
