@@ -4850,6 +4850,13 @@ const char kImeSystemEmojiPickerClipboardName[] =
 const char kImeSystemEmojiPickerClipboardDescription[] =
     "Emoji picker will insert emoji into clipboard if they can't be inserted "
     "into a text field";
+
+const char kImeSystemEmojiPickerExtensionName[] =
+    "System emoji picker extension";
+const char kImeSystemEmojiPickerExtensionDescription[] =
+    "Emoji picker extension allows users to select emoticons and symbols to "
+    "input.";
+
 const char kImeStylusHandwritingName[] = "Stylus Handwriting";
 const char kImeStylusHandwritingDescription[] =
     "Enable VK UI for stylus in text fields";

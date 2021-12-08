@@ -51085,6 +51085,7 @@ from previous Chrome versions.
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
   <int value="-549837954" label="RevenLogSource:enabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>
+  <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
   <int value="-545419529" label="LauncherAppSort:disabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
@@ -52553,6 +52554,7 @@ from previous Chrome versions.
   <int value="562111126" label="SidePanelBorder:enabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
+  <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>

@@ -286,6 +286,8 @@ extern const base::Feature kImeSystemEmojiPicker;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeSystemEmojiPickerClipboard;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kImeSystemEmojiPickerExtension;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeStylusHandwriting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImprovedDesksKeyboardShortcuts;

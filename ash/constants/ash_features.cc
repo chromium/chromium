@@ -750,6 +750,10 @@ const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
 const base::Feature kImeSystemEmojiPickerClipboard{
     "SystemEmojiPickerClipboard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable system emoji picker extension
+const base::Feature kImeSystemEmojiPickerExtension{
+    "SystemEmojiPickerExtension", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable a new UI for stylus writing on the virtual keyboard
 const base::Feature kImeStylusHandwriting{"StylusHandwriting",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
