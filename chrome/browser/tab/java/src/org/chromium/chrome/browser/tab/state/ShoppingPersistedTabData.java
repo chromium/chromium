@@ -959,7 +959,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     public boolean deserialize(@Nullable ByteBuffer bytes) {
         // TODO(crbug.com/1135573) add in metrics for serialize and deserialize
         // Do not attempt to deserialize if the bytes are null
-        if (bytes == null) {
+        if (bytes == null || !bytes.hasRemaining()) {
             return false;
         }
         try {
