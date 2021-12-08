@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/mac/install_from_archive.h"
 #include "chrome/updater/updater_scope.h"
@@ -161,7 +162,8 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveNoArgs) {
       GetTestDir().Append(FILE_PATH_LITERAL(kUpdaterTestDMGName));
   ASSERT_TRUE(base::PathExists(dmg_file_path));
   ASSERT_NE(updater::InstallFromArchive(dmg_file_path, {}, {},
-                                        updater::UpdaterScope::kUser, {}),
+                                        updater::UpdaterScope::kUser,
+                                        base::Version("0"), {}),
             0);
 }
 
@@ -172,7 +174,8 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithArgsFail) {
       GetTestDir().Append(FILE_PATH_LITERAL(kUpdaterTestDMGName));
   ASSERT_TRUE(base::PathExists(dmg_file_path));
   ASSERT_NE(updater::InstallFromArchive(dmg_file_path, {}, {},
-                                        updater::UpdaterScope::kUser, "arg2"),
+                                        updater::UpdaterScope::kUser,
+                                        base::Version("0"), "arg2"),
             0);
 }
 
@@ -189,7 +192,7 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithArgsPass) {
 
   ASSERT_EQ(updater::InstallFromArchive(dmg_file_path, installed_app_path, {},
                                         updater::UpdaterScope::kUser,
-                                        kTestAppVersion),
+                                        base::Version(kTestAppVersion), {}),
             0);
 }
 
@@ -207,7 +210,8 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchiveWithExtraneousArgsPass) {
 
   std::string args = base::StrCat({kTestAppVersion, " arg1 arg2"});
   ASSERT_EQ(updater::InstallFromArchive(dmg_file_path, installed_app_path, {},
-                                        updater::UpdaterScope::kUser, args),
+                                        updater::UpdaterScope::kUser,
+                                        base::Version("0"), args),
             0);
 }
 
@@ -219,25 +223,25 @@ TEST_F(ChromeUpdaterMacSetupTest, InstallFromArchivePreinstallPostinstall) {
   ASSERT_EQ(updater::InstallFromArchive(
                 test_dir.Append("setup_test_envcheck").Append("marker.app"),
                 base::FilePath::FromASCII("xc_path"), "ap",
-                updater::UpdaterScope::kUser, "arg1 arg2"),
+                updater::UpdaterScope::kUser, base::Version("0"), "arg1 arg2"),
             0);
 
   ASSERT_EQ(
       updater::InstallFromArchive(
           test_dir.Append("setup_test_preinstallfailure").Append("marker.app"),
-          {}, {}, updater::UpdaterScope::kUser, {}),
+          {}, {}, updater::UpdaterScope::kUser, base::Version("0"), {}),
       1);
 
   ASSERT_EQ(
       updater::InstallFromArchive(
           test_dir.Append("setup_test_installfailure").Append("marker.app"), {},
-          {}, updater::UpdaterScope::kUser, {}),
+          {}, updater::UpdaterScope::kUser, base::Version("0"), {}),
       2);
 
   ASSERT_EQ(
       updater::InstallFromArchive(
           test_dir.Append("setup_test_postinstallfailure").Append("marker.app"),
-          {}, {}, updater::UpdaterScope::kUser, {}),
+          {}, {}, updater::UpdaterScope::kUser, base::Version("0"), {}),
       3);
 }
 
