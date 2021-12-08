@@ -4,6 +4,7 @@ Googlers can view additional information about internal perf infrastructure at,h
 Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_blink_perf.performance_apis,yoavweiss@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.service_worker,"shimazu@chromium.org, falken@chromium.org, ting.shao@intel.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
+UNSCHEDULED_blink_perf.webcodecs,media-dev@chromium.org,Blink>WebCodecs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_loading.mbi,blink-isolation-dev@chromium.org,Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
 UNSCHEDULED_v8.loading_desktop,"cbruni@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"
 UNSCHEDULED_v8.loading_mobile,"cbruni@chromium.org, leszeks@chromium.org, tmrts@chromium.org",Blink>JavaScript,https://bit.ly/system-health-v8-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,international,javascript_heavy"

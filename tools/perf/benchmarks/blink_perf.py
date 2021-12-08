@@ -714,6 +714,18 @@ class BlinkPerfWebAudio(_BlinkPerfBenchmark):
     return 'blink_perf.webaudio'
 
 
+@benchmark.Info(emails=['media-dev@chromium.org'],
+                component='Blink>WebCodecs',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfWebCodecs(_BlinkPerfBenchmark):
+  SUBDIR = 'webcodecs'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.webcodecs'
+
+
 @benchmark.Info(
     emails=['kbr@chromium.org', 'enga@chromium.org', 'webgl-team@google.com'],
     component='Blink>WebGL',

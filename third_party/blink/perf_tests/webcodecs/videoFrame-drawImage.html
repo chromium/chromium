@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<title>Test VideoFrame drawImage() performance</title>
+<script src="../resources/runner.js"></script>
+
+<canvas id="canvas" width="1280" height="720"></canvas>
+
+<script>
+(async function() {
+  const config = {
+    codec: "avc1.64001f",
+    codedWidth: 1280,
+    codedHeight: 720
+  };
+
+  const support = await VideoDecoder.isConfigSupported(config);
+  if (!support.supported) {
+    testRunner.notifyDone();
+    return;
+  }
+
+  const result = await fetch("resources/720p.h264");
+  const buf = await result.arrayBuffer();
+  const chunk = new EncodedVideoChunk({
+    timestamp: 0,
+    type: "key",
+    data: buf
+  });
+
+  let frame = null;
+  const decoder = new VideoDecoder({
+    output: f => frame = f,
+    error: e => PerfTestRunner.log("Decode error:" + e)
+  });
+  decoder.configure(config);
+  decoder.decode(chunk);
+  await decoder.flush();
+
+  if (frame == null) {
+    PerfTestRunner.logFatalError("No frame decoded");
+    return;
+  }
+
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  PerfTestRunner.measureInnerRAFTime({
+    description: "CPU time for drawImage()",
+    run() {
+      for (let i = 0; i < 10; i++) {
+        ctx.drawImage(frame, 0, 0);
+      }
+    }
+  });
+})();
+</script>
