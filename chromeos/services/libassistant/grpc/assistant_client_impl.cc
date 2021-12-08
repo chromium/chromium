@@ -22,6 +22,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/experiment_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
@@ -106,7 +107,16 @@ bool AssistantClientImpl::StartGrpcServices() {
 
 void AssistantClientImpl::AddExperimentIds(
     const std::vector<std::string>& exp_ids) {
-  NOTIMPLEMENTED();
+  ::assistant::api::UpdateExperimentIdsRequest request;
+  request.set_operation(
+      ::assistant::api::UpdateExperimentIdsRequest_Operation_MERGE);
+  *request.mutable_experiment_ids() = {exp_ids.begin(), exp_ids.end()};
+
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::UpdateExperimentIdsResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::AddSpeakerIdEnrollmentEventObserver(

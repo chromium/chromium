@@ -16,6 +16,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/experiment_interface.pb.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -28,6 +29,14 @@ GetLibassistGrpcMethodName<::assistant::api::RegisterCustomerRequest>() {
   // libassistant services.
   return chromeos::assistant::GetLibassistGrpcMethodName(
       "CustomerRegistrationService", "RegisterCustomer");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::UpdateExperimentIdsRequest>() {
+  // ExperimentService.
+  return chromeos::assistant::GetLibassistGrpcMethodName("ExperimentService",
+                                                         "UpdateExperimentIds");
 }
 
 template <>
