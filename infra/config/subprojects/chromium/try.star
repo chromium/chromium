@@ -2395,6 +2395,14 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-octopus-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-octopus-compile-chrome",
+)
+
+chrome_internal_verifier(
     builder = "ipad-device",
 )
 
