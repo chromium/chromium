@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
+#include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -64,6 +66,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
@@ -984,6 +987,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
+  base::HistogramTester histogram_tester;
+
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
   FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
@@ -1002,6 +1007,43 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   WaitForPickerClosed();
   // IPH is shown.
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown(new_browser));
+
+  // FirstProfileTime.* histograms aren't recorded because the picker
+  // is opened from the menu.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "ProfilePicker.FirstProfileTime."),
+              testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       OpenProfileFromStartup) {
+  base::HistogramTester histogram_tester;
+
+  // Create a second profile.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+
+  // Open the new profile.
+  OpenProfileFromPicker(other_path, /*open_settings=*/false);
+
+  // Measurement of startup performance started.
+
+  // Browser for the profile is displayed.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForLoadStop(GURL("chrome://newtab/"),
+                  new_browser->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(new_browser->profile()->GetPath(), other_path);
+  WaitForPickerClosed();
+
+  histogram_tester.ExpectTotalCount(
+      "ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason",
+      metrics::StartupProfilingFinishReason::kDone, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,

@@ -837,6 +837,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.FirstProfileTime.FirstWebContentsFinishReason"
+    enum="StartupProfilingFinishReason" expires_after="2022-04-03">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    [Desktop] The reason for which profile picker startup profiling was deemed
+    complete. Logged once per session when the user opens a profile from the
+    profile picker shown on startup.
+
+    Used to understand user behavior shifts when
+    ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint regresses
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint"
+    units="ms" expires_after="2022-04-03">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Measure the elapsed time from when the user selects a profile on the startup
+    profile picker to the first non empty paint of the first web contents. This
+    is recorded when the user selects an existing profile from that profile
+    picker shown on startup.
+
+    Together with ProfilePicker.StartupTime.FirstPaint.FromApplicationStart,
+    this metric is intended to capture the startup latency for a common case
+    where Startup.FirstWebContents.NonEmptyPaint3 is not recorded due to the
+    profile picker interrupting browser startup.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.NewProfileCreateShortcut" enum="BooleanCreated"
     expires_after="M90">
   <owner>msalama@chromium.org</owner>

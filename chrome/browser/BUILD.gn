@@ -4014,6 +4014,8 @@ static_library("browser") {
       "metrics/desktop_session_duration/touch_mode_stats_tracker.h",
       "metrics/first_web_contents_profiler.cc",
       "metrics/first_web_contents_profiler.h",
+      "metrics/first_web_contents_profiler_base.cc",
+      "metrics/first_web_contents_profiler_base.h",
       "metrics/incognito_observer_desktop.cc",
       "metrics/power/power_metrics_reporter.cc",
       "metrics/power/power_metrics_reporter.h",
