@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -113,6 +115,8 @@ public class FirstRunIntegrationTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
+    private ExternalAuthUtils mExternalAuthUtilsMock;
+    @Mock
     public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
     @Mock
     public EnterpriseInfo mEnterpriseInfo;
@@ -136,6 +140,8 @@ public class FirstRunIntegrationTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         FirstRunStatus.setFirstRunSkippedByPolicy(false);
         FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
@@ -551,6 +557,30 @@ public class FirstRunIntegrationTest {
                 .skipSigninPromo();
 
         waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Remove({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
+    @CommandLineFlags.Add({ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+    public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSigninPromo());
     }
 
     private void runFirstRunPagesTest(FirstRunPagesTestCase testCase) throws Exception {
@@ -1410,7 +1440,13 @@ public class FirstRunIntegrationTest {
             int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
             int acceptCallCount = mScopedObserverData.acceptTermsOfServiceCallback.getCallCount();
 
-            clickButton(mFirstRunActivity, R.id.terms_accept, "Failed to accept ToS");
+            if (Matchers.instanceOf(SigninFirstRunFragment.class)
+                            .matches(mFirstRunActivity.getCurrentFragmentForTesting())) {
+                clickButton(
+                        mFirstRunActivity, R.id.signin_fre_continue_button, "Failed to accept ToS");
+            } else {
+                clickButton(mFirstRunActivity, R.id.terms_accept, "Failed to accept ToS");
+            }
             mScopedObserverData.jumpToPageCallback.waitForCallback(
                     "Failed to try moving to the next screen", jumpCallCount);
             mScopedObserverData.acceptTermsOfServiceCallback.waitForCallback(

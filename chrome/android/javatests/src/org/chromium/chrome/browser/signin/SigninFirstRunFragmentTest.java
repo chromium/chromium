@@ -59,6 +59,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Matchers;
@@ -175,6 +176,7 @@ public class SigninFirstRunFragmentTest {
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
+        when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(false);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
@@ -657,6 +659,14 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     public void testFragmentWithTosDialogBehaviorPolicy() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        CallbackHelper callbackHelper = new CallbackHelper();
+        doAnswer(invocation -> {
+            callbackHelper.notifyCalled();
+            return null;
+        })
+                .when(mFirstRunPageDelegateMock)
+                .exitFirstRun();
+        when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(true);
         doAnswer(AdditionalAnswers.answerVoid(
                          (Callback<OwnedState> callback)
                                  -> callback.onResult(new OwnedState(
@@ -671,8 +681,9 @@ public class SigninFirstRunFragmentTest {
         when(mFirstRunUtils.getCctTosDialogEnabled()).thenReturn(false);
         launchActivityWithFragment();
 
-        CriteriaHelper.pollUiThread(() -> mFragment.isExitFirstRunCalled());
+        callbackHelper.waitForFirst();
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
+        verify(mFirstRunPageDelegateMock).exitFirstRun();
     }
 
     private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
