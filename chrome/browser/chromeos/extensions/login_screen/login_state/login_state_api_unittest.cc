@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"

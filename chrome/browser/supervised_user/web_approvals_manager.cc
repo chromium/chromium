@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "components/policy/core/browser/url_util.h"
 #include "url/gurl.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sessions/exit_type_service_factory.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/buildflags.h"
