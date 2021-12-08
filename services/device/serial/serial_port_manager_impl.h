@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -16,6 +17,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
+#include "services/device/serial/bluetooth_serial_port_impl.h"
 #include "services/device/serial/serial_device_enumerator.h"
 
 namespace base {
@@ -71,6 +73,13 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
   void OnPortAdded(const mojom::SerialPortInfo& port) override;
   void OnPortRemoved(const mojom::SerialPortInfo& port) override;
 
+  void OpenBluetoothSerialPortOnUI(
+      const std::string& address,
+      mojom::SerialConnectionOptionsPtr options,
+      mojo::PendingRemote<mojom::SerialPortClient> client,
+      mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+      BluetoothSerialPortImpl::OpenCallback callback);
+
   std::unique_ptr<SerialDeviceEnumerator> enumerator_;
   std::unique_ptr<BluetoothSerialDeviceEnumerator> bluetooth_enumerator_;
   base::ScopedMultiSourceObservation<SerialDeviceEnumerator,
@@ -84,6 +93,7 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
   mojo::RemoteSet<mojom::SerialPortManagerClient> clients_;
   // See threading notes above for guidelines for checking sequence.
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<SerialPortManagerImpl> weak_factory_{this};
 };
 
 }  // namespace device

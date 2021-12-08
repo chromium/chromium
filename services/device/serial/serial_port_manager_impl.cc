@@ -131,8 +131,8 @@ void SerialPortManagerImpl::OpenPort(
       ui_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &BluetoothSerialPortImpl::Open,
-              bluetooth_enumerator_->GetAdapter(), *address, std::move(options),
+              &SerialPortManagerImpl::OpenBluetoothSerialPortOnUI,
+              weak_factory_.GetWeakPtr(), *address, std::move(options),
               std::move(client), std::move(watcher),
               base::BindOnce(&OnPortOpened, std::move(callback),
                              base::SequencedTaskRunnerHandle::Get())));
@@ -141,6 +141,17 @@ void SerialPortManagerImpl::OpenPort(
   }
 
   std::move(callback).Run(mojo::NullRemote());
+}
+
+void SerialPortManagerImpl::OpenBluetoothSerialPortOnUI(
+    const std::string& address,
+    mojom::SerialConnectionOptionsPtr options,
+    mojo::PendingRemote<mojom::SerialPortClient> client,
+    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
+    BluetoothSerialPortImpl::OpenCallback callback) {
+  BluetoothSerialPortImpl::Open(bluetooth_enumerator_->GetAdapter(), address,
+                                std::move(options), std::move(client),
+                                std::move(watcher), std::move(callback));
 }
 
 void SerialPortManagerImpl::OnPortAdded(const mojom::SerialPortInfo& port) {
