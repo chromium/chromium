@@ -22,6 +22,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/ListCredentials.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
