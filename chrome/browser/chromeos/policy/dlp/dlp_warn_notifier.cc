@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 
-#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"

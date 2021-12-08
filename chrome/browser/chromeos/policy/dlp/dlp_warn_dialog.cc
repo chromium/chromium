@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/style/color_provider.h"
-#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -23,6 +23,10 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/style/color_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -153,7 +157,10 @@ const std::u16string GetMessage(DlpWarnDialog::DlpWarnDialogOptions options) {
 // icon, dialog title and the informative text.
 void AddGeneralInformation(views::View* upper_panel,
                            DlpWarnDialog::DlpWarnDialogOptions options) {
+// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   views::BoxLayout* layout =
       upper_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -164,17 +171,25 @@ void AddGeneralInformation(views::View* upper_panel,
 
   views::ImageView* managed_icon =
       upper_panel->AddChildView(std::make_unique<views::ImageView>());
-  managed_icon->SetImage(gfx::CreateVectorIcon(
-      vector_icons::kBusinessIcon, kManagedIconSize,
-      color_provider->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kIconColorPrimary)));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto color = color_provider->GetContentLayerColor(
+      ash::ColorProvider::ContentLayerType::kIconColorPrimary);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+  auto color = SK_ColorGRAY;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  managed_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kBusinessIcon,
+                                               kManagedIconSize, color));
 
   views::Label* title_label = upper_panel->AddChildView(
       std::make_unique<views::Label>(GetTitle(options.restriction)));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetAllowCharacterBreak(true);
+// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   title_label->SetEnabledColor(color_provider->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   title_label->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                          kTitleFontSize,
                                          gfx::Font::Weight::MEDIUM));
@@ -185,8 +200,11 @@ void AddGeneralInformation(views::View* upper_panel,
   message->SetMultiLine(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message->SetAllowCharacterBreak(true);
+// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   message->SetEnabledColor(color_provider->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   message->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                      kBodyFontSize, gfx::Font::Weight::NORMAL));
   message->SetLineHeight(kBodyLineHeight);
@@ -197,7 +215,10 @@ void AddGeneralInformation(views::View* upper_panel,
 void AddConfidentialContentRow(
     views::View* container,
     const DlpConfidentialContent& confidential_content) {
+// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   views::View* row = container->AddChildView(std::make_unique<views::View>());
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -214,8 +235,11 @@ void AddConfidentialContentRow(
   title->SetMultiLine(true);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title->SetAllowCharacterBreak(true);
+// TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   title->SetEnabledColor(color_provider->GetContentLayerColor(
       ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   title->SetFontList(gfx::FontList({kFontName}, gfx::Font::NORMAL,
                                    kBodyFontSize, gfx::Font::Weight::NORMAL));
   title->SetLineHeight(kConfidentialContentLineHeight);

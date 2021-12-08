@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_NOTIFIER_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_NOTIFIER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_NOTIFIER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_NOTIFIER_H_
 
-#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
-#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 
 namespace policy {
 
@@ -57,4 +57,4 @@ class DlpWarnNotifier {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_NOTIFIER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_NOTIFIER_H_

@@ -6466,6 +6466,7 @@ test("unit_tests") {
     sources += [
       "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_clipboard_notifier_unittest.cc",
+      "../browser/chromeos/policy/dlp/dlp_confidential_contents_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_content_tab_helper_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_drag_drop_notifier_unittest.cc",
       "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.cc",

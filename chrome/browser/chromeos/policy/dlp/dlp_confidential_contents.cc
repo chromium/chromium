@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 
 #include <memory>
 #include <vector>
@@ -20,7 +20,7 @@ namespace policy {
 // The maximum number of entries that can be kept in the
 // DlpConfidentialContentsCache.
 // TODO(crbug.com/1275926): determine the value to use
-static constexpr int kDefaultCacheSizeLimit = 100;
+static constexpr size_t kDefaultCacheSizeLimit = 100;
 
 // The default timeout after which the entries are evicted from the
 // DlpConfidentialContentsCache.
@@ -162,7 +162,7 @@ bool DlpConfidentialContentsCache::Contains(
              }) != entries_.end();
 }
 
-int DlpConfidentialContentsCache::GetSizeForTesting() const {
+size_t DlpConfidentialContentsCache::GetSizeForTesting() const {
   return entries_.size();
 }
 

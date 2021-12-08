@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/mock_dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h"
 
-#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
-#include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::Mock;

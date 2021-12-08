@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
 
 #include <list>
 #include <string>
@@ -121,7 +121,7 @@ class DlpConfidentialContentsCache {
                 DlpRulesManager::Restriction restriction) const;
 
   // Returns the number of cached entries, useful for testing.
-  int GetSizeForTesting() const;
+  size_t GetSizeForTesting() const;
 
   // Returns the duration for which the entries are kept in the cache.
   static base::TimeDelta GetCacheTimeout();
@@ -156,7 +156,7 @@ class DlpConfidentialContentsCache {
   void OnEvictionTimerUp(const DlpConfidentialContent& content);
 
   std::list<std::unique_ptr<Entry>> entries_;
-  int cache_size_limit_;
+  size_t cache_size_limit_;
 
   // Used to evict cache entries after the timeout.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -164,4 +164,4 @@ class DlpConfidentialContentsCache {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONFIDENTIAL_CONTENTS_H_

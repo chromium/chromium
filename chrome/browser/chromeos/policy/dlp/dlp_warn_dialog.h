@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_DIALOG_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_DIALOG_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_DIALOG_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_DIALOG_H_
 
 #include <string>
+
 #include "base/callback_forward.h"
-#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -78,4 +79,4 @@ class DlpWarnDialog : public views::DialogDelegateView {
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_WARN_DIALOG_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_WARN_DIALOG_H_

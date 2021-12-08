@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 
 #include <string>
 
@@ -84,7 +84,7 @@ TEST_F(DlpConfidentialContentsTest, DuplicateConfidentialDataAdded) {
   auto web_contents = CreateWebContents(title1, url1);
   contents.Add(web_contents.get());
   contents.Add(web_contents.get());
-  EXPECT_EQ(contents.GetContents().size(), 1);
+  EXPECT_EQ(contents.GetContents().size(), 1u);
   EXPECT_TRUE(Contains(contents, web_contents.get()));
 }
 
@@ -97,10 +97,10 @@ TEST_F(DlpConfidentialContentsTest, ClearAndAdd) {
 
   contents.Add(web_contents1.get());
   contents.Add(web_contents2.get());
-  EXPECT_EQ(contents.GetContents().size(), 2);
+  EXPECT_EQ(contents.GetContents().size(), 2u);
 
   contents.ClearAndAdd(CreateWebContents(title3, url3).get());
-  EXPECT_EQ(contents.GetContents().size(), 1);
+  EXPECT_EQ(contents.GetContents().size(), 1u);
   EXPECT_FALSE(Contains(contents, web_contents1.get()));
   EXPECT_FALSE(Contains(contents, web_contents2.get()));
   EXPECT_TRUE(Contains(contents, web_contents3.get()));
@@ -120,14 +120,14 @@ TEST_F(DlpConfidentialContentsTest, UnionShouldAddUniqueItems) {
   contents2.Add(web_contents1.get());
   contents2.Add(web_contents3.get());
 
-  EXPECT_EQ(contents1.GetContents().size(), 2);
-  EXPECT_EQ(contents2.GetContents().size(), 2);
+  EXPECT_EQ(contents1.GetContents().size(), 2u);
+  EXPECT_EQ(contents2.GetContents().size(), 2u);
   EXPECT_FALSE(Contains(contents1, web_contents3.get()));
 
   contents1.UnionWith(contents2);
 
-  EXPECT_EQ(contents1.GetContents().size(), 3);
-  EXPECT_EQ(contents2.GetContents().size(), 2);
+  EXPECT_EQ(contents1.GetContents().size(), 3u);
+  EXPECT_EQ(contents2.GetContents().size(), 2u);
   EXPECT_TRUE(Contains(contents1, web_contents3.get()));
 }
 
@@ -166,7 +166,7 @@ TEST_F(DlpConfidentialContentsTest, CacheRemovesDuplicates) {
 
   cache.Cache(content, kRestriction);
   cache.Cache(content, kRestriction);
-  EXPECT_EQ(cache.GetSizeForTesting(), 1);
+  EXPECT_EQ(cache.GetSizeForTesting(), 1u);
 }
 
 }  // namespace policy

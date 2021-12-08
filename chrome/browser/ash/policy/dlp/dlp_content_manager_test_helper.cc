@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 
 namespace policy {
 
