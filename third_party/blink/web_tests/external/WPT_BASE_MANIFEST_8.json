@@ -213054,6 +213054,86 @@
     ]
    },
    "scroll-animations": {
+    "css": {
+     "at-scroll-timeline-default-descriptors-iframe.html": [
+      "ddb06693c77d80cdcde9b4cecb13cfdad7ef20bf",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-default-descriptors-quirks-mode.html": [
+      "1bba34d5866a2dfc581d8f1a97c16d0fd2344a6c",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-default-descriptors-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-default-descriptors-writing-mode-rl.html": [
+      "4d276497bc685ceba6ebece2df70f8dc8478c351",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-default-descriptors-writing-mode-rl-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-default-descriptors.html": [
+      "58225341938822b6d9ff5d13034b1dc7617cd183",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-default-descriptors-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-frame-size-changed.html": [
+      "e41af998c26ef375e6ce990b6dfba90200796c3e",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-frame-size-changed-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-scroll-timeline-inline-orientation.html": [
+      "ca6ef1c3f7ae8d7cf5edb4aa3097facdad0843f1",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/at-scroll-timeline-inline-orientation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
     "scroll-timelines": {
      "animation-with-animatable-interface.html": [
       "b04aaf2d336eeb3d7ddc8cfebbe4f902d3ef94f0",
@@ -300692,6 +300772,26 @@
      []
     ],
     "css": {
+     "at-scroll-timeline-default-descriptors-iframe-ref.html": [
+      "b05627d99400026dde2c568788a90a25af81f932",
+      []
+     ],
+     "at-scroll-timeline-default-descriptors-ref.html": [
+      "b72a4e8b733a57e119d01366cf44f32f28f0ca97",
+      []
+     ],
+     "at-scroll-timeline-default-descriptors-writing-mode-rl-ref.html": [
+      "2ea7d17577c2af1943f01784625a07dbea4e1605",
+      []
+     ],
+     "at-scroll-timeline-frame-size-changed-ref.html": [
+      "745c2f5472ee59f6a5bcaccff0a1181763bf720a",
+      []
+     ],
+     "at-scroll-timeline-inline-orientation-ref.html": [
+      "e87901e30a2c43b3d7e77c78805b1a6db87a920d",
+      []
+     ],
      "scroll-timeline-cssom.tentative-expected.txt": [
       "116f38ce142edb0efb004461c1a8a9a314c36283",
       []
@@ -369506,6 +369606,15 @@
        {}
       ]
      ],
+     "user-select-001.html": [
+      "35febc38bb0bebd0d1ada8c63a6ff4e27a8727f3",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "webkit-appearance-parsing.html": [
       "0f08eab222493a123fd5a44afce3689385a42390",
       [
@@ -432260,6 +432369,13 @@
      ],
      "coop-sandbox-cuts-opener.https.html": [
       "47e6d0d6fe54107f781454b99b6addb852b480bf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "coop-sandbox-redirects-cuts-opener.https.html": [
+      "01f60b425dbea78909c075382246d475c341dfde",
       [
        null,
        {}
