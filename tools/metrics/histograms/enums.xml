@@ -36065,6 +36065,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="22" label="Failed - data in store is expired"/>
   <int value="23" label="Failed - data in store is for another user"/>
   <int value="24" label="Failed - cannot load stream with pending clear all"/>
+  <int value="25" label="Failed - already has unread content available"/>
+  <int value="26" label="Failed - user does not follow any web feeds"/>
 </enum>
 
 <enum name="FeedNoticeAcknowledgementPath">
@@ -36205,6 +36207,8 @@ Called by update_permissions_policy_enum.py.-->
              tapped on the preview."/>
   <int value="40"
       label="User tapped Settings link to open feed autoplay settings."/>
+  <int value="41"
+      label="User tapped &quot;Add to Reading List&quot; in the context menu."/>
 </enum>
 
 <enum name="FeedUserCommandType">
