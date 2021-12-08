@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SigninPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -56,6 +57,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
     private final ImageFetcher mImageFetcher;
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
+    private final SnackbarManager mSnackbarManager;
 
     // There can only be one promo header at a time. This takes on one of the values:
     // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID.
@@ -117,7 +119,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         }
     };
 
-    BookmarkItemsAdapter(Context context) {
+    BookmarkItemsAdapter(Context context, SnackbarManager snackbarManager) {
         super(context);
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(this);
@@ -127,6 +129,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                         Profile.getLastUsedRegularProfile().getProfileKey(),
                         GlobalDiscardableReferencePool.getReferencePool());
         mCommerceSubscriptionsServiceFactory = new CommerceSubscriptionsServiceFactory();
+        mSnackbarManager = snackbarManager;
     }
 
     /**
@@ -229,7 +232,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                     ((PowerBookmarkShoppingItemRow) vh.itemView)
                             .init(mImageFetcher, mDelegate.getModel(),
                                     mCommerceSubscriptionsServiceFactory.getForLastUsedProfile()
-                                            .getSubscriptionsManager());
+                                            .getSubscriptionsManager(),
+                                    mSnackbarManager);
                 } else {
                     vh = createViewHolderHelper(parent, R.layout.bookmark_item_row);
                 }

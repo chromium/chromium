@@ -208,7 +208,7 @@ public class BookmarkManager
         mSelectableListLayout.initializeEmptyView(
                 R.string.bookmarks_folder_empty, R.string.bookmark_no_result);
 
-        mAdapter = new BookmarkItemsAdapter(mContext);
+        mAdapter = new BookmarkItemsAdapter(mContext, snackbarManager);
 
         mAdapterDataObserver = new AdapterDataObserver() {
             @Override

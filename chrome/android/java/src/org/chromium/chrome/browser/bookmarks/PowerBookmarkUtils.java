@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.res.Resources;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingDataProviderBridge;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
@@ -20,6 +23,8 @@ import org.chromium.chrome.browser.subscriptions.CommerceSubscription.Subscripti
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 
 /** Utilities for use in power bookmarks. */
@@ -61,6 +66,7 @@ public class PowerBookmarkUtils {
      * @param bookmarkBridge The BookmarkBridge used to query bookmarks.
      * @param bookmarkId The BookmarkId to check the price-tracking status of.
      * @param enabled Whether price-tracking should be enabled.
+     * @param callback The status callback.
      */
     public static void setPriceTrackingEnabled(@NonNull SubscriptionsManager subscriptionsManager,
             @NonNull BookmarkBridge bookmarkBridge, @Nullable BookmarkId bookmarkId,
@@ -90,6 +96,57 @@ public class PowerBookmarkUtils {
         } else {
             subscriptionsManager.unsubscribe(subscription, wrapperCallback);
         }
+    }
+
+    /**
+     * Checks if the given {@link BookmarkId} is price-tracked.
+     *
+     * @param subscriptionsManager Manages price-tracking subscriptions.
+     * @param bookmarkBridge The BookmarkBridge used to query bookmarks.
+     * @param bookmarkId The BookmarkId to check the price-tracking status of.
+     * @param enabled Whether price-tracking should be enabled.
+     * @param snackbarManager Manages snackbars, non-null if a message should be sent to alert the
+     *         users of price-tracking events.
+     * @param resources Used to retrieve resources.
+     * @param callback The status callback, may be called multiple times depending if the user
+     *         retries on failure.
+     */
+    public static void setPriceTrackingEnabledWithSnackbars(
+            @NonNull SubscriptionsManager subscriptionsManager,
+            @NonNull BookmarkBridge bookmarkBridge, @Nullable BookmarkId bookmarkId,
+            boolean enabled, SnackbarManager snackbarManager, Resources resources,
+            Callback<Integer> callback) {
+        // Action to retry the subscription request on failure.
+        SnackbarManager.SnackbarController retrySnackbarControllerAction =
+                new SnackbarManager.SnackbarController() {
+                    @Override
+                    public void onAction(Object actionData) {
+                        setPriceTrackingEnabledWithSnackbars(subscriptionsManager, bookmarkBridge,
+                                bookmarkId, enabled, snackbarManager, resources, callback);
+                    }
+                };
+        // Wrapper which shows a snackbar and forwards the result.
+        Callback<Integer> wrapperCallback = (status) -> {
+            Snackbar snackbar;
+            if (status == SubscriptionsManager.StatusCode.OK) {
+                snackbar = Snackbar.make(
+                        resources.getString(enabled ? R.string.price_tracking_enabled_snackbar
+                                                    : R.string.price_tracking_disabled_snackbar),
+                        null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_PRICE_TRACKING_SUCCESS);
+            } else {
+                snackbar =
+                        Snackbar.make(resources.getString(R.string.price_tracking_error_snackbar),
+                                        retrySnackbarControllerAction, Snackbar.TYPE_NOTIFICATION,
+                                        Snackbar.UMA_PRICE_TRACKING_FAILURE)
+                                .setAction(resources.getString(
+                                                   R.string.price_tracking_error_snackbar_action),
+                                        null);
+            }
+            snackbarManager.showSnackbar(snackbar);
+            callback.onResult(status);
+        };
+        setPriceTrackingEnabled(
+                subscriptionsManager, bookmarkBridge, bookmarkId, enabled, wrapperCallback);
     }
 
     /**

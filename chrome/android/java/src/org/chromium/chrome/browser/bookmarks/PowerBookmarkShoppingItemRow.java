@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.ProductPrice;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -43,6 +44,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     private CurrencyFormatter mCurrencyFormatter;
     private CommerceSubscription mSubscription;
     private boolean mSubscriptionChangeInProgress;
+    private SnackbarManager mSnackbarManager;
 
     /**
      * Constructor for inflating from XML.
@@ -60,10 +62,11 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
      * @param subscriptionsManager Used to manage the price-tracking subscriptions.
      */
     void init(ImageFetcher imageFetcher, BookmarkModel bookmarkModel,
-            SubscriptionsManager subscriptionsManager) {
+            SubscriptionsManager subscriptionsManager, SnackbarManager snackbarManager) {
         mImageFetcher = imageFetcher;
         mBookmarkModel = bookmarkModel;
         mSubscriptionsManager = subscriptionsManager;
+        mSnackbarManager = snackbarManager;
     }
 
     // BookmarkItemRow overrides:
@@ -157,8 +160,9 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             if (mSubscriptionChangeInProgress) return;
             mSubscriptionChangeInProgress = true;
 
-            PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager, mBookmarkModel,
-                    mBookmarkId, !mIsPriceTrackingEnabled, subscriptionCallback);
+            PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mSubscriptionsManager,
+                    mBookmarkModel, mBookmarkId, !mIsPriceTrackingEnabled, mSnackbarManager,
+                    getContext().getResources(), subscriptionCallback);
         });
     }
 
@@ -175,5 +179,9 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
 
     void setCurrencyFormatterForTesting(CurrencyFormatter currencyFormatter) {
         mCurrencyFormatter = currencyFormatter;
+    }
+
+    View getPriceTrackingButtonForTesting() {
+        return mEndStartButtonView;
     }
 }
