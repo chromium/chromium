@@ -1758,8 +1758,6 @@ static_library("browser") {
     "support_tool/support_tool_handler.h",
     "support_tool/support_tool_util.cc",
     "support_tool/support_tool_util.h",
-    "support_tool/ui_hierarchy_data_collector.cc",
-    "support_tool/ui_hierarchy_data_collector.h",
     "sync/bookmark_sync_service_factory.cc",
     "sync/bookmark_sync_service_factory.h",
     "sync/chrome_sync_client.cc",
@@ -5062,6 +5060,13 @@ static_library("browser") {
       "apps/app_service/browser_app_instance_registry.h",
       "apps/app_service/instance_registry_updater.cc",
       "apps/app_service/instance_registry_updater.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "support_tool/ash/ui_hierarchy_data_collector.cc",
+      "support_tool/ash/ui_hierarchy_data_collector.h",
     ]
   }
 

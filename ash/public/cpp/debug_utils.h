@@ -6,6 +6,8 @@
 #define ASH_PUBLIC_CPP_DEBUG_UTILS_H_
 
 #include <sstream>
+#include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 
@@ -19,8 +21,12 @@ ASH_EXPORT void PrintLayerHierarchy(std::ostringstream* out);
 ASH_EXPORT void PrintViewHierarchy(std::ostringstream* out);
 
 // Prints all windows hierarchy to |out|. If |scrub_data| is true, we
-// may skip some data fields that are not very important for debugging.
-ASH_EXPORT void PrintWindowHierarchy(std::ostringstream* out, bool scrub_data);
+// may skip some data fields that are not very important for debugging. Returns
+// a list of window titles. Window titles will be removed from |out| if
+// |scrub_data| is true.
+ASH_EXPORT std::vector<std::string> PrintWindowHierarchy(
+    std::ostringstream* out,
+    bool scrub_data);
 
 }  // namespace debug
 }  // namespace ash
