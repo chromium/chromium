@@ -219,6 +219,10 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
             Context context = ContextUtils.getApplicationContext();
             if (context == null) return;
             AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            if (manager == null) {
+                // The device does not support widgets. Abort.
+                return;
+            }
             dinoWidget.updateWidgets(context, manager, prefs, null);
             smallWidget.updateWidgets(context, manager, prefs, null);
         });
