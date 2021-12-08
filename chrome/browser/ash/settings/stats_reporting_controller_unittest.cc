@@ -67,20 +67,25 @@ class StatsReportingControllerTest : public testing::Test {
   }
 
   void ExpectThatPendingValueIs(bool expected) {
-    bool pending = false;
-    EXPECT_TRUE(StatsReportingController::Get()->GetPendingValue(&pending));
-    EXPECT_EQ(expected, pending);
+    absl::optional<base::Value> pending =
+        StatsReportingController::Get()->GetPendingValue();
+    EXPECT_TRUE(pending.has_value());
+    EXPECT_TRUE(pending->is_bool());
+    EXPECT_EQ(expected, pending->GetBool());
   }
 
   void ExpectThatPendingValueIsNotSet() {
-    bool pending = false;
-    EXPECT_FALSE(StatsReportingController::Get()->GetPendingValue(&pending));
+    absl::optional<base::Value> pending =
+        StatsReportingController::Get()->GetPendingValue();
+    EXPECT_FALSE(pending.has_value());
   }
 
   void ExpectThatSignedStoredValueIs(bool expected) {
-    bool stored = false;
-    EXPECT_TRUE(StatsReportingController::Get()->GetSignedStoredValue(&stored));
-    EXPECT_EQ(expected, stored);
+    absl::optional<base::Value> stored =
+        StatsReportingController::Get()->GetSignedStoredValue();
+    EXPECT_TRUE(stored.has_value());
+    EXPECT_TRUE(stored->is_bool());
+    EXPECT_EQ(expected, stored->GetBool());
   }
 
   void OnNotifiedOfChange() {

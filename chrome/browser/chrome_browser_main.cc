@@ -215,6 +215,7 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -904,6 +905,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::CrosSettings::Initialize(local_state);
+  ash::HWDataUsageController::Initialize(local_state);
   ash::StatsReportingController::Initialize(local_state);
   arc::StabilityMetricsManager::Initialize(local_state);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1886,6 +1888,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   device_event_log::Shutdown();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::HWDataUsageController::Shutdown();
   arc::StabilityMetricsManager::Shutdown();
   ash::StatsReportingController::Shutdown();
   ash::CrosSettings::Shutdown();

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -94,7 +95,8 @@ void HWDataCollectionScreen::HideImpl() {
 
 void HWDataCollectionScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionAcceptButtonClicked) {
-    // TODO(dkuzmin): set a device setting here, once it will be available
+    HWDataUsageController::Get()->Set(ProfileManager::GetActiveUserProfile(),
+                                      base::Value(hw_data_usage_enabled_));
     exit_callback_.Run(hw_data_usage_enabled_
                            ? Result::ACCEPTED_WITH_HW_DATA_USAGE
                            : Result::ACCEPTED_WITHOUT_HW_DATA_USAGE);

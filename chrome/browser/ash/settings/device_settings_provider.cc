@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -1409,18 +1410,21 @@ void DeviceSettingsProvider::OwnershipStatusChanged() {
 
       // TODO(https://crbug.com/433840): Some of the above code can be
       // simplified or removed, once the DoSet function is removed - then there
-      // will be no pending writes. This is because the only value that needs to
-      // be written as a pending write is kStatsReportingPref, and this is now
-      // handled by the StatsReportingController - see below. Once DoSet is
-      // removed and there are no pending writes that are being maintained by
-      // DeviceSettingsProvider, this code for updating the signed settings for
-      // the new owner should probably be moved outside of
-      // DeviceSettingsProvider.
+      // will be no pending writes. This is because the only values that need to
+      // be written as a pending write is kStatsReportingPref and
+      // kEnableDeviceHWDataUsage, and those are now handled by the Controllers
+      // - see below. Once DoSet is removed and there are no pending writes that
+      // are being maintained by DeviceSettingsProvider, this code for updating
+      // the signed settings for the new owner should probably be moved outside
+      // of DeviceSettingsProvider.
 
       StatsReportingController::Get()->OnOwnershipTaken(
           device_settings_service_->GetOwnerSettingsService());
+      HWDataUsageController::Get()->OnOwnershipTaken(
+          device_settings_service_->GetOwnerSettingsService());
     } else if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
       StatsReportingController::Get()->ClearPendingValue();
+      HWDataUsageController::Get()->ClearPendingValue();
     }
   }
 
