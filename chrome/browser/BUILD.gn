@@ -2487,6 +2487,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/chromeos/vm:mojo_bindings",
       "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
+      "//chrome/common/chromeos/extensions",
       "//chromeos/components/chromebox_for_meetings/buildflags",
       "//chromeos/components/local_search_service",
       "//chromeos/components/local_search_service/public/cpp:cpp",

@@ -366,6 +366,7 @@
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "components/crash/core/app/breakpad_linux.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -2396,6 +2397,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       autofill::switches::kShowAutofillSignatures,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       switches::kShortMergeSessionTimeoutForTest,  // For tests only.
+      chromeos::switches::
+          kTelemetryExtensionPwaOriginOverrideForTesting,  // For tests only.
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extensions::switches::kAllowHTTPBackgroundPage,
