@@ -1116,7 +1116,13 @@ void DisplayLockContext::DetachDescendantTopLayerElements() {
 
   // Detach all top layer elements contained by the element inducing this
   // display lock.
-  for (auto top_layer_element : document_->TopLayerElements()) {
+  // Detaching a layout tree can cause further top layer elements to be removed
+  // from the top layer element's list (in a nested top layer element case --
+  // since we would remove the ::backdrop pseudo when the layout object
+  // disappears). This means that we're potentially modifying the list as we're
+  // traversing it. Instead of doing that, make a copy.
+  auto top_layer_elements = document_->TopLayerElements();
+  for (auto top_layer_element : top_layer_elements) {
     auto* ancestor = top_layer_element.Get();
     while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor))) {
       if (ancestor == element_) {
