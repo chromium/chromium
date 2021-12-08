@@ -290,6 +290,24 @@ void NGBoxFragmentBuilder::AddOutOfFlowLegacyCandidate(
                                        /* relative_offset */ LogicalOffset()));
 }
 
+void NGBoxFragmentBuilder::RemoveOldLegacyOOFFlexItem(
+    const LayoutObject& object) {
+  // While what this method does should "work" for any child fragment in
+  // general, it's only expected to be called under very specific legacy
+  // circumstances, and besides it's evil.
+  DCHECK(object.IsOutOfFlowPositioned());
+  DCHECK(object.Parent()->IsFlexibleBox());
+  DCHECK(object.Parent()->IsOutOfFlowPositioned());
+  for (wtf_size_t idx = 0; idx < children_.size(); idx++) {
+    const ChildWithOffset& child = children_[idx];
+    if (child.fragment->GetLayoutObject() == &object) {
+      children_.EraseAt(idx);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 NGPhysicalFragment::NGBoxType NGBoxFragmentBuilder::BoxType() const {
   if (box_type_ != NGPhysicalFragment::NGBoxType::kNormalBox)
     return box_type_;

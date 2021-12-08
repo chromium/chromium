@@ -197,6 +197,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
     return;
 
   wtf_size_t prev_placed_objects_size = placed_objects.size();
+  bool did_get_same_object_count_once = false;
   while (SweepLegacyCandidates(&placed_objects)) {
     container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
 
@@ -214,8 +215,18 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
     // any additional objects.
     wtf_size_t placed_objects_size = placed_objects.size();
     if (prev_placed_objects_size == placed_objects_size) {
-      NOTREACHED();
-      break;
+      if (did_get_same_object_count_once || !has_legacy_flex_box_) {
+        NOTREACHED();
+        break;
+      }
+      // If we have an OOF legacy flex container with an (uncontained;
+      // e.g. fixed inside absolute positioned) OOF flex item inside, we'll
+      // allow one additional iteration, even if the object count is the
+      // same. In the first iteration the objects in
+      // LayoutBlock::PositionedObjects() were not in document order, and then
+      // corrected afterwards (before we get here). Only allow this to happen
+      // once, to avoid infinite loops for whatever reason, and good fortune.
+      did_get_same_object_count_once = true;
     }
     prev_placed_objects_size = placed_objects_size;
   }
@@ -238,11 +249,28 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
     return false;
   TrackedLayoutBoxLinkedHashSet* legacy_objects =
       container_block->PositionedObjects();
-  if (!legacy_objects || legacy_objects->size() == placed_objects->size())
-    return false;
+  if (!legacy_objects || legacy_objects->size() == placed_objects->size()) {
+    if (!has_legacy_flex_box_ || performing_extra_legacy_check_)
+      return false;
+    // If there is an OOF legacy flex container, and PositionedObjects() are out
+    // of document order (which is something that can happen in the legacy
+    // engine when there's a fixed-positioned object inside an absolute-
+    // positioned object - and we should just live with that and eventually get
+    // rid of the legacy engine), we'll allow one more pass, in case there's a
+    // fixed-positioend OOF flex item inside an absolutely-positioned OOF flex
+    // container. Because at this point, PositionedObjects() should finally be
+    // in correct document order. Only allow one more additional pass, though,
+    // since we might get stuck in an infinite loop otherwise (for reasons
+    // currently unknown).
+    performing_extra_legacy_check_ = true;
+  }
+  bool candidate_added = false;
   for (LayoutObject* legacy_object : *legacy_objects) {
-    if (placed_objects->Contains(legacy_object))
-      continue;
+    if (placed_objects->Contains(legacy_object)) {
+      if (!performing_extra_legacy_check_ || !legacy_object->NeedsLayout())
+        continue;
+      container_builder_->RemoveOldLegacyOOFFlexItem(*legacy_object);
+    }
 
     // Flex OOF children may have center alignment or similar, and in order
     // to determine their static position correctly need to have a valid
@@ -265,6 +293,13 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
       }
     }
 
+    // If we have a legacy OOF flex container, we'll allow some rocket science
+    // to take place, as an attempt to get things laid out in correct document
+    // order, or we might otherwise leave behind objects (OOF flex items)
+    // needing layout.
+    if (!has_legacy_flex_box_)
+      has_legacy_flex_box_ = layout_box->IsFlexibleBox();
+
     NGLogicalStaticPosition static_position =
         LayoutBoxUtils::ComputeStaticPositionFromLegacy(
             *layout_box,
@@ -280,8 +315,9 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
     container_builder_->AddOutOfFlowLegacyCandidate(
         NGBlockNode(layout_box), static_position,
         DynamicTo<LayoutInline>(css_container));
+    candidate_added = true;
   }
-  return true;
+  return candidate_added;
 }
 
 void NGOutOfFlowLayoutPart::HandleFragmentation() {
