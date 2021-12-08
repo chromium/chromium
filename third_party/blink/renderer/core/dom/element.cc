@@ -4771,6 +4771,12 @@ bool Element::ForceLegacyLayoutInFormattingContext(
     if (style->Display() == EDisplay::kNone)
       break;
 
+    // CSSContainerQueries rely on LayoutNG being fully shipped before shipping.
+    // In the meantime, make sure we do not mark containers for re-attachment
+    // since we might be in the process of laying out the container.
+    if (style->IsContainerForContainerQueries())
+      break;
+
     found_fc = DefinitelyNewFormattingContext(*ancestor, *style);
     ancestor->SetShouldForceLegacyLayoutForChild(true);
     ancestor->SetNeedsReattachLayoutTree();
