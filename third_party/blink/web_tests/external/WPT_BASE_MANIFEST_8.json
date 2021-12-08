@@ -273,6 +273,13 @@
       ]
      ],
      "flexbox": {
+      "fixed-flex-item-inside-abs-flex-in-multicol-crash.html": [
+       "29ba56748f9a81615977ded26f4299fa744475f0",
+       [
+        null,
+        {}
+       ]
+      ],
       "flexbox-fragmentation-layout-001-crash.html": [
        "3577b42cf6e7dc866cda8712592860197b3a22ef",
        [
@@ -78328,6 +78335,84 @@
         [
          [
           "/css/css-break/flexbox/flex-fragmented-with-float-descendant-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-001.html": [
+       "ba6b0103e447994a2778cbd9ea356a490f62b8fb",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-002.html": [
+       "62c1e313bfe3cc3d0908a2e1031322818601e7c2",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-003.html": [
+       "4d1b7e1c7d8d3faa4e4cb273935c66c6e35afd85",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-004.html": [
+       "a00469746efa83d89268c2ca415b6e00a89acfb4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-005.html": [
+       "d1e4f97c27d3db3f25cd8016842bcbc4d6eafbf3",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-006.html": [
+       "1b93be60e3c3ae56a620fc7f8afafbed5ebd2405",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -335286,7 +335371,7 @@
    },
    "clipboard-apis": {
     "async-custom-formats-write-read.tentative.https.html": [
-     "373c4a1294f1b79e42978428977d2bad6de9309e",
+     "9bb2b9d50ee10343879e1386808994d6468c7653",
      [
       null,
       {
@@ -335321,6 +335406,24 @@
     ],
     "async-svg-script-removal.https.html": [
      "cd1a551d9d12852f3ff8233bf535eb29e88c48ef",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "async-unsanitized-html-formats-write-read.tentative.https.html": [
+     "887ba8a484fd97c0956f70c85138099223be493c",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "async-unsanitized-plaintext-formats-write-read.tentative.https.html": [
+     "f44ed22618e2fd0c2781f959140d3d4d22cd45e9",
      [
       null,
       {
@@ -343227,10 +343330,10 @@
     ]
    },
    "cookie-store": {
-    "change_eventhandler_for_document_cookie.tentative.https.window.js": [
+    "change_eventhandler_for_document_cookie.https.window.js": [
      "0a8b1bd21efc9b0ac69468ad81c306757e5b18ff",
      [
-      "cookie-store/change_eventhandler_for_document_cookie.tentative.https.window.html",
+      "cookie-store/change_eventhandler_for_document_cookie.https.window.html",
       {
        "script_metadata": [
         [
@@ -343245,10 +343348,10 @@
       }
      ]
     ],
-    "change_eventhandler_for_http_cookie_and_set_cookie_headers.tentative.https.window.js": [
+    "change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.js": [
      "2028df5b4bf4611f565e223579b6673a0d368483",
      [
-      "cookie-store/change_eventhandler_for_http_cookie_and_set_cookie_headers.tentative.https.window.html",
+      "cookie-store/change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.html",
       {
        "script_metadata": [
         [
@@ -343263,10 +343366,10 @@
       }
      ]
     ],
-    "change_eventhandler_for_no_name_and_no_value.tentative.https.window.js": [
+    "change_eventhandler_for_no_name_and_no_value.https.window.js": [
      "4498caf59689cc3da875d1c56937f6d2a235cb5d",
      [
-      "cookie-store/change_eventhandler_for_no_name_and_no_value.tentative.https.window.html",
+      "cookie-store/change_eventhandler_for_no_name_and_no_value.https.window.html",
       {
        "script_metadata": [
         [
@@ -343281,10 +343384,10 @@
       }
      ]
     ],
-    "change_eventhandler_for_no_name_equals_in_value.tentative.https.window.js": [
+    "change_eventhandler_for_no_name_equals_in_value.https.window.js": [
      "13d721786c9a140b05ed5291c6096c894053f78b",
      [
-      "cookie-store/change_eventhandler_for_no_name_equals_in_value.tentative.https.window.html",
+      "cookie-store/change_eventhandler_for_no_name_equals_in_value.https.window.html",
       {
        "script_metadata": [
         [
@@ -343299,10 +343402,10 @@
       }
      ]
     ],
-    "change_eventhandler_for_no_name_multiple_values.tentative.https.window.js": [
+    "change_eventhandler_for_no_name_multiple_values.https.window.js": [
      "60c6c16518ae767d2dab68e62af8967b9890072b",
      [
-      "cookie-store/change_eventhandler_for_no_name_multiple_values.tentative.https.window.html",
+      "cookie-store/change_eventhandler_for_no_name_multiple_values.https.window.html",
       {
        "script_metadata": [
         [
@@ -343317,10 +343420,10 @@
       }
      ]
     ],
-    "cookieListItem_attributes.tentative.https.any.js": [
+    "cookieListItem_attributes.https.any.js": [
      "e46d6b6caa594d722f7502d06c18c13513e97213",
      [
-      "cookie-store/cookieListItem_attributes.tentative.https.any.html",
+      "cookie-store/cookieListItem_attributes.https.any.html",
       {
        "script_metadata": [
         [
@@ -343335,7 +343438,7 @@
       }
      ],
      [
-      "cookie-store/cookieListItem_attributes.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieListItem_attributes.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343350,10 +343453,10 @@
       }
      ]
     ],
-    "cookieStoreManager_getSubscriptions_empty.tentative.https.any.js": [
+    "cookieStoreManager_getSubscriptions_empty.https.any.js": [
      "8cfd732f304509582ff8c9be97e8e90e6c06e8ed",
      [
-      "cookie-store/cookieStoreManager_getSubscriptions_empty.tentative.https.any.html",
+      "cookie-store/cookieStoreManager_getSubscriptions_empty.https.any.html",
       {
        "script_metadata": [
         [
@@ -343372,7 +343475,7 @@
       }
      ],
      [
-      "cookie-store/cookieStoreManager_getSubscriptions_empty.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStoreManager_getSubscriptions_empty.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343391,10 +343494,10 @@
       }
      ]
     ],
-    "cookieStoreManager_getSubscriptions_multiple.tentative.https.any.js": [
+    "cookieStoreManager_getSubscriptions_multiple.https.any.js": [
      "9e153d03aae798371d4c28649de7126f18aefe76",
      [
-      "cookie-store/cookieStoreManager_getSubscriptions_multiple.tentative.https.any.html",
+      "cookie-store/cookieStoreManager_getSubscriptions_multiple.https.any.html",
       {
        "script_metadata": [
         [
@@ -343413,7 +343516,7 @@
       }
      ],
      [
-      "cookie-store/cookieStoreManager_getSubscriptions_multiple.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStoreManager_getSubscriptions_multiple.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343432,10 +343535,10 @@
       }
      ]
     ],
-    "cookieStoreManager_getSubscriptions_single.tentative.https.any.js": [
+    "cookieStoreManager_getSubscriptions_single.https.any.js": [
      "98ec19df3f1881666a48f2f920000c3a11b67f82",
      [
-      "cookie-store/cookieStoreManager_getSubscriptions_single.tentative.https.any.html",
+      "cookie-store/cookieStoreManager_getSubscriptions_single.https.any.html",
       {
        "script_metadata": [
         [
@@ -343454,7 +343557,7 @@
       }
      ],
      [
-      "cookie-store/cookieStoreManager_getSubscriptions_single.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStoreManager_getSubscriptions_single.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343473,10 +343576,10 @@
       }
      ]
     ],
-    "cookieStore_delete_arguments.tentative.https.any.js": [
+    "cookieStore_delete_arguments.https.any.js": [
      "ddae23888f4f2a7ff203b4189afeb1ced11b0a3d",
      [
-      "cookie-store/cookieStore_delete_arguments.tentative.https.any.html",
+      "cookie-store/cookieStore_delete_arguments.https.any.html",
       {
        "script_metadata": [
         [
@@ -343491,7 +343594,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_delete_arguments.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_delete_arguments.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343506,10 +343609,10 @@
       }
      ]
     ],
-    "cookieStore_delete_basic.tentative.https.any.js": [
+    "cookieStore_delete_basic.https.any.js": [
      "08a1fac5afe1ed5c2713e60674fadc3d0be7e620",
      [
-      "cookie-store/cookieStore_delete_basic.tentative.https.any.html",
+      "cookie-store/cookieStore_delete_basic.https.any.html",
       {
        "script_metadata": [
         [
@@ -343524,7 +343627,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_delete_basic.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_delete_basic.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343539,38 +343642,38 @@
       }
      ]
     ],
-    "cookieStore_event_arguments.tentative.https.window.js": [
+    "cookieStore_event_arguments.https.window.js": [
      "bcb698eeb0d6ce760033ba628120ebf7772a1084",
      [
-      "cookie-store/cookieStore_event_arguments.tentative.https.window.html",
+      "cookie-store/cookieStore_event_arguments.https.window.html",
       {}
      ]
     ],
-    "cookieStore_event_basic.tentative.https.window.js": [
+    "cookieStore_event_basic.https.window.js": [
      "c0075d6adcdd9a3438dfd3df622bf35883bf4110",
      [
-      "cookie-store/cookieStore_event_basic.tentative.https.window.html",
+      "cookie-store/cookieStore_event_basic.https.window.html",
       {}
      ]
     ],
-    "cookieStore_event_delete.tentative.https.window.js": [
+    "cookieStore_event_delete.https.window.js": [
      "e8c6fc036a76863acf2d8b2b3660550715f1dc0d",
      [
-      "cookie-store/cookieStore_event_delete.tentative.https.window.html",
+      "cookie-store/cookieStore_event_delete.https.window.html",
       {}
      ]
     ],
-    "cookieStore_event_overwrite.tentative.https.window.js": [
+    "cookieStore_event_overwrite.https.window.js": [
      "3acffea41c1d6a08e5aaf1ca944567347d174de0",
      [
-      "cookie-store/cookieStore_event_overwrite.tentative.https.window.html",
+      "cookie-store/cookieStore_event_overwrite.https.window.html",
       {}
      ]
     ],
-    "cookieStore_getAll_arguments.tentative.https.any.js": [
+    "cookieStore_getAll_arguments.https.any.js": [
      "5055a42e5d39fea6214baf3e782f5461594a9643",
      [
-      "cookie-store/cookieStore_getAll_arguments.tentative.https.any.html",
+      "cookie-store/cookieStore_getAll_arguments.https.any.html",
       {
        "script_metadata": [
         [
@@ -343585,7 +343688,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_getAll_arguments.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_getAll_arguments.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343600,10 +343703,10 @@
       }
      ]
     ],
-    "cookieStore_getAll_multiple.tentative.https.any.js": [
+    "cookieStore_getAll_multiple.https.any.js": [
      "10dcacbd688d6c23364e3e8e1b946196cd0b4387",
      [
-      "cookie-store/cookieStore_getAll_multiple.tentative.https.any.html",
+      "cookie-store/cookieStore_getAll_multiple.https.any.html",
       {
        "script_metadata": [
         [
@@ -343618,7 +343721,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_getAll_multiple.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_getAll_multiple.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343633,10 +343736,10 @@
       }
      ]
     ],
-    "cookieStore_getAll_set_basic.tentative.https.any.js": [
+    "cookieStore_getAll_set_basic.https.any.js": [
      "dee78e1867c7e0be04e779b4bfd949250540c289",
      [
-      "cookie-store/cookieStore_getAll_set_basic.tentative.https.any.html",
+      "cookie-store/cookieStore_getAll_set_basic.https.any.html",
       {
        "script_metadata": [
         [
@@ -343651,7 +343754,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_getAll_set_basic.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_getAll_set_basic.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343666,10 +343769,10 @@
       }
      ]
     ],
-    "cookieStore_get_arguments.tentative.https.any.js": [
+    "cookieStore_get_arguments.https.any.js": [
      "a56032f03e20e87c48e4a20e645f9fd63bdd65cf",
      [
-      "cookie-store/cookieStore_get_arguments.tentative.https.any.html",
+      "cookie-store/cookieStore_get_arguments.https.any.html",
       {
        "script_metadata": [
         [
@@ -343684,7 +343787,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_get_arguments.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_get_arguments.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343699,10 +343802,10 @@
       }
      ]
     ],
-    "cookieStore_get_delete_basic.tentative.https.any.js": [
+    "cookieStore_get_delete_basic.https.any.js": [
      "9337669afd5b61d821e9945bd2f3299d8afb8bad",
      [
-      "cookie-store/cookieStore_get_delete_basic.tentative.https.any.html",
+      "cookie-store/cookieStore_get_delete_basic.https.any.html",
       {
        "script_metadata": [
         [
@@ -343717,7 +343820,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_get_delete_basic.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_get_delete_basic.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343732,24 +343835,24 @@
       }
      ]
     ],
-    "cookieStore_get_set_across_frames.tentative.https.html": [
+    "cookieStore_get_set_across_frames.https.html": [
      "f7c737b422e559107bb210d0cea9267829e10ba7",
      [
       null,
       {}
      ]
     ],
-    "cookieStore_get_set_across_origins.tentative.sub.https.html": [
+    "cookieStore_get_set_across_origins.sub.https.html": [
      "c67ef98bcc944dbfb815993734dcfae7dbd3eb9d",
      [
       null,
       {}
      ]
     ],
-    "cookieStore_get_set_basic.tentative.https.any.js": [
+    "cookieStore_get_set_basic.https.any.js": [
      "127f758f5f0b8154dccc74f2b6e81d3b0d2562a9",
      [
-      "cookie-store/cookieStore_get_set_basic.tentative.https.any.html",
+      "cookie-store/cookieStore_get_set_basic.https.any.html",
       {
        "script_metadata": [
         [
@@ -343764,7 +343867,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_get_set_basic.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_get_set_basic.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343779,10 +343882,10 @@
       }
      ]
     ],
-    "cookieStore_get_set_ordering.tentative.https.any.js": [
+    "cookieStore_get_set_ordering.https.any.js": [
      "6b7e73950cbd652309dbbd35bb780e84294f1a70",
      [
-      "cookie-store/cookieStore_get_set_ordering.tentative.https.any.html",
+      "cookie-store/cookieStore_get_set_ordering.https.any.html",
       {
        "script_metadata": [
         [
@@ -343797,7 +343900,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_get_set_ordering.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_get_set_ordering.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343812,24 +343915,24 @@
       }
      ]
     ],
-    "cookieStore_in_detached_frame.tentative.https.html": [
+    "cookieStore_in_detached_frame.https.html": [
      "08a7b5b8e4629440956943489dd7fa7ca200b537",
      [
       null,
       {}
      ]
     ],
-    "cookieStore_opaque_origin.tentative.https.html": [
+    "cookieStore_opaque_origin.https.html": [
      "94a13fe63f9acbb369c448c5e339286f1d6ebf4b",
      [
       null,
       {}
      ]
     ],
-    "cookieStore_set_arguments.tentative.https.any.js": [
+    "cookieStore_set_arguments.https.any.js": [
      "aab964d014eca3b341c1e772c677d2af71d8756e",
      [
-      "cookie-store/cookieStore_set_arguments.tentative.https.any.html",
+      "cookie-store/cookieStore_set_arguments.https.any.html",
       {
        "script_metadata": [
         [
@@ -343844,7 +343947,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_set_arguments.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_set_arguments.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343859,10 +343962,10 @@
       }
      ]
     ],
-    "cookieStore_special_names.tentative.https.any.js": [
+    "cookieStore_special_names.https.any.js": [
      "db077478e0eebb143664c651123a32bb5fc1e722",
      [
-      "cookie-store/cookieStore_special_names.tentative.https.any.html",
+      "cookie-store/cookieStore_special_names.https.any.html",
       {
        "script_metadata": [
         [
@@ -343877,7 +343980,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_special_names.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_special_names.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343892,10 +343995,10 @@
       }
      ]
     ],
-    "cookieStore_subscribe_arguments.tentative.https.any.js": [
+    "cookieStore_subscribe_arguments.https.any.js": [
      "ca5f55d645be5188177eeb0b03a51a175a7f9e64",
      [
-      "cookie-store/cookieStore_subscribe_arguments.tentative.https.any.html",
+      "cookie-store/cookieStore_subscribe_arguments.https.any.html",
       {
        "script_metadata": [
         [
@@ -343914,7 +344017,7 @@
       }
      ],
      [
-      "cookie-store/cookieStore_subscribe_arguments.tentative.https.any.serviceworker.html",
+      "cookie-store/cookieStore_subscribe_arguments.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -343933,10 +344036,10 @@
       }
      ]
     ],
-    "cookieStore_subscriptions_empty.tentative.https.window.js": [
+    "cookieStore_subscriptions_empty.https.window.js": [
      "907a34b4de6632f5e91adbcd606839a92eead320",
      [
-      "cookie-store/cookieStore_subscriptions_empty.tentative.https.window.html",
+      "cookie-store/cookieStore_subscriptions_empty.https.window.html",
       {
        "script_metadata": [
         [
@@ -344117,24 +344220,24 @@
       }
      ]
     ],
-    "serviceworker_cookieStore_cross_origin.tentative.https.sub.html": [
+    "serviceworker_cookieStore_cross_origin.https.sub.html": [
      "6879c5da926384b2be6969b5585c8e2a75539f75",
      [
       null,
       {}
      ]
     ],
-    "serviceworker_cookieStore_subscriptions_reset.tentative.https.html": [
+    "serviceworker_cookieStore_subscriptions_reset.https.html": [
      "a1124e9220150ea48e016d805ead1f210a247a25",
      [
       null,
       {}
      ]
     ],
-    "serviceworker_cookiechange_eventhandler_mismatched_subscription.tentative.https.any.js": [
+    "serviceworker_cookiechange_eventhandler_mismatched_subscription.https.any.js": [
      "30d8d70940dae248b3b5cba030056daac78b32a6",
      [
-      "cookie-store/serviceworker_cookiechange_eventhandler_mismatched_subscription.tentative.https.any.serviceworker.html",
+      "cookie-store/serviceworker_cookiechange_eventhandler_mismatched_subscription.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -344149,10 +344252,10 @@
       }
      ]
     ],
-    "serviceworker_cookiechange_eventhandler_multiple_subscriptions.tentative.https.any.js": [
+    "serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.js": [
      "cd0657c0bcdf5fc5a2133fb0598778aa237c384c",
      [
-      "cookie-store/serviceworker_cookiechange_eventhandler_multiple_subscriptions.tentative.https.any.serviceworker.html",
+      "cookie-store/serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -344167,10 +344270,10 @@
       }
      ]
     ],
-    "serviceworker_cookiechange_eventhandler_overlapping_subscriptions.tentative.https.any.js": [
+    "serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.js": [
      "1f433aeb9476983cabccead67032ddb88d3ebc32",
      [
-      "cookie-store/serviceworker_cookiechange_eventhandler_overlapping_subscriptions.tentative.https.any.serviceworker.html",
+      "cookie-store/serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -344185,10 +344288,10 @@
       }
      ]
     ],
-    "serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.js": [
+    "serviceworker_cookiechange_eventhandler_single_subscription.https.any.js": [
      "3ccb4b303d90165eed0f7830ac1faed56ee29bba",
      [
-      "cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html",
+      "cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -344203,10 +344306,10 @@
       }
      ]
     ],
-    "serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.js": [
+    "serviceworker_oncookiechange_eventhandler_single_subscription.https.any.js": [
      "8def2440897b931c2af4402654a92ca89c34ea98",
      [
-      "cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.tentative.https.any.serviceworker.html",
+      "cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.https.any.serviceworker.html",
       {
        "script_metadata": [
         [
@@ -345270,6 +345373,13 @@
       ],
       "block-in-inline-client-rects-001.html": [
        "43305cb0594a8b0b8c55f20dba05d6b4240393e0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "block-in-inline-insert-018.html": [
+       "39118d610b79a0b479a6da1becb5295e01dc9911",
        [
         null,
         {}
@@ -443384,8 +443494,42 @@
          {}
         ]
        ],
+       "inert-inlines.html": [
+        "8acdb570fc602e3cec63dc1ec207b376f994bb8b",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "inert-label-focus.html": [
+        "ee0c91c412098cb8c86df7ce323efc8b26ac6f01",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "inert-node-is-uneditable.html": [
+        "393e5e10b52e37749d741aab3ab56120aa32ce44",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "inert-node-is-unfocusable.html": [
         "56f31f35924974f31b3cae9825846ec01e1a0170",
+        [
+         null,
+         {}
+        ]
+       ],
+       "inert-node-is-unselectable.html": [
+        "2889e1e90a563456998835fc2c30658973673bb5",
         [
          null,
          {}
@@ -443396,6 +443540,24 @@
         [
          null,
          {}
+        ]
+       ],
+       "modal-dialog-ancestor-is-inert.html": [
+        "c6bcb5d4caf357db85606638d8e11ffcd52cf02f",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "modal-dialog-blocks-mouse-events.html": [
+        "75eb451f58360b1cb2dc6f3e8b97af8c0f90e237",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "remove-dialog-should-unblock-document.html": [
