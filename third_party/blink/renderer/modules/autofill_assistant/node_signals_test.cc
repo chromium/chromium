@@ -171,4 +171,64 @@ TEST_F(NodeSignalsTest, CollectInnerText) {
   EXPECT_EQ(results[3].node_features.text[1], "B");
 }
 
+TEST_F(NodeSignalsTest, GetLabelFromParentElement) {
+  SetBodyContent(R"(<label>Name<input></label><input>)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 2u);
+
+  ASSERT_EQ(results[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results[0].label_features.text[0], "Name");
+
+  ASSERT_EQ(results[1].label_features.text.size(), 0u);
+}
+
+TEST_F(NodeSignalsTest, GetLabelByForAttribute) {
+  SetBodyContent(R"(
+    <label for="id">Name</label><input id="id"><input id="other">)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 2u);
+
+  ASSERT_EQ(results[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results[0].label_features.text[0], "Name");
+
+  ASSERT_EQ(results[1].label_features.text.size(), 0u);
+}
+
+TEST_F(NodeSignalsTest, GetLabelByForAttributeWithCollision) {
+  SetBodyContent(R"(
+    <label for="id">Name</label><input id="id">
+    <label for="id">Other</label><input id="id">)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 2u);
+
+  ASSERT_EQ(results[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results[0].label_features.text[0], "Name");
+
+  ASSERT_EQ(results[1].label_features.text.size(), 1u);
+  ASSERT_EQ(results[1].label_features.text[0], "Name");
+}
+
+TEST_F(NodeSignalsTest, GetLabelByAriaElements) {
+  SetBodyContent(R"(
+    <div id="form">Billing</div>
+    <div>
+      <div id="input">Name</div>
+      <input aria-labelledby="form input">
+    </div>)");
+
+  WebVector<AutofillAssistantNodeSignals> results =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results.size(), 1u);
+
+  ASSERT_EQ(results[0].label_features.text.size(), 2u);
+  EXPECT_EQ(results[0].label_features.text[0], "Billing");
+  EXPECT_EQ(results[0].label_features.text[1], "Name");
+}
+
 }  // namespace blink
