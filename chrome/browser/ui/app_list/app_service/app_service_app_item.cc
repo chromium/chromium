@@ -50,6 +50,7 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::mojom::AppType::kArc:
     case apps::mojom::AppType::kCrostini:
     case apps::mojom::AppType::kChromeApp:
+    case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kRemote:

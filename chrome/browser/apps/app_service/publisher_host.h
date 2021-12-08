@@ -59,6 +59,7 @@ class PublisherHost {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
+  std::unique_ptr<ExtensionAppsChromeOs> chrome_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
   std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
@@ -66,7 +67,7 @@ class PublisherHost {
   std::unique_ptr<BorealisApps> borealis_apps_;
 #else
   std::unique_ptr<web_app::WebApps> web_apps_;
-  std::unique_ptr<ExtensionApps> extension_apps_;
+  std::unique_ptr<ExtensionApps> chrome_apps_;
 #endif
 };
 

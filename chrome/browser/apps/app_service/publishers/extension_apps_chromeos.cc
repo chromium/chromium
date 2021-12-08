@@ -101,8 +101,10 @@ std::string GetLaunchId(extensions::AppWindow* app_window) {
 
 namespace apps {
 
-ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy)
-    : ExtensionAppsBase(proxy), instance_registry_(&proxy->InstanceRegistry()) {
+ExtensionAppsChromeOs::ExtensionAppsChromeOs(AppServiceProxy* proxy,
+                                             AppType app_type)
+    : ExtensionAppsBase(proxy, app_type),
+      instance_registry_(&proxy->InstanceRegistry()) {
   DCHECK(instance_registry_);
 }
 
@@ -160,6 +162,10 @@ void ExtensionAppsChromeOs::Initialize() {
   ExtensionAppsBase::Initialize();
 
   app_window_registry_.Observe(extensions::AppWindowRegistry::Get(profile()));
+
+  if (app_type() == AppType::kExtension) {
+    return;
+  }
 
   media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
 
@@ -264,9 +270,9 @@ void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = true;
-  PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
-                             apps::mojom::AppType::kChromeApp, app_id, kPaused),
-                         subscribers());
+  PublisherBase::Publish(
+      paused_apps_.GetAppWithPauseStatus(mojom_app_type(), app_id, kPaused),
+      subscribers());
 
   if (!instance_registry_->ContainsAppId(app_id)) {
     return;
@@ -284,9 +290,9 @@ void ExtensionAppsChromeOs::UnpauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = false;
-  PublisherBase::Publish(paused_apps_.GetAppWithPauseStatus(
-                             apps::mojom::AppType::kChromeApp, app_id, kPaused),
-                         subscribers());
+  PublisherBase::Publish(
+      paused_apps_.GetAppWithPauseStatus(mojom_app_type(), app_id, kPaused),
+      subscribers());
 
   ash::app_time::AppTimeLimitInterface* app_time =
       ash::app_time::AppTimeLimitInterface::Get(profile());
@@ -546,9 +552,9 @@ void ExtensionAppsChromeOs::OnNotificationClosed(
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
-                               apps::mojom::AppType::kChromeApp, app_id),
-                           subscribers());
+    PublisherBase::Publish(
+        app_notifications_.GetAppWithHasBadgeStatus(mojom_app_type(), app_id),
+        subscribers());
   }
 }
 
@@ -566,9 +572,9 @@ bool ExtensionAppsChromeOs::MaybeAddNotification(
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  PublisherBase::Publish(app_notifications_.GetAppWithHasBadgeStatus(
-                             apps::mojom::AppType::kChromeApp, app_id),
-                         subscribers());
+  PublisherBase::Publish(
+      app_notifications_.GetAppWithHasBadgeStatus(mojom_app_type(), app_id),
+      subscribers());
   return true;
 }
 
@@ -629,7 +635,7 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
   }
 
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kChromeApp;
+  app->app_type = mojom_app_type();
   app->app_id = app_id;
   SetShowInFields(app, extension);
   PublisherBase::Publish(std::move(app), subscribers());
@@ -667,25 +673,26 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
 }
 
 bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
-  // QuickOffice has file_handlers which we need to register.
-  if (extension->id() == extension_misc::kQuickOfficeComponentExtensionId) {
-    return true;
-  }
-  if (!extension->is_app() && !extension->is_extension()) {
-    return false;
-  }
-  if (IsBlocklisted(extension->id())) {
-    return false;
-  }
-  // Only accept extensions with file_browser_handlers.
-  if (extension->is_extension()) {
+  if (app_type() == AppType::kExtension) {
+    if (!extension->is_extension() || IsBlocklisted(extension->id())) {
+      return false;
+    }
+    // QuickOffice has file_handlers which we need to register.
+    if (extension->id() == extension_misc::kQuickOfficeComponentExtensionId) {
+      return true;
+    }
+    // Only accept extensions with file_browser_handlers.
     FileBrowserHandler::List* handler_list =
         FileBrowserHandler::GetHandlers(extension);
     if (!handler_list) {
       return false;
     }
+    return true;
   }
 
+  if (!extension->is_app() || IsBlocklisted(extension->id())) {
+    return false;
+  }
   return !extension->from_bookmark();
 }
 
@@ -838,13 +845,13 @@ void ExtensionAppsChromeOs::SetIconEffect(const std::string& app_id) {
   }
 
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
-  mojom_app->app_type = apps::mojom::AppType::kChromeApp;
+  mojom_app->app_type = mojom_app_type();
   mojom_app->app_id = app_id;
   mojom_app->icon_key = icon_key_factory().MakeIconKey(
       GetIconEffects(extension, paused_apps_.IsPaused(app_id)));
   PublisherBase::Publish(std::move(mojom_app), subscribers());
 
-  std::unique_ptr<App> app = std::make_unique<App>(AppType::kChromeApp, app_id);
+  std::unique_ptr<App> app = std::make_unique<App>(app_type(), app_id);
   app->icon_key = std::move(*icon_key_factory().CreateIconKey(
       GetIconEffects(extension, paused_apps_.IsPaused(app_id))));
   AppPublisher::Publish(std::move(app));
@@ -860,8 +867,10 @@ bool ExtensionAppsChromeOs::ShouldRecordAppWindowActivity(
   }
 
   // ARC Play Store is not published by this publisher, but the window for Play
-  // Store should be able to be added to InstanceRegistry.
-  if (extension->id() == arc::kPlayStoreAppId) {
+  // Store should be able to be added to InstanceRegistry by the Chrome app
+  // publisher.
+  if (extension->id() == arc::kPlayStoreAppId &&
+      app_type() != AppType::kExtension) {
     return true;
   }
 

@@ -83,6 +83,7 @@ bool AppTypeUsesWebContents(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
     case apps::mojom::AppType::kChromeApp:
+    case apps::mojom::AppType::kExtension:
       return true;
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kArc:

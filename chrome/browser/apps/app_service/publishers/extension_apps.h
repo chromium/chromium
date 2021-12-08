@@ -9,6 +9,7 @@
 
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,7 +32,7 @@ class PublisherHost;
 // See components/services/app_service/README.md.
 class ExtensionApps : public apps::ExtensionAppsBase {
  public:
-  explicit ExtensionApps(AppServiceProxy* proxy);
+  ExtensionApps(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionApps() override;
 
   ExtensionApps(const ExtensionApps&) = delete;

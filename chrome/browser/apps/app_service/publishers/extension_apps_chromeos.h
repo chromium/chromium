@@ -22,6 +22,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -45,8 +46,10 @@ namespace apps {
 class PublisherHost;
 
 // An app publisher (in the App Service sense) of extension-backed apps for
-// ChromeOS, including Chrome Apps (platform apps and legacy packaged apps) and
-// hosted apps (including desktop PWAs).
+// ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
+// hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
+// there are 2 ExtensionAppsChromeOs publishers for browser extensions and
+// Chrome apps(including hosted apps) separately.
 //
 // In the future, desktop PWAs will be migrated to a new system.
 //
@@ -58,7 +61,7 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public MediaCaptureDevicesDispatcher::Observer,
                               public AppWebContentsData::Client {
  public:
-  explicit ExtensionAppsChromeOs(AppServiceProxy* proxy);
+  ExtensionAppsChromeOs(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsChromeOs() override;
 
   ExtensionAppsChromeOs(const ExtensionAppsChromeOs&) = delete;

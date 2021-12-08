@@ -360,6 +360,8 @@ api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
       // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
       // Lacros-hosted chrome-apps.
       break;
+    case apps::mojom::AppType::kExtension:
+      break;
   }
   NOTREACHED();
   return api::autotest_private::AppType::APP_TYPE_NONE;

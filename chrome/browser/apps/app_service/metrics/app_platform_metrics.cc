@@ -71,6 +71,7 @@ std::set<apps::AppTypeName>& GetAppTypeNameSet() {
     app_type_name_map->insert(apps::AppTypeName::kSystemWeb);
     app_type_name_map->insert(apps::AppTypeName::kChromeBrowser);
     app_type_name_map->insert(apps::AppTypeName::kStandaloneBrowserChromeApp);
+    app_type_name_map->insert(apps::AppTypeName::kExtension);
   }
   return *app_type_name_map;
 }
@@ -138,6 +139,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kSystemWeb;
     case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
+    case apps::mojom::AppType::kExtension:
+      return apps::AppTypeNameV2::kExtension;
   }
 }
 
@@ -184,6 +187,8 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
       return apps::AppTypeNameV2::kSystemWeb;
     case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
+    case apps::mojom::AppType::kExtension:
+      return apps::AppTypeNameV2::kExtension;
   }
 }
 
@@ -242,6 +247,7 @@ constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
 constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
 constexpr char kStandaloneBrowserChromeAppHistogramName[] =
     "StandaloneBrowserChromeApp";
+constexpr char kExtensionHistogramName[] = "Extension";
 
 constexpr char kChromeAppTabHistogramName[] = "ChromeAppTab";
 constexpr char kChromeAppWindowHistogramName[] = "ChromeAppWindow";
@@ -278,6 +284,8 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
       return kChromeBrowserHistogramName;
     case apps::AppTypeName::kStandaloneBrowserChromeApp:
       return kStandaloneBrowserChromeAppHistogramName;
+    case apps::AppTypeName::kExtension:
+      return kExtensionHistogramName;
   }
 }
 
@@ -315,6 +323,8 @@ std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
       return kChromeBrowserHistogramName;
     case apps::AppTypeNameV2::kStandaloneBrowserChromeApp:
       return kStandaloneBrowserChromeAppHistogramName;
+    case apps::AppTypeNameV2::kExtension:
+      return kExtensionHistogramName;
   }
 }
 
@@ -979,6 +989,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
   switch (app_type) {
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kChromeApp:
+    case apps::mojom::AppType::kExtension:
       source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
       break;
     case apps::mojom::AppType::kArc:

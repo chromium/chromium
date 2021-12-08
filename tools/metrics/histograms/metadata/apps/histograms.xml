@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeApp" summary="Chrome apps"/>
   <variant name="ChromeBrowser" summary="Chrome browsers"/>
   <variant name="Crostini" summary="Crostini apps"/>
+  <variant name="Extension" summary="Browser extensions"/>
   <variant name="MacOs" summary="MacOs apps"/>
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
@@ -68,6 +69,7 @@ chromium-metrics-reviews@google.com.
       summary="Chrome apps opened in standalone windows"/>
   <variant name="ChromeBrowser" summary="Chrome browsers"/>
   <variant name="Crostini" summary="Crostini apps"/>
+  <variant name="Extension" summary="Browser extensions"/>
   <variant name="MacOs" summary="MacOs apps"/>
   <variant name="PluginVm" summary="Plugin VM app"/>
   <variant name="RemoteApp" summary="Remote apps"/>
