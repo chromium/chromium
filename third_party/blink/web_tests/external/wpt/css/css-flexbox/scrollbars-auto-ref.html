@@ -114,25 +114,56 @@ flexDirections.forEach((flexDirection) => {
   document.body.appendChild(containerRow);
 });
 
-// Scroll all flex containers to the emulated beginning of flow.
-var nodes = document.querySelectorAll(".ltr > .row-reverse");
+// Scroll all {row,column}-reverse flex containers to the emulated beginning
+// of flow.
+// * "row-reverse" changes the initial scroll position of a flex container to
+// correspond to its *inline-end* edge. So in our emulation, we need to
+// scroll to the extreme inline-end position. For 'direction:ltr', this is a
+// positive scroll offset; for 'direction:rtl', it's a zero or negative offset.
+var nodes = document.querySelectorAll(".ltr.horizontal > .row-reverse");
 for (var i = 0; i < nodes.length; i++) {
   nodes[i].scrollLeft = 10000;
+}
+nodes = document.querySelectorAll(".ltr.flipped-blocks > .row-reverse");
+for (var i = 0; i < nodes.length; i++) {
   nodes[i].scrollTop = 10000;
 }
-nodes = document.querySelectorAll(".rtl > .row-reverse");
+nodes = document.querySelectorAll(".ltr.flipped-lines > .row-reverse");
+for (var i = 0; i < nodes.length; i++) {
+  nodes[i].scrollTop = 10000;
+}
+var nodes = document.querySelectorAll(".rtl.horizontal > .row-reverse");
 for (var i = 0; i < nodes.length; i++) {
   nodes[i].scrollLeft = -10000;
+}
+nodes = document.querySelectorAll(".rtl.flipped-blocks > .row-reverse");
+for (var i = 0; i < nodes.length; i++) {
   nodes[i].scrollTop = -10000;
 }
-nodes = document.querySelectorAll(".column-reverse");
+nodes = document.querySelectorAll(".rtl.flipped-lines > .row-reverse");
 for (var i = 0; i < nodes.length; i++) {
-  nodes[i].scrollLeft = 10000;
+  nodes[i].scrollTop = -10000;
+}
+// * "column-reverse" changes the initial scroll position of a flex container
+// to correspond to its *block-end* edge. So in our emulation, we need to
+// scroll to the extreme block-end position. For horizontal-tb and
+// vertical-lr, this is a positive scroll offset (since "tb" and "lr" indicate
+// progression in a positive direction along the underlying physical axis).
+// For vertical-rl, this is a zero or negative scroll offset (since "rl"
+// indicates progression in a negative direction (right-to-left) along the
+// underlying physical axis). Note that the 'direction:rtl/ltr' doesn't need to
+// be considered at all in this section, since that only impacts the inline
+// axis, which isn't the axis that we're emulating a reversal for here.
+nodes = document.querySelectorAll(".horizontal > .column-reverse");
+for (var i = 0; i < nodes.length; i++) {
   nodes[i].scrollTop = 10000;
 }
 nodes = document.querySelectorAll(".flipped-blocks > .column-reverse");
 for (var i = 0; i < nodes.length; i++) {
   nodes[i].scrollLeft = -10000;
-  nodes[i].scrollTop = 0;
+}
+nodes = document.querySelectorAll(".flipped-lines > .column-reverse");
+for (var i = 0; i < nodes.length; i++) {
+  nodes[i].scrollLeft = 10000;
 }
 </script>

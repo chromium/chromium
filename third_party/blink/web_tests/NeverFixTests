@@ -1408,7 +1408,6 @@ external/wpt/html/semantics/interactive-elements/commands/legend/no-fieldset-par
 external/wpt/html/semantics/selectors/pseudo-classes/checked-001-manual.html [ Skip ]
 external/wpt/html/webappapis/scripting/events/contextmenu-event-manual.htm [ Skip ]
 external/wpt/html/webappapis/scripting/events/event-handler-processing-algorithm-manual.html [ Skip ]
-external/wpt/mediacapture-streams/MediaStream-MediaElement-preload-none-manual.https.html [ Skip ]
 external/wpt/mediacapture-streams/MediaStreamTrack-end-manual.https.html [ Skip ]
 external/wpt/notifications/body-basic-manual.https.html [ Skip ]
 external/wpt/notifications/body-empty-manual.https.html [ Skip ]

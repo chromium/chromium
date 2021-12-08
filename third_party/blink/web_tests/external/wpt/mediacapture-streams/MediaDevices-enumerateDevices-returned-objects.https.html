@@ -4,14 +4,19 @@
 <title>enumerateDevices is returning new MediaDeviceInfo objects every time</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=permission-helper.js></script>
 </head>
 <body>
 <script>
 function doTest(callGetUserMedia, testName)
 {
     promise_test(async () => {
-        if (callGetUserMedia)
+        if (callGetUserMedia) {
+            await setMediaPermission();
             await navigator.mediaDevices.getUserMedia({audio : true, video: true});
+        }
 
         const deviceList1 =  await navigator.mediaDevices.enumerateDevices();
         const deviceList2 =  await navigator.mediaDevices.enumerateDevices();

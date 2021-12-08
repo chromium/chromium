@@ -3,6 +3,9 @@
   context</title>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=permission-helper.js></script>
 <body></body>
 <script>
 let devices;
@@ -20,6 +23,7 @@ setup(() => {
 // return a promise rejected with a DOMException object whose name attribute
 // has the value "InvalidStateError".
 promise_test(async () => {
+  await setMediaPermission("granted", ["microphone"]);
   // `catch()` is used rather than static Promise methods because microtasks
   // for `PromiseResolve()` do not run when Promises in inactive Documents are
   // involved.  Whether microtasks for `catch()` run depends on the realm of

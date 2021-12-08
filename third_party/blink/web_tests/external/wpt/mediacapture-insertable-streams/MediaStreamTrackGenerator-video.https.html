@@ -26,7 +26,7 @@
     }
 
     async function getVideoFrame() {
-      const stream = await navigator.mediaDevices.getUserMedia({video: true});
+      const stream = await getNoiseStream({video: true});
       const input_track = stream.getTracks()[0];
       const processor = new MediaStreamTrackProcessor(input_track);
       const reader = processor.readable.getReader();
@@ -49,24 +49,15 @@
       t.add_cleanup(() => caller.close());
       const callee = new RTCPeerConnection();
       t.add_cleanup(() => callee.close());
-
       caller.addTrack(track);
       t.add_cleanup(() => track.stop());
 
-      callee.ontrack = e => output.srcObject = new MediaStream([e.track]);
-      let ontrack_promise = addEventListenerPromise(t, callee, 'track');
-
       exchangeIceCandidates(caller, callee);
-      await exchangeOffer(caller, callee);
-
       // Wait for the first track.
-      await ontrack_promise;
-
+      const e = await exchangeOfferAndListenToOntrack(t, caller, callee);
+      output.srcObject = new MediaStream([e.track])
       // Exchange answer.
-      let answer = await callee.createAnswer();
-      await callee.setLocalDescription(answer);
-      await caller.setRemoteDescription(answer);
-
+      await exchangeAnswer(caller, callee);
       await waitForConnectionStateChange(callee, ['connected']);
     }
 
@@ -138,7 +129,6 @@
       video.width = width;
       video.height = height;
       video.muted = true;
-
       let connectedResolver;
       const connectedPromise = new Promise((resolve) => connectedResolver = resolve);
 
@@ -150,6 +140,9 @@
         let writer = generator.writable.getWriter();
         for (let i = 0; i < 5; i++) {
           await writer.write(makeVideoFrame(i));
+          // FIXME: this makes the test non-flaky
+          // See also https://bugs.chromium.org/p/chromium/issues/detail?id=1232417&q=mediastreamtrackgenerator%20flaky&can=2
+          await new Promise(res => t.step_timeout(res, 1));
         }
       };
 
