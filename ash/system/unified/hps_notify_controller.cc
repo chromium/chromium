@@ -58,17 +58,20 @@ void HpsNotifyController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void HpsNotifyController::OnSessionStateChanged(
     session_manager::SessionState session_state) {
-  UpdateIconVisibility(session_state == session_manager::SessionState::ACTIVE,
-                       hps_state_, is_enabled_);
+  const bool session_active =
+      session_state == session_manager::SessionState::ACTIVE;
+  ReconfigureHps(hps_available_, session_active, pref_enabled_);
+  UpdateIconVisibility(session_active, hps_state_, pref_enabled_);
 }
 
 void HpsNotifyController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   DCHECK(pref_service);
 
-  UpdateIconVisibility(
-      session_active_, hps_state_,
-      pref_service->GetBoolean(prefs::kSnoopingProtectionEnabled));
+  const bool pref_enabled =
+      pref_service->GetBoolean(prefs::kSnoopingProtectionEnabled);
+  ReconfigureHps(hps_available_, session_active_, pref_enabled);
+  UpdateIconVisibility(session_active_, hps_state_, pref_enabled);
 
   // Re-subscribe to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -80,15 +83,16 @@ void HpsNotifyController::OnActiveUserPrefServiceChanged(
 }
 
 void HpsNotifyController::OnHpsNotifyChanged(bool hps_state) {
-  UpdateIconVisibility(session_active_, hps_state, is_enabled_);
+  UpdateIconVisibility(session_active_, hps_state, pref_enabled_);
 }
 
 void HpsNotifyController::OnRestart() {
-  RestartHpsObservation();
+  ReconfigureHps(/*hps_available_=*/true, session_active_, pref_enabled_);
 }
 
 void HpsNotifyController::OnShutdown() {
-  UpdateIconVisibility(session_active_, /*hps_state=*/false, is_enabled_);
+  ReconfigureHps(/*hps_available=*/false, session_active_, pref_enabled_);
+  UpdateIconVisibility(session_active_, /*hps_state=*/false, pref_enabled_);
 
   // We will be notified of the service starting back up again via our ongoing
   // observation of the DBus client.
@@ -103,17 +107,21 @@ void HpsNotifyController::RemoveObserver(Observer* observer) {
 }
 
 bool HpsNotifyController::IsIconVisible() const {
-  return session_active_ && hps_state_ && is_enabled_;
+  return session_active_ && hps_state_ && pref_enabled_;
 }
 
 void HpsNotifyController::UpdateIconVisibility(bool session_active,
                                                bool hps_state,
-                                               bool is_enabled) {
+                                               bool pref_enabled) {
+  // We should only receive a "present" signal if the service is available and
+  // configured.
+  DCHECK((hps_available_ && hps_configured_) || !hps_state);
+
   const bool old_visibility = IsIconVisible();
 
   session_active_ = session_active;
   hps_state_ = hps_state;
-  is_enabled_ = is_enabled;
+  pref_enabled_ = pref_enabled;
 
   const bool new_visibility = IsIconVisible();
 
@@ -124,48 +132,83 @@ void HpsNotifyController::UpdateIconVisibility(bool session_active,
     observer.ShouldUpdateVisibility(new_visibility);
 }
 
-void HpsNotifyController::StartHpsObservation(bool service_is_available) {
-  if (!service_is_available)
+void HpsNotifyController::ReconfigureHps(bool hps_available,
+                                         bool session_active,
+                                         bool pref_enabled) {
+  // Can't configure or de-configure the service if it's unavailable.
+  if (!hps_available) {
+    hps_available_ = false;
+    hps_configured_ = false;
+    return;
+  }
+  hps_available_ = true;
+
+  // We have correctly cached that the service is available; now handle
+  // configuring its signal.
+  const bool want_configured = pref_enabled && session_active;
+  if (hps_configured_ == want_configured)
     return;
 
-  // Start listening for state updates and restarts/shutdowns.
-  hps_dbus_observation_.Observe(chromeos::HpsDBusClient::Get());
+  if (want_configured) {
+    // Configure the snooping started/stopped signals that the service will
+    // emit.
+    const absl::optional config = GetEnableHpsNotifyConfig();
+    if (!config.has_value()) {
+      LOG(ERROR) << "Couldn't parse notify configuration";
+      return;
+    }
+
+    chromeos::HpsDBusClient::Get()->EnableHpsNotify(*config);
+
+    // Populate our initial HPS state for consistency with the service.
+    chromeos::HpsDBusClient::Get()->GetResultHpsNotify(base::BindOnce(
+        &HpsNotifyController::UpdateHpsState, weak_ptr_factory_.GetWeakPtr()));
+    hps_configured_ = true;
+
+    return;
+  }
+
+  // No longer need signals to be emitted.
+  chromeos::HpsDBusClient::Get()->DisableHpsNotify();
+  hps_configured_ = false;
+}
+
+void HpsNotifyController::StartHpsObservation(bool service_is_available) {
+  hps_available_ = service_is_available;
+  hps_configured_ = false;
+
+  if (!service_is_available) {
+    LOG(ERROR) << "Could not make initial connection to HPS service";
+    return;
+  }
 
   // Special case: at this point, the service could have been left in an enabled
   // state by a previous session that crashed (and hence didn't clean up
   // properly). Disable it here, which is a no-op if it is already disabled.
   chromeos::HpsDBusClient::Get()->DisableHpsNotify();
 
-  RestartHpsObservation();
-}
+  // Start listening for state updates and restarts/shutdowns.
+  hps_dbus_observation_.Observe(chromeos::HpsDBusClient::Get());
 
-void HpsNotifyController::RestartHpsObservation() {
-  // Configure the snooping started/stopped signals that the service will emit.
-  const absl::optional<hps::FeatureConfig> config = GetEnableHpsNotifyConfig();
-  if (!config.has_value()) {
-    LOG(ERROR) << "Couldn't parse notify configuration";
-    return;
-  }
-  chromeos::HpsDBusClient::Get()->EnableHpsNotify(*config);
-
-  // Populate our initial HPS state for consistency with the service.
-  chromeos::HpsDBusClient::Get()->GetResultHpsNotify(base::BindOnce(
-      &HpsNotifyController::UpdateHpsState, weak_ptr_factory_.GetWeakPtr()));
+  // Configure the service and poll its initial value if necessary.
+  ReconfigureHps(/*hps_available_=*/true, session_active_, pref_enabled_);
 }
 
 void HpsNotifyController::UpdateHpsState(absl::optional<bool> response) {
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
-  UpdateIconVisibility(session_active_, response.value_or(false), is_enabled_);
+  UpdateIconVisibility(session_active_, response.value_or(false),
+                       pref_enabled_);
 }
 
 void HpsNotifyController::UpdatePrefState() {
   DCHECK(pref_change_registrar_);
   DCHECK(pref_change_registrar_->prefs());
 
-  UpdateIconVisibility(session_active_, hps_state_,
-                       pref_change_registrar_->prefs()->GetBoolean(
-                           prefs::kSnoopingProtectionEnabled));
+  const bool pref_enabled = pref_change_registrar_->prefs()->GetBoolean(
+      prefs::kSnoopingProtectionEnabled);
+  ReconfigureHps(hps_available_, session_active_, pref_enabled);
+  UpdateIconVisibility(session_active_, hps_state_, pref_enabled);
 }
 
 }  // namespace ash
