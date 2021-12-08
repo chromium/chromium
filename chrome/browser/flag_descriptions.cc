@@ -4703,7 +4703,7 @@ const char kMagnifierContinuousMouseFollowingModeSettingDescription[] =
 const char kDockedMagnifierResizingName[] =
     "Enable ability to resize Docked Magnifier";
 const char kDockedMagnifierResizingDescription[] =
-    "Enable feature which adds ability for user to grab and resize divider of"
+    "Enable feature which adds ability for user to grab and resize divider of "
     "Docked Magnifier.";
 
 const char kFilesArchivemountName[] = "Archivemount in Files App (1st Tier)";
