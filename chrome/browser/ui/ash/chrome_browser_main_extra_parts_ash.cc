@@ -219,8 +219,12 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   night_light_client_->Start();
 
   if (ash::features::IsProjectorEnabled()) {
-    projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
     projector_client_ = std::make_unique<ProjectorClientImpl>();
+
+    // ProjectorAppClient may trigger function that eventually use the
+    // ProjectorClient. Therefore, create the ProjectorAppClient after the
+    // ProjectorClient.
+    projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   }
 
   desks_templates_client_ = std::make_unique<DesksTemplatesClient>();

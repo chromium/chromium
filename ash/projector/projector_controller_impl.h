@@ -45,7 +45,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   // ProjectorController:
   void StartProjectorSession(const std::string& storage_dir) override;
   void SetClient(ProjectorClient* client) override;
-  void OnSpeechRecognitionAvailable(bool available) override;
+  void OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability availability) override;
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
   bool IsEligible() const override;
@@ -149,7 +150,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   bool is_caption_on_ = false;
 
   // Whether SODA is available on the device.
-  bool is_speech_recognition_available_ = false;
+  SpeechRecognitionAvailability speech_recognition_availability_ =
+      SpeechRecognitionAvailability::kOnDeviceSpeechRecognitionNotSupported;
 
   // Whether speech recognition is taking place or not.
   bool is_speech_recognition_on_ = false;

@@ -90,7 +90,8 @@ class ProjectorControllerTest : public AshTestBase {
         std::move(mock_metadata_controller));
 
     controller_->SetClient(&mock_client_);
-    controller_->OnSpeechRecognitionAvailable(/*available=*/true);
+    controller_->OnSpeechRecognitionAvailabilityChanged(
+        SpeechRecognitionAvailability::kAvailable);
   }
 
  protected:
@@ -148,11 +149,13 @@ TEST_F(ProjectorControllerTest, OnTranscriptionCaptionOnPartialResult) {
   NotifyControllerForPartialSpeechResult(controller_);
 }
 
-TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailable) {
-  controller_->OnSpeechRecognitionAvailable(true);
+TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
+  controller_->OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability::kAvailable);
   EXPECT_TRUE(controller_->IsEligible());
 
-  controller_->OnSpeechRecognitionAvailable(false);
+  controller_->OnSpeechRecognitionAvailabilityChanged(
+      SpeechRecognitionAvailability::kOnDeviceSpeechRecognitionNotSupported);
   EXPECT_FALSE(controller_->IsEligible());
 }
 

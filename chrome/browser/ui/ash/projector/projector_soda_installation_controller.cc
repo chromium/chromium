@@ -39,11 +39,21 @@ ProjectorSodaInstallationController::ProjectorSodaInstallationController(
     : app_client_(client), projector_controller_(projector_controller) {
   speech::SodaInstaller::GetInstance()->AddObserver(this);
 
-  bool recognition_available =
-      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-          GetLocale());
+  if (!IsLanguageSupported(speech::GetLanguageCode(GetLocale()))) {
+    projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+        ash::SpeechRecognitionAvailability::kUserLanguageNotSupported);
+    return;
+  }
 
-  projector_controller_->OnSpeechRecognitionAvailable(recognition_available);
+  if (!OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+          GetLocale())) {
+    projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+        ash::SpeechRecognitionAvailability::kSodaNotInstalled);
+    return;
+  }
+
+  projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+      ash::SpeechRecognitionAvailability::kAvailable);
 }
 
 ProjectorSodaInstallationController::~ProjectorSodaInstallationController() {
@@ -86,7 +96,8 @@ void ProjectorSodaInstallationController::OnSodaInstalled() {
   if (!soda_installer->IsSodaInstalled(speech::GetLanguageCode(GetLocale())))
     return;
 
-  projector_controller_->OnSpeechRecognitionAvailable(true);
+  projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+      ash::SpeechRecognitionAvailability::kAvailable);
   app_client_->OnSodaInstalled();
 }
 

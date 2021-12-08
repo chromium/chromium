@@ -119,14 +119,15 @@ void ProjectorControllerImpl::SetClient(ProjectorClient* client) {
   client_ = client;
 }
 
-void ProjectorControllerImpl::OnSpeechRecognitionAvailable(bool available) {
+void ProjectorControllerImpl::OnSpeechRecognitionAvailabilityChanged(
+    SpeechRecognitionAvailability availability) {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled())
     return;
 
-  if (available == is_speech_recognition_available_)
+  if (availability == speech_recognition_availability_)
     return;
 
-  is_speech_recognition_available_ = available;
+  speech_recognition_availability_ = availability;
 
   OnNewScreencastPreconditionChanged();
 }
@@ -150,7 +151,8 @@ void ProjectorControllerImpl::OnTranscriptionError() {
 }
 
 bool ProjectorControllerImpl::IsEligible() const {
-  return is_speech_recognition_available_ ||
+  return speech_recognition_availability_ ==
+             SpeechRecognitionAvailability::kAvailable ||
          ProjectorController::AreExtendedProjectorFeaturesDisabled();
 }
 
@@ -294,7 +296,8 @@ void ProjectorControllerImpl::StartSpeechRecognition() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled())
     return;
 
-  DCHECK(is_speech_recognition_available_);
+  DCHECK(speech_recognition_availability_ ==
+         SpeechRecognitionAvailability::kAvailable);
   DCHECK(!is_speech_recognition_on_);
   DCHECK_NE(client_, nullptr);
   client_->StartSpeechRecognition();
@@ -305,7 +308,8 @@ void ProjectorControllerImpl::StopSpeechRecognition() {
   if (ProjectorController::AreExtendedProjectorFeaturesDisabled())
     return;
 
-  DCHECK(is_speech_recognition_available_);
+  DCHECK(speech_recognition_availability_ ==
+         SpeechRecognitionAvailability::kAvailable);
   DCHECK(is_speech_recognition_on_);
   DCHECK_NE(client_, nullptr);
   client_->StopSpeechRecognition();

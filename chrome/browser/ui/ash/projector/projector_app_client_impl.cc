@@ -58,6 +58,9 @@ ProjectorAppClientImpl::ProjectorAppClientImpl()
           base::Unretained(this))) {
   if (!base::FeatureList::IsEnabled(
           ash::features::kOnDeviceSpeechRecognition)) {
+    ash::ProjectorController::Get()->OnSpeechRecognitionAvailabilityChanged(
+        ash::SpeechRecognitionAvailability::
+            kOnDeviceSpeechRecognitionNotSupported);
     return;
   }
 

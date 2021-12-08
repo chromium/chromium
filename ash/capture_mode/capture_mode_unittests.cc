@@ -4778,7 +4778,8 @@ class ProjectorCaptureModeIntegrationTests
     auto* projector_controller = ProjectorController::Get();
     projector_controller->SetClient(&projector_client_);
     // Simulate the availability of speech recognition.
-    projector_controller->OnSpeechRecognitionAvailable(true);
+    projector_controller->OnSpeechRecognitionAvailabilityChanged(
+        SpeechRecognitionAvailability::kAvailable);
     window_ = CreateTestWindow(gfx::Rect(20, 30, 200, 200));
     CaptureModeController::Get()->SetUserCaptureRegion(kUserRegion,
                                                        /*by_user=*/true);
