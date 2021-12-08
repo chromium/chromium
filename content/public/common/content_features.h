@@ -246,6 +246,7 @@ CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtection;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtectionPku;
 #endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
+CONTENT_EXPORT extern const base::Feature kWebAssemblyDynamicTiering;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
 CONTENT_EXPORT extern const base::Feature kWebAssemblySimd;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyTiering;

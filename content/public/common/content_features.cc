@@ -952,6 +952,10 @@ const base::Feature kWebAssemblyCodeProtectionPku{
 #endif  // (defined(OS_LINUX) || defined(OS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 
+// Enable WebAssembly dynamic tiering (only tier up hot functions).
+const base::Feature kWebAssemblyDynamicTiering{
+    "WebAssemblyDynamicTiering", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable WebAssembly lazy compilation (JIT on first call).
 const base::Feature kWebAssemblyLazyCompilation{
     "WebAssemblyLazyCompilation", base::FEATURE_DISABLED_BY_DEFAULT};
