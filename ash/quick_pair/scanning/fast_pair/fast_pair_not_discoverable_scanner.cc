@@ -14,7 +14,9 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -30,6 +32,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -75,9 +78,11 @@ namespace quick_pair {
 
 FastPairNotDiscoverableScanner::FastPairNotDiscoverableScanner(
     scoped_refptr<FastPairScanner> scanner,
+    scoped_refptr<device::BluetoothAdapter> adapter,
     DeviceCallback found_callback,
     DeviceCallback lost_callback)
     : scanner_(scanner),
+      adapter_(std::move(adapter)),
       found_callback_(std::move(found_callback)),
       lost_callback_(std::move(lost_callback)) {
   observation_.Observe(scanner.get());
@@ -185,8 +190,39 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
   device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
                             metadata->account_key);
 
-  notified_devices_[bluetooth_device->GetAddress()] = device;
+  FastPairHandshakeLookup::GetInstance()->Create(
+      adapter_, std::move(device),
+      base::BindOnce(&FastPairNotDiscoverableScanner::OnHandshakeComplete,
+                     weak_pointer_factory_.GetWeakPtr()));
+}
 
+void FastPairNotDiscoverableScanner::OnHandshakeComplete(
+    scoped_refptr<Device> device,
+    absl::optional<PairFailure> failure) {
+  if (failure) {
+    QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
+                    << " because: " << failure.value();
+    return;
+  }
+
+  device::BluetoothDevice* classic_device =
+      device->classic_address()
+          ? adapter_->GetDevice(device->classic_address().value())
+          : nullptr;
+
+  device::BluetoothDevice* ble_device =
+      adapter_->GetDevice(device->ble_address);
+
+  bool is_already_paired =
+      (classic_device != nullptr ? classic_device->IsPaired() : false) ||
+      ble_device->IsPaired();
+
+  if (is_already_paired) {
+    QP_LOG(INFO) << __func__ << ": Already paired with " << device;
+    return;
+  }
+
+  notified_devices_[device->ble_address] = device;
   found_callback_.Run(device);
 }
 
@@ -197,8 +233,8 @@ void FastPairNotDiscoverableScanner::OnUtilityProcessStopped(
   if (current_retry_count > kMaxParseAdvertisementRetryCount) {
     QP_LOG(WARNING) << "Failed to parse advertisement from device more than "
                     << kMaxParseAdvertisementRetryCount << " times.";
-    // Clean up the state here which enables trying again in the future if this
-    // device is re-discovered.
+    // Clean up the state here which enables trying again in the future if
+    // this device is re-discovered.
     advertisement_parse_attempts_.erase(device->GetAddress());
     return;
   }

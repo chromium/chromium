@@ -103,7 +103,7 @@ void ScannerBrokerImpl::StartFastPairScanning() {
 
   fast_pair_discoverable_scanner_ =
       std::make_unique<FastPairDiscoverableScanner>(
-          fast_pair_scanner,
+          fast_pair_scanner, adapter_,
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
@@ -111,7 +111,7 @@ void ScannerBrokerImpl::StartFastPairScanning() {
 
   fast_pair_not_discoverable_scanner_ =
       std::make_unique<FastPairNotDiscoverableScanner>(
-          fast_pair_scanner,
+          fast_pair_scanner, adapter_,
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,

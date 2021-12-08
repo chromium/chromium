@@ -10,7 +10,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_impl.h"
 #include "base/callback.h"
 #include "base/memory/singleton.h"
-#include "base/no_destructor.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace ash {
@@ -22,8 +21,7 @@ absl::optional<FastPairHandshakeLookup::CreateFunction> g_test_create_function =
 
 // static
 FastPairHandshakeLookup* FastPairHandshakeLookup::GetInstance() {
-  static base::NoDestructor<FastPairHandshakeLookup> instance;
-  return instance.get();
+  return base::Singleton<FastPairHandshakeLookup>::get();
 }
 
 // static

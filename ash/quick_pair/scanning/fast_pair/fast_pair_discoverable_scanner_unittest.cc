@@ -7,6 +7,11 @@
 #include <vector>
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
 #include "ash/services/quick_pair/fast_pair_data_parser.h"
@@ -31,6 +36,7 @@
 
 namespace {
 constexpr char kValidModelId[] = "718c17";
+const std::string kAddress = "test_address";
 }  // namespace
 
 namespace ash {
@@ -66,8 +72,13 @@ class FastPairDiscoverableScannerTest : public testing::Test {
               data_parser_remote_, base::DoNothing());
         });
 
+    FastPairHandshakeLookup::SetCreateFunctionForTesting(
+        base::BindRepeating(&FastPairDiscoverableScannerTest::CreateHandshake,
+                            base::Unretained(this)));
+
     discoverable_scanner_ = std::make_unique<FastPairDiscoverableScanner>(
-        scanner_, found_device_callback_.Get(), lost_device_callback_.Get());
+        scanner_, adapter_, found_device_callback_.Get(),
+        lost_device_callback_.Get());
   }
 
   MockQuickPairProcessManager* mock_process_manager() {
@@ -75,11 +86,10 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<device::BluetoothDevice> GetDevice(
-      const std::string& hex_model_id,
-      bool expect_call) {
+  device::BluetoothDevice* GetDevice(const std::string& hex_model_id,
+                                     bool is_paired = false) {
     auto device = std::make_unique<device::MockBluetoothDevice>(
-        adapter_.get(), 0, "test_name", "test_address", /*paired=*/false,
+        adapter_.get(), 0, "test_name", kAddress, /*paired=*/is_paired,
         /*connected=*/false);
 
     if (!hex_model_id.empty()) {
@@ -88,7 +98,24 @@ class FastPairDiscoverableScannerTest : public testing::Test {
       device->SetServiceDataForUUID(kFastPairBluetoothUuid, model_id_bytes);
     }
 
-    return device;
+    device::BluetoothDevice* device_ptr = device.get();
+
+    adapter_->AddMockDevice(std::move(device));
+    ON_CALL(*adapter_, GetDevice(kAddress))
+        .WillByDefault(testing::Return(device_ptr));
+
+    return device_ptr;
+  }
+
+  std::unique_ptr<FastPairHandshake> CreateHandshake(
+      scoped_refptr<Device> device,
+      FastPairHandshake::OnCompleteCallback callback) {
+    auto fake = std::make_unique<FakeFastPairHandshake>(
+        adapter_, std::move(device), std::move(callback));
+
+    fake_fast_pair_handshake_ = fake.get();
+
+    return fake;
   }
 
   base::test::SingleThreadTaskEnvironment task_enviornment_;
@@ -102,6 +129,7 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   std::unique_ptr<FastPairDataParser> data_parser_;
   base::MockCallback<DeviceCallback> found_device_callback_;
   base::MockCallback<DeviceCallback> lost_device_callback_;
+  FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
 };
 
 TEST_F(FastPairDiscoverableScannerTest, NoServiceData) {
@@ -119,39 +147,121 @@ TEST_F(FastPairDiscoverableScannerTest, NoServiceData) {
 
 TEST_F(FastPairDiscoverableScannerTest, NoModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
-  std::unique_ptr<device::BluetoothDevice> device =
-      GetDevice("", /*expect_call=*/false);
-  scanner_->NotifyDeviceFound(device.get());
+  device::BluetoothDevice* device = GetDevice("");
+  scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(FastPairDiscoverableScannerTest, ValidModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(1);
-  std::unique_ptr<device::BluetoothDevice> device =
-      GetDevice(kValidModelId, /*expect_call=*/true);
-  scanner_->NotifyDeviceFound(device.get());
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(FastPairDiscoverableScannerTest, NearbyShareModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
-  std::unique_ptr<device::BluetoothDevice> device =
-      GetDevice("fc128e", /*expect_call=*/false);
-  scanner_->NotifyDeviceFound(device.get());
+  device::BluetoothDevice* device = GetDevice("fc128e");
+  scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound) {
-  std::unique_ptr<device::BluetoothDevice> device =
-      GetDevice(kValidModelId, /*expect_call=*/true);
+TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v1) {
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
-  scanner_->NotifyDeviceFound(device.get());
-
+  scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(lost_device_callback_, Run).Times(1);
-  scanner_->NotifyDeviceLost(device.get());
+  scanner_->NotifyDeviceLost(device);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v2) {
+  nearby::fastpair::Device metadata;
+  metadata.set_trigger_distance(2);
+  auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
+  key_pair->set_public_key("test_public_key");
+  metadata.set_allocated_anti_spoofing_key_pair(key_pair);
+  repository_->SetFakeMetadata(kValidModelId, metadata);
+
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(1);
+  scanner_->NotifyDeviceFound(device);
+
+  base::RunLoop().RunUntilIdle();
+
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(lost_device_callback_, Run).Times(1);
+  scanner_->NotifyDeviceLost(device);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerTest, AlreadyPaired_v1) {
+  device::BluetoothDevice* device =
+      GetDevice(kValidModelId, /*is_paired=*/true);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(lost_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceLost(device);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerTest, AlreadyPaired_v2) {
+  nearby::fastpair::Device metadata;
+  metadata.set_trigger_distance(2);
+  auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
+  key_pair->set_public_key("test_public_key");
+  metadata.set_allocated_anti_spoofing_key_pair(key_pair);
+  repository_->SetFakeMetadata(kValidModelId, metadata);
+
+  device::BluetoothDevice* device =
+      GetDevice(kValidModelId, /*is_paired=*/true);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+
+  base::RunLoop().RunUntilIdle();
+
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(lost_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceLost(device);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerTest, HandshakeFailed) {
+  nearby::fastpair::Device metadata;
+  metadata.set_trigger_distance(2);
+  auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
+  key_pair->set_public_key("test_public_key");
+  metadata.set_allocated_anti_spoofing_key_pair(key_pair);
+  repository_->SetFakeMetadata(kValidModelId, metadata);
+
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+
+  base::RunLoop().RunUntilIdle();
+
+  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(lost_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceLost(device);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -160,9 +270,8 @@ TEST_F(FastPairDiscoverableScannerTest,
        DoesntInvokeLostCallbackIfDidntInvokeFound) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   EXPECT_CALL(lost_device_callback_, Run).Times(0);
-  std::unique_ptr<device::BluetoothDevice> device =
-      GetDevice(kValidModelId, /*expect_call=*/false);
-  scanner_->NotifyDeviceLost(device.get());
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  scanner_->NotifyDeviceLost(device);
   base::RunLoop().RunUntilIdle();
 }
 

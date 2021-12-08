@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/singleton.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
@@ -39,10 +40,8 @@ class FastPairHandshakeLookup {
   static FastPairHandshakeLookup* GetInstance();
   static void SetCreateFunctionForTesting(CreateFunction create_function);
 
-  FastPairHandshakeLookup();
   FastPairHandshakeLookup(const FastPairHandshakeLookup&) = delete;
   FastPairHandshakeLookup& operator=(const FastPairHandshakeLookup&) = delete;
-  virtual ~FastPairHandshakeLookup();
 
   // Get an existing instance for |device|.
   FastPairHandshake* Get(scoped_refptr<Device> device);
@@ -56,7 +55,13 @@ class FastPairHandshakeLookup {
                             scoped_refptr<Device> device,
                             OnCompleteCallback on_complete);
 
+ protected:
+  FastPairHandshakeLookup();
+  virtual ~FastPairHandshakeLookup();
+
  private:
+  friend struct base::DefaultSingletonTraits<FastPairHandshakeLookup>;
+
   base::flat_map<scoped_refptr<Device>, std::unique_ptr<FastPairHandshake>>
       fast_pair_handshakes_;
 };

@@ -14,8 +14,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+class BluetoothAdapter;
 class BluetoothDevice;
 }  // namespace device
 
@@ -24,6 +26,7 @@ namespace quick_pair {
 
 struct Device;
 class DeviceMetadata;
+enum class PairFailure;
 
 using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 
@@ -35,6 +38,7 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
  public:
   FastPairDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
+                              scoped_refptr<device::BluetoothAdapter> adatper,
                               DeviceCallback found_callback,
                               DeviceCallback lost_callback);
   FastPairDiscoverableScanner(const FastPairDiscoverableScanner&) = delete;
@@ -52,11 +56,15 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   void OnDeviceMetadataRetrieved(device::BluetoothDevice* device,
                                  const std::string model_id,
                                  DeviceMetadata* device_metadata);
+  void OnHandshakeComplete(scoped_refptr<Device> device,
+                           absl::optional<PairFailure> failure);
+  void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
       device::BluetoothDevice* device,
       QuickPairProcessManager::ShutdownReason shutdown_reason);
 
   scoped_refptr<FastPairScanner> scanner_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   DeviceCallback found_callback_;
   DeviceCallback lost_callback_;
   base::flat_map<std::string, scoped_refptr<Device>> notified_devices_;

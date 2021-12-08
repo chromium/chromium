@@ -12,7 +12,10 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
@@ -22,6 +25,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
+#include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,12 +41,14 @@ namespace quick_pair {
 
 FastPairDiscoverableScanner::FastPairDiscoverableScanner(
     scoped_refptr<FastPairScanner> scanner,
+    scoped_refptr<device::BluetoothAdapter> adapter,
     DeviceCallback found_callback,
     DeviceCallback lost_callback)
-    : scanner_(scanner),
+    : scanner_(std::move(scanner)),
+      adapter_(std::move(adapter)),
       found_callback_(std::move(found_callback)),
       lost_callback_(std::move(lost_callback)) {
-  observation_.Observe(scanner.get());
+  observation_.Observe(scanner_.get());
 }
 
 FastPairDiscoverableScanner::~FastPairDiscoverableScanner() = default;
@@ -114,8 +120,53 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
   auto device = base::MakeRefCounted<Device>(
       model_id, bluetooth_device->GetAddress(), Protocol::kFastPairInitial);
 
-  notified_devices_[bluetooth_device->GetAddress()] = device;
+  // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
+  // available then the device is v1.
+  if (device_metadata->GetDetails()
+          .anti_spoofing_key_pair()
+          .public_key()
+          .empty()) {
+    NotifyDeviceFound(std::move(device));
+    return;
+  }
 
+  FastPairHandshakeLookup::GetInstance()->Create(
+      adapter_, device,
+      base::BindOnce(&FastPairDiscoverableScanner::OnHandshakeComplete,
+                     weak_pointer_factory_.GetWeakPtr()));
+}
+
+void FastPairDiscoverableScanner::OnHandshakeComplete(
+    scoped_refptr<Device> device,
+    absl::optional<PairFailure> failure) {
+  if (failure) {
+    QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
+                    << " because: " << failure.value();
+    return;
+  }
+
+  NotifyDeviceFound(std::move(device));
+}
+
+void FastPairDiscoverableScanner::NotifyDeviceFound(
+    scoped_refptr<Device> device) {
+  device::BluetoothDevice* classic_device =
+      device->classic_address()
+          ? adapter_->GetDevice(device->classic_address().value())
+          : nullptr;
+
+  device::BluetoothDevice* ble_device =
+      adapter_->GetDevice(device->ble_address);
+
+  bool is_already_paired =
+      (classic_device && classic_device->IsPaired()) || ble_device->IsPaired();
+
+  if (is_already_paired) {
+    QP_LOG(INFO) << __func__ << ": Already paired with " << device;
+    return;
+  }
+
+  notified_devices_[device->ble_address] = device;
   found_callback_.Run(device);
 }
 

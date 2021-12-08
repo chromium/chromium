@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 
 namespace device {
+class BluetoothAdapter;
 class BluetoothDevice;
 }  // namespace device
 
@@ -26,6 +27,7 @@ namespace quick_pair {
 class AccountKeyFilter;
 struct Device;
 struct NotDiscoverableAdvertisement;
+enum class PairFailure;
 struct PairingMetadata;
 
 using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
@@ -37,9 +39,11 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 // to the bluetooth adapter.
 class FastPairNotDiscoverableScanner final : public FastPairScanner::Observer {
  public:
-  FastPairNotDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
-                                 DeviceCallback found_callback,
-                                 DeviceCallback lost_callback);
+  FastPairNotDiscoverableScanner(
+      scoped_refptr<FastPairScanner> scanner,
+      scoped_refptr<device::BluetoothAdapter> adatper,
+      DeviceCallback found_callback,
+      DeviceCallback lost_callback);
   FastPairNotDiscoverableScanner(const FastPairNotDiscoverableScanner&) =
       delete;
   FastPairNotDiscoverableScanner& operator=(
@@ -56,11 +60,15 @@ class FastPairNotDiscoverableScanner final : public FastPairScanner::Observer {
       const absl::optional<NotDiscoverableAdvertisement>& advertisement);
   void OnAccountKeyFilterCheckResult(device::BluetoothDevice* device,
                                      absl::optional<PairingMetadata> metadata);
+  void OnHandshakeComplete(scoped_refptr<Device> device,
+                           absl::optional<PairFailure> failure);
+  void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
       device::BluetoothDevice* device,
       QuickPairProcessManager::ShutdownReason shutdown_reason);
 
   scoped_refptr<FastPairScanner> scanner_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   DeviceCallback found_callback_;
   DeviceCallback lost_callback_;
   base::flat_map<std::string, scoped_refptr<Device>> notified_devices_;
