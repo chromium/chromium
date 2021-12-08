@@ -20,7 +20,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -34,7 +33,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
-import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -114,10 +112,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     public void startMainActivityFromIntent(Intent intent, String url) {
         prepareUrlIntent(intent, url);
         startActivityCompletely(intent);
-
-        final Coordinates coord = Coordinates.createFor(getWebContents());
-        CriteriaHelper.pollUiThread(
-                coord::frameInfoUpdated, "FrameInfo has not been updated in time.");
+        waitForFirstFrame();
     }
 
     /**

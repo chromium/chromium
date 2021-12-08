@@ -109,7 +109,7 @@ public class TrustedWebActivityShareTargetTest {
     @MediumTest
     public void sharesDataWithPost_FromInitialIntent() throws Exception {
         putShareData(mIntent, POST_SHARE_TARGET);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntentNotWaitingForFirstFrame(mIntent);
         assertPostNavigatorCalled();
     }
 
