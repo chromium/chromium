@@ -165,11 +165,15 @@ ArcIntentHelperBridge::ArcIntentHelperBridge(content::BrowserContext* context,
 ArcIntentHelperBridge::~ArcIntentHelperBridge() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   arc_bridge_service_->intent_helper()->SetHost(nullptr);
+  for (auto& observer : observer_list_)
+    observer.OnArcIntentHelperBridgeDestruction();
 }
 
 void ArcIntentHelperBridge::OnIconInvalidated(const std::string& package_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   icon_loader_.InvalidateIcons(package_name);
+  for (auto& observer : observer_list_)
+    observer.OnIconInvalidated(package_name);
 }
 
 void ArcIntentHelperBridge::OnIntentFiltersUpdated(

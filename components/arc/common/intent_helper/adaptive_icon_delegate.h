@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INTENT_HELPER_ADAPTIVE_ICON_DELEGATE_H_
-#define COMPONENTS_ARC_INTENT_HELPER_ADAPTIVE_ICON_DELEGATE_H_
+#ifndef COMPONENTS_ARC_COMMON_INTENT_HELPER_ADAPTIVE_ICON_DELEGATE_H_
+#define COMPONENTS_ARC_COMMON_INTENT_HELPER_ADAPTIVE_ICON_DELEGATE_H_
 
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/callback.h"
-#include "ui/gfx/image/image_skia.h"
+#include "components/arc/common/intent_helper/activity_icon_loader.h"
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace arc {
 
@@ -22,10 +25,10 @@ class AdaptiveIconDelegate {
 
   // Generates adaptive icons from the |icons| and calls |callback|.
   virtual void GenerateAdaptiveIcons(
-      const std::vector<mojom::ActivityIconPtr>& icons,
+      const std::vector<internal::ActivityIconLoader::ActivityIconPtr>& icons,
       AdaptiveIconDelegateCallback callback) = 0;
 };
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INTENT_HELPER_ADAPTIVE_ICON_DELEGATE_H_
+#endif  // COMPONENTS_ARC_COMMON_INTENT_HELPER_ADAPTIVE_ICON_DELEGATE_H_

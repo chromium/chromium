@@ -7,9 +7,6 @@ import("//testing/test.gni")
 
 static_library("arc") {
   sources = [
-    "intent_helper/activity_icon_loader.cc",
-    "intent_helper/activity_icon_loader.h",
-    "intent_helper/adaptive_icon_delegate.h",
     "intent_helper/arc_intent_helper_bridge.cc",
     "intent_helper/arc_intent_helper_bridge.h",
     "intent_helper/arc_intent_helper_observer.h",
@@ -28,6 +25,7 @@ static_library("arc") {
   deps = [
     "//ash/components/arc",
     "//ash/public/cpp",
+    "//components/arc/common",
     "//components/exo",
     "//components/google/core/common",
 
@@ -65,6 +63,7 @@ source_set("unit_tests") {
     "//ash/components/arc/mojom",
     "//ash/components/arc/session",
     "//base/test:test_support",
+    "//components/arc/common",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/aura:test_support",

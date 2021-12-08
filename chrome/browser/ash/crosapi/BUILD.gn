@@ -191,6 +191,7 @@ source_set("crosapi") {
     "//chromeos/startup:constants",
     "//chromeos/system",
     "//chromeos/tpm",
+    "//components/arc",
     "//components/exo",
     "//components/keyed_service/content",
     "//components/metrics",

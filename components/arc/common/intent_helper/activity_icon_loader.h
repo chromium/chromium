@@ -2,23 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INTENT_HELPER_ACTIVITY_ICON_LOADER_H_
-#define COMPONENTS_ARC_INTENT_HELPER_ACTIVITY_ICON_LOADER_H_
+#ifndef COMPONENTS_ARC_COMMON_INTENT_HELPER_ACTIVITY_ICON_LOADER_H_
+#define COMPONENTS_ARC_COMMON_INTENT_HELPER_ACTIVITY_ICON_LOADER_H_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/arc.mojom.h"  // nogncheck
+#else
+#error "ARC files should only be included for Ash-chrome or Lacros-chrome."
+#endif
 
 namespace arc {
 
@@ -66,6 +74,17 @@ class ActivityIconLoader {
     FAILED_ARC_NOT_SUPPORTED,
   };
 
+  // Ash uses arc::mojom interface while Lacros uses crosapi::mojom.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  using ActivityIconPtr = mojom::ActivityIconPtr;
+  using ActivityNamePtr = mojom::ActivityNamePtr;
+  using ScaleFactor = mojom::ScaleFactor;
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  using ActivityIconPtr = crosapi::mojom::ActivityIconPtr;
+  using ActivityNamePtr = crosapi::mojom::ActivityNamePtr;
+  using ScaleFactor = crosapi::mojom::ScaleFactor;
+#endif
+
   using ActivityToIconsMap = std::map<ActivityName, Icons>;
   using OnIconsReadyCallback =
       base::OnceCallback<void(std::unique_ptr<ActivityToIconsMap>)>;
@@ -94,7 +113,7 @@ class ActivityIconLoader {
 
   void OnIconsReadyForTesting(std::unique_ptr<ActivityToIconsMap> cached_result,
                               OnIconsReadyCallback cb,
-                              std::vector<mojom::ActivityIconPtr> icons);
+                              std::vector<ActivityIconPtr> icons);
 
   // Returns true if |result| indicates that the |cb| object passed to
   // GetActivityIcons() has already called.
@@ -106,7 +125,7 @@ class ActivityIconLoader {
   // A function called when the mojo IPC returns.
   void OnIconsReady(std::unique_ptr<ActivityToIconsMap> cached_result,
                     OnIconsReadyCallback cb,
-                    std::vector<mojom::ActivityIconPtr> icons);
+                    std::vector<ActivityIconPtr> icons);
 
   // A function called when the adaptive icons are generated.
   void OnAdaptiveIconGenerated(
@@ -138,4 +157,4 @@ class ActivityIconLoader {
 }  // namespace internal
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INTENT_HELPER_ACTIVITY_ICON_LOADER_H_
+#endif  // COMPONENTS_ARC_COMMON_INTENT_HELPER_ACTIVITY_ICON_LOADER_H_

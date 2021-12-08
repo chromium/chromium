@@ -44,6 +44,11 @@ class ArcIntentHelperObserver {
       const std::vector<arc::mojom::SupportedLinksPtr>& added_packages,
       const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages,
       arc::mojom::SupportedLinkChangeSource source) {}
+
+  virtual void OnIconInvalidated(const std::string& package_name) {}
+
+  // Called when ArcIntentHelperBridge is destroyed.
+  virtual void OnArcIntentHelperBridgeDestruction() {}
 };
 
 }  // namespace arc
