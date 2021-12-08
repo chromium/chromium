@@ -26,22 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_LAYER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_LAYER_CLIENT_H_
 
-#include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-namespace gfx {
-class Rect;
-}
-
 namespace blink {
-
-class GraphicsContext;
-class GraphicsLayer;
-class ScrollableArea;
-class PaintArtifactCompositor;
 
 enum GraphicsLayerPaintingPhaseFlags {
   kGraphicsLayerPaintBackground = (1 << 0),
@@ -55,53 +40,6 @@ enum GraphicsLayerPaintingPhaseFlags {
        kGraphicsLayerPaintMask | kGraphicsLayerPaintDecoration)
 };
 typedef unsigned GraphicsLayerPaintingPhase;
-
-class PLATFORM_EXPORT GraphicsLayerClient : public GarbageCollectedMixin {
- public:
-  virtual ~GraphicsLayerClient() = default;
-
-  // Used only when CullRectUpdate is not enabled.
-  virtual gfx::Rect ComputeInterestRect(
-      const GraphicsLayer*,
-      const gfx::Rect& previous_interest_rect) const = 0;
-  // Used when CullRectUpdate is enabled.
-  virtual gfx::Rect PaintableRegion(const GraphicsLayer*) const = 0;
-
-  virtual LayoutSize SubpixelAccumulation() const { return LayoutSize(); }
-  // Returns whether the client needs to be repainted with respect to the given
-  // graphics layer.
-  virtual bool NeedsRepaint(const GraphicsLayer&) const = 0;
-  virtual void PaintContents(const GraphicsLayer*,
-                             GraphicsContext&,
-                             GraphicsLayerPaintingPhase,
-                             const gfx::Rect& interest_rect) const = 0;
-
-  virtual bool ShouldSkipPaintingSubtree() const { return false; }
-
-  virtual bool IsTrackingRasterInvalidations() const { return false; }
-
-  virtual void GraphicsLayersDidChange() {}
-
-  virtual PaintArtifactCompositor* GetPaintArtifactCompositor() = 0;
-
-  virtual String DebugName(const GraphicsLayer*) const = 0;
-
-  virtual const ScrollableArea* GetScrollableAreaForTesting(
-      const GraphicsLayer*) const {
-    return nullptr;
-  }
-
-#if DCHECK_IS_ON()
-  // CompositedLayerMapping overrides this to verify that it is not
-  // currently painting contents. An ASSERT fails, if it is.
-  // This is executed in GraphicsLayer construction and destruction
-  // to verify that we don't create or destroy GraphicsLayers
-  // while painting.
-  virtual void VerifyNotPainting() {}
-#endif
-
-  void Trace(Visitor*) const override {}
-};
 
 }  // namespace blink
 

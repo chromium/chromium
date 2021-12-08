@@ -997,12 +997,9 @@ void InspectorOverlayAgent::PaintOverlay(GraphicsContext& context) {
 bool InspectorOverlayAgent::IsInspectorLayer(const cc::Layer* layer) const {
   if (!frame_overlay_)
     return false;
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    return layer == static_cast<const InspectorPageOverlayDelegate*>(
-                        frame_overlay_->GetDelegate())
-                        ->GetLayer();
-  }
-  return layer == &frame_overlay_->GetGraphicsLayer()->CcLayer();
+  return layer == static_cast<const InspectorPageOverlayDelegate*>(
+                      frame_overlay_->GetDelegate())
+                      ->GetLayer();
 }
 
 LocalFrame* InspectorOverlayAgent::GetFrame() const {

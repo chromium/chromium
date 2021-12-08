@@ -30,9 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_OVERLAY_H_
 
 #include <memory>
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -40,10 +39,10 @@ namespace blink {
 
 class GraphicsContext;
 class LocalFrame;
+class PropertyTreeState;
 
 // Manages a layer that is overlaid on a WebLocalFrame's content.
 class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
-                                 public GraphicsLayerClient,
                                  public DisplayItemClient {
  public:
   class Delegate {
@@ -73,11 +72,6 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
   // For CompositeAfterPaint.
   void Paint(GraphicsContext&) const;
 
-  GraphicsLayer* GetGraphicsLayer() const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return layer_;
-  }
-
   // FrameOverlay is always the same size as the viewport.
   gfx::Size Size() const;
 
@@ -90,18 +84,6 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
   // DisplayItemClient.
   String DebugName() const final { return "FrameOverlay"; }
 
-  // GraphicsLayerClient implementation. Not needed for CompositeAfterPaint.
-  bool NeedsRepaint(const GraphicsLayer&) const override { return true; }
-  gfx::Rect ComputeInterestRect(const GraphicsLayer*,
-                                const gfx::Rect&) const override;
-  gfx::Rect PaintableRegion(const GraphicsLayer*) const override;
-  void PaintContents(const GraphicsLayer*,
-                     GraphicsContext&,
-                     GraphicsLayerPaintingPhase,
-                     const gfx::Rect& interest_rect) const override;
-  void GraphicsLayersDidChange() override;
-  PaintArtifactCompositor* GetPaintArtifactCompositor() override;
-  String DebugName(const GraphicsLayer*) const override;
   void Trace(Visitor*) const override;
 
   PropertyTreeState DefaultPropertyTreeState() const;
@@ -109,7 +91,6 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
  private:
   Member<LocalFrame> frame_;
   std::unique_ptr<FrameOverlay::Delegate> delegate_;
-  Member<GraphicsLayer> layer_;
 
 #if DCHECK_IS_ON()
   bool is_destroyed_ = false;

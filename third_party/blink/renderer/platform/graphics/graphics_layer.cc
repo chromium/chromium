@@ -66,9 +66,8 @@
 
 namespace blink {
 
-GraphicsLayer::GraphicsLayer(GraphicsLayerClient& client)
-    : client_(&client),
-      draws_content_(false),
+GraphicsLayer::GraphicsLayer()
+    : draws_content_(false),
       paints_hit_test_(false),
       contents_visible_(true),
       hit_testable_(false),
@@ -81,14 +80,6 @@ GraphicsLayer::GraphicsLayer(GraphicsLayerClient& client)
       raster_invalidation_function_(
           base::BindRepeating(&GraphicsLayer::InvalidateRaster,
                               base::Unretained(this))) {
-  // TODO(crbug.com/1033240): Debugging information for the referenced bug.
-  // Remove when it is fixed.
-  CHECK(client_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  client.VerifyNotPainting();
-#endif
   layer_ = cc::PictureLayer::Create(this);
   layer_->SetIsDrawable(draws_content_ && contents_visible_);
   layer_->SetHitTestable(hit_testable_);
@@ -105,10 +96,6 @@ GraphicsLayer::~GraphicsLayer() {
 void GraphicsLayer::Destroy() {
   CcLayer().ClearClient();
   contents_layer_ = nullptr;
-
-#if DCHECK_IS_ON()
-  client_->VerifyNotPainting();
-#endif
 
   RemoveAllChildren();
   RemoveFromParent();
@@ -259,10 +246,6 @@ void GraphicsLayer::RemoveFromParent() {
     parent_->children_.EraseAt(parent_->children_.ReverseFind(this));
     SetParent(nullptr);
   }
-
-  // cc::Layers are created and removed in PaintArtifactCompositor so ensure it
-  // is notified that something has changed.
-  client_->GraphicsLayersDidChange();
 }
 
 void GraphicsLayer::SetOffsetFromLayoutObject(const gfx::Vector2d& offset) {
@@ -293,10 +276,6 @@ bool GraphicsLayer::PaintRecursively(
   ForAllGraphicsLayers(
       *this,
       [&](GraphicsLayer& layer) -> bool {
-        if (layer.Client().ShouldSkipPaintingSubtree()) {
-          layer.ClearPaintStateRecursively();
-          return false;
-        }
         layer.Paint(pre_composited_layers, benchmark_mode, &cycle_scope);
         repainted |= layer.repainted_;
         return true;
@@ -339,8 +318,6 @@ void GraphicsLayer::Paint(
     const gfx::Rect* interest_rect) {
   repainted_ = false;
 
-  DCHECK(!client_->ShouldSkipPaintingSubtree());
-
   if (!PaintsContentOrHitTest()) {
     if (IsHitTestable()) {
       pre_composited_layers.push_back(
@@ -362,12 +339,6 @@ void GraphicsLayer::Paint(
   DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
 
   gfx::Rect new_interest_rect;
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    new_interest_rect = interest_rect ? *interest_rect
-                                      : client_->ComputeInterestRect(
-                                            this, previous_interest_rect_);
-  }
-
   auto& paint_controller = GetPaintController();
   if (cycle_scope)
     cycle_scope->AddController(paint_controller);
@@ -380,7 +351,6 @@ void GraphicsLayer::Paint(
   PaintController::ScopedBenchmarkMode scoped_benchmark_mode(paint_controller,
                                                              benchmark_mode);
   bool cached = !paint_controller.ShouldForcePaintForBenchmark() &&
-                !client_->NeedsRepaint(*this) &&
                 // TODO(wangxianzhu): This will be replaced by subsequence
                 // caching when unifying PaintController.
                 paint_controller.ClientCacheIsValid(*this) &&
@@ -396,7 +366,6 @@ void GraphicsLayer::Paint(
     paint_controller.SetShouldComputeContentsOpaque(
         ShouldCreateLayersAfterPaint());
     previous_interest_rect_ = new_interest_rect;
-    client_->PaintContents(this, context, painting_phase_, new_interest_rect);
     paint_controller.CommitNewDisplayItems();
     DVLOG(2) << "Painted GraphicsLayer: " << DebugName()
              << " paintable region: " << PaintableRegion().ToString();
@@ -404,17 +373,6 @@ void GraphicsLayer::Paint(
 
   PaintChunkSubset chunks(paint_controller.GetPaintArtifactShared());
   pre_composited_layers.push_back(PreCompositedLayerInfo{chunks, this});
-
-  if (ShouldCreateLayersAfterPaint()) {
-    if (auto* paint_artifact_compositor =
-            client_->GetPaintArtifactCompositor()) {
-      // This is checked even when |cached| is true because the paint controller
-      // may be fully cached while the PaintChunks within are marked as not
-      // cacheable.
-      paint_artifact_compositor->SetNeedsFullUpdateAfterPaintIfNeeded(
-          *previous_chunks, chunks);
-    }
-  }
 
   if (cached && !needs_check_raster_invalidation_ &&
       paint_controller.GetBenchmarkMode() !=
@@ -471,9 +429,7 @@ void GraphicsLayer::SetShouldCreateLayersAfterPaint(
   }
 }
 
-void GraphicsLayer::NotifyChildListChange() {
-  client_->GraphicsLayersDidChange();
-}
+void GraphicsLayer::NotifyChildListChange() {}
 
 void GraphicsLayer::UpdateLayerIsDrawable() {
   // For the rest of the accelerated compositor code, there is no reason to make
@@ -535,7 +491,7 @@ bool GraphicsLayer::IsTrackingRasterInvalidations() const {
   if (VLOG_IS_ON(3))
     return true;
 #endif
-  return Client().IsTrackingRasterInvalidations();
+  return false;
 }
 
 void GraphicsLayer::UpdateTrackingRasterInvalidations() {
@@ -576,12 +532,6 @@ void GraphicsLayer::TrackRasterInvalidation(const DisplayItemClient& client,
 }
 
 String GraphicsLayer::DebugName(const cc::Layer* layer) const {
-  if (layer == contents_layer_.get())
-    return "ContentsLayer for " + client_->DebugName(this);
-
-  if (layer == layer_.get())
-    return client_->DebugName(this);
-
   NOTREACHED();
   return "";
 }
@@ -610,8 +560,6 @@ void GraphicsLayer::SetDrawsContent(bool draws_content) {
   if (draws_content == draws_content_)
     return;
 
-  // This may affect which layers the client collects.
-  client_->GraphicsLayersDidChange();
   // This flag will be updated when the layer is repainted.
   should_create_layers_after_paint_ = false;
 
@@ -638,8 +586,6 @@ void GraphicsLayer::SetContentsVisible(bool contents_visible) {
 void GraphicsLayer::SetPaintsHitTest(bool paints_hit_test) {
   if (paints_hit_test_ == paints_hit_test)
     return;
-  // This may affect which layers the client collects.
-  client_->GraphicsLayersDidChange();
   // This flag will be updated when the layer is repainted.
   should_create_layers_after_paint_ = false;
   paints_hit_test_ = paints_hit_test;
@@ -648,8 +594,6 @@ void GraphicsLayer::SetPaintsHitTest(bool paints_hit_test) {
 void GraphicsLayer::SetHitTestable(bool should_hit_test) {
   if (hit_testable_ == should_hit_test)
     return;
-  // This may affect which layers the client collects.
-  client_->GraphicsLayersDidChange();
   hit_testable_ = should_hit_test;
   CcLayer().SetHitTestable(should_hit_test);
 }
@@ -674,7 +618,6 @@ void GraphicsLayer::SetContentsRect(const gfx::Rect& rect) {
 
   contents_rect_ = rect;
   UpdateContentsLayerBounds();
-  client_->GraphicsLayersDidChange();
 }
 
 void GraphicsLayer::SetPaintingPhase(GraphicsLayerPaintingPhase phase) {
@@ -709,7 +652,6 @@ void GraphicsLayer::SetLayerState(const PropertyTreeStateOrAlias& layer_state,
   }
 
   CcLayer().SetSubtreePropertyChanged();
-  client_->GraphicsLayersDidChange();
 }
 
 void GraphicsLayer::SetContentsLayerState(
@@ -729,13 +671,10 @@ void GraphicsLayer::SetContentsLayerState(
   }
 
   ContentsLayer()->SetSubtreePropertyChanged();
-  client_->GraphicsLayersDidChange();
 }
 
 gfx::Rect GraphicsLayer::PaintableRegion() const {
-  return RuntimeEnabledFeatures::CullRectUpdateEnabled()
-             ? client_->PaintableRegion(this)
-             : previous_interest_rect_;
+  return previous_interest_rect_;
 }
 
 scoped_refptr<cc::DisplayItemList> GraphicsLayer::PaintContentsToDisplayList() {
@@ -755,7 +694,6 @@ size_t GraphicsLayer::ApproximateUnsharedMemoryUsageRecursive() const {
 }
 
 void GraphicsLayer::Trace(Visitor* visitor) const {
-  visitor->Trace(client_);
   visitor->Trace(children_);
   visitor->Trace(parent_);
   DisplayItemClient::Trace(visitor);

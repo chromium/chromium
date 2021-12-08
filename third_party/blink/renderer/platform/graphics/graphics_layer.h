@@ -63,6 +63,7 @@ class PictureLayer;
 
 namespace blink {
 
+class GraphicsLayer;
 class PaintController;
 class RasterInvalidationTracking;
 class RasterInvalidator;
@@ -78,13 +79,11 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
                                       private cc::ContentLayerClient {
  public:
   // |Destroy()| shouold be called when the object is no longer used.
-  explicit GraphicsLayer(GraphicsLayerClient&);
+  explicit GraphicsLayer();
   GraphicsLayer(const GraphicsLayer&) = delete;
   GraphicsLayer& operator=(const GraphicsLayer&) = delete;
   ~GraphicsLayer() override;
   void Destroy();
-
-  GraphicsLayerClient& Client() const { return *client_; }
 
   void SetCompositingReasons(CompositingReasons reasons) {
     compositing_reasons_ = reasons;
@@ -186,7 +185,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
   void SetElementId(const CompositorElementId&);
 
   // DisplayItemClient methods
-  String DebugName() const final { return client_->DebugName(this); }
+  String DebugName() const final { return ""; }
   DOMNodeId OwnerNodeId() const final { return owner_node_id_; }
 
   // LayerAsJSONClient implementation.
@@ -269,8 +268,6 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
 
   RasterInvalidator& EnsureRasterInvalidator();
   void InvalidateRaster(const gfx::Rect&);
-
-  Member<GraphicsLayerClient> client_;
 
   // Offset from the owning layoutObject
   gfx::Vector2d offset_from_layout_object_;

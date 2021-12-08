@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -94,14 +93,13 @@ enum GraphicsLayerUpdateScope {
 // - Otherwise the PaintLayer doesn't own or directly reference any
 //   CompositedLayerMapping.
 class CORE_EXPORT CompositedLayerMapping final
-    : public GarbageCollected<CompositedLayerMapping>,
-      public GraphicsLayerClient {
+    : public GarbageCollected<CompositedLayerMapping> {
  public:
   // |Destroy()| should be called when the object is no longer used.
   explicit CompositedLayerMapping(PaintLayer&);
   CompositedLayerMapping(const CompositedLayerMapping&) = delete;
   CompositedLayerMapping& operator=(const CompositedLayerMapping&) = delete;
-  ~CompositedLayerMapping() override;
+  virtual ~CompositedLayerMapping();
   void Destroy();
 
   PaintLayer& OwningLayer() const { return *owning_layer_; }
@@ -174,26 +172,7 @@ class CORE_EXPORT CompositedLayerMapping final
 
   void UpdateElementId();
 
-  // GraphicsLayerClient interface
-  gfx::Rect ComputeInterestRect(
-      const GraphicsLayer*,
-      const gfx::Rect& previous_interest_rect) const override;
-  gfx::Rect PaintableRegion(const GraphicsLayer*) const override;
-  LayoutSize SubpixelAccumulation() const final;
-  bool NeedsRepaint(const GraphicsLayer&) const override;
-  void PaintContents(const GraphicsLayer*,
-                     GraphicsContext&,
-                     GraphicsLayerPaintingPhase,
-                     const gfx::Rect& interest_rect) const override;
-  bool ShouldSkipPaintingSubtree() const override;
-  bool IsTrackingRasterInvalidations() const override;
-  void GraphicsLayersDidChange() override;
-  PaintArtifactCompositor* GetPaintArtifactCompositor() override;
-  void Trace(Visitor*) const override;
-
-#if DCHECK_IS_ON()
-  void VerifyNotPainting() override;
-#endif
+  virtual void Trace(Visitor*) const;
 
   PhysicalRect ContentsBox() const;
 
@@ -242,10 +221,7 @@ class CORE_EXPORT CompositedLayerMapping final
   }
 #endif
 
-  String DebugName(const GraphicsLayer*) const override;
-
-  const ScrollableArea* GetScrollableAreaForTesting(
-      const GraphicsLayer*) const override;
+  String DebugName(const GraphicsLayer*) const;
 
   PhysicalOffset ContentOffsetInCompositingLayer() const;
 
