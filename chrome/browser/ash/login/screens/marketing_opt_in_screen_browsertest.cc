@@ -124,7 +124,7 @@ class MarketingOptInScreenTest : public OobeBaseTest,
   void OptIn();
   void OptOut();
 
-  void ExpectGeolocationMetric(bool resolved, int length);
+  void ExpectGeolocationMetric(bool resolved);
   void WaitForScreenExit();
 
   // US as default location for non-parameterized tests.
@@ -273,8 +273,7 @@ void MarketingOptInScreenTest::OptOut() {
   test::OobeJS().ExpectHasNoAttribute("checked", kChromebookEmailToggle);
 }
 
-void MarketingOptInScreenTest::ExpectGeolocationMetric(bool resolved,
-                                                       int length) {
+void MarketingOptInScreenTest::ExpectGeolocationMetric(bool resolved) {
   histogram_tester_.ExpectUniqueSample(
       "OOBE.MarketingOptInScreen.GeolocationResolve",
       resolved
@@ -282,10 +281,6 @@ void MarketingOptInScreenTest::ExpectGeolocationMetric(bool resolved,
                 kCountrySuccessfullyDetermined
           : MarketingOptInScreen::GeolocationEvent::kCouldNotDetermineCountry,
       1);
-  if (resolved) {
-    histogram_tester_.ExpectUniqueSample(
-        "OOBE.MarketingOptInScreen.GeolocationResolveLength", length, 1);
-  }
 }
 
 void MarketingOptInScreenTest::WaitForScreenExit() {
@@ -532,7 +527,7 @@ IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, CountryCodes) {
                                        1);
 
   // Expect successful geolocation resolve.
-  ExpectGeolocationMetric(true, std::string(param.country_code).size());
+  ExpectGeolocationMetric(/*resolved=*/true);
 }
 
 // Test all the countries lists.
@@ -572,10 +567,7 @@ IN_PROC_BROWSER_TEST_P(MarketingDisabledExtraCountries, OptInNotVisible) {
   ExpectNoOptInOption();
   TapOnGetStartedAndWaitForScreenExit();
 
-  if (param.is_unknown_country)
-    ExpectGeolocationMetric(false, 0);
-  else
-    ExpectGeolocationMetric(true, std::string(param.country_code).size());
+  ExpectGeolocationMetric(/*resolved=*/!param.is_unknown_country);
 }
 
 // Tests that countries from the extended list

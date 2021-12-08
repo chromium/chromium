@@ -201,6 +201,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolveLength"
     units="chars" expires_after="2021-08-09">
+  <obsolete>
+    Removed in the M98.
+  </obsolete>
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
