@@ -2902,6 +2902,7 @@ static_library("ui") {
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/quick_pair/common",
       "//ash/quick_pair/keyed_service",
+      "//ash/quick_pair/repository",
       "//ash/quick_pair/ui",
       "//ash/services/recording/public/mojom",
       "//ash/shortcut_viewer",
