@@ -750,13 +750,6 @@ ScriptPromise WebTransport::createBidirectionalStream(
     return ScriptPromise();
   }
 
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  // TODO(ricea): Find an appropriate value for capacity_num_bytes.
-  options.capacity_num_bytes = 0;
-
   mojo::ScopedDataPipeProducerHandle outgoing_producer;
   mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
   if (!CreateStreamDataPipe(&outgoing_producer, &outgoing_consumer,
