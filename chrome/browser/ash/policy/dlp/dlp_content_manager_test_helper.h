@@ -21,7 +21,7 @@ namespace policy {
 class DlpReportingManager;
 
 // This class is an interface to DlpContentManager and is used in tests to
-// access some of it's private methods.
+// access some of its private methods.
 class DlpContentManagerTestHelper {
  public:
   DlpContentManagerTestHelper();

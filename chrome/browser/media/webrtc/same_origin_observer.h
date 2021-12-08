@@ -19,7 +19,7 @@ class WebContents;
 // This will not trigger the callback until the navigation has been committed,
 // so that WebContents::GetLastCommittedURL will return the new origin, and thus
 // allow for easier code re-use. Note that that Loading hasn't actually started
-// yet, so this is still suitable for listening to for i.e. terminating tab
+// yet, so this is still suitable for listening to for, e.g., terminating a tab
 // capture when a site is no longer the same origin.
 class SameOriginObserver : public content::WebContentsObserver {
  public:

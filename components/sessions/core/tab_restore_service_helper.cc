@@ -111,7 +111,7 @@ absl::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalTab(
     return absl::nullopt;
   }
 
-  // Save the Window as well as the Tab if this is the last tab of an appp
+  // Save the Window as well as the Tab if this is the last tab of an app
   // browser to ensure the tab will reopen in the correct app window.
   if (context && context->GetTabCount() == 1 &&
       !context->GetAppName().empty()) {

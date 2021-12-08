@@ -36,8 +36,8 @@ class DlpContentTabHelper
   // is managed and it's not an incognito profile.
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
-  // Allows to create DlpContentTabHelper even the user is not managed and do
-  // not initialize DlpRulesManager in tests.
+  // Allows to create DlpContentTabHelper even if the user is not managed and
+  // without the need to initialize DlpRulesManager in tests.
   using ScopedIgnoreDlpRulesManager = base::AutoReset<bool>;
   static ScopedIgnoreDlpRulesManager IgnoreDlpRulesManagerForTesting();
 
