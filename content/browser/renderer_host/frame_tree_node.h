@@ -182,7 +182,7 @@ class CONTENT_EXPORT FrameTreeNode {
   // accordingly.
   void DidCommitNonInitialEmptyDocument();
 
-  // Returns true if the frame has committed a document that is not the initial
+  // Returns false if the frame has committed a document that is not the initial
   // empty document, or if the current document's input stream has been opened
   // with document.open(), causing the document to lose its "initial empty
   // document" status. For more details, see the definition of
