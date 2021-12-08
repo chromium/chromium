@@ -41,7 +41,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 
-using base::DictionaryValue;
 using base::ListValue;
 using base::Value;
 using base::WeakPtr;
@@ -458,8 +457,8 @@ void ServiceWorkerInternalsHandler::HandleGetOptions(const ListValue* args) {
   CHECK(args->GetList().size() != 0);
   std::string callback_id = args->GetList()[0].GetString();
   AllowJavascript();
-  DictionaryValue options;
-  options.SetBoolean("debug_on_start",
+  base::Value options(base::Value::Type::DICTIONARY);
+  options.SetBoolKey("debug_on_start",
                      ServiceWorkerDevToolsManager::GetInstance()
                          ->debug_service_worker_on_start());
   ResolveJavascriptCallback(base::Value(callback_id), options);
