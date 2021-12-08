@@ -3985,6 +3985,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   UIViewController* lensViewController =
       [_lensController postCaptureViewControllerForImage:command.image];
+  [lensViewController setModalPresentationStyle:UIModalPresentationFullScreen];
+
   // TODO(crbug.com/1234532): Integrate Lens with the browser's navigation
   // stack.
   [self presentViewController:lensViewController animated:YES completion:nil];
