@@ -25,6 +25,10 @@ using metrics_util::LeakDialogType;
 constexpr char kPasswordCheckupURL[] =
     "https://passwords.google.com/checkup/start?hideExplanation=true";
 
+constexpr base::FeatureParam<bool> kPasswordChangeUseBasicCloseLabel{
+    &password_manager::features::kPasswordChange, "use_basic_close_label",
+    false};
+
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
                                   IsSyncing is_syncing,
@@ -79,7 +83,8 @@ std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type) {
 }
 
 std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
-  if (ShouldShowChangePasswordButton(leak_type)) {
+  if (ShouldShowChangePasswordButton(leak_type) &&
+      !kPasswordChangeUseBasicCloseLabel.Get()) {
     return l10n_util::GetStringUTF16(
         IDS_CREDENTIAL_LEAK_DONT_CHANGE_AUTOMATICALLY);
   }
