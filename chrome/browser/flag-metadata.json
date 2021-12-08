@@ -1965,12 +1965,12 @@
   },
   {
     "name": "enable-experimental-accessibility-switch-access-setup-guide",
-    "owners": ["ansatasi@google.com", "josiahk@google.com", "//ui/accessibility/OWNERS"],
+    "owners": [ "josiahk@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 97
   },
   {
     "name": "enable-experimental-accessibility-switch-access-text",
-    "owners": [ "anastasi@google.com", "//ui/accessibility/OWNERS" ],
+    "owners": [ "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 95
   },
   {
@@ -2649,7 +2649,7 @@
   },
   {
     "name": "enable-store-hours",
-    "owners": [ "jawaid@google.com" ],
+    "owners": [ "meiliang@chromium.org" ],
     "expiry_milestone": 97
   },
   {
@@ -4798,7 +4798,7 @@
   },
   {
     "name": "scan-app-searchable-pdf",
-    "owners": [ "kmoed", "cros-peripherals@google.com" ],
+    "owners": [ "kmoed@google.com", "cros-peripherals@google.com" ],
     "expiry_milestone": 97
   },
   {
