@@ -5199,6 +5199,8 @@ static_library("browser") {
       "lacros/screen_orientation_delegate_lacros.h",
       "lacros/snap_controller_lacros.cc",
       "lacros/snap_controller_lacros.h",
+      "lacros/standalone_browser_test_controller.cc",
+      "lacros/standalone_browser_test_controller.h",
       "lacros/system_logs/lacros_system_log_fetcher.cc",
       "lacros/system_logs/lacros_system_log_fetcher.h",
       "lacros/task_manager_lacros.cc",

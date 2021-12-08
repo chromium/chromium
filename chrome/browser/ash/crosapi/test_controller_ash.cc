@@ -250,6 +250,18 @@ void TestControllerAsh::SendTouchEvent(const std::string& window_id,
   std::move(cb).Run();
 }
 
+void TestControllerAsh::RegisterStandaloneBrowserTestController(
+    mojo::PendingRemote<mojom::StandaloneBrowserTestController> controller) {
+  // At the moment only a single controller is supported.
+  // TODO(crbug.com/1174246): Support SxS lacros.
+  if (standalone_browser_test_controller_.is_bound()) {
+    return;
+  }
+  standalone_browser_test_controller_.Bind(std::move(controller));
+  standalone_browser_test_controller_.set_disconnect_handler(base::BindOnce(
+      &TestControllerAsh::OnControllerDisconnected, base::Unretained(this)));
+}
+
 void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
   for (size_t i = 0; i < overview_waiters_.size(); ++i) {
     if (waiter == overview_waiters_[i].get()) {
@@ -263,6 +275,10 @@ void TestControllerAsh::WaiterFinished(OverviewWaiter* waiter) {
       break;
     }
   }
+}
+
+void TestControllerAsh::OnControllerDisconnected() {
+  standalone_browser_test_controller_.reset();
 }
 
 void TestControllerAsh::OnGetContextMenuForShelfItem(

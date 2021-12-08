@@ -17,6 +17,7 @@
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
+#include "chrome/browser/lacros/standalone_browser_test_controller.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
@@ -57,6 +58,25 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     extension_apps_controller_->Initialize(
         extension_apps_publisher_->publisher());
   }
+
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // The test controller is only created in test builds AND when Ash's test
+  // controller service is available.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
+    int remote_version = lacros_service->GetInterfaceVersion(
+        crosapi::mojom::TestController::Uuid_);
+    if (static_cast<uint32_t>(remote_version) >=
+        crosapi::mojom::TestController::
+            kRegisterStandaloneBrowserTestControllerMinVersion) {
+      auto& ash_test_controller =
+          lacros_service->GetRemote<crosapi::mojom::TestController>();
+      standalone_browser_test_controller_ =
+          std::make_unique<StandaloneBrowserTestController>(
+              ash_test_controller);
+    }
+  }
+#endif
 
   arc_icon_cache_ = std::make_unique<ArcIconCacheLacros>();
   arc_icon_cache_->Start();

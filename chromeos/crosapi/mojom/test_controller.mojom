@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "chromeos/crosapi/mojom/app_service_types.mojom";
 
 [Stable, Extensible]
 enum TouchEventType {
@@ -27,11 +28,22 @@ enum OptionalBoolean {
   kTrue,
 };
 
+// Implemented in lacros-chrome.
+// Lets the Ash browser tests that require Lacros to send commands to this
+// lacros-chrome instance.
+[Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
+interface StandaloneBrowserTestController {
+  // Installs a test web app in lacros-chrome given a start URL and mode (open
+  // in a tab or window) and returns the ID of the installed app (see
+  // |web_app::GenerateAppId|).
+  InstallWebApp@0(string start_url, WindowMode mode) => (string app_id);
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 9
-// Next method id: 16
+// Next version: 10
+// Next method id: 17
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the window. Assumes that the window exists and is
@@ -123,4 +135,9 @@ interface TestController {
   // one.
   [MinVersion=8]
   CloseAllBrowserWindows@15() => (bool success);
+
+  // Register a lacros-chrome test controller with ash-chrome to let ash-chrome
+  // send commands to lacros-chrome.
+  [MinVersion=9] RegisterStandaloneBrowserTestController@16(
+      pending_remote<StandaloneBrowserTestController> controller);
 };
