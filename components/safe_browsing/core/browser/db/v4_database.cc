@@ -15,7 +15,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
+
+#if defined(OS_APPLE)
+#include "base/mac/backup_util.h"
+#endif
 
 using base::TimeTicks;
 
@@ -86,6 +91,10 @@ void V4Database::CreateOnTaskRunner(
 
   if (!base::CreateDirectory(base_path))
     NOTREACHED();
+
+#if defined(OS_APPLE)
+  base::mac::SetBackupExclusion(base_path);
+#endif
 
   std::unique_ptr<StoreMap> store_map = std::make_unique<StoreMap>();
   for (const auto& it : list_infos) {
