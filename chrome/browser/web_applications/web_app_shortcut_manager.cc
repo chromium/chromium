@@ -174,8 +174,7 @@ void WebAppShortcutManager::ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
 
 void WebAppShortcutManager::RegisterShortcutsMenuWithOs(
     const AppId& app_id,
-    const std::vector<WebApplicationShortcutsMenuItemInfo>&
-        shortcuts_menu_item_infos,
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_app::ShouldRegisterShortcutsMenuWithOs() ||
@@ -253,7 +252,7 @@ void WebAppShortcutManager::OnShortcutsMenuIconsReadRegisterShortcutsMenu(
     const AppId& app_id,
     RegisterShortcutsMenuCallback callback,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos =
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos =
       registrar_->GetAppShortcutsMenuItemInfos(app_id);
   if (!shortcuts_menu_item_infos.empty()) {
     RegisterShortcutsMenuWithOs(app_id, shortcuts_menu_item_infos,
@@ -384,8 +383,8 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
   }
 
 #if defined(OS_LINUX)
-  const std::vector<WebApplicationShortcutsMenuItemInfo>&
-      shortcuts_menu_item_infos = app->shortcuts_menu_item_infos();
+  const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =
+      app->shortcuts_menu_item_infos();
   int num_entries = std::min(static_cast<int>(shortcuts_menu_item_infos.size()),
                              kMaxApplicationDockMenuItems);
   for (int i = 0; i < num_entries; i++) {

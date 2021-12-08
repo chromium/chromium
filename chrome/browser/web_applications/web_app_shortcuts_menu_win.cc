@@ -126,8 +126,7 @@ void RegisterShortcutsMenuWithOsTask(
     const AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
-    const std::vector<WebApplicationShortcutsMenuItemInfo>&
-        shortcuts_menu_item_infos,
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   // Each entry in the ShortcutsMenu (JumpList on Windows) needs an icon in .ico
   // format. This helper writes these icon files to disk as a series of
@@ -172,8 +171,7 @@ void RegisterShortcutsMenuWithOs(
     const AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
-    const std::vector<WebApplicationShortcutsMenuItemInfo>&
-        shortcuts_menu_item_infos,
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},

@@ -46,7 +46,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
   MOCK_METHOD(void,
               RegisterShortcutsMenu,
               (const AppId& app_id,
-               const std::vector<WebApplicationShortcutsMenuItemInfo>&
+               const std::vector<WebAppShortcutsMenuItemInfo>&
                    shortcuts_menu_item_infos,
                const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
                ResultCallback callback),

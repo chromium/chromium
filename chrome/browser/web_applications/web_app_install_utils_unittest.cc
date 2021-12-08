@@ -470,7 +470,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestWithShortcuts) {
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[0]
                     .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
                     .size());
-  WebApplicationShortcutsMenuItemInfo::Icon web_app_shortcut_icon =
+  WebAppShortcutsMenuItemInfo::Icon web_app_shortcut_icon =
       web_app_info.shortcuts_menu_item_infos[0].GetShortcutIconInfosForPurpose(
           IconPurpose::ANY)[0];
   EXPECT_EQ(kIconUrl2, web_app_shortcut_icon.url);
@@ -548,7 +548,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
-  std::vector<WebApplicationShortcutsMenuItemInfo::Icon> all_icons;
+  std::vector<WebAppShortcutsMenuItemInfo::Icon> all_icons;
   for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
     for (const auto& icon_info :
          shortcut.GetShortcutIconInfosForPurpose(IconPurpose::ANY)) {
@@ -602,7 +602,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
-  std::vector<WebApplicationShortcutsMenuItemInfo::Icon> all_icons;
+  std::vector<WebAppShortcutsMenuItemInfo::Icon> all_icons;
   for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
     for (const auto& icon_info :
          shortcut.GetShortcutIconInfosForPurpose(IconPurpose::ANY)) {
@@ -616,13 +616,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestShortcutIconsTooLarge) {
 // their own map in web_app_info.
 TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   WebApplicationInfo web_app_info;
-  WebApplicationShortcutsMenuItemInfo::Icon icon;
+  WebAppShortcutsMenuItemInfo::Icon icon;
 
   const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   {
-    WebApplicationShortcutsMenuItemInfo shortcut_item;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_manifest_icons;
+    WebAppShortcutsMenuItemInfo shortcut_item;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_manifest_icons;
     shortcut_item.name = std::u16string(kShortcutItemName) + u"1";
     shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
     icon.url = kIconUrl1;
@@ -635,9 +634,8 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
 
   const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
   {
-    WebApplicationShortcutsMenuItemInfo shortcut_item;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_manifest_icons;
+    WebAppShortcutsMenuItemInfo shortcut_item;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_manifest_icons;
     shortcut_item.name = std::u16string(kShortcutItemName) + u"2";
     icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;

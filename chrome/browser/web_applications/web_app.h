@@ -210,8 +210,8 @@ class WebApp {
   }
 
   // Represents the "shortcuts" field in the manifest.
-  const std::vector<WebApplicationShortcutsMenuItemInfo>&
-  shortcuts_menu_item_infos() const {
+  const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos()
+      const {
     return shortcuts_menu_item_infos_;
   }
 
@@ -281,8 +281,7 @@ class WebApp {
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
   void SetIsGeneratedIcon(bool is_generated_icon);
   void SetShortcutsMenuItemInfos(
-      std::vector<WebApplicationShortcutsMenuItemInfo>
-          shortcuts_menu_item_infos);
+      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos);
   void SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes> icon_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
   void SetFileHandlerApprovalState(ApiApprovalState approval_state);
@@ -354,7 +353,7 @@ class WebApp {
   SortedSizesPx downloaded_icon_sizes_monochrome_;
   SortedSizesPx downloaded_icon_sizes_maskable_;
   bool is_generated_icon_ = false;
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
   std::vector<IconSizes> downloaded_shortcuts_menu_icons_sizes_;
   apps::FileHandlers file_handlers_;
   absl::optional<apps::ShareTarget> share_target_;

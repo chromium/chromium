@@ -234,8 +234,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
                                    ResultCallback callback);
   virtual void RegisterShortcutsMenu(
       const AppId& app_id,
-      const std::vector<WebApplicationShortcutsMenuItemInfo>&
-          shortcuts_menu_item_infos,
+      const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
       const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
       ResultCallback callback);
   virtual void ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(

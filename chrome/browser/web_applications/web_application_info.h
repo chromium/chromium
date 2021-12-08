@@ -112,7 +112,7 @@ using ShortcutsMenuIconBitmaps = std::vector<IconBitmaps>;
 
 // Structure used when creating app icon shortcuts menu and for downloading
 // associated shortcut icons when supported by OS platform (eg. Windows).
-struct WebApplicationShortcutsMenuItemInfo {
+struct WebAppShortcutsMenuItemInfo {
   struct Icon {
     Icon();
     Icon(const Icon&);
@@ -126,16 +126,13 @@ struct WebApplicationShortcutsMenuItemInfo {
     SquareSizePx square_size_px = 0;
   };
 
-  WebApplicationShortcutsMenuItemInfo();
-  WebApplicationShortcutsMenuItemInfo(
-      const WebApplicationShortcutsMenuItemInfo&);
-  WebApplicationShortcutsMenuItemInfo(
-      WebApplicationShortcutsMenuItemInfo&&) noexcept;
-  ~WebApplicationShortcutsMenuItemInfo();
-  WebApplicationShortcutsMenuItemInfo& operator=(
-      const WebApplicationShortcutsMenuItemInfo&);
-  WebApplicationShortcutsMenuItemInfo& operator=(
-      WebApplicationShortcutsMenuItemInfo&&) noexcept;
+  WebAppShortcutsMenuItemInfo();
+  WebAppShortcutsMenuItemInfo(const WebAppShortcutsMenuItemInfo&);
+  WebAppShortcutsMenuItemInfo(WebAppShortcutsMenuItemInfo&&) noexcept;
+  ~WebAppShortcutsMenuItemInfo();
+  WebAppShortcutsMenuItemInfo& operator=(const WebAppShortcutsMenuItemInfo&);
+  WebAppShortcutsMenuItemInfo& operator=(
+      WebAppShortcutsMenuItemInfo&&) noexcept;
 
   const std::vector<Icon>& GetShortcutIconInfosForPurpose(
       IconPurpose purpose) const;
@@ -270,7 +267,7 @@ struct WebApplicationInfo {
 
   // Set of shortcuts menu item infos populated using shortcuts specified in the
   // manifest.
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos;
 
   // Vector of shortcut icon bitmaps keyed by their square size. The index of a
   // given |IconBitmaps| matches that of the shortcut in
@@ -309,10 +306,10 @@ struct WebApplicationInfo {
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2);
 
-bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,
-                const WebApplicationShortcutsMenuItemInfo::Icon& icon2);
+bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
+                const WebAppShortcutsMenuItemInfo::Icon& icon2);
 
-bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
-                const WebApplicationShortcutsMenuItemInfo& shortcut_info2);
+bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
+                const WebAppShortcutsMenuItemInfo& shortcut_info2);
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APPLICATION_INFO_H_

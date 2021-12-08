@@ -213,9 +213,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   std::string GenerateShortcutId();
 
-  void StoreShortcutId(
-      const std::string& shortcut_id,
-      const WebApplicationShortcutsMenuItemInfo& menu_item_info);
+  void StoreShortcutId(const std::string& shortcut_id,
+                       const WebAppShortcutsMenuItemInfo& menu_item_info);
 
   // Execute the user command from the context menu items. Currently
   // on the web app shortcut need to be execute in the publisher.
@@ -381,7 +380,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   apps::MediaRequests media_requests_;
 #endif
 
-  std::map<std::string, WebApplicationShortcutsMenuItemInfo> shortcut_id_map_;
+  std::map<std::string, WebAppShortcutsMenuItemInfo> shortcut_id_map_;
   ShortcutId::Generator shortcut_id_generator_;
 
   std::unique_ptr<web_app::LinkCapturingMigrationManager>

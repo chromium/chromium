@@ -39,14 +39,14 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   {
-    WebApplicationShortcutsMenuItemInfo shortcut;
+    WebAppShortcutsMenuItemInfo shortcut;
     shortcut.name = u"Inter Frame Communication Demo";
     shortcut.url =
         GURL("chrome://sample-system-web-app/inter_frame_communication.html");
     info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
   }
   {
-    WebApplicationShortcutsMenuItemInfo shortcut;
+    WebAppShortcutsMenuItemInfo shortcut;
     shortcut.name = u"Component Playground";
     shortcut.url =
         GURL("chrome://sample-system-web-app/component_playground.html");

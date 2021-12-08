@@ -455,8 +455,7 @@ void OsIntegrationManager::RegisterUrlHandlers(const AppId& app_id,
 
 void OsIntegrationManager::RegisterShortcutsMenu(
     const AppId& app_id,
-    const std::vector<WebApplicationShortcutsMenuItemInfo>&
-        shortcuts_menu_item_infos,
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
     ResultCallback callback) {
   if (!ShouldRegisterShortcutsMenuWithOs()) {

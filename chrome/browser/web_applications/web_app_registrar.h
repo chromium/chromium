@@ -173,7 +173,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Returns the "shortcuts" field from the app manifest, use
   // |WebAppIconManager| to load shortcuts menu icons bitmaps data.
-  std::vector<WebApplicationShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
+  std::vector<WebAppShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
       const AppId& app_id) const;
 
   // Represents which icon sizes we successfully downloaded from the

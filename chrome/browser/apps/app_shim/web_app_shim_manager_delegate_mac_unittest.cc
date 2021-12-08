@@ -411,9 +411,9 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
 
     // Install a dummy app with shortcut menu items
     auto web_app_info = std::make_unique<WebApplicationInfo>();
-    WebApplicationShortcutsMenuItemInfo shortcut_info1;
-    WebApplicationShortcutsMenuItemInfo shortcut_info2;
-    WebApplicationShortcutsMenuItemInfo shortcut_info3;
+    WebAppShortcutsMenuItemInfo shortcut_info1;
+    WebAppShortcutsMenuItemInfo shortcut_info2;
+    WebAppShortcutsMenuItemInfo shortcut_info3;
 
     web_app_info->start_url = GURL("https://mytestpwa.com/");
     web_app_info->title = u"WebAppTestWithShortcutMenuItems";

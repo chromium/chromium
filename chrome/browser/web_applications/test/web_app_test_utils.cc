@@ -148,26 +148,25 @@ std::vector<apps::UrlHandlerInfo> CreateRandomUrlHandlers(uint32_t suffix) {
   return url_handlers;
 }
 
-std::vector<WebApplicationShortcutsMenuItemInfo>
-CreateRandomShortcutsMenuItemInfos(const GURL& scope, RandomHelper& random) {
+std::vector<WebAppShortcutsMenuItemInfo> CreateRandomShortcutsMenuItemInfos(
+    const GURL& scope,
+    RandomHelper& random) {
   const uint32_t suffix = random.next_uint();
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos;
   for (int i = random.next_uint(4) + 1; i >= 0; --i) {
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
-    WebApplicationShortcutsMenuItemInfo shortcut_info;
+    WebAppShortcutsMenuItemInfo shortcut_info;
     shortcut_info.url = scope.Resolve("shortcut" + suffix_str);
     shortcut_info.name = base::UTF8ToUTF16("shortcut" + suffix_str);
 
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icons_any;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_icons_maskable;
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_icons_monochrome;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons_any;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons_maskable;
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons_monochrome;
 
     for (int j = random.next_uint(4) + 1; j >= 0; --j) {
       std::string icon_suffix_str = suffix_str + base::NumberToString(j);
-      WebApplicationShortcutsMenuItemInfo::Icon shortcut_icon;
+      WebAppShortcutsMenuItemInfo::Icon shortcut_icon;
       shortcut_icon.url = scope.Resolve("/shortcuts/icon" + icon_suffix_str);
       // Within each shortcut_icons_*, square_size_px must be unique.
       shortcut_icon.square_size_px = (j * 10) + random.next_uint(10);

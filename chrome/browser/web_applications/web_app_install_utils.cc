@@ -100,24 +100,24 @@ void AddSquareIconsFromBitmaps(
 
 // Populate |web_app_info|'s shortcuts_menu_item_infos vector using the
 // blink::Manifest's shortcuts vector.
-std::vector<WebApplicationShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
+std::vector<WebAppShortcutsMenuItemInfo> ToWebAppShortcutsMenuItemInfos(
     const std::vector<blink::Manifest::ShortcutItem>& shortcuts) {
-  std::vector<WebApplicationShortcutsMenuItemInfo> web_app_shortcut_infos;
+  std::vector<WebAppShortcutsMenuItemInfo> web_app_shortcut_infos;
   web_app_shortcut_infos.reserve(shortcuts.size());
   int num_shortcut_icons = 0;
   for (const auto& shortcut : shortcuts) {
-    WebApplicationShortcutsMenuItemInfo shortcut_info;
+    WebAppShortcutsMenuItemInfo shortcut_info;
     shortcut_info.name = shortcut.name;
     shortcut_info.url = shortcut.url;
 
     for (IconPurpose purpose : kIconPurposes) {
-      std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icons;
+      std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons;
       for (const auto& icon : shortcut.icons) {
         DCHECK(!icon.purpose.empty());
         if (!base::Contains(icon.purpose, purpose))
           continue;
 
-        WebApplicationShortcutsMenuItemInfo::Icon info;
+        WebAppShortcutsMenuItemInfo::Icon info;
 
         // Filter out non-square or too large icons.
         auto valid_size_it = std::find_if(

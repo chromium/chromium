@@ -561,13 +561,13 @@ TestSystemWebAppInstallation::SetUpAppWithShortcuts() {
                 GenerateWebApplicationInfoForTestApp();
             info->title = u"Shortcuts";
             {
-              WebApplicationShortcutsMenuItemInfo menu_item;
+              WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"One";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#one");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));
             }
             {
-              WebApplicationShortcutsMenuItemInfo menu_item;
+              WebAppShortcutsMenuItemInfo menu_item;
               menu_item.name = u"Two";
               menu_item.url = GURL("chrome://test-system-app/pwa.html#two");
               info->shortcuts_menu_item_infos.push_back(std::move(menu_item));

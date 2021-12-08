@@ -121,55 +121,49 @@ bool IconSizes::empty() const {
   return any.empty() && maskable.empty() && monochrome.empty();
 }
 
-// WebApplicationShortcutsMenuItemInfo::Icon
-WebApplicationShortcutsMenuItemInfo::Icon::Icon() = default;
+// WebAppShortcutsMenuItemInfo::Icon
+WebAppShortcutsMenuItemInfo::Icon::Icon() = default;
 
-WebApplicationShortcutsMenuItemInfo::Icon::Icon(
-    const WebApplicationShortcutsMenuItemInfo::Icon&) = default;
+WebAppShortcutsMenuItemInfo::Icon::Icon(
+    const WebAppShortcutsMenuItemInfo::Icon&) = default;
 
-WebApplicationShortcutsMenuItemInfo::Icon::Icon(
-    WebApplicationShortcutsMenuItemInfo::Icon&&) = default;
+WebAppShortcutsMenuItemInfo::Icon::Icon(WebAppShortcutsMenuItemInfo::Icon&&) =
+    default;
 
-WebApplicationShortcutsMenuItemInfo::Icon::~Icon() = default;
+WebAppShortcutsMenuItemInfo::Icon::~Icon() = default;
 
-WebApplicationShortcutsMenuItemInfo::Icon&
-WebApplicationShortcutsMenuItemInfo::Icon::operator=(
-    const WebApplicationShortcutsMenuItemInfo::Icon&) = default;
+WebAppShortcutsMenuItemInfo::Icon& WebAppShortcutsMenuItemInfo::Icon::operator=(
+    const WebAppShortcutsMenuItemInfo::Icon&) = default;
 
-WebApplicationShortcutsMenuItemInfo::Icon&
-WebApplicationShortcutsMenuItemInfo::Icon::operator=(
-    WebApplicationShortcutsMenuItemInfo::Icon&&) = default;
+WebAppShortcutsMenuItemInfo::Icon& WebAppShortcutsMenuItemInfo::Icon::operator=(
+    WebAppShortcutsMenuItemInfo::Icon&&) = default;
 
-base::Value WebApplicationShortcutsMenuItemInfo::Icon::AsDebugValue() const {
+base::Value WebAppShortcutsMenuItemInfo::Icon::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
   root.SetStringKey("url", url.spec());
   root.SetIntKey("square_size_px", square_size_px);
   return root;
 }
 
-// WebApplicationShortcutsMenuItemInfo
-WebApplicationShortcutsMenuItemInfo::WebApplicationShortcutsMenuItemInfo() =
-    default;
+// WebAppShortcutsMenuItemInfo
+WebAppShortcutsMenuItemInfo::WebAppShortcutsMenuItemInfo() = default;
 
-WebApplicationShortcutsMenuItemInfo::WebApplicationShortcutsMenuItemInfo(
-    const WebApplicationShortcutsMenuItemInfo& other) = default;
+WebAppShortcutsMenuItemInfo::WebAppShortcutsMenuItemInfo(
+    const WebAppShortcutsMenuItemInfo& other) = default;
 
-WebApplicationShortcutsMenuItemInfo::WebApplicationShortcutsMenuItemInfo(
-    WebApplicationShortcutsMenuItemInfo&&) noexcept = default;
+WebAppShortcutsMenuItemInfo::WebAppShortcutsMenuItemInfo(
+    WebAppShortcutsMenuItemInfo&&) noexcept = default;
 
-WebApplicationShortcutsMenuItemInfo::~WebApplicationShortcutsMenuItemInfo() =
-    default;
+WebAppShortcutsMenuItemInfo::~WebAppShortcutsMenuItemInfo() = default;
 
-WebApplicationShortcutsMenuItemInfo&
-WebApplicationShortcutsMenuItemInfo::operator=(
-    const WebApplicationShortcutsMenuItemInfo&) = default;
+WebAppShortcutsMenuItemInfo& WebAppShortcutsMenuItemInfo::operator=(
+    const WebAppShortcutsMenuItemInfo&) = default;
 
-WebApplicationShortcutsMenuItemInfo&
-WebApplicationShortcutsMenuItemInfo::operator=(
-    WebApplicationShortcutsMenuItemInfo&&) noexcept = default;
+WebAppShortcutsMenuItemInfo& WebAppShortcutsMenuItemInfo::operator=(
+    WebAppShortcutsMenuItemInfo&&) noexcept = default;
 
-const std::vector<WebApplicationShortcutsMenuItemInfo::Icon>&
-WebApplicationShortcutsMenuItemInfo::GetShortcutIconInfosForPurpose(
+const std::vector<WebAppShortcutsMenuItemInfo::Icon>&
+WebAppShortcutsMenuItemInfo::GetShortcutIconInfosForPurpose(
     IconPurpose purpose) const {
   switch (purpose) {
     case IconPurpose::MONOCHROME:
@@ -181,10 +175,9 @@ WebApplicationShortcutsMenuItemInfo::GetShortcutIconInfosForPurpose(
   }
 }
 
-void WebApplicationShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
+void WebAppShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
     IconPurpose purpose,
-    std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
-        shortcut_manifest_icons) {
+    std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_manifest_icons) {
   switch (purpose) {
     case IconPurpose::ANY:
       any = std::move(shortcut_manifest_icons);
@@ -198,7 +191,7 @@ void WebApplicationShortcutsMenuItemInfo::SetShortcutIconInfosForPurpose(
   }
 }
 
-base::Value WebApplicationShortcutsMenuItemInfo::AsDebugValue() const {
+base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
   base::Value root(base::Value::Type::DICTIONARY);
 
   root.SetStringKey("name", name);
@@ -210,7 +203,7 @@ base::Value WebApplicationShortcutsMenuItemInfo::AsDebugValue() const {
   for (IconPurpose purpose : kIconPurposes) {
     base::Value& purpose_list = *icons.SetKey(
         ConvertToString(purpose), base::Value(base::Value::Type::LIST));
-    for (const WebApplicationShortcutsMenuItemInfo::Icon& icon :
+    for (const WebAppShortcutsMenuItemInfo::Icon& icon :
          GetShortcutIconInfosForPurpose(purpose)) {
       purpose_list.Append(icon.AsDebugValue());
     }
@@ -259,14 +252,14 @@ bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
                                                       icon_sizes2.monochrome);
 }
 
-bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,
-                const WebApplicationShortcutsMenuItemInfo::Icon& icon2) {
+bool operator==(const WebAppShortcutsMenuItemInfo::Icon& icon1,
+                const WebAppShortcutsMenuItemInfo::Icon& icon2) {
   return std::tie(icon1.url, icon1.square_size_px) ==
          std::tie(icon2.url, icon2.square_size_px);
 }
 
-bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
-                const WebApplicationShortcutsMenuItemInfo& shortcut_info2) {
+bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
+                const WebAppShortcutsMenuItemInfo& shortcut_info2) {
   return std::tie(shortcut_info1.name, shortcut_info1.url, shortcut_info1.any,
                   shortcut_info1.maskable, shortcut_info1.monochrome) ==
          std::tie(shortcut_info2.name, shortcut_info2.url, shortcut_info2.any,

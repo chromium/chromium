@@ -1568,8 +1568,8 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     web_app_info->theme_color = theme_color;
     web_app_info->title = u"App Name";
 
-    WebApplicationShortcutsMenuItemInfo shortcut_item;
-    WebApplicationShortcutsMenuItemInfo::Icon icon;
+    WebAppShortcutsMenuItemInfo shortcut_item;
+    WebAppShortcutsMenuItemInfo::Icon icon;
     shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
     shortcut_item.url = shortcut_url;
 

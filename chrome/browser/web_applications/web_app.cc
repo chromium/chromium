@@ -305,8 +305,7 @@ void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
 }
 
 void WebApp::SetShortcutsMenuItemInfos(
-    std::vector<WebApplicationShortcutsMenuItemInfo>
-        shortcuts_menu_item_infos) {
+    std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos) {
   shortcuts_menu_item_infos_ = std::move(shortcuts_menu_item_infos);
 }
 

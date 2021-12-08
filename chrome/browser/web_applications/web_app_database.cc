@@ -422,14 +422,14 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     }
   }
 
-  for (const WebApplicationShortcutsMenuItemInfo& shortcut_info :
+  for (const WebAppShortcutsMenuItemInfo& shortcut_info :
        web_app.shortcuts_menu_item_infos()) {
     WebAppShortcutsMenuItemInfoProto* shortcut_info_proto =
         local_data->add_shortcuts_menu_item_infos();
     shortcut_info_proto->set_name(base::UTF16ToUTF8(shortcut_info.name));
     shortcut_info_proto->set_url(shortcut_info.url.spec());
     for (IconPurpose purpose : kIconPurposes) {
-      for (const WebApplicationShortcutsMenuItemInfo::Icon& icon_info :
+      for (const WebAppShortcutsMenuItemInfo::Icon& icon_info :
            shortcut_info.GetShortcutIconInfosForPurpose(purpose)) {
         sync_pb::WebAppIconInfo* shortcut_icon_info_proto;
         switch (purpose) {
@@ -851,10 +851,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetShareTarget(std::move(share_target));
   }
 
-  std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
+  std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos;
   for (const auto& shortcut_info_proto :
        local_data.shortcuts_menu_item_infos()) {
-    WebApplicationShortcutsMenuItemInfo shortcut_info;
+    WebAppShortcutsMenuItemInfo shortcut_info;
     shortcut_info.name = base::UTF8ToUTF16(shortcut_info_proto.name());
     shortcut_info.url = GURL(shortcut_info_proto.url());
     for (IconPurpose purpose : kIconPurposes) {
@@ -877,9 +877,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
           break;
       }
 
-      std::vector<WebApplicationShortcutsMenuItemInfo::Icon> manifest_icons;
+      std::vector<WebAppShortcutsMenuItemInfo::Icon> manifest_icons;
       for (const auto& icon_info_proto : *shortcut_manifest_icons) {
-        WebApplicationShortcutsMenuItemInfo::Icon shortcut_icon_info;
+        WebAppShortcutsMenuItemInfo::Icon shortcut_icon_info;
         shortcut_icon_info.square_size_px = icon_info_proto.size_in_px();
         shortcut_icon_info.url = GURL(icon_info_proto.url());
         manifest_icons.emplace_back(std::move(shortcut_icon_info));

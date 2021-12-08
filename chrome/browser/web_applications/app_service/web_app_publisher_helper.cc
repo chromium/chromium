@@ -955,7 +955,7 @@ std::string WebAppPublisherHelper::GenerateShortcutId() {
 
 void WebAppPublisherHelper::StoreShortcutId(
     const std::string& shortcut_id,
-    const WebApplicationShortcutsMenuItemInfo& menu_item_info) {
+    const WebAppShortcutsMenuItemInfo& menu_item_info) {
   shortcut_id_map_.emplace(shortcut_id, std::move(menu_item_info));
 }
 

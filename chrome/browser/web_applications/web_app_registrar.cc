@@ -675,11 +675,11 @@ SortedSizesPx WebAppRegistrar::GetAppDownloadedIconSizesAny(
                  : SortedSizesPx();
 }
 
-std::vector<WebApplicationShortcutsMenuItemInfo>
+std::vector<WebAppShortcutsMenuItemInfo>
 WebAppRegistrar::GetAppShortcutsMenuItemInfos(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->shortcuts_menu_item_infos()
-                 : std::vector<WebApplicationShortcutsMenuItemInfo>();
+                 : std::vector<WebAppShortcutsMenuItemInfo>();
 }
 
 std::vector<IconSizes> WebAppRegistrar::GetAppDownloadedShortcutsMenuIconsSizes(

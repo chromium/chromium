@@ -452,7 +452,7 @@ void WebApps::OnShortcutsMenuIconsRead(
 
   size_t menu_item_index = 0;
 
-  for (const WebApplicationShortcutsMenuItemInfo& menu_item_info :
+  for (const WebAppShortcutsMenuItemInfo& menu_item_info :
        web_app->shortcuts_menu_item_infos()) {
     const std::map<SquareSizePx, SkBitmap>* menu_item_icon_bitmaps = nullptr;
     if (menu_item_index < shortcuts_menu_icon_bitmaps.size()) {
