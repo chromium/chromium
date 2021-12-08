@@ -32,7 +32,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   // will be executed.
   // If |upload| is true, |displayed_target_account| should be the account to
   // which the card will be saved. If |upload| is false, it must be empty.
-  // TODO(crbug.com/1206190): Split into 2 static constructors (local/cloud),
+  // TODO(crbug.com/1277904): Split into 2 static constructors (local/cloud),
   // each with the minimum set of required parameters. Also consider merging
   // the 2 callbacks into one.
   AutofillSaveCardInfoBarDelegateMobile(
