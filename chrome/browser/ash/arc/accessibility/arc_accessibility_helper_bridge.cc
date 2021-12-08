@@ -75,12 +75,6 @@ bool ShouldAnnounceEvent(arc::mojom::AccessibilityEventData* event_data) {
   return false;
 }
 
-float DeviceScaleFactorFromWindow(aura::Window* window) {
-  if (!window || !window->GetToplevelWindow())
-    return 1.0;
-  return window->GetToplevelWindow()->layer()->device_scale_factor();
-}
-
 void DispatchFocusChange(arc::mojom::AccessibilityNodeInfoData* node_data,
                          Profile* profile) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();

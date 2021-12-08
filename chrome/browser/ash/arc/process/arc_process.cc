@@ -56,23 +56,6 @@ bool IsProtectedBackgroundState(ProcessState state) {
   }
 }
 
-bool IsBackgroundState(ProcessState state) {
-  switch (state) {
-    case ProcessState::TRANSIENT_BACKGROUND:
-    case ProcessState::BACKUP:
-    case ProcessState::SERVICE:
-    case ProcessState::RECEIVER:
-    case ProcessState::TOP_SLEEPING:
-    case ProcessState::HEAVY_WEIGHT:
-    case ProcessState::HOME:
-    case ProcessState::LAST_ACTIVITY:
-    case ProcessState::CACHED_ACTIVITY:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool IsCachedState(ProcessState state) {
   switch (state) {
     case ProcessState::CACHED_ACTIVITY_CLIENT:
