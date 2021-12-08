@@ -211,7 +211,7 @@ public class ChromeStrictMode {
             ThreadStrictModeInterceptor.Builder threadInterceptor) {
         // Ignore strict mode violations due to SharedPreferences.
         threadInterceptor.ignoreExternalClass(
-                Violation.DETECT_DISK_IO, "android.content.SharedPreferences");
+                Violation.DETECT_DISK_IO, "android.app.SharedPreferencesImpl");
         threadInterceptor.ignoreExternalMethod(
                 Violation.DETECT_DISK_IO, "android.app.ContextImpl#getSharedPreferences");
 
