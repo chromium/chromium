@@ -70,15 +70,13 @@ const int kDownloadAttributionUserGestureLimit = 2;
 const int kDownloadAttributionUserGestureLimitForExtendedReporting = 5;
 
 void AddEventUrlToReferrerChain(const download::DownloadItem& item,
+                                content::RenderFrameHost* render_frame_host,
                                 ReferrerChain* out_referrer_chain) {
   ReferrerChainEntry* event_url_entry = out_referrer_chain->Add();
   event_url_entry->set_url(item.GetURL().spec());
   event_url_entry->set_type(ReferrerChainEntry::EVENT_URL);
   event_url_entry->set_referrer_url(
-      content::DownloadItemUtils::GetWebContents(
-          const_cast<download::DownloadItem*>(&item))
-          ->GetLastCommittedURL()
-          .spec());
+      render_frame_host->GetLastCommittedURL().spec());
   event_url_entry->set_is_retargeting(false);
   event_url_entry->set_navigation_time_msec(base::Time::Now().ToJavaTime());
   for (const GURL& url : item.GetUrlChain())
@@ -87,8 +85,7 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
 
 int GetDownloadAttributionUserGestureLimit(const download::DownloadItem& item) {
   content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(
-          const_cast<download::DownloadItem*>(&item));
+      content::DownloadItemUtils::GetWebContents(&item);
   if (!web_contents)
     return kDownloadAttributionUserGestureLimit;
 
@@ -538,11 +535,17 @@ DownloadProtectionService::IdentifyReferrerChain(
 
   // If no navigation event is found, this download is not triggered by regular
   // navigation (e.g. html5 file apis, etc). We look for the referrer chain
-  // based on relevant WebContents instead.
+  // based on relevant RenderFrameHost instead.
+  content::RenderFrameHost* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(&item);
+  content::RenderFrameHost* outermost_render_frame_host =
+      render_frame_host ? render_frame_host->GetOutermostMainFrame() : nullptr;
   if (result ==
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND &&
-      web_contents && web_contents->GetLastCommittedURL().is_valid()) {
-    AddEventUrlToReferrerChain(item, referrer_chain.get());
+      web_contents && outermost_render_frame_host &&
+      outermost_render_frame_host->GetLastCommittedURL().is_valid()) {
+    AddEventUrlToReferrerChain(item, outermost_render_frame_host,
+                               referrer_chain.get());
     result = GetNavigationObserverManager(web_contents)
                  ->IdentifyReferrerChainByWebContents(
                      web_contents, GetDownloadAttributionUserGestureLimit(item),

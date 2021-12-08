@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_item.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -18,16 +19,21 @@ namespace {
 class DownloadItemData : public base::SupportsUserData::Data,
                          public WebContentsObserver {
  public:
-  DownloadItemData(BrowserContext* browser_context, WebContents* web_contents);
+  DownloadItemData(BrowserContext* browser_context,
+                   WebContents* web_contents,
+                   GlobalRenderFrameHostId id);
   ~DownloadItemData() override = default;
 
   static void Attach(download::DownloadItem* download_item,
                      BrowserContext* browser_context,
-                     WebContents* web_contents);
+                     WebContents* web_contents,
+                     GlobalRenderFrameHostId id);
+
   static DownloadItemData* Get(const download::DownloadItem* download_item);
   static void Detach(download::DownloadItem* download_item);
 
   BrowserContext* browser_context() const { return browser_context_; }
+  GlobalRenderFrameHostId id() const { return id_; }
 
  private:
   // WebContentsObserver methods.
@@ -36,21 +42,26 @@ class DownloadItemData : public base::SupportsUserData::Data,
 
   static const char kKey[];
   raw_ptr<BrowserContext> browser_context_;
+  GlobalRenderFrameHostId id_;
 };
 
 // static
 const char DownloadItemData::kKey[] = "DownloadItemUtils DownloadItemData";
 
 DownloadItemData::DownloadItemData(BrowserContext* browser_context,
-                                   WebContents* web_contents)
+                                   WebContents* web_contents,
+                                   GlobalRenderFrameHostId id)
     : WebContentsObserver(web_contents),
-      browser_context_(browser_context) {}
+      browser_context_(browser_context),
+      id_(id) {}
 
 // static
 void DownloadItemData::Attach(download::DownloadItem* download_item,
                               BrowserContext* browser_context,
-                              WebContents* web_contents) {
-  auto data = std::make_unique<DownloadItemData>(browser_context, web_contents);
+                              WebContents* web_contents,
+                              GlobalRenderFrameHostId id) {
+  auto data =
+      std::make_unique<DownloadItemData>(browser_context, web_contents, id);
   download_item->SetUserData(&kKey, std::move(data));
 }
 
@@ -69,10 +80,12 @@ void DownloadItemData::PrimaryPageChanged(Page& page) {
   // To prevent reuse of a render in a different primary page, we will reset
   // web_contents when the primary page changed.
   Observe(nullptr);
+  id_ = GlobalRenderFrameHostId();
 }
 
 void DownloadItemData::WebContentsDestroyed() {
   Observe(nullptr);
+  id_ = GlobalRenderFrameHostId();
 }
 
 }  // namespace
@@ -96,10 +109,30 @@ WebContents* DownloadItemUtils::GetWebContents(
 }
 
 // static
+RenderFrameHost* DownloadItemUtils::GetRenderFrameHost(
+    const download::DownloadItem* download_item) {
+  DownloadItemData* data = DownloadItemData::Get(download_item);
+  if (!data)
+    return nullptr;
+  return RenderFrameHost::FromID(data->id());
+}
+
+// static
+void DownloadItemUtils::AttachInfo(download::DownloadItem* download_item,
+                                   BrowserContext* browser_context,
+                                   WebContents* web_contents,
+                                   GlobalRenderFrameHostId id) {
+  DownloadItemData::Attach(download_item, browser_context, web_contents, id);
+}
+
+// static
 void DownloadItemUtils::AttachInfo(download::DownloadItem* download_item,
                                    BrowserContext* browser_context,
                                    WebContents* web_contents) {
-  DownloadItemData::Attach(download_item, browser_context, web_contents);
+  DownloadItemUtils::AttachInfo(
+      download_item, browser_context, web_contents,
+      web_contents ? web_contents->GetMainFrame()->GetGlobalId()
+                   : GlobalRenderFrameHostId());
 }
 
 }  // namespace content
