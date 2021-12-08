@@ -515,8 +515,6 @@ void SyncServiceImpl::Shutdown() {
 
 void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
                                   ResetEngineReason reset_reason) {
-  base::UmaHistogramEnumeration("Sync.ResetEngineReason", reset_reason);
-
   if (!engine_) {
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
@@ -526,6 +524,7 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
     return;
   }
 
+  base::UmaHistogramEnumeration("Sync.ResetEngineReason", reset_reason);
   switch (shutdown_reason) {
     case ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
     case ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
