@@ -6,6 +6,14 @@ module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
+// Structure used to hold information about previous operators for a log.
+struct PreviousOperatorEntry {
+  // Name of the operator.
+  string name;
+  // Time when operator stopped operating this log.
+  mojo_base.mojom.TimeDelta end_time;
+};
+
 // A single Certificate Transparency Log configuration.
 struct CTLogInfo {
   // The DER-encoded SubjectPublicKeyInfo of the log.
@@ -25,4 +33,10 @@ struct CTLogInfo {
   // is used to determine the "once or currently qualified" status of the log.
   // If the log is currently qualified, this will not be set.
   mojo_base.mojom.TimeDelta? disqualified_at;
+
+  // Current operator for this log.
+  string current_operator;
+
+  // Information about previous operators for this log (if any).
+  array<PreviousOperatorEntry> previous_operators;
 };

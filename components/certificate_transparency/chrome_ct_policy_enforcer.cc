@@ -105,12 +105,19 @@ base::Value NetLogCertComplianceCheckResultParams(
 
 }  // namespace
 
+OperatorHistoryEntry::OperatorHistoryEntry() = default;
+OperatorHistoryEntry::~OperatorHistoryEntry() = default;
+OperatorHistoryEntry::OperatorHistoryEntry(const OperatorHistoryEntry& other) =
+    default;
+
 ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
     base::Time log_list_date,
     std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
-    std::vector<std::string> operated_by_google_logs)
-    : disqualified_logs_(disqualified_logs),
-      operated_by_google_logs_(operated_by_google_logs),
+    std::vector<std::string> operated_by_google_logs,
+    std::map<std::string, OperatorHistoryEntry> log_operator_history)
+    : disqualified_logs_(std::move(disqualified_logs)),
+      operated_by_google_logs_(std::move(operated_by_google_logs)),
+      log_operator_history_(std::move(log_operator_history)),
       clock_(base::DefaultClock::GetInstance()),
       log_list_date_(log_list_date) {}
 
@@ -144,10 +151,12 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
 void ChromeCTPolicyEnforcer::UpdateCTLogList(
     base::Time update_time,
     std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
-    std::vector<std::string> operated_by_google_logs) {
+    std::vector<std::string> operated_by_google_logs,
+    std::map<std::string, OperatorHistoryEntry> log_operator_history) {
   log_list_date_ = update_time;
   disqualified_logs_ = std::move(disqualified_logs);
   operated_by_google_logs_ = std::move(operated_by_google_logs);
+  log_operator_history_ = std::move(log_operator_history);
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
@@ -339,6 +348,20 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   return has_valid_nonembedded_sct
              ? CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS
              : CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
+}
+
+std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
+    std::string log_id,
+    base::TimeDelta timestamp) {
+  DCHECK(log_operator_history_.find(log_id) != log_operator_history_.end());
+  OperatorHistoryEntry log_history = log_operator_history_[log_id];
+  for (auto operator_entry : log_history.previous_operators_) {
+    if (timestamp < operator_entry.second)
+      return operator_entry.first;
+  }
+  // Either the log has only ever had one operator, or the timestamp is after
+  // the last operator change.
+  return log_history.current_operator_;
 }
 
 }  // namespace certificate_transparency

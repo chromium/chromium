@@ -46,7 +46,8 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
  public:
   void SetUp() override {
     auto enforcer = std::make_unique<ChromeCTPolicyEnforcer>(
-        base::Time::Now(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
+        base::Time::Now(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle(),
+        std::map<std::string, OperatorHistoryEntry>());
     enforcer->SetClockForTesting(&clock_);
     policy_enforcer_ = std::move(enforcer);
 
@@ -481,7 +482,8 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
   std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs);
+                                          operated_by_google_logs,
+                                          /*log_operator_history=*/{});
 
   // The check should fail since the Google Aviator log is no longer in the
   // list after the update with an empty list.
@@ -493,7 +495,8 @@ TEST_F(ChromeCTPolicyEnforcerTest, UpdateCTLogList) {
   // logs.
   operated_by_google_logs = certificate_transparency::GetLogsOperatedByGoogle();
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs);
+                                          operated_by_google_logs,
+                                          /*log_operator_history=*/{});
 
   // The check should now succeed.
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
@@ -511,9 +514,10 @@ TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
   // Clear the log list and set the last updated time to more than 10 weeks ago.
   std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs;
   std::vector<std::string> operated_by_google_logs;
-  chrome_policy_enforcer->UpdateCTLogList(base::Time::Now() - base::Days(71),
-                                          disqualified_logs,
-                                          operated_by_google_logs);
+  std::map<std::string, OperatorHistoryEntry> log_operator_history;
+  chrome_policy_enforcer->UpdateCTLogList(
+      base::Time::Now() - base::Days(71), disqualified_logs,
+      operated_by_google_logs, log_operator_history);
 
   // The check should return build not timely even though the Google Aviator log
   // is no longer in the list, since the last update time is greater than 10
@@ -524,7 +528,8 @@ TEST_F(ChromeCTPolicyEnforcerTest, TimestampUpdates) {
 
   // Update the last update time value again, this time with a recent time.
   chrome_policy_enforcer->UpdateCTLogList(base::Time::Now(), disqualified_logs,
-                                          operated_by_google_logs);
+                                          operated_by_google_logs,
+                                          log_operator_history);
 
   // The check should now fail
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS,

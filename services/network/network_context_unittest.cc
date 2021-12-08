@@ -6145,7 +6145,11 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     log_info->public_key = std::string(4, 0x30 + static_cast<char>(i));
     log_info->name = std::string(4, 0x30 + static_cast<char>(i));
     log_info->operated_by_google = i % 2;
-
+    if (log_info->operated_by_google) {
+      log_info->current_operator = "Google";
+    } else {
+      log_info->current_operator = "Not Google";
+    }
     log_list_mojo.push_back(std::move(log_info));
   }
   for (int i = 0; i < 3; ++i) {
@@ -6155,6 +6159,7 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
     log_info->name = std::string(4, 0x41 + static_cast<char>(i));
     log_info->operated_by_google = false;
     log_info->disqualified_at = base::Seconds(i);
+    log_info->current_operator = "Not Google Either";
 
     log_list_mojo.push_back(std::move(log_info));
   }
@@ -6196,6 +6201,88 @@ TEST_F(NetworkContextTest, CertificateTransparencyConfig) {
           ::testing::Pair(crypto::SHA256HashString("AAAA"), base::Seconds(0)),
           ::testing::Pair(crypto::SHA256HashString("BBBB"), base::Seconds(1)),
           ::testing::Pair(crypto::SHA256HashString("CCCC"), base::Seconds(2))));
+
+  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
+      operator_history = policy_enforcer->operator_history_for_testing();
+
+  for (auto log : policy_enforcer->operated_by_google_logs_for_testing()) {
+    EXPECT_EQ(operator_history[log].current_operator_, "Google");
+    EXPECT_TRUE(operator_history[log].previous_operators_.empty());
+  }
+
+  for (auto log : policy_enforcer->disqualified_logs_for_testing()) {
+    EXPECT_EQ(operator_history[log.first].current_operator_,
+              "Not Google Either");
+    EXPECT_TRUE(operator_history[log.first].previous_operators_.empty());
+  }
+}
+
+TEST_F(NetworkContextTest, CertificateTransparencyConfigWithOperatorSwitches) {
+  // Configure CT logs in network service.
+  std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
+
+  // The log public keys do not matter for the test, so invalid keys are used.
+  // However, because the log IDs are derived from the SHA-256 hash of the log
+  // key, the log keys are generated such that the log that never switched
+  // operator is "0000", while the one that did is "AAAA".
+  network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
+  // Shift to ASCII '0' (0x30)
+  log_info->public_key = std::string(4, 0x30);
+  log_info->name = std::string(4, 0x30);
+  log_info->current_operator = "Forever Operator";
+  log_list_mojo.push_back(std::move(log_info));
+
+  log_info = network::mojom::CTLogInfo::New();
+  // Shift to ASCII 'A' (0x41)
+  log_info->public_key = std::string(4, 0x41);
+  log_info->name = std::string(4, 0x41);
+  log_info->current_operator = "Changed Operator";
+  for (int i = 0; i < 3; i++) {
+    network::mojom::PreviousOperatorEntryPtr previous_operator =
+        network::mojom::PreviousOperatorEntry::New();
+    previous_operator->name = "Operator " + base::NumberToString(i);
+    previous_operator->end_time = base::Seconds(i);
+    log_info->previous_operators.push_back(std::move(previous_operator));
+  }
+  log_list_mojo.push_back(std::move(log_info));
+
+  network_service()->UpdateCtLogList(std::move(log_list_mojo),
+                                     base::Time::Now());
+
+  // Configure CT params in network context.
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
+  params->enforce_chrome_ct_policy = true;
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(params));
+
+  net::CTPolicyEnforcer* request_enforcer =
+      network_context->url_request_context()->ct_policy_enforcer();
+  ASSERT_TRUE(request_enforcer);
+
+  // Completely unsafe if |enforce_chrome_ct_policy| is false.
+  certificate_transparency::ChromeCTPolicyEnforcer* policy_enforcer =
+      reinterpret_cast<certificate_transparency::ChromeCTPolicyEnforcer*>(
+          request_enforcer);
+
+  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
+      operator_history = policy_enforcer->operator_history_for_testing();
+
+  EXPECT_EQ(
+      operator_history[crypto::SHA256HashString("0000")].current_operator_,
+      "Forever Operator");
+  EXPECT_TRUE(operator_history[crypto::SHA256HashString("0000")]
+                  .previous_operators_.empty());
+
+  EXPECT_EQ(
+      operator_history[crypto::SHA256HashString("AAAA")].current_operator_,
+      "Changed Operator");
+  EXPECT_THAT(
+      operator_history[crypto::SHA256HashString("AAAA")].previous_operators_,
+      ::testing::ElementsAre(::testing::Pair("Operator 0", base::Seconds(0)),
+                             ::testing::Pair("Operator 1", base::Seconds(1)),
+                             ::testing::Pair("Operator 2", base::Seconds(2))));
 }
 #endif
 

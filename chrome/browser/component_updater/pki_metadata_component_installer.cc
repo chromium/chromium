@@ -167,10 +167,31 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
     log_ptr->public_key = decoded_key;
     // Operator history is ordered in inverse chronological order, so the 0th
     // element will be the current operator.
-    if (!log.operator_history().empty() &&
-        log.operator_history().Get(0).name() == kGoogleOperatorName) {
-      log_ptr->operated_by_google = true;
+    if (!log.operator_history().empty()) {
+      if (log.operator_history().Get(0).name() == kGoogleOperatorName) {
+        log_ptr->operated_by_google = true;
+      }
+      log_ptr->current_operator = log.operator_history().Get(0).name();
+      if (log.operator_history().size() > 1) {
+        // The protobuffer includes operator history in reverse chronological
+        // order, but we need it in chronological order, so we iterate in
+        // reverse (and ignoring the current operator).
+        for (auto it = log.operator_history().rbegin();
+             it != log.operator_history().rend() - 1; ++it) {
+          network::mojom::PreviousOperatorEntryPtr previous_operator =
+              network::mojom::PreviousOperatorEntry::New();
+          previous_operator->name = it->name();
+          // We use the next element's start time as the current element end
+          // time.
+          base::TimeDelta end_time =
+              base::Seconds((it + 1)->operator_start().seconds()) +
+              base::Nanoseconds((it + 1)->operator_start().nanos());
+          previous_operator->end_time = end_time;
+          log_ptr->previous_operators.push_back(std::move(previous_operator));
+        }
+      }
     }
+
     // State history is ordered in inverse chronological order, so the 0th
     // element will be the current state.
     if (!log.state().empty()) {
