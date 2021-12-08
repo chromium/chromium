@@ -8,19 +8,30 @@
     height: 20px;
     width: 20px;
   }
+
+  #performUpdateButton {
+    border-color: var(--google-blue-600);
+    border-radius: 12px;
+  }
+
+  #recoverFirmwareButton {
+    border-color: var(--google-blue-600);
+    border-radius: 12px;
+  }
 </style>
 <base-page orientation="column">
   <div slot="header">
+    <iron-icon icon="shimless-icon:warning"
+        class="small-icon">
+    </iron-icon>
     <h1>[[i18n('criticalErrorTitleText')]]</h1>
+    <div>[[i18n('criticalErrorMessageText')]]</div>
     <div id="writeProtectStatus">[[statusString_]]</div>
-    <cr-button id="exitToLoginButton" on-click="onExitToLoginButtonClicked_">
-        [[i18n('criticalErrorExitToLoginText')]]
-    </cr-button>
     <cr-button id="performUpdateButton" on-click="onRebootButtonClicked_">
-        [[i18n('criticalErrorRebootText')]]
-      <iron-icon id="restartIcon" icon="shimless-icon:update"
-          class="small-icon">
-      </iron-icon>
+      [[i18n('criticalErrorRebootText')]]
+    </cr-button>
+    <cr-button id="recoverFirmwareButton" on-click="onRecoverFirmwareButtonClicked_">
+      [[i18n('criticalErrorRecoverFirmwareText')]]
     </cr-button>
   </div>
   <div slot="body">

@@ -122,6 +122,12 @@ export const fakeStates = [
     canGoBack: true,
     error: RmadErrorCode.kOk
   },
+  {
+    state: State.kUnknown,
+    canCancel: false,
+    canGoBack: false,
+    error: RmadErrorCode.kOk
+  },
 ];
 
 /** @type {!Array<string>} */

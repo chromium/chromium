@@ -2473,13 +2473,13 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Critical error page -->
       <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE" translateable="false" desc="The title for the critical error page. Critical errors cause the RMA process to attempt to exit to login or reboot the device at users discretion. It will try to cancel RMA, but if that fails the next boot may also trigger an RMA critical error.">
-        Critical Error
+        Error
       </message>
       <message name="IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE" translateable="false" desc="The message for the critical error when Shimless RMA app is launched when not in RMA. This should never happen.">
-        Repair finalization is in an unexpected state. You can exit to the login screen to investigate or backup data or reboot the device to attempt to resolve the issue. If you continue to see this message you should use the recovery shim.
+        We're running into errors. Try rebooting or recover the firmware using a USB thumbdrive.
       </message>
-      <message name="IDS_SHIMLESS_RMA_CRITICAL_EXIT_TO_LOGIN_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and exit to the login screen.">
-        Exit to login
+      <message name="IDS_SHIMLESS_RMA_CRITICAL_RECOVER_FIRMWARE_BUTTON" translateable="false" desc="Label for the button that attempts to recover firmware.">
+        Recover firmware image
       </message>
       <message name="IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON" translateable="false" desc="Label for the button that attempts to cancel RMA and reboot the device.">
         Reboot

@@ -43,7 +43,8 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   }
 
   /** @protected */
-  onExitToLoginButtonClicked_() {
+  onRecoverFirmwareButtonClicked_() {
+    // TODO(swifton): Rename the method to match the action that it performs.
     this.shimlessRmaService_.criticalErrorExitToLogin();
   }
 

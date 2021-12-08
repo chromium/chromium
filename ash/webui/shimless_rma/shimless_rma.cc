@@ -275,8 +275,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // Critical error
       {"criticalErrorTitleText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_TITLE},
       {"criticalErrorMessageText", IDS_SHIMLESS_RMA_CRITICAL_ERROR_MESSAGE},
-      {"criticalErrorExitToLoginText",
-       IDS_SHIMLESS_RMA_CRITICAL_EXIT_TO_LOGIN_BUTTON},
+      {"criticalErrorRecoverFirmwareText",
+       IDS_SHIMLESS_RMA_CRITICAL_RECOVER_FIRMWARE_BUTTON},
       {"criticalErrorRebootText", IDS_SHIMLESS_RMA_CRITICAL_REBOOT_BUTTON},
   };
 
