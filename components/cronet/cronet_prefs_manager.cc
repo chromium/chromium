@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/cronet/host_cache_persistence_manager.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"

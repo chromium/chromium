@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"

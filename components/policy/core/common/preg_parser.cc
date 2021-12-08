@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/registry_dict.h"
 
 #if defined(OS_WIN)

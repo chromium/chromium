@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 
 namespace autofill {

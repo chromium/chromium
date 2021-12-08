@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "components/feedback/feedback_common.h"
 
 namespace feedback_util {

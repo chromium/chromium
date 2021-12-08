@@ -5,6 +5,7 @@
 #include "components/browsing_data/core/pref_names.h"
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace browsing_data {

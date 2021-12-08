@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+
 class PrefService;
 struct TemplateURLData;
 

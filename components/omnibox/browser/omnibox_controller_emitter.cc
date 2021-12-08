@@ -4,6 +4,8 @@
 
 #include "omnibox_controller_emitter.h"
 
+#include "build/build_config.h"
+
 #if !defined(OS_IOS)
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

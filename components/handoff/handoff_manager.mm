@@ -9,6 +9,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/build_config.h"
 #include "net/base/mac/url_conversions.h"
 
 #if defined(OS_IOS)

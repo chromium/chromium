@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
 

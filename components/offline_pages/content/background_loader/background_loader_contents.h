@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
