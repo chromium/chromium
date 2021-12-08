@@ -203,23 +203,20 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
               existing_window->Show(AppWindow::SHOW_ACTIVE);
           }
 
-          std::unique_ptr<base::DictionaryValue> result(
-              new base::DictionaryValue);
-          result->SetInteger("frameId", frame_id);
-          existing_window->GetSerializedState(result.get());
-          result->SetBoolean("existingWindow", true);
+          base::Value result(base::Value::Type::DICTIONARY);
+          result.SetIntKey("frameId", frame_id);
+          existing_window->GetSerializedState(&result);
+          result.SetBoolKey("existingWindow", true);
           // We should not return the window until that window is properly
           // initialized. Hence, adding a callback for window first navigation
           // completion.
           if (existing_window->DidFinishFirstNavigation())
-            return RespondNow(OneArgument(
-                base::Value::FromUniquePtrValue(std::move(result))));
+            return RespondNow(OneArgument(std::move(result)));
 
-          existing_window->AddOnDidFinishFirstNavigationCallback(base::BindOnce(
-              &AppWindowCreateFunction::
-                  OnAppWindowFinishedFirstNavigationOrClosed,
-              this,
-              OneArgument(base::Value::FromUniquePtrValue(std::move(result)))));
+          existing_window->AddOnDidFinishFirstNavigationCallback(
+              base::BindOnce(&AppWindowCreateFunction::
+                                 OnAppWindowFinishedFirstNavigationOrClosed,
+                             this, OneArgument(std::move(result))));
           return RespondLater();
         }
       }
@@ -418,12 +415,11 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (create_params.creator_process_id == created_frame->GetProcess()->GetID())
     frame_id = created_frame->GetRoutingID();
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
-  result->SetInteger("frameId", frame_id);
-  result->SetString("id", app_window->window_key());
-  app_window->GetSerializedState(result.get());
-  ResponseValue result_arg =
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result)));
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetIntKey("frameId", frame_id);
+  result.SetStringKey("id", app_window->window_key());
+  app_window->GetSerializedState(&result);
+  ResponseValue result_arg = OneArgument(std::move(result));
 
   if (AppWindowRegistry::Get(browser_context())
           ->HadDevToolsAttached(app_window->web_contents())) {
