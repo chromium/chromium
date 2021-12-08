@@ -84,14 +84,15 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, three address profiles are created for testing.
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls if the heuristic field parsing utilizes shared labels.
-// TODO(crbug/1165780): Remove once shared labels are launched.
-const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{
-    "AutofillEnableSupportForParsingWithSharedLabels",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, AutofillPopupControllerImpl is destructed not immediately in its
+// HideViewAndDie() function, but as a delayed task.
+// TODO(crbug.com/1277218): Cleanup when launched.
+const base::Feature kAutofillDelayPopupControllerDeletion{
+    "AutofillDelayPopupControllerDeletion", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Kill switch for Autofill filling.
 const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
@@ -106,6 +107,12 @@ const base::Feature kAutofillDisplaceRemovedForms{
 // Kill switch for Autofill address import.
 const base::Feature kAutofillDisableAddressImport{
     "AutofillDisableAddressImport", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls if the heuristic field parsing utilizes shared labels.
+// TODO(crbug/1165780): Remove once shared labels are launched.
+const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{
+    "AutofillEnableSupportForParsingWithSharedLabels",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/1153715): Remove once launched.

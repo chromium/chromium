@@ -11,7 +11,9 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
@@ -19,6 +21,7 @@
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -55,8 +58,15 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     gfx::NativeView container_view,
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction) {
-  if (previous.get() && previous->delegate_.get() == delegate.get() &&
+  if (previous && previous->delegate_.get() == delegate.get() &&
       previous->container_view() == container_view) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillDelayPopupControllerDeletion)) {
+      // Cancels pending deletions of |previous| that were scheduled by
+      // HideViewAndDie(). Otherwise, |previous| would might be destroyed
+      // prematurely.
+      previous->weak_ptr_factory_.InvalidateWeakPtrs();
+    }
     previous->SetElementBounds(element_bounds);
     previous->ClearState();
     return previous;
@@ -91,6 +101,8 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
+  // TODO(crbug.com/1277218): Remove when kAutofillDelayPopupControllerDeletion
+  // is launched.
   WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
 
   if (IsMouseLocked()) {
@@ -575,7 +587,18 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
     view_->Hide();
   }
 
-  delete this;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDelayPopupControllerDeletion)) {
+    delete this;
+    return;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<AutofillPopupControllerImpl> weak_this) {
+                       delete weak_this.get();
+                     },
+                     GetWeakPtr()));
 }
 
 bool AutofillPopupControllerImpl::IsMouseLocked() const {

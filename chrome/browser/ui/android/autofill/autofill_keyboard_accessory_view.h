@@ -67,9 +67,6 @@ class AutofillKeyboardAccessoryView
 
  private:
   // Weak reference to owner of this class. Always outlives this view.
-  // TODO(crbug.com/1277218): Is this really the case?
-  // AutofillPopupControllerImpl::HideViewAndDie() calls this class's Hide(),
-  // which does not delete itself.
   base::WeakPtr<AutofillPopupController> controller_;
 
   // Call to confirm a requested deletion.
