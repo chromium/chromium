@@ -174,7 +174,7 @@ export class CommandProcessor {
         return await this._contextProcessor.PROTO_browsingContext_findElement(
           commandData as BrowsingContext.PROTO.BrowsingContextFindElementCommand
         );
-      case 'DEBUG.Page.close':
+      case 'DEBUG.browsingContext.close':
         return await this._process_DEBUG_Page_close(commandData.params as any);
 
       default:
