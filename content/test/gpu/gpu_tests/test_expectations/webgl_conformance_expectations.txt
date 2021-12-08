@@ -606,31 +606,25 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] deqp/data/gles
 crbug.com/angleproject/4846 [ mac angle-metal passthrough nvidia ] conformance/rendering/clipping-wide-points.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough nvidia ] conformance/rendering/more-than-65536-indices.html [ Failure ]
 
-# Mac ARM-based DTKs
-crbug.com/1130703 [ mac apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1130703 [ mac apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
-# TODO(crbug.com/1153984): remove the expectations with the incorrect GPU type for the Metal backend.
-# finder:disable Want to keep both sets of expectations around until the issue is fixed.
-crbug.com/1130758 [ mac apple-apple-m1 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
-crbug.com/1130758 [ mac apple-angle-metal-renderer:-apple-m1 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
-crbug.com/1130759 [ mac apple-apple-m1 angle-metal ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
-crbug.com/1130759 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
-crbug.com/1130759 [ mac apple-apple-m1 angle-metal ] conformance/textures/misc/texture-mips.html [ Failure ]
-crbug.com/1130760 [ mac apple-apple-m1 angle-metal ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
-crbug.com/1130760 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
-crbug.com/1130760 [ mac apple-apple-m1 angle-metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
-crbug.com/1130760 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
-crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/1141066 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
-# finder:enable
+# Mac / M1 / OpenGL
+crbug.com/1130703 [ mac angle-opengl apple-apple-m1 passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1130703 [ mac angle-opengl apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
+crbug.com/1130703 [ mac angle-opengl apple-apple-m1 passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+crbug.com/1130703 [ mac angle-opengl apple-apple-m1 no-passthrough ] conformance/textures/misc/texture-copying-feedback-loops.html [ Failure ]
+# No active browser window, but no crash stack.
+crbug.com/1240443 [ mac angle-opengl apple-apple-m1 passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+
+# Mac / M1 / Metal
+crbug.com/1130758 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
+crbug.com/1130759 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
+crbug.com/1130760 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
+crbug.com/1130760 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/ogles/GL/discard/discard_001_to_002.html [ Failure ]
 # Introduced by upstreaming Apple's direct-to-metal backend
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
-# crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
-crbug.com/angleproject/5505 [ mac apple-angle-metal-renderer:-apple-m1 angle-metal ] conformance/rendering/multisample-corruption.html [ Failure ]
-# No active browser window, but no crash stack.
-crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+# crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/multisample-corruption.html [ Failure ]
 # After converting to Python 3: crbug.com/1266604
-crbug.com/1271941 [ mac apple-apple-m1 angle-metal ] conformance/ogles/GL/* [ RetryOnFailure ]
+crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/ogles/GL/* [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
