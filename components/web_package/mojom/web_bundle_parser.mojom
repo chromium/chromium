@@ -56,9 +56,9 @@ struct BundleResponseParseError {
   string message;
 };
 
-// Corresponds to "bundle's metadata".
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#semantics-load-metadata
+// Bundle's metadata, i.e. information in sections other than "responses".
 struct BundleMetadata {
+  BundleFormatVersion version;
   url.mojom.Url primary_url;
   map<url.mojom.Url, BundleIndexValue> requests;
   url.mojom.Url manifest_url;
@@ -66,8 +66,15 @@ struct BundleMetadata {
   array<VouchedSubset> vouched_subsets;
 };
 
+// WebBundle format version. Corresponds to a specific draft of
+// https://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html
+enum BundleFormatVersion {
+  kB1,  // Corresponds to draft-00
+  kB2,  // Corresponds to draft-02
+};
+
 // Corresponds to the value type of "index" in the spec CDDL.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#index-section
+// https://wpack-wg.github.io/bundled-responses/draft-ietf-wpack-bundled-responses.html#name-the-index-section
 struct BundleIndexValue {
   string variants_value;
   array<BundleResponseLocation> response_locations;
@@ -88,7 +95,7 @@ struct AugmentedCertificate {
 };
 
 // Corresponds to the item type of "vouched-subsets" in the spec CDDL.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
 struct VouchedSubset {
   uint64 authority;  // An index in BundleMetadata::authorities.
   array<uint8> sig;
@@ -98,7 +105,7 @@ struct VouchedSubset {
 };
 
 // Corresponds to "signed-subset" in the spec CDDL.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
 struct SignedSubset {
   url.mojom.Url validity_url;
   array<uint8> auth_sha256;
@@ -108,21 +115,20 @@ struct SignedSubset {
 };
 
 // Corresponds to the value type of "subset-hashes" in the spec CDDL.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
 struct SubsetHashesValue {
   string variants_value;
   array<ResourceIntegrity> resource_integrities;
 };
 
 // Corresponds to "resource-integrity" in the spec CDDL.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#signatures-section
+// https://github.com/WICG/webpackage/blob/main/extensions/signatures-section.md
 struct ResourceIntegrity {
   array<uint8> header_sha256;
   string payload_integrity_header;
 };
 
 // Contains response headers and payload location.
-// https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#load-response
 struct BundleResponse {
   int32 response_code;
   map<string, string> response_headers;

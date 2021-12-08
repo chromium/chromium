@@ -711,6 +711,22 @@ void WebBundleURLLoaderFactory::OnMetadataParsed(
                                                        std::move(urls));
   }
 
+  if (metadata_->version == web_package::mojom::BundleFormatVersion::kB1) {
+    web_bundle_handle_->OnWebBundleError(
+        mojom::WebBundleErrorType::kDeprecationWarning,
+        "WebBundle format \"b1\" is deprecated. See migration guide at "
+        "https://bit.ly/3rpDuEX.");
+  }
+  for (auto& it : metadata_->requests) {
+    if (it.first.SchemeIs(url::kUrnScheme)) {
+      web_bundle_handle_->OnWebBundleError(
+          mojom::WebBundleErrorType::kDeprecationWarning,
+          "urn:uuid resource URL in WebBundles is deprecated. See migration "
+          "guide at https://bit.ly/3rpDuEX.");
+      break;
+    }
+  }
+
   if (data_completed_)
     MaybeReportLoadResult(SubresourceWebBundleLoadResult::kSuccess);
   for (auto loader : pending_loaders_)

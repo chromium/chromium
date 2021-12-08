@@ -593,6 +593,9 @@ class WebBundleParser::MetadataParser
     if (bundle_version_is_b1_) {
       DCHECK(!primary_url_.is_empty());
       metadata_->primary_url = primary_url_;
+      metadata_->version = mojom::BundleFormatVersion::kB1;
+    } else {
+      metadata_->version = mojom::BundleFormatVersion::kB2;
     }
 
     ReadMetadataSections(section_offsets_.begin());
