@@ -4,11 +4,13 @@
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -38,9 +40,7 @@ constexpr char kOemAppId[] = "emfkafnhnpcmabnnkckkchdilgeoekbo";
 
 class OemAppPositionTest : public ash::LoginManagerTest {
  public:
-  OemAppPositionTest() : LoginManagerTest() {
-    login_mixin_.AppendRegularUsers(1);
-  }
+  OemAppPositionTest() { login_mixin_.AppendRegularUsers(1); }
   OemAppPositionTest(const OemAppPositionTest&) = delete;
   OemAppPositionTest& operator=(const OemAppPositionTest&) = delete;
   ~OemAppPositionTest() override = default;
@@ -73,13 +73,14 @@ class OemAppPositionTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-class AppPositionReorderingTest : public extensions::ExtensionBrowserTest {
+class ChromeAppListModelUpdaterTest : public extensions::ExtensionBrowserTest {
  public:
-  AppPositionReorderingTest() = default;
-  ~AppPositionReorderingTest() override = default;
-  AppPositionReorderingTest(const AppPositionReorderingTest& other) = delete;
-  AppPositionReorderingTest& operator=(const AppPositionReorderingTest& other) =
+  ChromeAppListModelUpdaterTest() = default;
+  ~ChromeAppListModelUpdaterTest() override = default;
+  ChromeAppListModelUpdaterTest(const ChromeAppListModelUpdaterTest& other) =
       delete;
+  ChromeAppListModelUpdaterTest& operator=(
+      const ChromeAppListModelUpdaterTest& other) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -94,6 +95,16 @@ class AppPositionReorderingTest : public extensions::ExtensionBrowserTest {
 
   ash::AppListTestApi app_list_test_api_;
 };
+
+using AppPositionReorderingTest = ChromeAppListModelUpdaterTest;
+
+class ChromeAppListModelUpdaterProductivityLauncherTest
+    : public ChromeAppListModelUpdaterTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      ash::features::kProductivityLauncher};
+};
+
 // Tests that an Oem app and its folder are created with valid positions after
 // sign-in.
 IN_PROC_BROWSER_TEST_F(OemAppPositionTest, ValidOemAppPosition) {
@@ -378,4 +389,44 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest, UnmergeTwoItemFolder) {
 
   EXPECT_EQ(std::vector<std::string>({app1_id, app3_id, app2_id}),
             trailing_items);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
+                       IsNewInstall) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ASSERT_TRUE(model_updater);
+
+  // The built-in "Web Store" app is not a new install.
+  ChromeAppListItem* web_store_item =
+      model_updater->FindItem(extensions::kWebStoreAppId);
+  ASSERT_TRUE(web_store_item);
+  EXPECT_FALSE(web_store_item->CloneMetadata()->is_new_install);
+
+  // Install 2 apps.
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+
+  // Both apps are new installs.
+  ChromeAppListItem* item1 = model_updater->FindItem(app1_id);
+  ASSERT_TRUE(item1);
+  EXPECT_TRUE(item1->CloneMetadata()->is_new_install);
+
+  ChromeAppListItem* item2 = model_updater->FindItem(app2_id);
+  ASSERT_TRUE(item2);
+  EXPECT_TRUE(item2->CloneMetadata()->is_new_install);
+
+  // Launch the first app.
+  item1->Activate(ui::EF_NONE);
+
+  // First app is no longer a new install.
+  EXPECT_FALSE(item1->CloneMetadata()->is_new_install);
+
+  // Second app is still a new install.
+  EXPECT_TRUE(item2->CloneMetadata()->is_new_install);
 }

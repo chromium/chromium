@@ -118,7 +118,7 @@ SearchResultTag::SearchResultTag(int styles, uint32_t start, uint32_t end)
 ////////////////////////////////////////////////////////////////////////////////
 // SearchResultAction:
 
-SearchResultAction::SearchResultAction() {}
+SearchResultAction::SearchResultAction() = default;
 
 SearchResultAction::SearchResultAction(SearchResultActionType type,
                                        const gfx::ImageSkia& image,

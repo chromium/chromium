@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -12,8 +13,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -26,6 +27,40 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+
+namespace {
+
+// Returns true if `app_update` should be considered a new app install.
+bool IsNewInstall(const apps::AppUpdate& app_update) {
+  // Ignore internally-installed apps.
+  if (app_update.InstalledInternally() == apps::mojom::OptionalBool::kTrue)
+    return false;
+
+  switch (app_update.AppType()) {
+    case apps::mojom::AppType::kUnknown:
+    case apps::mojom::AppType::kBuiltIn:
+    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::mojom::AppType::kSystemWeb:
+      // Chrome, Lacros, Settings, etc. are built-in.
+      return false;
+    case apps::mojom::AppType::kMacOs:
+      NOTREACHED();
+      return false;
+    case apps::mojom::AppType::kArc:
+    case apps::mojom::AppType::kCrostini:
+    case apps::mojom::AppType::kChromeApp:
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kPluginVm:
+    case apps::mojom::AppType::kRemote:
+    case apps::mojom::AppType::kBorealis:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      // Other app types are user-installed.
+      return true;
+  }
+}
+
+}  // namespace
 
 // static
 const char AppServiceAppItem::kItemType[] = "AppServiceAppItem";
@@ -36,9 +71,8 @@ AppServiceAppItem::AppServiceAppItem(
     const app_list::AppListSyncableService::SyncItem* sync_item,
     const apps::AppUpdate& app_update)
     : ChromeAppListItem(profile, app_update.AppId()),
-      app_type_(app_update.AppType()),
-      is_platform_app_(false) {
-  OnAppUpdate(app_update, true);
+      app_type_(app_update.AppType()) {
+  OnAppUpdate(app_update, /*in_constructor=*/true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     InitFromSync(sync_item);
   } else {
@@ -69,6 +103,13 @@ AppServiceAppItem::AppServiceAppItem(
     }
   }
 
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    const bool is_new_install = !sync_item && IsNewInstall(app_update);
+    DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
+             << " from update " << app_update;
+    SetIsNewInstall(is_new_install);
+  }
+
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);
 }
@@ -76,7 +117,7 @@ AppServiceAppItem::AppServiceAppItem(
 AppServiceAppItem::~AppServiceAppItem() = default;
 
 void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update) {
-  OnAppUpdate(app_update, false);
+  OnAppUpdate(app_update, /*in_constructor=*/false);
 }
 
 void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
@@ -177,6 +218,10 @@ void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
 
 void AppServiceAppItem::Launch(int event_flags,
                                apps::mojom::LaunchSource launch_source) {
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    // Launching an app clears the "new install" badge.
+    SetIsNewInstall(false);
+  }
   apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
       id(), event_flags, launch_source,
       apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));

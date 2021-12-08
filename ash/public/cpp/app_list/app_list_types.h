@@ -124,6 +124,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   bool is_page_break = false;  // Whether this item is a "page break" item.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
 
+  // Whether the app was installed this session and has not yet been launched.
+  bool is_new_install = false;
+
   int icon_version = 0;  // An int represent icon version. If changed, `icon`
                          // should be reloaded.
 

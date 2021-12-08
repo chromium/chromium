@@ -340,6 +340,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void ItemNameChanged() override;
   void ItemBadgeVisibilityChanged() override;
   void ItemBadgeColorChanged() override;
+  void ItemIsNewInstallChanged() override;
   void ItemBeingDestroyed() override;
 
   // ui::ImplicitAnimationObserver:

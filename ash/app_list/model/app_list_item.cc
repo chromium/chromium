@@ -157,4 +157,13 @@ void AppListItem::UpdateNotificationBadge(bool has_badge) {
   }
 }
 
+void AppListItem::SetIsNewInstall(bool is_new_install) {
+  if (metadata_->is_new_install == is_new_install)
+    return;
+
+  metadata_->is_new_install = is_new_install;
+  for (auto& observer : observers_) {
+    observer.ItemIsNewInstallChanged();
+  }
+}
 }  // namespace ash

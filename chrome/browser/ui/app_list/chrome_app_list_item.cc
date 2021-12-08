@@ -214,6 +214,13 @@ void ChromeAppListItem::SetIsPageBreak(bool is_page_break) {
   metadata_->is_page_break = is_page_break;
 }
 
+void ChromeAppListItem::SetIsNewInstall(bool is_new_install) {
+  metadata_->is_new_install = is_new_install;
+  AppListModelUpdater* updater = model_updater();
+  if (updater)
+    updater->SetIsNewInstall(id(), is_new_install);
+}
+
 void ChromeAppListItem::SetChromeFolderId(const std::string& folder_id) {
   metadata_->folder_id = folder_id;
 }

@@ -399,6 +399,13 @@ void ChromeAppListModelUpdater::SetItemIsPersistent(const std::string& id,
   model_.SetItemMetadata(id, std::move(data));
 }
 
+void ChromeAppListModelUpdater::SetIsNewInstall(const std::string& id,
+                                                bool is_new_install) {
+  ash::AppListItem* item = model_.FindItem(id);
+  if (item)
+    item->SetIsNewInstall(is_new_install);  // Notifies observers.
+}
+
 void ChromeAppListModelUpdater::SetItemFolderId(const std::string& id,
                                                 const std::string& folder_id) {
   ash::AppListItem* item = model_.FindItem(id);

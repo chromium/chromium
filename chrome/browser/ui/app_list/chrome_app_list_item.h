@@ -82,6 +82,7 @@ class ChromeAppListItem {
   void SetFolderId(const std::string& folder_id);
   void SetIsPageBreak(bool is_page_break);
   void SetIsPersistent(bool is_persistent);
+  void SetIsNewInstall(bool is_new_install);
 
   // The following methods won't make changes to Ash and it should be called
   // by this item itself or the model updater.

@@ -30,13 +30,9 @@ class AppListModel;
 // and action to be executed when the AppListItemView is activated.
 class APP_LIST_MODEL_EXPORT AppListItem {
  public:
-  using AppListItemMetadata = ash::AppListItemMetadata;
-
   explicit AppListItem(const std::string& id);
-
   AppListItem(const AppListItem&) = delete;
   AppListItem& operator=(const AppListItem&) = delete;
-
   virtual ~AppListItem();
 
   void SetIcon(AppListConfigType config_type, const gfx::ImageSkia& icon);
@@ -114,11 +110,16 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   SkColor notification_badge_color() const { return metadata_->badge_color; }
 
+  bool is_new_install() const { return metadata_->is_new_install; }
+
+  // Sets the `is_new_install` metadata field and notifies observers.
+  void SetIsNewInstall(bool is_new_install);
+
+  AppStatus app_status() const { return metadata_->app_status; }
+
   void UpdateNotificationBadgeForTesting(bool has_badge) {
     UpdateNotificationBadge(has_badge);
   }
-
-  AppStatus app_status() const { return metadata_->app_status; }
 
   void UpdateAppStatusForTesting(AppStatus app_status) {
     metadata_->app_status = app_status;

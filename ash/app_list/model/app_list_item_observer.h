@@ -30,6 +30,9 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
   // Invoked when the item's notification badge color is changed.
   virtual void ItemBadgeColorChanged() {}
 
+  // Invoked when the item's "new install" badge is added or removed.
+  virtual void ItemIsNewInstallChanged() {}
+
   // Invoked when the item is about to be destroyed.
   virtual void ItemBeingDestroyed() {}
 

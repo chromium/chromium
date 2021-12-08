@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_item_view.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -585,10 +586,16 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
   const std::u16string folder_name_placeholder =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
-  if (is_folder_ && display_name.empty())
+  if (is_folder_ && display_name.empty()) {
     title_->SetText(folder_name_placeholder);
-  else
-    title_->SetText(display_name);
+  } else {
+    std::u16string title_text;
+    // TODO(crbug.com/1272817): Use a view for the dot.
+    if (item() && item()->is_new_install())
+      title_text = u"• ";
+    title_text += display_name;
+    title_->SetText(title_text);
+  }
 
   tooltip_text_ = display_name == full_name ? std::u16string() : full_name;
 
@@ -1153,6 +1160,13 @@ void AppListItemView::ItemBadgeVisibilityChanged() {
 void AppListItemView::ItemBadgeColorChanged() {
   if (notification_indicator_)
     notification_indicator_->SetColor(item_weak_->notification_badge_color());
+}
+
+void AppListItemView::ItemIsNewInstallChanged() {
+  // TODO(crbug.com/1272817): Use a view for the dot. For now, just refresh the
+  // label to add or remove the bullet from the name.
+  SetItemName(base::UTF8ToUTF16(item_weak_->GetDisplayName()),
+              base::UTF8ToUTF16(item_weak_->name()));
 }
 
 void AppListItemView::ItemBeingDestroyed() {
