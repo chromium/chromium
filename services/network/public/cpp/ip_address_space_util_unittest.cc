@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/transport_info.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,8 @@ using mojom::URLResponseHead;
 using net::IPAddress;
 using net::IPAddressBytes;
 using net::IPEndPoint;
+using net::TransportInfo;
+using net::TransportType;
 
 IPAddress PublicIPv4Address() {
   return IPAddress(64, 233, 160, 0);
@@ -29,6 +32,24 @@ IPAddress PublicIPv4Address() {
 
 IPAddress PrivateIPv4Address() {
   return IPAddress(192, 168, 1, 1);
+}
+
+TransportInfo DirectTransport(const IPEndPoint& endpoint) {
+  TransportInfo result;
+  result.type = TransportType::kDirect;
+  result.endpoint = endpoint;
+  return result;
+}
+
+TransportInfo ProxiedTransport(const IPEndPoint& endpoint) {
+  TransportInfo result;
+  result.type = TransportType::kProxied;
+  result.endpoint = endpoint;
+  return result;
+}
+
+IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
+  return TransportInfoToIPAddressSpace(DirectTransport(endpoint));
 }
 
 // Helper for tests that do not care about command-line overrides.
@@ -353,6 +374,22 @@ TEST(IPAddressSpaceTest, IPEndPointToAddressSpaceOverrideV6) {
   EXPECT_EQ(
       IPEndPointToIPAddressSpace(IPEndPoint(ParseIPAddress("2020::1"), 1234)),
       IPAddressSpace::kPrivate);
+}
+
+TEST(IPAddressSpaceTest, TransportInfoToIPAddressSpaceProxiedIsUnknown) {
+  EXPECT_EQ(TransportInfoToIPAddressSpace(
+                ProxiedTransport(IPEndPoint(IPAddress(1, 2, 3, 4), 80))),
+            IPAddressSpace::kUnknown);
+}
+
+TEST(IPAddressSpaceTest, TransportInfoToIPAddressSpaceProxiedIgnoresOverrides) {
+  auto& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitchASCII(switches::kIpAddressSpaceOverrides,
+                                 "127.0.0.1:80=public");
+
+  EXPECT_EQ(TransportInfoToIPAddressSpace(
+                ProxiedTransport(IPEndPoint(IPAddress(127, 0, 0, 1), 80))),
+            IPAddressSpace::kUnknown);
 }
 
 // Verifies that IPv4-mapped IPv6 addresses are not overridden as though they

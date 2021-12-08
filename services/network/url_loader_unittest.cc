@@ -1670,6 +1670,9 @@ struct URLLoaderFakeTransportInfoTestParams {
   // The address space of the endpoint serving the request.
   mojom::IPAddressSpace endpoint_address_space;
 
+  // The type of transport to set in `TransportInfo`.
+  net::TransportType transport_type;
+
   // The expected request result.
   int expected_result;
 };
@@ -1679,6 +1682,8 @@ std::ostream& operator<<(std::ostream& out,
                          const URLLoaderFakeTransportInfoTestParams& params) {
   return out << "{ client_address_space: " << params.client_address_space
              << ", endpoint_address_space: " << params.endpoint_address_space
+             << ", transport_type: "
+             << net::TransportTypeToString(params.transport_type)
              << ", expected_result: "
              << net::ErrorToString(params.expected_result) << " }";
 }
@@ -1707,9 +1712,10 @@ class URLLoaderFakeTransportInfoTest
   }
 
   // Returns a transport info with an endpoint in the given IP address space.
-  static net::TransportInfo FakeTransportInfo(mojom::IPAddressSpace space) {
-    return net::TransportInfo(net::TransportType::kDirect, FakeEndpoint(space),
-                              "");
+  static net::TransportInfo FakeTransportInfo(
+      const URLLoaderFakeTransportInfoTestParams& params) {
+    return net::TransportInfo(params.transport_type,
+                              FakeEndpoint(params.endpoint_address_space), "");
   }
 };
 
@@ -1728,7 +1734,7 @@ TEST_P(URLLoaderFakeTransportInfoTest, PrivateNetworkRequestLoadsCorrectly) {
 
   net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
       url, std::make_unique<FakeTransportInfoInterceptor>(
-               FakeTransportInfo(params.endpoint_address_space)));
+               FakeTransportInfo(params)));
 
   // Despite its name, IsError(OK) asserts that the matched value is OK.
   EXPECT_THAT(Load(url), IsError(params.expected_result));
@@ -1746,84 +1752,125 @@ constexpr URLLoaderFakeTransportInfoTestParams
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kUnknown,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kPublic,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kPrivate,
+            net::TransportType::kDirect,
             net::ERR_FAILED,
         },
         {
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kLocal,
+            net::TransportType::kDirect,
             net::ERR_FAILED,
         },
         // Client: kPublic
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kUnknown,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kPublic,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kPrivate,
+            net::TransportType::kDirect,
             net::ERR_FAILED,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kLocal,
+            net::TransportType::kDirect,
             net::ERR_FAILED,
         },
         // Client: kPrivate
         {
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kUnknown,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kPublic,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kPrivate,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kLocal,
+            net::TransportType::kDirect,
             net::ERR_FAILED,
         },
         // Client: kLocal
         {
             mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kUnknown,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kPublic,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kPrivate,
+            net::TransportType::kDirect,
             net::OK,
         },
         {
             mojom::IPAddressSpace::kLocal,
             mojom::IPAddressSpace::kLocal,
+            net::TransportType::kDirect,
+            net::OK,
+        },
+        // TransportType: kProxied
+        {
+            mojom::IPAddressSpace::kUnknown,
+            mojom::IPAddressSpace::kLocal,
+            net::TransportType::kProxied,
+            net::OK,
+        },
+        {
+            mojom::IPAddressSpace::kPublic,
+            mojom::IPAddressSpace::kLocal,
+            net::TransportType::kProxied,
+            net::OK,
+        },
+        {
+            mojom::IPAddressSpace::kPublic,
+            mojom::IPAddressSpace::kPrivate,
+            net::TransportType::kProxied,
+            net::OK,
+        },
+        {
+            mojom::IPAddressSpace::kPrivate,
+            mojom::IPAddressSpace::kLocal,
+            net::TransportType::kProxied,
             net::OK,
         },
 };

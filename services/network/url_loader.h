@@ -425,12 +425,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Applies Private Network Access checks to the current request.
   //
-  // `resource_address_space` specifies the IP address space of the remote
-  // endpoint.
-  //
   // Helper for `OnConnected()`.
   PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
-      mojom::IPAddressSpace resource_address_space) const;
+      const net::TransportInfo& info);
 
   mojom::DevToolsObserver* GetDevToolsObserver() const;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
@@ -568,6 +565,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // See |ResourceRequest::target_ip_address_space_|.
   mojom::IPAddressSpace target_ip_address_space_ =
+      mojom::IPAddressSpace::kUnknown;
+
+  // The resource's address space, as computed using the |net::TransportInfo|
+  // argument to the |OnConnected()| callback. This info is only available then,
+  // so the computation result is stored for later use in this member.
+  mojom::IPAddressSpace resource_ip_address_space_ =
       mojom::IPAddressSpace::kUnknown;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;

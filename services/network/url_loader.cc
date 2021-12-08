@@ -1095,14 +1095,16 @@ const mojom::ClientSecurityState* URLLoader::GetClientSecurityState() const {
 }
 
 PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
-    mojom::IPAddressSpace resource_address_space) const {
+    const net::TransportInfo& transport_info) {
+  resource_ip_address_space_ = TransportInfoToIPAddressSpace(transport_info);
+
   const mojom::ClientSecurityState* security_state = GetClientSecurityState();
 
   // Fully-qualify function name to disambiguate it, otherwise it resolves to
   // `URLLoader::PrivateNetworkAccessCheck()` and fails to compile.
   PrivateNetworkAccessCheckResult result = network::PrivateNetworkAccessCheck(
       security_state, target_ip_address_space_, options_,
-      resource_address_space);
+      resource_ip_address_space_);
 
   bool is_warning = false;
   switch (result) {
@@ -1124,7 +1126,7 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
   if (auto* devtools_observer = GetDevToolsObserver()) {
     devtools_observer->OnPrivateNetworkRequest(
         devtools_request_id(), url_request_->url(), is_warning,
-        resource_address_space, security_state->Clone());
+        resource_ip_address_space_, security_state->Clone());
   }
 
   return result;
@@ -1140,18 +1142,15 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
 
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
-  mojom::IPAddressSpace resource_address_space =
-      IPEndPointToIPAddressSpace(info.endpoint);
-
   absl::optional<mojom::CorsError> cors_error =
       PrivateNetworkAccessCheckResultToCorsError(
-          PrivateNetworkAccessCheck(resource_address_space));
+          PrivateNetworkAccessCheck(info));
   if (cors_error.has_value()) {
     // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
     // with it later, then fail the request with the same net error code as
     // other CORS errors.
     cors_error_status_ = CorsErrorStatus(*cors_error, target_ip_address_space_,
-                                         resource_address_space);
+                                         resource_ip_address_space_);
     return net::ERR_FAILED;
   }
 
@@ -2132,8 +2131,7 @@ bool URLLoader::DispatchOnRawResponse() {
   emitted_devtools_raw_response_ = true;
   devtools_observer->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
-      std::move(header_array), raw_response_headers,
-      IPEndPointToIPAddressSpace(response_info.remote_endpoint),
+      std::move(header_array), raw_response_headers, resource_ip_address_space_,
       response_headers->response_code());
 
   return true;
