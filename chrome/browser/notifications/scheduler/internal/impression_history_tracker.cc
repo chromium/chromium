@@ -56,6 +56,8 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
+    case SchedulerClientType::kFeatureGuide:
+      return "FeatureGuide";
   }
 }
 

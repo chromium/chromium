@@ -35,7 +35,9 @@ enum class SchedulerClientType {
   kPrefetch = 3,
   // Reading list weekly notification.
   kReadingList = 4,
-  kMaxValue = kReadingList
+  // Feature guide specific notifications.
+  kFeatureGuide = 5,
+  kMaxValue = kFeatureGuide
 };
 
 // The type of user feedback from a displayed notification.

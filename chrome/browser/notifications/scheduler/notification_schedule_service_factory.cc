@@ -9,6 +9,8 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
+#include "chrome/browser/feature_guide/notifications/feature_notification_guide_service_factory.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_impl.h"
 #include "chrome/browser/notifications/scheduler/public/display_agent.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
@@ -46,6 +48,19 @@ RegisterClients(ProfileKey* key) {
     client_registrar->RegisterClient(
         notifications::SchedulerClientType::kReadingList,
         std::move(reading_list_client));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          feature_guide::features::kFeatureNotificationGuide)) {
+    Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
+    auto feature_guide_service_getter = base::BindRepeating(
+        &feature_guide::FeatureNotificationGuideServiceFactory::GetForProfile,
+        profile);
+
+    client_registrar->RegisterClient(
+        notifications::SchedulerClientType::kFeatureGuide,
+        CreateFeatureNotificationGuideNotificationClient(
+            feature_guide_service_getter));
   }
 
 #endif  // defined(OS_ANDROID)

@@ -37,7 +37,7 @@ constexpr int kDefaultInitialDailyShownPerType = 2;
 constexpr int kDefaultDismissCount = 3;
 
 // The notification data is hold for one week.
-constexpr base::TimeDelta kDefaultNotificationExpiration = base::Days(7);
+constexpr base::TimeDelta kDefaultNotificationExpiration = base::Days(20);
 
 // The impression history is hold for 4 weeks.
 constexpr base::TimeDelta kDefaultImpressionExpiration = base::Days(28);

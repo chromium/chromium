@@ -35,6 +35,8 @@ std::string ToHistogramSuffix(SchedulerClientType client_type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
+    case SchedulerClientType::kFeatureGuide:
+      return "FeatureGuide";
   }
 }
 

@@ -7,6 +7,16 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
+#include "chrome/browser/feature_guide/notifications/feature_type.h"
+
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
+namespace notifications {
+class NotificationScheduleService;
+struct NotificationData;
+}  // namespace notifications
 
 namespace feature_guide {
 
@@ -15,6 +25,12 @@ class FeatureNotificationGuideServiceImpl
  public:
   FeatureNotificationGuideServiceImpl();
   ~FeatureNotificationGuideServiceImpl() override;
+
+  void OnSchedulerInitialized(const std::set<std::string>& guids) override;
+  void BeforeShowNotification(
+      std::unique_ptr<notifications::NotificationData> notification_data,
+      NotificationDataCallback callback) override;
+  void OnClick(FeatureType feature) override;
 
  private:
   base::WeakPtrFactory<FeatureNotificationGuideServiceImpl> weak_ptr_factory_{

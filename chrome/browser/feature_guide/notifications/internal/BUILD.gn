@@ -9,6 +9,8 @@ if (is_android) {
 
 source_set("internal") {
   sources = [
+    "feature_notification_guide_notification_client.cc",
+    "feature_notification_guide_notification_client.h",
     "feature_notification_guide_service_impl.cc",
     "feature_notification_guide_service_impl.h",
   ]
