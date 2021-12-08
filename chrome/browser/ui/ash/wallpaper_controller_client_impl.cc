@@ -65,6 +65,8 @@
 
 using chromeos::ProfileHelper;
 using extension_misc::kWallpaperManagerId;
+using file_manager::VolumeManager;
+using session_manager::SessionManager;
 using wallpaper_handlers::BackdropSurpriseMeImageFetcher;
 
 namespace {
@@ -222,10 +224,14 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
 
   DCHECK(!g_wallpaper_controller_client_instance);
   g_wallpaper_controller_client_instance = this;
+
+  SessionManager* session_manager = SessionManager::Get();
+  // SessionManager might not exist in unit tests.
+  if (session_manager)
+    session_observation_.Observe(session_manager);
 }
 
 WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
-  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   wallpaper_controller_->SetClient(nullptr);
   weak_factory_.InvalidateWeakPtrs();
   DCHECK_EQ(this, g_wallpaper_controller_client_instance);
@@ -240,7 +246,6 @@ void WallpaperControllerClientImpl::Init() {
           &WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged,
           weak_factory_.GetWeakPtr()));
   wallpaper_controller_ = ash::WallpaperController::Get();
-  user_manager::UserManager::Get()->AddSessionStateObserver(this);
 
   InitController();
 }
@@ -282,7 +287,7 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
   }
 
   // Show a white wallpaper during OOBE.
-  if (session_manager::SessionManager::Get()->session_state() ==
+  if (SessionManager::Get()->session_state() ==
       session_manager::SessionState::OOBE) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(1, 1);
@@ -524,10 +529,9 @@ void WallpaperControllerClientImpl::GetFilesId(
 bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
     const AccountId& account_id) const {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  // Profile isn't created yet. We shouldn't try syncing.
-  // This can happen on new user login.
   if (!profile)
     return false;
+
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   if (!sync_service)
@@ -543,24 +547,32 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
              syncer::UserSelectableType::kThemes);
 }
 
-void WallpaperControllerClientImpl::ActiveUserChanged(
-    user_manager::User* active_user) {
-  volume_manager_observation_.Reset();
-  active_user->AddProfileCreatedObserver(
-      base::BindOnce(&WallpaperControllerClientImpl::OnProfileCreated,
-                     weak_factory_.GetWeakPtr(), active_user));
-}
-
 void WallpaperControllerClientImpl::OnVolumeMounted(
     chromeos::MountError error_code,
     const file_manager::Volume& volume) {
+  if (error_code != chromeos::MOUNT_ERROR_NONE) {
+    return;
+  }
   if (volume.type() != file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {
     return;
   }
-  user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
-  if (user) {
-    wallpaper_controller_->SyncLocalAndRemotePrefs(user->GetAccountId());
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CHECK(profile);
+  VolumeManager* volume_manager = VolumeManager::Get(profile);
+  // Volume ID is based on the mount path, which for drive is based on the
+  // account_id.
+  if (!volume_manager->FindVolumeById(volume.volume_id())) {
+    return;
   }
+  user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(user);
+  wallpaper_controller_->SyncLocalAndRemotePrefs(user->GetAccountId());
+}
+
+void WallpaperControllerClientImpl::OnUserProfileLoaded(
+    const AccountId& account_id) {
+  wallpaper_controller_->SyncLocalAndRemotePrefs(account_id);
+  ObserveVolumeManagerForAccountId(account_id);
 }
 
 void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStoreForTesting(
@@ -761,21 +773,11 @@ void WallpaperControllerClientImpl::OnFetchImagesForCollection(
   images_info_fetcher_.reset();
 }
 
-void WallpaperControllerClientImpl::OnProfileCreated(user_manager::User* user) {
-  if (!user->is_active())
-    return;
-
-  ObserveVolumeManagerForActiveUser(user);
-  wallpaper_controller_->SyncLocalAndRemotePrefs(user->GetAccountId());
-}
-
-void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser(
-    user_manager::User* user) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  DCHECK(profile);
-
-  volume_manager_observation_.Observe(
-      file_manager::VolumeManager::Get(profile));
+void WallpaperControllerClientImpl::ObserveVolumeManagerForAccountId(
+    const AccountId& account_id) {
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  CHECK(profile);
+  volume_manager_observation_.AddObservation(VolumeManager::Get(profile));
 }
 
 void WallpaperControllerClientImpl::RecordWallpaperSourceUMA(

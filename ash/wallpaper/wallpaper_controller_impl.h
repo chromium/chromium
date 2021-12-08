@@ -305,7 +305,7 @@ class ASH_EXPORT WallpaperControllerImpl
   bool IsActiveUserWallpaperControlledByPolicy() override;
   WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
-  void SetDailyRefreshCollectionId(const AccountId& accound_id,
+  void SetDailyRefreshCollectionId(const AccountId& account_id,
                                    const std::string& collection_id) override;
   std::string GetDailyRefreshCollectionId(
       const AccountId& account_id) const override;

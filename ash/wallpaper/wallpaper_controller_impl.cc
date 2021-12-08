@@ -2565,6 +2565,11 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     WallpaperInfo info) {
   if (!CanSetUserWallpaper(account_id))
     return;
+  // We don't sync for background users because we don't want to update the
+  // wallpaper for background users. Instead, we call
+  // HandleWallpaperInfoSyncedIn again in OnActiveUserPrefServiceChanged.
+  if (!IsActiveUser(account_id))
+    return;
   switch (info.type) {
     case WallpaperType::kCustomized:
       HandleCustomWallpaperInfoSyncedIn(account_id, info);
@@ -2883,7 +2888,6 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
                             weak_factory_.GetWeakPtr()));
     return;
   }
-
   base::FilePath path_in_prefs = base::FilePath(info.location);
   std::string file_name = path_in_prefs.BaseName().value();
   ReadAndDecodeWallpaper(

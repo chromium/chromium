@@ -3546,6 +3546,25 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, HandleWallpaperInfoSyncedOnline) {
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
 }
 
+TEST_F(WallpaperControllerWallpaperWebUiTest,
+       HandleWallpaperInfoSyncedInactiveUser) {
+  CacheOnlineWallpaper(kDummyUrl);
+
+  // Make account_id_1 the inactive user.
+  SimulateUserLogin(account_id_2);
+
+  // Attempt to set an online wallpaper without providing the image data. Verify
+  // it succeeds this time because |SetOnlineWallpaperFromData| has saved the
+  // file.
+  ClearWallpaperCount();
+  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(WallpaperType::kOnline),
+                          GetProfilePrefService(account_id_1),
+                          prefs::kSyncableWallpaperInfo);
+  RunAllTasksUntilIdle();
+  EXPECT_EQ(0, GetWallpaperCount());
+  EXPECT_NE(controller_->GetWallpaperType(), WallpaperType::kOnline);
+}
+
 TEST_F(WallpaperControllerWallpaperWebUiTest, UpdateDailyRefreshWallpaper) {
   std::string expected{"fun_collection"};
   SimulateUserLogin(account_id_1);
