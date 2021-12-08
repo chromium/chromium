@@ -143,6 +143,9 @@ enum class BrokenNTPHierarchyRelationship {
 - (void)recordBrokenNTPHierarchy:
     (BrokenNTPHierarchyRelationship)brokenRelationship;
 
+// Records that the feed is about to be refreshed.
+- (void)recordFeedWillRefresh;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_

@@ -5494,6 +5494,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.WillRefresh">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The feed will trigger a refresh, either manually by the user or because of
+    the cache expiring.
+  </description>
+</action>
+
 <action name="ContentSuggestions.NotificationsPreferenceOff">
   <owner>dgn@chromium.org</owner>
   <owner>finkm@chromium.org</owner>
@@ -17621,6 +17631,16 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the Lens button is shown in the search box on the new tab
     page.
+  </description>
+</action>
+
+<action name="NewTabPage.ViewHierarchyFixed">
+  <owner>adamta@google.org</owner>
+  <owner>sczs@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    Recorded when the NTP detects a broken view hierarchy and repairs itself.
+    TODO(crbug.com/1262536): Remove this when issue is fixed.
   </description>
 </action>
 
