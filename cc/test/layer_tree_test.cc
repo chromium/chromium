@@ -542,21 +542,33 @@ class LayerTreeHostForTesting : public LayerTreeHost {
     return layer_tree_host;
   }
 
-  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
-      LayerTreeHostImplClient* host_impl_client) override {
+  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
+      LayerTreeHostImplClient* host_impl_client,
+      MutatorHost*,
+      const LayerTreeSettings& settings,
+      TaskRunnerProvider* task_runner_provider,
+      raw_ptr<RasterDarkModeFilter>&,
+      int,
+      raw_ptr<TaskGraphRunner>& task_graph_runner,
+      scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+      LayerTreeHostSchedulingClient* scheduling_client,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation,
+      std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
+      base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr)
+      override {
     std::unique_ptr<LayerTreeHostImpl> host_impl =
         LayerTreeHostImplForTesting::Create(
-            test_hooks_, GetSettings(), host_impl_client, scheduling_client(),
-            GetTaskRunnerProvider(), task_graph_runner(),
-            rendering_stats_instrumentation(), image_worker_task_runner_);
+            test_hooks_, settings, host_impl_client, scheduling_client,
+            task_runner_provider, task_graph_runner,
+            rendering_stats_instrumentation, image_worker_task_runner);
 
-    host_impl->InitializeUkm(ukm_recorder_factory_->CreateRecorder());
-    compositor_delegate_weak_ptr_ = host_impl->AsWeakPtr();
+    host_impl->InitializeUkm(ukm_recorder_factory->CreateRecorder());
+    compositor_delegate_weak_ptr = host_impl->AsWeakPtr();
 
     // Many tests using this class are specifically meant as input tests so
     // we'll need an input handler. Ideally these would be split out into a
     // separate test harness.
-    InputHandler::Create(*compositor_delegate_weak_ptr_);
+    InputHandler::Create(*compositor_delegate_weak_ptr);
 
     return host_impl;
   }

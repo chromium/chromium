@@ -483,29 +483,54 @@ void LayerTreeHost::DidFailToInitializeLayerTreeFrameSink() {
 
 std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
     LayerTreeHostImplClient* client) {
+  // This method is special: it should be the only LayerTreeHost method that
+  // runs on the impl thread. As such, it cannot use LayerTreeHost getter
+  // methods that enforce DCHECK(IsMainThread()). Because it only ever runs when
+  // the main thread is blocked, it's safe to access member variables directly.
   DCHECK(task_runner_provider_->IsImplThread());
+  DCHECK(task_runner_provider_->IsMainThreadBlocked());
+  return CreateLayerTreeHostImplInternal(
+      client, thread_unsafe_commit_state_.mutator_host, settings_,
+      task_runner_provider_.get(), dark_mode_filter_, id_, task_graph_runner_,
+      image_worker_task_runner_, scheduling_client_,
+      rendering_stats_instrumentation_.get(), ukm_recorder_factory_,
+      compositor_delegate_weak_ptr_);
+}
 
+std::unique_ptr<LayerTreeHostImpl>
+LayerTreeHost::CreateLayerTreeHostImplInternal(
+    LayerTreeHostImplClient* client,
+    MutatorHost* mutator_host,
+    const LayerTreeSettings& settings,
+    TaskRunnerProvider* task_runner_provider,
+    raw_ptr<RasterDarkModeFilter>& dark_mode_filter,
+    int id,
+    raw_ptr<TaskGraphRunner>& task_graph_runner,
+    scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+    LayerTreeHostSchedulingClient* scheduling_client,
+    RenderingStatsInstrumentation* rendering_stats_instrumentation,
+    std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
+    base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr) {
   std::unique_ptr<MutatorHost> mutator_host_impl =
-      mutator_host()->CreateImplInstance();
+      mutator_host->CreateImplInstance();
 
-  if (!settings_.scroll_animation_duration_for_testing.is_zero()) {
-    mutator_host()->SetScrollAnimationDurationForTesting(  // IN-TEST
-        settings_.scroll_animation_duration_for_testing);
+  if (!settings.scroll_animation_duration_for_testing.is_zero()) {
+    mutator_host->SetScrollAnimationDurationForTesting(  // IN-TEST
+        settings.scroll_animation_duration_for_testing);
   }
 
   std::unique_ptr<LayerTreeHostImpl> host_impl = LayerTreeHostImpl::Create(
-      settings_, client, task_runner_provider_.get(),
-      rendering_stats_instrumentation_.get(), task_graph_runner_,
-      std::move(mutator_host_impl), dark_mode_filter_, id_,
-      std::move(image_worker_task_runner_), scheduling_client_);
-  if (ukm_recorder_factory_) {
-    host_impl->InitializeUkm(ukm_recorder_factory_->CreateRecorder());
-    ukm_recorder_factory_.reset();
+      settings, client, task_runner_provider, rendering_stats_instrumentation,
+      task_graph_runner, std::move(mutator_host_impl), dark_mode_filter, id,
+      std::move(image_worker_task_runner), scheduling_client);
+  if (ukm_recorder_factory) {
+    host_impl->InitializeUkm(ukm_recorder_factory->CreateRecorder());
+    ukm_recorder_factory.reset();
   }
 
-  task_graph_runner_ = nullptr;
-  dark_mode_filter_ = nullptr;
-  compositor_delegate_weak_ptr_ = host_impl->AsWeakPtr();
+  task_graph_runner = nullptr;
+  dark_mode_filter = nullptr;
+  compositor_delegate_weak_ptr = host_impl->AsWeakPtr();
   return host_impl;
 }
 

@@ -66,8 +66,20 @@ class FakeLayerTreeHost : private TaskRunnerProviderHolder,
   void SetNeedsCommit() override;
   void SetNeedsUpdateLayers() override {}
 
-  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImpl(
-      LayerTreeHostImplClient* client) override;
+  std::unique_ptr<LayerTreeHostImpl> CreateLayerTreeHostImplInternal(
+      LayerTreeHostImplClient* client,
+      MutatorHost* mutator_host,
+      const LayerTreeSettings& settings,
+      TaskRunnerProvider* task_runner_provider,
+      raw_ptr<RasterDarkModeFilter>& dark_mode_filter,
+      int id,
+      raw_ptr<TaskGraphRunner>& task_graph_runner,
+      scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
+      LayerTreeHostSchedulingClient* scheduling_client,
+      RenderingStatsInstrumentation* rendering_stats_instrumentation,
+      std::unique_ptr<UkmRecorderFactory>& ukm_recorder_factory,
+      base::WeakPtr<CompositorDelegateForInput>& compositor_delegate_weak_ptr)
+      override;
 
   // This method is exposed for tests that don't use a Proxy (the
   // initialization of which would call the overridden CreateLayerTreeHostImpl

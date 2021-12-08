@@ -78,7 +78,10 @@ void SingleThreadProxy::Start() {
   DCHECK(settings.single_thread_proxy_scheduler ||
          !settings.enable_checker_imaging)
       << "Checker-imaging is not supported in synchronous single threaded mode";
-  host_impl_ = layer_tree_host_->CreateLayerTreeHostImpl(this);
+  {
+    DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
+    host_impl_ = layer_tree_host_->CreateLayerTreeHostImpl(this);
+  }
   if (settings.single_thread_proxy_scheduler && !scheduler_on_impl_thread_) {
     SchedulerSettings scheduler_settings(settings.ToSchedulerSettings());
     scheduler_settings.commit_to_active_tree = true;

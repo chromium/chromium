@@ -69,11 +69,23 @@ FakeLayerTreeHost::~FakeLayerTreeHost() {
 
 void FakeLayerTreeHost::SetNeedsCommit() { needs_commit_ = true; }
 
-std::unique_ptr<LayerTreeHostImpl> FakeLayerTreeHost::CreateLayerTreeHostImpl(
-    LayerTreeHostImplClient* client) {
+std::unique_ptr<LayerTreeHostImpl>
+FakeLayerTreeHost::CreateLayerTreeHostImplInternal(
+    LayerTreeHostImplClient* client,
+    MutatorHost*,
+    const LayerTreeSettings& settings,
+    TaskRunnerProvider* task_runner_provider,
+    raw_ptr<RasterDarkModeFilter>&,
+    int,
+    raw_ptr<TaskGraphRunner>& task_graph_runner,
+    scoped_refptr<base::SequencedTaskRunner>,
+    LayerTreeHostSchedulingClient*,
+    RenderingStatsInstrumentation*,
+    std::unique_ptr<UkmRecorderFactory>&,
+    base::WeakPtr<CompositorDelegateForInput>&) {
   DCHECK(!host_impl_);
   auto host_impl = std::make_unique<FakeLayerTreeHostImpl>(
-      GetSettings(), &task_runner_provider(), task_graph_runner());
+      settings, task_runner_provider, task_graph_runner);
   host_impl_ = host_impl.get();
   return host_impl;
 }
