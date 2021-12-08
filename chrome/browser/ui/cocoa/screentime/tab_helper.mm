@@ -34,7 +34,9 @@ bool TabHelper::IsScreentimeEnabledForProfile(Profile* profile) {
 }
 
 TabHelper::TabHelper(content::WebContents* contents)
-    : WebContentsObserver(contents), page_controller_(MakeWebpageController()) {
+    : WebContentsObserver(contents),
+      content::WebContentsUserData<TabHelper>(*contents),
+      page_controller_(MakeWebpageController()) {
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   // Absolutely ensure that we never record a navigation for an OTR profile.
   CHECK(!profile->IsOffTheRecord());
