@@ -1,2 +1,4 @@
 rootWebArea
 ++genericContainer ignored invisible
+++++genericContainer ignored invisible
+++++++staticText ignored invisible name='<newline>'

@@ -2841,25 +2841,35 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // Allow the browser side ax tree to access "visibility: [hidden|collapse]"
   // and "display: none" nodes. This is useful for APIs that return the node
   // referenced by aria-labeledby and aria-describedby.
-  // An element must have an id attribute or it cannot be referenced by
-  // aria-labelledby or aria-describedby.
-  if (RuntimeEnabledFeatures::AccessibilityExposeDisplayNoneEnabled()) {
-    if (Element* element = GetElement()) {
-      if (element->FastHasAttribute(html_names::kIdAttr) &&
-          IsHiddenViaStyle()) {
-        return true;
-      }
-    }
-  } else if (GetLayoutObject()) {
+  // The conditions are oversimplified, we will include more nodes than
+  // strictly necessary for aria-labelledby and aria-describedby but we
+  // avoid performing very complicated checks that could impact performance.
+
+  // We identify nodes in display none subtrees, or nodes that are display
+  // locked, because they lack a layout object.
+  if (!GetLayoutObject()) {
+    // Datalists and options inside them will never a layout object. They
+    // match the condition above, but we don't need them for accessible
+    // naming nor have any other use in the accessibility tree, so we exclude
+    // them specifically. What's more, including them breaks the browser test
+    // SelectToSpeakKeystrokeSelectionTest.textFieldWithComboBoxSimple.
+    // Selection and position code takes into account ignored nodes, and it
+    // looks like including ignored nodes for datalists and options is totally
+    // unexpected, making selections misbehave.
+    if (!IsA<HTMLDataListElement>(node) && !IsA<HTMLOptionElement>(node))
+      return true;
+
+  } else {  // GetLayoutObject() != null
+    // We identify hidden or collapsed nodes by their associated style values.
     if (GetLayoutObject()->Style()->Visibility() != EVisibility::kVisible)
       return true;
-  }
 
-  // Allow the browser side ax tree to access "aria-hidden" nodes.
-  // This is useful for APIs that return the node referenced by
-  // aria-labeledby and aria-describedby.
-  if (GetLayoutObject() && IsAriaHidden())
-    return true;
+    // Allow the browser side ax tree to access "aria-hidden" nodes.
+    // This is useful for APIs that return the node referenced by
+    // aria-labeledby and aria-describedby.
+    if (IsAriaHidden())
+      return true;
+  }
 
   // Labels are sometimes marked ignored, to prevent duplication when the AT
   // reads the label and the control it labels (see
@@ -3463,6 +3473,15 @@ String AXObject::RecursiveTextAlternative(
                                 name_from, nullptr, nullptr);
 }
 
+// There are 4 ways to use CSS to hide something:
+// * "display: none" is "destroy rendering state and don't do anything in the
+//   subtree"
+// * "visibility: [hidden|collapse]" are "don't visually show things, but still
+//   keep all of the rendering up to date"
+// * "content-visibility: hidden" is "don't show anything, skip all of the
+//   work, but don't destroy the work that was already there"
+// * "content-visibility: auto" is "paint when it's scrolled into the viewport,
+//   but its layout information is not updated when it isn't"
 bool AXObject::ComputeIsHiddenViaStyle() const {
   Node* node = GetNode();
   if (!node)
