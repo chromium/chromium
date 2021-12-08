@@ -33,8 +33,8 @@ public class FirstRunActivityTestObserver implements FirstRunActivity.FirstRunAc
 
     @Override
     public void onCreatePostNativeAndPoliciesPageSequence(FirstRunActivity caller) {
-        ScopedObserverData scopedObserverData = getScopedObserverData(caller);
-        scopedObserverData.createPostNativeAndPoliciesPageSequenceCallback.notifyCalled();
+        getScopedObserverData(caller)
+                .createPostNativeAndPoliciesPageSequenceCallback.notifyCalled();
     }
 
     @Override
