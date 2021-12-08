@@ -729,12 +729,12 @@
   {
     "name": "chrome-whats-new-in-main-menu-new-badge",
     "owners": [ "rbpotter" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "chrome-whats-new-ui",
     "owners": [ "rbpotter" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "chromeos-direct-video-decoder",
