@@ -121,16 +121,25 @@ class DataTransferDlpControllerTest
     : public ::testing::TestWithParam<
           std::tuple<absl::optional<ui::EndpointType>, bool>> {
  protected:
-  DataTransferDlpControllerTest()
-      : rules_manager_(), dlp_controller_(rules_manager_) {}
+  DataTransferDlpControllerTest() : dlp_controller_(rules_manager_) {}
 
   ~DataTransferDlpControllerTest() override = default;
 
+  void SetUp() override {
+    SetReportQueueForReportingManager(
+        &reporting_manager_, events_,
+        base::ThreadPool::CreateSequencedTaskRunner({}));
+    ON_CALL(rules_manager_, GetReportingManager)
+        .WillByDefault(::testing::Return(&reporting_manager_));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
-  ::testing::StrictMock<MockDlpRulesManager> rules_manager_;
+  ::testing::NiceMock<MockDlpRulesManager> rules_manager_;
   ::testing::StrictMock<MockDlpController> dlp_controller_;
   base::HistogramTester histogram_tester_;
+  DlpReportingManager reporting_manager_;
+  std::vector<DlpPolicyEvent> events_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosService lacros_service_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -209,6 +218,14 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
 
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
                                  web_contents->GetMainFrame(), callback.Get());
+  // We are not expecting warning proceeded event here. Warning proceeded event
+  // is sent after a user accept the warn dialogue.
+  // However, DataTransferDlpController::WarnOnBlinkPaste method is mocked
+  // and consequently the dialog is not displayed.
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                              "", "", DlpRulesManager::Restriction::kClipboard,
+                              DlpRulesManager::Level::kWarn)));
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
@@ -232,6 +249,10 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
   EXPECT_CALL(callback, Run(true));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
                                  web_contents->GetMainFrame(), callback.Get());
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                              "", "", DlpRulesManager::Restriction::kClipboard,
+                              DlpRulesManager::Level::kWarn)));
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
@@ -255,12 +276,14 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
   EXPECT_CALL(callback, Run(false));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
                                  web_contents->GetMainFrame(), callback.Get());
+  EXPECT_TRUE(events_.empty());
 }
 
 // Create a version of the test class for parameterized testing.
 class DlpControllerTest : public DataTransferDlpControllerTest {
  protected:
   void SetUp() override {
+    DataTransferDlpControllerTest::SetUp();
     data_src_ =
         ui::DataTransferEndpoint(url::Origin::Create(GURL(kExample1Url)));
     absl::optional<ui::EndpointType> endpoint_type;
@@ -268,20 +291,12 @@ class DlpControllerTest : public DataTransferDlpControllerTest {
     data_dst_ =
         CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify_);
     dst_ptr_ = base::OptionalOrNullptr(data_dst_);
-
-    SetReportQueueForReportingManager(
-        &reporting_manager_, events_,
-        base::ThreadPool::CreateSequencedTaskRunner({}));
-    EXPECT_CALL(rules_manager_, GetReportingManager)
-        .WillRepeatedly(::testing::Return(&reporting_manager_));
   }
 
   ui::DataTransferEndpoint data_src_{ui::EndpointType::kDefault};
   bool do_notify_;
   absl::optional<ui::DataTransferEndpoint> data_dst_;
   ui::DataTransferEndpoint* dst_ptr_;
-  DlpReportingManager reporting_manager_;
-  std::vector<DlpPolicyEvent> events_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -410,6 +425,13 @@ TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
 
   EXPECT_EQ(!show_warning, dlp_controller_.IsClipboardReadAllowed(
                                &data_src_, dst_ptr_, absl::nullopt));
+  if (show_warning) {
+    EXPECT_EQ(events_.size(), 1u);
+    EXPECT_THAT(events_[0],
+                IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                    "", "", DlpRulesManager::Restriction::kClipboard,
+                    DlpRulesManager::Level::kWarn)));
+  }
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   // ShouldPasteOnWarn returns true.
@@ -421,7 +443,9 @@ TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
       .WillRepeatedly(testing::Return(false));
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src_, dst_ptr_,
                                                          absl::nullopt));
+  EXPECT_EQ(events_.size(), show_warning ? 1u : 0u);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false,
       show_warning ? 1 : 2);
@@ -462,25 +486,18 @@ TEST_P(DlpControllerTest, Warn_DropIfAllowed) {
 class DlpControllerVMsTest : public DataTransferDlpControllerTest {
  protected:
   void SetUp() override {
+    DataTransferDlpControllerTest::SetUp();
     data_src_ =
         ui::DataTransferEndpoint(url::Origin::Create(GURL(kExample1Url)));
     std::tie(endpoint_type_, do_notify_) = GetParam();
     ASSERT_TRUE(endpoint_type_.has_value());
     data_dst_ = ui::DataTransferEndpoint(endpoint_type_.value(), do_notify_);
-
-    SetReportQueueForReportingManager(
-        &reporting_manager_, events_,
-        base::ThreadPool::CreateSequencedTaskRunner({}));
-    EXPECT_CALL(rules_manager_, GetReportingManager)
-        .WillRepeatedly(::testing::Return(&reporting_manager_));
   }
 
   ui::DataTransferEndpoint data_src_{ui::EndpointType::kDefault};
   absl::optional<ui::EndpointType> endpoint_type_;
   bool do_notify_;
   ui::DataTransferEndpoint data_dst_{ui::EndpointType::kDefault};
-  DlpReportingManager reporting_manager_;
-  std::vector<DlpPolicyEvent> events_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -616,6 +633,13 @@ TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
 
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst,
                                                          absl::nullopt));
+  if (do_notify) {
+    EXPECT_EQ(events_.size(), 1u);
+    EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                                "", GetComponent(endpoint_type.value()),
+                                DlpRulesManager::Restriction::kClipboard,
+                                DlpRulesManager::Level::kWarn)));
+  }
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
