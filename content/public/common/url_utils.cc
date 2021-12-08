@@ -11,6 +11,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "content/common/url_schemes.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"

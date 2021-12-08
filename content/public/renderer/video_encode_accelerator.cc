@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/task_runner_util.h"
+#include "build/build_config.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 
