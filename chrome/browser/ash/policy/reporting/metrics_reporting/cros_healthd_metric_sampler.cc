@@ -11,25 +11,84 @@ namespace cros_healthd = chromeos::cros_healthd::mojom;
 
 namespace reporting {
 namespace {
-void HandleCpuResult(MetricCallback callback,
+
+ThunderboltSecurityLevel TranslateThunderboltSecurityLevel(
+    cros_healthd::ThunderboltSecurityLevel security_level) {
+  switch (security_level) {
+    case cros_healthd::ThunderboltSecurityLevel::kNone:
+      return THUNDERBOLT_SECURITY_NONE_LEVEL;
+    case cros_healthd::ThunderboltSecurityLevel::kUserLevel:
+      return THUNDERBOLT_SECURITY_USER_LEVEL;
+    case cros_healthd::ThunderboltSecurityLevel::kSecureLevel:
+      return THUNDERBOLT_SECURITY_SECURE_LEVEL;
+    case cros_healthd::ThunderboltSecurityLevel::kDpOnlyLevel:
+      return THUNDERBOLT_SECURITY_DP_ONLY_LEVEL;
+    case cros_healthd::ThunderboltSecurityLevel::kUsbOnlyLevel:
+      return THUNDERBOLT_SECURITY_USB_ONLY_LEVEL;
+    case cros_healthd::ThunderboltSecurityLevel::kNoPcieLevel:
+      return THUNDERBOLT_SECURITY_NO_PCIE_LEVEL;
+  }
+
+  NOTREACHED();
+}
+
+void HandleBusResult(MetricCallback callback,
                      CrosHealthdMetricSampler::MetricType metric_type,
-                     chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
+                     cros_healthd::TelemetryInfoPtr result) {
   bool anything_reported = false;
   MetricData metric_data;
-  auto* keylocker_info_out = metric_data.mutable_info_data()
-                                 ->mutable_cpu_info()
-                                 ->mutable_keylocker_info();
+  const auto& bus_result = result->bus_result;
+
+  if (!bus_result.is_null()) {
+    switch (bus_result->which()) {
+      case cros_healthd::BusResult::Tag::ERROR: {
+        DVLOG(1) << "cros_healthd: Error getting bus info: "
+                 << bus_result->get_error()->msg;
+        break;
+      }
+
+      case cros_healthd::BusResult::Tag::BUS_DEVICES: {
+        for (const auto& bus_device : bus_result->get_bus_devices()) {
+          const auto& bus_info = bus_device->bus_info;
+          if (bus_info->is_thunderbolt_bus_info()) {
+            if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+              auto* const thunderbolt_info_out =
+                  metric_data.mutable_info_data()
+                      ->mutable_bus_device_info()
+                      ->mutable_thunderbolt_info();
+              anything_reported = true;
+              thunderbolt_info_out->set_security_level(
+                  TranslateThunderboltSecurityLevel(
+                      bus_info->get_thunderbolt_bus_info()->security_level));
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  if (anything_reported) {
+    std::move(callback).Run(metric_data);
+  }
+}
+
+void HandleCpuResult(MetricCallback callback,
+                     CrosHealthdMetricSampler::MetricType metric_type,
+                     cros_healthd::TelemetryInfoPtr result) {
+  bool anything_reported = false;
+  MetricData metric_data;
   const auto& cpu_result = result->cpu_result;
 
   if (!cpu_result.is_null()) {
     switch (cpu_result->which()) {
-      case chromeos::cros_healthd::mojom::CpuResult::Tag::ERROR: {
+      case cros_healthd::CpuResult::Tag::ERROR: {
         DVLOG(1) << "cros_healthd: Error getting CPU info: "
                  << cpu_result->get_error()->msg;
         break;
       }
 
-      case chromeos::cros_healthd::mojom::CpuResult::Tag::CPU_INFO: {
+      case cros_healthd::CpuResult::Tag::CPU_INFO: {
         const auto& cpu_info = cpu_result->get_cpu_info();
         if (cpu_info.is_null()) {
           DVLOG(1) << "Null CpuInfo from cros_healthd";
@@ -38,6 +97,9 @@ void HandleCpuResult(MetricCallback callback,
 
         // Gather keylocker info.
         if (metric_type == CrosHealthdMetricSampler::MetricType::kInfo) {
+          auto* const keylocker_info_out = metric_data.mutable_info_data()
+                                               ->mutable_cpu_info()
+                                               ->mutable_keylocker_info();
           auto* keylocker_info = cpu_info->keylocker_info.get();
           if (keylocker_info) {
             keylocker_info_out->set_supported(true);
@@ -60,11 +122,10 @@ void HandleCpuResult(MetricCallback callback,
   }
 }
 
-void OnHealthdInfoReceived(
-    MetricCallback callback,
-    cros_healthd::ProbeCategoryEnum probe_category,
-    CrosHealthdMetricSampler::MetricType metric_type,
-    chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
+void OnHealthdInfoReceived(MetricCallback callback,
+                           cros_healthd::ProbeCategoryEnum probe_category,
+                           CrosHealthdMetricSampler::MetricType metric_type,
+                           cros_healthd::TelemetryInfoPtr result) {
   if (!result) {
     DVLOG(1) << "cros_healthd: null telemetry result";
     return;
@@ -73,6 +134,10 @@ void OnHealthdInfoReceived(
   switch (probe_category) {
     case cros_healthd::ProbeCategoryEnum::kCpu: {
       HandleCpuResult(std::move(callback), metric_type, std::move(result));
+      break;
+    }
+    case cros_healthd::ProbeCategoryEnum::kBus: {
+      HandleBusResult(std::move(callback), metric_type, std::move(result));
       break;
     }
     default: {
