@@ -21,9 +21,6 @@
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/views_export.h"
 
-// This AnimationBuilder API is currently in the experimental phase and only
-// used within ui/views/examples/.
-
 namespace ui {
 class Layer;
 }
