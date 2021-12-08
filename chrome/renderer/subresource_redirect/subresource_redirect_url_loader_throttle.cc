@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
-#include "chrome/renderer/previews/resource_loading_hints_agent.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"

@@ -414,17 +414,6 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       ->OnAudioOutputSinkChangingDisabled(media_player_id_);
 }
 
-void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
-    OnBufferUnderflow() {
-  media_web_contents_observer_->web_contents_impl()->MediaBufferUnderflow(
-      media_player_id_);
-}
-
-void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnSeek() {
-  media_web_contents_observer_->web_contents_impl()->MediaPlayerSeek(
-      media_player_id_);
-}
-
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
   PlayerInfo* player_info = GetPlayerInfo();
   if (!player_info)

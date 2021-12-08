@@ -51,8 +51,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/lite_video/lite_video_keyed_service.h"
-#include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
@@ -1609,13 +1607,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);
 #endif
-
-  // Creates the LiteVideo Keyed Service and begins loading the
-  // hint cache and user blocklist.
-  auto* lite_video_keyed_service =
-      LiteVideoKeyedServiceFactory::GetForProfile(profile);
-  if (lite_video_keyed_service)
-    lite_video_keyed_service->Initialize(profile->GetPath());
 
   // TODO(crbug.com/1031477): Remove once getting this created with the browser
   // context does not change dependency initialization order to cause crashes.

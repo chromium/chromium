@@ -8640,16 +8640,6 @@ void WebContentsImpl::MediaEffectivelyFullscreenChanged(bool is_fullscreen) {
       &WebContentsObserver::MediaEffectivelyFullscreenChanged, is_fullscreen);
 }
 
-void WebContentsImpl::MediaBufferUnderflow(const MediaPlayerId& id) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaBufferUnderflow");
-  observers_.NotifyObservers(&WebContentsObserver::MediaBufferUnderflow, id);
-}
-
-void WebContentsImpl::MediaPlayerSeek(const MediaPlayerId& id) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaPlayerSeek");
-  observers_.NotifyObservers(&WebContentsObserver::MediaPlayerSeek, id);
-}
-
 void WebContentsImpl::MediaDestroyed(const MediaPlayerId& id) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::MediaDestroyed");
   observers_.NotifyObservers(&WebContentsObserver::MediaDestroyed, id);

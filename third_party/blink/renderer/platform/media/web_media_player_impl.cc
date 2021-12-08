@@ -1060,11 +1060,6 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
   if (watch_time_reporter_)
     watch_time_reporter_->OnSeeking();
 
-  // Send the seek updates only when the seek pipeline hasn't started,
-  // OnPipelineSeeked is not called yet.
-  if (!seeking_)
-    client_->DidSeek();
-
   // TODO(sandersd): Move `seeking_` to PipelineController.
   // TODO(sandersd): Do we want to reset the idle timer here?
   delegate_->SetIdle(delegate_id_, false);
@@ -2281,7 +2276,6 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
         !seeking_) {
       underflow_timer_ = std::make_unique<base::ElapsedTimer>();
       watch_time_reporter_->OnUnderflow();
-      client_->DidBufferUnderflow();
 
       if (playback_events_recorder_)
         playback_events_recorder_->OnBuffering();

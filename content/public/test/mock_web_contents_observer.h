@@ -310,11 +310,6 @@ class MockWebContentsObserver : public WebContentsObserver {
               MediaMutedStatusChanged,
               (const MediaPlayerId& id, bool muted),
               (override));
-  MOCK_METHOD(void,
-              MediaBufferUnderflow,
-              (const MediaPlayerId& id),
-              (override));
-  MOCK_METHOD(void, MediaPlayerSeek, (const MediaPlayerId& id), (override));
   MOCK_METHOD(void, MediaDestroyed, (const MediaPlayerId& id), (override));
   MOCK_METHOD(void,
               OnPageScaleFactorChanged,

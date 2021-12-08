@@ -1582,20 +1582,6 @@ const char kLensCameraAssistedSearchDescription[] =
     "Enable an entry point to Google Lens to allow users to search what they "
     "see using their mobile camera.";
 
-const char kLiteVideoName[] = "Enable LiteVideos";
-const char kLiteVideoDescription[] =
-    "Enable the LiteVideo optimization to throttle media requests to "
-    "reduce data usage";
-
-const char kLiteVideoDownlinkBandwidthKbpsName[] =
-    "Lite Video: Adjust throttling downlink (in Kbps).";
-const char kLiteVideoDownlinkBandwidthKbpsDescription[] =
-    "Specify the throttling bandwidth to be used";
-
-const char kLiteVideoForceOverrideDecisionName[] = "Force LiteVideos decision";
-const char kLiteVideoForceOverrideDecisionDescription[] =
-    "Force the LiteVideo decision to be allowed on every navigation.";
-
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";
 const char kLogJsConsoleMessagesDescription[] =

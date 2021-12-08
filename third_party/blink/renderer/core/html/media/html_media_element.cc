@@ -4641,21 +4641,6 @@ void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
     observer->OnMediaSizeChanged(size);
 }
 
-void HTMLMediaElement::DidBufferUnderflow() {
-  for (auto& observer : media_player_observer_remote_set_->Value())
-    observer->OnBufferUnderflow();
-}
-
-void HTMLMediaElement::DidSeek() {
-  // Send the seek updates to the browser process only once per second.
-  if (last_seek_update_time_.is_null() ||
-      (base::TimeTicks::Now() - last_seek_update_time_ >= base::Seconds(1))) {
-    last_seek_update_time_ = base::TimeTicks::Now();
-    for (auto& observer : media_player_observer_remote_set_->Value())
-      observer->OnSeek();
-  }
-}
-
 media::mojom::blink::MediaPlayerHost&
 HTMLMediaElement::GetMediaPlayerHostRemote() {
   // It is an error to call this before having access to the document's frame.

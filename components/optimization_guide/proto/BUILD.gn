@@ -14,7 +14,6 @@ proto_library("optimization_guide_proto") {
     "common_types.proto",
     "hint_cache.proto",
     "hints.proto",
-    "lite_video_metadata.proto",
     "loading_predictor_metadata.proto",
     "models.proto",
     "page_topics_model_metadata.proto",
@@ -30,7 +29,6 @@ if (is_android) {
     sources = [
       "common_types.proto",
       "hints.proto",
-      "lite_video_metadata.proto",
       "loading_predictor_metadata.proto",
       "models.proto",
       "performance_hints_metadata.proto",

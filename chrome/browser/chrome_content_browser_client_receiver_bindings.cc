@@ -18,7 +18,6 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net_benchmarking.h"
@@ -487,13 +486,6 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     return true;
   }
 #endif
-  if (interface_name == lite_video::mojom::LiteVideoService::Name_) {
-    LiteVideoObserver::BindLiteVideoService(
-        mojo::PendingAssociatedReceiver<lite_video::mojom::LiteVideoService>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   if (interface_name == offline_pages::mojom::MhtmlPageNotifier::Name_) {
     offline_pages::OfflinePageTabHelper::BindHtmlPageNotifier(

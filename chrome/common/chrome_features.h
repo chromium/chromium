@@ -449,9 +449,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel;
 #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kLiteVideo;
-
 #if defined(OS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kMacFullSizeContentView;

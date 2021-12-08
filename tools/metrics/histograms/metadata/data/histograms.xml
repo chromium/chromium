@@ -654,6 +654,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.CanApplyLiteVideo.HintCache.HasHint"
     enum="BooleanAvailable" expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -665,6 +668,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.CanApplyLiteVideo.UserBlocklist"
     enum="LiteVideoBlocklistReason" expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -677,6 +683,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.HintAgent.ActiveThrottleSize" units="count"
     expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -687,6 +696,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.HintAgent.HasHint" units="boolean"
     expires_after="2022-02-20">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -697,6 +709,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.LiteVideoDecider.OptGuideHintCacheSize"
     units="count" expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -707,6 +722,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.NavigationMetrics.FrameRebufferMapSize"
     units="count" expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -717,6 +735,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.OriginHints.ParseResult" enum="BooleanSuccess"
     expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -728,6 +749,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LiteVideo.URLLoader.ThrottleLatency" units="ms"
     expires_after="M96">
+  <obsolete>
+    Expired 12/2021.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

@@ -679,11 +679,6 @@ constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
     &kLinuxLowMemoryMonitor, "critical_level", 255};
 #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 
-// Enables LiteVideos, a data-saving optimization that throttles media requests
-// to reduce the bitrate of adaptive media streams. Only for Lite mode users
-// (formerly DataSaver).
-const base::Feature kLiteVideo{"LiteVideo", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_MAC)
 // Uses NSFullSizeContentViewWindowMask where available instead of adding our
 // own views to the window frame. This is a temporary kill switch, it can be

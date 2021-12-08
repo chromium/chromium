@@ -46,8 +46,6 @@
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "chrome/renderer/lite_video/lite_video_hint_agent.h"
-#include "chrome/renderer/lite_video/lite_video_util.h"
 #include "chrome/renderer/loadtimes_extension_bindings.h"
 #include "chrome/renderer/media/flash_embed_rewrite.h"
 #include "chrome/renderer/media/webrtc_logging_agent_impl.h"
@@ -57,7 +55,6 @@
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
-#include "chrome/renderer/previews/resource_loading_hints_agent.h"
 #include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/public_image_hints_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
@@ -683,11 +680,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
             std::move(ad_resource_tracker));
     subresource_filter_agent->Initialize();
   }
-
-  if (lite_video::IsLiteVideoEnabled())
-    new lite_video::LiteVideoHintAgent(render_frame);
-
-  new previews::ResourceLoadingHintsAgent(associated_interfaces, render_frame);
 
   if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression()) {
     new subresource_redirect::PublicImageHintsDeciderAgent(

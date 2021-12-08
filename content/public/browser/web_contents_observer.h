@@ -711,8 +711,6 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void MediaEffectivelyFullscreenChanged(bool is_fullscreen) {}
   virtual void MediaPictureInPictureChanged(bool is_picture_in_picture) {}
   virtual void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted) {}
-  virtual void MediaBufferUnderflow(const MediaPlayerId& id) {}
-  virtual void MediaPlayerSeek(const MediaPlayerId& id) {}
   virtual void MediaDestroyed(const MediaPlayerId& id) {}
 
   // Invoked when the renderer process changes the page scale factor.

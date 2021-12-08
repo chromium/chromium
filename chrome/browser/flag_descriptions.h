@@ -916,15 +916,6 @@ extern const char kLargeFaviconFromGoogleDescription[];
 extern const char kLensCameraAssistedSearchName[];
 extern const char kLensCameraAssistedSearchDescription[];
 
-extern const char kLiteVideoName[];
-extern const char kLiteVideoDescription[];
-
-extern const char kLiteVideoDownlinkBandwidthKbpsName[];
-extern const char kLiteVideoDownlinkBandwidthKbpsDescription[];
-
-extern const char kLiteVideoForceOverrideDecisionName[];
-extern const char kLiteVideoForceOverrideDecisionDescription[];
-
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 

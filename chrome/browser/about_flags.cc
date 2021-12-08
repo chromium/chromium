@@ -38,7 +38,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/lite_video/lite_video_switches.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
@@ -338,35 +337,6 @@ const FeatureEntry::Choice kTouchTextSelectionStrategyChoices[] = {
      blink::switches::kTouchTextSelectionStrategy, "character"},
     {flag_descriptions::kTouchSelectionStrategyDirection,
      blink::switches::kTouchTextSelectionStrategy, "direction"}};
-
-const FeatureEntry::Choice kLiteVideoDefaultDownlinkBandwidthKbps[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"100", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "100"},
-    {"150", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "150"},
-    {"200", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "200"},
-    {"250", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "250"},
-    {"300", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "300"},
-    {"350", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "350"},
-    {"400", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "400"},
-    {"450", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "450"},
-    {"500", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "500"},
-    {"600", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "600"},
-    {"700", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "700"},
-    {"800", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "800"},
-    {"900", lite_video::switches::kLiteVideoDefaultDownlinkBandwidthKbps,
-     "900"}};
 
 #if defined(OS_WIN)
 const FeatureEntry::Choice kUseAngleChoicesWindows[] = {
@@ -6642,20 +6612,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiDescription,
      kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableBluetoothSerialPortProfileInSerialApi)},
-
-    {"enable-lite-video", flag_descriptions::kLiteVideoName,
-     flag_descriptions::kLiteVideoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kLiteVideo)},
-
-    {"lite-video-default-downlink-bandwidth-kbps",
-     flag_descriptions::kLiteVideoDownlinkBandwidthKbpsName,
-     flag_descriptions::kLiteVideoDownlinkBandwidthKbpsDescription, kOsAll,
-     MULTI_VALUE_TYPE(kLiteVideoDefaultDownlinkBandwidthKbps)},
-
-    {"lite-video-force-override-decision",
-     flag_descriptions::kLiteVideoForceOverrideDecisionName,
-     flag_descriptions::kLiteVideoForceOverrideDecisionDescription, kOsAll,
-     SINGLE_VALUE_TYPE(lite_video::switches::kLiteVideoForceOverrideDecision)},
 
     {"add-passwords-in-settings",
      flag_descriptions::kAddPasswordsInSettingsName,

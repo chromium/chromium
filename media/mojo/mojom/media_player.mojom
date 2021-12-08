@@ -106,12 +106,6 @@ interface MediaPlayerObserver {
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();
-
-  // Notifies that a buffer underflow event happened for the media player.
-  OnBufferUnderflow();
-
-  // Notifies that a playback seek event happened for the media player.
-  OnSeek();
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

@@ -59,11 +59,21 @@
 
 namespace {
 
+constexpr base::FilePath::CharType kLiteVideoOptOutDBFilename[] =
+    FILE_PATH_LITERAL("lite_video_opt_out.db");
+
 // Deletes Previews opt-out database file. Opt-out database is no longer needed
 // since Previews has been turned down.
 void DeletePreviewsOptOutDatabaseOnDBThread(
     const base::FilePath& previews_optout_database_file) {
   sql::Database::Delete(previews_optout_database_file);
+}
+
+// Deletes LiteVideos opt-out database file. Opt-out database is no longer
+// needed since LiteVideos has been turned down.
+void DeleteLiteVideosOptOutDatabaseOnDBThread(
+    const base::FilePath& optout_database_file) {
+  sql::Database::Delete(optout_database_file);
 }
 
 // Assume that any proxy host ending with this suffix is a Data Reduction Proxy.
@@ -226,6 +236,11 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
       FROM_HERE,
       base::BindOnce(DeletePreviewsOptOutDatabaseOnDBThread,
                      profile_path.Append(chrome::kPreviewsOptOutDBFilename)));
+
+  db_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(DeleteLiteVideosOptOutDatabaseOnDBThread,
+                     profile_path.Append(kLiteVideoOptOutDBFilename)));
 
 #if defined(OS_ANDROID)
   // On mobile we write Data Reduction Proxy prefs directly to the pref service.

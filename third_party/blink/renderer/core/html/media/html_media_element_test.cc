@@ -185,13 +185,6 @@ class TestMediaPlayerObserver final
 
   void OnAudioOutputSinkChangingDisabled() override {}
 
-  void OnBufferUnderflow() override {
-    received_buffer_underflow_ = true;
-    run_loop_->Quit();
-  }
-
-  void OnSeek() override {}
-
   // Getters used from HTMLMediaElementTest.
   bool received_media_playing() const { return received_media_playing_; }
 
@@ -214,8 +207,6 @@ class TestMediaPlayerObserver final
     return received_uses_audio_service_.value() == uses_audio_service;
   }
 
-  bool received_buffer_underflow() const { return received_buffer_underflow_; }
-
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   bool received_media_playing_{false};
@@ -224,7 +215,6 @@ class TestMediaPlayerObserver final
   absl::optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
   absl::optional<bool> received_uses_audio_service_;
-  bool received_buffer_underflow_{false};
 };
 
 class TestMediaPlayerHost final : public media::mojom::blink::MediaPlayerHost {
@@ -419,15 +409,6 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   bool ReceivedMessageUseAudioServiceChanged(bool uses_audio_service) {
     return media_player_observer().received_use_audio_service_changed(
         uses_audio_service);
-  }
-
-  void NotifyBufferUnderflowEvent() {
-    media_->DidBufferUnderflow();
-    media_player_observer().WaitUntilReceivedMessage();
-  }
-
-  bool ReceivedMessageBufferUnderflowEvent() {
-    return media_player_observer().received_buffer_underflow();
   }
 
   bool WasPlayerDestroyed() const { return !media_player_weak_; }
@@ -1171,13 +1152,6 @@ TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {
 
   NotifyUseAudioServiceChanged(true);
   EXPECT_TRUE(ReceivedMessageUseAudioServiceChanged(true));
-}
-
-TEST_P(HTMLMediaElementTest, SendBufferOverflowToObserver) {
-  WaitForPlayer();
-
-  NotifyBufferUnderflowEvent();
-  EXPECT_TRUE(ReceivedMessageBufferUnderflowEvent());
 }
 
 TEST_P(HTMLMediaElementTest,

@@ -17,7 +17,6 @@
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/src_video_redirect_url_loader_throttle.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
@@ -206,14 +205,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
           MaybeCreateThrottle(request, render_frame_id);
   if (src_video_redirect_throttle)
     throttles.emplace_back(std::move(src_video_redirect_throttle));
-
-  if (render_frame_id != MSG_ROUTING_NONE) {
-    auto lite_video_throttle =
-        lite_video::LiteVideoURLLoaderThrottle::MaybeCreateThrottle(
-            request, render_frame_id);
-    if (lite_video_throttle)
-      throttles.emplace_back(std::move(lite_video_throttle));
-  }
 
   return throttles;
 }

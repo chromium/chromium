@@ -44,8 +44,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
-#include "chrome/browser/lite_video/lite_video_keyed_service.h"
-#include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
@@ -547,11 +545,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
     if (optimization_guide_keyed_service)
       optimization_guide_keyed_service->ClearData();
-
-    LiteVideoKeyedService* lite_video_keyed_service =
-        LiteVideoKeyedServiceFactory::GetForProfile(profile_);
-    if (lite_video_keyed_service)
-      lite_video_keyed_service->ClearData(delete_begin_, delete_end_);
 
     PrefetchProxyService* prefetch_proxy_service =
         PrefetchProxyServiceFactory::GetForProfile(profile_);

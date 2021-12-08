@@ -49,8 +49,6 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
-#include "chrome/browser/lite_video/lite_video_keyed_service.h"
-#include "chrome/browser/lite_video/lite_video_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
@@ -3261,32 +3259,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
   domains =
       delegate->GetDomainsForDeferredCookieDeletion(constants::ALL_DATA_TYPES);
   EXPECT_EQ(domains.size(), 0u);
-}
-
-class ChromeBrowsingDataRemoverDelegateLiteVideoTest
-    : public ChromeBrowsingDataRemoverDelegateTest {
- public:
-  ChromeBrowsingDataRemoverDelegateLiteVideoTest() {
-    // Both LiteVideo and Lite mode must be enabled for the
-    // LiteVideoKeyedService to be created.
-    feature_list_.InitAndEnableFeature(features::kLiteVideo);
-  }
-};
-TEST_F(ChromeBrowsingDataRemoverDelegateLiteVideoTest,
-       LiteVideoClearHistoryData) {
-  base::HistogramTester histogram_tester;
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      "enable-spdy-proxy-auth");
-
-  LiteVideoKeyedService* lite_video_keyed_service =
-      LiteVideoKeyedServiceFactory::GetForProfile(GetProfile());
-  lite_video_keyed_service->Initialize(GetProfile()->GetPath());
-
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                constants::DATA_TYPE_HISTORY, false);
-
-  histogram_tester.ExpectUniqueSample("LiteVideo.UserBlocklist.ClearBlocklist",
-                                      true, 1);
 }
 
 // Verify that clearing secure payment confirmation credentials data works.

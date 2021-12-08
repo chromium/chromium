@@ -214,8 +214,6 @@ class CONTENT_EXPORT MediaWebContentsObserver
     void OnAudioOutputSinkChanged(const std::string& hashed_device_id) override;
     void OnUseAudioServiceChanged(bool uses_audio_service) override;
     void OnAudioOutputSinkChangingDisabled() override;
-    void OnBufferUnderflow() override;
-    void OnSeek() override;
 
    private:
     PlayerInfo* GetPlayerInfo();
