@@ -1053,6 +1053,105 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(num_messages_received, 3);
 }
 
+enum class FrameType {
+  kMainFrame,
+  kSubFrame,
+};
+
+enum class StickinessType {
+  kSticky,
+  kNonSticky,
+};
+
+class BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<
+          testing::tuple<FrameType, StickinessType>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
+    ::testing::Combine(::testing::Values(FrameType::kMainFrame,
+                                         FrameType::kSubFrame),
+                       ::testing::Values(StickinessType::kSticky,
+                                         StickinessType::kNonSticky)));
+
+// Test pagehide's persisted value and whether the page can be BFCached when a
+// sticky/non-sticky feature is used on the mainframe/subframe.
+IN_PROC_BROWSER_TEST_P(
+    BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
+    TestPagehidePersistedValue) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  FrameType parameter_frame = std::get<0>(GetParam());
+  StickinessType use_sticky_feature = std::get<1>(GetParam());
+
+  // Depending on the parameter, pick the mainframe or subframe to add a
+  // blocking feature.
+  RenderFrameHostImplWrapper rfh_with_blocking_feature(
+      parameter_frame == FrameType::kSubFrame
+          ? current_frame_host()->child_at(0)->current_frame_host()
+          : current_frame_host());
+
+  // 2) Mark the document as using a feature that's either sticky or non-sticky,
+  // depending on the test parameter.
+  if (use_sticky_feature == StickinessType::kSticky) {
+    rfh_with_blocking_feature.get()
+        ->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
+  } else {
+    EXPECT_TRUE(ExecJs(rfh_with_blocking_feature.get(),
+                       "window.foo = new BroadcastChannel('foo');"));
+  }
+
+  // 3) Install the pagehide handler in A to know pagehide.persisted status
+  // after navigating to B.
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    window.onpagehide = (e) => {
+      if (e.persisted) {
+        window.domAutomationController.send('pagehide.persisted');
+      }else{
+        window.domAutomationController.send('pagehide.not_persisted');
+      }
+    }
+  )"));
+  DOMMessageQueue dom_message_queue(shell()->web_contents());
+
+  // 4) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 5) If the page is using a sticky feature at pagehide, it can never be put
+  // into BFCache no matter what pagehide does, so pagehide's persisted is
+  // false. Meanwhile, if the page is using a non-sticky feature at pagehide, it
+  // can still be put into BFCache if the pagehide event removes the feature's
+  // usage, so pagehide's persisted is true, since the page might still get into
+  // BFCache.
+  std::string message;
+  EXPECT_TRUE(dom_message_queue.PopMessage(&message));
+  if (use_sticky_feature == StickinessType::kSticky) {
+    EXPECT_EQ(message, "\"pagehide.not_persisted\"");
+  } else {
+    EXPECT_EQ(message, "\"pagehide.persisted\"");
+  }
+
+  // 6) Go back to the previous page.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // 7) Confirm that the page was not restored from the BFCache in both the
+  // sticky and non-sticky cases.
+  blink::scheduler::WebSchedulerTrackedFeature expected_feature =
+      (use_sticky_feature == StickinessType::kSticky)
+          ? blink::scheduler::WebSchedulerTrackedFeature::kDummy
+          : blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel;
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {expected_feature}, {}, {}, {}, FROM_HERE);
+}
+
 IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
                        CanCacheMultiplesPagesOnSameDomain) {
   ASSERT_TRUE(embedded_test_server()->Start());
