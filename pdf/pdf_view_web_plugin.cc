@@ -273,7 +273,11 @@ PdfViewWebPlugin::PdfViewWebPlugin(
       pdf_service_remote_(std::move(pdf_service_remote)),
       initial_params_(params),
       pdf_accessibility_data_handler_(
-          client_->CreateAccessibilityDataHandler(this)) {}
+          client_->CreateAccessibilityDataHandler(this)) {
+  auto* service = GetPdfService();
+  if (service)
+    service->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
+}
 
 PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
@@ -739,6 +743,19 @@ void PdfViewWebPlugin::ScheduleTaskOnMainThread(const base::Location& from_here,
                                                 base::TimeDelta delay) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       from_here, base::BindOnce(std::move(callback), result), delay);
+}
+
+void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
+  PdfViewPluginBase::SetCaretPosition(position);
+}
+
+void PdfViewWebPlugin::MoveRangeSelectionExtent(const gfx::PointF& extent) {
+  PdfViewPluginBase::MoveRangeSelectionExtent(extent);
+}
+
+void PdfViewWebPlugin::SetSelectionBounds(const gfx::PointF& base,
+                                          const gfx::PointF& extent) {
+  PdfViewPluginBase::SetSelectionBounds(base, extent);
 }
 
 bool PdfViewWebPlugin::IsValid() const {

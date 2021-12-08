@@ -296,6 +296,11 @@ class PdfViewPluginBase : public PDFEngine::Client,
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
 
+  // Common `pdf::mojom::PdfListener` implementations.
+  void SetCaretPosition(const gfx::PointF& position);
+  void MoveRangeSelectionExtent(const gfx::PointF& extent);
+  void SetSelectionBounds(const gfx::PointF& base, const gfx::PointF& extent);
+
   // Sets the text input type for this plugin based on `in_focus`.
   virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
 
@@ -531,6 +536,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Called after a preview page has loaded or failed to load.
   void LoadNextPreviewPage();
+
+  // Converts `frame_coordinates` to PDF coordinates.
+  gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};

@@ -66,6 +66,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -1016,6 +1017,20 @@ int PdfViewPluginBase::GetDocumentPixelHeight() const {
       std::ceil(document_size_.height() * zoom() * device_scale()));
 }
 
+void PdfViewPluginBase::SetCaretPosition(const gfx::PointF& position) {
+  engine()->SetCaretPosition(FrameToPdfCoordinates(position));
+}
+
+void PdfViewPluginBase::MoveRangeSelectionExtent(const gfx::PointF& extent) {
+  engine()->MoveRangeSelectionExtent(FrameToPdfCoordinates(extent));
+}
+
+void PdfViewPluginBase::SetSelectionBounds(const gfx::PointF& base,
+                                           const gfx::PointF& extent) {
+  engine()->SetSelectionBounds(FrameToPdfCoordinates(base),
+                               FrameToPdfCoordinates(extent));
+}
+
 void PdfViewPluginBase::PrepareAndSetAccessibilityPageInfo(int32_t page_index) {
   // Outdated calls are ignored.
   if (page_index != next_accessibility_page_index_)
@@ -1799,6 +1814,14 @@ void PdfViewPluginBase::LoadNextPreviewPage() {
 
   if (print_preview_loaded_page_count_ == print_preview_page_count_)
     SendPrintPreviewLoadedNotification();
+}
+
+gfx::Point PdfViewPluginBase::FrameToPdfCoordinates(
+    const gfx::PointF& frame_coordinates) const {
+  return gfx::ToFlooredPoint(
+             gfx::ScalePoint(frame_coordinates, device_scale_)) -
+         plugin_rect_.OffsetFromOrigin() -
+         gfx::Vector2d(available_area_.x(), 0);
 }
 
 }  // namespace chrome_pdf

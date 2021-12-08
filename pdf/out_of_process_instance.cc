@@ -526,32 +526,18 @@ void OutOfProcessInstance::GetPrintPresetOptionsFromDocument(
 }
 
 void OutOfProcessInstance::SetCaretPosition(const pp::FloatPoint& position) {
-  pp::Point new_position(position.x(), position.y());
-  ScalePoint(device_scale(), &new_position);
-  new_position.set_x(new_position.x() - available_area().x());
-  engine()->SetCaretPosition(PointFromPPPoint(new_position));
+  PdfViewPluginBase::SetCaretPosition(PointFFromPPFloatPoint(position));
 }
 
 void OutOfProcessInstance::MoveRangeSelectionExtent(
     const pp::FloatPoint& extent) {
-  pp::Point new_extent(extent.x(), extent.y());
-  ScalePoint(device_scale(), &new_extent);
-  new_extent.set_x(new_extent.x() - available_area().x());
-  engine()->MoveRangeSelectionExtent(PointFromPPPoint(new_extent));
+  PdfViewPluginBase::MoveRangeSelectionExtent(PointFFromPPFloatPoint(extent));
 }
 
 void OutOfProcessInstance::SetSelectionBounds(const pp::FloatPoint& base,
                                               const pp::FloatPoint& extent) {
-  pp::Point new_base_point(base.x(), base.y());
-  ScalePoint(device_scale(), &new_base_point);
-  new_base_point.set_x(new_base_point.x() - available_area().x());
-
-  pp::Point new_extent_point(extent.x(), extent.y());
-  ScalePoint(device_scale(), &new_extent_point);
-  new_extent_point.set_x(new_extent_point.x() - available_area().x());
-
-  engine()->SetSelectionBounds(PointFromPPPoint(new_base_point),
-                               PointFromPPPoint(new_extent_point));
+  PdfViewPluginBase::SetSelectionBounds(PointFFromPPFloatPoint(base),
+                                        PointFFromPPFloatPoint(extent));
 }
 
 pp::Var OutOfProcessInstance::GetLinkAtPosition(const pp::Point& point) {
