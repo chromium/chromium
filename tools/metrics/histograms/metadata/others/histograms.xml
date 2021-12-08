@@ -8163,7 +8163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ImportantFile.SerializationDuration{File}" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
