@@ -6,12 +6,15 @@
 
 #include <windows.h>
 
+#include "base/command_line.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_set.h"
+#include "ui/color/color_switches.h"
 #include "ui/color/color_transform.h"
+#include "ui/color/win/accent_color_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
@@ -26,6 +29,16 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   // reverse-engineering current Windows behavior.  Or maybe the union of all
   // these.
   ColorMixer& mixer = provider->AddMixer();
+
+  // Use the system accent color as the Chrome accent color, if desired.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kPervasiveSystemAccentColor)) {
+    const auto accent_color = AccentColorObserver::Get()->accent_color();
+    if (accent_color.has_value()) {
+      mixer[kColorAccent] =
+          PickGoogleColor({accent_color.value()}, kColorPrimaryBackground);
+    }
+  }
 
   if (!high_contrast)
     return;

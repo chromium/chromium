@@ -20,9 +20,20 @@ source_set("color_headers") {
   ]
 
   public_deps = [
-    "//base:base",
-    "//skia:skia",
+    "//base",
+    "//skia",
   ]
+}
+
+component("color_switches") {
+  sources = [
+    "color_switches.cc",
+    "color_switches.h",
+  ]
+
+  defines = [ "IS_COLOR_SWITCHES_IMPL" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("color") {
@@ -46,8 +57,8 @@ component("color") {
 
   public_deps = [
     ":color_headers",
-    "//base:base",
-    "//skia:skia",
+    "//base",
+    "//skia",
     "//ui/gfx:color_utils",
   ]
 
@@ -147,5 +158,9 @@ component("mixers") {
     ]
   } else if (is_win) {
     sources += [ "win/native_color_mixers_win.cc" ]
+    deps += [
+      ":accent_color_observer",
+      ":color_switches",
+    ]
   }
 }

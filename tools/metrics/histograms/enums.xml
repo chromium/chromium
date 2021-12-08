@@ -51677,6 +51677,7 @@ from previous Chrome versions.
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
+  <int value="-112707644" label="pervasive-system-accent-color"/>
   <int value="-112459802" label="WebXrRenderPath:enabled"/>
   <int value="-112335255" label="FormControlsRefresh:enabled"/>
   <int value="-111160804" label="ChromeShareLongScreenshot:disabled"/>

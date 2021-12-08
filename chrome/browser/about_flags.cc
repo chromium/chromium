@@ -280,6 +280,7 @@
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
 #include "chrome/browser/win/titlebar_config.h"
+#include "ui/color/color_switches.h"  // nogncheck
 #endif  // OS_WIN
 
 #if defined(TOOLKIT_VIEWS)
@@ -7727,6 +7728,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSnoopingProtection,
                                     kSnoopingProtectionVariations,
                                     "SnoopingProtection")},
+#endif
+
+#if defined(OS_WIN)
+    {"pervasive-system-accent-color",
+     flag_descriptions::kPervasiveSystemAccentColorName,
+     flag_descriptions::kPervasiveSystemAccentColorDescription, kOsWin,
+     SINGLE_VALUE_TYPE(switches::kPervasiveSystemAccentColor)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

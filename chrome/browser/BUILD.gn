@@ -5504,6 +5504,7 @@ static_library("browser") {
       "//ui/aura_extra",
       "//ui/base:fullscreen_win",
       "//ui/color:accent_color_observer",
+      "//ui/color:color_switches",
     ]
     allow_circular_includes_from +=
         [ "//chrome/browser/safe_browsing/chrome_cleaner" ]

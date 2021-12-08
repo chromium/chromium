@@ -2222,6 +2222,9 @@ extern const char kHardwareSecureDecryptionExperimentDescription[];
 extern const char kMediaFoundationClearName[];
 extern const char kMediaFoundationClearDescription[];
 
+extern const char kPervasiveSystemAccentColorName[];
+extern const char kPervasiveSystemAccentColorDescription[];
+
 extern const char kPwaUninstallInWindowsOsName[];
 extern const char kPwaUninstallInWindowsOsDescription[];
 

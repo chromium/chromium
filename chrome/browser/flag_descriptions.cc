@@ -3864,6 +3864,12 @@ const char kMediaFoundationClearDescription[] =
     "Enable/Disable the use of MediaFoundation for non-protected content "
     "playback on supported systems.";
 
+const char kPervasiveSystemAccentColorName[] = "Pervasive system accent color";
+const char kPervasiveSystemAccentColorDescription[] =
+    "Use the Windows system accent color as the Chrome accent color, if \"Show "
+    "accent color on title bars and windows borders\" is toggled on in the "
+    "Windows system settings.";
+
 const char kPwaUninstallInWindowsOsName[] =
     "Enable PWAs to register as an uninstallable app in Windows on "
     "installation.";
