@@ -5,6 +5,7 @@
 #include "content/browser/back_forward_cache_browsertest.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"

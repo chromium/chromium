@@ -20,6 +20,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"

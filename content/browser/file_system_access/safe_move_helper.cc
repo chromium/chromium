@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/quarantine/quarantine.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/content_browser_client.h"
