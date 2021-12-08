@@ -1,44 +1,17 @@
 <style include="cr-shared-style shimless-rma-shared">
+  iron-icon {
+    height: 200px;
+    width: 300px;
+  }
 </style>
 
-<base-page>
+<base-page orientation="column">
   <div slot="header">
-    <h1 hidden$="[[!reimageRequired_]]">
-      [[i18n('firmwareReimagingTitleReimageRequired')]]
-    </h1>
-    <h1 hidden$="[[reimageRequired_]]">
-      [[i18n('firmwareReimagingTitleReimageNotRequired')]]
-    </h1>
+    <h1>[[i18n('firmwareUpdatePageTitleText')]]</h1>
+    <div id="firmwareUpdateStatus">[[statusString_]]</div>
   </div>
   <div slot="body">
-    <cr-radio-group
-        id="firmwareReimageOptions"
-        on-selected-changed="onFirmwareReimageSelectionChanged_">
-      <cr-radio-button
-          name="firmwareReimageDownload"
-          id="firmwareReimageDownload">
-        [[firmwareReimageDownloadMessage_(reimageRequired_)]]
-      </cr-radio-button>
-      <p class="indented-description">
-        [[i18n('firmwareReimagingInternetAccess')]]
-      </p>
-      <cr-radio-button
-          name="firmwareReimageUsb"
-          id="firmwareReimageUsb">
-        [[firmwareReimageUsbMessage_(reimageRequired_)]]
-      </cr-radio-button>
-      <p class="indented-description">
-        [[i18n('firmwareReimagingThumbdrive1')]]
-        <a href="#" on-click="linkToRecoveryClicked_">
-          [[i18n('firmwareReimagingThumbdrive2')]]
-        </a>
-      </p>
-      <cr-radio-button
-          name="firmwareReimageSkip"
-          id="firmwareReimageSkip"
-          hidden$="[[reimageRequired_]]">
-          [[i18n('firmwareReimagingSkip')]]
-      </cr-radio-button>
-    </cr-radio-group>
+    <!-- TODO(gavindodd): Replace with spinner -->
+    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
   </div>
 </base-page>

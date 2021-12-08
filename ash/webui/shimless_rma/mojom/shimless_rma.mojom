@@ -55,7 +55,7 @@ enum State {
   kEnterRSUWPDisableCode,
   kWaitForManualWPDisable,
   kWPDisableComplete,
-  kChooseFirmwareReimageMethod,
+  kUpdateRoFirmware,
   kRestock,
   kUpdateDeviceInformation,
   kCheckCalibration,
@@ -557,27 +557,13 @@ interface ShimlessRmaService {
           RmadErrorCode error);
 
   ///////////////////////////////////////
-  // Methods for kChooseFirmwareReimageMethod state.
+  // Method for kUpdateRoFirmware state.
   //
-  // Indicate the device requires reimaging, or if it is optional.
-  ReimageRequired() => (bool required);
-  // Indicate that the user has chosen to skip device reimaging and move to the
-  // next state.
-  // Returns the next state to display and an error code.
-  ReimageSkipped()
+  // Continue after firmware reimaging completes.
+  RoFirmwareUpdateComplete()
       => (State state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
-  // TODO(gavindod): Does reimaging require an observer?
-  // Attempt to reimage by downloading the firmware.
-  // Returns the next state to display and an error code.
-  ReimageFromDownload()
-      => (State state, bool can_cancel, bool can_go_back,
-          RmadErrorCode error);
-  // Attempt to reimage with firmware loaded from a USB drive.
-  // Returns the next state to display and an error code.
-  ReimageFromUsb()
-      => (State state, bool can_cancel, bool can_go_back,
-          RmadErrorCode error);
+
 
   ///////////////////////////////////////
   // Methods for kRestock state.

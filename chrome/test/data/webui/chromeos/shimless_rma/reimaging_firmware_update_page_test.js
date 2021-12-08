@@ -5,12 +5,13 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingFirmwareUpdatePageElement} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
+import {UpdateRoFirmwarePage} from 'chrome://shimless-rma/reimaging_firmware_update_page.js';
+import {UpdateRoFirmwareStatus} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function reimagingFirmwareUpdatePageTest() {
-  /** @type {?ReimagingFirmwareUpdatePageElement} */
+  /** @type {?UpdateRoFirmwarePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -31,15 +32,11 @@ export function reimagingFirmwareUpdatePageTest() {
     service.reset();
   });
 
-  /**
-   * @param {boolean} reimageRequired
-   * @return {!Promise}
-   */
-  function initializeReimagingFirmwareUpdatePage(reimageRequired) {
+  /** @return {!Promise} */
+  function initializeReimagingFirmwareUpdatePage() {
     assertFalse(!!component);
 
-    service.setReimageRequiredResult(reimageRequired);
-    component = /** @type {!ReimagingFirmwareUpdatePageElement} */ (
+    component = /** @type {!UpdateRoFirmwarePage} */ (
         document.createElement('reimaging-firmware-update-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -47,73 +44,57 @@ export function reimagingFirmwareUpdatePageTest() {
     return flushTasks();
   }
 
-  test('ReimagingFirmwareUpdatePageRequiredInitializes', async () => {
-    await initializeReimagingFirmwareUpdatePage(true);
+  test('RoFirmwareUpdatePageInitializes', async () => {
+    await initializeReimagingFirmwareUpdatePage();
     await flushTasks();
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
-    const skipReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageSkip');
-
-    assertFalse(downloadReimageComponent.checked);
-    assertFalse(usbReimageComponent.checked);
-    assertFalse(skipReimageComponent.checked);
-    assertTrue(skipReimageComponent.hidden);
+    const updateStatus =
+        component.shadowRoot.querySelector('#firmwareUpdateStatus');
+    assertFalse(updateStatus.hidden);
+    assertEquals('', updateStatus.textContent.trim());
   });
 
-  test('ReimagingFirmwareUpdatePageNotRequiredInitializes', async () => {
-    await initializeReimagingFirmwareUpdatePage(false);
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
-    const skipReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageSkip');
+  test('RoFirmwareUpdateStartingDisablesNext', async () => {
+    await initializeReimagingFirmwareUpdatePage();
 
-    assertFalse(downloadReimageComponent.checked);
-    assertFalse(usbReimageComponent.checked);
-    assertFalse(skipReimageComponent.checked);
-    assertFalse(skipReimageComponent.hidden);
+    let savedResult;
+    let savedError;
+    component.onNextButtonClick()
+        .then((result) => savedResult = result)
+        .catch((error) => savedError = error);
+    await flushTasks();
+
+    assertTrue(savedError instanceof Error);
+    assertEquals(savedError.message, 'RO Firmware update is not complete.');
+    assertEquals(savedResult, undefined);
   });
 
-  test('ReimagingFirmwareUpdatePageOneChoiceOnly', async () => {
-    await initializeReimagingFirmwareUpdatePage(true);
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
+  test('RoFirmwareUpdateInProgressDisablesNext', async () => {
+    await initializeReimagingFirmwareUpdatePage();
+    service.triggerUpdateRoFirmwareObserver(
+        UpdateRoFirmwareStatus.kUpdating, 0);
+    await flushTasks();
 
-    downloadReimageComponent.click();
-    await flushTasks;
+    let savedResult;
+    let savedError;
+    component.onNextButtonClick()
+        .then((result) => savedResult = result)
+        .catch((error) => savedError = error);
+    await flushTasks();
 
-    assertTrue(downloadReimageComponent.checked);
-    assertFalse(usbReimageComponent.checked);
-
-    usbReimageComponent.click();
-    await flushTasks;
-
-    assertFalse(downloadReimageComponent.checked);
-    assertTrue(usbReimageComponent.checked);
+    assertTrue(savedError instanceof Error);
+    assertEquals(savedError.message, 'RO Firmware update is not complete.');
+    assertEquals(savedResult, undefined);
   });
 
-  test('SelectDownloadImage', async () => {
+  test('RoFirmwareUpdateEnablesNext', async () => {
     const resolver = new PromiseResolver();
-    let callCounter = 0;
-    await initializeReimagingFirmwareUpdatePage(true);
-    service.reimageFromUsb = () => assertTrue(false);
-    service.reimageSkipped = () => assertTrue(false);
-    service.reimageFromDownload = () => {
-      callCounter++;
+    await initializeReimagingFirmwareUpdatePage();
+    service.triggerUpdateRoFirmwareObserver(
+        UpdateRoFirmwareStatus.kComplete, 0);
+    await flushTasks();
+    service.roFirmwareUpdateComplete = () => {
       return resolver.promise;
     };
-    const downloadReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageDownload');
-
-    downloadReimageComponent.click();
-    await flushTasks();
-    assertTrue(downloadReimageComponent.checked);
 
     let expectedResult = {foo: 'bar'};
     let savedResult;
@@ -122,63 +103,6 @@ export function reimagingFirmwareUpdatePageTest() {
     resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
-  });
-
-  test('SelectUsbImage', async () => {
-    const resolver = new PromiseResolver();
-    let callCounter = 0;
-    await initializeReimagingFirmwareUpdatePage(true);
-    service.reimageFromDownload = () => assertTrue(false);
-    service.reimageSkipped = () => assertTrue(false);
-    service.reimageFromUsb = () => {
-      callCounter++;
-      return resolver.promise;
-    };
-    const usbReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageUsb');
-
-    usbReimageComponent.click();
-    await flushTasks();
-    assertTrue(usbReimageComponent.checked);
-
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
-
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
-  });
-
-  test('SelectSkipImage', async () => {
-    const resolver = new PromiseResolver();
-    let callCounter = 0;
-    await initializeReimagingFirmwareUpdatePage(false);
-    service.reimageFromDownload = () => assertTrue(false);
-    service.reimageFromUsb = () => assertTrue(false);
-    service.reimageSkipped = () => {
-      callCounter++;
-      return resolver.promise;
-    };
-    const skipReimageComponent =
-        component.shadowRoot.querySelector('#firmwareReimageSkip');
-
-    skipReimageComponent.click();
-    await flushTasks();
-    assertTrue(skipReimageComponent.checked);
-
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
-
-    assertEquals(callCounter, 1);
     assertDeepEquals(savedResult, expectedResult);
   });
 }

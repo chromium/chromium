@@ -85,10 +85,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       SetComponentListCallback callback) override;
   void ReworkMainboard(ReworkMainboardCallback callback) override;
 
-  void ReimageRequired(ReimageRequiredCallback callback) override;
-  void ReimageSkipped(ReimageSkippedCallback callback) override;
-  void ReimageFromDownload(ReimageFromDownloadCallback callback) override;
-  void ReimageFromUsb(ReimageFromUsbCallback callback) override;
+  void RoFirmwareUpdateComplete(
+      RoFirmwareUpdateCompleteCallback callback) override;
 
   void ShutdownForRestock(ShutdownForRestockCallback callback) override;
   void ContinueFinalizationAfterRestock(

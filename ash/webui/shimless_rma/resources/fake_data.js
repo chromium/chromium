@@ -63,7 +63,7 @@ export const fakeStates = [
     error: RmadErrorCode.kOk
   },
   {
-    state: State.kChooseFirmwareReimageMethod,
+    state: State.kUpdateRoFirmware,
     canCancel: true,
     canGoBack: true,
     error: RmadErrorCode.kOk

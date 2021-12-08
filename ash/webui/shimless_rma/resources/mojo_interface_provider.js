@@ -52,7 +52,7 @@ function setupFakeShimlessRmaService_() {
   service.automaticallyTriggerOsUpdateObservation();
 
   service.setGetComponentListResult(fakeComponents);
-  service.setReimageRequiredResult(false);
+  service.automaticallyTriggerUpdateRoFirmwareObservation();
   service.automaticallyTriggerDisableWriteProtectionObservation();
   service.automaticallyTriggerCalibrationObservation();
 

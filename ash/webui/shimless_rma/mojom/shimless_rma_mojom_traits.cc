@@ -80,7 +80,7 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     case ProtoRmadState::kWpDisableComplete:
       return MojomRmaState::kWPDisableComplete;
     case ProtoRmadState::kUpdateRoFirmware:
-      return MojomRmaState::kChooseFirmwareReimageMethod;
+      return MojomRmaState::kUpdateRoFirmware;
     case ProtoRmadState::kRestock:
       return MojomRmaState::kRestock;
     case ProtoRmadState::kUpdateDeviceInfo:

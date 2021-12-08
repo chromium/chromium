@@ -2413,35 +2413,23 @@ Try tapping the mic to ask me anything.
         The SKU should only be changed if the new component(s) are different from the ones they replaced. For example, a touchscreen replacing a non-touchscreen, or memory being upgraded from 8GB to 16GB.
       </message>
       <!-- RO firmware reimaging page -->
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_REQUIRED" translateable="false" desc="The title for the page when reimaging is required.">
-        Select an option for firmware reimaging
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_TITLE" translateable="false" desc="The title for the page when reimaging is in progress.">
+      Install firmware image
       </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_TITLE_REIMAGE_NOT_REQUIRED" translateable="false" desc="The title for the page when reimaging is not required.">
-        This device doesn't require firmware reimaging. Would you like to reimage the firmware anyway?
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_WAIT_FOR_USB" translateable="false" desc="The prompt to insert a thumb drive with the recovery image for this device.">
+      Insert your thumb drive with the downloaded recovery image.
       </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_INTERNET_ACCESS" translateable="false" desc="The label that says that internet access is required.">
-        Requires internet access
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_NOT_FOUND" translateable="false" desc="The message when a thumb drive is detected but it does not conatin a valid recovery image for this device.">
+      Recovery image not found. Insert your thumb drive with the downloaded recovery image.
       </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_THUMBDRIVE_1" translateable="false" desc="Part 1 of the label that says that a thumbdrive is required.">
-        Requires a Thumbdrive configured for
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATING" translateable="false" desc="The message when the firmware is being installed.">
+      Installing firmware...
       </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_THUMBDRIVE_2" translateable="false" desc="Part 2 of the label that says that a thumbdrive is required.">
-        Chromebook Recovery
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_REBOOT" translateable="false" desc="The message when firmware is installed and the required reboot is about to take place.">
+      About to reboot...
       </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_SKIP" translateable="false" desc="The label that offers to skip reimaging.">
-        No, skip it for now.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_DOWNLOAD_REIMAGE_REQUIRED" translateable="false" desc="The label that offers to download if reimaging is required.">
-        Download the firmware image
-      </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_DOWNLOAD_REIMAGE_NOT_REQUIRED" translateable="false" desc="The label that offers to download if reimaging is not required.">
-        Yes, download the firmware image
-      </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_REQUIRED" translateable="false" desc="The label that offers to use the recovery utility if reimaging is required.">
-        Use the Chromebook Recovery Utility
-      </message>
-      <message name="IDS_SHIMLESS_RMA_REIMAGING_FIRMWARE_RECOVERY_REIMAGE_NOT_REQUIRED" translateable="false" desc="The label that offers to use the recovery utility if reimaging is not required.">
-        Yes, use the Chromebook Recovery Utility
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_COMPLETE" translateable="false" desc="The message when firmware installation is complete and the device has rebooted.">
+      Installation complete.
       </message>
       <!-- Onboarding update page -->
       <message name="IDS_SHIMLESS_RMA_ONBOARDING_UPDATE_CONNECT" translateable="false" desc="The message that you can connect to the internet on the prevous page.">

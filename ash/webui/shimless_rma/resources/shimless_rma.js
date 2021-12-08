@@ -132,7 +132,7 @@ const StateComponentMapping = {
     buttonCancel: ButtonState.HIDDEN,
     buttonBack: ButtonState.HIDDEN,
   },
-  [State.kChooseFirmwareReimageMethod]: {
+  [State.kUpdateRoFirmware]: {
     componentIs: 'reimaging-firmware-update-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,

@@ -442,41 +442,11 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * @return {!Promise<!{required: boolean}>}
-   */
-  reimageRequired() {
-    return this.methods_.resolveMethod('reimageRequired');
-  }
-
-  /**
-   * @param {boolean} required
-   */
-  setReimageRequiredResult(required) {
-    this.methods_.setResult('reimageRequired', {required: required});
-  }
-
-  /**
    * @return {!Promise<!StateResult>}
    */
-  reimageSkipped() {
+  roFirmwareUpdateComplete() {
     return this.getNextStateForMethod_(
-        'reimageSkipped', State.kChooseFirmwareReimageMethod);
-  }
-
-  /**
-   * @return {!Promise<!StateResult>}
-   */
-  reimageFromDownload() {
-    return this.getNextStateForMethod_(
-        'reimageFromDownload', State.kChooseFirmwareReimageMethod);
-  }
-
-  /**
-   * @return {!Promise<!StateResult>}
-   */
-  reimageFromUsb() {
-    return this.getNextStateForMethod_(
-        'reimageFromUsb', State.kChooseFirmwareReimageMethod);
+        'roFirmwareUpdateComplete', State.kUpdateRoFirmware);
   }
 
   /**
@@ -1229,10 +1199,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('setComponentList');
     this.methods_.register('reworkMainboard');
 
-    this.methods_.register('reimageRequired');
-    this.methods_.register('reimageSkipped');
-    this.methods_.register('reimageFromDownload');
-    this.methods_.register('reimageFromUsb');
+    this.methods_.register('roFirmwareUpdateComplete');
 
     this.methods_.register('getRegionList');
     this.methods_.register('getSkuList');

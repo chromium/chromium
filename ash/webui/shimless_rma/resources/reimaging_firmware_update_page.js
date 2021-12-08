@@ -2,20 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
+import './icons.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {ShimlessRmaServiceInterface, StateResult, UpdateRoFirmwareObserverInterface, UpdateRoFirmwareObserverReceiver, UpdateRoFirmwareStatus} from './shimless_rma_types.js';
+
+/** @type {!Object<!UpdateRoFirmwareStatus, string>} */
+const updateRoFirmwareStatusTextKeys = {
+  [UpdateRoFirmwareStatus.kWaitUsb]: 'firmwareUpdateWaitForUsbText',
+  [UpdateRoFirmwareStatus.kFileNotFound]: 'firmwareUpdateFileNotFoundText',
+  [UpdateRoFirmwareStatus.kUpdating]: 'firmwareUpdatingText',
+  [UpdateRoFirmwareStatus.kRebooting]: 'firmwareUpdateRebootText',
+  [UpdateRoFirmwareStatus.kComplete]: 'firmwareUpdateCompleteText',
+};
 
 /**
  * @fileoverview
- * 'reimaging-firmware-update-page' allows user to reimage the firmware via
- * internet or recovery shim.
- * The reimage may be optional in which case skip reimage will be available.
+ * 'firmware-updating-page' displays status of firmware update.
+ *
+ * The kWaitUsb state requires the user to insert a USB with a recovery image.
+ * If there is an error other than 'file not found' an error signal will be
+ * received and handled by |ShimlessRma| and the status will return to kWaitUsb.
  */
 
 /**
@@ -23,12 +37,10 @@ import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  */
-const ReimagingFirmwareUpdatePageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const UpdateRoFirmwarePageBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-export class ReimagingFirmwareUpdatePageElement extends
-    ReimagingFirmwareUpdatePageBase {
+export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
   static get is() {
     return 'reimaging-firmware-update-page';
   }
@@ -39,16 +51,15 @@ export class ReimagingFirmwareUpdatePageElement extends
 
   static get properties() {
     return {
-      /** @private */
-      reimageMethod_: {
-        type: String,
-        value: '',
+      /** @protected {!UpdateRoFirmwareStatus} */
+      status_: {
+        type: Object,
       },
 
-      /** @private */
-      reimageRequired_: {
-        type: Boolean,
-        value: true,
+      /** @protected */
+      statusString_: {
+        type: String,
+        computed: 'getStatusString_(status_)',
       },
     };
   }
@@ -57,75 +68,53 @@ export class ReimagingFirmwareUpdatePageElement extends
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-  }
+    /** @private {UpdateRoFirmwareObserverReceiver} */
+    this.updateRoFirmwareObserverReceiver_ =
+        new UpdateRoFirmwareObserverReceiver(
+            /**
+             * @type {!UpdateRoFirmwareObserverInterface}
+             */
+            (this));
 
-  /** @override */
-  ready() {
-    super.ready();
-    this.shimlessRmaService_.reimageRequired().then((result) => {
-      this.reimageRequired_ =
-          (result && result.required != undefined) ? result.required : true;
-    });
+    this.shimlessRmaService_.observeRoFirmwareUpdateProgress(
+        this.updateRoFirmwareObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /**
-   * @param {!CustomEvent<{value: string}>} event
    * @protected
+   * @return {string}
    */
-  onFirmwareReimageSelectionChanged_(event) {
-    this.reimageMethod_ = event.detail.value;
-    const disabled = !this.reimageMethod_;
+  getStatusString_() {
+    // kDownloading state is not used in V1.
+    if (!this.status_ || this.status_ == UpdateRoFirmwareStatus.kDownloading) {
+      return '';
+    }
+    return this.i18n(updateRoFirmwareStatusTextKeys[this.status_]);
+  }
+
+  /**
+   * Implements UpdateRoFirmwareObserver.onUpdateRoFirmwareStatusChanged()
+   * TODO(joonbug): Add error handling and display failure using cr-dialog.
+   * @protected
+   * @param {!UpdateRoFirmwareStatus} status
+   */
+  onUpdateRoFirmwareStatusChanged(status) {
+    this.status_ = status;
+    const disabled = this.status_ != UpdateRoFirmwareStatus.kComplete;
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: disabled},
         ));
   }
 
-  /**
-   * @protected
-   * @param {boolean} reimageRequired
-   * @returns {string}
-   */
-  firmwareReimageDownloadMessage_(reimageRequired) {
-    if (reimageRequired) {
-      return this.i18n('firmwareReimagingDownloadReimageRequired');
-    } else {
-      return this.i18n('firmwareReimagingDownloadReimageNotRequired');
-    }
-  }
-
-  /**
-   * @protected
-   * @param {boolean} reimageRequired
-   * @returns {string}
-   */
-  firmwareReimageUsbMessage_(reimageRequired) {
-    if (reimageRequired) {
-      return this.i18n('firmwareReimagingRecoveryReimageRequired');
-    } else {
-      return this.i18n('firmwareReimagingRecoveryReimageNotRequired');
-    }
-  }
-
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
-    if (this.reimageMethod_ === 'firmwareReimageDownload') {
-      return this.shimlessRmaService_.reimageFromDownload();
-    } else if (this.reimageMethod_ === 'firmwareReimageUsb') {
-      return this.shimlessRmaService_.reimageFromUsb();
-    } else if (this.reimageMethod_ === 'firmwareReimageSkip') {
-      return this.shimlessRmaService_.reimageSkipped();
+    if (this.status_ == UpdateRoFirmwareStatus.kComplete) {
+      return this.shimlessRmaService_.roFirmwareUpdateComplete();
     } else {
-      return Promise.reject(new Error('No reimage option selected'));
+      return Promise.reject(new Error('RO Firmware update is not complete.'));
     }
-  }
-
-  /** @protected */
-  linkToRecoveryClicked_() {
-    // TODO(joonbug): Update with real link and check for browser leak.
-    window.open('http://www.google.com');
   }
 }
 
-customElements.define(
-    ReimagingFirmwareUpdatePageElement.is, ReimagingFirmwareUpdatePageElement);
+customElements.define(UpdateRoFirmwarePage.is, UpdateRoFirmwarePage);
