@@ -34,7 +34,8 @@ extern const base::FilePath::CharType kArchiveMountPath[];
 // Name of the mount point used to store temporary files for sharing.
 extern const char kShareCacheMountPointName[];
 
-// Returns FilesApp origin chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj.
+// Returns the valid FilesApp origin. It may be either the System Web App
+// chrome:// URL or the legacy Chrome App chrome-extension:// URL.
 const url::Origin& GetFilesAppOrigin();
 
 // Gets the absolute path for the 'Downloads' folder for the |profile|.

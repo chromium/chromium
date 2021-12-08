@@ -51,7 +51,7 @@ class AppSourceUrlRecorderTest : public testing::Test {
 };
 
 TEST_F(AppSourceUrlRecorderTest, CheckChromeApp) {
-  const std::string app_id = "hhaomjibdihmijegdhdafkllkbggdgoj";
+  const std::string app_id = "unique_app_id";
   SourceId id = GetSourceIdForChromeApp(app_id);
   GURL expected_url("app://" + app_id);
 

@@ -1368,7 +1368,7 @@ var scrollableShelfTests = [
 
   async function pinThenUnpinFileApp() {
     // Pin the File app.
-    var fileID = 'hhaomjibdihmijegdhdafkllkbggdgoj'
+    var fileID = 'unique-file-id-123'
     var pinResults = await promisify(
         chrome.autotestPrivate.setShelfIconPin,
         [{appId: fileID, pinned: true}]);
