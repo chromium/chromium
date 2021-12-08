@@ -23,7 +23,7 @@ import {
   Script,
 } from '../../bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
-import ArgumentValue = Script.PROTO.ArgumentValue;
+import ArgumentValue = Script.ArgumentValue;
 
 export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;
@@ -246,8 +246,8 @@ export class Context {
 
   public async _executeCallFunction(
     functionDeclaration: string,
-    _this: Script.PROTO.ArgumentValue,
-    args: Script.PROTO.ArgumentValue[],
+    _this: Script.ArgumentValue,
+    args: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Protocol.Runtime.CallFunctionOnResponse> {
     // TODO sadym: add error handling for serialization/deserialization errors.
@@ -276,10 +276,10 @@ export class Context {
 
   public async callFunction(
     functionDeclaration: string,
-    _this: Script.PROTO.ArgumentValue,
-    args: Script.PROTO.ArgumentValue[],
+    _this: Script.ArgumentValue,
+    args: Script.ArgumentValue[],
     awaitPromise: boolean
-  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
+  ): Promise<Script.ScriptCallFunctionResult> {
     const cdpCallFunctionResult = await this._executeCallFunction(
       functionDeclaration,
       _this,

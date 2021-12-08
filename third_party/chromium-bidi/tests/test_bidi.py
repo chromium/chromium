@@ -180,13 +180,13 @@ async def _ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
 
 
 @pytest.mark.asyncio
-async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(
+async def test_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(
       websocket):
     initial_context_id = await get_open_context_id(websocket)
 
     command = {
         "id": 9,
-        "method": "PROTO.browsingContext.create",
+        "method": "browsingContext.create",
         "params": {}}
     await send_JSON_command(websocket, command)
 
@@ -231,7 +231,7 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(
+async def test_PROTO_PageClose_browsingContextContextDestroyedEmitted(
       websocket):
     context_id = await get_open_context_id(websocket)
 
@@ -240,18 +240,18 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(
                "params": {"context": context_id}}
     await send_JSON_command(websocket, command)
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {"id": 12, "result": {}}
-
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
     assert resp == {
         "method": "browsingContext.contextDestroyed",
         "params": {
             "context": context_id,
-            "parent": None,
-            "url": "about:blank"}}
+            "url": "about:blank",
+            "children": []}}
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp == {"id": 12, "result": {}}
 
 
 @pytest.mark.asyncio
@@ -979,13 +979,13 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithArgs_resultReturn(websocket):
+async def test_scriptCallFunctionWithArgs_resultReturn(websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 48,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
             "args": [{
@@ -1014,14 +1014,14 @@ async def test_PROTO_scriptCallFunctionWithArgs_resultReturn(websocket):
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableReturn(
+async def test_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableReturn(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 49,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
             "args": [{
@@ -1053,14 +1053,14 @@ async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableRet
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
+async def test_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 49,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
             "args": [{
@@ -1084,7 +1084,7 @@ async def test_PROTO_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseRetur
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(
+async def test_scriptCallFunctionWithRemoteValueArgument_resultReturn(
       websocket):
     context_id = await get_open_context_id(websocket)
 
@@ -1106,7 +1106,7 @@ async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(
     # Send command.
     await send_JSON_command(websocket, {
         "id": 51,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
             "args": [{
@@ -1124,14 +1124,14 @@ async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(
+async def test_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 52,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async ()=>{return 'SOME_VALUE'}",
             "this": {
@@ -1151,14 +1151,14 @@ async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromise_res
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(
+async def test_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 53,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async ()=>{return 'SOME_VALUE'}",
             "this": {
@@ -1179,14 +1179,14 @@ async def test_PROTO_scriptCallFunctionWithAsyncArrowFunctionAndAwaitPromiseFals
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(
+async def test_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 54,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async function(){return 'SOME_VALUE'}",
             "this": {
@@ -1206,13 +1206,14 @@ async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromise_r
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(websocket):
+async def test_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(
+      websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 55,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async function(){return 'SOME_VALUE'}",
             "this": {
@@ -1233,14 +1234,14 @@ async def test_PROTO_scriptCallFunctionWithAsyncClassicFunctionAndAwaitPromiseFa
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(
+async def test_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 56,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "()=>{return this.constructor.name}",
             "this": {
@@ -1259,14 +1260,14 @@ async def test_PROTO_scriptCallFunctionWithArrowFunctionAndThisParameter_thisIsI
 
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptCallFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
+async def test_scriptCallFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
       websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 57,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": "function(){return this.constructor.name}",
             "this": {
@@ -1356,7 +1357,8 @@ async def test_selectElementMissingElement_missingElement(websocket):
 
 
 # Testing serialization.
-async def assertSerialization(js_str_object, expected_serialized_object, websocket):
+async def assertSerialization(js_str_object, expected_serialized_object,
+      websocket):
     context_id = await get_open_context_id(websocket)
 
     # Send command.

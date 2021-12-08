@@ -64,7 +64,7 @@ async def main():
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
     command_result = await run_and_wait_command({
         "id": 1000,
-        "method": "PROTO.browsingContext.create",
+        "method": "browsingContext.create",
         "params": {}}, websocket)
 
     # Part 2. Get the command result.
@@ -106,7 +106,7 @@ async def main():
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L38
     command_result = await run_and_wait_command({
         "id": 1002,
-        "method": "PROTO.script.callFunction",
+        "method": "script.callFunction",
         "params": {
             "functionDeclaration": """(resultsSelector) => {
                 const anchors = Array.from(document.querySelectorAll(resultsSelector));

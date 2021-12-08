@@ -223,12 +223,8 @@ export namespace CommonDataTypes {
 }
 
 export namespace Script {
-  export type CommandType =
-    | ScriptEvaluateCommand
-    | PROTO.ScriptCallFunctionCommand;
-  export type ResultType =
-    | ScriptEvaluateResult
-    | PROTO.ScriptCallFunctionResult;
+  export type CommandType = ScriptEvaluateCommand | ScriptCallFunctionCommand;
+  export type ResultType = ScriptEvaluateResult | ScriptCallFunctionResult;
 
   export type RealmTarget = {
     // TODO sadym: implement.
@@ -263,32 +259,30 @@ export namespace Script {
     exceptionDetails: CommonDataTypes.ExceptionDetails;
   };
 
-  export namespace PROTO {
-    export type ScriptCallFunctionCommand = {
-      method: 'PROTO.script.callFunction';
-      params: ScriptCallFunctionParameters;
-    };
+  export type ScriptCallFunctionCommand = {
+    method: 'script.callFunction';
+    params: ScriptCallFunctionParameters;
+  };
 
-    export type ScriptCallFunctionParameters = {
-      functionDeclaration: string;
-      args?: ArgumentValue[];
-      this?: ArgumentValue;
-      awaitPromise?: boolean;
-      target: Target;
-    };
+  export type ScriptCallFunctionParameters = {
+    functionDeclaration: string;
+    args?: ArgumentValue[];
+    this?: ArgumentValue;
+    awaitPromise?: boolean;
+    target: Target;
+  };
 
-    export type ScriptCallFunctionResult =
-      | ScriptCallFunctionSuccessResult
-      | ScriptExceptionResult;
+  export type ScriptCallFunctionResult =
+    | ScriptCallFunctionSuccessResult
+    | ScriptExceptionResult;
 
-    export type ScriptCallFunctionSuccessResult = {
-      result: CommonDataTypes.RemoteValue;
-    };
+  export type ScriptCallFunctionSuccessResult = {
+    result: CommonDataTypes.RemoteValue;
+  };
 
-    export type ArgumentValue =
-      | CommonDataTypes.RemoteReference
-      | CommonDataTypes.LocalValue;
-  }
+  export type ArgumentValue =
+    | CommonDataTypes.RemoteReference
+    | CommonDataTypes.LocalValue;
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
@@ -296,11 +290,11 @@ export namespace BrowsingContext {
   export type CommandType =
     | BrowsingContextGetTreeCommand
     | BrowsingContextNavigateCommand
-    | PROTO.BrowsingContextCreateCommand;
+    | BrowsingContextCreateCommand;
   export type ResultType =
     | BrowsingContextGetTreeResult
     | BrowsingContextNavigateResult
-    | PROTO.BrowsingContextCreateResult;
+    | BrowsingContextCreateResult;
   export type EventType =
     | BrowsingContextDomContentLoadedEvent
     | BrowsingContextCreatedEvent
@@ -350,6 +344,21 @@ export namespace BrowsingContext {
     url: string;
   };
 
+  export type BrowsingContextCreateCommand = {
+    method: 'browsingContext.create';
+    params: BrowsingContextCreateParameters;
+  };
+
+  export type BrowsingContextCreateType = 'tab' | 'window';
+
+  export type BrowsingContextCreateParameters = {
+    type?: BrowsingContextCreateType;
+  };
+
+  export type BrowsingContextCreateResult = {
+    context: BrowsingContext;
+  };
+
   // events
   export type BrowsingContextDomContentLoadedEvent = {
     method: 'browsingContext.domContentLoaded';
@@ -374,23 +383,6 @@ export namespace BrowsingContext {
 
   // proto
   export namespace PROTO {
-    // `browsingContext.create`:
-    // https://github.com/w3c/webdriver-bidi/pull/133
-    export type BrowsingContextCreateCommand = {
-      method: 'PROTO.browsingContext.create';
-      params: BrowsingContextCreateParameters;
-    };
-
-    export type BrowsingContextCreateType = 'tab' | 'window';
-
-    export type BrowsingContextCreateParameters = {
-      type?: BrowsingContextCreateType;
-    };
-
-    export type BrowsingContextCreateResult = {
-      context: BrowsingContext;
-    };
-
     // `browsingContext.findElement`:
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/67
     export type BrowsingContextFindElementCommand = {

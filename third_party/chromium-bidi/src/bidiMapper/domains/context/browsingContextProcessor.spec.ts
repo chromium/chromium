@@ -87,9 +87,9 @@ describe('BrowsingContextProcessor', function () {
   });
 
   describe('handle `process_PROTO_browsingContext_create`', async function () {
-    const BROWSING_CONTEXT_CREATE_COMMAND: BrowsingContext.PROTO.BrowsingContextCreateCommand =
+    const BROWSING_CONTEXT_CREATE_COMMAND: BrowsingContext.BrowsingContextCreateCommand =
       {
-        method: 'PROTO.browsingContext.create',
+        method: 'browsingContext.create',
         params: {},
       };
 
@@ -111,7 +111,7 @@ describe('BrowsingContextProcessor', function () {
 
     it('Target.attachedToTarget before command finished', async function () {
       const createResultPromise =
-        browsingContextProcessor.process_PROTO_browsingContext_create(
+        browsingContextProcessor.process_browsingContext_create(
           BROWSING_CONTEXT_CREATE_COMMAND
         );
 
@@ -131,7 +131,7 @@ describe('BrowsingContextProcessor', function () {
 
     it('Target.attachedToTarget after command finished', async function () {
       const createResultPromise =
-        browsingContextProcessor.process_PROTO_browsingContext_create(
+        browsingContextProcessor.process_browsingContext_create(
           BROWSING_CONTEXT_CREATE_COMMAND
         );
 
