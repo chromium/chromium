@@ -73,6 +73,14 @@ Part::Part(PartType t,
     ABSL_ASSERT(value.empty());
 }
 
+bool Part::HasCustomName() const {
+  // Determine if the part name was custom, like `:foo`, or an
+  // automatically assigned numeric value.  Since custom group
+  // names follow javascript identifier rules the first character
+  // cannot be a digit, so that is all we need to check here.
+  return !name.empty() && !std::isdigit(name[0]);
+}
+
 Pattern::Pattern(std::vector<Part> part_list,
                  Options options,
                  std::string segment_wildcard_regex)
@@ -112,20 +120,26 @@ std::string Pattern::GeneratePatternString() const {
       continue;
     }
 
-    // Determine if the part needs a grouping like `{ ... }`.  This is only
-    // necessary when using a non-automatic prefix or any suffix.
+    bool custom_name = part.HasCustomName();
+
+    // Determine if the part needs a grouping like `{ ... }`.  This is
+    // necessary when the group:
+    //
+    // 1. is using a non-automatic prefix or any suffix.
+    // 2. followed by a matching group that may be represented by a
+    //    `(...)` expression.  This is necessary to avoid the following `(...)`
+    //    being mistakenly interpretted as the custom regexp for this
+    //    named group; like `:foo(...)`.
+    const Part* next_part =
+        (i + 1) < part_list_.size() ? &part_list_[i + 1] : nullptr;
     bool needs_grouping =
         !part.suffix.empty() ||
         (!part.prefix.empty() &&
          (part.prefix.size() != 1 ||
-          options_.prefix_list.find(part.prefix[0]) == std::string::npos));
-
-    // Determine if the part name was custom, like `:foo`, or an
-    // automatically assigned numeric value.  Since custom group
-    // names follow javascript identifier rules the first character
-    // cannot be a digit, so that is all we need to check here.
-    ABSL_ASSERT(!part.name.empty());
-    bool custom_name = !std::isdigit(part.name[0]);
+          options_.prefix_list.find(part.prefix[0]) == std::string::npos)) ||
+        (custom_name && part.modifier == Modifier::kNone && next_part &&
+         next_part->type != PartType::kFixed && next_part->prefix.empty() &&
+         next_part->suffix.empty() && !next_part->HasCustomName());
 
     // This is a full featured part.  We must generate a string that looks
     // like:

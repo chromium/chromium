@@ -85,6 +85,10 @@ struct COMPONENT_EXPORT(LIBURLPATTERN) Part {
        std::string suffix,
        Modifier modifier);
   Part() = default;
+
+  // Returns true if the `name` member is a custom name; e.g. for a `:foo`
+  // group.
+  bool HasCustomName() const;
 };
 
 COMPONENT_EXPORT(LIBURLPATTERN)

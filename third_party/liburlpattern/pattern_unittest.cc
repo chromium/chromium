@@ -342,6 +342,35 @@ TEST(PatternStringTest, RegexpWithSuffixModifierFollowedByWildcard) {
   RunPatternStringTest("{(foo)a}(.*)", "{(foo)a}(.*)");
 }
 
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcard) {
+  RunPatternStringTest("{:foo}(.*)", "{:foo}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByRegexp) {
+  RunPatternStringTest("{:foo}(bar)", "{:foo}(bar)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardInGrouping) {
+  RunPatternStringTest("{:foo}{(.*)}", "{:foo}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithSuffix) {
+  RunPatternStringTest("{:foo}{(.*)bar}", ":foo{(.*)bar}");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithPrefix) {
+  RunPatternStringTest("{:foo}{bar(.*)}", ":foo{bar(.*)}");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithCustomName) {
+  RunPatternStringTest("{:foo}:bar(.*)", ":foo:bar(.*)");
+}
+
+TEST(PatternStringTest,
+     NamedGroupInGroupingWithOptionalModifierFollowedByWildcard) {
+  RunPatternStringTest("{:foo}?(.*)", ":foo?*");
+}
+
 struct DirectMatchCase {
   absl::string_view input;
   bool expected_match = true;
