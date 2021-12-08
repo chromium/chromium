@@ -22,15 +22,22 @@ class TailoredSecurityConsentedModalAndroid {
   TailoredSecurityConsentedModalAndroid();
   ~TailoredSecurityConsentedModalAndroid();
 
-  void DisplayMessage(content::WebContents* web_contents);
-  void DismissMessage(messages::DismissReason dismiss_reason);
+  // Show the message for the given `web_contents`, when the Tailored security
+  // setting has been `enabled`.
+  void DisplayMessage(content::WebContents* web_contents, bool enabled);
 
  private:
+  void DismissMessageInternal(messages::DismissReason dismiss_reason);
   void HandleSettingsClicked();
+  void HandleMessageAccepted();
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<messages::MessageWrapper> message_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+
+  // Whether the message is shown for Tailored Security being enabled or
+  // disabled.
+  bool is_enable_message_;
 };
 
 }  // namespace safe_browsing

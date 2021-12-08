@@ -11863,11 +11863,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Tailored security Android message for consented primary accounts -->
-    <message name="IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_TITLE" desc="Title shown in the Android message when the account tailored security setting changes for a consented primary account">
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_TITLE" desc="Title shown in the Android message when the account tailored security setting changes for a consented primary account">
       Enhanced Safe Browsing is on
     </message>
-    <message name="IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_DESCRIPTION" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_MESSAGE_DESCRIPTION" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
       You&#x2019;re on Chrome&#x2019;s strongest security
+    </message>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_TITLE" desc="Title shown in the Android message when the account tailored security setting changes for a consented primary account">
+      Enhanced Safe Browsing is off
+    </message>
+    <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
+      You&#x2019;re getting standard protection
     </message>
     <message name="IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_OK_BUTTON" desc="The text on the ok button in the Android message when the account tailored security setting changes for a consented primary account">
       OK

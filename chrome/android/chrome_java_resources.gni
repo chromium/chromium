@@ -479,6 +479,7 @@ chrome_java_resources = [
   "java/res/drawable/explore_sites_dense_tile_background.xml",
   "java/res/drawable/google_pay_plex.xml",
   "java/res/drawable/google_pay_with_divider.xml",
+  "java/res/drawable/gpp_maybe_grey.xml",
   "java/res/drawable/ic_add_box_rounded_corner.xml",
   "java/res/drawable/ic_add_to_home_screen.xml",
   "java/res/drawable/ic_arrow_forward_blue_24dp.xml",
