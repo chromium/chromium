@@ -99,6 +99,13 @@ GpuArcVideoDecodeAccelerator::GpuArcVideoDecodeAccelerator(
   base::UmaHistogramExactLinear(
       "Media.GpuArcVideoDecodeAccelerator.InstanceCount.All", instance_count_,
       /*exclusive_max=*/50);
+
+  // If out-of-process video decoding is enabled, there should only be one
+  // GpuArcVideoDecodeAccelerator instance per process. This is enforced in the
+  // browser process by the
+  // arc::<unnamed namespace>::VideoAcceleratorFactoryService.
+  DCHECK(!base::FeatureList::IsEnabled(arc::kOutOfProcessVideoDecoding) ||
+         instance_count_ == 1);
 }
 
 GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
