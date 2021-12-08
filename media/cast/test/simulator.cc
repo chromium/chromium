@@ -700,9 +700,9 @@ int main(int argc, char** argv) {
   NetworkSimulationModel model = media::cast::LoadModel(
       cmd->GetSwitchValuePath(media::cast::kModelPath));
 
-  base::DictionaryValue values;
-  values.SetBoolean("sim", true);
-  values.SetString("sim-id", sim_id);
+  base::Value values(base::Value::Type::DICTIONARY);
+  values.SetBoolKey("sim", true);
+  values.SetStringKey("sim-id", sim_id);
 
   std::string extra_data;
   base::JSONWriter::Write(values, &extra_data);
