@@ -23,6 +23,7 @@
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -117,7 +118,7 @@ VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
 
 SupportedVideoDecoderConfigs
 GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
-  if (!supported_config_cache_)
+  if (!supported_config_cache_) {
     supported_config_cache_ = GetPlatformSupportedVideoDecoderConfigs(
         gpu_workarounds_, gpu_preferences_, gpu_info_,
         // GetPlatformSupportedVideoDecoderConfigs runs this callback either
@@ -125,11 +126,8 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
         // the bound function.
         base::BindOnce(&GpuMojoMediaClient::GetVDAVideoDecoderConfigs,
                        base::Unretained(this)));
-
-  if (!supported_config_cache_)
-    return {};
-
-  return *supported_config_cache_;
+  }
+  return supported_config_cache_.value_or(SupportedVideoDecoderConfigs{});
 }
 
 SupportedVideoDecoderConfigs GpuMojoMediaClient::GetVDAVideoDecoderConfigs() {

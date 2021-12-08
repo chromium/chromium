@@ -50,7 +50,6 @@ GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
-  SupportedVideoDecoderConfigs supported_configs;
   switch (GetPlatformDecoderImplementationType(gpu_workarounds, gpu_preferences,
                                                gpu_info)) {
     case VideoDecoderType::kVda:
