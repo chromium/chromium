@@ -17368,6 +17368,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="SystemNotificationAgeType" separator=".">
   <suffix name="ClickToCall" label="Click To Call"/>
+  <suffix name="PriceDrop" label="Price Drop Alerts"/>
   <suffix name="SendTabToSelf" label="Send Tab To Self"/>
   <suffix name="SharedClipboard" label="Shared Clipboard"/>
   <affected-histogram name="Mobile.SystemNotification.Action.Click.Age"/>
