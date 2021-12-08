@@ -4553,6 +4553,7 @@ test("unit_tests") {
     "../browser/federated_learning/floc_remote_permission_service_unittest.cc",
     "../browser/file_select_helper_unittest.cc",
     "../browser/file_system_access/chrome_file_system_access_permission_context_unittest.cc",
+    "../browser/first_party_sets/first_party_sets_util_unittest.cc",
     "../browser/font_pref_change_notifier_unittest.cc",
     "../browser/geolocation/geolocation_permission_context_delegate_unittest.cc",
     "../browser/google/google_search_domain_mixing_metrics_emitter_factory_unittest.cc",

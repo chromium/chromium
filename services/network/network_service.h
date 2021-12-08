@@ -321,6 +321,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
 
+  // Globally-scoped state for First-Party Sets. Must be above the `receiver_`
+  // so it's destroyed after, to make sure even when the reply callback owned by
+  // the `first_party_sets_` is never run when destroyed, the receiver which the
+  // reply callback associated with is already disconnected.
+  std::unique_ptr<FirstPartySets> first_party_sets_;
+
   mojo::Receiver<mojom::NetworkService> receiver_{this};
 
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
@@ -340,9 +346,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // HttpAuthPreferences.
   mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_network_service_params_;
   mojom::HttpAuthStaticParamsPtr http_auth_static_network_service_params_;
-
-  // Globally-scoped state for First-Party Sets.
-  std::unique_ptr<FirstPartySets> first_party_sets_;
 
   // NetworkContexts created by CreateNetworkContext(). They call into the
   // NetworkService when their connection is closed so that it can delete
