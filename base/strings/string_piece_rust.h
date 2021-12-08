@@ -12,7 +12,7 @@
 
 namespace base {
 
-// Create a Rust str from a base::BasigStringPiece. This will call std::abort
+// Create a Rust str from a base::BasicStringPiece. This will call std::abort
 // if there is any invalid UTF8. If you're concerned about this, then
 // instead use StringPieceToRustSlice and convert the data to a string on
 // the Rust side (or pass in a std::string).
