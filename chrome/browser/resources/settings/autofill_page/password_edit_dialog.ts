@@ -434,6 +434,11 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     return this.dialogMode_ === PasswordDialogMode.ADD;
   }
 
+  private shouldAutofocusWebsiteInput_(): boolean {
+    return this.dialogMode_ === PasswordDialogMode.ADD &&
+        !this.isAccountStoreUser;
+  }
+
   /**
    * @return The text to be displayed as the dialog's footnote.
    */

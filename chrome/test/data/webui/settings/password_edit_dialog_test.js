@@ -356,6 +356,7 @@ suite('PasswordEditDialog', function() {
   test('hasCorrectInitialStateWhenAddPassword', function() {
     const addDialog = elementFactory.createPasswordEditDialog();
     assertAddDialogParts(addDialog);
+    assertEquals(true, addDialog.$.websiteInput.autofocus);
     assertEquals('', addDialog.$.websiteInput.value);
     assertEquals('', addDialog.$.usernameInput.value);
     assertEquals('', addDialog.$.passwordInput.value);
@@ -370,10 +371,14 @@ suite('PasswordEditDialog', function() {
     addDialog.accountEmail = 'username@gmail.com';
     const picker = addDialog.$.storePicker;
     assertFalse(isElementVisible(picker));
+    assertEquals(false, picker.autofocus);
+    assertEquals(true, addDialog.$.websiteInput.autofocus);
 
     addDialog.isAccountStoreUser = true;
     flush();
     assertTrue(isElementVisible(picker));
+    assertEquals(true, picker.autofocus);
+    assertEquals(false, addDialog.$.websiteInput.autofocus);
     assertEquals(
         addDialog.i18n('addPasswordStoreOptionAccount', addDialog.accountEmail),
         picker.options[0].textContent.trim());
