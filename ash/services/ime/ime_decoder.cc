@@ -68,12 +68,6 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
 
   base::FilePath path = GetImeDecoderLibPath();
 
-  if (!base::PathExists(path)) {
-    LOG(WARNING) << "IME decoder shared library is not installed.";
-    status_ = Status::kNotInstalled;
-    return;
-  }
-
   // Add dlopen flags (RTLD_LAZY | RTLD_NODELETE) later.
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
   if (!library.is_valid()) {
