@@ -222,6 +222,7 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
           std::make_unique<FrameContextMenuController>(frame, this)) {
   DCHECK(frame_);
 
+  header_view_->Init();
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
       &NonClientFrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr()));
 

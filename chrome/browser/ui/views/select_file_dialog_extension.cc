@@ -218,9 +218,8 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate {
     params->shadow_type = views::Widget::InitParams::ShadowType::kDefault;
     params->init_properties_container.SetProperty(
         chromeos::kFrameActiveColorKey, kFilePickerActiveTitleColor);
-    // Enabling the color below makes the Browser process to crash:
-    // params->init_properties_container.SetProperty(chromeos::kFrameInactiveColorKey,
-    // kFilePickerInactiveTitleColor);
+    params->init_properties_container.SetProperty(
+        chromeos::kFrameInactiveColorKey, kFilePickerInactiveTitleColor);
   }
 
   void GetMinimumDialogSize(gfx::Size* size) const override {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/frame/wide_frame_view.h"
+#include <memory>
 
 #include "ash/frame/header_view.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -100,8 +101,9 @@ WideFrameView::WideFrameView(views::Widget* target)
   target_window->AddObserver(this);
   // Use the HeaderView itself as a frame view because WideFrameView is
   // is the frame only.
-  header_view_ = new HeaderView(target, /*frame view=*/nullptr);
-  AddChildView(header_view_);
+  header_view_ = AddChildView(
+      std::make_unique<HeaderView>(target, /*frame view=*/nullptr));
+  header_view_->Init();
   GetTargetHeaderView()->SetShouldPaintHeader(false);
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
