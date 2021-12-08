@@ -4,16 +4,16 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/ash/notification_badge_color_cache.h"
+#include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 
-using NotificationBadgeTest = testing::Test;
+using AppIconColorCacheTestTest = testing::Test;
 
 namespace ash {
 
-TEST_F(NotificationBadgeTest, NotificationBadgeColorTest) {
+TEST_F(AppIconColorCacheTestTest, ExtractedLightVibrantColorTest) {
   const int width = 64;
   const int height = 64;
 
@@ -22,10 +22,10 @@ TEST_F(NotificationBadgeTest, NotificationBadgeColorTest) {
   all_black_icon.eraseColor(SK_ColorBLACK);
 
   SkColor test_color =
-      NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
+      AppIconColorCache::GetInstance().GetLightVibrantColorForApp(
           "app_id1", gfx::ImageSkia::CreateFrom1xBitmap(all_black_icon));
 
-  // For an all black icon, a white notification badge is expected, since there
+  // For an all black icon, a default white color is expected, since there
   // is no other light vibrant color to get from the icon.
   EXPECT_EQ(test_color, SK_ColorWHITE);
 
@@ -35,10 +35,10 @@ TEST_F(NotificationBadgeTest, NotificationBadgeColorTest) {
   red_icon.eraseColor(gfx::kGoogleRed300);
   red_icon.erase(gfx::kGoogleRed600, {0, 0, width, height / 2});
 
-  test_color = NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
+  test_color = AppIconColorCache::GetInstance().GetLightVibrantColorForApp(
       "app_id2", gfx::ImageSkia::CreateFrom1xBitmap(red_icon));
 
-  // For the red icon, the notification badge should calculate and use the
+  // For the red icon, the color cache should calculate and use the
   // kGoogleRed300 color as the light vibrant color taken from the icon.
   EXPECT_EQ(gfx::kGoogleRed300, test_color);
 }

@@ -71,6 +71,24 @@ std::vector<SyncItemWrapper<std::string>>
 GenerateStringWrappersFromAppListItems(
     const std::vector<const ChromeAppListItem*>& app_list_items);
 
+// Used to calculate the color grouping of the icon image's background.
+// Samples color from the left, right, and top edge of the icon image and
+// determines the color group for each. Returns the most common grouping from
+// the samples. If all three sampled groups are different, then returns
+// 'light_vibrant_group' which is the color group for the light vibrant color of
+// the whole icon image.
+sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
+    const SkBitmap& source,
+    sync_pb::AppListSpecifics::ColorGroup light_vibrant_group);
+
+// Categorize `color` into one of the ColorGroups.
+sync_pb::AppListSpecifics::ColorGroup ColorToColorGroup(SkColor color);
+
+// Returns a SortableIconColor which can be used to sort icons based on a
+// combination of their background color and their light vibrant color.
+ash::IconColor GetSortableIconColorForApp(const std::string& id,
+                                          const gfx::ImageSkia& image);
+
 }  // namespace reorder
 }  // namespace app_list
 

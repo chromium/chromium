@@ -52,10 +52,10 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
+#include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/notification_badge_color_cache.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
@@ -455,7 +455,7 @@ void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,
     ash::ShelfItem new_item = *item;
     new_item.image = image;
     new_item.notification_badge_color =
-        ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
+        ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(
             new_item.id.app_id, image);
     model_->Set(model_->ItemIndexByID(shelf_id), new_item);
   }
@@ -1024,8 +1024,8 @@ void ChromeShelfController::UpdateAppImage(const std::string& app_id,
     item.image = image;
     shelf_spinner_controller_->MaybeApplySpinningEffect(app_id, &item.image);
     item.notification_badge_color =
-        ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
-            app_id, image);
+        ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(app_id,
+                                                                         image);
     model_->Set(index, item);
     // It's possible we're waiting on more than one item, so don't break.
   }
@@ -1299,7 +1299,7 @@ void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   browser_shortcut.image = *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192);
   browser_shortcut.notification_badge_color =
-      ash::NotificationBadgeColorCache::GetInstance().GetBadgeColorForApp(
+      ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(
           kChromeAppId, browser_shortcut.image);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
 
