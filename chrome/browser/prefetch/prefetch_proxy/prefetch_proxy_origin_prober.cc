@@ -163,16 +163,6 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
 
   PrefetchProxyCanaryChecker::RetryPolicy retry_policy;
   retry_policy.max_retries = PrefetchProxyCanaryCheckRetries();
-  retry_policy.backoff_policy = {
-      .num_errors_to_ignore = 0,
-      .initial_delay_ms = 100,
-      .multiply_factor = 2,
-      .jitter_factor = 0.2,
-      // No maximum backoff.
-      .maximum_backoff_ms = -1,
-      .entry_lifetime_ms = -1,
-      .always_use_initial_delay = false,
-  };
 
   if (PrefetchProxyTLSCanaryCheckEnabled()) {
     tls_canary_check_ = std::make_unique<PrefetchProxyCanaryChecker>(

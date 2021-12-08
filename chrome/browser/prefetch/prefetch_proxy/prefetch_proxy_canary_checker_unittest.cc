@@ -322,8 +322,7 @@ TEST_F(PrefetchProxyCanaryCheckerTest, CacheAutoRevalidation) {
   EXPECT_TRUE(checker->IsActive());
 }
 
-// TODO(https://crbug.com/1277788): Fails on MSAN.
-TEST_F(PrefetchProxyCanaryCheckerTest, DISABLED_NetError) {
+TEST_F(PrefetchProxyCanaryCheckerTest, NetError) {
   base::HistogramTester histogram_tester;
   GURL probe_url("https://probe-url.com");
   std::unique_ptr<TestPrefetchProxyCanaryChecker> checker =
@@ -368,8 +367,7 @@ TEST_F(PrefetchProxyCanaryCheckerTest, TimeUntilSuccess) {
       "PrefetchProxy.CanaryChecker.TimeUntilFailure.DNS", 0);
 }
 
-// TODO(https://crbug.com/1277788): Fails on MSAN.
-TEST_F(PrefetchProxyCanaryCheckerTest, DISABLED_TimeUntilFailure) {
+TEST_F(PrefetchProxyCanaryCheckerTest, TimeUntilFailure) {
   base::HistogramTester histogram_tester;
   GURL probe_url("https://probe-url.com");
   std::unique_ptr<TestPrefetchProxyCanaryChecker> checker =
