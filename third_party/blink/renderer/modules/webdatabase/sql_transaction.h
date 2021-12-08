@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sql_transaction_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sql_transaction_error_callback.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_statement.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_state_machine.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -202,7 +202,7 @@ class SQLTransaction final : public ScriptWrappable,
 
   bool execute_sql_allowed_;
   std::unique_ptr<SQLErrorData> transaction_error_;
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
 
   bool read_only_;
 };
