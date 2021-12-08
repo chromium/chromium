@@ -35,7 +35,7 @@ public final class LanguageProfileController {
      */
     public List<String> getLanguagePreferences(String accountName) {
         ThreadUtils.assertOnBackgroundThread();
-        if (!mDelegate.isULPAvailable()) {
+        if (!mDelegate.isULPSupported()) {
             // (TODO:https://crbug.com/1258261) Add initiation histogram.
             Log.d(TAG, "ULP not available");
             return new ArrayList<String>();

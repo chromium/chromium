@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class LanguageProfileDelegateImpl implements LanguageProfileDelegate {
     /**
-     * @return True if ULP is currently available.
+     * @return True if ULP is currently supported.
      */
     @Override
-    public boolean isULPAvailable() {
-        // ULP is not available in the default implementation.
+    public boolean isULPSupported() {
+        // ULP is not supported in the default implementation.
         return false;
     }
 

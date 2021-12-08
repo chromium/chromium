@@ -13,9 +13,9 @@ import java.util.concurrent.TimeoutException;
  */
 public interface LanguageProfileDelegate {
     /**
-     * @return True if ULP is currently available.
+     * @return True if ULP is currently supported.
      */
-    public boolean isULPAvailable();
+    public boolean isULPSupported();
 
     /**
      * @param accountName Account to get profile or null if the default profile should be returned.
