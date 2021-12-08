@@ -56,9 +56,12 @@ source_set("unit_tests") {
     "//dbus",
     "//services/device/public/cpp:test_support",
     "//services/network:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/private_membership:private_membership",
   ]
+
+  data = [ "//third_party/private_membership/src/internal/testing/regression_test_data/cros_test_data.binarypb" ]
 }
 
 proto_library("fresnel_service_proto") {

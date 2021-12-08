@@ -29,6 +29,18 @@ class PrefService;
 namespace ash {
 namespace device_activity {
 
+// Create a delegate which can be used to create fakes in unit tests.
+// Fake via. delegate is required for creating deterministic unit tests.
+class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) PsmDelegate {
+ public:
+  virtual ~PsmDelegate() = default;
+  virtual rlwe::StatusOr<
+      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
+  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
+                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
+                      plaintext_ids) = 0;
+};
+
 // Observes the network for connected state to determine whether the device
 // is active in a given window.
 // State Transition flow:
@@ -51,13 +63,14 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
       NetworkStateHandler* handler,
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<PsmDelegate> psm_delegate,
+      std::unique_ptr<base::RepeatingTimer> report_timer,
+      const std::string& fresnel_server_url,
+      const std::string& api_key,
       const std::string& psm_device_active_secret);
   DeviceActivityClient(const DeviceActivityClient&) = delete;
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
-
-  // Initialize repeating timer to run every |kTimeToRepeat|.
-  virtual std::unique_ptr<base::RepeatingTimer> ConstructReportTimer();
 
   // Returns pointer to |report_timer_|.
   base::RepeatingTimer* GetReportTimer();
@@ -66,34 +79,6 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   void DefaultNetworkChanged(const NetworkState* network) override;
 
   State GetState() const;
-
- protected:
-  // Send Health Check network request and update |state_|.
-  // Before calling this method: |state_| is expected to be |kIdle|.
-  // After calling this method: |state_| set to |kHealthCheck|.
-  virtual void TransitionToHealthCheck();
-
-  // Send Oprf network request and update |state_|.
-  // Before calling this method: |state_| is expected to be |kIdle|.
-  // After calling this method:  |state_| set to |kCheckingMembershipOprf|.
-  virtual void TransitionToCheckMembershipOprf();
-
-  // Update |state_| to |kIdle|.
-  virtual void TransitionToIdle();
-
-  // Send Query network request and update |state_|.
-  // Before calling this method: |state_| is expected to be
-  // |kCheckingMembershipOprf|. After calling this method:  |state_| set to
-  // |kCheckingMembershipQuery|.
-  virtual void TransitionToCheckMembershipQuery(
-      const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
-          oprf_response);
-
-  // Send Import network request and update |state_|.
-  // Before calling this method: |state_| is expected to be
-  // |kCheckingMembershipQuery|. After calling this method:  |state_| set to
-  // |kCheckingIn|.
-  virtual void TransitionToCheckIn();
 
  private:
   // Handles device network connecting successfully.
@@ -105,28 +90,51 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // Called when device network comes online as well as by |report_timer_|.
   void TransitionOutOfIdle();
 
+  // Send Health Check network request and update |state_|.
+  // Before calling this method: |state_| is expected to be |kIdle|.
+  // After calling this method: |state_| set to |kHealthCheck|.
+  void TransitionToHealthCheck();
+
   // Callback from asynchronous method |TransitionToHealthCheck|.
   void OnHealthCheckDone(std::unique_ptr<std::string> response_body);
 
+  // Send Oprf network request and update |state_|.
+  // Before calling this method: |state_| is expected to be |kIdle|.
+  // After calling this method:  |state_| set to |kCheckingMembershipOprf|.
+  void TransitionToCheckMembershipOprf();
+
   // Callback from asynchronous method |TransitionToCheckMembershipOprf|.
   void OnCheckMembershipOprfDone(std::unique_ptr<std::string> response_body);
+
+  // Send Query network request and update |state_|.
+  // Before calling this method: |state_| is expected to be
+  // |kCheckingMembershipOprf|.
+  // After calling this method:  |state_| set to |kCheckingMembershipQuery|.
+  void TransitionToCheckMembershipQuery(
+      const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
+          oprf_response);
 
   // Callback from asynchronous method |TransitionToCheckMembershipQuery|.
   // Check in PSM id based on |response_body| from CheckMembershipQuery.
   void OnCheckMembershipQueryDone(std::unique_ptr<std::string> response_body);
 
+  // Send Import network request and update |state_|.
+  // Before calling this method: |state_| is expected to be
+  // |kCheckingMembershipQuery|.
+  // After calling this method:  |state_| set to |kCheckingIn|.
+  void TransitionToCheckIn();
+
   // Callback from asynchronous method |TransitionToCheckIn|.
   void OnCheckInDone(std::unique_ptr<std::string> response_body);
+
+  // Updates |state_| to |kIdle| and resets state based member variables.
+  void TransitionToIdle();
 
   // Tracks the current state of the DeviceActivityClient.
   State state_ = State::kIdle;
 
   // Keep track of whether the device is connected to the network.
   bool network_connected_ = false;
-
-  // API key used to authenticate with the Fresnel server. This key is read from
-  // the chrome-internal repository and is not publicly exposed in Chromium.
-  const std::string api_key_;
 
   // Generated on demand each time the state machine leaves the idle state.
   // It is reused by several states. It is reset to nullopt.
@@ -140,11 +148,6 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   // Time the device last transitioned out of idle state.
   base::Time last_transition_out_of_idle_time_;
-
-  // Tries reporting device actives every |kTimeToRepeat| from when this class
-  // is initialized. Time of class initialization depends on when the device is
-  // turned on (when |ChromeBrowserMainPartsAsh::PostBrowserStart| is run).
-  std::unique_ptr<base::RepeatingTimer> report_timer_;
 
   // Generated on demand each time the state machine leaves the idle state.
   // Client Generates protos used in request body of Oprf and Query requests.
@@ -171,6 +174,21 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // The URLLoaderFactory we use to issue network requests.
   // |url_loader_factory_| outlives |url_loader_|.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Abstract class used to generate the |psm_rlwe_client_|.
+  std::unique_ptr<PsmDelegate> psm_delegate_;
+
+  // Tries reporting device actives every |kTimeToRepeat| from when this class
+  // is initialized. Time of class initialization depends on when the device is
+  // turned on (when |ChromeBrowserMainPartsAsh::PostBrowserStart| is run).
+  std::unique_ptr<base::RepeatingTimer> report_timer_;
+
+  // Base Fresnel server URL is set by |DeviceActivityClient| constructor.
+  const std::string fresnel_base_url_;
+
+  // API key used to authenticate with the Fresnel server. This key is read from
+  // the chrome-internal repository and is not publicly exposed in Chromium.
+  const std::string api_key_;
 
   // The ChromeOS platform code will provide a derived PSM device active secret
   // via callback.

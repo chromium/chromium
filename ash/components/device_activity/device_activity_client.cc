@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/hmac.h"
-#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -46,10 +45,8 @@ constexpr int32_t kDefaultResponseCode = -1;
 // Response code representing a successfully completed network request.
 constexpr int32_t kSuccessResponseCode = 200;
 
-// TODO(https://crbug.com/1268095): Refactor to pass base url via. constructor.
-const char kFresnelBaseUrl[] =
-    "https://autopush-crosfresnel-pa.sandbox.googleapis.com";
-
+// TODO(https://crbug.com/1272922): Move shared configuration constants to
+// separate file.
 const char kFresnelHealthCheckEndpoint[] = "/v1/fresnel/healthCheck";
 const char kFresnelImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 const char kFresnelOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
@@ -150,16 +147,24 @@ DeviceActivityClient::DeviceActivityClient(
     NetworkStateHandler* handler,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<PsmDelegate> psm_delegate,
+    std::unique_ptr<base::RepeatingTimer> report_timer,
+    const std::string& fresnel_base_url,
+    const std::string& api_key,
     const std::string& psm_device_active_secret)
-    : api_key_(google_apis::GetFresnelAPIKey()),
-      report_timer_(ConstructReportTimer()),
-      network_state_handler_(handler),
+    : network_state_handler_(handler),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
+      psm_delegate_(std::move(psm_delegate)),
+      report_timer_(std::move(report_timer)),
+      fresnel_base_url_(fresnel_base_url),
+      api_key_(api_key),
       psm_device_active_secret_(psm_device_active_secret) {
   DCHECK(network_state_handler_);
   DCHECK(local_state_);
   DCHECK(url_loader_factory_);
+  DCHECK(psm_delegate_);
+  DCHECK(report_timer_);
 
   report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
                        &DeviceActivityClient::TransitionOutOfIdle);
@@ -170,11 +175,6 @@ DeviceActivityClient::DeviceActivityClient(
 
 DeviceActivityClient::~DeviceActivityClient() {
   network_state_handler_->RemoveObserver(this, FROM_HERE);
-}
-
-std::unique_ptr<base::RepeatingTimer>
-DeviceActivityClient::ConstructReportTimer() {
-  return std::make_unique<base::RepeatingTimer>();
 }
 
 base::RepeatingTimer* DeviceActivityClient::GetReportTimer() {
@@ -202,7 +202,7 @@ void DeviceActivityClient::OnNetworkOnline() {
 }
 
 GURL DeviceActivityClient::GetFresnelURL() const {
-  GURL base_url(kFresnelBaseUrl);
+  GURL base_url(fresnel_base_url_);
   GURL::Replacements replacements;
 
   switch (state_) {
@@ -262,7 +262,7 @@ void DeviceActivityClient::TransitionOutOfIdle() {
 
     std::vector<psm_rlwe::RlwePlaintextId> psm_rlwe_ids = {
         current_day_psm_id_.value()};
-    auto status_or_client = psm_rlwe::PrivateMembershipRlweClient::Create(
+    auto status_or_client = psm_delegate_->CreatePsmClient(
         psm_rlwe::RlweUseCase::CROS_FRESNEL_DAILY, psm_rlwe_ids);
 
     if (!status_or_client.ok()) {
