@@ -168,7 +168,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
     AshTestBase::SetUp();
     controller()->AddObserver(&observer_);
 
-    fullscreen_controller_ = controller()->fullscreen_controller_for_test();
+    fullscreen_controller_ = controller()->fullscreen_controller();
   }
 
   void TearDown() override {

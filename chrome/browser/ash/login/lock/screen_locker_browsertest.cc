@@ -89,7 +89,7 @@ class ScreenLockerTest : public InProcessBrowserTest {
 
   bool IsFullscreenNotificationShowing() {
     ash::FullscreenController* ash_fullscreen_controller =
-        Shell::Get()->session_controller()->fullscreen_controller_for_test();
+        Shell::Get()->session_controller()->fullscreen_controller();
     return ash_fullscreen_controller->bubble_for_test() &&
            ash_fullscreen_controller->bubble_for_test()->widget_for_test() &&
            ash_fullscreen_controller->bubble_for_test()
