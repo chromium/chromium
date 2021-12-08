@@ -39,12 +39,11 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
       this,
       extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED,
       content::Source<Profile>(profile_->GetOriginalProfile()));
-  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED,
-                 content::Source<Profile>(profile_.get()));
+
+  omnibox_observation_.Observe(OmniboxWatcher::GetForBrowserContext(profile_));
 }
 
-KeywordExtensionsDelegateImpl::~KeywordExtensionsDelegateImpl() {
-}
+KeywordExtensionsDelegateImpl::~KeywordExtensionsDelegateImpl() = default;
 
 void KeywordExtensionsDelegateImpl::DeleteSuggestion(
     const TemplateURL* template_url,
@@ -128,6 +127,14 @@ void KeywordExtensionsDelegateImpl::MaybeEndExtensionKeywordMode() {
   }
 }
 
+// Input has been accepted, so we're done with this input session. Ensure
+// we don't send the OnInputCancelled event, or handle any more stray
+// suggestions_ready events.
+void KeywordExtensionsDelegateImpl::OnOmniboxInputEntered() {
+  current_keyword_extension_id_.clear();
+  IncrementInputId();
+}
+
 void KeywordExtensionsDelegateImpl::Observe(
     int type,
     const content::NotificationSource& source,
@@ -136,14 +143,6 @@ void KeywordExtensionsDelegateImpl::Observe(
   const AutocompleteInput& input = extension_suggest_last_input_;
 
   switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED:
-      // Input has been accepted, so we're done with this input session. Ensure
-      // we don't send the OnInputCancelled event, or handle any more stray
-      // suggestions_ready events.
-      current_keyword_extension_id_.clear();
-      IncrementInputId();
-      return;
-
     case extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED
         : {
       DCHECK(model);

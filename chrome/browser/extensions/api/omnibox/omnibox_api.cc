@@ -21,6 +21,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
+#include "components/omnibox/browser/omnibox_watcher.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/notification_details.h"
@@ -153,10 +154,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED,
-      content::Source<Profile>(profile),
-      content::NotificationService::NoDetails());
+  OmniboxWatcher::GetForBrowserContext(profile)->NotifyInputEntered();
 }
 
 // static

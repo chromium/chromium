@@ -65,11 +65,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174750): Remove.
   NOTIFICATION_EXTENSION_OMNIBOX_SUGGESTIONS_READY,
 
-  // Sent when the user accepts the input in an extension omnibox keyword
-  // session. The source is the BrowserContext*.
-  // TODO(https://crbug.com/1174751): Remove.
-  NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED,
-
   // Sent when an omnibox extension has updated the default suggestion. The
   // source is the BrowserContext*.
   // TODO(https://crbug.com/1174752): Remove.

@@ -183,6 +183,8 @@ static_library("browser") {
     "omnibox_triggered_feature_service.h",
     "omnibox_view.cc",
     "omnibox_view.h",
+    "omnibox_watcher.cc",
+    "omnibox_watcher.h",
     "on_device_head_model.cc",
     "on_device_head_model.h",
     "on_device_head_provider.cc",

@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/omnibox_watcher.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/buildflags/buildflags.h"
@@ -27,7 +29,8 @@
 class Profile;
 
 class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
-                                      public content::NotificationObserver {
+                                      public content::NotificationObserver,
+                                      public OmniboxWatcher::Observer {
  public:
   KeywordExtensionsDelegateImpl(Profile* profile, KeywordProvider* provider);
 
@@ -51,6 +54,9 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
              const std::u16string& remaining_input) override;
   void EnterExtensionKeywordMode(const std::string& extension_id) override;
   void MaybeEndExtensionKeywordMode() override;
+
+  // OmniboxWatcher::Observer:
+  void OnOmniboxInputEntered() override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -92,6 +98,9 @@ class KeywordExtensionsDelegateImpl : public KeywordExtensionsDelegate,
   // We need our input IDs to be unique across all profiles, so we keep a global
   // UID that each provider uses.
   static int global_input_uid_;
+
+  base::ScopedObservation<OmniboxWatcher, OmniboxWatcher::Observer>
+      omnibox_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_KEYWORD_EXTENSIONS_DELEGATE_IMPL_H_
