@@ -95,6 +95,18 @@ def main(argv):
         raise
     if os.path.exists(out_path) and os.path.samefile(out_path, in_path):
       os.remove(out_path)
+
+    # Detect and delete any stale TypeScript files present in the output folder,
+    # corresponding to input .js files, since they can get picked up by
+    # subsequent ts_library() invocations and cause transient build failures.
+    # This can happen when a file is migrated from JS to TS  and a bot is
+    # switched from building a later CL to building an earlier CL.
+    [pathname, extension] = os.path.splitext(out_path)
+    if extension == '.js':
+      to_check = pathname + '.ts'
+      if os.path.exists(to_check):
+        os.remove(to_check)
+
     with io.open(out_path, mode='wb') as f:
       f.write(preprocessed.encode('utf-8'))
 
