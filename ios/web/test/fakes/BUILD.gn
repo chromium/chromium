@@ -9,6 +9,7 @@ source_set("fakes") {
   deps = [
     "//base",
     "//ios/third_party/webkit",
+    "//ios/web/download",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
@@ -35,6 +36,8 @@ source_set("fakes") {
     "crw_fake_wk_navigation_action.mm",
     "fake_java_script_feature.h",
     "fake_java_script_feature.mm",
+    "fake_native_task_bridge.h",
+    "fake_native_task_bridge.mm",
     "fake_navigation_manager_delegate.h",
     "fake_navigation_manager_delegate.mm",
     "fake_web_frame_impl.cc",

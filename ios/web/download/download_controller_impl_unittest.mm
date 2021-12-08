@@ -12,6 +12,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
+#import "ios/web/test/fakes/fake_native_task_bridge.h"
 #include "net/url_request/url_fetcher_response_writer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -85,6 +86,39 @@ TEST_F(DownloadControllerImplTest, OnDownloadCreated) {
   EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
   EXPECT_EQ(kMimeType, task->GetMimeType());
   EXPECT_EQ("file.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
+}
+
+// Tests that DownloadController::CreateNativeDownloadTask calls
+// DownloadControllerDelegate::OnDownloadCreated.
+TEST_F(DownloadControllerImplTest, OnNativeDownloadCreated) {
+  NSString* identifier = [NSUUID UUID].UUIDString;
+  GURL url("https://download.test");
+
+  if (@available(iOS 15, *)) {
+    WKDownload* fake_download = nil;
+    id<DownloadNativeTaskBridgeReadyDelegate> fake_ready_delegate;
+    FakeNativeTaskBridge* fake_task_bridge_ =
+        [[FakeNativeTaskBridge alloc] initWithDownload:fake_download
+                                 downloadReadyDelegate:fake_ready_delegate];
+
+    download_controller_->CreateNativeDownloadTask(
+        &web_state_, identifier, url, @"POST", kContentDisposition,
+        /*total_bytes=*/-1, kMimeType, fake_task_bridge_);
+
+    ASSERT_EQ(1U, delegate_->alive_download_tasks().size());
+    DownloadTask* task = delegate_->alive_download_tasks()[0].second.get();
+    EXPECT_EQ(&web_state_, delegate_->alive_download_tasks()[0].first);
+    EXPECT_NSEQ(identifier, task->GetIndentifier());
+    EXPECT_EQ(url, task->GetOriginalUrl());
+    EXPECT_NSEQ(@"POST", task->GetHttpMethod());
+    EXPECT_FALSE(task->IsDone());
+    EXPECT_EQ(0, task->GetErrorCode());
+    EXPECT_EQ(0, task->GetTotalBytes());
+    EXPECT_EQ(0, task->GetPercentComplete());
+    EXPECT_EQ(kContentDisposition, task->GetContentDisposition());
+    EXPECT_EQ(kMimeType, task->GetMimeType());
+    EXPECT_EQ("file.test", base::UTF16ToUTF8(task->GetSuggestedFilename()));
+  }
 }
 
 // Tests that DownloadController::FromBrowserState does not crash if used
