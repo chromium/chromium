@@ -106,12 +106,17 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
     PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE};
 
+// Convenienve wrapper to check if the feature to improve the suggestion UI is
+// used.
+bool UseImprovedSuggestionUi() {
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillVisualImprovementsForSuggestionUi);
+}
+
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillVisualImprovementsForSuggestionUi)
-          ? DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
-          : DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+      UseImprovedSuggestionUi() ? DISTANCE_CONTENT_LIST_VERTICAL_SINGLE
+                                : DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 }
 
 int GetHorizontalMargin() {
@@ -791,8 +796,7 @@ void AutofillPopupItemView::RefreshStyle() {
       continue;
     }
 
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillVisualImprovementsForSuggestionUi)) {
+    if (!UseImprovedSuggestionUi()) {
       label->SetEnabledColor(fg_color);
       continue;
     }
@@ -823,10 +827,8 @@ std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
           .is_value_secondary) {
     std::unique_ptr<views::Label> label = CreateLabelWithStyleAndContext(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        base::FeatureList::IsEnabled(
-            features::kAutofillVisualImprovementsForSuggestionUi)
-            ? views::style::STYLE_PRIMARY
-            : views::style::STYLE_SECONDARY);
+        UseImprovedSuggestionUi() ? views::style::STYLE_PRIMARY
+                                  : views::style::STYLE_SECONDARY);
     KeepLabel(label.get());
     return label;
   }
@@ -915,8 +917,7 @@ int AutofillPopupSuggestionView::GetPrimaryTextStyle() {
 }
 
 gfx::Font::Weight AutofillPopupSuggestionView::GetPrimaryTextWeight() const {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillVisualImprovementsForSuggestionUi)
+  return UseImprovedSuggestionUi()
              ? gfx::Font::Weight::NORMAL
              : views::TypographyProvider::MediumWeightForUI();
 }
@@ -1153,12 +1154,17 @@ void AutofillPopupSeparatorView::CreateContent() {
 }
 
 void AutofillPopupSeparatorView::RefreshStyle() {
+  if (UseImprovedSuggestionUi()) {
+    SetBackground(CreateBackground());
+  }
   SchedulePaint();
 }
 
 std::unique_ptr<views::Background>
 AutofillPopupSeparatorView::CreateBackground() {
-  return nullptr;
+  return UseImprovedSuggestionUi()
+             ? views::CreateSolidBackground(popup_view()->GetBackgroundColor())
+             : nullptr;
 }
 
 AutofillPopupSeparatorView::AutofillPopupSeparatorView(
@@ -1361,9 +1367,6 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   std::vector<int> footer_item_line_numbers;
   footer_item_line_numbers.reserve(line_count);
 
-  bool use_visual_suggestion_ui_improvements = base::FeatureList::IsEnabled(
-      features::kAutofillVisualImprovementsForSuggestionUi);
-
   // Convert a line number to a front end id.
   auto line_number_to_frontend_id = [&](int line_number) {
     return controller_->GetSuggestionAt(line_number).frontend_id;
@@ -1388,7 +1391,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
       case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
         // TODO(crbug.com/1274134): Clean up once improvements are launched.
-        if (use_visual_suggestion_ui_improvements) {
+        if (UseImprovedSuggestionUi()) {
           DCHECK(footer_item_line_numbers.empty());
           rows_.push_back(AutofillPopupSuggestionView::Create(
               this, current_line_number, frontend_id,
