@@ -9,8 +9,10 @@
 #include "content/browser/devtools/protocol/audits_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 namespace content {
 
@@ -195,6 +197,18 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   if (!ftn)
     return;
 
+  RenderFrameHostImpl* rfhi = ftn->current_frame_host();
+  if (!rfhi)
+    return;
+
+  // TODO(https://crbug.com/1268378): Remove this once enforcement is always
+  // enabled and warnings are no more.
+  if (is_warning) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfhi,
+        blink::mojom::WebFeature::kPrivateNetworkAccessIgnoredPreflightError);
+  }
+
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
       protocol::Audits::AffectedRequest::Create()
           .SetRequestId(devtools_request_id ? *devtools_request_id : "")
@@ -227,8 +241,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
                    .SetDetails(std::move(details))
                    .SetIssueId(cors_error_status.issue_id.ToString())
                    .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(
-      ftn->current_frame_host(), issue.get());
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 
 void NetworkServiceDevToolsObserver::OnSubresourceWebBundleMetadata(
