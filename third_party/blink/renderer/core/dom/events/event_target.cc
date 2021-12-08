@@ -962,7 +962,7 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return;
-  probe::AsyncTaskScheduled(context, event.type(), event.async_task_id());
+  event.async_task_context()->Schedule(context, event.type());
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
       WTF::Bind(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
@@ -972,10 +972,10 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
 void EventTarget::DispatchEnqueuedEvent(Event* event,
                                         ExecutionContext* context) {
   if (!GetExecutionContext()) {
-    probe::AsyncTaskCanceled(context, event->async_task_id());
+    event->async_task_context()->Cancel();
     return;
   }
-  probe::AsyncTask async_task(context, event->async_task_id());
+  probe::AsyncTask async_task(context, event->async_task_context());
   DispatchEvent(*event);
 }
 

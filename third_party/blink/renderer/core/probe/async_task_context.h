@@ -44,7 +44,7 @@ class CORE_EXPORT AsyncTaskContext {
   friend class AsyncTask;
 
   AsyncTaskId async_task_id_;
-  v8::Isolate* isolate_;
+  v8::Isolate* isolate_ = nullptr;
 };
 
 }  // namespace probe

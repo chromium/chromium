@@ -1084,7 +1084,7 @@ void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
                     WrapPersistent(event),
                     std::move(posted_message->target_origin),
                     std::move(location), source->GetAgent()->cluster_id()));
-  probe::AsyncTaskScheduled(this, "postMessage", event->async_task_id());
+  event->async_task_context()->Schedule(this, "postMessage");
 }
 
 void LocalDOMWindow::DispatchPostMessage(
@@ -1094,8 +1094,8 @@ void LocalDOMWindow::DispatchPostMessage(
     const base::UnguessableToken& source_agent_cluster_id) {
   // Do not report postMessage tasks to the ad tracker. This allows non-ad
   // script to perform operations in response to events created by ad frames.
-  probe::AsyncTask async_task(this, event->async_task_id(), nullptr /* step */,
-                              true /* enabled */,
+  probe::AsyncTask async_task(this, event->async_task_context(),
+                              nullptr /* step */, true /* enabled */,
                               probe::AsyncTask::AdTrackingType::kIgnore);
   if (!IsCurrentlyDisplayedInFrame())
     return;
