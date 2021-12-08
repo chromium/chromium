@@ -2915,5 +2915,128 @@ TEST_F(CookieManagerTest, SetStorageAccessGrantSettingsRunsCallback) {
   ASSERT_EQ(1U, service_wrapper()->callback_count());
 }
 
+class FPSPartitionedCookiesCookieManagerTest : public CookieManagerTest {
+ public:
+  FPSPartitionedCookiesCookieManagerTest()
+      : owner_url_(GURL("https://owner.test")),
+        owner_site_(owner_url_),
+        owner_partition_key_(
+            net::CookiePartitionKey::FromURLForTesting(owner_url_)),
+        member_url_(GURL("https://member.test")),
+        member_site_(member_url_),
+        member_partition_key_(
+            net::CookiePartitionKey::FromURLForTesting(GURL(member_url_))),
+        non_member_url_(GURL("https://nonmember.test")),
+        non_member_partition_key_(
+            net::CookiePartitionKey::FromURLForTesting(non_member_url_)) {
+    delegate_ = std::make_unique<net::TestCookieAccessDelegate>();
+    first_party_sets_.insert(std::make_pair(
+        owner_site_,
+        std::set<net::SchemefulSite>({owner_site_, member_site_})));
+    delegate_->SetFirstPartySets(first_party_sets_);
+    cookie_store()->SetCookieAccessDelegate(std::move(delegate_));
+  }
+
+ protected:
+  const GURL owner_url_;
+  const net::SchemefulSite owner_site_;
+  const net::CookiePartitionKey owner_partition_key_;
+
+  const GURL member_url_;
+  const net::SchemefulSite member_site_;
+  const net::CookiePartitionKey member_partition_key_;
+
+  const GURL non_member_url_;
+  const net::CookiePartitionKey non_member_partition_key_;
+
+  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
+      first_party_sets_;
+  std::unique_ptr<net::TestCookieAccessDelegate> delegate_;
+};
+
+TEST_F(FPSPartitionedCookiesCookieManagerTest, GetCookieList) {
+  // Add unpartitioned cookie.
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-unpartitioned", "1", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          /*partition_key=*/absl::nullopt),
+      "https", true));
+  // Add partitioned cookies. One is in the First-Party Set's partition, the
+  // other is not.
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-intheset", "2", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          absl::make_optional<net::CookiePartitionKey>(owner_partition_key_)),
+      "https", true));
+  ASSERT_TRUE(SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-nonmember", "4", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          absl::make_optional<net::CookiePartitionKey>(
+              non_member_partition_key_)),
+      "https", true));
+
+  // Query cookies when the top-level site is a member of the First-Party Set.
+  // It should have access to the cookie set with the owner site as a partition
+  // key the unpartitioned cookie.
+  auto cookies = service_wrapper()->GetCookieList(
+      GURL("https://foo_host.com/with/path"),
+      net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeychain(member_partition_key_));
+  EXPECT_EQ(2u, cookies.size());
+  EXPECT_EQ("__Host-unpartitioned", cookies[0].Name());
+  EXPECT_EQ("__Host-intheset", cookies[1].Name());
+  EXPECT_EQ(owner_partition_key_, cookies[1].PartitionKey().value());
+}
+
+TEST_F(FPSPartitionedCookiesCookieManagerTest, SetCanonicalCookie) {
+  // Add unpartitioned cookie.
+  ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-unpartitioned", "1", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          /*partition_key=*/absl::nullopt),
+      "https", true));
+  // Add partitioned cookies. One is in the First-Party Set's partition, and is
+  // first set with a member site as the partition key. SetCanonicalCookie
+  // should change the partition key to the First-Party Set's owner site.
+  ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-intheset", "2", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          absl::make_optional<net::CookiePartitionKey>(member_partition_key_)),
+      "https", true));
+  ASSERT_TRUE(service_wrapper()->SetCanonicalCookie(
+      *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+          "__Host-nonmember", "4", kCookieDomain, "/", base::Time(),
+          base::Time(), base::Time(),
+          /*secure=*/true, /*httponly=*/false, net::CookieSameSite::LAX_MODE,
+          net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+          absl::make_optional<net::CookiePartitionKey>(
+              non_member_partition_key_)),
+      "https", true));
+
+  auto cookies = service_wrapper()->GetCookieList(
+      GURL("https://foo_host.com/with/path"),
+      net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeychain(owner_partition_key_));
+  EXPECT_EQ(2u, cookies.size());
+  EXPECT_EQ("__Host-unpartitioned", cookies[0].Name());
+  EXPECT_EQ("__Host-intheset", cookies[1].Name());
+  EXPECT_EQ(owner_partition_key_, cookies[1].PartitionKey().value());
+}
+
 }  // namespace
 }  // namespace network

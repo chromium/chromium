@@ -241,6 +241,7 @@ URLRequestHttpJob::URLRequestHttpJob(
     throttling_entry_ = manager->RegisterRequestUrl(request->url());
 
   ResetTimer();
+  ComputeCookiePartitionKey();
 }
 
 URLRequestHttpJob::~URLRequestHttpJob() {
@@ -595,13 +596,9 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             request_site, request_->isolation_info(), delegate,
             request_->force_ignore_top_frame_party_for_cookies()));
 
-    absl::optional<CookiePartitionKey> cookie_partition_key =
-        CookiePartitionKey::FromNetworkIsolationKey(
-            request_->isolation_info().network_isolation_key());
-
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
-        CookiePartitionKeychain::FromOptional(cookie_partition_key),
+        CookiePartitionKeychain::FromOptional(cookie_partition_key_),
         base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                        weak_factory_.GetWeakPtr(), options));
   } else {
@@ -781,9 +778,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,
-        net::CookiePartitionKey::FromNetworkIsolationKey(
-            request_->isolation_info().network_isolation_key()),
-        &returned_status);
+        cookie_partition_key_, &returned_status);
 
     absl::optional<CanonicalCookie> cookie_to_return = absl::nullopt;
     if (returned_status.IsInclude()) {
@@ -1614,6 +1609,17 @@ void URLRequestHttpJob::NotifyURLRequestDestroyed() {
       request()->context()->network_quality_estimator();
   if (network_quality_estimator)
     network_quality_estimator->NotifyURLRequestDestroyed(*request());
+}
+
+void URLRequestHttpJob::ComputeCookiePartitionKey() {
+  const CookieStore* cookie_store = request_->context()->cookie_store();
+  if (!cookie_store) {
+    cookie_partition_key_ = absl::nullopt;
+    return;
+  }
+  cookie_partition_key_ = CookieAccessDelegate::CreateCookiePartitionKey(
+      cookie_store->cookie_access_delegate(),
+      request_->isolation_info().network_isolation_key());
 }
 
 }  // namespace net

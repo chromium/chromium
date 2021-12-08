@@ -179,11 +179,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     return isolation_info_.top_frame_origin().value();
   }
 
-  const absl::optional<net::CookiePartitionKey> CookiePartitionKey() const {
-    return net::CookiePartitionKey::FromNetworkIsolationKey(
-        isolation_info_.network_isolation_key());
-  }
-
   CookieAccesses* GetCookieAccessesForURLAndSite(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies);

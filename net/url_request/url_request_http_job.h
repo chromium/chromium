@@ -206,6 +206,14 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // `override_response_info_::headers`.
   HttpResponseHeaders* GetResponseHeaders() const;
 
+  // Compute the `cookie_partition_key_` for the request. Partitioned cookies
+  // will be set using this key and only partitioned cookies with this partition
+  // key will be sent.
+  // Sets `cookie_partition_key_` to nullopt if cookie partitioning is not
+  // enabled, if the NIK has no top-frame site, or if the instance has no
+  // cookie store.
+  void ComputeCookiePartitionKey();
+
   RequestPriority priority_;
 
   HttpRequestInfo request_info_;
@@ -274,6 +282,12 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestHeadersCallback request_headers_callback_;
   ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
+
+  // Partitioned cookies will be set using this key and only partitioned cookies
+  // with this partition key will be sent.
+  //
+  // Unpartitioned cookies are unaffected by this field.
+  absl::optional<CookiePartitionKey> cookie_partition_key_;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

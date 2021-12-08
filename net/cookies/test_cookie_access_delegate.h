@@ -47,6 +47,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const std::set<net::SchemefulSite>& party_context) const override;
   bool IsInNontrivialFirstPartySet(
       const net::SchemefulSite& site) const override;
+  absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
+      const net::SchemefulSite& site) const override;
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
   RetrieveFirstPartySets() const override;
 
@@ -63,6 +65,9 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const std::string& site_for_cookies_scheme,
       bool require_secure_origin);
 
+  // Set the test delegate's First-Party Sets. The map is keyed on the set's
+  // owner site. The owner site should still be included in the std::set stored
+  // in the map.
   void SetFirstPartySets(
       const base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>&
           sets);

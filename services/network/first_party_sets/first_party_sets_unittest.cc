@@ -169,6 +169,14 @@ TEST_F(FirstPartySetsDisabledTest, ComputeContext_InfersSingletons) {
                                     SamePartyContextType::kSameParty));
 }
 
+TEST_F(FirstPartySetsDisabledTest, FindOwner) {
+  sets().SetManuallySpecifiedSet("https://example.test,https://member.test");
+  EXPECT_FALSE(
+      sets().FindOwner(net::SchemefulSite(GURL("https://example.test"))));
+  EXPECT_FALSE(
+      sets().FindOwner(net::SchemefulSite(GURL("https://member.test"))));
+}
+
 class FirstPartySetsEnabledTest : public FirstPartySetsTest {
  public:
   FirstPartySetsEnabledTest() : FirstPartySetsTest(true) {}
@@ -1392,6 +1400,35 @@ TEST_F(PopulatedFirstPartySetsTest, IsInNontrivialFirstPartySet) {
 
   EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
       net::SchemefulSite(GURL("https://nonmember.test"))));
+}
+
+TEST_F(PopulatedFirstPartySetsTest, FindOwner) {
+  const absl::optional<net::SchemefulSite> kSetOwner1 =
+      absl::make_optional(net::SchemefulSite(GURL("https://example.test")));
+  const absl::optional<net::SchemefulSite> kSetOwner2 =
+      absl::make_optional(net::SchemefulSite(GURL("https://foo.test")));
+
+  struct TestCase {
+    const std::string url;
+    const absl::optional<net::SchemefulSite> expected;
+  } test_cases[] = {
+      {"https://example.test", kSetOwner1},
+      // Insecure URL
+      {"http://example.test", absl::nullopt},
+      // Test member
+      {"https://member1.test", kSetOwner1},
+      {"http://member1.test", absl::nullopt},
+      // Test another disjoint set
+      {"https://foo.test", kSetOwner2},
+      {"https://member2.test", kSetOwner2},
+      // Test a site not in a set
+      {"https://nonmember.test", absl::nullopt},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expected,
+              sets().FindOwner(net::SchemefulSite(GURL(test_case.url))));
+  }
 }
 
 TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {

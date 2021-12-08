@@ -59,8 +59,12 @@ class NET_EXPORT CookiePartitionKey {
 
   // Create a cookie partition key from a request's NetworkIsolationKey.
   //
+  // `first_party_set_owner_site` should be nullptr if the NetworkIsolationKey's
+  // top-frame site is not in  First-Party Set. Otherwise it should be the owner
+  // site of the top-frame site's set.
   static absl::optional<CookiePartitionKey> FromNetworkIsolationKey(
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkIsolationKey& network_isolation_key,
+      const SchemefulSite* first_party_set_owner_site = nullptr);
 
   // Create a new CookiePartitionKey from the site of an existing
   // CookiePartitionKey. This should only be used for sites of partition keys
@@ -114,6 +118,10 @@ class NET_EXPORT CookiePartitionKey {
   // for non-opaque origins.
   absl::optional<base::UnguessableToken> nonce_;
 };
+
+// Used so that CookiePartitionKeys can be the arguments of DCHECK_EQ.
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const CookiePartitionKey& cpk);
 
 }  // namespace net
 

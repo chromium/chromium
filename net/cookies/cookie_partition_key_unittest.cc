@@ -155,6 +155,45 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey_WithNonce) {
   EXPECT_EQ(kNonce, got->nonce().value());
 }
 
+TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey_WithFirstPartySetOwner) {
+  SchemefulSite kTopLevelSite = SchemefulSite(GURL("https://setmember.com"));
+  SchemefulSite kFirstPartySetOwnerSite =
+      SchemefulSite(GURL("https://setowner.com"));
+  SchemefulSite kCookieSite = SchemefulSite(GURL("https://cookiesite.com"));
+
+  {
+    // Without a nonce.
+    absl::optional<CookiePartitionKey> got =
+        CookiePartitionKey::FromNetworkIsolationKey(
+            NetworkIsolationKey(kTopLevelSite, kCookieSite),
+            &kFirstPartySetOwnerSite);
+    bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
+    EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
+    if (partitioned_cookies_enabled) {
+      EXPECT_FALSE(got->from_script());
+      EXPECT_EQ(kFirstPartySetOwnerSite, got->site());
+      EXPECT_FALSE(got->nonce());
+    }
+  }
+
+  {
+    // With a nonce.
+    base::UnguessableToken nonce = base::UnguessableToken::Create();
+    absl::optional<CookiePartitionKey> got =
+        CookiePartitionKey::FromNetworkIsolationKey(
+            NetworkIsolationKey(kTopLevelSite, kCookieSite, &nonce),
+            &kFirstPartySetOwnerSite);
+    bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
+    EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
+    if (partitioned_cookies_enabled) {
+      EXPECT_FALSE(got->from_script());
+      EXPECT_EQ(kFirstPartySetOwnerSite, got->site());
+      EXPECT_TRUE(got->nonce());
+      EXPECT_EQ(nonce, got->nonce().value());
+    }
+  }
+}
+
 TEST_P(CookiePartitionKeyTest, FromWire) {
   struct TestCase {
     const GURL url;

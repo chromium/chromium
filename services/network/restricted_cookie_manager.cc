@@ -349,7 +349,8 @@ RestrictedCookieManager::~RestrictedCookieManager() {
 }
 
 void RestrictedCookieManager::ComputeCookiePartitionKey() {
-  cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
+  cookie_partition_key_ = net::CookieAccessDelegate::CreateCookiePartitionKey(
+      cookie_store_->cookie_access_delegate(),
       isolation_info_.network_isolation_key());
   cookie_partition_keychain_ =
       net::CookiePartitionKeychain::FromOptional(cookie_partition_key_);

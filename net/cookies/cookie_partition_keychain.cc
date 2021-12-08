@@ -34,4 +34,23 @@ CookiePartitionKeychain& CookiePartitionKeychain::operator=(
 
 CookiePartitionKeychain::~CookiePartitionKeychain() = default;
 
+CookiePartitionKeychain CookiePartitionKeychain::FirstPartySetify(
+    const CookieAccessDelegate* cookie_access_delegate) const {
+  if (!cookie_access_delegate || IsEmpty() || ContainsAllKeys())
+    return *this;
+  std::vector<CookiePartitionKey> keys;
+  keys.reserve(PartitionKeys().size());
+  for (const auto& key : PartitionKeys()) {
+    absl::optional<SchemefulSite> fps_owner =
+        cookie_access_delegate->FindFirstPartySetOwner(key.site());
+    if (fps_owner) {
+      keys.push_back(
+          CookiePartitionKey::FromWire(fps_owner.value(), key.nonce()));
+    } else {
+      keys.push_back(key);
+    }
+  }
+  return CookiePartitionKeychain(keys);
+}
+
 }  // namespace net

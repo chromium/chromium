@@ -4,9 +4,11 @@
 
 #include "net/cookies/cookie_partition_key.h"
 
+#include <ostream>
 #include <tuple>
 
 #include "base/feature_list.h"
+#include "base/stl_util.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 
@@ -83,22 +85,24 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
 }
 
 absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
-    const NetworkIsolationKey& network_isolation_key) {
-  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
+    const NetworkIsolationKey& network_isolation_key,
+    const SchemefulSite* first_party_set_owner_site) {
+  if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
     return absl::nullopt;
-  }
 
   // TODO(crbug.com/1225444): Check if the top frame site is in a First-Party
   // Set or if it is an extension URL.
-  absl::optional<net::SchemefulSite> top_frame_site =
-      network_isolation_key.GetTopFrameSite();
-  if (!top_frame_site)
+  const SchemefulSite* partition_key_site =
+      first_party_set_owner_site
+          ? first_party_set_owner_site
+          : base::OptionalOrNullptr(network_isolation_key.GetTopFrameSite());
+  if (!partition_key_site)
     return absl::nullopt;
 
   absl::optional<base::UnguessableToken> nonce =
       network_isolation_key.GetNonce();
   return absl::make_optional(
-      net::CookiePartitionKey(top_frame_site.value(), nonce));
+      net::CookiePartitionKey(*partition_key_site, nonce));
 }
 
 bool CookiePartitionKey::IsSerializeable() const {
@@ -107,6 +111,11 @@ bool CookiePartitionKey::IsSerializeable() const {
   // We should not try to serialize a partition key created by a renderer.
   DCHECK(!from_script_);
   return !site_.opaque() && !nonce_.has_value();
+}
+
+std::ostream& operator<<(std::ostream& os, const CookiePartitionKey& cpk) {
+  os << cpk.site();
+  return os;
 }
 
 }  // namespace net

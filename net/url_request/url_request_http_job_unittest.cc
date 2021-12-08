@@ -34,6 +34,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
+#include "net/cookies/test_cookie_access_delegate.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/http/transport_security_state.h"
@@ -1855,6 +1856,123 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
       EXPECT_EQ("None", delegate.data_received());
     } else {
       EXPECT_EQ("__Host-foo=bar", delegate.data_received());
+    }
+  }
+}
+
+// This class test partitioned cookies' interaction with First-Party Sets.
+// When FPS is enabled, top-level sites that are in the same set share a cookie
+// partition.
+TEST_P(PartitionedCookiesURLRequestHttpJobTest,
+       PartitionedCookiesAndFirstPartySets) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  const GURL kOwnerURL("https://owner.com");
+  const SchemefulSite kOwnerSite(kOwnerURL);
+  const url::Origin kOwnerOrigin = url::Origin::Create(kOwnerURL);
+  const IsolationInfo kOwnerIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kOwnerOrigin);
+
+  const GURL kMemberURL("https://member.com");
+  const SchemefulSite kMemberSite(kMemberURL);
+  const url::Origin kMemberOrigin = url::Origin::Create(kMemberURL);
+  const IsolationInfo kMemberIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kMemberOrigin);
+
+  const GURL kNonMemberURL("https://nonmember.com");
+  const url::Origin kNonMemberOrigin = url::Origin::Create(kNonMemberURL);
+  const IsolationInfo kNonMemberIsolationInfo =
+      IsolationInfo::CreateForInternalRequest(kNonMemberOrigin);
+
+  base::flat_map<SchemefulSite, std::set<SchemefulSite>> first_party_sets;
+  first_party_sets.insert(std::make_pair(
+      kOwnerSite, std::set<SchemefulSite>({kOwnerSite, kMemberSite})));
+
+  TestURLRequestContext context;
+  CookieMonster cookie_monster(nullptr, nullptr);
+  auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
+  cookie_access_delegate->SetFirstPartySets(first_party_sets);
+  cookie_monster.SetCookieAccessDelegate(std::move(cookie_access_delegate));
+  context.set_cookie_store(&cookie_monster);
+
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context.CreateRequest(
+      https_test.GetURL("/set-cookie?__Host-foo=0;SameSite=None;Secure;Path=/"
+                        ";Partitioned;"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Start with the set's owner as the top-level site.
+  req->set_isolation_info(kOwnerIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {
+    // Test the cookie is present in a request with the same top-frame site as
+    // when the cookie was set.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kOwnerIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-foo=0", delegate.data_received());
+  }
+
+  {
+    // Requests whose top-frame site are in the set should have access to the
+    // partitioned cookie.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kMemberIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-foo=0", delegate.data_received());
+  }
+
+  // Set a cookie from the member site.
+  req = context.CreateRequest(
+      https_test.GetURL("/set-cookie?__Host-bar=1;SameSite=None;Secure;Path=/"
+                        ";Partitioned;"),
+      DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+  req->set_isolation_info(kMemberIsolationInfo);
+  req->Start();
+  ASSERT_TRUE(req->is_pending());
+  delegate.RunUntilComplete();
+
+  {
+    // Check request whose top-frame site is the owner site has the cookie set
+    // on the member site.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kOwnerIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("__Host-foo=0; __Host-bar=1", delegate.data_received());
+  }
+
+  {
+    // Check that the cookies are not available when the top-frame site is not
+    // in the set. If partitioned cookies are disabled, then the cookies should
+    // be available.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context.CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kNonMemberIsolationInfo);
+    req->Start();
+    delegate.RunUntilComplete();
+    if (PartitionedCookiesEnabled()) {
+      EXPECT_EQ("None", delegate.data_received());
+    } else {
+      EXPECT_EQ("__Host-foo=0; __Host-bar=1", delegate.data_received());
     }
   }
 }

@@ -231,6 +231,11 @@ const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
   return owner;
 }
 
+const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
+    const net::SchemefulSite& site) const {
+  return FindOwner(site, /*infer_singleton_sets=*/false);
+}
+
 bool FirstPartySets::IsInNontrivialFirstPartySet(
     const net::SchemefulSite& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

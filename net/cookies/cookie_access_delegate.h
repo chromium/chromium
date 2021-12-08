@@ -11,6 +11,7 @@
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -62,6 +63,27 @@ class NET_EXPORT CookieAccessDelegate {
       const SchemefulSite& site,
       const absl::optional<SchemefulSite>& top_frame_site,
       const std::set<SchemefulSite>& party_context) const = 0;
+
+  // Returns the owner of a `site`'s First-Party Set if `site` is in a
+  // non-trivial set. Returns nullopt otherwise.
+  virtual absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
+      const net::SchemefulSite& site) const = 0;
+
+  // Creates a CookiePartitionKey that takes whether the top-frame site is in a
+  // First-Party Set into account. If FPS are not enabled, it returns a cookie
+  // partition key that does not take FPS into account.
+  //
+  // Should always return nullopt if partitioned cookies are disabled or if
+  // the NIK has no top-frame site.
+  static absl::optional<CookiePartitionKey> CreateCookiePartitionKey(
+      const CookieAccessDelegate* delegate,
+      const NetworkIsolationKey& network_isolation_key);
+
+  // Converts the CookiePartitionKey's site to its First-Party Set owner if
+  // the site is in a nontrivial set.
+  static absl::optional<CookiePartitionKey> FirstPartySetifyPartitionKey(
+      const CookieAccessDelegate* delegate,
+      const CookiePartitionKey& cookie_partition_key);
 
   // Returns the First-Party Sets.
   virtual base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>

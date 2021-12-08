@@ -107,6 +107,13 @@ class FirstPartySets {
   void SetOnSiteDataCleared(
       base::OnceCallback<void(const std::string&)> callback);
 
+  // Returns nullopt if First-Party Sets are disabled or if the input is not in
+  // a nontrivial set.
+  // If FPS are enabled and the input site is in a nontrivial set, then this
+  // returns the owner site of that set.
+  const absl::optional<net::SchemefulSite> FindOwner(
+      const net::SchemefulSite& site) const;
+
  private:
   // Parses the contents of `raw_sets` as a collection of First-Party Set
   // declarations, and assigns to `sets_`.
