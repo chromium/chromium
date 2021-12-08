@@ -9,6 +9,7 @@
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
@@ -132,7 +133,8 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
-  ui_broker_->RemoveNotifications(std::move(device));
+  ui_broker_->RemoveNotifications(device);
+  FastPairHandshakeLookup::GetInstance()->Erase(device);
 }
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {

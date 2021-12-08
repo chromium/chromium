@@ -23,6 +23,7 @@ static_library("keyed_service") {
 
   deps = [
     "//ash/quick_pair/common",
+    "//ash/quick_pair/fast_pair_handshake",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/message_stream",
     "//ash/quick_pair/pairing",
