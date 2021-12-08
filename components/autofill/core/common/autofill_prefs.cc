@@ -325,7 +325,7 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
 
 void ClearSyncTransportOptIns(PrefService* prefs) {
   DictionaryPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
-  update->Clear();
+  update->DictClear();
 }
 
 }  // namespace prefs

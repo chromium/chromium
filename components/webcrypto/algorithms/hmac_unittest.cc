@@ -333,7 +333,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
   // Consistency rules when JWK value exists: Fail if inconsistency is found.
 
   // Pass: All input values are consistent with the JWK values.
-  dict.Clear();
+  dict.DictClear();
   dict.SetString("kty", "oct");
   dict.SetString("alg", "HS256");
   dict.SetString("use", "sig");
@@ -367,7 +367,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
 
   // Fail: Input algorithm (AES-CBC) is inconsistent with JWK value
   // (HMAC SHA256).
-  dict.Clear();
+  dict.DictClear();
   dict.SetString("kty", "oct");
   dict.SetString("alg", "HS256");
   dict.SetString("k", "l3nZEgZCeX8XRwJdWyK3rGB8qwjhdY8vOkbIvh4lxTuMao9Y_--hdg");

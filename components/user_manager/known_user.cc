@@ -259,7 +259,7 @@ void KnownUser::UpdatePrefs(const AccountId& account_id,
           static_cast<base::DictionaryValue*>(&element_value);
       if (UserMatches(account_id, *element)) {
         if (clear)
-          element->Clear();
+          element->DictClear();
         element->MergeDictionary(&values);
         UpdateIdentity(account_id, *element);
         return;

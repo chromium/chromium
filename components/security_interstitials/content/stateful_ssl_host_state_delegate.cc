@@ -527,7 +527,7 @@ void StatefulSSLHostStateDelegate::ResetRecurrentErrorCountForTesting() {
   recurrent_errors_.clear();
   DictionaryPrefUpdate pref_update(pref_service_,
                                    prefs::kRecurrentSSLInterstitial);
-  pref_update->Clear();
+  pref_update->DictClear();
 }
 
 void StatefulSSLHostStateDelegate::SetClockForTesting(

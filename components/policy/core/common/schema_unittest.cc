@@ -671,7 +671,7 @@ TEST(SchemaTest, Validate) {
 
   // Wrong type, expected list of strings.
   {
-    bundle.Clear();
+    bundle.DictClear();
     base::ListValue list;
     list.Append(1);
     bundle.SetKey("Array", std::move(list));
@@ -680,7 +680,7 @@ TEST(SchemaTest, Validate) {
 
   // Wrong type in a sub-object.
   {
-    bundle.Clear();
+    bundle.DictClear();
     base::DictionaryValue dict;
     dict.SetString("one", "one");
     bundle.SetKey("Object", std::move(dict));
@@ -688,12 +688,12 @@ TEST(SchemaTest, Validate) {
   }
 
   // Unknown name.
-  bundle.Clear();
+  bundle.DictClear();
   bundle.SetBoolean("Unknown", true);
   TestSchemaValidation(schema, bundle, SCHEMA_STRICT, false);
 
   // All of these will be valid.
-  bundle.Clear();
+  bundle.DictClear();
   bundle.SetBoolean("Boolean", true);
   bundle.SetInteger("Integer", 123);
   bundle.SetDouble("Number", 3.14);

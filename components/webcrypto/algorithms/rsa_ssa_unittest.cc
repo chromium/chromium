@@ -24,7 +24,7 @@ namespace {
 // Helper for ImportJwkRsaFailures. Restores the JWK JSON
 // dictionary to a good state
 void RestoreJwkRsaDictionary(base::DictionaryValue* dict) {
-  dict->Clear();
+  dict->DictClear();
   dict->SetString("kty", "RSA");
   dict->SetString("alg", "RS256");
   dict->SetString("use", "sig");
