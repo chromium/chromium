@@ -51,8 +51,6 @@ PsmTestData* GetPsmTestData() {
 //
 // URLs for the different network requests being performed.
 const char kTestFresnelBaseUrl[] = "https://dummy.googleapis.com";
-const char kPsmOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
-const char kPsmQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
 const char kPsmImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 
 // Create fake secrets used by the |DeviceActivityClient|.
@@ -266,7 +264,7 @@ TEST_F(DeviceActivityClientTest, DefaultStatesAreInitializedProperly) {
 }
 
 TEST_F(DeviceActivityClientTest, NetworkRequestsUseFakeApiKey) {
-  // When network comes online, the device performs an Oprf network request.
+  // When network comes online, the device performs an Import network request.
   SetWifiNetworkState(shill::kStateOnline);
 
   network::TestURLLoaderFactory::PendingRequest* request =
@@ -283,68 +281,16 @@ TEST_F(DeviceActivityClientTest, NetworkRequestsUseFakeApiKey) {
 // so the client is expected to go back to |kIdle| state.
 TEST_F(DeviceActivityClientTest,
        FireTimerWithoutNetworkKeepsClientinIdleState) {
+  SetWifiNetworkState(shill::kStateOffline);
   FireTimer();
 
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 }
 
-TEST_F(DeviceActivityClientTest,
-       ValidOprfResponseBodyTransitionsClientToQueryState) {
-  // Device active reporting starts membership check on network connect.
-  SetWifiNetworkState(shill::kStateOnline);
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingMembershipOprf);
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingMembershipQuery);
-}
-
-TEST_F(DeviceActivityClientTest,
-       InvalidOprfResponseBodyKeepsClientInIdleState) {
-  // Device active reporting starts membership check on network connect.
-  SetWifiNetworkState(shill::kStateOnline);
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingMembershipOprf);
-
-  // Return empty FresnelPsmRlweOprfResponse response body.
-  FresnelPsmRlweOprfResponse fresnel_oprf_response;
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kIdle);
-}
-
 TEST_F(DeviceActivityClientTest, PerformSuccessfulCheckIn) {
-  // Device active reporting starts membership check on network connect.
+  // Device active reporting starts checking in on network connect.
   SetWifiNetworkState(shill::kStateOnline);
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingMembershipOprf);
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingMembershipQuery);
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingIn);
@@ -369,16 +315,10 @@ TEST_F(DeviceActivityClientTest, PerformSuccessfulCheckIn) {
 }
 
 TEST_F(DeviceActivityClientTest, NetworkReconnectsAfterSuccessfulCheckIn) {
-  // Device active reporting starts membership check on network connect.
+  // Device active reporting starts checking in on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Oprf, Query, and Import response body.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
+  // Return well formed Import response body.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
       net::HTTP_OK);
@@ -397,13 +337,7 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
   // Device active reporting starts membership check on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Oprf, Query, and Import response body.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
+  // Return well formed Import response body.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
       net::HTTP_OK);
@@ -422,15 +356,8 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
   // has NOT been imported for the new UTC day.
   EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
 
-  // Mock successful |kCheckingMembershipOprf| and |kCheckingMembershipQuery|.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
-
+  // Verify state goes directly to |kCheckingIn| since local state is updated
+  // with the last check in timestamp.
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingIn);
 
@@ -446,16 +373,10 @@ TEST_F(DeviceActivityClientTest, CheckInAfterNextUtcMidnight) {
 }
 
 TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
-  // Device active reporting starts membership check on network connect.
+  // Device active reporting starts checking in on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Return well formed Oprf, Query, and Import response body.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
+  // Return well formed Import response body.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
       net::HTTP_OK);
@@ -483,21 +404,10 @@ TEST_F(DeviceActivityClientTest, DoNotCheckInTwiceBeforeNextUtcDay) {
 }
 
 // Powerwashing a device resets the |local_state_|. This will result in the
-// client re-attempting to check membership of a PSM ID, even on the same day.
-// The check membership should return True, given that it was successfully
-// imported previously on the same UTC day.
-TEST_F(DeviceActivityClientTest, CheckMembershipOnLocalStateReset) {
+// client re-importing a PSM ID, on the same day.
+TEST_F(DeviceActivityClientTest, CheckInAgainOnLocalStateReset) {
   // Device active reporting starts membership check on network connect.
   SetWifiNetworkState(shill::kStateOnline);
-
-  // Mock successful |kCheckingMembershipOprf| and |kCheckingMembershipQuery|.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
 
   base::Time prev_time =
       local_state_.GetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp);
@@ -522,11 +432,11 @@ TEST_F(DeviceActivityClientTest, CheckMembershipOnLocalStateReset) {
   // reconnecting network.
   FireTimer();
 
-  // Verify that the |kCheckingMembershipOprf| state is reached.
-  // Indicator is used to verify that we are checking membership again on
-  // powerwash.
+  // Verify that the |kCheckingIn| state is reached.
+  // Indicator is used to verify that we are checking the PSM ID again after
+  // powerwash/recovery scenario.
   EXPECT_EQ(device_activity_client_->GetState(),
-            DeviceActivityClient::State::kCheckingMembershipOprf);
+            DeviceActivityClient::State::kCheckingIn);
 }
 
 TEST_F(DeviceActivityClientTest, InitialUmaHistogramStateCount) {
@@ -541,47 +451,16 @@ TEST_F(DeviceActivityClientTest, InitialUmaHistogramStateCount) {
                                       0);
 }
 
-TEST_F(DeviceActivityClientTest, IncrementSuccessfulQueryMembershipHistogram) {
-  // Device active reporting starts membership check on network connect.
-  SetWifiNetworkState(shill::kStateOnline);
-
-  // Mock successful |kCheckingMembershipOprf|, |kCheckingMembershipQuery|, and
-  // |kCheckingIn| requests.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
-  task_environment_.RunUntilIdle();
-
-  histogram_tester_.ExpectTotalCount(
-      "Ash.DeviceActiveClient.QueryMembershipResult", 1);
-}
-
 TEST_F(DeviceActivityClientTest, UmaHistogramStateCountAfterFirstCheckIn) {
   // Device active reporting starts membership check on network connect.
   SetWifiNetworkState(shill::kStateOnline);
 
-  // Mock successful |kCheckingMembershipOprf|, |kCheckingMembershipQuery|, and
-  // |kCheckingIn| requests.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
-      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
-      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
+  // Mock successful |kCheckingIn| requests.
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
       net::HTTP_OK);
   task_environment_.RunUntilIdle();
 
-  histogram_tester_.ExpectBucketCount(
-      "Ash.DeviceActiveClient.StateCount",
-      DeviceActivityClient::State::kCheckingMembershipOprf, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Ash.DeviceActiveClient.StateCount",
-      DeviceActivityClient::State::kCheckingMembershipQuery, 1);
   histogram_tester_.ExpectBucketCount("Ash.DeviceActiveClient.StateCount",
                                       DeviceActivityClient::State::kCheckingIn,
                                       1);

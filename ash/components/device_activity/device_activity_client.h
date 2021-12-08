@@ -137,8 +137,8 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   void OnCheckMembershipQueryDone(std::unique_ptr<std::string> response_body);
 
   // Send Import network request and update |state_|.
-  // Before calling this method: |state_| is expected to be
-  // |kCheckingMembershipQuery|.
+  // Before calling this method: |state_| is expected to be either
+  // |kCheckingMembershipQuery| or |kIdle|.
   // After calling this method:  |state_| set to |kCheckingIn|.
   void TransitionToCheckIn();
 

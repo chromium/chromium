@@ -348,7 +348,9 @@ void DeviceActivityClient::TransitionOutOfIdle() {
     }
     psm_rlwe_client_ = std::move(status_or_client.value());
 
-    TransitionToCheckMembershipOprf();
+    // During rollout, we perform CheckIn without CheckMembership for powerwash,
+    // recovery, or RMA devices.
+    TransitionToCheckIn();
   }
 }
 
@@ -586,7 +588,6 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 }
 
 void DeviceActivityClient::TransitionToCheckIn() {
-  DCHECK_EQ(state_, State::kCheckingMembershipQuery);
   DCHECK(!url_loader_);
 
   state_timer_ = base::ElapsedTimer();
