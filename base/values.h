@@ -645,10 +645,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindKey(key)` instead.
   bool HasKey(StringPiece key) const;
 
-  // Clears any current contents of this dictionary.
-  // DEPRECATED, use `Value::DictClear()` instead.
-  void Clear();
-
   // Sets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
   // into the next DictionaryValue down.  Obviously, "." can't be used

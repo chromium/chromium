@@ -1103,10 +1103,6 @@ bool DictionaryValue::HasKey(StringPiece key) const {
   return current_entry != dict().end();
 }
 
-void DictionaryValue::Clear() {
-  DictClear();
-}
-
 Value* DictionaryValue::Set(StringPiece path, std::unique_ptr<Value> in_value) {
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
   DCHECK(in_value);
