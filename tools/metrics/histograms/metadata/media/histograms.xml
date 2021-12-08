@@ -668,6 +668,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.OutputDeviceListener.Duration.{Device}" units="ms"
+    expires_after="2022-10-04">
+  <owner>olka@chromium.org</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <summary>
+    Duration of the interval when a listener listens to a specific output
+    device. Recorded when a listener chooses to listen to another output device,
+    or stops listening altogether.
+  </summary>
+  <token key="Device">
+    <variant name=".Default" summary="Default device"/>
+    <variant name=".NonDefault" summary="Non-default device"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.OutputDeviceMixer.MaxListenerCount{Device}"
     units="listeners" expires_after="2022-10-04">
   <owner>olka@chromium.org</owner>

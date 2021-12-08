@@ -30,15 +30,19 @@ class AudioProcessor final : public ReferenceOutput::Listener {
   void Stop();
 
  private:
+  class UmaLogger;
   // Listener
   void OnPlayoutData(const media::AudioBus& audio_bus,
                      int sample_rate,
                      base::TimeDelta delay) final;
 
+  void StartListening();
+
   SEQUENCE_CHECKER(owning_sequence_);
   bool active_ = false;
   std::string output_device_id_;
   raw_ptr<DeviceOutputListener> const device_output_listener_;
+  std::unique_ptr<UmaLogger> uma_logger_;
 };
 
 }  // namespace audio
