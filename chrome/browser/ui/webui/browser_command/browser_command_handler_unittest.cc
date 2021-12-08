@@ -12,6 +12,7 @@
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -36,6 +37,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenSafetyCheck,
     Command::kOpenSafeBrowsingEnhancedProtectionSettings,
     Command::kOpenFeedbackForm,
+    Command::kOpenPrivacyReview,
 };
 
 class TestCommandHandler : public BrowserCommandHandler {
@@ -113,6 +115,11 @@ WindowOpenDisposition DispositionFromClick(const ClickInfo& info) {
   return ui::DispositionFromClick(info.middle_button, info.alt_key,
                                   info.ctrl_key, info.meta_key, info.shift_key);
 }
+
+class TestingChildProfile : public TestingProfile {
+ public:
+  bool IsChild() const override { return true; }
+};
 
 }  // namespace
 
@@ -312,4 +319,46 @@ TEST_F(BrowserCommandHandlerTest, OpenFeedbackFormCommand) {
   ClickInfoPtr info = ClickInfo::New();
   EXPECT_CALL(*command_handler_, OpenFeedbackForm());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenFeedbackForm, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, CanExecuteCommand_OpenPrivacyReview) {
+  // Showing the Privacy Review promo is not allowed if the experimental
+  // flag is disabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPrivacyReview);
+  EXPECT_FALSE(CanExecuteCommand(Command::kOpenPrivacyReview));
+
+  // Once the flag is enabled, it is allowed.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(features::kPrivacyReview);
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenPrivacyReview));
+
+  // If the browser is managed, it is again not allowed.
+  {
+    TestingProfile::Builder builder;
+    builder.OverridePolicyConnectorIsManagedForTesting(true);
+    std::unique_ptr<TestingProfile> profile = builder.Build();
+    command_handler_ = std::make_unique<MockCommandHandler>(profile.get());
+    EXPECT_FALSE(CanExecuteCommand(Command::kOpenPrivacyReview));
+  }
+
+  // Neither is it if the profile belongs to a child.
+  {
+    TestingChildProfile profile;
+    command_handler_ = std::make_unique<MockCommandHandler>(&profile);
+    EXPECT_FALSE(CanExecuteCommand(Command::kOpenPrivacyReview));
+  }
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenPrivacyReviewCommand) {
+  // The OpenPrivacyReview command opens a new settings window with the Privacy
+  // Review, and the correct disposition.
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(
+      *command_handler_,
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPrivacyReviewSubPage)),
+                    DispositionFromClick(*info)));
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenPrivacyReview, std::move(info)));
 }

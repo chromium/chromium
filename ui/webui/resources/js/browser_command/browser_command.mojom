@@ -19,6 +19,7 @@ enum Command {
   kOpenSafetyCheck = 1,
   kOpenSafeBrowsingEnhancedProtectionSettings = 2,
   kOpenFeedbackForm = 3,
+  kOpenPrivacyReview = 4,
 };
 
 // Click information needed to determine user's desired window disposition using

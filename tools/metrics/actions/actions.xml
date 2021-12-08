@@ -19616,6 +19616,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="NewTabPage_Promos_PrivacyGuide">
+  <owner>msramek@chromium.org</owner>
+  <owner>rainhard@chromium.org</owner>
+  <description>
+    Recorded when the user clicks a Privacy Guide promotion on the New Tab Page.
+  </description>
+</action>
+
 <action name="NewTabPage_Promos_SafetyCheck">
   <owner>msramek@chromium.org</owner>
   <description>
