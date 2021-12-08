@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/variations/variations_ids_provider.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #include "ios/web_view/internal/app/application_context.h"
@@ -60,6 +61,8 @@ void WebViewWebMainParts::PreCreateThreads() {
           autofill::features::kAutofillUpstream.name,
           autofill::features::kAutofillEnableAccountWalletStorage.name,
           password_manager::features::kEnablePasswordsAccountStorage.name,
+          switches::kSyncTrustedVaultPassphraseiOSRPC.name,
+          switches::kSyncTrustedVaultPassphraseRecovery.name,
       },
       ",");
   std::string disabled_features = base::JoinString(
