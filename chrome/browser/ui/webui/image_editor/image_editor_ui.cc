@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/image_editor/image_editor_ui.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/image_editor/editor_untrusted_source.h"
@@ -33,7 +34,7 @@ ImageEditorUI::ImageEditorUI(content::WebUI* web_ui)
 ImageEditorUI::~ImageEditorUI() = default;
 
 void ImageEditorUI::RecordUserAction(mojom::EditAction action) {
-  // TODO(crbug/1269052) add metrics code;
+  base::UmaHistogramEnumeration("Sharing.DesktopScreenshot.Action", action);
 }
 
 void ImageEditorUI::BindInterface(

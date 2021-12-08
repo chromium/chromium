@@ -7,14 +7,29 @@ module image_editor.mojom;
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Represents user actions from the image editor.
-// TODO (crbug/1269052) Create final end to end user action enum.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum EditAction {
-  kDraw = 0,
-  kCrop = 1,
-  kText = 2,
-  kSave = 3,
-  kShare = 4,
+  kToolCrop = 0,
+  kToolText = 1,
+  kToolDraw = 2,
+  kToolCircle = 3,
+  kToolRect = 4,
+  kToolLine = 5,
+  kToolArrow = 6,
+  kToolEmoji = 7,
+  kToolHighlight = 8,
+  kZoomIn = 9,
+  kZoomOut = 10,
+  kCopy = 11,
+  kSave = 12,
+  kShare = 13,
+  kTextColorChnage = 14,
+  kTextFontChange = 15,
+  kTextSizeChange = 16,
+  kDrawSizeChange = 17,
+  kDrawColorChange = 18,
+  kHighlightColorChange = 19,
 };
 
 // Represents the Chrome side of the desktop screenshot editing session.
