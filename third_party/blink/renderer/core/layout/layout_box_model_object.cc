@@ -91,15 +91,6 @@ static ContinuationMap& GetContinuationMap() {
   return *map;
 }
 
-void LayoutBoxModelObject::ContentChanged(ContentChangeType change_type) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  if (!HasLayer())
-    return;
-
-  Layer()->ContentChanged(change_type);
-}
-
 LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
     : LayoutObject(node) {}
 
@@ -169,14 +160,7 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
        IsStackingContext() != IsStackingContext(new_style)) &&
       // ObjectPaintInvalidator requires this.
       IsRooted()) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
-    } else {
-      // We need to invalidate based on the current compositing status.
-      DisableCompositingQueryAsserts compositing_disabler;
-      ObjectPaintInvalidator(*this)
-          .InvalidatePaintIncludingNonCompositingDescendants();
-    }
+    ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
   LayoutObject::StyleWillChange(diff, new_style);

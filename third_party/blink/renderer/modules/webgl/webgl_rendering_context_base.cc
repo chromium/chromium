@@ -1398,12 +1398,6 @@ void WebGLRenderingContextBase::MarkContextChanged(
     marked_canvas_dirty_ = true;
     if (auto* cc_layer = CcLayer())
       cc_layer->SetNeedsDisplay();
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      LayoutBox* layout_box = canvas()->GetLayoutBox();
-      auto* settings = canvas()->GetDocument().GetSettings();
-      if (layout_box && settings->GetAcceleratedCompositingEnabled())
-        layout_box->ContentChanged(change_type);
-    }
     DidDraw(draw_type);
   }
 }

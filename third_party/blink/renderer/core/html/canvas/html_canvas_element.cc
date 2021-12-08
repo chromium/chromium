@@ -680,12 +680,8 @@ void HTMLCanvasElement::Reset() {
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
     if (layout_object->IsCanvas()) {
-      if (old_size != Size()) {
+      if (old_size != Size())
         To<LayoutHTMLCanvas>(layout_object)->CanvasSizeChanged();
-        if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-            GetDocument().GetSettings()->GetAcceleratedCompositingEnabled())
-          GetLayoutBox()->ContentChanged(kCanvasChanged);
-      }
       if (had_resource_provider)
         layout_object->SetShouldDoFullPaintInvalidation();
     }

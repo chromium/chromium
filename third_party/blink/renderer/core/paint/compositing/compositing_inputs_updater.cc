@@ -184,8 +184,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
 
   compositor->ClearCompositingInputsRoot();
 
-  DisableCompositingQueryAsserts disabler;
-
   bool previously_needed_paint_offset_translation =
       layer->NeedsPaintOffsetTranslationForCompositing();
 
@@ -230,8 +228,6 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
       info.enclosing_stacking_composited_layer;
   PaintLayer* enclosing_squashing_composited_layer =
       info.enclosing_squashing_composited_layer;
-
-  DisableCompositingQueryAsserts disabler;
 
   if (layer->NeedsCompositingInputsUpdate()) {
     if (enclosing_stacking_composited_layer) {

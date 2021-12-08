@@ -511,8 +511,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const = 0;
 
-  void ContentChanged(ContentChangeType);
-
   // Returns true if the background is painted opaque in the given rect.
   // The query rect is given in local coordinate system.
   virtual bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {

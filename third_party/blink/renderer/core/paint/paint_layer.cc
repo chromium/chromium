@@ -266,11 +266,6 @@ void PaintLayer::Destroy() {
     rare_data_->resource_info->ClearLayer();
   }
 
-  if (GroupedMapping()) {
-    DisableCompositingQueryAsserts disabler;
-    SetGroupedMapping(nullptr, kInvalidateLayerAndRemoveFromMapping);
-  }
-
   // Child layers will be deleted by their corresponding layout objects, so
   // we don't need to delete them ourselves.
   if (HasCompositedLayerMapping())
@@ -304,41 +299,10 @@ PaintLayerCompositor* PaintLayer::Compositor() const {
   return GetLayoutObject().View()->Compositor();
 }
 
-void PaintLayer::ContentChanged(ContentChangeType change_type) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  // updateLayerCompositingState will query compositingReasons for accelerated
-  // overflow scrolling.  This is tripped by
-  // web_tests/compositing/content-changed-chicken-egg.html
-  DisableCompositingQueryAsserts disabler;
-
-  if (Compositor()) {
-    SetNeedsCompositingInputsUpdate();
-
-    if (change_type == kCanvasContextChanged) {
-      // Although we're missing test coverage, we need to call
-      // GraphicsLayer::SetContentsToCcLayer with the new cc::Layer for this
-      // canvas. See http://crbug.com/349195
-      if (HasCompositedLayerMapping()) {
-        GetCompositedLayerMapping()->SetNeedsGraphicsLayerUpdate(
-            kGraphicsLayerUpdateSubtree);
-      }
-    }
-  }
-}
-
 bool PaintLayer::PaintsWithFilters() const {
   if (!GetLayoutObject().HasFilterInducingProperty())
     return false;
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // https://code.google.com/p/chromium/issues/detail?id=343759
-    DisableCompositingQueryAsserts disabler;
-    return !GetCompositedLayerMapping() ||
-           GetCompositingState() != kPaintsIntoOwnBacking;
-  } else {
-    return true;
-  }
+  return true;
 }
 
 PhysicalOffset PaintLayer::SubpixelAccumulation() const {
@@ -1514,8 +1478,6 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
     if (LocalFrameView* frame_view = layout_object_->GetDocument().View())
       frame_view->SetNeedsForcedCompositingUpdate();
 
-    // We need the current compositing status.
-    DisableCompositingQueryAsserts disabler;
     if (IsPaintInvalidationContainer()) {
       // Our children will be reparented and contained by a new paint
       // invalidation container, so need paint invalidation. CompositingUpdate
@@ -3165,7 +3127,6 @@ void PaintLayer::ClearCompositedLayerMapping(bool layer_being_destroyed) {
   DCHECK(HasCompositedLayerMapping());
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
 
-  DisableCompositingQueryAsserts disabler;
   if (!layer_being_destroyed) {
     // We need to make sure our descendants get a geometry update. In principle,
     // we could call setNeedsGraphicsLayerUpdate on our children, but that would
@@ -3549,19 +3510,6 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   // to recompute the bit once scrollbars have been updated.
   UpdateSelfPaintingLayer();
 
-  if (!diff.CompositingReasonsChanged() &&
-      !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // For querying stale GetCompositingState().
-    DisableCompositingQueryAsserts disable;
-
-    // Compositing inputs update is required when the PaintLayer is currently
-    // composited. This is because even style changes as simple as background
-    // color change, or pointer-events state change, can update compositing
-    // state.
-    if (old_style && GetCompositingState() == kPaintsIntoOwnBacking)
-      SetNeedsCompositingInputsUpdate();
-  }
-
   // HasAlphaChanged can affect whether a composited layer is opaque.
   if (diff.NeedsLayout() || diff.HasAlphaChanged())
     SetNeedsCompositingInputsUpdate();
@@ -3810,21 +3758,6 @@ void PaintLayer::SetDescendantNeedsRepaint() {
 void PaintLayer::MarkCompositingContainerChainForNeedsRepaint() {
   PaintLayer* layer = this;
   while (true) {
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // Need to access compositingState(). We've ensured correct flag setting
-      // when compositingState() changes.
-      DisableCompositingQueryAsserts disabler;
-      if (layer->GetCompositingState() == kPaintsIntoOwnBacking)
-        break;
-      if (CompositedLayerMapping* grouped_mapping = layer->GroupedMapping()) {
-        // TODO(wkorman): As we clean up the CompositedLayerMapping needsRepaint
-        // logic to delegate to scrollbars, we may be able to remove the line
-        // below as well.
-        grouped_mapping->OwningLayer().SetNeedsRepaint();
-        break;
-      }
-    }
-
     // For a non-self-painting layer having self-painting descendant, the
     // descendant will be painted through this layer's Parent() instead of
     // this layer's Container(), so in addition to the CompositingContainer()
@@ -3957,26 +3890,10 @@ void PaintLayer::DirtyStackingContextZOrderLists() {
   auto* stacking_context = AncestorStackingContext();
   if (!stacking_context)
     return;
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // This invalidation code intentionally refers to stale state.
-    DisableCompositingQueryAsserts disabler;
-
-    // Changes of stacking may result in graphics layers changing size
-    // due to new contents painting into them.
-    if (auto* mapping = stacking_context->GetCompositedLayerMapping())
-      mapping->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
-  }
-
   if (stacking_context->StackingNode())
     stacking_context->StackingNode()->DirtyZOrderLists();
 
   MarkAncestorChainForFlagsUpdate();
-}
-
-DisableCompositingQueryAsserts::DisableCompositingQueryAsserts()
-    : disabler_(&g_compositing_query_mode, kCompositingQueriesAreAllowed) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
 }
 
 void PaintLayer::Trace(Visitor* visitor) const {
@@ -4017,10 +3934,6 @@ void ShowLayerTree(const blink::PaintLayer* layer) {
     LOG(ERROR) << "Cannot showLayerTree. Root is (nil)";
     return;
   }
-
-  absl::optional<blink::DisableCompositingQueryAsserts> disabler;
-  if (!blink::RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    disabler.emplace();
 
   if (blink::LocalFrame* frame = layer->GetLayoutObject().GetFrame()) {
     WTF::String output =

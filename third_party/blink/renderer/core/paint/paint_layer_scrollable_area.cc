@@ -343,42 +343,16 @@ GraphicsLayer* PaintLayerScrollableArea::GraphicsLayerForScrolling() const {
 
 GraphicsLayer* PaintLayerScrollableArea::GraphicsLayerForHorizontalScrollbar()
     const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return nullptr;
-
-  // See crbug.com/343132.
-  DisableCompositingQueryAsserts disabler;
-
-  return Layer()->HasCompositedLayerMapping()
-             ? Layer()
-                   ->GetCompositedLayerMapping()
-                   ->LayerForHorizontalScrollbar()
-             : nullptr;
+  return nullptr;
 }
 
 GraphicsLayer* PaintLayerScrollableArea::GraphicsLayerForVerticalScrollbar()
     const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return nullptr;
-
-  // See crbug.com/343132.
-  DisableCompositingQueryAsserts disabler;
-
-  return Layer()->HasCompositedLayerMapping()
-             ? Layer()->GetCompositedLayerMapping()->LayerForVerticalScrollbar()
-             : nullptr;
+  return nullptr;
 }
 
 GraphicsLayer* PaintLayerScrollableArea::GraphicsLayerForScrollCorner() const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return nullptr;
-
-  // See crbug.com/343132.
-  DisableCompositingQueryAsserts disabler;
-
-  return Layer()->HasCompositedLayerMapping()
-             ? Layer()->GetCompositedLayerMapping()->LayerForScrollCorner()
-             : nullptr;
+  return nullptr;
 }
 
 bool PaintLayerScrollableArea::IsActive() const {
@@ -2018,7 +1992,6 @@ void PaintLayerScrollableArea::PositionOverflowControls() {
   // composited controls get correctly positioned on a compositor update. For
   // now, conservatively leaving this unchanged.
   if (Layer()->HasCompositedLayerMapping()) {
-    DisableCompositingQueryAsserts disabler;
     Layer()->GetCompositedLayerMapping()->PositionOverflowControlsLayers();
   }
 }
@@ -2494,7 +2467,6 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
 void PaintLayerScrollableArea::UpdateCompositingLayersAfterScroll() {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
 
-  DisableCompositingQueryAsserts disabler;
   PaintLayerCompositor* compositor = GetLayoutBox()->View()->Compositor();
   if (!compositor || !compositor->InCompositingMode())
     return;

@@ -104,21 +104,6 @@ enum PaintLayerIteration {
       kNegativeZOrderChildren | kNormalFlowChildren | kPositiveZOrderChildren
 };
 
-// FIXME: remove this once the compositing query DCHECKS are no longer hit.
-class CORE_EXPORT DisableCompositingQueryAsserts {
-  STACK_ALLOCATED();
-
- public:
-  DisableCompositingQueryAsserts();
-  DisableCompositingQueryAsserts(const DisableCompositingQueryAsserts&) =
-      delete;
-  DisableCompositingQueryAsserts& operator=(
-      const DisableCompositingQueryAsserts&) = delete;
-
- private:
-  base::AutoReset<CompositingQueryMode> disabler_;
-};
-
 struct CORE_EXPORT PaintLayerRareData final
     : public GarbageCollected<PaintLayerRareData> {
  public:
@@ -339,11 +324,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsRootLayer() const { return is_root_layer_; }
 
   PaintLayerCompositor* Compositor() const;
-
-  // Notification from the layoutObject that its content changed (e.g. current
-  // frame of image changed).  Allows updates of layer content without
-  // invalidating paint.
-  void ContentChanged(ContentChangeType);
 
   bool UpdateSize();
   void UpdateSizeAndScrollingAfterLayout();

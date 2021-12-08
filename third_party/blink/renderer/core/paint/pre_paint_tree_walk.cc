@@ -59,7 +59,6 @@ static void SetNeedsCompositingLayerPropertyUpdate(const LayoutObject& object) {
 
   PaintLayer* paint_layer = To<LayoutBoxModelObject>(object).Layer();
 
-  DisableCompositingQueryAsserts disabler;
   // This ensures that CompositingLayerPropertyUpdater::Update will
   // be called and update LayerState for the LayoutView.
   auto* mapping = paint_layer->GetCompositedLayerMapping();
@@ -412,8 +411,6 @@ void PrePaintTreeWalk::UpdatePaintInvalidationContainer(
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
 
-  DisableCompositingQueryAsserts disabler;
-
   if (object.IsPaintInvalidationContainer()) {
     context.paint_invalidation_container = To<LayoutBoxModelObject>(&object);
     if (object.IsStackingContext() || object.IsSVGRoot()) {
@@ -630,8 +627,6 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
           // Mark the previous paint invalidation container as needing
           // raster invalidation. This handles cases where raster invalidation
           // needs to happen but no compositing layers were added or removed.
-          DisableCompositingQueryAsserts disabler;
-
           const auto* paint_invalidation_container =
               context.paint_invalidation_container->Layer();
           if (!paint_invalidation_container->SelfNeedsRepaint()) {

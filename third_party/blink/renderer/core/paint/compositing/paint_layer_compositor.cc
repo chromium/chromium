@@ -406,7 +406,6 @@ void PaintLayerCompositor::PaintInvalidationOnCompositingChange(
   layer->SetNeedsRepaint();
   // We need to check for raster invalidations due to content changing
   // composited layer backings.
-  DisableCompositingQueryAsserts compositing_disabler;
   switch (layer->GetCompositingState()) {
     case kPaintsIntoOwnBacking:
       layer->GetCompositedLayerMapping()->SetNeedsCheckRasterInvalidation();

@@ -724,10 +724,6 @@ bool DisplayLockContext::MarkForCompositingUpdatesIfNeeded() {
     needs_graphics_layer_rebuild_ = false;
 
     if (forced_graphics_layer_update_blocked_) {
-      // We only add an extra dirty bit to the compositing state, which is safe
-      // since we do this before updating the compositing state.
-      DisableCompositingQueryAsserts disabler;
-
       auto* compositing_parent =
           layout_box->Layer()->EnclosingLayerWithCompositedLayerMapping(
               kIncludeSelf);
