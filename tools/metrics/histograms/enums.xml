@@ -42914,6 +42914,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147012851" label="WININET_E_INVALID_CA"/>
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
+  <int value="-2140143615" label="MF_INDEX_SIZE_ERR"/>
+  <int value="-2140143608" label="MF_NOT_FOUND_ERR"/>
+  <int value="-2140143607" label="MF_NOT_SUPPORTED_ERR"/>
+  <int value="-2140143605" label="MF_INVALID_STATE_ERR"/>
+  <int value="-2140143604" label="MF_SYNTAX_ERR"/>
+  <int value="-2140143601" label="MF_INVALID_ACCESS_ERR"/>
+  <int value="-2140143594" label="MF_QUOTA_EXCEEDED_ERR"/>
+  <int value="-2140143535" label="MF_PARSE_ERR"/>
+  <int value="-2140127227" label="MF_TYPE_ERR"/>
   <int value="-2005270527" label="DXGI_ERROR_INVALID_CALL"/>
   <int value="-2005270526" label="DXGI_ERROR_NOT_FOUND"/>
   <int value="-2005270525" label="DXGI_ERROR_MORE_DATA"/>
@@ -42977,13 +42986,382 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2003283956" label="DWRITE_E_NOCOLOR"/>
   <int value="-1606219753" label="GOOPDATE_E_NON_BLOCKING_CALL_PENDING"/>
   <int value="-1606219747" label="GOOPDATE_E_APP_USING_EXTERNAL_UPDATER"/>
+  <int value="-1072875856" label="MF_E_PLATFORM_NOT_INITIALIZED"/>
+  <int value="-1072875855" label="MF_E_BUFFERTOOSMALL"/>
+  <int value="-1072875854" label="MF_E_INVALIDREQUEST"/>
+  <int value="-1072875853" label="MF_E_INVALIDSTREAMNUMBER"/>
+  <int value="-1072875852" label="MF_E_INVALIDMEDIATYPE"/>
+  <int value="-1072875851" label="MF_E_NOTACCEPTING"/>
+  <int value="-1072875850" label="MF_E_NOT_INITIALIZED"/>
+  <int value="-1072875849" label="MF_E_UNSUPPORTED_REPRESENTATION"/>
+  <int value="-1072875847" label="MF_E_NO_MORE_TYPES"/>
+  <int value="-1072875846" label="MF_E_UNSUPPORTED_SERVICE"/>
+  <int value="-1072875845" label="MF_E_UNEXPECTED"/>
+  <int value="-1072875844" label="MF_E_INVALIDNAME"/>
+  <int value="-1072875843" label="MF_E_INVALIDTYPE"/>
+  <int value="-1072875842" label="MF_E_INVALID_FILE_FORMAT"/>
+  <int value="-1072875841" label="MF_E_INVALIDINDEX"/>
+  <int value="-1072875840" label="MF_E_INVALID_TIMESTAMP"/>
+  <int value="-1072875837" label="MF_E_UNSUPPORTED_SCHEME"/>
+  <int value="-1072875836" label="MF_E_UNSUPPORTED_BYTESTREAM_TYPE"/>
+  <int value="-1072875835" label="MF_E_UNSUPPORTED_TIME_FORMAT"/>
+  <int value="-1072875832" label="MF_E_NO_SAMPLE_TIMESTAMP"/>
+  <int value="-1072875831" label="MF_E_NO_SAMPLE_DURATION"/>
+  <int value="-1072875829" label="MF_E_INVALID_STREAM_DATA"/>
+  <int value="-1072875825" label="MF_E_RT_UNAVAILABLE"/>
+  <int value="-1072875824" label="MF_E_UNSUPPORTED_RATE"/>
+  <int value="-1072875823" label="MF_E_THINNING_UNSUPPORTED"/>
+  <int value="-1072875822" label="MF_E_REVERSE_UNSUPPORTED"/>
+  <int value="-1072875821" label="MF_E_UNSUPPORTED_RATE_TRANSITION"/>
+  <int value="-1072875820" label="MF_E_RATE_CHANGE_PREEMPTED"/>
+  <int value="-1072875819" label="MF_E_NOT_FOUND"/>
+  <int value="-1072875818" label="MF_E_NOT_AVAILABLE"/>
+  <int value="-1072875817" label="MF_E_NO_CLOCK"/>
+  <int value="-1072875815" label="MF_E_MULTIPLE_BEGIN"/>
+  <int value="-1072875814" label="MF_E_MULTIPLE_SUBSCRIBERS"/>
+  <int value="-1072875813" label="MF_E_TIMER_ORPHANED"/>
+  <int value="-1072875812" label="MF_E_STATE_TRANSITION_PENDING"/>
+  <int value="-1072875811" label="MF_E_UNSUPPORTED_STATE_TRANSITION"/>
+  <int value="-1072875810" label="MF_E_UNRECOVERABLE_ERROR_OCCURRED"/>
+  <int value="-1072875809" label="MF_E_SAMPLE_HAS_TOO_MANY_BUFFERS"/>
+  <int value="-1072875808" label="MF_E_SAMPLE_NOT_WRITABLE"/>
+  <int value="-1072875806" label="MF_E_INVALID_KEY"/>
+  <int value="-1072875805" label="MF_E_BAD_STARTUP_VERSION"/>
+  <int value="-1072875804" label="MF_E_UNSUPPORTED_CAPTION"/>
+  <int value="-1072875803" label="MF_E_INVALID_POSITION"/>
+  <int value="-1072875802" label="MF_E_ATTRIBUTENOTFOUND"/>
+  <int value="-1072875801" label="MF_E_PROPERTY_TYPE_NOT_ALLOWED"/>
+  <int value="-1072875800" label="MF_E_PROPERTY_TYPE_NOT_SUPPORTED"/>
+  <int value="-1072875799" label="MF_E_PROPERTY_EMPTY"/>
+  <int value="-1072875798" label="MF_E_PROPERTY_NOT_EMPTY"/>
+  <int value="-1072875797" label="MF_E_PROPERTY_VECTOR_NOT_ALLOWED"/>
+  <int value="-1072875796" label="MF_E_PROPERTY_VECTOR_REQUIRED"/>
+  <int value="-1072875795" label="MF_E_OPERATION_CANCELLED"/>
+  <int value="-1072875794" label="MF_E_BYTESTREAM_NOT_SEEKABLE"/>
+  <int value="-1072875793" label="MF_E_DISABLED_IN_SAFEMODE"/>
+  <int value="-1072875792" label="MF_E_CANNOT_PARSE_BYTESTREAM"/>
+  <int value="-1072875791"
+      label="MF_E_SOURCERESOLVER_MUTUALLY_EXCLUSIVE_FLAGS"/>
+  <int value="-1072875790" label="MF_E_MEDIAPROC_WRONGSTATE"/>
+  <int value="-1072875789" label="MF_E_RT_THROUGHPUT_NOT_AVAILABLE"/>
+  <int value="-1072875788" label="MF_E_RT_TOO_MANY_CLASSES"/>
+  <int value="-1072875787" label="MF_E_RT_WOULDBLOCK"/>
+  <int value="-1072875786" label="MF_E_NO_BITPUMP"/>
+  <int value="-1072875785" label="MF_E_RT_OUTOFMEMORY"/>
+  <int value="-1072875784" label="MF_E_RT_WORKQUEUE_CLASS_NOT_SPECIFIED"/>
+  <int value="-1072875782" label="MF_E_CANNOT_CREATE_SINK"/>
+  <int value="-1072875781" label="MF_E_BYTESTREAM_UNKNOWN_LENGTH"/>
+  <int value="-1072875780" label="MF_E_SESSION_PAUSEWHILESTOPPED"/>
+  <int value="-1072875778" label="MF_E_FORMAT_CHANGE_NOT_SUPPORTED"/>
+  <int value="-1072875777" label="MF_E_INVALID_WORKQUEUE"/>
+  <int value="-1072875776" label="MF_E_DRM_UNSUPPORTED"/>
+  <int value="-1072875775" label="MF_E_UNAUTHORIZED"/>
+  <int value="-1072875774" label="MF_E_OUT_OF_RANGE"/>
+  <int value="-1072875773" label="MF_E_INVALID_CODEC_MERIT"/>
+  <int value="-1072875772" label="MF_E_HW_MFT_FAILED_START_STREAMING"/>
+  <int value="-1072875771" label="MF_E_OPERATION_IN_PROGRESS"/>
+  <int value="-1072875770" label="MF_E_HARDWARE_DRM_UNSUPPORTED"/>
+  <int value="-1072875769" label="MF_E_DURATION_TOO_LONG"/>
+  <int value="-1072875768"
+      label="MF_E_OPERATION_UNSUPPORTED_AT_D3D_FEATURE_LEVEL"/>
+  <int value="-1072875767"
+      label="MF_E_UNSUPPORTED_MEDIATYPE_AT_D3D_FEATURE_LEVEL"/>
+  <int value="-1072874856" label="MF_E_ASF_PARSINGINCOMPLETE"/>
+  <int value="-1072874855" label="MF_E_ASF_MISSINGDATA"/>
+  <int value="-1072874854" label="MF_E_ASF_INVALIDDATA"/>
+  <int value="-1072874853" label="MF_E_ASF_OPAQUEPACKET"/>
+  <int value="-1072874852" label="MF_E_ASF_NOINDEX"/>
+  <int value="-1072874851" label="MF_E_ASF_OUTOFRANGE"/>
+  <int value="-1072874850" label="MF_E_ASF_INDEXNOTLOADED"/>
+  <int value="-1072874849" label="MF_E_ASF_TOO_MANY_PAYLOADS"/>
+  <int value="-1072874848" label="MF_E_ASF_UNSUPPORTED_STREAM_TYPE"/>
+  <int value="-1072874847" label="MF_E_ASF_DROPPED_PACKET"/>
+  <int value="-1072873856" label="MF_E_NO_EVENTS_AVAILABLE"/>
+  <int value="-1072873854" label="MF_E_INVALID_STATE_TRANSITION"/>
+  <int value="-1072873852" label="MF_E_END_OF_STREAM"/>
+  <int value="-1072873851" label="MF_E_SHUTDOWN"/>
+  <int value="-1072873850" label="MF_E_MP3_NOTFOUND"/>
+  <int value="-1072873849" label="MF_E_MP3_OUTOFDATA"/>
+  <int value="-1072873848" label="MF_E_MP3_NOTMP3"/>
+  <int value="-1072873847" label="MF_E_MP3_NOTSUPPORTED"/>
+  <int value="-1072873846" label="MF_E_NO_DURATION"/>
+  <int value="-1072873844" label="MF_E_INVALID_FORMAT"/>
+  <int value="-1072873843" label="MF_E_PROPERTY_NOT_FOUND"/>
+  <int value="-1072873842" label="MF_E_PROPERTY_READ_ONLY"/>
+  <int value="-1072873841" label="MF_E_PROPERTY_NOT_ALLOWED"/>
+  <int value="-1072873839" label="MF_E_MEDIA_SOURCE_NOT_STARTED"/>
+  <int value="-1072873832" label="MF_E_UNSUPPORTED_FORMAT"/>
+  <int value="-1072873831" label="MF_E_MP3_BAD_CRC"/>
+  <int value="-1072873830" label="MF_E_NOT_PROTECTED"/>
+  <int value="-1072873829" label="MF_E_MEDIA_SOURCE_WRONGSTATE"/>
+  <int value="-1072873828" label="MF_E_MEDIA_SOURCE_NO_STREAMS_SELECTED"/>
+  <int value="-1072873827" label="MF_E_CANNOT_FIND_KEYFRAME_SAMPLE"/>
+  <int value="-1072873826" label="MF_E_UNSUPPORTED_CHARACTERISTICS"/>
+  <int value="-1072873825" label="MF_E_NO_AUDIO_RECORDING_DEVICE"/>
+  <int value="-1072873824" label="MF_E_AUDIO_RECORDING_DEVICE_IN_USE"/>
+  <int value="-1072873823" label="MF_E_AUDIO_RECORDING_DEVICE_INVALIDATED"/>
+  <int value="-1072873822" label="MF_E_VIDEO_RECORDING_DEVICE_INVALIDATED"/>
+  <int value="-1072873821" label="MF_E_VIDEO_RECORDING_DEVICE_PREEMPTED"/>
+  <int value="-1072872856" label="MF_E_NETWORK_RESOURCE_FAILURE"/>
+  <int value="-1072872855" label="MF_E_NET_WRITE"/>
+  <int value="-1072872854" label="MF_E_NET_READ"/>
+  <int value="-1072872853" label="MF_E_NET_REQUIRE_NETWORK"/>
+  <int value="-1072872852" label="MF_E_NET_REQUIRE_ASYNC"/>
+  <int value="-1072872851" label="MF_E_NET_BWLEVEL_NOT_SUPPORTED"/>
+  <int value="-1072872850" label="MF_E_NET_STREAMGROUPS_NOT_SUPPORTED"/>
+  <int value="-1072872849" label="MF_E_NET_MANUALSS_NOT_SUPPORTED"/>
+  <int value="-1072872848" label="MF_E_NET_INVALID_PRESENTATION_DESCRIPTOR"/>
+  <int value="-1072872847" label="MF_E_NET_CACHESTREAM_NOT_FOUND"/>
+  <int value="-1072872844" label="MF_E_NET_REQUIRE_INPUT"/>
+  <int value="-1072872843" label="MF_E_NET_REDIRECT"/>
+  <int value="-1072872842" label="MF_E_NET_REDIRECT_TO_PROXY"/>
+  <int value="-1072872841" label="MF_E_NET_TOO_MANY_REDIRECTS"/>
+  <int value="-1072872840" label="MF_E_NET_TIMEOUT"/>
+  <int value="-1072872839" label="MF_E_NET_CLIENT_CLOSE"/>
+  <int value="-1072872838" label="MF_E_NET_BAD_CONTROL_DATA"/>
+  <int value="-1072872837" label="MF_E_NET_INCOMPATIBLE_SERVER"/>
+  <int value="-1072872836" label="MF_E_NET_UNSAFE_URL"/>
+  <int value="-1072872835" label="MF_E_NET_CACHE_NO_DATA"/>
+  <int value="-1072872834" label="MF_E_NET_EOL"/>
+  <int value="-1072872833" label="MF_E_NET_BAD_REQUEST"/>
+  <int value="-1072872832" label="MF_E_NET_INTERNAL_SERVER_ERROR"/>
+  <int value="-1072872831" label="MF_E_NET_SESSION_NOT_FOUND"/>
+  <int value="-1072872830" label="MF_E_NET_NOCONNECTION"/>
+  <int value="-1072872829" label="MF_E_NET_CONNECTION_FAILURE"/>
+  <int value="-1072872828" label="MF_E_NET_INCOMPATIBLE_PUSHSERVER"/>
+  <int value="-1072872827" label="MF_E_NET_SERVER_ACCESSDENIED"/>
+  <int value="-1072872826" label="MF_E_NET_PROXY_ACCESSDENIED"/>
+  <int value="-1072872825" label="MF_E_NET_CANNOTCONNECT"/>
+  <int value="-1072872824" label="MF_E_NET_INVALID_PUSH_TEMPLATE"/>
+  <int value="-1072872823" label="MF_E_NET_INVALID_PUSH_PUBLISHING_POINT"/>
+  <int value="-1072872822" label="MF_E_NET_BUSY"/>
+  <int value="-1072872821" label="MF_E_NET_RESOURCE_GONE"/>
+  <int value="-1072872820" label="MF_E_NET_ERROR_FROM_PROXY"/>
+  <int value="-1072872819" label="MF_E_NET_PROXY_TIMEOUT"/>
+  <int value="-1072872818" label="MF_E_NET_SERVER_UNAVAILABLE"/>
+  <int value="-1072872817" label="MF_E_NET_TOO_MUCH_DATA"/>
+  <int value="-1072872816" label="MF_E_NET_SESSION_INVALID"/>
+  <int value="-1072872815" label="MF_E_OFFLINE_MODE"/>
+  <int value="-1072872814" label="MF_E_NET_UDP_BLOCKED"/>
+  <int value="-1072872813" label="MF_E_NET_UNSUPPORTED_CONFIGURATION"/>
+  <int value="-1072872812" label="MF_E_NET_PROTOCOL_DISABLED"/>
+  <int value="-1072872811" label="MF_E_NET_COMPANION_DRIVER_DISCONNECT"/>
+  <int value="-1072871856" label="MF_E_ALREADY_INITIALIZED"/>
+  <int value="-1072871855" label="MF_E_BANDWIDTH_OVERRUN"/>
+  <int value="-1072871854" label="MF_E_LATE_SAMPLE"/>
+  <int value="-1072871853" label="MF_E_FLUSH_NEEDED"/>
+  <int value="-1072871852" label="MF_E_INVALID_PROFILE"/>
+  <int value="-1072871851" label="MF_E_INDEX_NOT_COMMITTED"/>
+  <int value="-1072871850" label="MF_E_NO_INDEX"/>
+  <int value="-1072871849" label="MF_E_CANNOT_INDEX_IN_PLACE"/>
+  <int value="-1072871848" label="MF_E_MISSING_ASF_LEAKYBUCKET"/>
+  <int value="-1072871847" label="MF_E_INVALID_ASF_STREAMID"/>
+  <int value="-1072870856" label="MF_E_STREAMSINK_REMOVED"/>
+  <int value="-1072870854" label="MF_E_STREAMSINKS_OUT_OF_SYNC"/>
+  <int value="-1072870853" label="MF_E_STREAMSINKS_FIXED"/>
+  <int value="-1072870852" label="MF_E_STREAMSINK_EXISTS"/>
+  <int value="-1072870851" label="MF_E_SAMPLEALLOCATOR_CANCELED"/>
+  <int value="-1072870850" label="MF_E_SAMPLEALLOCATOR_EMPTY"/>
+  <int value="-1072870849" label="MF_E_SINK_ALREADYSTOPPED"/>
+  <int value="-1072870848" label="MF_E_ASF_FILESINK_BITRATE_UNKNOWN"/>
+  <int value="-1072870847" label="MF_E_SINK_NO_STREAMS"/>
+  <int value="-1072870845" label="MF_E_METADATA_TOO_LONG"/>
+  <int value="-1072870844" label="MF_E_SINK_NO_SAMPLES_PROCESSED"/>
+  <int value="-1072870843" label="MF_E_SINK_HEADERS_NOT_FOUND"/>
+  <int value="-1072869856" label="MF_E_VIDEO_REN_NO_PROCAMP_HW"/>
+  <int value="-1072869855" label="MF_E_VIDEO_REN_NO_DEINTERLACE_HW"/>
+  <int value="-1072869854" label="MF_E_VIDEO_REN_COPYPROT_FAILED"/>
+  <int value="-1072869853" label="MF_E_VIDEO_REN_SURFACE_NOT_SHARED"/>
+  <int value="-1072869852" label="MF_E_VIDEO_DEVICE_LOCKED"/>
+  <int value="-1072869851" label="MF_E_NEW_VIDEO_DEVICE"/>
+  <int value="-1072869850" label="MF_E_NO_VIDEO_SAMPLE_AVAILABLE"/>
+  <int value="-1072869756" label="MF_E_NO_AUDIO_PLAYBACK_DEVICE"/>
+  <int value="-1072869755" label="MF_E_AUDIO_PLAYBACK_DEVICE_IN_USE"/>
+  <int value="-1072869754" label="MF_E_AUDIO_PLAYBACK_DEVICE_INVALIDATED"/>
+  <int value="-1072869753" label="MF_E_AUDIO_SERVICE_NOT_RUNNING"/>
+  <int value="-1072869752" label="MF_E_AUDIO_BUFFER_SIZE_ERROR"/>
+  <int value="-1072869751" label="MF_E_AUDIO_CLIENT_WRAPPER_SPOOF_ERROR"/>
+  <int value="-1072868850" label="MF_E_TOPO_INVALID_OPTIONAL_NODE"/>
+  <int value="-1072868847" label="MF_E_TOPO_CANNOT_FIND_DECRYPTOR"/>
+  <int value="-1072868846" label="MF_E_TOPO_CODEC_NOT_FOUND"/>
+  <int value="-1072868845" label="MF_E_TOPO_CANNOT_CONNECT"/>
+  <int value="-1072868844" label="MF_E_TOPO_UNSUPPORTED"/>
+  <int value="-1072868843" label="MF_E_TOPO_INVALID_TIME_ATTRIBUTES"/>
+  <int value="-1072868842" label="MF_E_TOPO_LOOPS_IN_TOPOLOGY"/>
+  <int value="-1072868841" label="MF_E_TOPO_MISSING_PRESENTATION_DESCRIPTOR"/>
+  <int value="-1072868840" label="MF_E_TOPO_MISSING_STREAM_DESCRIPTOR"/>
+  <int value="-1072868839" label="MF_E_TOPO_STREAM_DESCRIPTOR_NOT_SELECTED"/>
+  <int value="-1072868838" label="MF_E_TOPO_MISSING_SOURCE"/>
+  <int value="-1072868837" label="MF_E_TOPO_SINK_ACTIVATES_UNSUPPORTED"/>
+  <int value="-1072864852" label="MF_E_SEQUENCER_UNKNOWN_SEGMENT_ID"/>
+  <int value="-1072864850" label="MF_E_NO_SOURCE_IN_CACHE"/>
+  <int value="-1072861856" label="MF_E_TRANSFORM_TYPE_NOT_SET"/>
+  <int value="-1072861855" label="MF_E_TRANSFORM_STREAM_CHANGE"/>
+  <int value="-1072861854" label="MF_E_TRANSFORM_INPUT_REMAINING"/>
+  <int value="-1072861853" label="MF_E_TRANSFORM_PROFILE_MISSING"/>
+  <int value="-1072861852" label="MF_E_TRANSFORM_PROFILE_INVALID_OR_CORRUPT"/>
+  <int value="-1072861851" label="MF_E_TRANSFORM_PROFILE_TRUNCATED"/>
+  <int value="-1072861850" label="MF_E_TRANSFORM_PROPERTY_PID_NOT_RECOGNIZED"/>
+  <int value="-1072861849" label="MF_E_TRANSFORM_PROPERTY_VARIANT_TYPE_WRONG"/>
+  <int value="-1072861848" label="MF_E_TRANSFORM_PROPERTY_NOT_WRITEABLE"/>
+  <int value="-1072861847"
+      label="MF_E_TRANSFORM_PROPERTY_ARRAY_VALUE_WRONG_NUM_DIM"/>
+  <int value="-1072861846" label="MF_E_TRANSFORM_PROPERTY_VALUE_SIZE_WRONG"/>
+  <int value="-1072861845" label="MF_E_TRANSFORM_PROPERTY_VALUE_OUT_OF_RANGE"/>
+  <int value="-1072861844" label="MF_E_TRANSFORM_PROPERTY_VALUE_INCOMPATIBLE"/>
+  <int value="-1072861843"
+      label="MF_E_TRANSFORM_NOT_POSSIBLE_FOR_CURRENT_OUTPUT_MEDIATYPE"/>
+  <int value="-1072861842"
+      label="MF_E_TRANSFORM_NOT_POSSIBLE_FOR_CURRENT_INPUT_MEDIATYPE"/>
+  <int value="-1072861841"
+      label="MF_E_TRANSFORM_NOT_POSSIBLE_FOR_CURRENT_MEDIATYPE_COMBINATION"/>
+  <int value="-1072861840"
+      label="MF_E_TRANSFORM_CONFLICTS_WITH_OTHER_CURRENTLY_ENABLED_FEATURES"/>
+  <int value="-1072861838" label="MF_E_TRANSFORM_NEED_MORE_INPUT"/>
+  <int value="-1072861837"
+      label="MF_E_TRANSFORM_NOT_POSSIBLE_FOR_CURRENT_SPKR_CONFIG"/>
+  <int value="-1072861836"
+      label="MF_E_TRANSFORM_CANNOT_CHANGE_MEDIATYPE_WHILE_PROCESSING"/>
+  <int value="-1072861834" label="MF_E_UNSUPPORTED_D3D_TYPE"/>
+  <int value="-1072861833" label="MF_E_TRANSFORM_ASYNC_LOCKED"/>
+  <int value="-1072861832" label="MF_E_TRANSFORM_CANNOT_INITIALIZE_ACM_DRIVER"/>
+  <int value="-1072861831" label="MF_E_TRANSFORM_STREAM_INVALID_RESOLUTION"/>
+  <int value="-1072861830" label="MF_E_TRANSFORM_ASYNC_MFT_NOT_SUPPORTED"/>
+  <int value="-1072861828" label="MF_E_TRANSFORM_EXATTRIBUTE_NOT_SUPPORTED"/>
+  <int value="-1072860856" label="MF_E_LICENSE_INCORRECT_RIGHTS"/>
   <int value="-1072860855" label="MF_E_LICENSE_OUTOFDATE"/>
+  <int value="-1072860854" label="MF_E_LICENSE_REQUIRED"/>
+  <int value="-1072860853" label="MF_E_DRM_HARDWARE_INCONSISTENT"/>
+  <int value="-1072860852" label="MF_E_NO_CONTENT_PROTECTION_MANAGER"/>
+  <int value="-1072860851" label="MF_E_LICENSE_RESTORE_NO_RIGHTS"/>
+  <int value="-1072860850" label="MF_E_BACKUP_RESTRICTED_LICENSE"/>
+  <int value="-1072860849"
+      label="MF_E_LICENSE_RESTORE_NEEDS_INDIVIDUALIZATION"/>
+  <int value="-1072860847" label="MF_E_COMPONENT_REVOKED"/>
+  <int value="-1072860846" label="MF_E_TRUST_DISABLED"/>
+  <int value="-1072860845" label="MF_E_WMDRMOTA_NO_ACTION"/>
+  <int value="-1072860844" label="MF_E_WMDRMOTA_ACTION_ALREADY_SET"/>
+  <int value="-1072860843" label="MF_E_WMDRMOTA_DRM_HEADER_NOT_AVAILABLE"/>
+  <int value="-1072860842"
+      label="MF_E_WMDRMOTA_DRM_ENCRYPTION_SCHEME_NOT_SUPPORTED"/>
+  <int value="-1072860841" label="MF_E_WMDRMOTA_ACTION_MISMATCH"/>
+  <int value="-1072860840" label="MF_E_WMDRMOTA_INVALID_POLICY"/>
+  <int value="-1072860839" label="MF_E_POLICY_UNSUPPORTED"/>
+  <int value="-1072860838" label="MF_E_OPL_NOT_SUPPORTED"/>
+  <int value="-1072860837" label="MF_E_TOPOLOGY_VERIFICATION_FAILED"/>
+  <int value="-1072860836" label="MF_E_SIGNATURE_VERIFICATION_FAILED"/>
+  <int value="-1072860835" label="MF_E_DEBUGGING_NOT_ALLOWED"/>
+  <int value="-1072860834" label="MF_E_CODE_EXPIRED"/>
+  <int value="-1072860833" label="MF_E_GRL_VERSION_TOO_LOW"/>
+  <int value="-1072860832" label="MF_E_GRL_RENEWAL_NOT_FOUND"/>
+  <int value="-1072860831" label="MF_E_GRL_EXTENSIBLE_ENTRY_NOT_FOUND"/>
+  <int value="-1072860830" label="MF_E_KERNEL_UNTRUSTED"/>
+  <int value="-1072860829" label="MF_E_PEAUTH_UNTRUSTED"/>
+  <int value="-1072860827" label="MF_E_NON_PE_PROCESS"/>
+  <int value="-1072860825" label="MF_E_REBOOT_REQUIRED"/>
+  <int value="-1072860822" label="MF_E_GRL_INVALID_FORMAT"/>
+  <int value="-1072860821" label="MF_E_GRL_UNRECOGNIZED_FORMAT"/>
+  <int value="-1072860820" label="MF_E_ALL_PROCESS_RESTART_REQUIRED"/>
+  <int value="-1072860819" label="MF_E_PROCESS_RESTART_REQUIRED"/>
+  <int value="-1072860818" label="MF_E_USERMODE_UNTRUSTED"/>
+  <int value="-1072860817" label="MF_E_PEAUTH_SESSION_NOT_STARTED"/>
+  <int value="-1072860816" label="MF_E_INSUFFICIENT_BUFFER"/>
+  <int value="-1072860815" label="MF_E_PEAUTH_PUBLICKEY_REVOKED"/>
+  <int value="-1072860814" label="MF_E_GRL_ABSENT"/>
+  <int value="-1072860812" label="MF_E_PE_UNTRUSTED"/>
+  <int value="-1072860811" label="MF_E_PEAUTH_NOT_STARTED"/>
+  <int value="-1072860810" label="MF_E_INCOMPATIBLE_SAMPLE_PROTECTION"/>
+  <int value="-1072860809" label="MF_E_PE_SESSIONS_MAXED"/>
+  <int value="-1072860808"
+      label="MF_E_HIGH_SECURITY_LEVEL_CONTENT_NOT_ALLOWED"/>
+  <int value="-1072860807" label="MF_E_TEST_SIGNED_COMPONENTS_NOT_ALLOWED"/>
+  <int value="-1072860806" label="MF_E_ITA_UNSUPPORTED_ACTION"/>
+  <int value="-1072860805" label="MF_E_ITA_ERROR_PARSING_SAP_PARAMETERS"/>
+  <int value="-1072860804" label="MF_E_POLICY_MGR_ACTION_OUTOFBOUNDS"/>
+  <int value="-1072860803" label="MF_E_BAD_OPL_STRUCTURE_FORMAT"/>
+  <int value="-1072860802"
+      label="MF_E_ITA_UNRECOGNIZED_ANALOG_VIDEO_PROTECTION_GUID"/>
+  <int value="-1072860801" label="MF_E_NO_PMP_HOST"/>
+  <int value="-1072860800" label="MF_E_ITA_OPL_DATA_NOT_INITIALIZED"/>
+  <int value="-1072860799" label="MF_E_ITA_UNRECOGNIZED_ANALOG_VIDEO_OUTPUT"/>
+  <int value="-1072860798" label="MF_E_ITA_UNRECOGNIZED_DIGITAL_VIDEO_OUTPUT"/>
+  <int value="-1072860797"
+      label="MF_E_RESOLUTION_REQUIRES_PMP_CREATION_CALLBACK"/>
+  <int value="-1072860796" label="MF_E_INVALID_AKE_CHANNEL_PARAMETERS"/>
+  <int value="-1072860795" label="MF_E_CONTENT_PROTECTION_SYSTEM_NOT_ENABLED"/>
+  <int value="-1072860794" label="MF_E_UNSUPPORTED_CONTENT_PROTECTION_SYSTEM"/>
+  <int value="-1072860793" label="MF_E_DRM_MIGRATION_NOT_SUPPORTED"/>
+  <int value="-1072860792" label="MF_E_HDCP_AUTHENTICATION_FAILURE"/>
+  <int value="-1072860791" label="MF_E_HDCP_LINK_FAILURE"/>
+  <int value="-1072849856" label="MF_E_CLOCK_INVALID_CONTINUITY_KEY"/>
+  <int value="-1072849855" label="MF_E_CLOCK_NO_TIME_SOURCE"/>
+  <int value="-1072849854" label="MF_E_CLOCK_STATE_ALREADY_SET"/>
+  <int value="-1072849853" label="MF_E_CLOCK_NOT_SIMPLE"/>
+  <int value="-1072848856" label="MF_E_NO_MORE_DROP_MODES"/>
+  <int value="-1072848855" label="MF_E_NO_MORE_QUALITY_LEVELS"/>
+  <int value="-1072848854" label="MF_E_DROPTIME_NOT_SUPPORTED"/>
+  <int value="-1072848853" label="MF_E_QUALITYKNOB_WAIT_LONGER"/>
+  <int value="-1072848852" label="MF_E_QM_INVALIDSTATE"/>
+  <int value="-1072847856" label="MF_E_TRANSCODE_NO_CONTAINERTYPE"/>
+  <int value="-1072847855" label="MF_E_TRANSCODE_PROFILE_NO_MATCHING_STREAMS"/>
+  <int value="-1072847854" label="MF_E_TRANSCODE_NO_MATCHING_ENCODER"/>
+  <int value="-1072847853" label="MF_E_TRANSCODE_INVALID_PROFILE"/>
+  <int value="-1072846856" label="MF_E_ALLOCATOR_NOT_INITIALIZED"/>
+  <int value="-1072846855" label="MF_E_ALLOCATOR_NOT_COMMITED"/>
+  <int value="-1072846854" label="MF_E_ALLOCATOR_ALREADY_COMMITED"/>
+  <int value="-1072846853" label="MF_E_STREAM_ERROR"/>
+  <int value="-1072846852" label="MF_E_INVALID_STREAM_STATE"/>
+  <int value="-1072846851" label="MF_E_HW_STREAM_NOT_CONNECTED"/>
+  <int value="-1072845856" label="MF_E_NO_CAPTURE_DEVICES_AVAILABLE"/>
+  <int value="-1072845855" label="MF_E_CAPTURE_SINK_OUTPUT_NOT_SET"/>
+  <int value="-1072845854" label="MF_E_CAPTURE_SINK_MIRROR_ERROR"/>
+  <int value="-1072845853" label="MF_E_CAPTURE_SINK_ROTATE_ERROR"/>
+  <int value="-1072845852" label="MF_E_CAPTURE_ENGINE_INVALID_OP"/>
+  <int value="-1072845851" label="MF_E_CAPTURE_ENGINE_ALL_EFFECTS_REMOVED"/>
+  <int value="-1072845850"
+      label="MF_E_CAPTURE_SOURCE_NO_INDEPENDENT_PHOTO_STREAM_PRESENT"/>
+  <int value="-1072845849" label="MF_E_CAPTURE_SOURCE_NO_VIDEO_STREAM_PRESENT"/>
+  <int value="-1072845848" label="MF_E_CAPTURE_SOURCE_NO_AUDIO_STREAM_PRESENT"/>
+  <int value="-1072845847"
+      label="MF_E_CAPTURE_SOURCE_DEVICE_EXTENDEDPROP_OP_IN_PROGRESS"/>
+  <int value="-1072845846" label="MF_E_CAPTURE_PROPERTY_SET_DURING_PHOTO"/>
+  <int value="-1072845845" label="MF_E_CAPTURE_NO_SAMPLES_IN_QUEUE"/>
+  <int value="-1072845844" label="MF_E_HW_ACCELERATED_THUMBNAIL_NOT_SUPPORTED"/>
+  <int value="-1072845843" label="MF_E_UNSUPPORTED_CAPTURE_DEVICE_PRESENT"/>
+  <int value="-1072844856"
+      label="MF_E_TIMELINECONTROLLER_UNSUPPORTED_SOURCE_TYPE"/>
+  <int value="-1072844855" label="MF_E_TIMELINECONTROLLER_NOT_ALLOWED"/>
+  <int value="-1072844854" label="MF_E_TIMELINECONTROLLER_CANNOT_ATTACH"/>
+  <int value="-1072843856"
+      label="MF_E_MEDIA_EXTENSION_APPSERVICE_CONNECTION_FAILED"/>
+  <int value="-1072843855"
+      label="MF_E_MEDIA_EXTENSION_APPSERVICE_REQUEST_FAILED"/>
+  <int value="-1072843854"
+      label="MF_E_MEDIA_EXTENSION_PACKAGE_INTEGRITY_CHECK_FAILED"/>
+  <int value="-1072843853"
+      label="MF_E_MEDIA_EXTENSION_PACKAGE_LICENSE_INVALID"/>
   <int value="-805306212" label="STATUS_DEVICE_DATA_ERROR"/>
   <int value="-805305979" label="STATUS_IO_DEVICE_ERROR"/>
   <int value="0" label="S_OK"/>
+  <int value="866008" label="MF_S_MULTIPLE_BEGIN"/>
+  <int value="866045" label="MF_S_ACTIVATE_REPLACED"/>
+  <int value="870978" label="MF_S_SINK_NOT_FINALIZED"/>
+  <int value="876973" label="MF_S_SEQUENCER_CONTEXT_CANCELED"/>
+  <int value="876975" label="MF_S_SEQUENCER_SEGMENT_AT_END_OF_STREAM"/>
+  <int value="879989" label="MF_S_TRANSFORM_DO_NOT_PROPAGATE_EVENT"/>
+  <int value="880976" label="MF_S_PROTECTION_NOT_REQUIRED"/>
+  <int value="881000" label="MF_S_WAIT_FOR_POLICY_SET"/>
+  <int value="881001" label="MF_S_VIDEO_DISABLED_WITH_UNKNOWN_SOFTWARE_OUTPUT"/>
+  <int value="881011" label="MF_S_PE_TRUSTED"/>
+  <int value="891972" label="MF_S_CLOCK_STOPPED"/>
+  <int value="891973" label="MF_E_CLOCK_AUDIO_DEVICE_POSITION_UNEXPECTED"/>
+  <int value="891974" label="MF_E_CLOCK_AUDIO_RENDER_POSITION_UNEXPECTED"/>
+  <int value="891975" label="MF_E_CLOCK_AUDIO_RENDER_TIME_UNEXPECTED"/>
   <int value="143196161" label="AUDCLNT_S_BUFFER_EMPTY"/>
   <int value="143196162" label="AUDCLNT_S_THREAD_ALREADY_REGISTERED"/>
   <int value="143196163" label="AUDCLNT_S_POSITION_STALLED"/>
+  <int value="1074608792" label="MF_S_ASF_PARSEINPROGRESS"/>
+  <int value="1074610802" label="MF_I_MANUAL_PROXY"/>
 </enum>
 
 <enum name="HstsInfo">
