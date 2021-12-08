@@ -32,8 +32,6 @@ static_library("content") {
     "payment_credential.h",
     "payment_credential_factory.cc",
     "payment_credential_factory.h",
-    "payment_credential_manager.cc",
-    "payment_credential_manager.h",
     "payment_details_converter.cc",
     "payment_details_converter.h",
     "payment_event_response_util.cc",
