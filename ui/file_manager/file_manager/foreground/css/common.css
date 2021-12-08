@@ -364,9 +364,10 @@ html[dir='rtl'] .entry-name {
 
 .cr-dialog-container.files-ng #suggest-app-dialog .cr-dialog-close,
 .cr-dialog-container.files-ng #default-task-dialog .cr-dialog-close {
-  background: url(../images/common/ic_close.svg);
-  background-position: center;
-  background-repeat: no-repeat;
+  -webkit-mask-image: url(../images/common/ic_close.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-primary);
   cursor: pointer;
   display: inline-block;
   height: 32px;

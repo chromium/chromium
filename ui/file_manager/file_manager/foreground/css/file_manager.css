@@ -1796,7 +1796,7 @@ html[dir='rtl'] .badge {
    bar when it's not needed. Max height is set to fit 8 items before showing
    scroll bar. */
 body.files-ng #default-tasks-list {
-  border-top: solid 1px rgba(0, 0, 0, 14%);
+  border-top: solid 1px var(--cros-separator-color);
   height: 240px;
   margin: 16px -16px;
   margin-bottom: 12px;
@@ -1847,14 +1847,15 @@ body.files-ng #list-container list:focus > li[lead] {
 
 body.files-ng #default-tasks-list:focus > li[selected],
 body.files-ng #default-tasks-list > li[selected] {
-  background-color: var(--google-blue-50);
+  background-color: var(--cros-highlight-color);
   outline: none;
 }
 
 body.files-ng #default-tasks-list li[selected]::after {
-  background-image: url(../images/common/ic_selected.svg);
-  background-position: right;
-  background-repeat: no-repeat;
+  -webkit-mask-image: url(../images/common/ic_selected.svg);
+  -webkit-mask-position: right;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-selection);
   content: ' ';
   height: 40px;
   position: absolute;
