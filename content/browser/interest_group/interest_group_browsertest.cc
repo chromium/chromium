@@ -631,6 +631,15 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                           execution_target));
   }
 
+  std::string WarningPermissionsPolicy(std::string feature, std::string api) {
+    return base::StringPrintf(
+        "In the future, feature %s will not be enabled by default by "
+        "Permissions Policy (thus calling %s will be rejected with "
+        "NotAllowedError) in cross-origin iframes or same-origin iframes nested"
+        " in cross-origin iframes",
+        feature.c_str(), api.c_str());
+  }
+
  protected:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
@@ -4060,7 +4069,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "/cross_site_iframe_factory.html?a.test("
           "a.test,"
           "b.test("
-              "c.test{allow-join-ad-interest-group;run-ad-auction}"
+              "c.test{allow-join-ad-interest-group;run-ad-auction},"
+              "a.test{allow-join-ad-interest-group;run-ad-auction},"
+              "a.test{allow-join-ad-interest-group;run-ad-auction}"
           ")"
        ")");
   // clang-format on
@@ -4071,6 +4082,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
   RenderFrameHost* inner_cross_origin_iframe =
       ChildFrameAt(cross_origin_iframe, 0);
+  RenderFrameHost* same_origin_iframe_in_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 1);
+  RenderFrameHost* same_origin_iframe_in_cross_origin_iframe2 =
+      ChildFrameAt(cross_origin_iframe, 2);
 
   // The server JSON updates all fields that can be updated.
   constexpr char kDailyUpdateUrlPath[] =
@@ -4086,14 +4101,21 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL url;
   url::Origin origin;
   std::string host;
-  RenderFrameHost* execution_targets[] = {main_frame, same_origin_iframe,
-                                          cross_origin_iframe,
-                                          inner_cross_origin_iframe};
+  RenderFrameHost* execution_targets[] = {
+      main_frame,
+      same_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
+      same_origin_iframe_in_cross_origin_iframe,
+      same_origin_iframe_in_cross_origin_iframe2};
 
   for (auto* execution_target : execution_targets) {
     url = execution_target->GetLastCommittedURL();
     origin = url::Origin::Create(url);
     host = url.host();
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    console_observer.SetPattern(WarningPermissionsPolicy("*", "*"));
+
     EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
         blink::InterestGroup(
             /*expiry=*/base::Time(),
@@ -4129,7 +4151,44 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                           execution_target));
 
     EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
+    // The second UpdateInterestGroupsInJS will not add a warning message, since
+    // the same message has already been added and redundant messages will be
+    // discarded.
+    EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
     EXPECT_TRUE(LeaveInterestGroupInJS(origin, "cars", execution_target));
+
+    // It seems discard_duplicates of AddConsoleMessage works differently on
+    // Android and other platforms. On Android, a message will be discarded if
+    // it's not unique across all frames in a page. On other platforms, a
+    // message will be discarded if it's not unique per origin (e.g., iframe
+    // a.test and iframe b.test can have the same message, while the same
+    // message from another a.test will be discarded).
+
+#if defined(OS_ANDROID)
+    RenderFrameHost* execution_targets_with_message[] = {cross_origin_iframe};
+#else
+    RenderFrameHost* execution_targets_with_message[] = {
+        cross_origin_iframe, inner_cross_origin_iframe,
+        same_origin_iframe_in_cross_origin_iframe};
+#endif  // defined(OS_ANDROID)
+
+    if (std::find(std::begin(execution_targets_with_message),
+                  std::end(execution_targets_with_message), execution_target) !=
+        std::end(execution_targets_with_message)) {
+      EXPECT_EQ(WarningPermissionsPolicy("join-ad-interest-group",
+                                         "joinAdInterestGroup"),
+                console_observer.GetMessageAt(0));
+      EXPECT_EQ(WarningPermissionsPolicy("run-ad-auction", "runAdAuction"),
+                console_observer.GetMessageAt(1));
+      EXPECT_EQ(WarningPermissionsPolicy("join-ad-interest-group",
+                                         "updateAdInterestGroups"),
+                console_observer.GetMessageAt(2));
+      EXPECT_EQ(WarningPermissionsPolicy("join-ad-interest-group",
+                                         "leaveAdInterestGroup"),
+                console_observer.GetMessageAt(3));
+    } else {
+      EXPECT_TRUE(console_observer.messages().empty());
+    }
   }
 }
 
@@ -4225,6 +4284,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
     url = execution_target->GetLastCommittedURL();
     origin = url::Origin::Create(url);
     host = url.host();
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    console_observer.SetPattern(WarningPermissionsPolicy("*", "*"));
+
     EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
         blink::InterestGroup(
             /*expiry=*/base::Time(),
@@ -4261,6 +4323,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
 
     EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
     EXPECT_TRUE(LeaveInterestGroupInJS(origin, "cars", execution_target));
+    EXPECT_TRUE(console_observer.messages().empty());
   }
 }
 

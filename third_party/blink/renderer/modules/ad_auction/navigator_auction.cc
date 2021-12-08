@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ad_properties.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/ad_auction/ads.h"
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
@@ -87,6 +89,14 @@ String ErrorInvalidAdRequestConfig(const AdRequestConfig& config,
                         field_name.Utf8().c_str(), field_value.Utf8().c_str(),
                         config.adRequestUrl().Utf8().c_str(),
                         error.Utf8().c_str());
+}
+
+String WarningPermissionsPolicy(const String& feature, const String& api) {
+  return String::Format(
+      "In the future, feature %s will not be enabled by default by Permissions "
+      "Policy (thus calling %s will be rejected with NotAllowedError) in cross-"
+      "origin iframes or same-origin iframes nested in cross-origin iframes",
+      feature.Utf8().c_str(), api.Utf8().c_str());
 }
 
 // JSON and Origin conversion helpers.
@@ -628,6 +638,43 @@ bool ValidateAdsObject(ExceptionState& exception_state, const Ads* ads) {
   return true;
 }
 
+// Modified from LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy.
+// Checks if a feature, which is currently available in all frames, would be
+// blocked by our restricted permissions policy EnableForSelf.
+// Returns true if the frame is cross-origin relative to the top-level document,
+// or if it is same-origin with the top level, but is embedded in any way
+// through a cross-origin frame. (A->B->A embedding)
+bool FeatureWouldBeBlockedByRestrictedPermissionsPolicy(Navigator& navigator) {
+  const Frame* frame = navigator.DomWindow()->GetFrame();
+  // Get the origin of the top-level document
+  const SecurityOrigin* top_origin =
+      frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
+
+  // Walk up the frame tree looking for any cross-origin embeds. Even if this
+  // frame is same-origin with the top-level, if it is embedded by a cross-
+  // origin frame (like A->B->A) it would be blocked without a permissions
+  // policy.
+  while (!frame->IsMainFrame()) {
+    if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            top_origin)) {
+      return true;
+    }
+    frame = frame->Tree().Parent();
+  }
+  return false;
+}
+
+void AddWarningMessageToConsole(ScriptState* script_state,
+                                const String& feature,
+                                const String& api) {
+  auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
+  WebLocalFrameImpl::FromFrame(window->GetFrame())
+      ->AddMessageToConsole(
+          WebConsoleMessage(mojom::ConsoleMessageLevel::kWarning,
+                            WarningPermissionsPolicy(feature, api)),
+          /*discard_duplicates=*/true);
+}
+
 }  // namespace
 
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
@@ -712,11 +759,18 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    exception_state.ThrowException(
-        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return;
   }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
+                               "joinAdInterestGroup");
+  }
+
   return From(ExecutionContext::From(script_state), navigator)
       .joinAdInterestGroup(script_state, group, duration_seconds,
                            exception_state);
@@ -744,11 +798,18 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    exception_state.ThrowException(
-        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return;
   }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
+                               "leaveAdInterestGroup");
+  }
+
   return From(ExecutionContext::From(script_state), navigator)
       .leaveAdInterestGroup(script_state, group, exception_state);
 }
@@ -764,11 +825,18 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    exception_state.ThrowException(
-        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
         "Feature join-ad-interest-group is not enabled by Permissions Policy");
     return;
   }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(script_state, "join-ad-interest-group",
+                               "updateAdInterestGroups");
+  }
+
   return From(context, navigator).updateAdInterestGroups();
 }
 
@@ -810,11 +878,17 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
   const ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
-    exception_state.ThrowException(
-        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
         "Feature run-ad-auction is not enabled by Permissions Policy");
     return ScriptPromise();
   }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault) &&
+      FeatureWouldBeBlockedByRestrictedPermissionsPolicy(navigator)) {
+    AddWarningMessageToConsole(script_state, "run-ad-auction", "runAdAuction");
+  }
+
   return From(ExecutionContext::From(script_state), navigator)
       .runAdAuction(script_state, config, exception_state);
 }
