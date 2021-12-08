@@ -798,6 +798,49 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.CreditCard.NumberFills" units="NumberFills"
+    expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records for each credit card form submission whether a credit card number
+    has been autofilled.
+
+    That is, emits 1 if a form contains an autofilled credit card number.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CreditCard.SeamlessFills"
+    enum="CreditCardSeamlessFill" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records for each credit card form submission the quality of the fill.
+
+    The fields in question are: cardholder name (full, or first and last),
+    credit card number, expiration date (MM/YY, MM/YYYY, MM and YY, or MM and
+    YYYY), and CVC.
+
+    Each bucket represents a minimal set of fields that must be autofilled.
+    Lower numbers are better:
+
+    Bucket 0 = name &amp; number &amp; exp. date &amp; CVC = Full fill :-D
+
+    Bucket 1 = number &amp; exp. date &amp; CVC = Optional name missing :-)
+
+    Bucket 2 = name &amp; number &amp; exp. date = Optional CVC missing :-)
+
+    Bucket 3 = number &amp; exp. date = Optional name and CVC missing :-)
+
+    Bucket 4 = name &amp; number &amp; CVC = Full fill but exp. date missing :-|
+
+    Bucket 5 = all other scenarios = Partial fill :-(
+
+    Any form that contains at least one credit card field counts as credit card
+    form.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CreditCardFillingInfoBar"
     enum="AutofillCreditCardInfoBar" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
@@ -1537,6 +1580,54 @@ chromium-metrics-reviews@google.com.
     Logs when a hidden or presentational field is autofilled. The hidden or
     presentational fields are only autofilled for 'select' fields to support
     synthetic fields.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields"
+    units="frames" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts per form submission the number of frames across which the form's
+    autofilled credit card fields are distributed.
+
+    A field is an &quot;autofilled credit card field&quot; if it is autofilled
+    at submission time and its field type belongs to the credit card group.
+
+    For example, emits 1 if all fields are in the same frame, and emits 2 if the
+    fields live in two different frames. Never emits 0.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Iframes.NumberOfFramesWithDetectedCreditCardFields"
+    units="frames" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts per form submission the number of frames across which the form's
+    detected credit card fields are distributed.
+
+    A field is a &quot;detected credit card field&quot; if its field type
+    belongs to the credit card group.
+
+    For example, emits 1 if all fields are in the same frame, and emits 2 if the
+    fields live in two different frames. Never emits 0.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Iframes.NumberOfFramesWithDetectedFields"
+    units="frames" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Counts per form submission the number of frames across which the form's
+    detected fields are distributed.
+
+    A field is &quot;detected&quot; if its field type is neither EMPTY_TYPE or
+    UNKNOWN_TYPE.
+
+    For example, emits 1 if all fields are in the same frame, and emits 2 if the
+    fields live in two different frames. Never emits 0.
   </summary>
 </histogram>
 

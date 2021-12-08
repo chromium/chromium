@@ -1162,6 +1162,34 @@ class AutofillMetrics {
     kMaxValue = kOtpMismatchError,
   };
 
+  // Emits a value that indicates which fields of a credit card form were
+  // filled:
+  //
+  // +-------------------------------------------------------------+
+  // |                            | Name | Number | Exp Date | CVC |
+  // |----------------------------+------+--------+----------+-----|
+  // | kFullFill                  |  X   |   X    |    X     |  X  |
+  // +----------------------------+------+--------+----------+-----+
+  // | kOptionalNameMissing       |      |   X    |    X     |  X  |
+  // +----------------------------+------+--------+----------+-----+
+  // | kOptionalCvcMissing        |  X   |   X    |    X     |     |
+  // +----------------------------+------+--------+----------+-----+
+  // | kOptionalNameAndCvcMissing |      |   X    |    X     |     |
+  // +----------------------------+------+--------+----------+-----+
+  // | kFullFillButExpDateMissing |  X   |   X    |          |  X  |
+  // +----------------------------+------+--------+----------+-----+
+  // | kPartialFill               |           otherwise            |
+  // +-------------------------------------------------------------+
+  enum class CreditCardSeamlessFillMetric {
+    kFullFill = 0,
+    kOptionalNameMissing = 1,
+    kOptionalCvcMissing = 2,
+    kOptionalNameAndCvcMissing = 3,
+    kFullFillButExpDateMissing = 4,
+    kPartialFill = 5,
+    kMaxValue = kPartialFill,
+  };
+
   // Utility to log URL keyed form interaction events.
   class FormInteractionsUkmLogger {
    public:
@@ -1720,6 +1748,23 @@ class AutofillMetrics {
   // Logs if every non-empty field in a submitted form was filled by Autofill.
   // If |is_address| an address was filled, otherwise it was a credit card.
   static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
+
+  // Log across how many frames the detected and/or autofilled [credit card]
+  // fields of a submitted form are distributed.
+  static void LogNumberOfFramesWithDetectedFields(size_t num_frames);
+  static void LogNumberOfFramesWithDetectedCreditCardFields(size_t num_frames);
+  static void LogNumberOfFramesWithAutofilledCreditCardFields(
+      size_t num_frames);
+
+  // Logs the Autofill.CreditCard.SeamlessFills metric. See the enum for
+  // details. Note that this function does not check whether the form contains a
+  // credit card field.
+  static void LogCreditCardSeamlessFills(
+      const ServerFieldTypeSet& autofilled_types);
+
+  // Logs the Autofill.CreditCard.NumberFills metric.
+  static void LogCreditCardNumberFills(
+      const ServerFieldTypeSet& autofilled_types);
 
   // This should be called when determining the heuristic types for a form's
   // fields.

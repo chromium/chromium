@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -2390,6 +2391,71 @@ void AutofillMetrics::LogAutofillPerfectFilling(bool is_address,
     UMA_HISTOGRAM_BOOLEAN("Autofill.PerfectFilling.CreditCards",
                           perfect_filling);
   }
+}
+
+// static
+void AutofillMetrics::LogNumberOfFramesWithDetectedFields(size_t num_frames) {
+  if (num_frames == 0)
+    return;
+  base::UmaHistogramCounts100(
+      "Autofill.Iframes.NumberOfFramesWithDetectedFields", num_frames);
+}
+
+// static
+void AutofillMetrics::LogNumberOfFramesWithDetectedCreditCardFields(
+    size_t num_frames) {
+  if (num_frames == 0)
+    return;
+  base::UmaHistogramCounts100(
+      "Autofill.Iframes.NumberOfFramesWithDetectedCreditCardFields",
+      num_frames);
+}
+
+// static
+void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
+    size_t num_frames) {
+  if (num_frames == 0)
+    return;
+  base::UmaHistogramCounts100(
+      "Autofill.Iframes.NumberOfFramesWithAutofilledCreditCardFields",
+      num_frames);
+}
+
+// static
+void AutofillMetrics::LogCreditCardSeamlessFills(
+    const ServerFieldTypeSet& autofilled_types) {
+  bool name = autofilled_types.contains(CREDIT_CARD_NAME_FULL) ||
+              (autofilled_types.contains(CREDIT_CARD_NAME_FIRST) &&
+               autofilled_types.contains(CREDIT_CARD_NAME_LAST));
+  bool number = autofilled_types.contains(CREDIT_CARD_NUMBER);
+  bool exp = autofilled_types.contains(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) ||
+             autofilled_types.contains(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) ||
+             (autofilled_types.contains(CREDIT_CARD_EXP_MONTH) &&
+              (autofilled_types.contains(CREDIT_CARD_EXP_2_DIGIT_YEAR) ||
+               autofilled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
+  bool cvc = autofilled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
+  CreditCardSeamlessFillMetric emit;
+  if (name && number && exp && cvc) {
+    emit = CreditCardSeamlessFillMetric::kFullFill;
+  } else if (!name && number && exp && cvc) {
+    emit = CreditCardSeamlessFillMetric::kOptionalNameMissing;
+  } else if (name && number && exp && !cvc) {
+    emit = CreditCardSeamlessFillMetric::kOptionalCvcMissing;
+  } else if (!name && number && exp && !cvc) {
+    emit = CreditCardSeamlessFillMetric::kOptionalNameAndCvcMissing;
+  } else if (name && number && !exp && cvc) {
+    emit = CreditCardSeamlessFillMetric::kFullFillButExpDateMissing;
+  } else {
+    emit = CreditCardSeamlessFillMetric::kPartialFill;
+  }
+  base::UmaHistogramEnumeration("Autofill.CreditCard.SeamlessFills", emit);
+}
+
+// static
+void AutofillMetrics::LogCreditCardNumberFills(
+    const ServerFieldTypeSet& autofilled_types) {
+  bool emit = autofilled_types.contains(CREDIT_CARD_NUMBER);
+  base::UmaHistogramBoolean("Autofill.CreditCard.NumberFills", emit);
 }
 
 // static

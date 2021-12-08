@@ -17196,6 +17196,15 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Site marked as legitimate"/>
 </enum>
 
+<enum name="CreditCardSeamlessFill">
+  <int value="0" label=":-D Full fill"/>
+  <int value="1" label=":-) Optional name missing"/>
+  <int value="2" label=":-) Optional CVC missing"/>
+  <int value="3" label=":-) Optional name and CVC missing"/>
+  <int value="4" label=":-| Full fill but exp. date missing"/>
+  <int value="5" label=":-( Partial fill"/>
+</enum>
+
 <enum name="CreditCardUploadDisallowedNetwork">
   <int value="0" label="Elo card"/>
   <int value="1" label="JCB card"/>
