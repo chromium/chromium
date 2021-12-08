@@ -127,17 +127,23 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    view_ = new LoginAuthFactorsView(base::BindRepeating(
-        &LoginAuthFactorsViewUnittest::set_click_to_enter_called,
-        base::Unretained(this), true));
-
     // We proxy |view_| inside of |container_| so we can control layout.
     // TODO(crbug.com/1233614): Add layout tests to check positioning/ordering
     // of icons.
-    container_ = new views::View();
+    container_ = std::make_unique<views::View>();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_);
+
+    view_ = container_->AddChildView(
+        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+            &LoginAuthFactorsViewUnittest::set_click_to_enter_called,
+            base::Unretained(this), true)));
+  }
+
+  void TearDown() override {
+    container_.reset();
+    view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
   void AddAuthFactors(std::vector<AuthFactorType> types) {
@@ -164,9 +170,8 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  views::View* container_ = nullptr;  // Owned by test widget view hierarchy.
-  LoginAuthFactorsView* view_ =
-      nullptr;  // Owned by test widget view hierarchy.
+  std::unique_ptr<views::View> container_;
+  LoginAuthFactorsView* view_ = nullptr;  // Owned by container.
   std::vector<FakeAuthFactorModel*> auth_factors_;
   bool click_to_enter_called_ = false;
 };

@@ -51,8 +51,8 @@ class ASH_EXPORT DragDropCaptureDelegate {
   //
   // This should only be called on events if TakeCapture returned true at the
   // start of a drag and drop session.
-  ui::LocatedEvent* ConvertEvent(aura::Window* target,
-                                 const ui::LocatedEvent& event);
+  std::unique_ptr<ui::LocatedEvent> ConvertEvent(aura::Window* target,
+                                                 const ui::LocatedEvent& event);
 
   // Return the capture window used if TakeCapture returns true.
   aura::Window* capture_window();

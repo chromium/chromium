@@ -50,7 +50,7 @@ void BluetoothDeviceListItemMultipleBatteryView::UpdateBatteryInfo(
         battery_info->left_bud_info->battery_percentage,
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LEFT_BUD_LABEL);
   } else if (left_bud_battery_view_) {
-    RemoveChildView(left_bud_battery_view_);
+    RemoveChildViewT(left_bud_battery_view_);
     left_bud_battery_view_ = nullptr;
   }
 
@@ -65,7 +65,7 @@ void BluetoothDeviceListItemMultipleBatteryView::UpdateBatteryInfo(
         battery_info->case_info->battery_percentage,
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_CASE_LABEL);
   } else if (case_battery_view_) {
-    RemoveChildView(case_battery_view_);
+    RemoveChildViewT(case_battery_view_);
     case_battery_view_ = nullptr;
   }
 
@@ -80,7 +80,7 @@ void BluetoothDeviceListItemMultipleBatteryView::UpdateBatteryInfo(
         battery_info->right_bud_info->battery_percentage,
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_RIGHT_BUD_LABEL);
   } else if (right_bud_battery_view_) {
-    RemoveChildView(right_bud_battery_view_);
+    RemoveChildViewT(right_bud_battery_view_);
     right_bud_battery_view_ = nullptr;
   }
 }

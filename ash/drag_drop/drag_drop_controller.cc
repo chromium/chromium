@@ -417,13 +417,12 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  ui::LocatedEvent* translated_event;
+  std::unique_ptr<ui::LocatedEvent> translated_event;
   if (capture_delegate_) {
     translated_event =
         capture_delegate_->ConvertEvent(translated_target, touch_offset_event);
   } else {
-    translated_event =
-        ConvertEvent(translated_target, touch_offset_event).release();
+    translated_event = ConvertEvent(translated_target, touch_offset_event);
   }
 
   switch (event->type()) {

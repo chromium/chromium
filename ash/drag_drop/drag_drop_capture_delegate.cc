@@ -57,7 +57,7 @@ aura::Window* DragDropCaptureDelegate::GetTarget(
   return drag_drop_tracker_->GetTarget(event);
 }
 
-ui::LocatedEvent* DragDropCaptureDelegate::ConvertEvent(
+std::unique_ptr<ui::LocatedEvent> DragDropCaptureDelegate::ConvertEvent(
     aura::Window* target,
     const ui::LocatedEvent& event) {
   return drag_drop_tracker_->ConvertEvent(target, event);
