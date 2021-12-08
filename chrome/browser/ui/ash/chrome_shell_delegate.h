@@ -9,6 +9,7 @@
 
 #include "ash/shell_delegate.h"
 #include "base/callback_forward.h"
+#include "url/gurl.h"
 
 class ChromeShellDelegate : public ash::ShellDelegate {
  public:
@@ -59,6 +60,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   void OpenFeedbackPageForPersistentDesksBar() override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
+  const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELL_DELEGATE_H_

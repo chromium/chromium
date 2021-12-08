@@ -614,13 +614,6 @@ const base::Feature kFiltersInRecents{"FiltersInRecents",
 const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, there will be an alert bubble showing up when the device
-// returns from low brightness (e.g., sleep, closed cover) without a lock screen
-// and the active window is in fullscreen.
-// TODO(https://crbug.com/1107185): Remove this after the feature is launched.
-const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable ChromeOS FuseBox service.
 const base::Feature kFuseBox{"FuseBox", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1531,10 +1524,6 @@ bool IsFileManagerSwaEnabled() {
 
 bool IsFirmwareUpdaterAppEnabled() {
   return base::FeatureList::IsEnabled(kFirmwareUpdaterApp);
-}
-
-bool IsFullscreenAlertBubbleEnabled() {
-  return base::FeatureList::IsEnabled(kFullscreenAlertBubble);
 }
 
 bool IsGaiaCloseViewMessageEnabled() {

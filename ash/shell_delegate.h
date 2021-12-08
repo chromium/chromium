@@ -17,6 +17,7 @@
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace aura {
 class Window;
@@ -129,6 +130,10 @@ class ASH_EXPORT ShellDelegate {
   // persistent desks bar. Note, this will be removed once the feature is fully
   // launched or removed.
   virtual void OpenFeedbackPageForPersistentDesksBar() = 0;
+
+  // Returns the last committed URL from the web contents if the given |window|
+  // contains a browser frame, otherwise returns GURL::EmptyURL().
+  virtual const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window);
 };
 
 }  // namespace ash
