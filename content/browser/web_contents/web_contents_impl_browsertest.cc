@@ -5079,6 +5079,29 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, RemainsVisible) {
   EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
 }
 
+// Tests that AXTreeIDForMainFrameHasChanged() works only with the primary page
+// by checking if it's not called on the fenced frame loading.
+IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, DoNotUpdateAXTree) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  testing::NiceMock<MockWebContentsObserver> observer(web_contents());
+  const GURL main_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+
+  EXPECT_CALL(observer, AXTreeIDForMainFrameHasChanged())
+      .Times(testing::AtLeast(1));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Create fenced frame.
+  const GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+  EXPECT_CALL(observer, AXTreeIDForMainFrameHasChanged()).Times(0);
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_rfh);
+}
+
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
 
 namespace {
