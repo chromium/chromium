@@ -724,25 +724,8 @@ void ClientControlledShellSurface::SetResizeLockType(
 
 void ClientControlledShellSurface::UpdateResizability() {
   TRACE_EVENT0("exo", "ClientControlledShellSurface::updateCanResize");
-  ash::ArcResizeLockType resize_lock_type = pending_resize_lock_type_;
-  // TODO(b/200230343): Remove this once the client's switched to the
-  // new protocol.
-  if (resize_lock_type == ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE &&
-      !CalculateCanResize()) {
-    resize_lock_type = ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
-  } else if (resize_lock_type == ash::ArcResizeLockType::NONE) {
-    const auto current_resize_lock_type =
-        widget_->GetNativeWindow()->GetProperty(ash::kArcResizeLockTypeKey);
-    if (current_resize_lock_type ==
-        ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE) {
-      resize_lock_type = ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE;
-    } else if (current_resize_lock_type ==
-               ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
-      resize_lock_type = ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE;
-    }
-  }
   widget_->GetNativeWindow()->SetProperty(ash::kArcResizeLockTypeKey,
-                                          resize_lock_type);
+                                          pending_resize_lock_type_);
   // If resize lock is enabled, the window is explicitly marded as unresizable.
   // Otherwise, the decision is deferred to the parent class.
   if (pending_resize_lock_type_ ==
