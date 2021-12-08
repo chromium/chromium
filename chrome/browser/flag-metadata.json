@@ -1481,21 +1481,15 @@
     "expiry_milestone": 97
   },
   {
-    "name": "enable-autofill-credit-card-ablation-experiment",
-    "owners": [ "jsaul@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "enable-autofill-credit-card-authentication",
     "owners": [ "jsaul@google.com", "siyua" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 105
   },
   {
     "name": "enable-autofill-credit-card-upload",
     "owners": [ "jsaul@google.com" ],
     // This flag is heavily used by the testing team that can't easily use the
-    // commandline, and can't be enabled by default.
-    // http://g/chrome-flags/s2RTQCvcRRs
+    // commandline, especially in India.
     "expiry_milestone": -1
   },
   {
