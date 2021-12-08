@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@ namespace safe_browsing {
 
 TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   RecordDangerousDownloadWarningShown(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
@@ -37,6 +39,8 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
   histogram_tester.ExpectUniqueSample(
       "SBClientDownload.Warning.DownloadHasUserGesture.Malicious.Shown",
       /*sample=*/1, /*expected_bucket_count=*/1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningShown"));
 
   RecordDangerousDownloadWarningShown(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
@@ -54,10 +58,13 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningShown) {
       "SBClientDownload.Warning.DownloadHasUserGesture.Uncommon.Shown",
       /*sample=*/0,
       /*expected_count=*/1);
+  EXPECT_EQ(2, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningShown"));
 }
 
 TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningBypassed) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
 
   RecordDangerousDownloadWarningBypassed(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -73,6 +80,8 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDangerousDownloadWarningBypassed) {
       "SBClientDownload.Warning.DownloadHasUserGesture.DangerousFileType."
       "Bypassed",
       /*sample=*/0, /*expected_bucket_count=*/1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SafeBrowsing.Download.WarningBypassed"));
 }
 
 TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {

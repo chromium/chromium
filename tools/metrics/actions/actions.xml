@@ -23926,6 +23926,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafeBrowsing.Download.WarningBypassed">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>User bypasses a download warning.</description>
+</action>
+
+<action name="SafeBrowsing.Download.WarningShown" not_user_triggered="true">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>A download warning is shown.</description>
+</action>
+
 <action name="SafeBrowsing.Settings.DisableSafeBrowsingClicked">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
