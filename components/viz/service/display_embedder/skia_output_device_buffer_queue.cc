@@ -158,17 +158,24 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDoubleBufferCompositing))
     capabilities_.number_of_buffers = 2;
-  capabilities_.max_frames_pending = capabilities_.number_of_buffers - 1;
+  capabilities_.pending_swap_params.max_pending_swaps =
+      capabilities_.number_of_buffers - 1;
 #if defined(OS_ANDROID)
   if (::features::IncreaseBufferCountForHighFrameRate() &&
       capabilities_.number_of_buffers == 5) {
-    capabilities_.max_frames_pending = 2;
-    capabilities_.max_frames_pending_120hz = 4;
+    capabilities_.pending_swap_params.max_pending_swaps = 2;
+    capabilities_.pending_swap_params.max_pending_swaps_90hz = 3;
+    capabilities_.pending_swap_params.max_pending_swaps_120hz = 4;
   }
 #endif
-  DCHECK_LT(capabilities_.max_frames_pending, capabilities_.number_of_buffers);
-  DCHECK_LT(capabilities_.max_frames_pending_120hz.value_or(0),
+  DCHECK_LT(capabilities_.pending_swap_params.max_pending_swaps,
             capabilities_.number_of_buffers);
+  DCHECK_LT(
+      capabilities_.pending_swap_params.max_pending_swaps_90hz.value_or(0),
+      capabilities_.number_of_buffers);
+  DCHECK_LT(
+      capabilities_.pending_swap_params.max_pending_swaps_120hz.value_or(0),
+      capabilities_.number_of_buffers);
 
   presenter_->InitializeCapabilities(&capabilities_);
 

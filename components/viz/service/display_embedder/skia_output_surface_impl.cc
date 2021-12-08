@@ -880,7 +880,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
     // If there is only one pending frame, then we can use damage area hint from
     // SkiaOutputDevice, otherwise we have to track damage area with
     // FrameBufferDamageTracker.
-    if (capabilities_.max_frames_pending == 1 &&
+    if (capabilities_.pending_swap_params.max_pending_swaps == 1 &&
         capabilities_.damage_area_from_skia_output_device) {
       use_damage_area_from_skia_output_device_ = true;
       damage_of_current_buffer_ = gfx::Rect();

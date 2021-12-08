@@ -366,8 +366,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   }
   auto scheduler = std::make_unique<viz::DisplayScheduler>(
       begin_frame_source.get(), compositor->task_runner().get(),
-      display_output_surface->capabilities().max_frames_pending,
-      display_output_surface->capabilities().max_frames_pending_120hz,
+      display_output_surface->capabilities().pending_swap_params,
       /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(

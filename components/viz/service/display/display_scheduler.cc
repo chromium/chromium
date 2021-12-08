@@ -46,8 +46,7 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
 
 DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
                                    base::SingleThreadTaskRunner* task_runner,
-                                   int max_pending_swaps,
-                                   absl::optional<int> max_pending_swaps_120hz,
+                                   PendingSwapParams pending_swap_params,
                                    HintSessionFactory* hint_session_factory,
                                    bool wait_for_all_surfaces_before_draw)
     : begin_frame_observer_(std::make_unique<BeginFrameObserver>(this)),
@@ -61,8 +60,7 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       has_pending_surfaces_(false),
       next_swap_id_(1),
       pending_swaps_(0),
-      max_pending_swaps_(max_pending_swaps),
-      max_pending_swaps_120hz_(max_pending_swaps_120hz),
+      pending_swap_params_(std::move(pending_swap_params)),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false),
       hint_session_factory_(hint_session_factory),
@@ -183,7 +181,8 @@ void DisplayScheduler::ReportFrameTime(
 bool DisplayScheduler::DrawAndSwap() {
   TRACE_EVENT0("viz", "DisplayScheduler::DrawAndSwap");
   DCHECK_LT(pending_swaps_,
-            std::max(max_pending_swaps_, max_pending_swaps_120hz_.value_or(0)));
+            std::max(pending_swap_params_.max_pending_swaps,
+                     pending_swap_params_.max_pending_swaps_120hz.value_or(0)));
   DCHECK(!output_surface_lost_);
 
   bool success =
@@ -253,13 +252,17 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
-  // Interval for 120hz with some delta for margin of error.
+  // Interval for 90hz and 120hz with some delta for margin of error.
+  constexpr base::TimeDelta k90HzInterval = base::Microseconds(11500);
   constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
-  if (current_begin_frame_args_.interval > k120HzInterval ||
-      !max_pending_swaps_120hz_) {
-    return max_pending_swaps_;
+  if (current_begin_frame_args_.interval < k120HzInterval &&
+      pending_swap_params_.max_pending_swaps_120hz) {
+    return pending_swap_params_.max_pending_swaps_120hz.value();
+  } else if (current_begin_frame_args_.interval < k90HzInterval &&
+             pending_swap_params_.max_pending_swaps_90hz) {
+    return pending_swap_params_.max_pending_swaps_90hz.value();
   } else {
-    return max_pending_swaps_120hz_.value();
+    return pending_swap_params_.max_pending_swaps;
   }
 }
 

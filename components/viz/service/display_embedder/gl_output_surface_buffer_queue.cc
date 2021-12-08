@@ -36,14 +36,14 @@ GLOutputSurfaceBufferQueue::GLOutputSurfaceBufferQueue(
   capabilities_.only_invalidates_damage_rect = false;
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
-  // Set |max_frames_pending| to 2 for buffer_queue, which aligns scheduling
+  // Set |max_pending_swaps| to 2 for buffer_queue, which aligns scheduling
   // more closely with the previous surfaced behavior.
   // With a surface, swap buffer ack used to return early, before actually
   // presenting the back buffer, enabling the browser compositor to run ahead.
   // BufferQueue implementation acks at the time of actual buffer swap, which
   // shifts the start of the new frame forward relative to the old
   // implementation.
-  capabilities_.max_frames_pending = 2;
+  capabilities_.pending_swap_params.max_pending_swaps = 2;
   // GetCurrentFramebufferDamage will return an upper bound of the part of the
   // buffer that needs to be recomposited.
 #if defined(OS_APPLE)
@@ -57,7 +57,7 @@ GLOutputSurfaceBufferQueue::GLOutputSurfaceBufferQueue(
   // allocates at most one additional buffer.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDoubleBufferCompositing)) {
-    capabilities_.max_frames_pending = 1;
+    capabilities_.pending_swap_params.max_pending_swaps = 1;
     buffer_queue_->SetMaxBuffers(2);
   }
 

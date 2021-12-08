@@ -53,7 +53,7 @@ class FakeOutputSurface : public OutputSurface {
   }
 
   void set_max_frames_pending(int max) {
-    capabilities_.max_frames_pending = max;
+    capabilities_.pending_swap_params.max_pending_swaps = max;
   }
 
   void set_supports_dc_layers(bool supports) {

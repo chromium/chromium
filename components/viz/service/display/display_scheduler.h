@@ -15,6 +15,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/display_scheduler_base.h"
+#include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -32,8 +33,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   // `max_pending_swaps`.
   DisplayScheduler(BeginFrameSource* begin_frame_source,
                    base::SingleThreadTaskRunner* task_runner,
-                   int max_pending_swaps,
-                   absl::optional<int> max_pending_swaps_120hz,
+                   PendingSwapParams pending_swap_params,
                    HintSessionFactory* hint_session_factory = nullptr,
                    bool wait_for_all_surfaces_before_draw = false);
 
@@ -134,8 +134,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   int next_swap_id_;
   int pending_swaps_;
-  const int max_pending_swaps_;
-  absl::optional<int> max_pending_swaps_120hz_;
+  const PendingSwapParams pending_swap_params_;
   bool wait_for_all_surfaces_before_draw_;
 
   bool observing_begin_frame_source_;

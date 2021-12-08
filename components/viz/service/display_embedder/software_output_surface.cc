@@ -26,7 +26,8 @@ namespace viz {
 SoftwareOutputSurface::SoftwareOutputSurface(
     std::unique_ptr<SoftwareOutputDevice> software_device)
     : OutputSurface(std::move(software_device)) {
-  capabilities_.max_frames_pending = software_device_->MaxFramesPending();
+  capabilities_.pending_swap_params.max_pending_swaps =
+      software_device_->MaxFramesPending();
   capabilities_.resize_based_on_root_surface =
       software_device_->SupportsOverridePlatformSize();
 }

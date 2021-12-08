@@ -41,7 +41,7 @@ GLOutputSurface::GLOutputSurface(
   // Since one of the buffers is used by the surface for presentation, there can
   // be at most |num_surface_buffers - 1| pending buffers that the compositor
   // can use.
-  capabilities_.max_frames_pending =
+  capabilities_.pending_swap_params.max_pending_swaps =
       context_capabilities.num_surface_buffers - 1;
   capabilities_.supports_gpu_vsync = context_capabilities.gpu_vsync;
   capabilities_.supports_dc_layers = context_capabilities.dc_layers;

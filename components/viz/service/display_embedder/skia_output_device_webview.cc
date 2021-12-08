@@ -36,7 +36,8 @@ SkiaOutputDeviceWebView::SkiaOutputDeviceWebView(
   // SkSurface wrappers non GL fbo0.
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gl_surface_->GetOrigin();
-  capabilities_.max_frames_pending = gl_surface_->GetBufferCount() - 1;
+  capabilities_.pending_swap_params.max_pending_swaps =
+      gl_surface_->GetBufferCount() - 1;
 
   DCHECK(context_state_->gr_context());
   DCHECK(context_state_->context());

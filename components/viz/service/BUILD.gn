@@ -90,6 +90,8 @@ viz_component("service") {
     "display/overlay_processor_on_gpu.h",
     "display/overlay_processor_stub.cc",
     "display/overlay_processor_stub.h",
+    "display/pending_swap_params.cc",
+    "display/pending_swap_params.h",
     "display/program_binding.cc",
     "display/program_binding.h",
     "display/renderer_utils.cc",

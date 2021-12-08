@@ -16,6 +16,7 @@
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/service/display/pending_swap_params.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -66,10 +67,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     Capabilities(const Capabilities& capabilities);
     Capabilities& operator=(const Capabilities& capabilities);
 
-    int max_frames_pending = 1;
-    // If set, should be the max number of pending frames when running at or
-    // above 120hz. Otherwise, fallback to `max_frames_pending`.
-    absl::optional<int> max_frames_pending_120hz;
+    PendingSwapParams pending_swap_params{1};
     // The number of buffers for the SkiaOutputDevice. If the
     // |supports_post_sub_buffer| true, SkiaOutputSurfaceImpl will track target
     // damaged area based on this number.

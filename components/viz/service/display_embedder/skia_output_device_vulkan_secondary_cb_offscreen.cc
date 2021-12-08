@@ -35,7 +35,7 @@ SkiaOutputDeviceVulkanSecondaryCBOffscreen::
                                 memory_tracker,
                                 std::move(did_swap_buffer_complete_callback)) {
   DCHECK(context_state_->vk_context_provider());
-  capabilities_.max_frames_pending = 1;
+  capabilities_.pending_swap_params.max_pending_swaps = 1;
   capabilities_.preserve_buffer_content = false;
   capabilities_.supports_post_sub_buffer = false;
 }

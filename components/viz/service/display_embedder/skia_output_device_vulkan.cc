@@ -289,7 +289,7 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   vulkan_surface_ = std::move(vulkan_surface);
 
   capabilities_.uses_default_gl_framebuffer = false;
-  capabilities_.max_frames_pending = 1;
+  capabilities_.pending_swap_params.max_pending_swaps = 1;
   // Vulkan FIFO swap chain should return vk images in presenting order, so set
   // preserve_buffer_content & supports_post_sub_buffer to true to let
   // SkiaOutputBufferImpl to manager damages.
