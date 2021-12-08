@@ -182,10 +182,13 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayloads(
                   payload_contents.reporting_origin.Serialize());
     value.emplace(kOperationKey, kHierarchicalHistogramValue);
 
-    cbor::Value::MapValue data;
+    // TODO(crbug.com/1272030): Support multiple contributions in one payload.
+    cbor::Value::ArrayValue data;
     if (i == index_to_populate) {
-      data.emplace("bucket", payload_contents.bucket);
-      data.emplace("value", payload_contents.value);
+      cbor::Value::MapValue data_map;
+      data_map.emplace("bucket", payload_contents.bucket);
+      data_map.emplace("value", payload_contents.value);
+      data.push_back(cbor::Value(std::move(data_map)));
     }
     value.emplace("data", std::move(data));
 

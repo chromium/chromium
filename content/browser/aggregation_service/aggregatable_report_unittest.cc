@@ -159,12 +159,18 @@ void VerifyReport(
       }
       case AggregationServicePayloadContents::ProcessingType::kSingleServer: {
         ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "data",
-                                              cbor::Value::Type::MAP));
-        const cbor::Value::MapValue& data_map =
-            payload_map.at(cbor::Value("data")).GetMap();
+                                              cbor::Value::Type::ARRAY));
+        const cbor::Value::ArrayValue& data_array =
+            payload_map.at(cbor::Value("data")).GetArray();
 
-        if (!data_map.empty()) {
+        if (!data_array.empty()) {
           ++complete_data_count;
+
+          // TODO(crbug.com/1272030): Support multiple contributions in one
+          // payload.
+          EXPECT_EQ(data_array.size(), 1u);
+          ASSERT_TRUE(data_array[0].is_map());
+          const cbor::Value::MapValue& data_map = data_array[0].GetMap();
 
           ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "bucket",
                                                 cbor::Value::Type::UNSIGNED));
