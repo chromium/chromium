@@ -637,6 +637,17 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
       return;
     }
     gmb_handle.native_pixmap_handle = std::move(protected_native_pixmap);
+
+    // Explicitly verify the GPU Memory Buffer Handle here. Note that we do not
+    // do this for non-protected content because the verification happens on
+    // creation in that path.
+    if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
+                                            gmb_handle)) {
+      VLOGF(1) << "Invalid GpuMemoryBufferHandle for protected content";
+      client_->NotifyError(
+          mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
+      return;
+    }
   } else {
     std::vector<base::ScopedFD> handle_fds =
         DuplicateFD(std::move(handle_fd), planes.size());
@@ -647,6 +658,8 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
       return;
     }
 
+    // Verification of the GPU Memory Buffer Handle is handled under the hood in
+    // this call.
     auto buffer_handle = CreateGpuMemoryBufferHandle(
         pixel_format, modifier, coded_size_, std::move(handle_fds), planes);
     if (!buffer_handle) {

@@ -17,6 +17,7 @@
 #include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
 #include "media/base/waiting.h"
+#include "media/gpu/buffer_validation.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/macros.h"
 #include "ui/gl/gl_bindings.h"
@@ -360,6 +361,8 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
       return;
     }
 
+    CHECK(media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
+                                             gmb_handle));
     const uint64_t modifier = gmb_handle.type == gfx::NATIVE_PIXMAP
                                   ? gmb_handle.native_pixmap_handle.modifier
                                   : gfx::NativePixmapHandle::kNoModifier;
@@ -400,11 +403,13 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   if (!layout_)
     return;
 
+  CHECK(media::VerifyGpuMemoryBufferHandle(pixel_format, layout_->coded_size(),
+                                           gmb_handle));
   // VideoFrame::WrapVideoFrame() will check whether the updated visible_rect
   // is sub rect of the original visible_rect. Therefore we set visible_rect
   // as large as coded_size to guarantee this condition.
   scoped_refptr<VideoFrame> origin_frame = VideoFrame::WrapExternalDmabufs(
-      *layout_, gfx::Rect(coded_size_), coded_size_,
+      *layout_, gfx::Rect(layout_->coded_size()), layout_->coded_size(),
       ExtractFds(std::move(gmb_handle)), base::TimeDelta());
   DmabufId dmabuf_id = DmabufVideoFramePool::GetDmabufId(*origin_frame);
   auto res = frame_id_to_picture_id_.emplace(dmabuf_id, picture_buffer_id);
