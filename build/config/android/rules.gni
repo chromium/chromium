@@ -3709,7 +3709,6 @@ if (enable_java_templates) {
                                "modules",
                                "proguard_mapping_path",
                                "public_deps",
-                               "use_vpython3",
                                "use_webview_provider",
                              ])
       test_name = invoker.target_name
@@ -3855,9 +3854,7 @@ if (enable_java_templates) {
     _apk_target_name = "${target_name}__test_apk"
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     android_test_apk(_apk_target_name) {
-      forward_variables_from(invoker,
-                             "*",
-                             TESTONLY_AND_VISIBILITY + [ "use_vpython3" ])
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     }
     instrumentation_test_runner(target_name) {
       forward_variables_from(invoker,
@@ -3872,7 +3869,6 @@ if (enable_java_templates) {
                                "modules",
                                "never_incremental",
                                "public_deps",
-                               "use_vpython3",
                                "use_webview_provider",
                              ])
       android_test_apk = ":${_apk_target_name}"

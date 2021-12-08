@@ -214,8 +214,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
   android_manifest = "../javatests/AndroidManifest.xml"
   min_sdk_version = default_min_sdk_version
 
-  use_vpython3 = false
-
   deps = [
     ":webview_instrumentation_test_mock_services_java",
     ":webview_instrumentation_test_utils_java",

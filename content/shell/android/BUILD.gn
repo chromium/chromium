@@ -223,7 +223,6 @@ content_shell_apk_tmpl("content_shell_test_apk") {
   apk_name = "ContentShellTest"
   android_manifest = content_shell_test_manifest
   android_manifest_dep = ":content_shell_test_manifest"
-  use_vpython3 = false
   shared_libraries = [ ":libcontent_native_test" ]
   deps = [
     "//base:base_java_test_support",
