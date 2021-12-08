@@ -15,25 +15,27 @@
 
 namespace shape_detection {
 
-struct TestParams {
-  std::string filename;
-  std::string expected_value;
+constexpr struct TestParams {
+  base::FilePath::StringPieceType filename;
+  base::StringPiece expected_value;
   float x;
   float y;
   float width;
   float height;
-} kTestParams[] = {{"codabar.png", "A6.2831853B", 24, 24, 448, 95},
-                   {"code_39.png", "CHROMIUM", 20, 20, 318, 75},
-                   {"code_93.png", "CHROMIUM", 20, 20, 216, 75},
-                   {"code_128.png", "Chromium", 20, 20, 246, 75},
-                   {"data_matrix.png", "Chromium", 11, 11, 53, 53},
-                   {"ean_8.png", "62831857", 14, 10, 134, 75},
-                   {"ean_13.png", "6283185307179", 27, 10, 190, 75},
-                   {"itf.png", "62831853071795", 10, 10, 135, 39},
-                   {"pdf417.png", "Chromium", 20, 20, 240, 44},
-                   {"qr_code.png", "https://chromium.org", 40, 40, 250, 250},
-                   {"upc_a.png", "628318530714", 23, 10, 190, 75},
-                   {"upc_e.png", "06283186", 23, 10, 102, 75}};
+} kTestParams[] = {
+    {FILE_PATH_LITERAL("codabar.png"), "A6.2831853B", 24, 24, 448, 95},
+    {FILE_PATH_LITERAL("code_39.png"), "CHROMIUM", 20, 20, 318, 75},
+    {FILE_PATH_LITERAL("code_93.png"), "CHROMIUM", 20, 20, 216, 75},
+    {FILE_PATH_LITERAL("code_128.png"), "Chromium", 20, 20, 246, 75},
+    {FILE_PATH_LITERAL("data_matrix.png"), "Chromium", 11, 11, 53, 53},
+    {FILE_PATH_LITERAL("ean_8.png"), "62831857", 14, 10, 134, 75},
+    {FILE_PATH_LITERAL("ean_13.png"), "6283185307179", 27, 10, 190, 75},
+    {FILE_PATH_LITERAL("itf.png"), "62831853071795", 10, 10, 135, 39},
+    {FILE_PATH_LITERAL("pdf417.png"), "Chromium", 20, 20, 240, 44},
+    {FILE_PATH_LITERAL("qr_code.png"), "https://chromium.org", 40, 40, 250,
+     250},
+    {FILE_PATH_LITERAL("upc_a.png"), "628318530714", 23, 10, 190, 75},
+    {FILE_PATH_LITERAL("upc_e.png"), "06283186", 23, 10, 102, 75}};
 
 class BarcodeDetectionImplBarhopperTest
     : public testing::TestWithParam<struct TestParams> {
@@ -58,14 +60,15 @@ class BarcodeDetectionImplBarhopperTest
     return barcode_service;
   }
 
-  std::unique_ptr<SkBitmap> LoadTestImage(std::string filename) {
+  std::unique_ptr<SkBitmap> LoadTestImage(
+      base::FilePath::StringPieceType filename) {
     // Load image data from test directory.
     base::FilePath image_path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
     image_path = image_path.Append(FILE_PATH_LITERAL("services"))
                      .Append(FILE_PATH_LITERAL("test"))
                      .Append(FILE_PATH_LITERAL("data"))
-                     .Append(FILE_PATH_LITERAL(filename));
+                     .Append(filename);
     EXPECT_TRUE(base::PathExists(image_path));
     std::string image_data;
     EXPECT_TRUE(base::ReadFileToString(image_path, &image_data));
