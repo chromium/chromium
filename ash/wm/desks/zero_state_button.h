@@ -59,6 +59,8 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
  protected:
   virtual void OnButtonPressed() = 0;
 
+  virtual void UpdateBorderState();
+
   SkColor background_color_;
 
   // If true, paints a background of the button with `background_color_`. The
@@ -74,8 +76,6 @@ class ASH_EXPORT DeskButtonBase : public views::LabelButton,
 
  private:
   friend class DesksTestApi;
-
-  void UpdateBorderState();
 
   // Owned by this View via `View::border_`. This is just a convenient pointer
   // to it.

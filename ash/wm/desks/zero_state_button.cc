@@ -121,16 +121,16 @@ void DeskButtonBase::OnViewUnhighlighted() {
   UpdateBorderState();
 }
 
-void DeskButtonBase::UpdateBorderState() {
-  border_ptr_->SetFocused(IsViewHighlighted() && GetEnabled());
-  SchedulePaint();
-}
-
 void DeskButtonBase::SetShouldPaintBackground(bool should_paint_background) {
   if (should_paint_background_ == should_paint_background)
     return;
 
   should_paint_background_ = should_paint_background;
+  SchedulePaint();
+}
+
+void DeskButtonBase::UpdateBorderState() {
+  border_ptr_->SetFocused(IsViewHighlighted() && GetEnabled());
   SchedulePaint();
 }
 
