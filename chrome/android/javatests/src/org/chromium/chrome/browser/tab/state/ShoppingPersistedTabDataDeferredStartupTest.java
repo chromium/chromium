@@ -81,8 +81,10 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
     @SmallTest
     @Test
     @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
-    public void testDeferredStartup() {
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
+            + "return_empty_price_drops_until_init/false"})
+    public void
+    testDeferredStartup() {
         ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
                 mOptimizationGuideBridgeJniMock,
                 HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
@@ -103,5 +105,42 @@ public class ShoppingPersistedTabDataDeferredStartupTest {
             ShoppingPersistedTabData.onDeferredStartup();
         });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+    }
+
+    @SmallTest
+    @Test
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true/"
+            + "return_empty_price_drops_until_init/true"})
+    public void
+    testReturnEmptyPriceDropsUntilInit() {
+        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
+                mOptimizationGuideBridgeJniMock,
+                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
+                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
+                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
+        final Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, false);
+        final Semaphore semaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.initialize(tab);
+            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
+                Assert.assertNull(shoppingPersistedTabData);
+                semaphore.release();
+            });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
+        final Semaphore newSemaphore = new Semaphore(0);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
+            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
+                Assert.assertNotNull(shoppingPersistedTabData);
+                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UPDATED_PRICE_MICROS,
+                        shoppingPersistedTabData.getPriceMicros());
+                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
+                        shoppingPersistedTabData.getPreviousPriceMicros());
+                newSemaphore.release();
+            });
+        });
+        ShoppingPersistedTabDataTestUtils.acquireSemaphore(newSemaphore);
     }
 }
