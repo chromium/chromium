@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_AX_COMMON_H_
 #define UI_ACCESSIBILITY_AX_COMMON_H_
 
+#include "build/build_config.h"
+
 #if (!defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||            \
      defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER) ||      \
      defined(THREAD_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
