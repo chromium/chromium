@@ -808,9 +808,16 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       1);
 }
 
+// TODO(https://crbug.com/1277893): Flaky on Mac builders.
+#if defined(OS_MAC)
+#define MAYBE_HrefTranslateSiteBlocked DISABLED_HrefTranslateSiteBlocked
+#else
+#define MAYBE_HrefTranslateSiteBlocked HrefTranslateSiteBlocked
+#endif
 // Test that hrefTranslate doesn't translate if the website is in the user's
 // site blocklist.
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, HrefTranslateSiteBlocked) {
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       MAYBE_HrefTranslateSiteBlocked) {
   base::HistogramTester histograms;
   GetChromeTranslateClient()
       ->GetTranslateManager()
