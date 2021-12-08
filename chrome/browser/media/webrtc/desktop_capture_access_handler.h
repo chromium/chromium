@@ -88,6 +88,13 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   // Currently chrome://feedback/ is default approved.
   static bool IsDefaultApproved(const GURL& url);
 
+  // Returns whether the request is approved or not. Some extensions do not
+  // require user approval, because they provide their own user approval UI. For
+  // others, shows a message box and asks for user approval.
+  static bool IsRequestApproved(content::WebContents* web_contents,
+                                const content::MediaStreamRequest& request,
+                                const extensions::Extension* extension);
+
   // WebContentsCollection::Observer:
   void WebContentsDestroyed(content::WebContents* web_contents) override;
 

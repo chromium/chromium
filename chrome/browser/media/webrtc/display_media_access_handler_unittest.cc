@@ -36,8 +36,8 @@
 
 class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  DisplayMediaAccessHandlerTest() {}
-  ~DisplayMediaAccessHandlerTest() override {}
+  DisplayMediaAccessHandlerTest() = default;
+  ~DisplayMediaAccessHandlerTest() override = default;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -264,11 +264,11 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
       .WillOnce([](const content::DesktopMediaID& media_id,
                    const std::u16string& application_title,
                    base::OnceCallback<void(bool)> callback) {
-        // Disallow
-        std::move(callback).Run(false);
+        std::move(callback).Run(/*should_proceed=*/false);
       });
 
-  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
   blink::MediaStreamDevices devices;
   ProcessRequest(media_id, &result, &devices, /*request_audio=*/false);
 
@@ -514,8 +514,7 @@ TEST_F(DisplayMediaAccessHandlerTest, ChangeSourceDlpRestricted) {
       .WillOnce([](const content::DesktopMediaID& media_id,
                    const std::u16string& application_title,
                    base::OnceCallback<void(bool)> callback) {
-        // Disallow
-        std::move(callback).Run(false);
+        std::move(callback).Run(/*should_proceed=*/false);
       });
 
   ChangeSourceRequestTest(
