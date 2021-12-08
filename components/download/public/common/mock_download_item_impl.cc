@@ -39,6 +39,8 @@ MockDownloadItemImpl::MockDownloadItemImpl(DownloadItemImplDelegate* delegate)
                        DownloadItem::ReceivedSlices(),
                        DownloadItemRerouteInfo(),
                        absl::nullopt /*download_schedule*/,
+                       kInvalidRange,
+                       kInvalidRange,
                        nullptr /* download_entry */) {}
 
 MockDownloadItemImpl::~MockDownloadItemImpl() = default;

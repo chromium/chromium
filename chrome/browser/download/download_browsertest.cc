@@ -4978,7 +4978,8 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
           false /* transient */,
           std::vector<download::DownloadItem::ReceivedSlice>(),
           download::DownloadItemRerouteInfo(),
-          absl::nullopt /*download_schedule*/, nullptr /* download_entry */));
+          absl::nullopt /*download_schedule*/, download::kInvalidRange,
+          download::kInvalidRange, nullptr /* download_entry */));
 
   download::DownloadItem* download = coordinator->GetDownloadByGuid(guid);
   content::DownloadManager* manager = DownloadManagerForBrowser(browser());

@@ -211,6 +211,7 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
         state, danger_type, interrupt_reason, false /* paused */,
         false /* allow_metered */, opened, last_access_time, transient,
         received_slices, reroute_info, absl::nullopt /*download_schedule*/,
+        download::kInvalidRange, download::kInvalidRange,
         nullptr /* download_entry */);
   }
 

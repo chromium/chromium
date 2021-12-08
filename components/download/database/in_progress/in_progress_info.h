@@ -135,6 +135,9 @@ struct InProgressInfo {
   // The credentials mode of the request.
   ::network::mojom::CredentialsMode credentials_mode =
       ::network::mojom::CredentialsMode::kInclude;
+
+  int64_t range_request_from = kInvalidRange;
+  int64_t range_request_to = kInvalidRange;
 };
 
 }  // namespace download

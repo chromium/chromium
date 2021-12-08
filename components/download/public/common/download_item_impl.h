@@ -216,6 +216,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       const std::vector<DownloadItem::ReceivedSlice>& received_slices,
       const DownloadItemRerouteInfo& reroute_info,
       absl::optional<DownloadSchedule> download_schedule,
+      int64_t range_request_from,
+      int64_t range_request_to,
       std::unique_ptr<DownloadEntry> download_entry);
 
   // Constructing for a regular download.
@@ -411,6 +413,8 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   // Gets the approximate memory usage of this item.
   size_t GetApproximateMemoryUsage() const;
+
+  std::pair<int64_t, int64_t> GetRangeRequestOffset() const;
 
  private:
   // Fine grained states of a download.

@@ -331,6 +331,8 @@ DownloadItemImpl::DownloadItemImpl(
     const std::vector<DownloadItem::ReceivedSlice>& received_slices,
     const DownloadItemRerouteInfo& reroute_info,
     absl::optional<DownloadSchedule> download_schedule,
+    int64_t range_request_from,
+    int64_t range_request_to,
     std::unique_ptr<DownloadEntry> download_entry)
     : request_info_(url_chain,
                     referrer_url,
@@ -346,8 +348,8 @@ DownloadItemImpl::DownloadItemImpl(
                     start_time,
                     ::network::mojom::CredentialsMode::kInclude,
                     absl::nullopt,
-                    kInvalidRange,
-                    kInvalidRange),
+                    range_request_from,
+                    range_request_to),
       guid_(guid),
       download_id_(download_id),
       mime_type_(mime_type),
@@ -2937,6 +2939,11 @@ size_t DownloadItemImpl::GetApproximateMemoryUsage() const {
   size += base::trace_event::EstimateMemoryUsage(GetETag());
   size += base::trace_event::EstimateMemoryUsage(GetGuid());
   return size;
+}
+
+std::pair<int64_t, int64_t> DownloadItemImpl::GetRangeRequestOffset() const {
+  return std::make_pair(request_info_.range_request_from,
+                        request_info_.range_request_to);
 }
 
 }  // namespace download

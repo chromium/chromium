@@ -84,6 +84,8 @@ message InProgressInfo {
   optional DownloadSchedule download_schedule = 28;
   optional enterprise_connectors.DownloadItemRerouteInfo reroute_info = 29;
   optional int32 credentials_mode = 30;  // network::mojom::CredentialsMode
+  optional int64 range_request_from = 31;
+  optional int64 range_request_to = 32;
 }
 
 // Stores various metadata related to a download.

@@ -299,7 +299,8 @@ class DownloadItemTest : public testing::Test {
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, reason, false, false,
         false, base::Time::Now(), true,
         std::vector<download::DownloadItem::ReceivedSlice>(), reroute_info,
-        absl::nullopt /*download_schedule*/, nullptr /* download_entry */);
+        absl::nullopt /*download_schedule*/, kInvalidRange, kInvalidRange,
+        nullptr /* download_entry */);
     return item;
   }
 

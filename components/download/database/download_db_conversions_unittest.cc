@@ -167,6 +167,10 @@ TEST_F(DownloadDBConversionsTest, InProgressInfo) {
   // InProgressInfo with valid fields.
   info = CreateInProgressInfo();
   EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
+
+  info.range_request_from = 5;
+  info.range_request_from = 10;
+  EXPECT_EQ(info, InProgressInfoFromProto(InProgressInfoToProto(info)));
 }
 
 TEST_F(DownloadDBConversionsTest, RerouteInfo) {

@@ -840,7 +840,8 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
           base::Time(), false,
           std::vector<download::DownloadItem::ReceivedSlice>(),
           download::DownloadItemRerouteInfo(),
-          absl::nullopt /*download_schedule*/, nullptr));
+          absl::nullopt /*download_schedule*/, download::kInvalidRange,
+          download::kInvalidRange, nullptr));
 }
 
 void DownloadManagerService::InitializeForProfile(ProfileKey* profile_key) {
