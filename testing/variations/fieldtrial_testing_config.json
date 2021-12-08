@@ -7227,9 +7227,26 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledFixed",
+                    "enable_features": [
+                        "ShareUsageRanking",
+                        "ShareUsageRankingFixedMore"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ShareUsageRanking",
+                        "ShareUsageRankingFixedMore"
+                    ]
+                },
+                {
+                    "name": "EnabledVariable",
                     "enable_features": [
                         "ShareUsageRanking"
+                    ],
+                    "disable_features": [
+                        "ShareUsageRankingFixedMore"
                     ]
                 }
             ]
