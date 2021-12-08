@@ -9,6 +9,7 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import './privacy_review_completion_link_row.js';
 import './privacy_review_fragment_shared_css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';

@@ -10,21 +10,9 @@
     flex: 1;
     flex-direction: column;
     justify-content: space-between;
-    padding: 36px 120px var(--cr-section-padding) 120px;
+    padding: 36px 120px 16px 120px;
     row-gap: 8px;
     text-align: center;
-  }
-
-  .info-row {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-  }
-
-  .info-row-description {
-    flex: 1;
   }
 
   .footer {
@@ -46,35 +34,25 @@
     $i18n{privacyReviewCompletionCardSubHeader}
   </div>
 </div>
-<div id="privacySandboxRow" class="info-row">
-  <picture>
-    <source
-        srcset="./images/privacy_review/privacy_sandbox_graphic_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img alt="" src="./images/privacy_review/privacy_sandbox_graphic.svg">
-  </picture>
-  <cr-link-row class="info-row-description" external
-      label="$i18n{privacyReviewCompletionCardPrivacySandboxLabel}"
-      sub-label="$i18n{privacyReviewCompletionCardPrivacySandboxSubLabel}"
-      on-click="onPrivacySandboxClick_"
-      role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-  <a id="privacySandboxLink" href="privacySandbox"
-      target="_blank" tabindex="-1" aria-disabled="true"
-      role="none"></a>
-</div>
-<div id="waaRow" class="info-row" hidden="[[!shouldShowWaa_]]">
-  <picture>
-    <source
-        srcset="./images/privacy_review/waa_graphic_dark.svg"
-        media="(prefers-color-scheme: dark)">
-    <img alt="" src="./images/privacy_review/waa_graphic.svg">
-  </picture>
-  <cr-link-row class="info-row-description" external
+<privacy-review-completion-link-row id="privacySandboxRow"
+    label="$i18n{privacyReviewCompletionCardPrivacySandboxLabel}"
+    sub-label="$i18n{privacyReviewCompletionCardPrivacySandboxSubLabel}"
+    light-img-src="./images/privacy_review/privacy_sandbox_graphic.svg"
+    dark-img-src="./images/privacy_review/privacy_sandbox_graphic_dark.svg"
+    on-click="onPrivacySandboxClick_">
+</privacy-review-completion-link-row>
+<a id="privacySandboxLink" href="privacySandbox"
+    target="_blank" tabindex="-1" aria-disabled="true"
+    role="none"></a>
+<template is="dom-if" if="[[shouldShowWaa_]]">
+  <privacy-review-completion-link-row id="waaRow"
       label="$i18n{privacyReviewCompletionCardWaaLabel}"
       sub-label="$i18n{privacyReviewCompletionCardWaaSubLabel}"
-      on-click="onWaaClick_"
-      role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-</div>
+      light-img-src="./images/privacy_review/waa_graphic.svg"
+      dark-img-src="./images/privacy_review/waa_graphic_dark.svg"
+      on-click="onWaaClick_">
+  </privacy-review-completion-link-row>
+</template>
 <div class="footer">
   <cr-button id="backButton" role="button" on-click="onBackButtonClick_">
     $i18n{privacyReviewBackButton}
