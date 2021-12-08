@@ -85,7 +85,6 @@ TEST_F(WebSocketInterceptorTest, SubsequentInterceptWhenSlow) {
   EXPECT_CALL(mock_callback_, Callback()).Times(1);
   task_environment_.FastForwardUntilNoTasksRemain();
 
-  interceptor_->FinishFrame();
   EXPECT_EQ(WebSocketInterceptor::kShouldWait,
             interceptor_->Intercept(42, MakeCallback()));
 }
@@ -98,10 +97,7 @@ TEST_F(WebSocketInterceptorTest, OfflineCallbackInvokedWhenBackOnline) {
   EXPECT_EQ(WebSocketInterceptor::kShouldWait,
             interceptor_->Intercept(42, MakeCallback()));
 
-  // EXPECT_CALL(mock_callback_, Callback()).Times(1);
-  EXPECT_CALL(mock_callback_, Callback()).Times(1).WillOnce([&] {
-    interceptor_->FinishFrame();
-  });
+  EXPECT_CALL(mock_callback_, Callback()).Times(1);
   ThrottlingController::SetConditions(*kThrottlingProfileId, nullptr);
   interceptor_->Intercept(42, MakeCallback());
 }
@@ -114,9 +110,7 @@ TEST_F(WebSocketInterceptorTest, SlowAfterOffline) {
   EXPECT_EQ(WebSocketInterceptor::kShouldWait,
             interceptor_->Intercept(42, MakeCallback()));
 
-  EXPECT_CALL(mock_callback_, Callback()).Times(1).WillOnce([&] {
-    interceptor_->FinishFrame();
-  });
+  EXPECT_CALL(mock_callback_, Callback()).Times(1);
   ThrottlingController::SetConditions(
       *kThrottlingProfileId,
       std::make_unique<NetworkConditions>(/*offline=*/false, /*latency=*/0,
