@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
 

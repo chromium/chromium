@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
 #include "chrome/service/net/in_process_network_connection_tracker.h"
 #include "chrome/service/service_ipc_server.h"

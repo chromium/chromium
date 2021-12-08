@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"

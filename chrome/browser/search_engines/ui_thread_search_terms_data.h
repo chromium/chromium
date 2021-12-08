@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "components/search_engines/search_terms_data.h"
 
 // Implementation of SearchTermsData that is only usable on the UI thread.

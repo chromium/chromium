@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "build/build_config.h"
+
 namespace base {
 class Value;
 class DictionaryValue;

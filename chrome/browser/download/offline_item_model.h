@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"

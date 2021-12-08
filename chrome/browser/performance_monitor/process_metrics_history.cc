@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/process/process_metrics.h"
+#include "build/build_config.h"
 
 #if defined(OS_MAC)
 #include "content/public/browser/browser_child_process_host.h"

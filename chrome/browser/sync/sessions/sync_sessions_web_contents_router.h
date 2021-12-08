@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
 // Android has no BrowserList or TabStripModel, so we exclude code that refers
 // to those two things. For non-android platforms, this code is used to
