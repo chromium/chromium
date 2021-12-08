@@ -65,6 +65,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   };
 
   // Represents the action taken by the user on the snooze UI.
+  // These enums are persisted as histogram entries, so this enum should be
+  // treated as append-only and kept in sync with InProductHelpSnoozeAction in
+  // enums.xml.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.feature_engagement
   enum class SnoozeAction : int {
     // User chose to snooze the IPH.

@@ -43773,7 +43773,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="Canceled"/>
 </enum>
 
-<enum name="InProductHelp.SnoozeAction">
+<enum name="InProductHelpSnoozeAction">
   <int value="0" label="Unknown"/>
   <int value="1" label="Snooze"/>
   <int value="2" label="Dismiss"/>
