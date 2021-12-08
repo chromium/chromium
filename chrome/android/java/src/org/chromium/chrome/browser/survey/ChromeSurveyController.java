@@ -329,8 +329,8 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                     tab.getWebContents(), R.drawable.chrome_sync_logo, getSurveyInfoBarDelegate());
 
             RecordUserAction.record("Android.Survey.ShowSurveyInfoBar");
-            mTabModelSelector.removeObserver(mTabModelObserver);
         }
+        mTabModelSelector.removeObserver(mTabModelObserver);
     }
 
     /**
