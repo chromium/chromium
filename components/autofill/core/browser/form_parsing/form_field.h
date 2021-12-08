@@ -80,7 +80,7 @@ class FormField {
   static const float kBaseSearchParserScore;
 
   // Only derived classes may instantiate.
-  FormField() {}
+  FormField() = default;
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills |match| with a pointer to the field.

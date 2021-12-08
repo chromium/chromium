@@ -328,11 +328,11 @@ const char16_t kEmailRe[] =
 // name_field.cc
 /////////////////////////////////////////////////////////////////////////////
 const char16_t kNameIgnoredRe[] =
-    u"user.?name|user.?id|nickname|maiden name|title|prefix|suffix"
+    u"user.?name|user.?id|nickname|maiden name|title|prefix|suffix|mail"
     u"|vollständiger.?name"              // de-DE
     u"|用户名"                           // zh-CN
     u"|(?:사용자.?)?아이디|사용자.?ID";  // ko-KR
-const char16_t kNameRe[] =
+const char16_t kFullNameRe[] =
     u"^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name"
     u"|name.*first.*last|firstandlastname|contact.?(name|person)"
     u"|nombre.*y.*apellidos"                    // es
@@ -345,7 +345,7 @@ const char16_t kNameRe[] =
     u"|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)"  // tr
     u"|성명"                                    // ko-KR
     u"|nama.?(lengkap|penerima|kamu)";          // id
-const char16_t kNameSpecificRe[] =
+const char16_t kNameGenericRe[] =
     u"^name"
     u"|^nom"    // fr-FR
     u"|^nome";  // pt-BR, pt-PT

@@ -196,13 +196,15 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillParsingPatternsLanguageDetection,
        // TODO(crbug/1165780): Remove once shared labels are launched.
        features::kAutofillEnableSupportForParsingWithSharedLabels,
+       // TODO(crbug.com/1277480): Remove once launched.
+       features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug/1190334): Remove once launched.
        features::kAutofillParseMerchantPromoCodeFields},
       // Disabled
       {});
 }
 
-FormStructureBrowserTest::~FormStructureBrowserTest() {}
+FormStructureBrowserTest::~FormStructureBrowserTest() = default;
 
 void FormStructureBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {

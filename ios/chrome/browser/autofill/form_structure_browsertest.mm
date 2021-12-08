@@ -158,6 +158,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        autofill::features::kAutofillEnableSupportForParsingWithSharedLabels,
        // TODO(crbug.com/1150895) Remove once launched.
        autofill::features::kAutofillParsingPatternsLanguageDetection,
+       // TODO(crbug.com/1277480): Remove once launched.
+       autofill::features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.
        autofill::features::kAutofillParseMerchantPromoCodeFields},
       // Disabled

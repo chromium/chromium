@@ -68,6 +68,8 @@ extern const base::Feature kAutofillEnableSupportForApartmentNumbers;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableLabelPrecedenceForTurkishAddresses;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillEnableNameSurenameParsing;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableProfileDeduplication;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableSupportForParsingWithSharedLabels;
