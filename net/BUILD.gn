@@ -1158,6 +1158,8 @@ component("net") {
       "android/network_change_notifier_factory_android.h",
       "android/network_library.cc",
       "android/network_library.h",
+      "android/radio_activity_tracker.cc",
+      "android/radio_activity_tracker.h",
       "android/traffic_stats.cc",
       "android/traffic_stats.h",
       "cert/cert_verify_proc_android.cc",

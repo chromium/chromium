@@ -112,6 +112,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/radio_utils.h"
+#include "net/android/radio_activity_tracker.h"
 #include "services/network/radio_monitor_android.h"
 #endif
 
@@ -7299,9 +7300,10 @@ void CheckRadioWakeupTriggerHistograms(base::HistogramTester& histograms,
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_Record) {
   base::HistogramTester histograms;
 
-  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
-      base::android::RadioDataActivity::kDormant);
-  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideRadioActivityForTesting(
+          base::android::RadioDataActivity::kDormant);
+  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
 
   LoadAndCompareFile("simple_page.html");
@@ -7312,9 +7314,10 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_Record) {
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
   base::HistogramTester histograms;
 
-  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
-      base::android::RadioDataActivity::kDormant);
-  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideRadioActivityForTesting(
+          base::android::RadioDataActivity::kDormant);
+  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kWifi);
 
   LoadAndCompareFile("simple_page.html");
@@ -7325,9 +7328,10 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioTypeIsNotCell) {
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
   base::HistogramTester histograms;
 
-  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
-      base::android::RadioDataActivity::kInOut);
-  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideRadioActivityForTesting(
+          base::android::RadioDataActivity::kInOut);
+  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
 
   LoadAndCompareFile("simple_page.html");
@@ -7338,12 +7342,13 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_RadioActivityIsNotDormant) {
 TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_IntervalTooShort) {
   base::HistogramTester histograms;
 
-  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
-      base::android::RadioDataActivity::kDormant);
-  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideRadioActivityForTesting(
+          base::android::RadioDataActivity::kDormant);
+  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
-  RadioMonitorAndroid::GetInstance().OverrideLastCheckTimeForTesting(
-      base::TimeTicks::Now());
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideLastCheckTimeForTesting(base::TimeTicks::Now());
 
   LoadAndCompareFile("simple_page.html");
 

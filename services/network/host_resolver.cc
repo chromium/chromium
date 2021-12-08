@@ -129,8 +129,7 @@ void HostResolver::ResolveHost(
 
 #if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger)) {
-    RadioMonitorAndroid::GetInstance().MaybeRecordResolveHost(
-        optional_parameters);
+    MaybeRecordResolveHostForWakeupTrigger(optional_parameters);
   }
 #endif
 

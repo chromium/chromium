@@ -45,6 +45,7 @@
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "net/android/radio_activity_tracker.h"
 #include "net/base/features.h"
 #include "services/network/radio_monitor_android.h"
 #endif
@@ -1589,9 +1590,10 @@ class HostResolverRecordRadioWakeupTest : public HostResolverTest {
 TEST_F(HostResolverRecordRadioWakeupTest, RecordPreconnect) {
   base::HistogramTester histograms;
 
-  RadioMonitorAndroid::GetInstance().OverrideRadioActivityForTesting(
-      base::android::RadioDataActivity::kDormant);
-  RadioMonitorAndroid::GetInstance().OverrideRadioTypeForTesting(
+  net::android::RadioActivityTracker::GetInstance()
+      .OverrideRadioActivityForTesting(
+          base::android::RadioDataActivity::kDormant);
+  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
       base::android::RadioConnectionType::kCell);
 
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
