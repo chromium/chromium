@@ -93,6 +93,8 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
+  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
+
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
@@ -114,7 +116,6 @@ void AutofillPopupControllerImpl::Show(
     just_created = true;
   }
 
-  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
   if (just_created) {
 #if defined(OS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
@@ -130,17 +131,19 @@ void AutofillPopupControllerImpl::Show(
     // event when suggestions changed.
     FireControlsChangedEvent(true);
 
-    if (autoselect_first_suggestion)
+    if (autoselect_first_suggestion) {
       SetSelectedLine(0);
+    }
   } else {
     if (selected_line_ && *selected_line_ >= GetLineCount())
       selected_line_.reset();
 
     OnSuggestionsChanged();
-    // crbug.com/1200766. |this| can be destroyed synchronously at this point.
-    if (!weak_this)
-      return;
   }
+  // |this| can be destroyed synchronously at this point. See crbug.com/1200766
+  // and crbug.com/1276850 and crbug.com/1277218.
+  if (!weak_this)
+    return;
 
   absl::visit(
       [&](auto* driver) {
@@ -258,7 +261,10 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      SetSelectedLine(absl::nullopt);
+      // TODO(crbug.com/1276850,crbug.com/1277218): Replace with
+      // SetSelectedLine().
+      if (SetSelectedLineHelper(absl::nullopt) != SelfStatus::kAlive)
+        return true;
       SelectNextLine();
       return true;
     case ui::VKEY_NEXT:  // Page down.
@@ -433,13 +439,21 @@ PopupType AutofillPopupControllerImpl::GetPopupType() const {
 
 void AutofillPopupControllerImpl::SetSelectedLine(
     absl::optional<int> selected_line) {
+  SetSelectedLineHelper(selected_line);
+}
+
+// TODO(crbug.com/1276850,crbug.com/1277218): Remove function in favour of
+// SetSelectedLine().
+AutofillPopupControllerImpl::SelfStatus
+AutofillPopupControllerImpl::SetSelectedLineHelper(
+    absl::optional<int> selected_line) {
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
-    return;
+    return SelfStatus::kDestroyed;
   }
 
   if (selected_line_ == selected_line)
-    return;
+    return SelfStatus::kAlive;
 
   if (selected_line) {
     DCHECK_LT(*selected_line, GetLineCount());
@@ -457,6 +471,7 @@ void AutofillPopupControllerImpl::SetSelectedLine(
   } else {
     delegate_->ClearPreviewedForm();
   }
+  return SelfStatus::kAlive;
 }
 
 void AutofillPopupControllerImpl::SelectNextLine() {

@@ -163,6 +163,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   virtual void HideViewAndDie();
 
  private:
+  // TODO(crbug.com/1276850, crbug.com/1277218): Remove.
+  enum class SelfStatus { kDestroyed, kAlive };
+
   // The user has accepted the currently selected line. Returns whether there
   // was a selection to accept.
   bool AcceptSelectedLine();
@@ -181,6 +184,12 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   absl::variant<ContentAutofillDriver*,
                 password_manager::ContentPasswordManagerDriver*>
   GetDriver();
+
+  // Conceptually an override of AutofillPopupController::SetSelectedLine(), but
+  // additionally returns a `SelfStatus` to indicate if |this| was destroyed by
+  // this call.
+  // TODO(crbug.com/1276850, crbug.com/1277218): Replace with SetSelectedLine().
+  SelfStatus SetSelectedLineHelper(absl::optional<int> selected_line);
 
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
