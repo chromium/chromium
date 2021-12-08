@@ -105,7 +105,7 @@ void TranslateModelService::OnModelUpdated(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&LoadModelFile, model_info.GetModelFilePath()),
       base::BindOnce(&TranslateModelService::OnModelFileLoaded,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TranslateModelService::OnModelFileLoaded(base::File model_file) {
