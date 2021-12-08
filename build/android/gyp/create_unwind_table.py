@@ -5,13 +5,19 @@
 """Creates a table of unwind information in Android Chrome's bespoke format."""
 
 import abc
+import argparse
+import collections
 import enum
 import logging
+import os
 import re
-import collections
 import struct
+import subprocess
+import sys
 from typing import (Dict, Iterable, List, NamedTuple, Sequence, TextIO, Tuple,
                     Union)
+
+from util import build_utils
 
 _STACK_CFI_INIT_REGEX = re.compile(
     r'^STACK CFI INIT ([0-9a-f]+) ([0-9a-f]+) (.+)$')
@@ -653,6 +659,7 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
   text_section_start_address: int = sorted_function_unwinds[0].address
   prev_func_end_address: int = sorted_function_unwinds[0].address
 
+  gaps = 0
   for unwind in sorted_function_unwinds:
     assert prev_func_end_address <= unwind.address, (
         'Detected overlap between functions.')
@@ -661,6 +668,7 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
       # Gaps between functions are typically filled by regions of thunks which
       # do not alter the stack pointer. Filling these gaps with TRIVIAL_UNWIND
       # is the appropriate unwind strategy.
+      gaps += 1
       yield EncodedFunctionUnwind(GetPageNumber(prev_func_end_address),
                                   GetPageOffset(prev_func_end_address),
                                   TRIVIAL_UNWIND)
@@ -675,6 +683,9 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
     yield EncodedFunctionUnwind(GetPageNumber(prev_func_end_address),
                                 GetPageOffset(prev_func_end_address),
                                 REFUSE_TO_UNWIND)
+
+  logging.info('%d/%d gaps between functions filled with trivial unwind.', gaps,
+               len(sorted_function_unwinds))
 
 
 def EncodeFunctionOffsetTable(
@@ -869,8 +880,8 @@ def GenerateUnwinds(function_cfis: Iterable[FunctionCfi],
         epilogues_seen += 1
         break
 
-      logging.info('unrecognized CFI: %x %s.' %
-                   (address_cfi.address, address_cfi.unwind_instructions))
+      logging.info('unrecognized CFI: %x %s.', address_cfi.address,
+                   address_cfi.unwind_instructions)
 
     if address_unwinds:
       # We expect that the unwind information for every function starts with a
@@ -996,3 +1007,47 @@ def GenerateUnwindTables(
 
   return (page_table, function_table, function_offset_table,
           unwind_instruction_table)
+
+
+def main():
+  build_utils.InitLogging('CREATE_UNWIND_TABLE_DEBUG')
+  parser = argparse.ArgumentParser(description=__doc__)
+  parser.add_argument('--input_path',
+                      help='Path to the unstripped binary.',
+                      required=True,
+                      metavar='FILE')
+  parser.add_argument('--output_path',
+                      help='Path to unwind info binary output.',
+                      required=True,
+                      metavar='FILE')
+  parser.add_argument('--dump_syms_path',
+                      required=True,
+                      help='The path of the dump_syms binary.',
+                      metavar='FILE')
+
+  args = parser.parse_args()
+  proc = subprocess.Popen(['./' + args.dump_syms_path, args.input_path, '-v'],
+                          stdout=subprocess.PIPE,
+                          encoding='ascii')
+
+  function_cfis = ReadFunctionCfi(proc.stdout)
+  function_unwinds = GenerateUnwinds(function_cfis, parsers=ALL_PARSERS)
+  encoded_function_unwinds = EncodeFunctionUnwinds(function_unwinds)
+  (page_table, function_table, function_offset_table,
+   unwind_instruction_table) = GenerateUnwindTables(encoded_function_unwinds)
+  unwind_info: bytes = EncodeUnwindInfo(page_table, function_table,
+                                        function_offset_table,
+                                        unwind_instruction_table)
+
+  if proc.wait():
+    logging.critical('dump_syms exited with return code %d', proc.returncode)
+    sys.exit(proc.returncode)
+
+  with open(args.output_path, 'wb') as f:
+    f.write(unwind_info)
+
+  return 0
+
+
+if __name__ == '__main__':
+  sys.exit(main())

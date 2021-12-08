@@ -5,6 +5,7 @@
 import("//android_webview/variables.gni")
 import("//base/android/linker/config.gni")
 import("//base/android/resource_exclusions.gni")
+import("//build/config/android/create_unwind_table.gni")
 import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/compiler/compiler.gni")
@@ -100,25 +101,46 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
   if (_add_unwind_tables) {
     _unwind_asset_target = "${target_name}__unwind_assets"
-    unwind_table_asset(_unwind_asset_target) {
-      if (defined(invoker.testonly)) {
-        testonly = invoker.testonly
-      }
 
-      if (defined(invoker.shared_library_for_unwind_asset)) {
-        library_target = invoker.shared_library_for_unwind_asset
-      } else {
-        if (_is_monochrome || _is_trichrome) {
+    if (use_android_unwinder_v2) {
+      unwind_table_asset_v2(_unwind_asset_target) {
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+
+        if (defined(invoker.shared_library_for_unwind_asset)) {
+          library_target = invoker.shared_library_for_unwind_asset
+        } else if (_is_monochrome || _is_trichrome) {
           library_target = "monochrome"
         } else {
           library_target = "chrome"
         }
-      }
 
-      if (android_64bit_target_cpu) {
-        deps = [ "//chrome/android:lib${library_target}($android_secondary_abi_toolchain)" ]
-      } else {
-        deps = [ "//chrome/android:lib${library_target}" ]
+        if (android_64bit_target_cpu) {
+          deps = [ "//chrome/android:lib${library_target}($android_secondary_abi_toolchain)" ]
+        } else {
+          deps = [ "//chrome/android:lib${library_target}" ]
+        }
+      }
+    } else {
+      unwind_table_asset(_unwind_asset_target) {
+        if (defined(invoker.testonly)) {
+          testonly = invoker.testonly
+        }
+
+        if (defined(invoker.shared_library_for_unwind_asset)) {
+          library_target = invoker.shared_library_for_unwind_asset
+        } else if (_is_monochrome || _is_trichrome) {
+          library_target = "monochrome"
+        } else {
+          library_target = "chrome"
+        }
+
+        if (android_64bit_target_cpu) {
+          deps = [ "//chrome/android:lib${library_target}($android_secondary_abi_toolchain)" ]
+        } else {
+          deps = [ "//chrome/android:lib${library_target}" ]
+        }
       }
     }
   } else if (defined(invoker.shared_library_for_unwind_asset)) {

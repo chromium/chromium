@@ -204,6 +204,9 @@ can_unwind_with_cfi_table = is_android && !is_component_build &&
 enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
+  # Set to true to use the android unwinder V2 implementation.
+  use_android_unwinder_v2 = false
+
   # If this running on a GPU FYI bot.
   # TODO(https://crbug.com/1233871): Remove this again.
   is_gpu_fyi_bot = false
