@@ -3730,6 +3730,9 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_UPDATE_CREDENTIAL_DIALOG_TITLE" desc="The title of a dialog that lets users update sign-in data on their security key (an authentication hardware device).">
     Edit sign-in data
   </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_CONFIRM_DELETE_TITLE" desc="The title of a prompt that asks users to confirm whether they want to delete the selected sign-in data on their security key (an authentication hardware device).">
+    Delete sign-in data
+  </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_CREDENTIAL_MANAGEMENT_CONFIRM_DELETE_CREDENTIAL" desc="A confirmation message shown to confirm the user wants to delete the selected sign-in data. Security keys are external devices used to authenticate people.">
     Are you sure you want to delete the selected sign-in data?
   </message>

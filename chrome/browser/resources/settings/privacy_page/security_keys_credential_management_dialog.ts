@@ -246,11 +246,11 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         break;
       case CredentialManagementDialogPage.CONFIRM:
         this.cancelButtonVisible_ = true;
-        this.confirmButtonLabel_ = this.i18n('continue');
+        this.confirmButtonLabel_ = this.i18n('delete');
         this.confirmButtonVisible_ = true;
         this.closeButtonVisible_ = false;
         this.dialogTitle_ =
-            this.i18n('securityKeysCredentialManagementDialogTitle');
+            this.i18n('securityKeysCredentialManagementConfirmDeleteTitle');
         break;
       default:
         assertNotReached();
