@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -129,8 +130,13 @@ void CaptureModeAdvancedSettingsView::OnCaptureFolderMayHaveChanged() {
     return;
   }
 
-  save_to_menu_group_->AddOrUpdateExistingOption(
-      custom_path.BaseName().AsUTF16Unsafe(), kCustomFolder);
+  const std::u16string folder_name =
+      controller->IsRootDriveFsPath(custom_path)
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_SAVE_TO_GOOGLE_DRIVE)
+          : custom_path.BaseName().AsUTF16Unsafe();
+  save_to_menu_group_->AddOrUpdateExistingOption(folder_name, kCustomFolder);
+
   controller->CheckFolderAvailability(
       custom_path,
       base::BindOnce(

@@ -700,6 +700,16 @@ CaptureModeController::CreateRecordingOverlayView() {
   return delegate_->CreateRecordingOverlayView();
 }
 
+bool CaptureModeController::IsRootDriveFsPath(
+    const base::FilePath& path) const {
+  base::FilePath mounted_path;
+  if (delegate_->GetDriveFsMountPointPath(&mounted_path)) {
+    if (path == mounted_path.Append("root"))
+      return true;
+  }
+  return false;
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {
@@ -1595,10 +1605,11 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
     return CaptureModeSaveToLocation::kDefault;
   base::FilePath mounted_path;
   if (delegate_->GetDriveFsMountPointPath(&mounted_path)) {
-    if (dir_path == mounted_path)
+    const auto drive_root_path = mounted_path.Append("root");
+    if (dir_path == drive_root_path)
       return CaptureModeSaveToLocation::kDrive;
 
-    if (mounted_path.IsParent(dir_path))
+    if (drive_root_path.IsParent(dir_path))
       return CaptureModeSaveToLocation::kDriveFolder;
   }
   return CaptureModeSaveToLocation::kCustomizedFolder;

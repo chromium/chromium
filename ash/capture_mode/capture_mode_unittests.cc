@@ -599,10 +599,10 @@ class CaptureModeTest : public AshTestBase {
 
   base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
     auto* test_delegate = CaptureModeController::Get()->delegate_for_testing();
-    base::FilePath root_drive_folder;
-    EXPECT_TRUE(test_delegate->GetDriveFsMountPointPath(&root_drive_folder));
+    base::FilePath mount_point_path;
+    EXPECT_TRUE(test_delegate->GetDriveFsMountPointPath(&mount_point_path));
     base::FilePath folder_on_drive_fs =
-        root_drive_folder.Append(custom_folder_name);
+        mount_point_path.Append("root").Append(custom_folder_name);
     base::ScopedAllowBlockingForTesting allow_blocking;
     const bool result = base::CreateDirectory(folder_on_drive_fs);
     EXPECT_TRUE(result);
@@ -2480,8 +2480,9 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
   // a specific folder on drive.
   const auto downloads_folder = test_delegate->GetUserDefaultDownloadsFolder();
   const base::FilePath custom_folder = CreateCustomFolder("test");
-  base::FilePath root_drive_folder;
-  test_delegate->GetDriveFsMountPointPath(&root_drive_folder);
+  base::FilePath mount_point_path;
+  test_delegate->GetDriveFsMountPointPath(&mount_point_path);
+  const auto root_drive_folder = mount_point_path.Append("root");
   const base::FilePath non_root_drive_folder = CreateFolderOnDriveFS("test");
   struct {
     base::FilePath set_save_file_folder;

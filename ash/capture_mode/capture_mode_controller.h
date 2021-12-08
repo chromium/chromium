@@ -194,6 +194,10 @@ class ASH_EXPORT CaptureModeController
   // content view of the recording overlay widget.
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView();
 
+  // Returns true if the given `path` is the root folder of DriveFS, false
+  // otherwise.
+  bool IsRootDriveFsPath(const base::FilePath& path) const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
