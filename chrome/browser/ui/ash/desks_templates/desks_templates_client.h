@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/desks_storage/core/desk_model.h"
 
 class DesksTemplatesAppLaunchHandler;
@@ -25,8 +26,6 @@ namespace desks_storage {
 class DeskModel;
 class LocalDeskDataManager;
 }  // namespace desks_storage
-
-class Profile;
 
 // Class to handle all Desks in-browser functionalities. Will call into
 // ash::DesksController to do actual desk related operations.
@@ -82,6 +81,15 @@ class DesksTemplatesClient : public ash::SessionObserver {
       base::OnceCallback<void(const TemplateList&, std::string error)>;
   // Returns the current available saved desk templates.
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
+
+  using GetTemplateJsonCallback =
+      base::OnceCallback<void(const std::string& template_json,
+                              std::string error)>;
+  // Takes in |uuid| and fetches the stringified json representation of a
+  // desk template.
+  void GetTemplateJson(const std::string uuid,
+                       Profile* profile,
+                       GetTemplateJsonCallback callback);
 
   using LaunchDeskTemplateCallback =
       base::OnceCallback<void(const std::string error)>;
@@ -167,6 +175,12 @@ class DesksTemplatesClient : public ash::SessionObserver {
   // argument.
   void OnCapturedDeskTemplate(CaptureActiveDeskAndSaveTemplateCallback callback,
                               std::unique_ptr<ash::DeskTemplate> desk_template);
+
+  // Callback function that handles the JSON representation of a specific
+  // template.
+  void OnGetTemplateJson(DesksTemplatesClient::GetTemplateJsonCallback callback,
+                         desks_storage::DeskModel::GetTemplateJsonStatus status,
+                         const std::string& json_representation);
 
   // Convenience pointer to ash::DesksController.
   // Guaranteed to be not null for the duration of `this`.

@@ -1664,6 +1664,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS = 1601,
   AUTOTESTPRIVATE_RESETHOLDINGSPACE = 1602,
   FILEMANAGERPRIVATEINTERNAL_GETDISALLOWEDTRANSFERS = 1603,
+  WMDESKSPRIVATE_GETDESKTEMPLATEJSON = 1604,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

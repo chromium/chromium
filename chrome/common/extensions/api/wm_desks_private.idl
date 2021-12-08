@@ -18,6 +18,7 @@ namespace wmDesksPrivate {
   callback GetSavedDeskTemplatesCallback =
       void (DeskTemplate[] deskTemplates);
   callback DeskTemplateVoidCallback = void ();
+  callback GetDeskTemplateJsonCallback = void (DOMString templateJson);
 
   interface Functions {
     // Captures the current active desk as a template and then returns the
@@ -51,5 +52,11 @@ namespace wmDesksPrivate {
     // returned.
     static void launchDeskTemplate(DOMString templateUuid,
                                    DeskTemplateVoidCallback callback);
+
+    // Gets the template associated wit the templateUuid and returns its JSON
+    // representation.  Returns an error if either the template could not be
+    // found or the user profile is not valid.
+    static void getDeskTemplateJson(DOMString templateUuid,
+                                    GetDeskTemplateJsonCallback callback);
   };
 };

@@ -30398,6 +30398,7 @@ Called by update_extension_histograms.py.-->
   <int value="1601" label="AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS"/>
   <int value="1602" label="AUTOTESTPRIVATE_RESETHOLDINGSPACE"/>
   <int value="1603" label="FILEMANAGERPRIVATEINTERNAL_GETDISALLOWEDTRANSFERS"/>
+  <int value="1604" label="WMDESKSPRIVATE_GETDESKTEMPLATEJSON"/>
 </enum>
 
 <enum name="ExtensionIconState">

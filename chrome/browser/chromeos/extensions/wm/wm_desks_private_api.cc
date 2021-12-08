@@ -9,6 +9,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
 
@@ -119,6 +120,38 @@ void WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate(
   Respond(ArgumentList(
       api::wm_desks_private::GetSavedDeskTemplates::Results::Create(
           api_templates)));
+}
+
+WmDesksPrivateGetDeskTemplateJsonFunction::
+    WmDesksPrivateGetDeskTemplateJsonFunction() = default;
+WmDesksPrivateGetDeskTemplateJsonFunction::
+    ~WmDesksPrivateGetDeskTemplateJsonFunction() = default;
+
+ExtensionFunction::ResponseAction
+WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
+  std::unique_ptr<api::wm_desks_private::GetDeskTemplateJson::Params> params(
+      api::wm_desks_private::GetDeskTemplateJson::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DesksTemplatesClient::Get()->GetTemplateJson(
+      params->template_uuid, Profile::FromBrowserContext(browser_context()),
+      base::BindOnce(
+          &WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson,
+          this));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson(
+    const std::string& template_json,
+    std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  Respond(
+      ArgumentList(api::wm_desks_private::GetDeskTemplateJson::Results::Create(
+          template_json)));
 }
 
 WmDesksPrivateDeleteDeskTemplateFunction::

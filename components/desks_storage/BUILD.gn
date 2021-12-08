@@ -27,6 +27,7 @@ static_library("desks_storage") {
     "//components/sync/protocol",
     "//components/version_info:channel",
     "//third_party/re2",
+    "//ui/gfx/geometry",
   ]
 
   defines = [ "IS_DESKS_STORAGE_IMPL" ]

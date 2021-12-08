@@ -16,8 +16,9 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
@@ -47,6 +48,8 @@ constexpr char kMissingTemplateDataError[] =
     "The desk template has invalid or missing data.";
 constexpr char kStorageError[] = "The operation failed due to a storage error.";
 constexpr char kNoCurrentUserError[] = "There is no active profile.";
+constexpr char kBadProfileError[] =
+    "Either the profile is not valid or there is not an active proflile.";
 constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 
 // Returns true if |profile| is a supported profile in desk template feature.
@@ -148,6 +151,24 @@ void DesksTemplatesClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {
 
   GetDeskModel()->GetAllEntries(
       base::BindOnce(&DesksTemplatesClient::OnGetAllTemplates,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DesksTemplatesClient::GetTemplateJson(const std::string uuid,
+                                           Profile* profile,
+                                           GetTemplateJsonCallback callback) {
+  if (!active_profile_ || active_profile_ != profile) {
+    std::move(callback).Run(/*desk_templates=*/{},
+                            std::string(kBadProfileError));
+    return;
+  }
+
+  apps::AppRegistryCache& app_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+
+  GetDeskModel()->GetTemplateJson(
+      uuid, &app_cache,
+      base::BindOnce(&DesksTemplatesClient::OnGetTemplateJson,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -396,4 +417,15 @@ void DesksTemplatesClient::OnCapturedDeskTemplate(
       base::BindOnce(&DesksTemplatesClient::OnCaptureActiveDeskAndSaveTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(desk_template)));
+}
+
+void DesksTemplatesClient::OnGetTemplateJson(
+    DesksTemplatesClient::GetTemplateJsonCallback callback,
+    desks_storage::DeskModel::GetTemplateJsonStatus status,
+    const std::string& json_representation) {
+  std::move(callback).Run(
+      json_representation,
+      std::string(status != desks_storage::DeskModel::GetTemplateJsonStatus::kOk
+                      ? kStorageError
+                      : ""));
 }

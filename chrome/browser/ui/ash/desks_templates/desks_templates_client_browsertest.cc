@@ -117,6 +117,21 @@ std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate() {
   return desk_template;
 }
 
+std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
+  base::RunLoop run_loop;
+  std::string template_json_result;
+  DesksTemplatesClient::Get()->GetTemplateJson(
+      uuid, profile,
+      base::BindLambdaForTesting(
+          [&](const std::string& template_json, std::string error_string) {
+            run_loop.Quit();
+            ASSERT_TRUE(error_string.empty());
+            template_json_result = template_json;
+          }));
+  run_loop.Run();
+  return template_json_result;
+}
+
 void DeleteDeskTemplate(const base::GUID uuid) {
   base::RunLoop run_loop;
   DesksTemplatesClient::Get()->DeleteDeskTemplate(
@@ -1194,4 +1209,39 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
   EXPECT_EQ(get_templates_size(), 0);
+}
+
+// Tests that captured desk templates can be recalled as a JSON string.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
+  // Test that Singleton was properly initialized.
+  ASSERT_TRUE(DesksTemplatesClient::Get());
+
+  // Change |browser|'s bounds.
+  const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  window->SetBounds(browser_bounds);
+  // Make window visible on all desks.
+  window->SetProperty(aura::client::kWindowWorkspaceKey,
+                      aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+
+  // Create the settings app, which is a system web app.
+  web_app::AppId settings_app_id =
+      CreateSettingsSystemWebApp(browser()->profile());
+
+  // Change the Settings app's bounds too.
+  const gfx::Rect settings_app_bounds = gfx::Rect(100, 100, 800, 300);
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
+  ASSERT_TRUE(settings_window);
+  settings_window->SetBounds(settings_app_bounds);
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+
+  std::string template_json = GetTemplateJson(
+      desk_template->uuid().AsLowercaseString(), browser()->profile());
+
+  // content of the conversion is tested in:
+  // components/desks_storage/core/desk_template_conversion_unittests.cc in this
+  // case we're simply interested in whether or not we got content back.
+  ASSERT_TRUE(!template_json.empty());
 }
