@@ -572,6 +572,115 @@ IN_PROC_BROWSER_TEST_F(
       {}, {}, {}, {}, FROM_HERE);
 }
 
+// Tests the case when fetching started in a dedicated worker and the header was
+// received before the page is frozen, but parts of the response body is
+// received when the page is frozen.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
+  CreateHttpsServer();
+
+  net::test_server::ControllableHttpResponse fetch_response(https_server(),
+                                                            "/fetch");
+
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+
+  // Call fetch in a dedicated worker before navigating away.
+  std::string worker_script =
+      JsReplace("fetch($1)", https_server()->GetURL("a.test", "/fetch"));
+  EXPECT_TRUE(ExecJs(rfh_a.get(), JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                            worker_script)));
+  // Send response header and a piece of the body. This receiving the response
+  // doesn't end (i.e. Done is not called) before navigating away. In this case,
+  // the page will be evicted when the page is frozen.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "text/plain");
+  fetch_response.Send("body");
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Go back to A. kNetworkRequestDatapipeDrainedAsBytesConsumer is recorded
+  // since receiving the response body started but this didn't end before the
+  // navigation to B.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kNetworkRequestDatapipeDrainedAsBytesConsumer},
+                    {}, {}, {}, {}, FROM_HERE);
+}
+
+// Tests the case when fetching started in a nested dedicated worker and the
+// header was received before the page is frozen, but parts of the response body
+// is received when the page is frozen.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested) {
+  CreateHttpsServer();
+
+  net::test_server::ControllableHttpResponse fetch_response(https_server(),
+                                                            "/fetch");
+
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL url_a(https_server()->GetURL("a.test", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.test", "/title1.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+
+  // Call fetch in a nested dedicated worker before navigating away.
+  std::string child_worker_script =
+      JsReplace("fetch($1)", https_server()->GetURL("a.test", "/fetch"));
+  std::string parent_worker_script = JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                               child_worker_script);
+  EXPECT_TRUE(ExecJs(rfh_a.get(), JsReplace(R"(
+    const blob = new Blob([$1]);
+    const blobURL = URL.createObjectURL(blob);
+    const worker = new Worker(blobURL);
+  )",
+                                            parent_worker_script)));
+  // Send response header and a piece of the body. This receiving the response
+  // doesn't end (i.e. Done is not called) before navigating away. In this case,
+  // the page will be evicted when the page is frozen.
+  fetch_response.WaitForRequest();
+  fetch_response.Send(net::HTTP_OK, "text/plain");
+  fetch_response.Send("body");
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // Go back to A. kNetworkRequestDatapipeDrainedAsBytesConsumer is recorded
+  // since receiving the response body started but this didn't end before the
+  // navigation to B.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kNetworkRequestDatapipeDrainedAsBytesConsumer},
+                    {}, {}, {}, {}, FROM_HERE);
+}
+
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
 #if defined(OS_ANDROID)
 #define MAYBE_PageWithSharedWorkerNotCached \
