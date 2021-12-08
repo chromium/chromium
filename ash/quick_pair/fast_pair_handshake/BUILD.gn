@@ -18,6 +18,12 @@ source_set("fast_pair_handshake") {
     "fast_pair_gatt_service_client.h",
     "fast_pair_gatt_service_client_impl.cc",
     "fast_pair_gatt_service_client_impl.h",
+    "fast_pair_handshake.cc",
+    "fast_pair_handshake.h",
+    "fast_pair_handshake_impl.cc",
+    "fast_pair_handshake_impl.h",
+    "fast_pair_handshake_lookup.cc",
+    "fast_pair_handshake_lookup.h",
     "fast_pair_key_pair.cc",
     "fast_pair_key_pair.h",
   ]
@@ -40,10 +46,16 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_fast_pair_data_encryptor.cc",
+    "fake_fast_pair_data_encryptor.h",
     "fake_fast_pair_gatt_service_client.cc",
     "fake_fast_pair_gatt_service_client.h",
+    "fake_fast_pair_handshake.cc",
+    "fake_fast_pair_handshake.h",
     "fast_pair_data_encryptor.h",
     "fast_pair_gatt_service_client.h",
+    "fast_pair_handshake.h",
+    "fast_pair_handshake_lookup.h",
   ]
 
   deps = [
@@ -63,14 +75,17 @@ source_set("unit_tests") {
     "fast_pair_data_encryptor_unittest.cc",
     "fast_pair_encryption_unittest.cc",
     "fast_pair_gatt_service_client_unittest.cc",
+    "fast_pair_handshake_impl_unittest.cc",
   ]
 
   deps = [
     ":fast_pair_handshake",
+    ":test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository:test_support",
     "//ash/services/quick_pair",
     "//ash/services/quick_pair:test_support",
+    "//ash/services/quick_pair/public/cpp",
     "//base",
     "//base/test:test_support",
     "//device/bluetooth",

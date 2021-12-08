@@ -9,6 +9,7 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 #include "base/bind.h"
@@ -259,41 +260,10 @@ std::unique_ptr<FakeBluetoothDevice> CreateTestBluetoothDevice(
 namespace ash {
 namespace quick_pair {
 
-class FakeFastPairDataEncryptor : public FastPairDataEncryptor {
- public:
-  const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
-      const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) override {
-    return encrypted_bytes_;
-  }
-
-  const absl::optional<std::array<uint8_t, 64>>& GetPublicKey() override {
-    static absl::optional<std::array<uint8_t, 64>> val = kPublicKey;
-    return val;
-  }
-
-  void ParseDecryptedResponse(
-      const std::vector<uint8_t>& encrypted_response_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedResponse>&)>
-          callback) override {}
-
-  void ParseDecryptedPasskey(
-      const std::vector<uint8_t>& encrypted_passkey_bytes,
-      base::OnceCallback<void(const absl::optional<DecryptedPasskey>&)>
-          callback) override {}
-
-  void SetEncryptedBytes(std::array<uint8_t, kBlockSizeBytes> encrypted_bytes) {
-    encrypted_bytes_ = std::move(encrypted_bytes);
-  }
-
-  FakeFastPairDataEncryptor() = default;
-  ~FakeFastPairDataEncryptor() override = default;
-
- private:
-  std::array<uint8_t, kBlockSizeBytes> encrypted_bytes_ = {};
-};
-
 class FastPairGattServiceClientTest : public testing::Test {
  public:
+  void SetUp() override { fast_pair_data_encryptor_->public_key(kPublicKey); }
+
   void SuccessfulGattConnectionSetUp() {
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     device_ = CreateTestBluetoothDevice(
@@ -549,7 +519,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FakeBluetoothDevice> device_;
   std::unique_ptr<FakeBluetoothGattCharacteristic>
       fake_key_based_characteristic_;
-  std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_ =
+  std::unique_ptr<FakeFastPairDataEncryptor> fast_pair_data_encryptor_ =
       std::make_unique<FakeFastPairDataEncryptor>();
   std::unique_ptr<FakeBluetoothGattCharacteristic> fake_passkey_characteristic_;
   std::unique_ptr<testing::NiceMock<device::MockBluetoothGattService>>
