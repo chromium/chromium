@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_THEMES_THEME_HELPER_WIN_H_
 #define CHROME_BROWSER_THEMES_THEME_HELPER_WIN_H_
 
-#include "base/win/registry.h"
+#include "base/callback_list.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,26 +31,22 @@ class ThemeHelperWin : public ThemeHelper {
       bool incognito,
       const CustomThemeSupplier* theme_supplier) const override;
 
-  bool GetPlatformHighContrastColor(int id, SkColor* color) const;
-
   // Returns true if colors from DWM can be used, i.e. this is a native frame
-  // on Windows 10.
+  // on Windows 8+.
   bool DwmColorsAllowed(const CustomThemeSupplier* theme_supplier) const;
 
-  // Callback executed when |dwm_key_| is updated. This re-reads the active
-  // frame color and updates |use_dwm_frame_color_|, |dwm_frame_color_| and
+  // Callback executed when the accent color is updated. This re-reads the
+  // accent color and updates |dwm_frame_color_| and
   // |dwm_inactive_frame_color_|.
-  void OnDwmKeyUpdated();
+  void OnAccentColorUpdated();
 
-  // Registry key containing the params that determine the DWM frame color.
-  std::unique_ptr<base::win::RegKey> dwm_key_;
+  // Re-reads the accent colors and updates member variables.
+  void FetchAccentColors();
+
+  base::CallbackListSubscription subscription_;
 
   // The frame color when active. If empty the default colors should be used.
   absl::optional<SkColor> dwm_frame_color_;
-
-  // True if we took |dwm_inactive_frame_color_| from the registry (vs
-  // calculating it ourselves) and thus Windows will use it too.
-  bool inactive_frame_color_from_registry_ = false;
 
   // The frame color when inactive. If empty the default colors should be used.
   absl::optional<SkColor> dwm_inactive_frame_color_;

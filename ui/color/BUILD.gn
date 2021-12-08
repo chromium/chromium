@@ -92,6 +92,27 @@ test("color_unittests") {
   ]
 }
 
+if (is_win) {
+  component("accent_color_observer") {
+    sources = [
+      "win/accent_color_observer.cc",
+      "win/accent_color_observer.h",
+    ]
+
+    defines = [ "IS_COLOR_IMPL" ]
+
+    public_deps = [
+      "//base",
+      "//third_party/abseil-cpp:absl",
+    ]
+
+    deps = [
+      "//skia",
+      "//ui/gfx:color_utils",
+    ]
+  }
+}
+
 component("mixers") {
   sources = [
     "color_mixers.cc",
