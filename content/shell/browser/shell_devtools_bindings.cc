@@ -59,10 +59,10 @@ std::vector<ShellDevToolsBindings*>* GetShellDevtoolsBindingsInstances() {
   return instance.get();
 }
 
-base::DictionaryValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
-                                             bool success,
-                                             int net_error) {
-  base::DictionaryValue response = base::DictionaryValue();
+base::Value BuildObjectForResponse(const net::HttpResponseHeaders* rh,
+                                   bool success,
+                                   int net_error) {
+  base::Value response(base::Value::Type::DICTIONARY);
   int responseCode = 200;
   if (rh) {
     responseCode = rh->response_code();
@@ -70,18 +70,18 @@ base::DictionaryValue BuildObjectForResponse(const net::HttpResponseHeaders* rh,
     // In case of no headers, assume file:// URL and failed to load
     responseCode = 404;
   }
-  response.SetInteger("statusCode", responseCode);
-  response.SetInteger("netError", net_error);
-  response.SetString("netErrorName", net::ErrorToString(net_error));
+  response.SetIntKey("statusCode", responseCode);
+  response.SetIntKey("netError", net_error);
+  response.SetStringKey("netErrorName", net::ErrorToString(net_error));
 
-  base::DictionaryValue headers;
+  base::Value headers(base::Value::Type::DICTIONARY);
   size_t iterator = 0;
   std::string name;
   std::string value;
   // TODO(caseq): this probably needs to handle duplicate header names
   // correctly by folding them.
   while (rh && rh->EnumerateHeaderLines(&iterator, &name, &value))
-    headers.SetString(name, value);
+    headers.SetStringKey(name, value);
 
   response.SetKey("headers", std::move(headers));
   return response;
@@ -300,9 +300,9 @@ void ShellDevToolsBindings::HandleMessageFromDevToolsFrontend(
 
     GURL gurl(*url);
     if (!gurl.is_valid()) {
-      base::DictionaryValue response;
-      response.SetInteger("statusCode", 404);
-      response.SetBoolean("urlValid", false);
+      base::Value response(base::Value::Type::DICTIONARY);
+      response.SetIntKey("statusCode", 404);
+      response.SetBoolKey("urlValid", false);
       SendMessageAck(request_id, std::move(response));
       return;
     }
