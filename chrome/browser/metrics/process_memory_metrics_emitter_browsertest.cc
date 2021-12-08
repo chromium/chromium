@@ -18,7 +18,13 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_config_memory_test_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -296,6 +302,8 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
                     count_for_resident_set, ValueRestriction::ABOVE_ZERO);
   CheckMemoryMetric("Memory.Total.PrivateMemoryFootprint", histogram_tester,
                     count, ValueRestriction::ABOVE_ZERO);
+  CheckMemoryMetric("Memory.Total.PrivateMemoryFootprint.HasZombieProfile",
+                    histogram_tester, 0, ValueRestriction::NONE);
   CheckMemoryMetric("Memory.Total.RendererPrivateMemoryFootprint",
                     histogram_tester, count, ValueRestriction::ABOVE_ZERO);
   CheckMemoryMetric("Memory.Total.RendererMalloc", histogram_tester, count,
@@ -316,6 +324,31 @@ void CheckAllMemoryMetrics(const base::HistogramTester& histogram_tester,
                            number_of_renderer_processes,
                            number_of_extension_processes);
 }
+
+class ProfileDestructionWatcher : public ProfileObserver {
+ public:
+  explicit ProfileDestructionWatcher(Profile* profile) {
+    observation_.Observe(profile);
+  }
+
+  ProfileDestructionWatcher(const ProfileDestructionWatcher&) = delete;
+  ProfileDestructionWatcher& operator=(const ProfileDestructionWatcher&) =
+      delete;
+
+  ~ProfileDestructionWatcher() override = default;
+
+  void WaitForDestruction() { run_loop_.Run(); }
+
+ private:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    observation_.Reset();
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<Profile, ProfileObserver> observation_{this};
+};
 
 }  // namespace
 
@@ -579,6 +612,56 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckAllUkmEntries();
   CheckPageInfoUkmMetrics(url, true);
 }
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+// TODO(crbug.com/732501): Re-enable on Win once not flaky.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || defined(OS_WIN)
+#define MAYBE_HasZombieProfile DISABLED_HasZombieProfile
+#else
+#define MAYBE_HasZombieProfile HasZombieProfile
+#endif
+IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
+                       MAYBE_HasZombieProfile) {
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL("foo.com", "/empty.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Create  a second Profile.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile2 = profile_manager->GetProfile(
+      profile_manager->GenerateNextProfileDirectoryPath());
+
+  // Now destroy the second Profile, so HasZombieProfile() returns true.
+  ProfileDestructionWatcher destruction_watcher(profile2);
+  {
+    ScopedProfileKeepAlive keep_alive(profile2,
+                                      ProfileKeepAliveOrigin::kBrowserWindow);
+  }
+  destruction_watcher.WaitForDestruction();
+
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+
+  // Intentionally let emitter leave scope to check that it correctly keeps
+  // itself alive.
+  {
+    scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter(
+        new ProcessMemoryMetricsEmitterFake(&run_loop,
+                                            test_ukm_recorder_.get()));
+    emitter->FetchAndEmitProcessMemoryMetrics();
+  }
+  run_loop.Run();
+
+  CheckMemoryMetric("Memory.Total.PrivateMemoryFootprint.HasZombieProfile",
+                    histogram_tester, 1, ValueRestriction::NONE);
+}
+#endif
 
 // TODO(https://crbug.com/990148): Re-enable on Win and Linux once not flaky.
 #if BUILDFLAG(ENABLE_EXTENSIONS)

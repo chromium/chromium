@@ -116,9 +116,6 @@ void BrowserWithTestWindowTest::TearDown() {
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
 #endif
 
-  profile_manager_->DeleteAllTestingProfiles();
-  profile_ = nullptr;
-
   // Depends on LocalState owned by |profile_manager_|.
   if (SystemNetworkContextManager::GetInstance()) {
     SystemNetworkContextManager::DeleteInstance();
@@ -128,7 +125,10 @@ void BrowserWithTestWindowTest::TearDown() {
   manager_.reset();
 #endif
 
+  // Calling DeleteAllTestingProfiles() first can cause issues in some tests, if
+  // they're still holding a ScopedProfileKeepAlive.
   profile_manager_.reset();
+  profile_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   tablet_state_.reset();

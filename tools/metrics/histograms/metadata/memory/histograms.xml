@@ -403,6 +403,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Browser.PrivateMemoryFootprint.HasZombieProfile"
+    units="MB" expires_after="2022-04-20">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Same as Memory.Browser.PrivateMemoryFootprint, but only gets recorded after
+    a Profile becomes safe to delete during this browsing session. This lets us
+    measure the memory impact of destroying Profile objects and their
+    KeyedServices.
+
+    This is not meant to be compared with Memory.Browser.PrivateMemoryFootprint,
+    as it measures a different scenario. Instead, it should be compared with
+    itself in an A/B test with the DestroyProfileOnBrowserClose variation.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Browser.PrivateSwapFootprint" units="MB"
     expires_after="2023-01-10">
   <owner>erikchen@chromium.org</owner>
@@ -2679,6 +2695,22 @@ chromium-metrics-reviews@google.com.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Total.PrivateMemoryFootprint.HasZombieProfile"
+    units="MB" expires_after="2022-04-20">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Same as Memory.Total.PrivateMemoryFootprint, but only gets recorded after a
+    Profile becomes safe to delete during this browsing session. This lets us
+    measure the memory impact of destroying Profile objects and their
+    KeyedServices.
+
+    This is not meant to be compared with Memory.Total.PrivateMemoryFootprint,
+    as it measures a different scenario. Instead, it should be compared with
+    itself in an A/B test with the DestroyProfileOnBrowserClose variation.
   </summary>
 </histogram>
 

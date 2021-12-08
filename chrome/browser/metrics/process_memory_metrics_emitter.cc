@@ -685,6 +685,14 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
 #endif
   MEMORY_METRICS_HISTOGRAM_MB(GetPrivateFootprintHistogramName(process_type),
                               pmd.os_dump().private_footprint_kb / kKiB);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (process_type == HistogramProcessType::kBrowser && profile_manager &&
+      profile_manager->HasZombieProfile()) {
+    // Measure impact of the DestroyProfileOnBrowserClose experiment.
+    MEMORY_METRICS_HISTOGRAM_MB(
+        GetPrivateFootprintHistogramName(process_type) + ".HasZombieProfile",
+        pmd.os_dump().private_footprint_kb / kKiB);
+  }
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".SharedMemoryFootprint",
                               pmd.os_dump().shared_footprint_kb / kKiB);
@@ -1108,6 +1116,13 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 #endif
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    if (profile_manager && profile_manager->HasZombieProfile()) {
+      // Measure impact of the DestroyProfileOnBrowserClose experiment.
+      UMA_HISTOGRAM_MEMORY_LARGE_MB(
+          "Memory.Total.PrivateMemoryFootprint.HasZombieProfile",
+          private_footprint_total_kb / kKiB);
+    }
     // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
     // assess field trial data quality.
     UMA_HISTOGRAM_MEMORY_LARGE_MB(

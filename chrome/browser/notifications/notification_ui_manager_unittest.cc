@@ -67,33 +67,30 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(NotificationUIManagerTest, SetupNotificationManager) {
-  TestingProfile profile;
-  notification_manager()->Add(GetANotification("test"), &profile);
+  notification_manager()->Add(GetANotification("test"), profile());
 }
 
 TEST_F(NotificationUIManagerTest, AddNotificationOnShutdown) {
-  TestingProfile profile;
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
-  notification_manager()->Add(GetANotification("test"), &profile);
+  notification_manager()->Add(GetANotification("test"), profile());
   EXPECT_TRUE(message_center()->NotificationCount() == 1);
 
   // Verify the number of notifications does not increase when trying to add a
   // notifcation on shutdown.
   notification_manager()->StartShutdown();
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
-  notification_manager()->Add(GetANotification("test2"), &profile);
+  notification_manager()->Add(GetANotification("test2"), profile());
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
 
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(NotificationUIManagerTest, UpdateNotification) {
-  TestingProfile profile;
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
-  notification_manager()->Add(GetANotification("test"), &profile);
+  notification_manager()->Add(GetANotification("test"), profile());
   EXPECT_TRUE(message_center()->NotificationCount() == 1);
   ASSERT_TRUE(
-      notification_manager()->Update(GetANotification("test"), &profile));
+      notification_manager()->Update(GetANotification("test"), profile()));
   EXPECT_TRUE(message_center()->NotificationCount() == 1);
 
   base::RunLoop().RunUntilIdle();
@@ -101,11 +98,10 @@ TEST_F(NotificationUIManagerTest, UpdateNotification) {
 
 // Regression test for crbug.com/767868
 TEST_F(NotificationUIManagerTest, GetAllIdsReturnsOriginalId) {
-  TestingProfile profile;
   EXPECT_TRUE(message_center()->NotificationCount() == 0);
-  notification_manager()->Add(GetANotification("test"), &profile);
+  notification_manager()->Add(GetANotification("test"), profile());
   std::set<std::string> ids = notification_manager()->GetAllIdsByProfile(
-      ProfileNotification::GetProfileID(&profile));
+      ProfileNotification::GetProfileID(profile()));
   ASSERT_EQ(1u, ids.size());
   EXPECT_EQ(*ids.begin(), "test");
 }

@@ -12,6 +12,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -285,6 +286,20 @@ class ProfileManager : public Profile::Delegate {
   // |origin|.
   bool HasKeepAliveForTesting(const Profile* profile,
                               ProfileKeepAliveOrigin origin);
+
+  // Returns true if there's at least one profile in a "zombie" state, which
+  // means either:
+  //
+  //   - this profile was destroyed from memory,
+  //   - this profile has a refcount of 0, meaning it's safe to destroy.
+  //
+  // Looks at the list of profiles that were loaded during this browsing
+  // session, to determine if they're all still loaded in memory and look at
+  // their refcount.
+  //
+  // This is used for an A/B test, that measures the impact of the
+  // DestroyProfileOnBrowserClose variation on memory usage.
+  bool HasZombieProfile() const;
 
  protected:
   // Creates a new profile by calling into the profile's profile creation
@@ -560,6 +575,15 @@ class ProfileManager : public Profile::Delegate {
   // during the last run. This is why they are kept in a list, not in a set.
   std::vector<Profile*> active_profiles_;
   bool closing_all_browsers_ = false;
+
+  // Becomes true once the refcount for any profile hits 0. This is used to
+  // measure how often DestroyProfileOnBrowserClose logic triggers.
+  bool could_have_destroyed_profile_ = false;
+
+  // Set of profile dirs that were loaded during this browsing session at some
+  // point (or are currently loaded). This is used to measure memory savings
+  // from DestroyProfileOnBrowserClose.
+  std::set<base::FilePath> ever_loaded_profiles_;
 
   // Controls whether to initialize some services. Only disabled for testing.
   bool do_final_services_init_ = true;

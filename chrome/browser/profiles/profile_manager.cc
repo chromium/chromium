@@ -507,6 +507,9 @@ ProfileManager::~ProfileManager() {
   for (auto& observer : observers_) {
     observer.OnProfileManagerDestroying();
   }
+
+  base::UmaHistogramBoolean("Profile.DidDestroyProfileBeforeShutdown",
+                            could_have_destroyed_profile_);
   if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Ideally, all the keepalives should've been cleared already. Report
     // metrics for incorrect usage of ScopedProfileKeepAlive.
@@ -1368,11 +1371,18 @@ bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
   return info->keep_alives[origin] > 0;
 }
 
+bool ProfileManager::HasZombieProfile() const {
+  for (const base::FilePath& dir : ever_loaded_profiles_) {
+    const ProfileInfo* info = GetProfileInfoByPath(dir);
+    if (!info || GetTotalRefCount(info->keep_alives) == 0)
+      return true;
+  }
+  return false;
+}
+
 void ProfileManager::AddKeepAlive(const Profile* profile,
                                   ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
-  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
-    return;
 
   DCHECK(profile);
   DCHECK(!profile->IsOffTheRecord());
@@ -1389,8 +1399,10 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
     return;
   }
 
-  DCHECK_NE(0, GetTotalRefCount(info->keep_alives))
-      << "AddKeepAlive() on a soon-to-be-deleted Profile is not allowed";
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    DCHECK_NE(0, GetTotalRefCount(info->keep_alives))
+        << "AddKeepAlive() on a soon-to-be-deleted Profile is not allowed";
+  }
 
   info->keep_alives[origin]++;
 
@@ -1404,8 +1416,6 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
 void ProfileManager::RemoveKeepAlive(const Profile* profile,
                                      ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
-  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
-    return;
 
   DCHECK(profile);
   DCHECK(!profile->IsOffTheRecord());
@@ -1433,8 +1443,6 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
 }
 
 void ProfileManager::ClearFirstBrowserWindowKeepAlive(const Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose));
-
   DCHECK(profile);
   DCHECK(!profile->IsOffTheRecord());
 
@@ -1458,6 +1466,13 @@ void ProfileManager::ClearFirstBrowserWindowKeepAlive(const Profile* profile) {
 void ProfileManager::DeleteProfileIfNoKeepAlive(const ProfileInfo* info) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetTotalRefCount(info->keep_alives) != 0)
+    return;
+
+  could_have_destroyed_profile_ = true;
+
+  // When DestroyProfileOnBrowserClose is disabled: record memory metrics, but
+  // don't actually delete the Profile.
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
     return;
 
   if (!info->GetCreatedProfile()) {
@@ -1629,8 +1644,7 @@ void ProfileManager::DoFinalInitLogging(Profile* profile) {
 
 ProfileManager::ProfileInfo::ProfileInfo() {
   // The profile should have a refcount >=1 until AddKeepAlive() is called.
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
-    keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow] = 1;
+  keep_alives[ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow] = 1;
 }
 
 ProfileManager::ProfileInfo::~ProfileInfo() {
@@ -2069,6 +2083,7 @@ ProfileManager::ProfileInfo* ProfileManager::RegisterOwnedProfile(
   ProfileInfo* info_raw = info.get();
   profiles_info_.insert(
       std::make_pair(profile_ptr->GetPath(), std::move(info)));
+  ever_loaded_profiles_.insert(profile_ptr->GetPath());
   return info_raw;
 }
 
@@ -2079,6 +2094,7 @@ ProfileManager::ProfileInfo* ProfileManager::RegisterUnownedProfile(
   auto info = ProfileInfo::FromUnownedProfile(profile);
   ProfileInfo* info_raw = info.get();
   profiles_info_.insert(std::make_pair(path, std::move(info)));
+  ever_loaded_profiles_.insert(path);
   return info_raw;
 }
 

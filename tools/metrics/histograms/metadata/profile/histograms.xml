@@ -220,6 +220,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Profile.DidDestroyProfileBeforeShutdown" enum="Boolean"
+    expires_after="2022-04-01">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Whether any profile reached a refcount of 0 at any point, prior to exiting
+    Chrome. Recorded during teardown.
+  </summary>
+</histogram>
+
 <histogram name="Profile.EphemeralGuest.Signin" enum="BooleanProfileSignedIn"
     expires_after="2022-02-02">
   <obsolete>

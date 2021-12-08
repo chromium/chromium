@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,13 +25,19 @@ ScopedProfileKeepAlive::ScopedProfileKeepAlive(const Profile* profile,
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // The object that owns ScopedProfileKeepAlive might be owned by Profile,
-  // in which case triggering ~Profile() from here causes UAF bugs. Post
-  // RemoveKeepAlive() to a task to avoid this.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread,
-                     profile_, origin_));
+  if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
+    // Decrementing the refcount won't cause Profile destruction in this
+    // configuration, so we don't need to post a task.
+    RemoveKeepAliveOnUIThread(profile_, origin_);
+  } else {
+    // The object that owns ScopedProfileKeepAlive might be owned by Profile,
+    // in which case triggering ~Profile() from here causes UAF bugs. Post
+    // RemoveKeepAlive() to a task to avoid this.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread,
+                       profile_, origin_));
+  }
 }
 
 // static
