@@ -3055,7 +3055,7 @@
   {
     "name": "explore-sites",
     "owners": [ "chili", "dewittj" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 102
   },
   {
     "name": "extension-content-verification",
