@@ -85,6 +85,7 @@ tools/metrics/histograms/metadata/permissions/histograms.xml
 tools/metrics/histograms/metadata/phonehub/histograms.xml
 tools/metrics/histograms/metadata/platform/histograms.xml
 tools/metrics/histograms/metadata/plugin/histograms.xml
+tools/metrics/histograms/metadata/plugin_vm/histograms.xml
 tools/metrics/histograms/metadata/power/histograms.xml
 tools/metrics/histograms/metadata/prefetch/histograms.xml
 tools/metrics/histograms/metadata/print/histograms.xml
