@@ -119,13 +119,54 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"
     expires_after="2022-06-05">
   <owner>yfriedman@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
   <summary>
-    The time from the activity creation point to the moment Chrome appears
-    ready. The intent is to reflect Clank's perceived cold start performance
-    regardless of different launch paths. The recorded value is the minimum of
+    The time from Chrome tabbed activity creation to the moment the Chrome first
+    appears ready.
+
+    This metric captures when the omnibox is painted and either a navigation has
+    committed or a Paint Preview is shown. The intent is to reflect Clank's
+    perceived cold start performance regardless of different launch paths, while
+    controlling for the factors that we have the most direct influence over and
+    minimizing external factors. Note that network connectivity is mostly but
+    not entirely omitted as it does impact the initial response time for a site
+    which impacts the omnibox UX and loading metric.
+
+    This metric captures the value of the first emitted metric out of the
     'Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed' and
-    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metric values.
+    'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metrics and emits the
+    value.
+
+    This metric is only recorded once per application lifetime during cold
+    startup i.e. when Chrome's native library is not loaded at first activity
+    creation. Specifically, it is recorded for the first foreground committed
+    http(s) URL in the primary frame if that first navigation is not: an error,
+    same-document navigation, or fragment navigation.
+
+    This metric is expected be stable from milestone to milestone. Updating
+    Chrome or the Android system image on the device are expected to result in a
+    noticeable slowdown on the first cold startup after. The total counts
+    changes for this histogram are not of significant importance; however, a
+    non-trivial increase in total counts could signal more background kills, for
+    example.
+
+    This metric is not recorded:
+
+    - If another navigation occurs before the first navigation commit and the
+    Paint Preview show.
+
+    - If the navigation is pre-warmed, is a background navigation, or fails to
+    be committed (e.g. cancelled, network error, or error due to lack of
+    connectivity).
+
+    - If the activity was ever backgrounded between activity creation and this
+    metric reporting.
+
+    - If the app opens to the Chrome Start page.
+
+    - For WebApps, PWAs or WebApks.
   </summary>
 </histogram>
 
@@ -140,6 +181,11 @@ chromium-metrics-reviews@google.com.
     page. The recorded value is the minimum of
     'Startup.Android.Cold.TimeToFirstContentfulPaint.Tabbed' and
     'Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap' metric values.
+
+    Not to be mistaken with the Startup.Android.Cold.TimeToFirstVisibleContent
+    histogram, as this metric is intended for the use of the Paint Preview
+    owners and the other is intended to track Clank's perceived cold start
+    performance.
   </summary>
 </histogram>
 
