@@ -25,8 +25,6 @@
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chromeos/login/session/session_termination_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chromeos/network/fast_transition_observer.h"
 
 class AssistantBrowserDelegateImpl;
@@ -84,6 +82,7 @@ class PowerMetricsReporter;
 class PSIMemoryMetrics;
 class QuickAnswersController;
 class RendererFreezer;
+class SessionTerminationManager;
 class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
 class WebKioskAppManager;

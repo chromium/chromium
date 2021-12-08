@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -38,7 +39,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/login/session/session_termination_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -321,8 +321,8 @@ bool SessionControllerClientImpl::IsEnterpriseManaged() const {
 bool SessionControllerClientImpl::IsMultiProfileAvailable() {
   if (!profiles::IsMultipleProfilesEnabled() || !UserManager::IsInitialized())
     return false;
-  if (chromeos::SessionTerminationManager::Get() &&
-      chromeos::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
+  if (ash::SessionTerminationManager::Get() &&
+      ash::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
     return false;
   }
   // Multiprofile mode is not allowed when Lacros is running.
@@ -387,7 +387,7 @@ bool SessionControllerClientImpl::ShouldLockScreenAutomatically() {
 // static
 ash::AddUserSessionPolicy
 SessionControllerClientImpl::GetAddUserSessionPolicy() {
-  if (chromeos::SessionTerminationManager::Get()->IsLockedToSingleUser())
+  if (ash::SessionTerminationManager::Get()->IsLockedToSingleUser())
     return ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER;
 
   UserManager* const user_manager = UserManager::Get();

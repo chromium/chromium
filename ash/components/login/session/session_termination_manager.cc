@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/login/session/session_termination_manager.h"
+#include "ash/components/login/session/session_termination_manager.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -11,7 +11,7 @@
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -109,4 +109,4 @@ void SessionTerminationManager::RebootIfNecessaryProcessReply(
     Reboot();
 }
 
-}  // namespace chromeos
+}  // namespace ash

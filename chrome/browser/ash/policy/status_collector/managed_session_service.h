@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 #define CHROME_BROWSER_ASH_POLICY_STATUS_COLLECTOR_MANAGED_SESSION_SERVICE_H_
 
+#include "ash/components/login/session/session_termination_manager.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -24,14 +24,13 @@
 
 namespace policy {
 
-class ManagedSessionService
-    : public session_manager::SessionManagerObserver,
-      public ProfileObserver,
-      public chromeos::PowerManagerClient::Observer,
-      public chromeos::AuthStatusConsumer,
-      public ash::UserAuthenticatorObserver,
-      public chromeos::SessionTerminationManager::Observer,
-      public user_manager::UserManager::Observer {
+class ManagedSessionService : public session_manager::SessionManagerObserver,
+                              public ProfileObserver,
+                              public chromeos::PowerManagerClient::Observer,
+                              public chromeos::AuthStatusConsumer,
+                              public ash::UserAuthenticatorObserver,
+                              public ash::SessionTerminationManager::Observer,
+                              public user_manager::UserManager::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:

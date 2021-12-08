@@ -37,8 +37,8 @@ ManagedSessionService::~ManagedSessionService() {
         ->RemoveLoginStatusConsumer(this);
   }
 
-  if (chromeos::SessionTerminationManager::Get()) {
-    chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->RemoveObserver(this);
   }
 }
 
@@ -74,9 +74,9 @@ void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile =
       chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   profile_observations_.AddObservation(profile);
-  if (chromeos::SessionTerminationManager::Get() &&
+  if (ash::SessionTerminationManager::Get() &&
       chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
-    chromeos::SessionTerminationManager::Get()->AddObserver(this);
+    ash::SessionTerminationManager::Get()->AddObserver(this);
   }
   for (auto& observer : observers_) {
     observer.OnLogin(profile);
@@ -101,7 +101,7 @@ void ManagedSessionService::OnSessionWillBeTerminated() {
     observer.OnSessionTerminationStarted(
         user_manager::UserManager::Get()->GetPrimaryUser());
   }
-  chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  ash::SessionTerminationManager::Get()->RemoveObserver(this);
 }
 
 void ManagedSessionService::OnUserToBeRemoved(const AccountId& account_id) {

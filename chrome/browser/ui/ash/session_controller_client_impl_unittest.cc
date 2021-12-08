@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -27,7 +28,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -200,7 +200,7 @@ class SessionControllerClientImplTest : public testing::Test {
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   session_manager::SessionManager session_manager_;
-  chromeos::SessionTerminationManager session_termination_manager_;
+  ash::SessionTerminationManager session_termination_manager_;
 
  protected:
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;

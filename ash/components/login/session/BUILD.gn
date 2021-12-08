@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("session") {
-  defines = [ "IS_CHROMEOS_LOGIN_SESSION_IMPL" ]
+  defines = [ "IS_ASH_LOGIN_SESSION_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/cryptohome:cryptohome",
@@ -27,12 +28,12 @@ component("session") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//ash/components/login/session:session",
     "//base",
     "//chromeos/dbus/cryptohome:cryptohome",
     "//chromeos/dbus/power:power",
     "//chromeos/dbus/session_manager:session_manager",
     "//chromeos/dbus/userdataauth:userdataauth",
-    "//chromeos/login/session:session",
     "//testing/gtest",
   ]
   sources = [ "session_termination_manager_unittest.cc" ]

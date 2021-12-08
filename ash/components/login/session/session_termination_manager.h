@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
-#define CHROMEOS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
+#ifndef ASH_COMPONENTS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
+#define ASH_COMPONENTS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -12,10 +12,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 // SessionTerminationManager is used to handle the session termination.
-class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
+class COMPONENT_EXPORT(ASH_LOGIN_SESSION) SessionTerminationManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -62,12 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_SESSION) SessionTerminationManager {
   base::WeakPtrFactory<SessionTerminationManager> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SessionTerminationManager;
-}
-
-#endif  // CHROMEOS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_
+#endif  // ASH_COMPONENTS_LOGIN_SESSION_SESSION_TERMINATION_MANAGER_H_

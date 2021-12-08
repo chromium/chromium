@@ -9,6 +9,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -23,7 +24,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -111,9 +111,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
   void StartArc() { arc_session_manager_->StartArcForTesting(); }
   void StartedVm(bool expect_ok = true) {
-    EXPECT_EQ(
-        expect_ok,
-        chromeos::SessionTerminationManager::Get()->IsLockedToSingleUser());
+    EXPECT_EQ(expect_ok,
+              ash::SessionTerminationManager::Get()->IsLockedToSingleUser());
 
     vm_tools::concierge::VmStartedSignal signal;  // content is irrelevant
     fake_concierge_client_->NotifyVmStarted(signal);
@@ -154,7 +153,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   // Required for initialization.
-  chromeos::SessionTerminationManager termination_manager_;
+  ash::SessionTerminationManager termination_manager_;
   std::unique_ptr<LockToSingleUserManager> lock_to_single_user_manager_;
   chromeos::FakeConciergeClient* fake_concierge_client_;
 };

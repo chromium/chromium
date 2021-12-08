@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/login/session/session_termination_manager.h"
+#include "ash/components/login/session/session_termination_manager.h"
 
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class SessionTerminationManagerTest : public testing::Test {
  public:
@@ -52,4 +52,4 @@ TEST_F(SessionTerminationManagerTest, RebootTest) {
   EXPECT_EQ(1, power_client_->num_request_restart_calls());
 }
 
-}  // namespace chromeos
+}  // namespace ash

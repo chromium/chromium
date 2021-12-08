@@ -119,7 +119,6 @@ test("chromeos_unittests") {
       "//chromeos/language/language_packs:unit_tests",
       "//chromeos/login/auth:unit_tests",
       "//chromeos/login/login_state:unit_tests",
-      "//chromeos/login/session:unit_tests",
       "//chromeos/memory:unit_tests",
       "//chromeos/network:test_support",
       "//chromeos/network:unit_tests",

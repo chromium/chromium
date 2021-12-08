@@ -19,6 +19,7 @@
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "ash/components/fwupd/firmware_update_manager.h"
+#include "ash/components/login/session/session_termination_manager.h"
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 #include "ash/components/power/dark_resume_controller.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -197,7 +198,6 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/network/fast_transition_observer.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
@@ -701,8 +701,7 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
 
   g_browser_process->platform_part()->InitializeKernelFeatureManager();
 
-  session_termination_manager_ =
-      std::make_unique<chromeos::SessionTerminationManager>();
+  session_termination_manager_ = std::make_unique<SessionTerminationManager>();
 
   // This should be in PreProfileInit but it needs to be created before the
   // policy connector is started.
