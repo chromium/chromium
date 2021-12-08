@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader_client.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_event_target.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_progress_event_throttle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -168,7 +168,7 @@ class XMLHttpRequest final : public XMLHttpRequestEventTarget,
   XMLHttpRequestUpload* upload();
   bool IsAsync() { return async_; }
 
-  probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(readystatechange, kReadystatechange)
 
@@ -379,7 +379,7 @@ class XMLHttpRequest final : public XMLHttpRequestEventTarget,
   bool send_flag_ = false;
   bool response_array_buffer_failure_ = false;
 
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
 };
 
 std::ostream& operator<<(std::ostream&, const XMLHttpRequest*);
