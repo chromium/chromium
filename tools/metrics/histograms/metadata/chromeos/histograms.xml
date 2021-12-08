@@ -2241,7 +2241,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.WebAPK.{InstallType}.ArcInstallResult"
-    enum="WebApkArcInstallResultChromeOS" expires_after="2022-01-14">
+    enum="WebApkArcInstallResultChromeOS" expires_after="2022-04-14">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2258,7 +2258,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.WebAPK.{InstallType}.Result"
-    enum="WebApkInstallResultChromeOS" expires_after="2022-01-14">
+    enum="WebApkInstallResultChromeOS" expires_after="2022-04-14">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
