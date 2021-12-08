@@ -102,11 +102,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   explicit AutofillProvider(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutofillProvider>;
 
-#ifdef UNIT_TEST
-  // For the unit tests where WebContents isn't available.
-  AutofillProvider() = default;
-#endif  // UNIT_TEST
-
   content::WebContents* web_contents() { return &GetWebContents(); }
 
  private:
