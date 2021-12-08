@@ -112,7 +112,8 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
 
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer
-  // suggestions. Separator views can be both a footer or non-footer suggestion.
+  // suggestions. Separator views can be both a footer or non-footer suggestion
+  // but they are not allowed to be the first or last item.
   void CreateChildViews();
 
   // Applies certain rounding rules to the given width, such as matching the

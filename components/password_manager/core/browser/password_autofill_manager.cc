@@ -207,6 +207,17 @@ void MaybeAppendManagePasswordsEntry(
       &autofill::Suggestion::frontend_id);
   if (has_no_fillable_suggestions)
     return;
+
+  // Add a separator before the manage option unless there are no suggestions
+  // yet.
+  // TODO(crbug.com/1274134): Clean up once improvements are launched.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillVisualImprovementsForSuggestionUi) &&
+      !suggestions->empty()) {
+    suggestions->push_back(autofill::Suggestion());
+    suggestions->back().frontend_id = autofill::POPUP_ITEM_ID_SEPARATOR;
+  }
+
   autofill::Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS));
   suggestion.frontend_id = autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY;

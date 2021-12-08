@@ -291,9 +291,14 @@ class PopupSeparator : public views::Separator {
 };
 
 PopupSeparator::PopupSeparator(AutofillPopupBaseView* popup) : popup_(popup) {
-  // Add some spacing between the the previous item and the separator.
   SetPreferredHeight(views::MenuConfig::instance().separator_thickness);
-  SetBorder(views::CreateEmptyBorder(GetContentsVerticalPadding(), 0, 0, 0));
+  // Add some spacing between the previous item and the separator.
+  // If the feature AutofillVisualImprovementsForSuggestionUi is enabled, also
+  // add a padding after the separator.
+  // TODO(crbug.com/1274134): Clean up once improvements are launched.
+  SetBorder(views::CreateEmptyBorder(
+      GetContentsVerticalPadding(), 0,
+      UseImprovedSuggestionUi() ? GetContentsVerticalPadding() : 0, 0));
 }
 
 void PopupSeparator::OnThemeChanged() {
@@ -1104,8 +1109,12 @@ void AutofillPopupFooterView::CreateContent() {
 void AutofillPopupFooterView::RefreshStyle() {
   AutofillPopupItemView::RefreshStyle();
   SetBorder(views::CreateSolidSidedBorder(
-      // If the footer is the first item, do not draw a separator line.
-      /*top=*/GetLineNumber() == 0
+      // If the footer is the first item, do not draw a top border line that
+      // acts as a separator line.
+      // Also, if the feature to improve the suggestion UI is used, do not draw
+      // it.
+      // TODO(crbug.com/1274134): Clean up once improvements are launched.
+      /*top=*/(GetLineNumber() == 0 || UseImprovedSuggestionUi())
           ? 0
           : views::MenuConfig::instance().separator_thickness,
       /*left=*/0,
@@ -1372,14 +1381,13 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     return controller_->GetSuggestionAt(line_number).frontend_id;
   };
 
-  // Process and add all the suggestions which are in the primary container.
-  // Collect all footer line numbers such that those can be added to the footer
-  // container below. DCHECK that all non-footer items are added before any
-  // footer items.
-  for (int current_line_number = 0; current_line_number < line_count;
-       ++current_line_number) {
-    int frontend_id = line_number_to_frontend_id(current_line_number);
-    switch (frontend_id) {
+  // Returns true if the item at |line_number| is a footer item.
+  // Returns false if the |line_number| exceeds the line count.
+  auto is_footer_item = [&](int line_number) {
+    if (line_number >= line_count)
+      return false;
+
+    switch (line_number_to_frontend_id(line_number)) {
       case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
       case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
       case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
@@ -1390,42 +1398,52 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
           POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
       case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
       case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
-        // TODO(crbug.com/1274134): Clean up once improvements are launched.
-        if (UseImprovedSuggestionUi()) {
-          DCHECK(footer_item_line_numbers.empty());
-          rows_.push_back(AutofillPopupSuggestionView::Create(
-              this, current_line_number, frontend_id,
-              controller_->GetPopupType()));
-        } else {
-          footer_item_line_numbers.emplace_back(current_line_number);
-        }
-        break;
+        return UseImprovedSuggestionUi();
 
-      // Collect all the footer lines for subsequent processing.
       case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
       case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
       case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
-        footer_item_line_numbers.emplace_back(current_line_number);
-        break;
+        return true;
 
-      // Separator lines can be added both into the footer section and into the
-      // scrollable section before.
+      default:
+        return false;
+    }
+  };
+
+  // Process and add all the suggestions which are in the primary container.
+  // Collect all footer line numbers such that those can be added to the footer
+  // container below. DCHECK that all non-footer items are added before any
+  // footer items.
+  for (int current_line_number = 0; current_line_number < line_count;
+       ++current_line_number) {
+    // Collect all footer item numbers for subsequent processing.
+    if (is_footer_item(current_line_number)) {
+      footer_item_line_numbers.emplace_back(current_line_number);
+      continue;
+    }
+
+    int frontend_id = line_number_to_frontend_id(current_line_number);
+    bool is_separator = frontend_id == PopupItemId::POPUP_ITEM_ID_SEPARATOR;
+
+    // Non-footer items must precede footer items.
+    // The separator item can be part of both the footer or the scroll view.
+    DCHECK(footer_item_line_numbers.empty() || is_separator);
+
+    switch (frontend_id) {
+      // The separator should be added to the scroll view only if the next item
+      // is not a footer item and the footer section has not been started yet.
       case PopupItemId::POPUP_ITEM_ID_SEPARATOR:
-        // Directly add the separator view unless the loop is already processing
-        // footer items. In this case, add it to the footer items for subsequent
-        // processing.
-        // TODO(crbug.com/1274134): Clean up once improvements are launched.
-        if (footer_item_line_numbers.empty()) {
+        if (footer_item_line_numbers.empty() &&
+            !is_footer_item(current_line_number + 1)) {
           rows_.push_back(
               AutofillPopupSeparatorView::Create(this, current_line_number));
         } else {
-          footer_item_line_numbers.emplace_back(current_line_number);
+          footer_item_line_numbers.push_back(current_line_number);
         }
         break;
 
       case PopupItemId::POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
       case PopupItemId::POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-        DCHECK(footer_item_line_numbers.empty());
         rows_.push_back(
             AutofillPopupWarningView::Create(this, current_line_number));
         break;
@@ -1434,13 +1452,13 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       case PopupItemId::POPUP_ITEM_ID_PASSWORD_ENTRY:
       case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
       case PopupItemId::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
-        DCHECK(footer_item_line_numbers.empty());
         rows_.push_back(PasswordPopupSuggestionView::Create(
             this, current_line_number, frontend_id));
         break;
 
+      // The default section contains most of the suggestions including
+      // addresses and credit cards.
       default:
-        DCHECK(footer_item_line_numbers.empty());
         rows_.push_back(AutofillPopupSuggestionView::Create(
             this, current_line_number, frontend_id,
             controller_->GetPopupType()));
@@ -1472,9 +1490,17 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     // corners appear properly; on Mac, the clipping path will not apply
     // properly to a scrollable area. NOTE: GetContentsVerticalPadding is
     // guaranteed to return a size which accommodates the rounded corners.
+    // Add the padding to the top unconditionally, but only add a padding to the
+    // bottom if there are no footer items to follow or if the feature to
+    // improve the UI is not enabled.
+    // TODO(crbug.com/1274134): Clean up once improvements are launched.
     views::View* padding_wrapper = new views::View();
-    padding_wrapper->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(GetContentsVerticalPadding(), 0)));
+    padding_wrapper->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+        GetContentsVerticalPadding(), 0,
+        (!UseImprovedSuggestionUi() || footer_item_line_numbers.empty())
+            ? GetContentsVerticalPadding()
+            : 0,
+        0)));
     padding_wrapper->SetLayoutManager(std::make_unique<views::FillLayout>());
     padding_wrapper->AddChildView(scroll_view_.get());
     AddChildView(padding_wrapper);
