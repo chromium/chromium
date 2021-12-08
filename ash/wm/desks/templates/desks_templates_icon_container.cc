@@ -13,6 +13,7 @@
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -86,10 +87,18 @@ void InsertIdentifierInfoFromLaunchList(
   constexpr int kInactiveTabOffset = 10000;
 
   for (auto& restore_data : launch_list) {
+    // If `restore_data` is a SWA then it will have a valid url for its active
+    // tab. However, in this case we want to display the SWA's icon via its app
+    // id so to determine whether `restore_data` is an SWA we need to check
+    // whether it's a browser.
+    const bool is_browser =
+        app_id == extension_misc::kChromeAppId &&
+        (!restore_data.second->app_type_browser.has_value() ||
+         !restore_data.second->app_type_browser.value());
     const int activation_index = restore_data.second->activation_index.value();
-    if (restore_data.second->urls.has_value()) {
-      const int active_tab_index =
-          restore_data.second->active_tab_index.value();
+    const int active_tab_index =
+        restore_data.second->active_tab_index.value_or(-1);
+    if (restore_data.second->urls.has_value() && is_browser) {
       const auto& urls = restore_data.second->urls.value();
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
         InsertIdentifierInfo(urls[i].spec(),
