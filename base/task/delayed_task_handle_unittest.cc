@@ -15,13 +15,12 @@ namespace {
 class TestDelegate : public DelayedTaskHandle::Delegate {
  public:
   TestDelegate() = default;
+  ~TestDelegate() override = default;
 
   bool IsValid() const override { return is_valid_; }
   void CancelTask() override { is_valid_ = false; }
 
  private:
-  ~TestDelegate() override = default;
-
   // Indicates if this delegate is currently valid.
   bool is_valid_ = true;
 };
@@ -36,7 +35,7 @@ TEST(DelayedTaskHandleTest, DefaultConstructor) {
 
 // Tests that creating a handle with an invalid delegate will DCHECK.
 TEST(DelayedTaskHandleTest, RequiresValidDelegateOnConstruction) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
   // Invalidate the delegate before creating the handle.
@@ -50,16 +49,17 @@ TEST(DelayedTaskHandleTest, RequiresValidDelegateOnConstruction) {
 // Tests that calling CancelTask() on the handle will call CancelTask() on the
 // delegate and invalidate it.
 TEST(DelayedTaskHandleTest, CancelTask) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
-  DelayedTaskHandle delayed_task_handle(delegate);
-  EXPECT_TRUE(delegate->IsValid());
+  auto* delegate_ptr = delegate.get();
+  DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
   delayed_task_handle.CancelTask();
 
-  EXPECT_FALSE(delegate->IsValid());
+  EXPECT_FALSE(delegate_ptr->IsValid());
   EXPECT_FALSE(delayed_task_handle.IsValid());
 }
 
@@ -75,62 +75,66 @@ TEST(DelayedTaskHandleTest, CancelTaskNoDelegate) {
 // Tests that calling CancelTask() on a handle with an invalid delegate will
 // no-op.
 TEST(DelayedTaskHandleTest, CancelTaskInvalidDelegate) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
-  DelayedTaskHandle delayed_task_handle(delegate);
-  EXPECT_TRUE(delegate->IsValid());
+  auto* delegate_ptr = delegate.get();
+  DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
-  delegate->CancelTask();
+  delegate_ptr->CancelTask();
 
-  EXPECT_FALSE(delegate->IsValid());
+  EXPECT_FALSE(delegate_ptr->IsValid());
   EXPECT_FALSE(delayed_task_handle.IsValid());
 
   delayed_task_handle.CancelTask();
 
-  EXPECT_FALSE(delegate->IsValid());
+  EXPECT_FALSE(delegate_ptr->IsValid());
   EXPECT_FALSE(delayed_task_handle.IsValid());
 }
 
 // Tests that invalidating the delegate will also invalidate the handle.
 TEST(DelayedTaskHandleTest, InvalidateDelegate) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
-  DelayedTaskHandle delayed_task_handle(delegate);
-  EXPECT_TRUE(delegate->IsValid());
+  auto* delegate_ptr = delegate.get();
+  DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
-  delegate->CancelTask();
+  delegate_ptr->CancelTask();
 
-  EXPECT_FALSE(delegate->IsValid());
+  EXPECT_FALSE(delegate_ptr->IsValid());
   EXPECT_FALSE(delayed_task_handle.IsValid());
 }
 
 // Tests that destroying a valid handle will DCHECK.
 TEST(DelayedTaskHandleTest, InvalidOnDestuction) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
+  auto* delegate_ptr = delegate.get();
   EXPECT_DCHECK_DEATH({
-    DelayedTaskHandle delayed_task_handle(delegate);
-    EXPECT_TRUE(delegate->IsValid());
+    DelayedTaskHandle delayed_task_handle(std::move(delegate));
+    EXPECT_TRUE(delegate_ptr->IsValid());
     EXPECT_TRUE(delayed_task_handle.IsValid());
   });
 }
 
 // Tests the move-constructor.
 TEST(DelayedTaskHandleTest, MoveConstructor) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
-  DelayedTaskHandle delayed_task_handle(delegate);
-  EXPECT_TRUE(delegate->IsValid());
+  auto* delegate_ptr = delegate.get();
+  DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
   DelayedTaskHandle other_delayed_task_handle(std::move(delayed_task_handle));
-  EXPECT_TRUE(delegate->IsValid());
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(other_delayed_task_handle.IsValid());
 
   // Clean-up.
@@ -139,18 +143,19 @@ TEST(DelayedTaskHandleTest, MoveConstructor) {
 
 // Tests the move-assignment.
 TEST(DelayedTaskHandleTest, MoveAssignment) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
-  DelayedTaskHandle delayed_task_handle(delegate);
-  EXPECT_TRUE(delegate->IsValid());
+  auto* delegate_ptr = delegate.get();
+  DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
   DelayedTaskHandle other_delayed_task_handle;
   EXPECT_FALSE(other_delayed_task_handle.IsValid());
 
   other_delayed_task_handle = std::move(delayed_task_handle);
-  EXPECT_TRUE(delegate->IsValid());
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(other_delayed_task_handle.IsValid());
 
   // Clean-up.
@@ -159,11 +164,12 @@ TEST(DelayedTaskHandleTest, MoveAssignment) {
 
 // Tests that assigning to a valid handle will DCHECK.
 TEST(DelayedTaskHandleTest, AssignToValidHandle) {
-  auto delegate = base::MakeRefCounted<TestDelegate>();
+  auto delegate = std::make_unique<TestDelegate>();
   EXPECT_TRUE(delegate->IsValid());
 
-  DelayedTaskHandle delayed_task_handle(delegate);
-  EXPECT_TRUE(delegate->IsValid());
+  auto* delegate_ptr = delegate.get();
+  DelayedTaskHandle delayed_task_handle(std::move(delegate));
+  EXPECT_TRUE(delegate_ptr->IsValid());
   EXPECT_TRUE(delayed_task_handle.IsValid());
 
   EXPECT_DCHECK_DEATH({ delayed_task_handle = DelayedTaskHandle(); });

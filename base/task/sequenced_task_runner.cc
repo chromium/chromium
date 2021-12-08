@@ -22,7 +22,7 @@ DelayedTaskHandle SequencedTaskRunner::PostCancelableDelayedTask(
     OnceClosure task,
     TimeDelta delay) {
   auto delayed_task_handle_delegate =
-      base::MakeRefCounted<DefaultDelayedTaskHandleDelegate>();
+      std::make_unique<DefaultDelayedTaskHandleDelegate>();
 
   task = delayed_task_handle_delegate->BindCallback(std::move(task));
 
