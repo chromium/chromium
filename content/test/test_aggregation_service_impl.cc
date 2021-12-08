@@ -35,9 +35,8 @@ namespace {
 AggregationServicePayloadContents::Operation ConvertToOperation(
     TestAggregationService::Operation operation) {
   switch (operation) {
-    case TestAggregationService::Operation::kHierarchicalHistogram:
-      return AggregationServicePayloadContents::Operation::
-          kHierarchicalHistogram;
+    case TestAggregationService::Operation::kHistogram:
+      return AggregationServicePayloadContents::Operation::kHistogram;
   }
 }
 

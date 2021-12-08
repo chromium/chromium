@@ -175,8 +175,7 @@ AggregatableReportRequest CreateExampleRequest(
   return AggregatableReportRequest::Create(
              std::move(processing_origins),
              AggregationServicePayloadContents(
-                 AggregationServicePayloadContents::Operation::
-                     kHierarchicalHistogram,
+                 AggregationServicePayloadContents::Operation::kHistogram,
                  /*bucket=*/123, /*value=*/456, processing_type,
                  url::Origin::Create(GURL("https://reporting.example"))),
              AggregatableReportSharedInfo(
@@ -301,8 +300,8 @@ std::ostream& operator<<(
     std::ostream& out,
     const AggregationServicePayloadContents::Operation& operation) {
   switch (operation) {
-    case AggregationServicePayloadContents::Operation::kHierarchicalHistogram:
-      return out << "kHierarchicalHistogram";
+    case AggregationServicePayloadContents::Operation::kHistogram:
+      return out << "kHistogram";
   }
 }
 

@@ -110,9 +110,8 @@ void AggregatableReportAssembler::AssembleReport(
       report_request.payload_contents();
 
   // Currently, this is the only supported operation.
-  DCHECK_EQ(
-      contents.operation,
-      AggregationServicePayloadContents::Operation::kHierarchicalHistogram);
+  DCHECK_EQ(contents.operation,
+            AggregationServicePayloadContents::Operation::kHistogram);
 
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
     std::move(callback).Run(absl::nullopt,

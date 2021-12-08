@@ -37,8 +37,8 @@ class TestAggregationService {
 
   // This is 1-1 mapping of AggregationServicePayloadContents::Operation.
   enum class Operation {
-    kHierarchicalHistogram = 0,
-    kMaxValue = kHierarchicalHistogram,
+    kHistogram = 0,
+    kMaxValue = kHistogram,
   };
 
   // This is 1-1 mapping of AggregationServicePayloadContent::ProcessingType.

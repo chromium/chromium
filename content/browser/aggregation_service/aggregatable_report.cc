@@ -48,7 +48,7 @@ constexpr char kVersionKey[] = "version";
 constexpr char kVersionValue[] = "";
 
 // Payload contents:
-constexpr char kHierarchicalHistogramValue[] = "hierarchical-histogram";
+constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 constexpr char kReportingOriginKey[] = "reporting_origin";
 
@@ -71,9 +71,8 @@ std::vector<DpfParameters> ConstructDpfParameters() {
 // Returns empty vector in case of error.
 std::vector<DpfKey> GenerateDpfKeys(
     const AggregationServicePayloadContents& contents) {
-  DCHECK_EQ(
-      contents.operation,
-      AggregationServicePayloadContents::Operation::kHierarchicalHistogram);
+  DCHECK_EQ(contents.operation,
+            AggregationServicePayloadContents::Operation::kHistogram);
   DCHECK_EQ(contents.processing_type,
             AggregationServicePayloadContents::ProcessingType::kTwoParty);
 
@@ -147,7 +146,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
 
     value.emplace(kReportingOriginKey,
                   payload_contents.reporting_origin.Serialize());
-    value.emplace(kOperationKey, kHierarchicalHistogramValue);
+    value.emplace(kOperationKey, kHistogramValue);
     value.emplace("dpf_key", std::move(serialized_key));
 
     absl::optional<std::vector<uint8_t>> unencrypted_payload =
@@ -180,7 +179,7 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayloads(
 
     value.emplace(kReportingOriginKey,
                   payload_contents.reporting_origin.Serialize());
-    value.emplace(kOperationKey, kHierarchicalHistogramValue);
+    value.emplace(kOperationKey, kHistogramValue);
 
     // TODO(crbug.com/1272030): Support multiple contributions in one payload.
     cbor::Value::ArrayValue data;

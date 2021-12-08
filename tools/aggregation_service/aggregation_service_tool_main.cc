@@ -47,9 +47,8 @@ constexpr char kHelpMsg[] = R"(
   [--additional-fields=<additional_fields>]
 
   Examples:
-  aggregation_service_tool --operation="hierarchical-histogram" --bucket=1234
-  --value=5 --processing-type="two-party"
-  --reporting-origin="https://example.com"
+  aggregation_service_tool --operation="histogram" --bucket=1234 --value=5
+  --processing-type="two-party" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
   --helper-keys="https://a.com=keys1.json,https://b.com=keys2.json"
   --output-file="output.json"
@@ -70,8 +69,8 @@ constexpr char kHelpMsg[] = R"(
   serialization. `scheduled_report_time` will be default to 30 seconds later.
 
   Switches:
-  --operation = Optional switch. Currently only supports
-                "hierarchical-histogram". Default is "hierarchical-histogram".
+  --operation = Optional switch. Currently only supports "histogram". Default is
+                "histogram".
   --bucket = Bucket key of the histogram contribution, must be non-negative
              integer.
   --value = Bucket value of the histogram contribution, must be non-negative
@@ -193,7 +192,7 @@ int main(int argc, char* argv[]) {
   std::string operation =
       command_line.HasSwitch(kSwitchOperation)
           ? command_line.GetSwitchValueASCII(kSwitchOperation)
-          : "hierarchical-histogram";
+          : "histogram";
 
   std::string processing_type =
       command_line.HasSwitch(kSwitchProcessingType)

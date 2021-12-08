@@ -144,7 +144,7 @@ void VerifyReport(
     ASSERT_TRUE(CborMapContainsKeyAndType(payload_map, "operation",
                                           cbor::Value::Type::STRING));
     EXPECT_EQ(payload_map.at(cbor::Value("operation")).GetString(),
-              "hierarchical-histogram");
+              "histogram");
 
     switch (expected_payload_contents.processing_type) {
       case AggregationServicePayloadContents::ProcessingType::kTwoParty: {

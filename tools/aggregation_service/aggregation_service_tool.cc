@@ -31,8 +31,8 @@ namespace {
 
 absl::optional<content::TestAggregationService::Operation> ConvertToOperation(
     const std::string& operation_string) {
-  if (operation_string == "hierarchical-histogram")
-    return content::TestAggregationService::Operation::kHierarchicalHistogram;
+  if (operation_string == "histogram")
+    return content::TestAggregationService::Operation::kHistogram;
 
   return absl::nullopt;
 }
