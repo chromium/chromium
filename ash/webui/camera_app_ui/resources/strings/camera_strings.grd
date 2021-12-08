@@ -165,7 +165,7 @@
         Print
       </message>
       <message desc="Label for the gallery button." name="IDS_GALLERY_BUTTON">
-        Go to gallery
+        Go to Gallery
       </message>
       <message desc="Error message shown when saving/adding a image or video to the file system failed." name="IDS_ERROR_MSG_SAVE_FILE_FAILED">
         Unable to save the file
