@@ -9123,5 +9123,35 @@
                 }
             ]
         }
+    ],
+    "WinDelaySpellcheckServiceInit": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinDelaySpellcheckServiceInit"
+                    ]
+                }
+            ]
+        }
+    ],
+    "XsurfaceMetricsReporting": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "XsurfaceMetricsReporting"
+                    ]
+                }
+            ]
+        }
     ]
 }
