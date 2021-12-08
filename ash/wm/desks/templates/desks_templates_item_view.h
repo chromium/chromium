@@ -37,6 +37,8 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   DesksTemplatesItemView& operator=(const DesksTemplatesItemView&) = delete;
   ~DesksTemplatesItemView() override;
 
+  DesksTemplatesNameView* name_view() const { return name_view_; }
+
   // Updates the visibility state of the delete and launch buttons depending on
   // the current mouse or touch event location, or if switch access is enabled.
   void UpdateHoverButtonsVisibility(const gfx::Point& screen_location,

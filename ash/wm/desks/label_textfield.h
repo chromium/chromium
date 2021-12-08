@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_LABEL_TEXTFIELD_H_
 #define ASH_WM_DESKS_LABEL_TEXTFIELD_H_
 
+#include "ash/ash_export.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -14,7 +16,8 @@ namespace ash {
 // Defines a textfield styled so when it's not focused, it looks like a normal
 // label. It provides an API to elide long names.
 // TODO(minch): Unify this to ash/style.
-class LabelTextfield : public views::Textfield {
+class ASH_EXPORT LabelTextfield : public views::Textfield,
+                                  public OverviewHighlightableView {
  public:
   METADATA_HEADER(LabelTextfield);
 
@@ -35,10 +38,20 @@ class LabelTextfield : public views::Textfield {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+
+  // OverviewHighlightableView:
+  views::View* GetView() override;
+  void MaybeActivateHighlightedView() override;
+  void MaybeCloseHighlightedView() override;
+  void MaybeSwapHighlightedView(bool right) override;
+  void OnViewHighlighted() override;
+  void OnViewUnhighlighted() override;
 
  protected:
   // Owned by this View via `View::border_`. This is just a convenient pointer

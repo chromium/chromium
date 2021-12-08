@@ -7,8 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/label_textfield.h"
-#include "ash/wm/overview/overview_highlightable_view.h"
-#include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -18,10 +16,9 @@ class DeskMiniView;
 // Defines a textfield styled to normally look like a label. Allows modifying
 // the name of its corresponding desk. It can be highlighted and activated by
 // the OverviewHighlightController. Inherits an API to elide long desk names.
-// TODO(richui): In a follow up CL, refactor the renaming logic, and see if
-// there are more functions we can extract into `LabelTextfield`.
-class ASH_EXPORT DeskNameView : public LabelTextfield,
-                                public OverviewHighlightableView {
+// When Bento is enabled and the user creates a new desk, the accessible name
+// for `this` will be the default desk name.
+class ASH_EXPORT DeskNameView : public LabelTextfield {
  public:
   METADATA_HEADER(DeskNameView);
 
@@ -38,20 +35,9 @@ class ASH_EXPORT DeskNameView : public LabelTextfield,
   static void CommitChanges(views::Widget* widget);
 
   // LabelTextfield:
-  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
-  // OverviewHighlightableView:
-  views::View* GetView() override;
-  void MaybeActivateHighlightedView() override;
-  void MaybeCloseHighlightedView() override;
-  void MaybeSwapHighlightedView(bool right) override;
   void OnViewHighlighted() override;
-  void OnViewUnhighlighted() override;
 
  private:
-  void UpdateBorderState();
-
   // The mini view that associated with this name view.
   DeskMiniView* const mini_view_;
 };

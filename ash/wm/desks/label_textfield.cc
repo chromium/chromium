@@ -73,6 +73,19 @@ gfx::Size LabelTextfield::CalculatePreferredSize() const {
   return size;
 }
 
+bool LabelTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
+  // The default behavior of the tab key is that it moves the focus to the next
+  // available view.
+  // We want that to be handled by OverviewHighlightController as part of moving
+  // the highlight forward or backward when tab or shift+tab are pressed.
+  return event.key_code() == ui::VKEY_TAB;
+}
+
+void LabelTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  Textfield::GetAccessibleNodeData(node_data);
+  node_data->SetName(full_text_.empty() ? GetAccessibleName() : full_text_);
+}
+
 void LabelTextfield::OnMouseEntered(const ui::MouseEvent& event) {
   UpdateViewAppearance();
 }
@@ -101,8 +114,28 @@ gfx::NativeCursor LabelTextfield::GetCursor(const ui::MouseEvent& event) {
   return views::GetNativeIBeamCursor();
 }
 
+views::View* LabelTextfield::GetView() {
+  return this;
+}
+
+void LabelTextfield::MaybeActivateHighlightedView() {
+  RequestFocus();
+}
+
+void LabelTextfield::MaybeCloseHighlightedView() {}
+
+void LabelTextfield::MaybeSwapHighlightedView(bool right) {}
+
+void LabelTextfield::OnViewHighlighted() {
+  UpdateBorderState();
+}
+
+void LabelTextfield::OnViewUnhighlighted() {
+  UpdateBorderState();
+}
+
 void LabelTextfield::UpdateBorderState() {
-  border_ptr_->SetFocused(HasFocus());
+  border_ptr_->SetFocused(IsViewHighlighted() || HasFocus());
   SchedulePaint();
 }
 
