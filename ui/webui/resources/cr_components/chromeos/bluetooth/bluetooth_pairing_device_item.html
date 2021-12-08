@@ -30,15 +30,30 @@
   }
 
 </style>
-<div id="container" class="cr-row continuation"
-    on-click="onSelected_"
-    on-keydown="onKeydown_">
-  <bluetooth-icon device="[[device]]"></bluetooth-icon>
-  <div id="deviceName" class="text-row">
-    [[getDeviceName_(device.*)]]
-     <!-- TODO(crbug.com/1010321): Add A11Y. -->
-    <div id="secondaryLabel" class="secondary">
-      [[secondaryLabel_]]
+<div id="wrapper" focus-row-container>
+  <div id="container"
+      class="cr-row continuation"
+      actionable
+      focus-row-control
+      selectable
+      aria-label$="[[getAriaLabel_(device.*, itemIndex, listSize)]]"
+      role="button"
+      focus-type="rowWrapper"
+      on-keydown="onKeydown_"
+      on-click="onSelected_">
+    <bluetooth-icon device="[[device]]"></bluetooth-icon>
+    <div aria-live="polite"
+        aria-label="[[getSecondaryAriaLabel_(
+          secondaryLabel_, pairingFailed_, device.*)]]"
+        class="text-row">
+      <div id="deviceName" aria-hidden="true">
+        [[getDeviceName_(device.*)]]
+      </div>
+      <div id="secondaryLabel"
+          aria-hidden="true"
+          class="secondary">
+        [[secondaryLabel_]]
+      </div>
     </div>
   </div>
 </div>

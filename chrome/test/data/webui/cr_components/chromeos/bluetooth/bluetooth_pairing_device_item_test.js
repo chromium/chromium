@@ -86,9 +86,9 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
   });
 
   test('Pairing message is shown', async function() {
+    const deviceName = 'BeatsX';
     const device = createDefaultBluetoothDevice(
-        /*id=*/ '12//345&6789',
-        /*publicName=*/ 'BeatsX',
+        /*id=*/ '12//345&6789', deviceName,
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*nickname=*/ 'device1',
@@ -98,11 +98,28 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     bluetoothPairingDeviceItem.device = device.deviceProperties;
     await flushAsync();
 
+    const itemIndex = 1;
+    const listSize = 10;
+    bluetoothPairingDeviceItem.itemIndex = itemIndex;
+    bluetoothPairingDeviceItem.listSize = listSize;
+
     const getSecondaryLabel = () =>
         bluetoothPairingDeviceItem.shadowRoot.querySelector('#secondaryLabel');
+    const getItemSecondaryA11yLabel = () =>
+        bluetoothPairingDeviceItem.shadowRoot.querySelector('.text-row')
+            .ariaLabel;
+    const getItemA11yLabel = () =>
+        bluetoothPairingDeviceItem.shadowRoot.querySelector('#container')
+            .ariaLabel;
 
     assertTrue(!!getSecondaryLabel());
     assertEquals('', getSecondaryLabel().textContent.trim());
+    assertEquals(
+        getItemA11yLabel(),
+        bluetoothPairingDeviceItem.i18n(
+            'bluetoothPairingDeviceItemA11YLabelMouse', itemIndex + 1, listSize,
+            deviceName));
+    assertEquals(getItemSecondaryA11yLabel(), '');
 
     bluetoothPairingDeviceItem.deviceItemState = DeviceItemState.PAIRING;
     await flushAsync();
@@ -110,6 +127,10 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     assertEquals(
         bluetoothPairingDeviceItem.i18n('bluetoothPairing'),
         getSecondaryLabel().textContent.trim());
+    assertEquals(
+        getItemSecondaryA11yLabel(),
+        bluetoothPairingDeviceItem.i18n(
+            'bluetoothPairingDeviceItemSecondaryPairingA11YLabel', deviceName));
 
     bluetoothPairingDeviceItem.deviceItemState = DeviceItemState.FAILED;
     await flushAsync();
@@ -117,6 +138,10 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     assertEquals(
         bluetoothPairingDeviceItem.i18n('bluetoothPairingFailed'),
         getSecondaryLabel().textContent.trim());
+    assertEquals(
+        getItemSecondaryA11yLabel(),
+        bluetoothPairingDeviceItem.i18n(
+            'bluetoothPairingDeviceItemSecondaryErrorA11YLabel', deviceName));
 
     bluetoothPairingDeviceItem.deviceItemState = DeviceItemState.DEFAULT;
     await flushAsync();

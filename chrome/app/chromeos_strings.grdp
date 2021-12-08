@@ -851,6 +851,39 @@
   <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEYS" desc="Bluetooth pairing dialog: Message displayed informing the user to enter the keys below on the device being paired.">
     Enter these keys on <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
   </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_UNKNOWN" desc="Bluetooth pairing UI: Accessibility label used for a device of unknown type in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Unknown device named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_COMPUTER" desc="Bluetooth pairing UI: Accessibility label used for a computer device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Computer named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_PHONE" desc="Bluetooth pairing UI: Accessibility label used for a phone device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Phone named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_HEADSET" desc="Bluetooth pairing UI: Accessibility label used for an audio device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Audio device named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_VIDEO_CAMERA" desc="Bluetooth pairing UI: Accessibility label used for a video camera device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Video camera named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_GAME_CONTROLLER" desc="Bluetooth pairing UI: Accessibility label used for a game controller device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Game controller named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_KEYBOARD" desc="Bluetooth pairing UI: Accessibility label used for a keyboard device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Keyboard named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_MOUSE" desc="Bluetooth pairing UI: Accessibility label used for a mouse device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Mouse named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_A11Y_LABEL_TABLET" desc="Bluetooth pairing UI: Accessibility label used for a tablet device in a list of devices which can be paired.">
+    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, Tablet named <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_ERROR_A11Y_LABEL" desc="Bluetooth pairing dialog: Accessibility label for unpaired Bluetooth device list item, when pairing to a device fails.">
+    Couldn't pair to device <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>; select device to try again
+  </message>
+  <message name="IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_PAIRING_A11Y_LABEL" desc="Bluetooth pairing dialog: Accessibility label for unpaired Bluetooth device list item, when pairing to the a device is in progress.">
+    Pairing to <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+  </message>
 
   <!-- Strings for the OOBE packaged license screen -->
   <message name="IDS_OOBE_PACKAGED_LICENSE_TITLE" desc="Title of the screen which advertises use of packaged license.">

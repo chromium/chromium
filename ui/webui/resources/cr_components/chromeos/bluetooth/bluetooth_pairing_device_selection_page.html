@@ -14,22 +14,32 @@
     margin: 20px 0 8px 0;
   }
 </style>
-<bluetooth-base-page show-scan-progress  button-bar-state="[[buttonBarState_]]">
+<bluetooth-base-page show-scan-progress
+    button-bar-state="[[buttonBarState_]]">
   <div slot="page-body" id="pageBody">
     <localized-link
         localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
     </localized-link>
     <div id="deviceListTitle">[[getDeviceListTitle_(devices.*)]]</div>
-    <!-- TODO(crbug.com/1010321): Fix item focus. -->
     <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*)]]">
       <div id="container" class="layout vertical flex" scrollable
           no-bottom-scroll-border>
-        <iron-list items="[[devices]]" preserve-focus>
+        <iron-list items="[[devices]]"
+            scroll-target="container"
+            preserve-focus>
           <template>
             <bluetooth-pairing-device-item
+                item="[[item]]"
                 device="[[item]]"
                 device-item-state="[[getDeviceItemState_(
-                    item, devicePendingPairing.*, failedPairingDeviceId)]]" >
+                    item, devicePendingPairing.*, failedPairingDeviceId)]]"
+                tabindex$="[[tabIndex]]"
+                focus-row-index="[[index]]"
+                iron-list-tab-index="[[tabIndex]]"
+                last-focused="{{lastFocused_}}"
+                list-blurred="{{listBlurred_}}"
+                item-index="[[index]]"
+                list-size="[[devices.length]]" >
             </bluetooth-pairing-device-item>
           </template>
         </iron-list>
