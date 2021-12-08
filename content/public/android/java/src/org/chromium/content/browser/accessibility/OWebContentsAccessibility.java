@@ -48,7 +48,9 @@ public class OWebContentsAccessibility extends WebContentsAccessibilityImpl {
 
     @Override
     public void clearNodeInfoCacheForGivenId(int virtualViewId) {
-        mImageDataRequestedNodes.remove(virtualViewId);
+        if (mImageDataRequestedNodes != null) {
+            mImageDataRequestedNodes.remove(virtualViewId);
+        }
         super.clearNodeInfoCacheForGivenId(virtualViewId);
     }
 
