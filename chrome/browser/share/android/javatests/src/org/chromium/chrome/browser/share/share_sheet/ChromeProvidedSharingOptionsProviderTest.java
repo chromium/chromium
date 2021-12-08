@@ -145,6 +145,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -170,6 +171,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -193,7 +195,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*printingEnabled=*/false, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.TEXT), /*isMultiWindow=*/false);
+                        ImmutableSet.of(ContentType.TEXT), DetailedContentType.NOT_SPECIFIED,
+                        /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
                 ImmutableList.of(mActivity.getResources().getString(R.string.sharing_screenshot),
@@ -211,6 +214,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_AND_TEXT,
                                 ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.TEXT),
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/true);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -230,6 +234,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/true);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -248,7 +253,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.TEXT),
+                        ImmutableSet.of(ContentType.TEXT), DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/true);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -266,6 +271,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/true);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -288,6 +294,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE),
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
@@ -306,6 +313,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE),
+                        DetailedContentType.NOT_SPECIFIED,
                         /*isMultiWindow=*/false);
 
         // Long Screenshots is supported >= Android N (7.0).
@@ -327,6 +335,48 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
+    public void getPropertyModels_nonLightweightReaction_doesNotFilterByDetailedContentType() {
+        setUpChromeProvidedSharingOptionsProviderTest(
+                /*printingEnabled=*/true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ImmutableSet.of(ContentType.IMAGE), DetailedContentType.IMAGE,
+                        /*isMultiWindow=*/false);
+
+        List<String> expectedModels = new ArrayList<String>();
+        expectedModels.add(mActivity.getResources().getString(R.string.sharing_screenshot));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            expectedModels.add(
+                    mActivity.getResources().getString(R.string.sharing_long_screenshot));
+        }
+        expectedModels.addAll(ImmutableList.of(
+                mActivity.getResources().getString(R.string.sharing_copy_image),
+                mActivity.getResources().getString(R.string.send_tab_to_self_share_activity_title),
+                mActivity.getResources().getString(R.string.qr_code_share_icon_label),
+                mActivity.getResources().getString(R.string.sharing_save_image)));
+
+        assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
+    }
+
+    @Test
+    @MediumTest
+    public void getPropertyModels_lightweightReaction_filtersByDetailedContentType() {
+        setUpChromeProvidedSharingOptionsProviderTest(
+                /*printingEnabled=*/true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ImmutableSet.of(ContentType.IMAGE_AND_LINK),
+                        DetailedContentType.LIGHTWEIGHT_REACTION,
+                        /*isMultiWindow=*/false);
+
+        List<String> expectedModels = new ArrayList<>();
+        expectedModels.add(mActivity.getResources().getString(R.string.sharing_copy_image));
+
+        assertCorrectModelsAreInTheRightOrder(propertyModels, expectedModels);
+    }
+
+    @Test
+    @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     public void getShareDetailsMetrics_LinkGeneration() {
@@ -337,7 +387,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*printingEnabled=*/false, linkGenerationStatus);
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), /*isMultiWindow=*/false);
+                        ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT),
+                        DetailedContentType.NOT_SPECIFIED, /*isMultiWindow=*/false);
 
         assertCorrectLinkGenerationMetrics(propertyModels, linkGenerationStatus);
     }
@@ -350,7 +401,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         List<PropertyModel> propertyModels =
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE), /*isMultiWindow=*/false);
+                        ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE),
+                        DetailedContentType.NOT_SPECIFIED, /*isMultiWindow=*/false);
         View.OnClickListener onClickListener =
                 propertyModels.get(0).get(ShareSheetItemViewProperties.CLICK_LISTENER);
 

@@ -338,7 +338,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                contentTypes, mIsMultiWindow);
+                contentTypes, chromeShareExtras.getDetailedContentType(), mIsMultiWindow);
     }
 
     private boolean shouldShowLinkToText(ChromeShareExtras chromeShareExtras) {
@@ -633,8 +633,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         mIsMultiWindow = isMultiWindow;
         mBottomSheet.createFirstPartyRecyclerViews(
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        mContentTypes, mIsMultiWindow));
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(mContentTypes,
+                        mChromeShareExtras.getDetailedContentType(), mIsMultiWindow));
         mBottomSheetController.requestShowContent(mBottomSheet, /*animate=*/false);
     }
 
