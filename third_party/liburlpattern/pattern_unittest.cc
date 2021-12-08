@@ -371,6 +371,18 @@ TEST(PatternStringTest,
   RunPatternStringTest("{:foo}?(.*)", ":foo?*");
 }
 
+TEST(PatternStringTest, NamedGroupWithEscapedValidNameSuffix) {
+  RunPatternStringTest("{:foo\\bar}", "{:foo\\bar}");
+}
+
+TEST(PatternStringTest, NamedGroupWithEscapedInvalidNameSuffix) {
+  RunPatternStringTest("{:foo\\.bar}", "{:foo.bar}");
+}
+
+TEST(PatternStringTest, NamedGroupWithCustomRegexpAndValidNameSuffix) {
+  RunPatternStringTest("{:foo(baz)bar}", "{:foo(baz)bar}");
+}
+
 struct DirectMatchCase {
   absl::string_view input;
   bool expected_match = true;

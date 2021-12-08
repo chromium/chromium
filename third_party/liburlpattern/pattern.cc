@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/icu/source/common/unicode/utf8.h"
 #include "third_party/liburlpattern/utils.h"
 
 namespace liburlpattern {
@@ -103,7 +104,7 @@ std::string Pattern::GeneratePatternString() const {
 
   for (size_t i = 0; i < part_list_.size(); ++i) {
     const Part& part = part_list_[i];
-    //
+
     if (part.type == PartType::kFixed) {
       // A simple fixed string part.
       if (part.modifier == Modifier::kNone) {
@@ -188,6 +189,21 @@ std::string Pattern::GeneratePatternString() const {
         result += "(";
         result += kFullWildcardRegex;
         result += ")";
+      }
+    }
+
+    // If the matching group is a simple `:foo` custom name with the default
+    // segment wildcard, then we must check for a trailing suffix that could
+    // be interpreted as a trailing part of the name itself.  In these cases
+    // we must escape the beginning of the suffix in order to separate it
+    // from the end of the custom name; e.g. `:foo\\bar` instead of `:foobar`.
+    if (part.type == PartType::kSegmentWildcard && custom_name &&
+        !part.suffix.empty()) {
+      UChar32 codepoint = -1;
+      U8_GET(reinterpret_cast<const uint8_t*>(part.suffix.data()), 0, 0,
+             static_cast<int>(part.suffix.size()), codepoint);
+      if (IsNameCodepoint(codepoint, /*first_codepoint=*/false)) {
+        result += "\\";
       }
     }
 

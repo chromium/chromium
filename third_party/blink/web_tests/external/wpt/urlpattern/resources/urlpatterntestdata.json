@@ -2541,5 +2541,29 @@
     "expected_match": {
       "pathname": { "input": "foobarbaz", "groups": { "foo": "f", "0": "oobarbaz" }}
     }
+  },
+  {
+    "pattern": [{ "pathname": "{:foo\\bar}" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": "{:foo\\.bar}" }],
+    "inputs": [{ "pathname": "foo.bar" }],
+    "expected_obj": {
+      "pathname": "{:foo.bar}"
+    },
+    "expected_match": {
+      "pathname": { "input": "foo.bar", "groups": { "foo": "foo" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": "{:foo(foo)bar}" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "foo": "foo" }}
+    }
   }
 ]
