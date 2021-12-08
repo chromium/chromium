@@ -2707,6 +2707,7 @@ test("ash_unittests") {
     "//ash/components/audio",
     "//ash/components/phonehub:test_support",
     "//ash/constants",
+    "//ash/dbus:privacy_screen_proto",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",
     "//ash/public/cpp",
