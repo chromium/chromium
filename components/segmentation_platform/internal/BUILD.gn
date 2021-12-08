@@ -58,6 +58,8 @@ static_library("internal") {
     "selection/segment_selector_impl.h",
     "selection/segmentation_result_prefs.cc",
     "selection/segmentation_result_prefs.h",
+    "service_proxy_impl.cc",
+    "service_proxy_impl.h",
     "signals/histogram_signal_handler.cc",
     "signals/histogram_signal_handler.h",
     "signals/signal_filter_processor.cc",

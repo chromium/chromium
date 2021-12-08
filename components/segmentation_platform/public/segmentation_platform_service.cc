@@ -4,4 +4,10 @@
 
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-namespace segmentation_platform {}  // namespace segmentation_platform
+namespace segmentation_platform {
+
+ServiceProxy* SegmentationPlatformService::GetServiceProxy() {
+  return nullptr;
+}
+
+}  // namespace segmentation_platform

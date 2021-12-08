@@ -103,6 +103,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       std::move(signal_storage_config_db), clock);
   segmentation_result_prefs_ =
       std::make_unique<SegmentationResultPrefs>(pref_service);
+  proxy_ = std::make_unique<ServiceProxyImpl>(this);
 
   // Construct signal processors.
   user_action_signal_handler_ =
@@ -161,18 +162,8 @@ void SegmentationPlatformServiceImpl::EnableMetrics(
   signal_filter_processor_->EnableMetrics(signal_collection_allowed);
 }
 
-void SegmentationPlatformServiceImpl::GetServiceStatus() {
-  OnServiceStatusChanged();
-}
-
-void SegmentationPlatformServiceImpl::AddObserver(
-    SegmentationPlatformService::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void SegmentationPlatformServiceImpl::RemoveObserver(
-    SegmentationPlatformService::Observer* observer) {
-  observers_.RemoveObserver(observer);
+ServiceProxy* SegmentationPlatformServiceImpl::GetServiceProxy() {
+  return proxy_.get();
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentInfoDatabaseInitialized(
@@ -270,8 +261,7 @@ void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
     }
   }
 
-  for (Observer& obs : observers_)
-    obs.OnServiceStatusChanged(IsInitializationFinished(), status);
+  proxy_->OnServiceStatusChanged(IsInitializationFinished(), status);
 }
 
 // static

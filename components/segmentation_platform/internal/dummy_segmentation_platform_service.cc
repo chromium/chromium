@@ -24,7 +24,4 @@ void DummySegmentationPlatformService::GetSelectedSegment(
 
 void DummySegmentationPlatformService::EnableMetrics(
     bool signal_collection_allowed) {}
-
-void DummySegmentationPlatformService::GetServiceStatus() {}
-
 }  // namespace segmentation_platform

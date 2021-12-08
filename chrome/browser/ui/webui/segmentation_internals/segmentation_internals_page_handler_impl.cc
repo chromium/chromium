@@ -14,20 +14,27 @@ SegmentationInternalsPageHandlerImpl::SegmentationInternalsPageHandlerImpl(
     Profile* profile)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      segmentation_platform_service_(
-          segmentation_platform::SegmentationPlatformServiceFactory::
-              GetForProfile(profile)) {
-  segmentation_platform_service_->AddObserver(this);
+      service_proxy_(segmentation_platform::SegmentationPlatformServiceFactory::
+                         GetForProfile(profile)
+                             ->GetServiceProxy()) {
+  if (service_proxy_)
+    service_proxy_->AddObserver(this);
 }
 
 SegmentationInternalsPageHandlerImpl::~SegmentationInternalsPageHandlerImpl() {
-  segmentation_platform_service_->RemoveObserver(this);
+  if (service_proxy_)
+    service_proxy_->RemoveObserver(this);
 }
 
 void SegmentationInternalsPageHandlerImpl::GetSegment(
     const std::string& key,
     GetSegmentCallback callback) {
-  segmentation_platform_service_->GetSelectedSegment(
+  if (!service_proxy_) {
+    OnGetSelectedSegmentDone(std::move(callback),
+                             segmentation_platform::SegmentSelectionResult());
+    return;
+  }
+  service_proxy_->GetSelectedSegment(
       key, base::BindOnce(
                &SegmentationInternalsPageHandlerImpl::OnGetSelectedSegmentDone,
                weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -44,7 +51,9 @@ void SegmentationInternalsPageHandlerImpl::OnGetSelectedSegmentDone(
 }
 
 void SegmentationInternalsPageHandlerImpl::GetServiceStatus() {
-  segmentation_platform_service_->GetServiceStatus();
+  if (service_proxy_) {
+    service_proxy_->GetServiceStatus();
+  }
 }
 
 void SegmentationInternalsPageHandlerImpl::OnServiceStatusChanged(

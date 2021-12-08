@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/service_proxy.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -18,7 +18,7 @@ class Profile;
 
 class SegmentationInternalsPageHandlerImpl
     : public segmentation_internals::mojom::PageHandler,
-      public segmentation_platform::SegmentationPlatformService::Observer {
+      public segmentation_platform::ServiceProxy::Observer {
  public:
   SegmentationInternalsPageHandlerImpl(
       mojo::PendingReceiver<segmentation_internals::mojom::PageHandler>
@@ -47,8 +47,7 @@ class SegmentationInternalsPageHandlerImpl
 
   mojo::Receiver<segmentation_internals::mojom::PageHandler> receiver_;
   mojo::Remote<segmentation_internals::mojom::Page> page_;
-  segmentation_platform::SegmentationPlatformService*
-      segmentation_platform_service_;
+  segmentation_platform::ServiceProxy* service_proxy_;
 
   base::WeakPtrFactory<SegmentationInternalsPageHandlerImpl> weak_ptr_factory_{
       this};

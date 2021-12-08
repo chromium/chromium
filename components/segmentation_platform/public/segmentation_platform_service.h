@@ -20,6 +20,7 @@
 class PrefRegistrySimple;
 
 namespace segmentation_platform {
+class ServiceProxy;
 struct SegmentSelectionResult;
 
 // The core class of segmentation platform that integrates all the required
@@ -27,12 +28,6 @@ struct SegmentSelectionResult;
 class SegmentationPlatformService : public KeyedService,
                                     public base::SupportsUserData {
  public:
-  // Interface that observes the service for debugging purpose.
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnServiceStatusChanged(bool is_initialized, int status_flag) {}
-  };
-
 #if defined(OS_ANDROID)
   // Returns a Java object of the type SegmentationPlatformService for the given
   // SegmentationPlatformService.
@@ -63,12 +58,8 @@ class SegmentationPlatformService : public KeyedService,
   // on startup.
   virtual void EnableMetrics(bool signal_collection_allowed) = 0;
 
-  // Called to check if the status of the service.
-  virtual void GetServiceStatus() = 0;
-
-  // Called to add and remove observers
-  virtual void AddObserver(Observer* observer) {}
-  virtual void RemoveObserver(Observer* observer) {}
+  // Called to get the proxy that is used for debugging purpose.
+  virtual ServiceProxy* GetServiceProxy();
 };
 
 }  // namespace segmentation_platform

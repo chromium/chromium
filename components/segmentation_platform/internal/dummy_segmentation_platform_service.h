@@ -28,7 +28,6 @@ class DummySegmentationPlatformService : public SegmentationPlatformService {
   void GetSelectedSegment(const std::string& segmentation_key,
                           SegmentSelectionCallback callback) override;
   void EnableMetrics(bool signal_collection_allowed) override;
-  void GetServiceStatus() override;
 };
 
 }  // namespace segmentation_platform
