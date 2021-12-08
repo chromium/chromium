@@ -334,6 +334,15 @@
 }
 
 - (void)updateLayout {
+  // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
+  // return early in that case.
+  if (self.mode == TabGridModeSearch) {
+    [NSLayoutConstraint deactivateConstraints:_compactConstraints];
+    [_toolbar removeFromSuperview];
+    [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
+    [_largeNewTabButton removeFromSuperview];
+    return;
+  }
   _largeNewTabButtonBottomAnchor.constant =
       -kTabGridFloatingButtonVerticalInset;
 
