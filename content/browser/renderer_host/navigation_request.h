@@ -1672,6 +1672,9 @@ class CONTENT_EXPORT NavigationRequest
   // The time this navigation was ready to commit.
   base::TimeTicks ready_to_commit_time_;
 
+  // The time WillStartRequest() was called.
+  base::TimeTicks will_start_request_time_;
+
   // Set in ReadyToCommitNavigation.
   bool is_same_process_ = true;
 

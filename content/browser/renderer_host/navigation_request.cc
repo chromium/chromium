@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -1818,6 +1819,7 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
 }
 
 void NavigationRequest::BeginNavigationImpl() {
+  base::ElapsedTimer timer;
   SetState(WILL_START_NAVIGATION);
 
   bool convert_urn_uuid_urls = frame_tree_node_->IsFencedFrameRoot() ||
@@ -2026,7 +2028,13 @@ void NavigationRequest::BeginNavigationImpl() {
             common_params_->previews_state, this, common_params_->url);
   }
 
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.BeginNavigationImpl.",
+                    IsInMainFrame() ? "MainFrame" : "Subframe"}),
+      timer.Elapsed());
   WillStartRequest();
+  // DO NOT ADD CODE AFTER THIS, as the NavigationRequest might have been
+  // deleted by the previous calls.
 }
 
 void NavigationRequest::SetWaitingForRendererResponse() {
@@ -3919,6 +3927,11 @@ void NavigationRequest::OnStartChecksComplete(
       std::move(cached_response_head), std::move(interceptor));
   DCHECK(!render_frame_host_);
 
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.WillStartRequestToLoaderStart.",
+                    IsInMainFrame() ? "MainFrame" : "Subframe"}),
+      base::TimeTicks::Now() - will_start_request_time_);
+
   loader_->Start();
   // DO NOT ADD CODE after this. The previous call to
   // NavigationURLLoader::Start() could cause the destruction of the
@@ -5418,6 +5431,7 @@ void NavigationRequest::CancelDeferredNavigationInternal(
 void NavigationRequest::WillStartRequest() {
   EnterChildTraceEvent("WillStartRequest", this);
   DCHECK_EQ(state_, WILL_START_REQUEST);
+  will_start_request_time_ = base::TimeTicks::Now();
 
   if (IsSelfReferentialURL()) {
     SetState(CANCELING);

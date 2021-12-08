@@ -14,7 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -592,6 +594,7 @@ void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
   TRACE_EVENT2("navigation", "FrameTreeNode::DidStartLoading",
                "frame_tree_node", frame_tree_node_id(),
                "should_show_loading_ui ", should_show_loading_ui);
+  base::ElapsedTimer timer;
 
   frame_tree_->DidStartLoadingNode(*this, should_show_loading_ui,
                                    was_previously_loading);
@@ -602,6 +605,10 @@ void FrameTreeNode::DidStartLoading(bool should_show_loading_ui,
 
   // Notify the RenderFrameHostManager of the event.
   render_manager()->OnDidStartLoading();
+  base::UmaHistogramTimes(
+      base::StrCat({"Navigation.DidStartLoading.",
+                    IsMainFrame() ? "MainFrame" : "Subframe"}),
+      timer.Elapsed());
 }
 
 void FrameTreeNode::DidStopLoading() {

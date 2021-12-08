@@ -328,6 +328,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Timer used for triggering (optional) early timeout on the navigation.
   base::OneShotTimer timeout_timer_;
 
+  // The time this loader was created.
+  base::TimeTicks loader_creation_time_;
+
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };
 

@@ -1411,6 +1411,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.{Stage}.{FrameType}" units="ms"
+    expires_after="2022-05-06">
+  <owner>cduvall@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Measures the amount of time the {Stage} stage takes in early navigation.
+    Logged for any navigation that reaches the stage.
+  </summary>
+  <token key="Stage">
+    <variant name="BeginNavigationImpl"
+        summary="NavigationRequest::BeginNavigationImpl"/>
+    <variant name="DidStartLoading" summary="FrameTreeNode::DidStartLoading"/>
+    <variant name="LoaderCreateToRequestStart"
+        summary="NavigationURLLoaderImpl creation to network request start"/>
+    <variant name="WillStartRequestToLoaderStart"
+        summary="NavigationRequest::WillStartRequest to
+                 NavigationURLLoader::Start"/>
+  </token>
+  <token key="FrameType" variants="FrameTypes"/>
+</histogram>
+
 <histogram base="true" name="NavigationPredictor.ActionTaken"
     enum="NavigationPredictorActionTaken" expires_after="M85">
   <obsolete>

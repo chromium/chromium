@@ -144,6 +144,24 @@ class NavigationLoaderInterceptorBrowserContainer
   std::unique_ptr<URLLoaderRequestInterceptor> browser_interceptor_;
 };
 
+class NavigationTimingThrottle : public blink::URLLoaderThrottle {
+ public:
+  NavigationTimingThrottle(bool is_main_frame, base::TimeTicks start)
+      : is_main_frame_(is_main_frame), start_(start) {}
+
+  void WillStartRequest(network::ResourceRequest* request,
+                        bool* defer) override {
+    base::UmaHistogramTimes(
+        base::StrCat({"Navigation.LoaderCreateToRequestStart.",
+                      is_main_frame_ ? "MainFrame" : "Subframe"}),
+        base::TimeTicks::Now() - start_);
+  }
+
+ private:
+  bool is_main_frame_;
+  base::TimeTicks start_;
+};
+
 base::LazyInstance<NavigationURLLoaderImpl::URLLoaderFactoryInterceptor>::Leaky
     g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
 
@@ -1067,9 +1085,12 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
 
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 NavigationURLLoaderImpl::CreateURLLoaderThrottles() {
-  return CreateContentBrowserURLLoaderThrottles(
+  auto throttles = CreateContentBrowserURLLoaderThrottles(
       *resource_request_, browser_context_, web_contents_getter_,
       navigation_ui_data_.get(), frame_tree_node_id_);
+  throttles.push_back(std::make_unique<NavigationTimingThrottle>(
+      resource_request_->is_main_frame, loader_creation_time_));
+  return throttles;
 }
 
 std::unique_ptr<SignedExchangeRequestHandler>
@@ -1178,7 +1199,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
                               frame_tree_node_id_)),
       navigation_ui_data_(std::move(navigation_ui_data)),
       interceptors_(std::move(initial_interceptors)),
-      download_policy_(request_info_->common_params->download_policy) {
+      download_policy_(request_info_->common_params->download_policy),
+      loader_creation_time_(base::TimeTicks::Now()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
