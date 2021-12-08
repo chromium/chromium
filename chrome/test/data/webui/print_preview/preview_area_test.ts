@@ -2,31 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, PrintPreviewPreviewAreaElement, Size, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/test_util.js';
+
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getCddTemplate} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
-window.preview_area_test = {};
-preview_area_test.suiteName = 'PreviewAreaTest';
-/** @enum {string} */
-preview_area_test.TestNames = {
-  StateChanges: 'state changes',
-  ViewportSizeChanges: 'viewport size changes',
+const preview_area_test = {
+  suiteName: 'PreviewAreaTest',
+  TestNames: {
+    StateChanges: 'state changes',
+    ViewportSizeChanges: 'viewport size changes',
+  },
 };
 
+Object.assign(window, {preview_area_test: preview_area_test});
+
 suite(preview_area_test.suiteName, function() {
-  /** @type {?PrintPreviewPreviewAreaElement} */
-  let previewArea = null;
+  let previewArea: PrintPreviewPreviewAreaElement;
 
-  /** @type {?NativeLayer} */
-  let nativeLayer = null;
+  let nativeLayer: NativeLayerStub;
 
-  let pluginProxy = null;
+  let pluginProxy: TestPluginProxy;
 
-  /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
@@ -45,7 +46,8 @@ suite(preview_area_test.suiteName, function() {
     previewArea.destination = new Destination(
         'FooDevice', DestinationType.LOCAL, DestinationOrigin.LOCAL, 'FooName',
         DestinationConnectionStatus.ONLINE);
-    previewArea.destination.capabiliites = getCddTemplate('FooDevice');
+    previewArea.destination.capabilities =
+        getCddTemplate('FooDevice').capabilities;
     previewArea.error = Error.NONE;
     previewArea.state = State.NOT_READY;
     previewArea.documentModifiable = true;
@@ -63,20 +65,20 @@ suite(preview_area_test.suiteName, function() {
     previewArea.state = State.READY;
     assertEquals(PreviewAreaState.LOADING, previewArea.previewState);
     assertFalse(
-        previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+        previewArea.shadowRoot!.querySelector('.preview-area-overlay-layer')!
             .classList.contains('invisible'));
     const message =
-        previewArea.shadowRoot.querySelector('.preview-area-message')
-            .querySelector('span');
-    assertEquals('Loading preview', message.textContent.trim());
+        previewArea.shadowRoot!.querySelector('.preview-area-message')!
+            .querySelector('span')!;
+    assertEquals('Loading preview', message.textContent!.trim());
 
-    previewArea.startPreview();
+    previewArea.startPreview(false);
 
     return whenPreviewStarted.then(() => {
       assertEquals(PreviewAreaState.DISPLAY_PREVIEW, previewArea.previewState);
       assertEquals(3, pluginProxy.getCallCount('loadPreviewPage'));
       assertTrue(
-          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+          previewArea.shadowRoot!.querySelector('.preview-area-overlay-layer')!
               .classList.contains('invisible'));
 
       // If destination capabilities fetch fails, the invalid printer error
@@ -88,13 +90,13 @@ suite(preview_area_test.suiteName, function() {
       previewArea.error = Error.INVALID_PRINTER;
       assertEquals(PreviewAreaState.ERROR, previewArea.previewState);
       assertFalse(
-          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+          previewArea.shadowRoot!.querySelector('.preview-area-overlay-layer')!
               .classList.contains('invisible'));
       assertEquals(
           'The selected printer is not available or not installed ' +
               'correctly.  Check your printer or try selecting another ' +
               'printer.',
-          message.textContent.trim());
+          message.textContent!.trim());
     });
   });
 
@@ -103,15 +105,15 @@ suite(preview_area_test.suiteName, function() {
     // Simulate starting the preview.
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;
-    previewArea.startPreview();
+    previewArea.startPreview(false);
 
     return whenPreviewStarted.then(() => {
       assertEquals(PreviewAreaState.DISPLAY_PREVIEW, previewArea.previewState);
       assertTrue(
-          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+          previewArea.shadowRoot!.querySelector('.preview-area-overlay-layer')!
               .classList.contains('invisible'));
       const plugin =
-          previewArea.shadowRoot.querySelector('.preview-area-plugin');
+          previewArea.shadowRoot!.querySelector('.preview-area-plugin')!;
       assertEquals(null, plugin.getAttribute('tabindex'));
 
       // This can be triggered at any time by a resizing of the viewport or

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundGraphicsModeRestriction, DuplexMode, getInstance, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl} from 'chrome://print/print_preview.js';
+import {BackgroundGraphicsModeRestriction, CrButtonElement, CrCheckboxElement, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PolicyObjectEntry, PrintPreviewAppElement, PrintPreviewPluralStringProxyImpl, SerializedSettings} from 'chrome://print/print_preview.js';
 // <if expr="chromeos or lacros">
-import {ColorModeRestriction, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
+import {ColorModeRestriction, DuplexMode, DuplexModeRestriction, PinModeRestriction} from 'chrome://print/print_preview.js';
 // </if>
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
 // <if expr="chromeos or lacros">
@@ -19,34 +21,32 @@ import {getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
 
 
-window.policy_tests = {};
-policy_tests.suiteName = 'PolicyTest';
-/** @enum {string} */
-policy_tests.TestNames = {
-  HeaderFooterPolicy: 'header/footer policy',
-  CssBackgroundPolicy: 'css background policy',
-  MediaSizePolicy: 'media size policy',
-  SheetsPolicy: 'sheets policy',
-  ColorPolicy: 'color policy',
-  DuplexPolicy: 'duplex policy',
-  PinPolicy: 'pin policy',
-  PrintPdfAsImageAvailability: 'print as image available for PDF policy',
-  PrintPdfAsImageDefault: 'print as image option default for PDF policy'
+const policy_tests = {
+  suiteName: 'PolicyTest',
+  TestNames: {
+    HeaderFooterPolicy: 'header/footer policy',
+    CssBackgroundPolicy: 'css background policy',
+    MediaSizePolicy: 'media size policy',
+    SheetsPolicy: 'sheets policy',
+    ColorPolicy: 'color policy',
+    DuplexPolicy: 'duplex policy',
+    PinPolicy: 'pin policy',
+    PrintPdfAsImageAvailability: 'print as image available for PDF policy',
+    PrintPdfAsImageDefault: 'print as image option default for PDF policy'
+  },
 };
 
-/**
- * @typedef {{
- *   settingName: string,
- *   serializedSettingName: string,
- *   allowedMode: *,
- *   defaultMode: *,
- * }}
- */
-let AllowedDefaultModePolicySetup;
+Object.assign(window, {policy_tests: policy_tests});
+
+type AllowedDefaultModePolicySetup = {
+  settingName: string,
+  serializedSettingName?: string, allowedMode: any, defaultMode: any,
+};
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
-  /** override */
-  getPluralString(messageName, itemCount) {
+  text: string = '';
+
+  getPluralString(messageName: string, itemCount: number) {
     if (messageName === 'sheetsLimitErrorMessage') {
       this.methodCalled('getPluralString', {messageName, itemCount});
     }
@@ -54,17 +54,15 @@ class PolicyTestPluralStringProxy extends TestPluralStringProxy {
   }
 }
 
-
 suite(policy_tests.suiteName, function() {
-  /** @type {?PrintPreviewAppElement} */
-  let page = null;
+  let page: PrintPreviewAppElement;
 
   /**
-   * @param {!NativeInitialSettings} initialSettings
-   * @return {!Promise} A Promise that resolves once initial settings are done
+   * @return A Promise that resolves once initial settings are done
    *     loading.
    */
-  function loadInitialSettings(initialSettings) {
+  function loadInitialSettings(initialSettings: NativeInitialSettings):
+      Promise<void> {
     document.body.innerHTML = '';
     const nativeLayer = new NativeLayerStub();
     nativeLayer.setInitialSettings(initialSettings);
@@ -95,34 +93,36 @@ suite(policy_tests.suiteName, function() {
   /**
    * Sets up the Print Preview app, and loads initial settings with the given
    * policy.
-   * @param {!Array<!AllowedDefaultModePolicySetup>} policies Policies to set
-   *     up.
-   * @param {boolean} isPdf If settings are for previewing a PDF.
-   * @return {!Promise} A Promise that resolves once initial settings are done
-   *     loading.
+   * @param policies Policies to set up.
+   * @param isPdf If settings are for previewing a PDF.
+   * @return A Promise that resolves once initial settings are done loading.
    */
-  function doAllowedDefaultModePoliciesSetup(policies, isPdf = false) {
+  function doAllowedDefaultModePoliciesSetup(
+      policies: AllowedDefaultModePolicySetup[],
+      isPdf: boolean = false): Promise<void> {
     const initialSettings = getDefaultInitialSettings(isPdf);
-    const appState = {version: 2};
+    const appState: SerializedSettings = {version: 2};
     let setSerializedAppState = false;
 
     initialSettings.policies = {};
 
     policies.forEach(setup => {
       if (setup.allowedMode !== undefined || setup.defaultMode !== undefined) {
-        const policy = {};
+        const policy: PolicyObjectEntry = {};
         if (setup.allowedMode !== undefined) {
           policy.allowedMode = setup.allowedMode;
         }
         if (setup.defaultMode !== undefined) {
           policy.defaultMode = setup.defaultMode;
         }
-        initialSettings.policies[setup.settingName] = policy;
+        (initialSettings.policies as {[key: string]: any})[setup.settingName] =
+            policy;
       }
       if (setup.defaultMode !== undefined &&
           setup.serializedSettingName !== undefined) {
         // We want to make sure sticky settings get overridden.
-        appState[setup.serializedSettingName] = !setup.defaultMode;
+        (appState as {[key: string]: any})[setup.serializedSettingName] =
+            !setup.defaultMode;
         setSerializedAppState = true;
       }
     });
@@ -136,17 +136,14 @@ suite(policy_tests.suiteName, function() {
   /**
    * Sets up the Print Preview app, and loads initial settings with the
    * given policy.
-   * @param {string} settingName Name of the setting to set up.
-   * @param {string} serializedSettingName Name of the serialized setting.
-   * @param {*} allowedMode Allowed value for the given setting.
-   * @param {*} defaultMode Default value for the given setting.
-   * @return {!Promise} A Promise that resolves once initial settings are
-   *     done loading.
+   * @param settingName Name of the setting to set up.
+   * @param value The value to set for the policy.
+   * @return A Promise that resolves once initial settings are done loading.
    */
-  function doValuePolicySetup(settingName, value) {
+  function doValuePolicySetup(settingName: string, value: any): Promise<void> {
     const initialSettings = getDefaultInitialSettings();
     if (value !== undefined) {
-      const policy = {value: value};
+      const policy: PolicyObjectEntry = {value: value};
       initialSettings.policies = {[settingName]: policy};
     }
     return loadInitialSettings(initialSettings);
@@ -154,15 +151,15 @@ suite(policy_tests.suiteName, function() {
 
   function toggleMoreSettings() {
     const moreSettingsElement =
-        page.shadowRoot.querySelector('print-preview-sidebar')
-            .shadowRoot.querySelector('print-preview-more-settings');
+        page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+            .querySelector('print-preview-more-settings')!;
     moreSettingsElement.$.label.click();
   }
 
-  function getCheckbox(settingName) {
-    return page.shadowRoot.querySelector('print-preview-sidebar')
-        .shadowRoot.querySelector('print-preview-other-options-settings')
-        .shadowRoot.querySelector(`#${settingName}`);
+  function getCheckbox(settingName: string): CrCheckboxElement {
+    return page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+        .querySelector('print-preview-other-options-settings')!.shadowRoot!
+        .querySelector<CrCheckboxElement>(`#${settingName}`)!;
   }
 
   // Tests different scenarios of applying header/footer policy.
@@ -301,10 +298,10 @@ suite(policy_tests.suiteName, function() {
       }]);
       toggleMoreSettings();
       const mediaSettingsSelect =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .shadowRoot.querySelector('print-preview-media-size-settings')
-              .shadowRoot.querySelector('print-preview-settings-select')
-              .shadowRoot.querySelector('select');
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+              .querySelector('print-preview-media-size-settings')!.shadowRoot!
+              .querySelector('print-preview-settings-select')!.shadowRoot!
+              .querySelector('select')!;
       assertEquals(
           subtestParams.expectedName,
           JSON.parse(mediaSettingsSelect.value).name);
@@ -363,17 +360,18 @@ suite(policy_tests.suiteName, function() {
       pluralString.resetResolver('getPluralString');
       page.setSetting('pages', subtestParams.pages);
       if (subtestParams.expectedNonEmptyErrorMessage) {
-        const {_, itemCount} = await pluralString.whenCalled('getPluralString');
-        assertEquals(subtestParams.maxSheets, itemCount);
+        const pluralStringArgs =
+            await pluralString.whenCalled('getPluralString');
+        assertEquals(subtestParams.maxSheets, pluralStringArgs.itemCount);
       }
       const printButton =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .shadowRoot.querySelector('print-preview-button-strip')
-              .shadowRoot.querySelector('cr-button.action-button');
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+              .querySelector('print-preview-button-strip')!.shadowRoot!
+              .querySelector<CrButtonElement>('cr-button.action-button')!;
       const errorMessage =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .shadowRoot.querySelector('print-preview-button-strip')
-              .shadowRoot.querySelector('div.error-message');
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+              .querySelector('print-preview-button-strip')!.shadowRoot!
+              .querySelector<HTMLElement>('div.error-message')!;
       assertEquals(subtestParams.expectedDisabled, printButton.disabled);
       assertEquals(subtestParams.expectedHidden, errorMessage.hidden);
       assertEquals(
@@ -451,9 +449,9 @@ suite(policy_tests.suiteName, function() {
         defaultMode: subtestParams.defaultMode
       }]);
       const colorSettingsSelect =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .shadowRoot.querySelector('print-preview-color-settings')
-              .shadowRoot.querySelector('select');
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+              .querySelector('print-preview-color-settings')!.shadowRoot!
+              .querySelector('select')!;
       assertEquals(
           subtestParams.expectedDisabled, colorSettingsSelect.disabled);
       assertEquals(subtestParams.expectedValue, colorSettingsSelect.value);
@@ -581,13 +579,13 @@ suite(policy_tests.suiteName, function() {
       }]);
       toggleMoreSettings();
       const duplexSettingsSection =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .shadowRoot.querySelector('print-preview-duplex-settings');
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+              .querySelector('print-preview-duplex-settings')!;
       const checkbox =
-          duplexSettingsSection.shadowRoot.querySelector('cr-checkbox');
+          duplexSettingsSection.shadowRoot!.querySelector('cr-checkbox')!;
       const collapse =
-          duplexSettingsSection.shadowRoot.querySelector('iron-collapse');
-      const select = duplexSettingsSection.shadowRoot.querySelector('select');
+          duplexSettingsSection.shadowRoot!.querySelector('iron-collapse')!;
+      const select = duplexSettingsSection.shadowRoot!.querySelector('select')!;
       const expectedValue = subtestParams.expectedValue.toString();
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
       assertEquals(subtestParams.expectedOpened, collapse.opened);
@@ -677,17 +675,17 @@ suite(policy_tests.suiteName, function() {
 
       if (subtestParams.allowedMode !== undefined ||
           subtestParams.defaultMode !== undefined) {
-        const policy = {};
+        const policy: PolicyObjectEntry = {};
         if (subtestParams.allowedMode !== undefined) {
           policy.allowedMode = subtestParams.allowedMode;
         }
         if (subtestParams.defaultMode !== undefined) {
           policy.defaultMode = subtestParams.defaultMode;
         }
-        initialSettings.policies = {"pin": policy};
+        initialSettings.policies = {'pin': policy};
       }
 
-      const appState = {version: 2, "pinValue": "0000"};
+      const appState: SerializedSettings = {version: 2, 'pinValue': '0000'};
       if (subtestParams.defaultMode !== undefined) {
         appState.isPinEnabled = !subtestParams.defaultMode;
       }
@@ -696,13 +694,13 @@ suite(policy_tests.suiteName, function() {
       await loadInitialSettings(initialSettings);
 
       const pinSettingsSection =
-          page.shadowRoot.querySelector('print-preview-sidebar')
-              .shadowRoot.querySelector('print-preview-pin-settings');
+          page.shadowRoot!.querySelector('print-preview-sidebar')!.shadowRoot!
+              .querySelector('print-preview-pin-settings')!;
       const checkbox =
-          pinSettingsSection.shadowRoot.querySelector('cr-checkbox');
+          pinSettingsSection.shadowRoot!.querySelector('cr-checkbox')!;
       const collapse =
-          pinSettingsSection.shadowRoot.querySelector('iron-collapse');
-      const input = pinSettingsSection.shadowRoot.querySelector('cr-input');
+          pinSettingsSection.shadowRoot!.querySelector('iron-collapse')!;
+      const input = pinSettingsSection.shadowRoot!.querySelector('cr-input')!;
       assertEquals(subtestParams.expectedCheckboxDisabled, checkbox.disabled);
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
       assertEquals(subtestParams.expectedOpened, collapse.opened);
@@ -765,8 +763,9 @@ suite(policy_tests.suiteName, function() {
           /*isPdf=*/ subtestParams.isPdf);
       toggleMoreSettings();
       const checkbox = getCheckbox('rasterize');
-      expectEquals(
-          subtestParams.expectedHidden, checkbox.parentNode.parentNode.hidden);
+      assertEquals(
+          subtestParams.expectedHidden,
+          (checkbox.parentNode!.parentNode! as HTMLElement).hidden);
     }
   });
   // </if>
@@ -842,8 +841,8 @@ suite(policy_tests.suiteName, function() {
           /*isPdf=*/ true);
       toggleMoreSettings();
       const checkbox = getCheckbox('rasterize');
-      assertFalse(checkbox.parentNode.parentNode.hidden);
-      expectEquals(subtestParams.expectedChecked, checkbox.checked);
+      assertFalse((checkbox.parentNode!.parentNode! as HTMLElement).hidden);
+      assertEquals(subtestParams.expectedChecked, checkbox.checked);
     }
   });
 });

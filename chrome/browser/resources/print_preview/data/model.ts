@@ -93,6 +93,12 @@ export type PolicyEntry = {
   applyOnDestinationUpdate: boolean,
 };
 
+export type PolicyObjectEntry = {
+  defaultMode?: any,
+  allowedMode?: any,
+  value?: number,
+};
+
 export type PolicySettings = {
   headerFooter?: PolicyEntry,
   cssBackground?: PolicyEntry,
@@ -1189,8 +1195,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     if (policies === undefined) {
       return;
     }
-    const policiesObject = policies as
-        {[key: string]: {defaultMode?: any, allowedMode?: any, value?: number}};
+    const policiesObject = policies as {[key: string]: PolicyObjectEntry};
     ['headerFooter', 'cssBackground', 'mediaSize'].forEach(settingName => {
       if (!policiesObject[settingName]) {
         return;

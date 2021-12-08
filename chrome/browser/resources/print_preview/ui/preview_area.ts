@@ -33,7 +33,7 @@ import {MARGIN_KEY_MAP, MarginObject, PrintPreviewMarginControlContainerElement}
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-type PreviewTicket = Ticket&{
+export type PreviewTicket = Ticket&{
   headerFooterEnabled: boolean;
   pageRange: Array<{to: number, from: number}>;
   pagesPerSheet: number;
@@ -145,6 +145,10 @@ export class PrintPreviewPreviewAreaElement extends
 
   private computePreviewLoaded_(): boolean {
     return this.documentReady_ && this.pluginLoadComplete_;
+  }
+
+  getLastTicketForTest(): PreviewTicket|null {
+    return this.lastTicket_;
   }
 
   previewLoaded(): boolean {
@@ -780,6 +784,12 @@ export class PrintPreviewPreviewAreaElement extends
       default:
         return '';
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-preview-area': PrintPreviewPreviewAreaElement;
   }
 }
 
