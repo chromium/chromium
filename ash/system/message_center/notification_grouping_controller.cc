@@ -133,6 +133,15 @@ void NotificationGroupingController::PopulateGroupParent(
       GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           notification_id);
 
+  // TODO(crbug/1277765) Need this check to fix crbug/1275765. However, this
+  // should not be necessary if the message center bubble is initialized
+  // properly. Need to monitor for empty group notifications if this check is
+  // hit and fix the root cause.
+  if (!parent_view) {
+    LOG(WARNING) << "MessageView does not exist for notification: "
+                 << notification_id;
+    return;
+  }
   std::vector<const Notification*> notifications;
   for (const auto* notification : MessageCenter::Get()->GetNotifications()) {
     if (notification->notifier_id() == parent_view->notifier_id() &&
