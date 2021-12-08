@@ -1721,8 +1721,8 @@ class MetaBuildWrapper(object):
     # under Xvfb on Linux.
     # TODO(tonikitoo,msisov,fwang): Find a way to run tests for the Wayland
     # backend.
-    use_xvfb = (self.platform == 'linux2' and not is_android and not is_fuchsia
-                and not is_cros_device)
+    use_xvfb = (self.platform.startswith('linux') and not is_android
+                and not is_fuchsia and not is_cros_device)
 
     asan = 'is_asan=true' in vals['gn_args']
     msan = 'is_msan=true' in vals['gn_args']
