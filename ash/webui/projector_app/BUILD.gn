@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/projector_app/projector_app.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Projector App is ash-chrome only")
@@ -28,8 +30,11 @@ static_library("projector_app") {
 
   deps = [
     "//ash/public/cpp",
+    "//ash/webui/media_app_ui:buildflags",
+    "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_app_trusted_resources",
+    "//ash/webui/resources:projector_app_untrusted_resources",
     "//ash/webui/resources:projector_app_untrusted_resources",
     "//chromeos/strings",
     "//components/prefs",

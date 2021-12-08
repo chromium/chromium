@@ -6,6 +6,7 @@
 
 #include "ash/grit/ash_projector_app_untrusted_resources.h"
 #include "ash/grit/ash_projector_app_untrusted_resources_map.h"
+#include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources_map.h"
@@ -16,6 +17,10 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_generated_resources_map.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+#include "chromeos/grit/chromeos_media_app_bundle_resources.h"
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
 
 namespace ash {
 
@@ -39,12 +44,25 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
   source->AddResourcePaths(
       base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize));
 
+#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+  // Loads WASM resources shipped to Chromium by chrome://media-app.
+  source->AddResourcePath("annotator/ink_engine_ink.worker.js",
+                          IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS);
+  source->AddResourcePath("annotator/ink_engine_ink.wasm",
+                          IDR_MEDIA_APP_INK_ENGINE_INK_WASM);
+  source->AddResourcePath("annotator/ink.js", IDR_MEDIA_APP_INK_JS);
+#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
+
   // Provide a list of specific script resources(javascript files and inlined
   // scripts inside html) or their sha-256 hashes to allow to be executed.
+  // "wasm-eval" is added to allow wasm.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      // Allows loading javascript files from the current origin
-      "script-src 'self';");
+      "script-src 'self' 'wasm-eval';");
+  // Need to explicitly set |worker-src| because CSP falls back to |child-src|
+  // which is none.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
   // Allow styles to include inline styling needed for Polymer elements.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
@@ -57,19 +75,22 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       network::mojom::CSPDirectiveName::MediaSrc,
       // Allows streaming video.
       "media-src 'self' https://*.drive.google.com;");
-
+  // Allow images to also handle data urls.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src blob: data: 'self' https://*.drive.google.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src 'self' https://www.googleapis.com "
       "https://drive.google.com;");
 
+  // Allow use of SharedArrayBuffer (required by the wasm).
+  source->OverrideCrossOriginOpenerPolicy("same-origin");
+  source->OverrideCrossOriginEmbedderPolicy("require-corp");
+
   // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
   // template is setting innerHTML.
   source->DisableTrustedTypesCSP();
-
-  // TODO(b/193579885): Add ink WASM.
-  // TODO(b/193579885): Override content security policy to support loading wasm
-  // resources.
 
   source->AddFrameAncestor(GURL(kChromeUITrustedProjectorUrl));
 
