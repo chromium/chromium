@@ -953,7 +953,7 @@ void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateBorderColor();
   expanded_state_desks_templates_button_->set_active(
-      !!overview_grid_->desks_templates_grid_widget());
+      overview_grid_->IsShowingDesksTemplatesGrid());
   expanded_state_desks_templates_button_->UpdateBorderColor();
 }
 
