@@ -697,6 +697,13 @@ public final class ChromePreferenceKeys {
             "Chrome.OfflineIndicatorV2.HasPersistentOfflineContent";
 
     /**
+     * Save the timestamp of the last time that we record metrics on whether user enables the price
+     * tracking annotations.
+     */
+    public static final String PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP =
+            "Chrome.PriceTracking.AnnotationsEnabledMetricsTimestamp";
+
+    /**
      * Whether the PriceAlertsMessageCard is enabled.
      */
     public static final String PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD =
@@ -1109,6 +1116,7 @@ public final class ChromePreferenceKeys {
                 OPEN_RECENT_TABS_COUNT,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
+                PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT,
                 PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD,

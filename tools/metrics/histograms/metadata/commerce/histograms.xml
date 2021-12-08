@@ -150,6 +150,19 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PriceDrop.AnnotationsEnabled" enum="Boolean"
+    expires_after="2022-06-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the price drop annotation is enabled. Recorded when user
+    enters the grid tab switcher. The record frequency is controlled by a
+    feature parameter and by default it is recorded at most once every day.
+    Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
     expires_after="2022-06-01">
   <owner>zhiyuancai@chromium.org</owner>

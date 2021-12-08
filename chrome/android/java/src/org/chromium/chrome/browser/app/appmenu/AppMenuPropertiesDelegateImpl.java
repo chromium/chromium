@@ -528,7 +528,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                                 .size()
                         > 1;
         boolean isPriceTrackingVisible = isOverviewModeMenu
-                && PriceTrackingUtilities.isPriceTrackingEligible()
+                && PriceTrackingUtilities.shouldShowPriceTrackingMenu()
                 && !DeviceClassManager.enableAccessibilityLayout(mContext) && !isIncognito;
         boolean isPriceTrackingEnabled = isPriceTrackingVisible;
         boolean hasItemBetweenDividers = false;
