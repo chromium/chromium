@@ -28,9 +28,7 @@ namespace device_activity {
 namespace {
 
 // Amount of time to wait before retriggering repeating timer.
-// Currently we define it as 5 hours to align our protocol with Omahas
-// device active reporting.
-constexpr base::TimeDelta kTimeToRepeat = base::Hours(5);
+constexpr base::TimeDelta kTimeToRepeat = base::Hours(1);
 
 // General upper bound of expected Fresnel response size in bytes.
 constexpr size_t kMaxFresnelResponseSizeBytes = 1 << 20;  // 1MB;
