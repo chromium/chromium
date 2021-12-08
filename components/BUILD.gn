@@ -489,7 +489,10 @@ test("components_unittests") {
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
-    deps += [ "//components/account_manager_core:unit_tests" ]
+    deps += [
+      "//components/account_manager_core:unit_tests",
+      "//components/arc/common:unit_tests",
+    ]
   }
 
   if (is_mac) {

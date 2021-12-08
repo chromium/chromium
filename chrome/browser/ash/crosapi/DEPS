@@ -1,5 +1,6 @@
 specific_include_rules = {
   "arc_ash(\.cc|.h)": [
+    "+ash/components/arc/mojom",
     "+components/arc/intent_helper",
   ],
   "message_center_ash(\.cc|_unittest\.cc)": [

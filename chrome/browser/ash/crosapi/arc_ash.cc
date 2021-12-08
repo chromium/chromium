@@ -6,9 +6,23 @@
 
 #include <utility>
 
+#include "ash/components/arc/mojom/scale_factor.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "base/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+
+// Check ScaleFactor values are the same for arc::mojom and crosapi::mojom.
+#define STATIC_ASSERT_SCALE_FACTOR(v)                               \
+  static_assert(static_cast<int>(crosapi::mojom::ScaleFactor::v) == \
+                    static_cast<int>(arc::mojom::ScaleFactor::v),   \
+                "mismatching enums: " #v)
+STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_NONE);
+STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_100P);
+STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_200P);
+STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_300P);
 
 namespace crosapi {
 
@@ -57,8 +71,58 @@ void ArcAsh::OnArcIntentHelperBridgeDestruction() {
 void ArcAsh::RequestActivityIcons(
     std::vector<mojom::ActivityNamePtr> activities,
     mojom::ScaleFactor scale_factor,
-    RequestActivityIconsCallback) {
-  NOTIMPLEMENTED();
+    RequestActivityIconsCallback callback) {
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    LOG(WARNING) << "ARC is not ready";
+    return;
+  }
+
+  auto* intent_helper_holder =
+      arc_service_manager->arc_bridge_service()->intent_helper();
+  if (!intent_helper_holder->IsConnected()) {
+    LOG(WARNING) << "ARC intent helper instance is not ready.";
+    return;
+  }
+
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
+  if (!instance) {
+    LOG(WARNING) << "RequestActivityIcons is not supported.";
+    return;
+  }
+
+  // Convert activities to arc::mojom::ActivityNamePtr from
+  // crosapi::mojom::ActivityNamePtr.
+  std::vector<arc::mojom::ActivityNamePtr> converted_activities;
+  for (const auto& activity : activities) {
+    converted_activities.push_back(arc::mojom::ActivityName::New(
+        activity->package_name, activity->activity_name));
+  }
+  instance->RequestActivityIcons(
+      std::move(converted_activities), arc::mojom::ScaleFactor(scale_factor),
+      base::BindOnce(&ArcAsh::ConvertActivityIcons,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcAsh::ConvertActivityIcons(
+    RequestActivityIconsCallback callback,
+    std::vector<arc::mojom::ActivityIconPtr> icons) {
+  // Convert icons to crosapi::mojom::ActivityIconPtr from
+  // arc::mojom::ActivityIconPtr.
+  std::vector<mojom::ActivityIconPtr> converted_icons;
+  for (const auto& icon : icons) {
+    converted_icons.push_back(mojom::ActivityIcon::New(
+        mojom::ActivityName::New(icon->activity->package_name,
+                                 icon->activity->activity_name),
+        icon->width, icon->height, icon->icon,
+        mojom::RawIconPngData::New(
+            icon->icon_png_data->is_adaptive_icon,
+            icon->icon_png_data->icon_png_data,
+            icon->icon_png_data->foreground_icon_png_data,
+            icon->icon_png_data->background_icon_png_data)));
+  }
+  std::move(callback).Run(std::move(converted_icons));
 }
 
 void ArcAsh::RequestUrlHandlerList(const std::string& url,

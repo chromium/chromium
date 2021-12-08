@@ -20,6 +20,12 @@ namespace arc {
 namespace internal {
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using RawIconPngDataPtr = mojom::RawIconPngDataPtr;
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+using RawIconPngDataPtr = crosapi::mojom::RawIconPngDataPtr;
+#endif
+
 void OnIconsReady0(
     std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> activity_to_icons) {
   EXPECT_EQ(3U, activity_to_icons->size());
@@ -61,7 +67,7 @@ class FakeAdaptiveIconDelegate : public AdaptiveIconDelegate {
   FakeAdaptiveIconDelegate& operator=(const FakeAdaptiveIconDelegate&) = delete;
 
   void GenerateAdaptiveIcons(
-      const std::vector<arc::mojom::ActivityIconPtr>& icons,
+      const std::vector<ActivityIconLoader::ActivityIconPtr>& icons,
       AdaptiveIconDelegateCallback callback) override {
     ++count_;
     std::vector<gfx::ImageSkia> result;
@@ -250,19 +256,21 @@ TEST_F(ActivityIconLoaderOnIconsReadyTest, TestWithDelegate) {
       activity_name1,
       ActivityIconLoader::Icons(gfx::Image(), gfx::Image(), nullptr)));
 
-  std::vector<mojom::ActivityIconPtr> icons;
+  std::vector<ActivityIconLoader::ActivityIconPtr> icons;
   std::string foreground_png_data_as_string0 = "FOREGROUND_ICON_CONTENT_0";
   std::string foreground_png_data_as_string1 = "FOREGROUND_ICON_CONTENT_1";
-  icons.emplace_back(mojom::ActivityIcon::New(
-      mojom::ActivityName::New("p2", "a2"), 32, 32, std::vector<uint8_t>(),
-      mojom::RawIconPngData::New(
+  icons.emplace_back(ActivityIconLoader::ActivityIconPtr::Struct::New(
+      ActivityIconLoader::ActivityNamePtr::Struct::New("p2", "a2"), 32, 32,
+      std::vector<uint8_t>(),
+      RawIconPngDataPtr::Struct::New(
           true, std::vector<uint8_t>(),
           std::vector<uint8_t>(foreground_png_data_as_string0.begin(),
                                foreground_png_data_as_string0.end()),
           std::vector<uint8_t>())));
-  icons.emplace_back(mojom::ActivityIcon::New(
-      mojom::ActivityName::New("p3", "a3"), 32, 32, std::vector<uint8_t>(),
-      mojom::RawIconPngData::New(
+  icons.emplace_back(ActivityIconLoader::ActivityIconPtr::Struct::New(
+      ActivityIconLoader::ActivityNamePtr::Struct::New("p3", "a3"), 32, 32,
+      std::vector<uint8_t>(),
+      RawIconPngDataPtr::Struct::New(
           true, std::vector<uint8_t>(),
           std::vector<uint8_t>(foreground_png_data_as_string1.begin(),
                                foreground_png_data_as_string1.end()),
@@ -301,13 +309,13 @@ TEST_F(ActivityIconLoaderOnIconsReadyTest, TestWithoutDelegate) {
       activity_name1,
       ActivityIconLoader::Icons(gfx::Image(), gfx::Image(), nullptr)));
 
-  std::vector<mojom::ActivityIconPtr> icons;
-  icons.emplace_back(mojom::ActivityIcon::New(
-      mojom::ActivityName::New("p2", "a2"), 1, 1, std::vector<uint8_t>(4),
-      mojom::RawIconPngData::New()));
-  icons.emplace_back(mojom::ActivityIcon::New(
-      mojom::ActivityName::New("p3", "a3"), 1, 1, std::vector<uint8_t>(4),
-      mojom::RawIconPngData::New()));
+  std::vector<ActivityIconLoader::ActivityIconPtr> icons;
+  icons.emplace_back(ActivityIconLoader::ActivityIconPtr::Struct::New(
+      ActivityIconLoader::ActivityNamePtr::Struct::New("p2", "a2"), 1, 1,
+      std::vector<uint8_t>(4), RawIconPngDataPtr::Struct::New()));
+  icons.emplace_back(ActivityIconLoader::ActivityIconPtr::Struct::New(
+      ActivityIconLoader::ActivityNamePtr::Struct::New("p3", "a3"), 1, 1,
+      std::vector<uint8_t>(4), RawIconPngDataPtr::Struct::New()));
 
   // Call OnIconsReady() and check that the cache is properly updated.
   loader.OnIconsReadyForTesting(

@@ -160,6 +160,8 @@ source_set("crosapi") {
   deps = [
     "//ash",
     "//ash/components/account_manager",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
     "//ash/components/settings:settings",
     "//ash/constants",
     "//base",
