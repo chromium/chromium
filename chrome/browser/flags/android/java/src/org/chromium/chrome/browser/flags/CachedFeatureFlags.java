@@ -102,6 +102,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, false)
                     .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, false)
+                    .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
                     .build();
 
     /**

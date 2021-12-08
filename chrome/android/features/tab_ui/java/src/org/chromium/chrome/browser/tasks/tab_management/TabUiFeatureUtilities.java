@@ -142,7 +142,7 @@ public class TabUiFeatureUtilities {
     public static boolean isTabGroupsAndroidEnabled(Context context) {
         // Disable tab group for tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return false;
+            return CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
         }
 
         return !DeviceClassManager.enableAccessibilityLayout(context)

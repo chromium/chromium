@@ -140,6 +140,7 @@ extern const base::Feature kTabEngagementReportingAndroid;
 extern const base::Feature kTabGroupsAndroid;
 extern const base::Feature kTabGroupsContinuationAndroid;
 extern const base::Feature kTabGroupsUiImprovementsAndroid;
+extern const base::Feature kTabGroupsForTablets;
 extern const base::Feature kTabGridLayoutAndroid;
 extern const base::Feature kTabReparenting;
 extern const base::Feature kTabSwitcherOnReturn;

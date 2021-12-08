@@ -2024,6 +2024,9 @@ extern const char kSharingHubLinkToggleDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kTabGroupsForTabletsName[];
+extern const char kTabGroupsForTabletsDescription[];
+
 extern const char kThemeRefactorAndroidName[];
 extern const char kThemeRefactorAndroidDescription[];
 

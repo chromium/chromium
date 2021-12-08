@@ -106,6 +106,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT);
                 add(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID);
                 add(ChromeFeatureList.TAB_GROUPS_ANDROID);
+                add(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS);
                 add(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID);
                 add(ChromeFeatureList.TAB_TO_GTS_ANIMATION);
                 add(ChromeFeatureList.THEME_REFACTOR_ANDROID);

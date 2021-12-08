@@ -3521,6 +3521,9 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
+const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";
+
 const char kThemeRefactorAndroidName[] = "Theme refactor on Android";
 const char kThemeRefactorAndroidDescription[] =
     "Enables the theme refactoring on Android.";

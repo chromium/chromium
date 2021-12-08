@@ -7643,6 +7643,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGridTabSwitcherForTabletsName,
      flag_descriptions::kGridTabSwitcherForTabletsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherForTablets)},
+
+    {"enable-tab-groups-for-tablets",
+     flag_descriptions::kTabGroupsForTabletsName,
+     flag_descriptions::kTabGroupsForTabletsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupsForTablets)},
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

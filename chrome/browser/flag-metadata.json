@@ -2718,6 +2718,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-tab-groups-for-tablets",
+    "owners": [ "skavuluru", "clank-app-team@google.com" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "enable-tab-groups-ui-improvements",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
