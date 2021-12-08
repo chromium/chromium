@@ -311,7 +311,6 @@
         ],
         "returns": {
           "$ref": "Port",
-          // TODO(robwu): This description should appear in the documentation, but the docserver does not render it.
           "description": "Port through which messages can be sent and received. The port's $(ref:Port onDisconnect) event is fired if the extension/app does not exist. "
         }
       },
