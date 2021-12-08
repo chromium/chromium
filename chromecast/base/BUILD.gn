@@ -62,6 +62,7 @@ cast_source_set("base") {
     "path_utils.h",
     "pref_names.cc",
     "pref_names.h",
+    "process_types.h",
     "process_utils.cc",
     "process_utils.h",
     "statistics/weighted_mean.cc",

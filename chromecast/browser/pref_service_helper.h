@@ -13,6 +13,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "chromecast/base/process_types.h"
 #include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
@@ -26,7 +27,8 @@ class PrefServiceHelper {
  public:
   // Loads configs from config file. Returns true if successful.
   static std::unique_ptr<PrefService> CreatePrefService(
-      PrefRegistrySimple* registry);
+      PrefRegistrySimple* registry,
+      ProcessType process_type = ProcessType::kCastBrowser);
 
   // Provides names of prefs that take a large amount of storage, and are
   // therefore stored in a different file.

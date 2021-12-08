@@ -33,19 +33,27 @@ void UserPrefsLoadError(PersistentPrefStore::PrefReadError* error_val,
   *error_val = error;
 }
 
-base::FilePath GetConfigPath() {
+base::FilePath GetConfigPath(ProcessType process_type) {
   base::FilePath config_path;
-  CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
+  switch (process_type) {
+    case ProcessType::kCastBrowser:
+      CHECK(base::PathService::Get(FILE_CAST_CONFIG, &config_path));
+      break;
+    case ProcessType::kCastService:
+      CHECK(base::PathService::Get(FILE_CAST_SERVICE_CONFIG, &config_path));
+      // No default. All possible cases are handled above.
+  }
+  CHECK(!config_path.empty());
   return config_path;
 }
 
-base::FilePath GetLargeConfigPath() {
-  return GetConfigPath().AddExtension(".large");
+base::FilePath GetLargeConfigPath(ProcessType process_type) {
+  return GetConfigPath(process_type).AddExtension(".large");
 }
 
-scoped_refptr<PersistentPrefStore> MakePrefStore() {
+scoped_refptr<PersistentPrefStore> MakePrefStore(ProcessType process_type) {
   auto default_pref_store =
-      base::MakeRefCounted<JsonPrefStore>(GetConfigPath());
+      base::MakeRefCounted<JsonPrefStore>(GetConfigPath(process_type));
 
   std::set<std::string> selected_pref_names;
   if (PrefServiceHelper::LargePrefNames) {
@@ -56,7 +64,7 @@ scoped_refptr<PersistentPrefStore> MakePrefStore() {
   }
 
   auto large_pref_store =
-      base::MakeRefCounted<JsonPrefStore>(GetLargeConfigPath());
+      base::MakeRefCounted<JsonPrefStore>(GetLargeConfigPath(process_type));
   // Move large prefs out of the default pref store, if necessary.
   if (default_pref_store->ReadPrefs() ==
       PersistentPrefStore::PREF_READ_ERROR_NONE) {
@@ -83,8 +91,9 @@ scoped_refptr<PersistentPrefStore> MakePrefStore() {
 
 // static
 std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
-    PrefRegistrySimple* registry) {
-  const base::FilePath config_path(GetConfigPath());
+    PrefRegistrySimple* registry,
+    ProcessType process_type) {
+  const base::FilePath config_path(GetConfigPath(process_type));
   DVLOG(1) << "Loading config from " << config_path.value();
 
   registry->RegisterBooleanPref(prefs::kMetricsIsNewClientID, false);
@@ -105,7 +114,7 @@ std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
   RegisterPlatformPrefs(registry);
 
   PrefServiceFactory pref_service_factory;
-  pref_service_factory.set_user_prefs(MakePrefStore());
+  pref_service_factory.set_user_prefs(MakePrefStore(process_type));
   pref_service_factory.set_async(false);
 
   PersistentPrefStore::PrefReadError prefs_read_error =

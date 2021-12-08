@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "chromecast/base/process_types.h"
+
 namespace base {
 struct Feature;
 }  // namespace base
@@ -22,11 +24,15 @@ namespace chromecast {
 class CastFeatureListCreator {
  public:
   CastFeatureListCreator();
+  CastFeatureListCreator(const CastFeatureListCreator&) = delete;
+  CastFeatureListCreator& operator=(const CastFeatureListCreator&) = delete;
   virtual ~CastFeatureListCreator();
 
   // Creates the |PrefService| and uses it to initialize |FeatureList|. Retains
-  // ownership of the |PrefService|.
-  void CreatePrefServiceAndFeatureList();
+  // ownership of the |PrefService|. Based on the given |ProcessType|, different
+  // files will be used to store prefs.
+  void CreatePrefServiceAndFeatureList(
+      ProcessType process_type = ProcessType::kCastBrowser);
 
   // Takes ownership of the |PrefService| previously created.
   std::unique_ptr<PrefService> TakePrefService();
