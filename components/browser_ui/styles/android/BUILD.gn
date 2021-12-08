@@ -23,7 +23,6 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color/checkbox_tint.xml",
     "java/res/color/default_icon_color_accent1_tint_list.xml",
     "java/res/color/default_icon_color_light_tint_list.xml",
     "java/res/color/default_icon_color_secondary_light_tint_list.xml",
@@ -34,6 +33,7 @@ android_resources("java_resources") {
     "java/res/color/default_text_color_list.xml",
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/progress_bar_bg_color.xml",
+    "java/res/color/selection_control_button_tint.xml",
     "java/res/color/switch_thumb_tint.xml",
     "java/res/color/switch_track_tint.xml",
     "java/res/color/text_highlight_color.xml",

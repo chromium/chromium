@@ -9,7 +9,9 @@
          themes.xml. -->
     <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI">
         <!-- Control styles -->
-        <item name="switchStyle">@style/SwitchMaterialStyle</item>
+        <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
+        <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
+        <item name="switchStyle">@style/Widget.BrowserUI.Switch</item>
 
         <!-- Window Properties -->
         <item name="android:windowBackground">@macro/default_bg_color</item>
@@ -36,12 +38,7 @@
 
         <!-- This is for keeping the current TextInputLayout style.
              TODO(crbug.com/1206024): Remove or update once the design for the app is updated. -->
-        <item name="textInputStyle">@style/TextInputStyle</item>
-        <!-- Overrides to keep the current styling for the widgets after migrating to the
-             MaterialComponents theme.
-             TODO(crbug.com/1165077): Remove these when the widgets are being migrated. -->
-        <item name="radioButtonStyle">@style/Widget.AppCompat.CompoundButton.RadioButton</item>
-        <item name="checkboxStyle">@style/Widget.AppCompat.CompoundButton.CheckBox</item>
+        <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
     </style>
 
     <style name="Theme.BrowserUI.DayNight" />
@@ -70,7 +67,24 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="TextInputStyle" parent="Widget.Design.TextInputLayout">
+    <!-- Control styles -->
+    <style name="Widget.BrowserUI.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/selection_control_button_tint</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+    <style name="Widget.BrowserUI.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/selection_control_button_tint</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+    <style name="Widget.BrowserUI.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_tint</item>
+        <item name="trackTint">@color/switch_track_tint</item>
+        <item name="trackTintMode">src_in</item>
+    </style>
+    <!-- TextInputLayout style -->
+    <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
     </style>
 
@@ -161,13 +175,6 @@
         <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 
-    <!-- Switch styling -->
-    <style name="SwitchMaterialStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="thumbTint">@color/switch_thumb_tint</item>
-        <item name="trackTint">@color/switch_track_tint</item>
-        <item name="trackTintMode">src_in</item>
-    </style>
-
     <!-- Switch styling for dark theme -->
     <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
          -->
@@ -177,7 +184,7 @@
         <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_100</item>
         <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_400</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
-        <item name="switchStyle">@style/SwitchMaterialStyle</item>
+        <item name="switchStyle">@style/Widget.BrowserUI.Switch</item>
     </style>
 
     <!-- Styling for an app menu item row. -->
