@@ -161,7 +161,10 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
         {base::TaskPriority::BEST_EFFORT, base::WithBaseSyncPrimitives()},
         base::BindOnce(&ApplyVisualTfLiteModelHelper, bitmap,
                        model_.tflite_metadata().input_width(),
-                       model_.tflite_metadata().input_height(), GetWeakPtr()),
+                       model_.tflite_metadata().input_height(),
+                       std::string(reinterpret_cast<const char*>(
+                                       visual_tflite_model_.data()),
+                                   visual_tflite_model_.length())),
         std::move(callback));
     base::UmaHistogramTimes(
         "SBClientPhishing.TfLiteModelLoadTime.ProtobufScorer",
