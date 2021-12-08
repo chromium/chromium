@@ -6,6 +6,11 @@
 
 #include <memory>
 
+#include "ash/components/tether/fake_notification_presenter.h"
+#include "ash/components/tether/fake_tether_component.h"
+#include "ash/components/tether/fake_tether_host_fetcher.h"
+#include "ash/components/tether/tether_component_impl.h"
+#include "ash/components/tether/tether_host_fetcher_impl.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -23,11 +28,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/components/tether/fake_notification_presenter.h"
-#include "chromeos/components/tether/fake_tether_component.h"
-#include "chromeos/components/tether/fake_tether_host_fetcher.h"
-#include "chromeos/components/tether/tether_component_impl.h"
-#include "chromeos/components/tether/tether_host_fetcher_impl.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"

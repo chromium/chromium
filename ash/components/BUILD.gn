@@ -27,6 +27,7 @@ source_set("unit_tests") {
     "//ash/components/security_token_pin:unit_tests",
     "//ash/components/settings:unit_tests",
     "//ash/components/smbfs:unit_tests",
+    "//ash/components/tether:unit_tests",
     "//ash/components/timezone:unit_tests",
     "//ash/components/trial_group:unit_tests",
   ]

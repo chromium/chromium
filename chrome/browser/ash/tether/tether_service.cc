@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ash/tether/tether_service.h"
 
+#include "ash/components/tether/gms_core_notifications_state_tracker_impl.h"
+#include "ash/components/tether/tether_component.h"
+#include "ash/components/tether/tether_component_impl.h"
+#include "ash/components/tether/tether_host_fetcher_impl.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
@@ -14,10 +18,6 @@
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/tether/gms_core_notifications_state_tracker_impl.h"
-#include "chromeos/components/tether/tether_component.h"
-#include "chromeos/components/tether/tether_component_impl.h"
-#include "chromeos/components/tether/tether_host_fetcher_impl.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_type_pattern.h"

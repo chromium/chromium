@@ -1843,9 +1843,9 @@
       'filepath': 'apitest|unittest|browsertest|uitest|chrome/test/',
     },
     'tether': {
-      'filepath': 'chrome/browser/ash/tether/'\
+      'filepath': 'ash/components/tether/'\
+                  '|chrome/browser/ash/tether/'\
                   '|chrome/browser/ui/ash/network/tether*'\
-                  '|chromeos/components/tether/'
     },
     'text_to_speech': {
       'filepath': 'tts'

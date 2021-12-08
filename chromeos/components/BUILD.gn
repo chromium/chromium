@@ -31,7 +31,6 @@ test("chromeos_components_unittests") {
     "//chromeos/components/sensors:unit_tests",
     "//chromeos/components/string_matching:unit_tests",
     "//chromeos/components/sync_wifi:unit_tests",
-    "//chromeos/components/tether:unit_tests",
     "//mojo/core/embedder",
     "//ui/base:base",
   ]

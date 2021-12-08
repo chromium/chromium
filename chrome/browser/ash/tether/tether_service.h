@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "ash/components/tether/tether_component.h"
+#include "ash/components/tether/tether_host_fetcher.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chromeos/components/tether/tether_component.h"
-#include "chromeos/components/tether/tether_host_fetcher.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
