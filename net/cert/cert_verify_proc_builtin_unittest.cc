@@ -15,6 +15,9 @@
 #include "net/cert/crl_set.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
+#include "net/cert/internal/trust_store.h"
+#include "net/cert/internal/trust_store_collection.h"
+#include "net/cert/internal/trust_store_in_memory.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/der/encode_values.h"
 #include "net/log/net_log_with_source.h"
@@ -78,6 +81,42 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
   return error;
 }
 
+class MockSystemTrustStore : public SystemTrustStore {
+ public:
+  TrustStore* GetTrustStore() override { return &trust_store_; }
+
+  bool UsesSystemTrustStore() const override { return false; }
+
+  bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
+    return false;
+  }
+
+  void AddTrustStore(TrustStore* store) { trust_store_.AddTrustStore(store); }
+
+ private:
+  TrustStoreCollection trust_store_;
+};
+
+class BlockingTrustStore : public TrustStore {
+ public:
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override {
+    return backing_trust_store_.GetTrust(cert, debug_data);
+  }
+
+  void SyncGetIssuersOf(const ParsedCertificate* cert,
+                        ParsedCertificateList* issuers) override {
+    sync_get_issuer_started_event_.Signal();
+    sync_get_issuer_ok_to_finish_event_.Wait();
+
+    backing_trust_store_.SyncGetIssuersOf(cert, issuers);
+  }
+
+  base::WaitableEvent sync_get_issuer_started_event_;
+  base::WaitableEvent sync_get_issuer_ok_to_finish_event_;
+  TrustStoreInMemory backing_trust_store_;
+};
+
 }  // namespace
 
 class CertVerifyProcBuiltinTest : public ::testing::Test {
@@ -86,8 +125,10 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
-    verify_proc_ = CreateCertVerifyProcBuiltin(cert_net_fetcher_,
-                                               CreateEmptySystemTrustStore());
+    auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
+    mock_system_trust_store_ = mock_system_trust_store.get();
+    verify_proc_ = CreateCertVerifyProcBuiltin(
+        cert_net_fetcher_, std::move(mock_system_trust_store));
 
     context_ = std::make_unique<net::TestURLRequestContext>();
 
@@ -129,6 +170,10 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     (*out_root)->SetValidity(not_before, not_after);
   }
 
+  void AddTrustStore(TrustStore* store) {
+    mock_system_trust_store_->AddTrustStore(store);
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
@@ -137,6 +182,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   CertVerifier::Config config_;
   std::unique_ptr<net::TestURLRequestContext> context_;
+  MockSystemTrustStore* mock_system_trust_store_;
   scoped_refptr<CertVerifyProc> verify_proc_;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };
@@ -437,6 +483,53 @@ TEST_F(CertVerifyProcBuiltinTest, EVRevocationCheckDeadline) {
   EXPECT_EQ(true, event->params.FindBoolKey("has_valid_path"));
 }
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+
+TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
+  std::unique_ptr<CertBuilder> leaf, intermediate, root;
+  CreateChain(&leaf, &intermediate, &root);
+  ASSERT_TRUE(leaf && intermediate && root);
+
+  BlockingTrustStore trust_store;
+  AddTrustStore(&trust_store);
+
+  auto intermediate_parsed_cert =
+      ParsedCertificate::Create(intermediate->DupCertBuffer(), {}, nullptr);
+  ASSERT_TRUE(intermediate_parsed_cert);
+  trust_store.backing_trust_store_.AddCertificateWithUnspecifiedTrust(
+      intermediate_parsed_cert);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback verify_callback;
+  Verify(chain.get(), "www.example.com",
+         /*flags=*/0,
+         /*additional_trust_anchors=*/{root->GetX509Certificate()},
+         &verify_result, &verify_net_log_source, verify_callback.callback());
+
+  // Wait for trust_store.SyncGetIssuersOf to be called.
+  trust_store.sync_get_issuer_started_event_.Wait();
+
+  // Advance the clock past the verifier deadline.
+  const base::TimeDelta timeout_increment =
+      GetCertVerifyProcBuiltinTimeLimitForTesting() + base::Milliseconds(1);
+  task_environment().AdvanceClock(timeout_increment);
+
+  // Signal trust_store.SyncGetIssuersOf to finish.
+  trust_store.sync_get_issuer_ok_to_finish_event_.Signal();
+
+  int error = verify_callback.WaitForResult();
+  // Because the deadline was reached while retrieving the intermediate, path
+  // building should have stopped there and not found the root. The partial
+  // path built up to that point should be returned, and the error should be
+  // CERT_AUTHORITY_INVALID.
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  ASSERT_EQ(1u, verify_result.verified_cert->intermediate_buffers().size());
+  EXPECT_EQ(intermediate->GetCertBuffer(),
+            verify_result.verified_cert->intermediate_buffers()[0].get());
+}
 
 TEST_F(CertVerifyProcBuiltinTest, DebugData) {
   std::unique_ptr<CertBuilder> leaf, intermediate, root;
