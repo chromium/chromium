@@ -206,8 +206,24 @@ void AssistantClientImpl::SendScreenContextRequest(
   NOTIMPLEMENTED();
 }
 
+void AssistantClientImpl::StartVoiceInteraction() {
+  libassistant_client_.CallServiceMethod(
+      ::assistant::api::StartVoiceQueryRequest(),
+      GetLoggingCallback<::assistant::api::StartVoiceQueryResponse>(
+          /*request_name=*/__func__),
+      kInteractionDefaultStateConfig);
+}
+
 void AssistantClientImpl::StopAssistantInteraction(bool cancel_conversation) {
-  NOTIMPLEMENTED();
+  ::assistant::api::StopQueryRequest request;
+  request.set_type(::assistant::api::StopQueryRequest::ACTIVE_INTERNAL);
+  request.set_cancel_conversation(cancel_conversation);
+
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::StopQueryResponse>(
+          /*request_name=*/__func__),
+      kInteractionDefaultStateConfig);
 }
 
 void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {
