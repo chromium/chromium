@@ -13,7 +13,11 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.
 
 import android.app.Activity;
 import android.util.Pair;
+import android.view.View;
 
+import androidx.annotation.Nullable;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +27,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -31,10 +39,13 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinatorTest.ShadowContextMenuDialog;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -48,7 +59,27 @@ import java.util.List;
  * Unit tests for the context menu.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = ShadowContextMenuDialog.class)
 public class ContextMenuCoordinatorTest {
+    /**
+     * Shadow class used to capture the inputs for {@link
+     * ContextMenuCoordinator#createContextMenuDialog}.
+     */
+    @Implements(ContextMenuDialog.class)
+    public static class ShadowContextMenuDialog {
+        boolean mShouldRemoveScrim;
+
+        public ShadowContextMenuDialog() {}
+
+        @Implementation
+        public void __constructor__(Activity ownerActivity, int theme, float touchPointXPx,
+                float touchPointYPx, float topContentOffsetPx, int topMarginPx, int bottomMarginPx,
+                View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
+                @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth) {
+            mShouldRemoveScrim = shouldRemoveScrim;
+        }
+    }
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
@@ -157,6 +188,31 @@ public class ContextMenuCoordinatorTest {
         assertThat(itemList.get(0).type, equalTo(ListItemType.HEADER));
         assertThat(itemList.get(1).type, equalTo(ListItemType.DIVIDER));
         assertThat(itemList.get(2).type, equalTo(ListItemType.CONTEXT_MENU_ITEM));
+    }
+
+    @Test
+    public void testCreateContextMenuDialog() {
+        View contentView = Mockito.mock(View.class);
+        View rootView = Mockito.mock(View.class);
+
+        ContextMenuDialog dialog = ContextMenuCoordinator.createContextMenuDialog(
+                mActivity, rootView, contentView, /*isPopup=*/false, 0, 0, 0, 0, 0, 0, 0);
+        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
+
+        Assert.assertFalse("Dialog should have scrim behind.", shadowDialog.mShouldRemoveScrim);
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+    public void testCreateContextMenuDialog_PopupStyle() {
+        View contentView = Mockito.mock(View.class);
+        View rootView = Mockito.mock(View.class);
+
+        ContextMenuDialog dialog = ContextMenuCoordinator.createContextMenuDialog(
+                mActivity, rootView, contentView, /*isPopup=*/true, 0, 0, 0, 0, 0, 0, 0);
+        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
+
+        Assert.assertTrue("Dialog should remove scrim behind.", shadowDialog.mShouldRemoveScrim);
     }
 
     private ListItem createListItem(@Item int item) {

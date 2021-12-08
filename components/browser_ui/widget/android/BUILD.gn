@@ -345,6 +345,7 @@ java_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegateUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/ContextMenuDialogUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/InsetObserverViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
