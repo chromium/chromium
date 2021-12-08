@@ -5,6 +5,7 @@
 #include "ash/app_list/views/search_result_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
@@ -44,7 +45,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/image_model_utils.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -162,7 +162,6 @@ SearchResultView::SearchResultView(
   icon_->SetCanProcessEventsWithinSubtree(false);
   badge_icon_->SetCanProcessEventsWithinSubtree(false);
 
-  set_context_menu_controller(this);
   SetNotifyEnterExitOnChild(true);
 
   text_container_ = AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -707,51 +706,6 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
 
 bool SearchResultView::IsSearchResultHoveredOrSelected() {
   return IsMouseHovered() || selected();
-}
-
-void SearchResultView::OnMenuClosed() {
-  // Release menu since its menu model delegate (AppContextMenu) could be
-  // released as a result of menu command execution.
-  context_menu_.reset();
-}
-
-void SearchResultView::ShowContextMenuForViewImpl(
-    views::View* source,
-    const gfx::Point& point,
-    ui::MenuSourceType source_type) {
-  // |result()| could be nullptr when result list is changing.
-  if (!result())
-    return;
-
-  view_delegate_->GetSearchResultContextMenuModel(
-      result()->id(), base::BindOnce(&SearchResultView::OnGetContextMenu,
-                                     weak_ptr_factory_.GetWeakPtr(), source,
-                                     point, source_type));
-}
-
-void SearchResultView::OnGetContextMenu(
-    views::View* source,
-    const gfx::Point& point,
-    ui::MenuSourceType source_type,
-    std::unique_ptr<ui::SimpleMenuModel> menu_model) {
-  if (!menu_model || (context_menu_ && context_menu_->IsShowingMenu()))
-    return;
-
-  AppLaunchedMetricParams metric_params = {
-      AppListLaunchedFrom::kLaunchedFromSearchBox,
-      AppListLaunchType::kSearchResult};
-  view_delegate_->GetAppLaunchedMetricParams(&metric_params);
-
-  context_menu_ = std::make_unique<AppListMenuModelAdapter>(
-      std::string(), std::move(menu_model), GetWidget(), source_type,
-      metric_params, AppListMenuModelAdapter::SEARCH_RESULT,
-      base::BindOnce(&SearchResultView::OnMenuClosed,
-                     weak_ptr_factory_.GetWeakPtr()),
-      view_delegate_->IsInTabletMode());
-  context_menu_->Run(gfx::Rect(point, gfx::Size()),
-                     views::MenuAnchorPosition::kTopLeft,
-                     views::MenuRunner::HAS_MNEMONICS);
-  source->RequestFocus();
 }
 
 }  // namespace ash

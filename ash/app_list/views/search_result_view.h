@@ -5,20 +5,12 @@
 #ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_VIEW_H_
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_VIEW_H_
 
-#include <stddef.h>
-
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "ash/app_list/model/search/search_result.h"
-#include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/views/context_menu_controller.h"
 
 namespace views {
 class FlexLayoutView;
@@ -40,7 +32,6 @@ class SearchResultPageDialogController;
 
 // SearchResultView displays a SearchResult.
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
-                                    public views::ContextMenuController,
                                     public SearchResultActionsViewDelegate {
  public:
   enum class SearchResultViewType {
@@ -111,17 +102,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // views::ContextMenuController overrides:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
-
-  // Bound by ShowContextMenuForViewImpl().
-  void OnGetContextMenu(views::View* source,
-                        const gfx::Point& point,
-                        ui::MenuSourceType source_type,
-                        std::unique_ptr<ui::SimpleMenuModel> menu_model);
-
   // SearchResultObserver overrides:
   void OnMetadataChanged() override;
 
@@ -134,12 +114,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // SearchResultActionsViewDelegate overrides:
   void OnSearchResultActionActivated(size_t index) override;
   bool IsSearchResultHoveredOrSelected() override;
-
-  // Invoked when the context menu closes.
-  void OnMenuClosed();
-
-  // Whether this result has a rich image icon.
-  bool IsRichImage() const;
 
   // Parent list view. Owned by views hierarchy.
   SearchResultListView* const list_view_;
@@ -157,8 +131,6 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
   views::Label* rating_ = nullptr;           // Owned by views hierarchy.
   views::ImageView* rating_star_ = nullptr;  // Owned by views hierarchy.
-
-  std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 
   // Whether the removal confirmation dialog is invoked by long press touch.
   bool confirm_remove_by_long_press_ = false;

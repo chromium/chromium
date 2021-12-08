@@ -178,11 +178,6 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
             user_journey_time);
       }
       break;
-    case SEARCH_RESULT:
-      // SearchResult can use this class, but the code is dead and does not show
-      // a menu.
-      NOTREACHED();
-      break;
     case APP_LIST_APP_TYPE_LAST:
       NOTREACHED();
       break;
