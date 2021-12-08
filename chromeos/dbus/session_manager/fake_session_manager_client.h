@@ -32,6 +32,15 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     kInMemory,  // Store policy in memory only. Usually used for tests.
   };
 
+  enum class ServerBackedStateKeysHandling {
+    // session_manager responds with configured state keys.
+    kRegular,
+    // session_manager responds with no state keys being available.
+    kForceNotAvailable,
+    // session_manager does not respond on GetServerBackedStateKeys.
+    kNoResponse,
+  };
+
   // A callback tht FakeSessionManagerClient can use to inform the test that
   // LoadShillProfile has been called.
   using OnLoadShillProfileCallback = base::RepeatingCallback<void(
@@ -280,8 +289,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     arc_start_time_ = arc_start_time;
   }
 
-  void set_force_state_keys_missing(bool force_state_keys_missing) {
-    force_state_keys_missing_ = force_state_keys_missing;
+  void set_state_keys_handling(
+      ServerBackedStateKeysHandling state_keys_handling) {
+    state_keys_handling_ = state_keys_handling;
   }
 
   void set_adb_sideload_enabled(bool adb_sideload_enabled) {
@@ -362,7 +372,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   int start_tpm_firmware_update_call_count_ = 0;
   std::string last_tpm_firmware_update_mode_;
   bool screen_is_locked_ = false;
-  bool force_state_keys_missing_ = false;
+  ServerBackedStateKeysHandling state_keys_handling_ =
+      ServerBackedStateKeysHandling::kRegular;
   OnLoadShillProfileCallback on_load_shill_profile_callback_;
 
   bool arc_available_ = false;
