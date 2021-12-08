@@ -2341,6 +2341,12 @@
       'ToTWinCFI64',
     ],
   },
+  'overlay_prioritization_viz_unittests': {
+    'remove_from': [
+      # Reduce CQ load
+      'Linux Tests (Wayland)',
+    ],
+  },
   'ozone_unittests': {
     'modifications': {
       'chromeos-betty-pi-arc-chrome': {

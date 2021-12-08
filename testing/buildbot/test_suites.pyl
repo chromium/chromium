@@ -4664,6 +4664,17 @@
           '--shard-timeout=3000'
         ],
         'test': 'opus_tests',
+       },
+     },
+
+    # TODO(petermcneeley) : Remove once OverlayPrioritization has landed on
+    # all ozone platforms.
+    'overlay_prioritization_gtests': {
+      'overlay_prioritization_viz_unittests': {
+        'args': [
+          '--enable-features=EnableOverlayPrioritization'
+        ],
+        'test': 'viz_unittests',
       },
     },
 
@@ -6095,6 +6106,7 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
+      'overlay_prioritization_gtests',
       'weblayer_gtests',
     ],
 
