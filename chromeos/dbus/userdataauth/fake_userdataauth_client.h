@@ -55,8 +55,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
              MountCallback callback) override;
   void Remove(const ::user_data_auth::RemoveRequest& request,
               RemoveCallback callback) override;
-  void Rename(const ::user_data_auth::RenameRequest& request,
-              RenameCallback callback) override;
   void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
                   GetKeyDataCallback callback) override;
   void CheckKey(const ::user_data_auth::CheckKeyRequest& request,

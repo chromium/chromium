@@ -19,23 +19,17 @@ using chromeos::ChallengeResponseKey;
 namespace cryptohome {
 namespace {
 
-// Subsystem name for GaiaId migration status.
-const char kCryptohome[] = "cryptohome";
-
 const std::string GetCryptohomeId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {
     case AccountType::GOOGLE: {
-      if (GetGaiaIdMigrationStatus(account_id))
-        return account_id.GetAccountIdKey();
-      return account_id.GetUserEmail();  // Migrated.
+      return account_id.GetUserEmail();
     }
     case AccountType::ACTIVE_DIRECTORY: {
       // Always use the account id key, authpolicyd relies on it!
       return account_id.GetAccountIdKey();
     }
     case AccountType::UNKNOWN: {
-      // Guest/kiosk/managed/public accounts have empty GaiaId. Use email.
-      return account_id.GetUserEmail();  // Migrated.
+      return account_id.GetUserEmail();
     }
   }
 
@@ -220,16 +214,6 @@ Authorization::Authorization(const KeyDefinition& key_def)
 
 bool Authorization::operator==(const Authorization& other) const {
   return key == other.key && label == other.label;
-}
-
-bool GetGaiaIdMigrationStatus(const AccountId& account_id) {
-  return user_manager::known_user::GetGaiaIdMigrationStatus(account_id,
-                                                            kCryptohome);
-}
-
-void SetGaiaIdMigrationStatusDone(const AccountId& account_id) {
-  user_manager::known_user::SetGaiaIdMigrationStatusDone(account_id,
-                                                         kCryptohome);
 }
 
 }  // namespace cryptohome

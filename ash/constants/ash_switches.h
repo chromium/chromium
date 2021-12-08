@@ -267,10 +267,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOndeviceHandwritingSwitch[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Returns true if flags are set indicating that stored user keys are being
-// converted to GAIA IDs.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaIdMigrationStarted();
-
 // Returns true if flag if AuthSession should be used to communicate with
 // cryptohomed instead of explicitly authorizing each operation.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthSessionCryptohomeEnabled();

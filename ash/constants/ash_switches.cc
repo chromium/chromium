@@ -17,13 +17,6 @@ namespace switches {
 
 namespace {
 
-// Controls CrOS GaiaId migration for tests ("" is default).
-const char kTestCrosGaiaIdMigration[] = "test-cros-gaia-id-migration";
-
-// Value for kTestCrosGaiaIdMigration indicating that migration is started (i.e.
-// all stored user keys will be converted to GaiaId)
-const char kTestCrosGaiaIdMigrationStarted[] = "started";
-
 // Max and min number of seconds that must pass between showing user contextual
 // nudges when override switch is set.
 constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
@@ -835,15 +828,6 @@ const char kOndeviceHandwritingSwitch[] = "ondevice_handwriting";
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
-}
-
-bool IsGaiaIdMigrationStarted() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kTestCrosGaiaIdMigration))
-    return false;
-
-  return command_line->GetSwitchValueASCII(kTestCrosGaiaIdMigration) ==
-         kTestCrosGaiaIdMigrationStarted;
 }
 
 bool IsCellularFirstDevice() {

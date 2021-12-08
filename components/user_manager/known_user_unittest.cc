@@ -409,24 +409,6 @@ TEST_F(KnownUserTest, RemovePrefOnReservedPref) {
   ASSERT_DEATH(known_user.RemovePref(kDefaultAccountId, kReservedPrefName), "");
 }
 
-TEST_F(KnownUserTest, GaiaIdMigrationStatus) {
-  KnownUser known_user(local_state());
-  const std::string kSubsystem1 = "subsystem1";
-  const std::string kSubsystem2 = "subsystem2";
-
-  EXPECT_FALSE(
-      known_user.GetGaiaIdMigrationStatus(kDefaultAccountId, kSubsystem1));
-  EXPECT_FALSE(
-      known_user.GetGaiaIdMigrationStatus(kDefaultAccountId, kSubsystem2));
-
-  known_user.SetGaiaIdMigrationStatusDone(kDefaultAccountId, kSubsystem1);
-
-  EXPECT_TRUE(
-      known_user.GetGaiaIdMigrationStatus(kDefaultAccountId, kSubsystem1));
-  EXPECT_FALSE(
-      known_user.GetGaiaIdMigrationStatus(kDefaultAccountId, kSubsystem2));
-}
-
 TEST_F(KnownUserTest, DeviceId) {
   KnownUser known_user(local_state());
   EXPECT_EQ(known_user.GetDeviceId(kDefaultAccountId), std::string());

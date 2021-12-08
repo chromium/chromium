@@ -48,30 +48,6 @@ const char kKeyProviderDataTypeName[] = "type";
 // credentials is stored.
 const char kKeyProviderDataSaltName[] = "salt";
 
-// Name of UMA histogram.
-const char kCryptohomeMigrationToGaiaId[] = "Cryptohome.MigrationToGaiaId";
-
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration.
-//
-// This must be kept in sync with enum CryptohomeMigrationToGaiaId in
-// histograms.xml .
-enum CryptohomeMigrationToGaiaId {
-  NOT_STARTED = 0,
-  ALREADY_MIGRATED = 1,
-  SUCCESS = 2,
-  FAILURE = 3,
-  ENTRIES_COUNT
-};
-
-// Report to UMA.
-void UMACryptohomeMigrationToGaiaId(const CryptohomeMigrationToGaiaId status) {
-  UMA_HISTOGRAM_ENUMERATION(kCryptohomeMigrationToGaiaId, status,
-                            CryptohomeMigrationToGaiaId::ENTRIES_COUNT);
-}
-
 // Returns a human-readable string describing |state|.
 const char* AuthStateToString(CryptohomeAuthenticator::AuthState state) {
   switch (state) {
@@ -255,97 +231,6 @@ void DoMount(const base::WeakPtr<AuthAttemptState>& attempt,
                                    base::BindOnce(&OnMount, attempt, resolver));
 }
 
-// Handle cryptohome migration status.
-void OnCryptohomeRenamed(const base::WeakPtr<AuthAttemptState>& attempt,
-                         scoped_refptr<CryptohomeAuthenticator> resolver,
-                         bool ephemeral,
-                         bool create_if_nonexistent,
-                         absl::optional<user_data_auth::RenameReply> reply) {
-  cryptohome::MountError return_code = user_data_auth::ReplyToMountError(reply);
-  chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
-      "CryptohomeRename-End", false);
-  const AccountId& account_id = attempt->user_context->GetAccountId();
-  if (return_code == cryptohome::MOUNT_ERROR_NONE) {
-    cryptohome::SetGaiaIdMigrationStatusDone(account_id);
-    UMACryptohomeMigrationToGaiaId(CryptohomeMigrationToGaiaId::SUCCESS);
-  } else {
-    LOG(ERROR) << "Failed to rename cryptohome for account of type "
-               << AccountId::AccountTypeToString(account_id.GetAccountType())
-               << " (return_code=" << return_code << ")";
-    // If rename fails, we can still use legacy cryptohome identifier.
-    // Proceed to DoMount.
-    UMACryptohomeMigrationToGaiaId(CryptohomeMigrationToGaiaId::FAILURE);
-  }
-  DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
-}
-
-// This method migrates cryptohome identifier to gaia id (if needed),
-// and then calls Mount.
-void EnsureCryptohomeMigratedToGaiaId(
-    const base::WeakPtr<AuthAttemptState>& attempt,
-    scoped_refptr<CryptohomeAuthenticator> resolver,
-    bool ephemeral,
-    bool create_if_nonexistent) {
-  // Set the migration flag for Active Directory accounts since they're using
-  // the account id key as cryptohome id.
-  const AccountId& account_id = attempt->user_context->GetAccountId();
-  if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    cryptohome::SetGaiaIdMigrationStatusDone(account_id);
-  }
-
-  // Only Google accounts have to be migrated.
-  if (account_id.GetAccountType() != AccountType::GOOGLE) {
-    DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
-    return;
-  }
-
-  const bool is_gaiaid_migration_started = switches::IsGaiaIdMigrationStarted();
-  if (!is_gaiaid_migration_started) {
-    UMACryptohomeMigrationToGaiaId(CryptohomeMigrationToGaiaId::NOT_STARTED);
-    DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
-    return;
-  }
-  const bool already_migrated =
-      cryptohome::GetGaiaIdMigrationStatus(account_id);
-  const bool has_account_key = account_id.HasAccountIdKey();
-
-  bool need_migration = false;
-  if (!create_if_nonexistent && !already_migrated) {
-    if (has_account_key) {
-      need_migration = true;
-    } else {
-      LOG(WARNING)
-          << "Google account has no gaia id. Cryptohome migration skipped.";
-    }
-  }
-  if (need_migration) {
-    chromeos::LoginEventRecorder::Get()->AddLoginTimeMarker(
-        "CryptohomeRename-Start", false);
-    cryptohome::AccountIdentifier cryptohome_id_from;
-    cryptohome_id_from.set_account_id(account_id.GetUserEmail());  // Migrated
-    cryptohome::AccountIdentifier cryptohome_id_to;
-    cryptohome_id_to.set_account_id(account_id.GetAccountIdKey());
-
-    user_data_auth::RenameRequest request;
-    *request.mutable_id_from() = cryptohome_id_from;
-    *request.mutable_id_to() = cryptohome_id_to;
-    UserDataAuthClient::Get()->Rename(
-        request, base::BindOnce(&OnCryptohomeRenamed, attempt, resolver,
-                                ephemeral, create_if_nonexistent));
-    return;
-  }
-  if (!already_migrated && has_account_key) {
-    // Mark new users migrated.
-    cryptohome::SetGaiaIdMigrationStatusDone(account_id);
-  }
-  if (already_migrated) {
-    UMACryptohomeMigrationToGaiaId(
-        CryptohomeMigrationToGaiaId::ALREADY_MIGRATED);
-  }
-
-  DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
-}
-
 // Callback invoked when the system salt has been retrieved. Transforms the key
 // in |attempt->user_context| using Chrome's default hashing algorithm and the
 // system salt, then calls MountEx().
@@ -360,8 +245,7 @@ void OnGetSystemSalt(const base::WeakPtr<AuthAttemptState>& attempt,
   attempt->user_context->GetKey()->Transform(
       Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
 
-  EnsureCryptohomeMigratedToGaiaId(attempt, resolver, ephemeral,
-                                   create_if_nonexistent);
+  DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
 }
 
 // Callback invoked when cryptohome's GetKeyData() method has finished.
@@ -419,8 +303,7 @@ void OnGetKeyData(const base::WeakPtr<AuthAttemptState>& attempt,
 
         attempt->user_context->GetKey()->Transform(
             static_cast<Key::KeyType>(*type), *salt);
-        EnsureCryptohomeMigratedToGaiaId(attempt, resolver, ephemeral,
-                                         create_if_nonexistent);
+        DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
         return;
       }
     } else {
@@ -450,8 +333,7 @@ void StartMount(const base::WeakPtr<AuthAttemptState>& attempt,
 
   if (attempt->user_context->GetKey()->GetKeyType() !=
       Key::KEY_TYPE_PASSWORD_PLAIN) {
-    EnsureCryptohomeMigratedToGaiaId(attempt, resolver, ephemeral,
-                                     create_if_nonexistent);
+    DoMount(attempt, resolver, ephemeral, create_if_nonexistent);
     return;
   }
 

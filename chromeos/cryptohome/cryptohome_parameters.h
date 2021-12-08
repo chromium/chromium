@@ -158,16 +158,6 @@ struct COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) Authorization {
   std::string label;
 };
 
-// This function returns true if cryptohome of |account_id| is migrated to
-// accountId-based identifier (AccountId::GetAccountIdKey()).
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-bool GetGaiaIdMigrationStatus(const AccountId& account_id);
-
-// This function marks |account_id| cryptohome migrated to accountId-based
-// identifier (AccountId::GetAccountIdKey()).
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-void SetGaiaIdMigrationStatusDone(const AccountId& account_id);
-
 }  // namespace cryptohome
 
 #endif  // CHROMEOS_CRYPTOHOME_CRYPTOHOME_PARAMETERS_H_

@@ -41,7 +41,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using UnmountCallback = DBusMethodCallback<::user_data_auth::UnmountReply>;
   using MountCallback = DBusMethodCallback<::user_data_auth::MountReply>;
   using RemoveCallback = DBusMethodCallback<::user_data_auth::RemoveReply>;
-  using RenameCallback = DBusMethodCallback<::user_data_auth::RenameReply>;
   using GetKeyDataCallback =
       DBusMethodCallback<::user_data_auth::GetKeyDataReply>;
   using CheckKeyCallback = DBusMethodCallback<::user_data_auth::CheckKeyReply>;
@@ -118,10 +117,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Removes user's vault.
   virtual void Remove(const ::user_data_auth::RemoveRequest& request,
                       RemoveCallback callback) = 0;
-
-  // Renames user's vault.
-  virtual void Rename(const ::user_data_auth::RenameRequest& request,
-                      RenameCallback callback) = 0;
 
   // Get key metadata for user's vault.
   virtual void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,

@@ -91,12 +91,6 @@ void FakeUserDataAuthClient::Remove(
   ReturnProtobufMethodCallback(::user_data_auth::RemoveReply(),
                                std::move(callback));
 }
-void FakeUserDataAuthClient::Rename(
-    const ::user_data_auth::RenameRequest& request,
-    RenameCallback callback) {
-  ReturnProtobufMethodCallback(::user_data_auth::RenameReply(),
-                               std::move(callback));
-}
 void FakeUserDataAuthClient::GetKeyData(
     const ::user_data_auth::GetKeyDataRequest& request,
     GetKeyDataCallback callback) {

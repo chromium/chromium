@@ -59,7 +59,7 @@ const char kGAPSCookie[] = "gaps_cookie";
 const char kReauthReasonKey[] = "reauth_reason";
 
 // Key for the GaiaId migration status.
-const char kGaiaIdMigration[] = "gaia_id_migration";
+const char kGaiaIdMigrationObsolete[] = "gaia_id_migration";
 
 // Key of the boolean flag telling if a minimal user home migration has been
 // attempted. This flag is not used since M88 and is only kept here to be able
@@ -116,7 +116,6 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kDeviceId,
                                kGAPSCookie,
                                kReauthReasonKey,
-                               kGaiaIdMigration,
                                kProfileRequiresPolicy,
                                kIsEphemeral,
                                kChallengeResponseKeys,
@@ -135,6 +134,7 @@ const char* kReservedKeys[] = {kCanonicalEmail,
 // are now obsolete.
 const char* kObsoleteKeys[] = {
     kMinimalMigrationAttemptedObsolete,
+    kGaiaIdMigrationObsolete,
     kOfflineSigninLimitObsolete,
 };
 
@@ -468,25 +468,6 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
     }
   }
   return result;
-}
-
-bool KnownUser::GetGaiaIdMigrationStatus(const AccountId& account_id,
-                                         const std::string& subsystem) {
-  bool migrated = false;
-
-  if (GetBooleanPref(account_id,
-                     std::string(kGaiaIdMigration) + "." + subsystem,
-                     &migrated)) {
-    return migrated;
-  }
-
-  return false;
-}
-
-void KnownUser::SetGaiaIdMigrationStatusDone(const AccountId& account_id,
-                                             const std::string& subsystem) {
-  SetBooleanPref(account_id, std::string(kGaiaIdMigration) + "." + subsystem,
-                 true);
 }
 
 void KnownUser::SaveKnownUser(const AccountId& account_id) {
@@ -1001,25 +982,6 @@ std::vector<AccountId> GetKnownAccountIds() {
   if (!local_state)
     return {};
   return KnownUser(local_state).GetKnownAccountIds();
-}
-
-bool GetGaiaIdMigrationStatus(const AccountId& account_id,
-                              const std::string& subsystem) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).GetGaiaIdMigrationStatus(account_id, subsystem);
-}
-
-void SetGaiaIdMigrationStatusDone(const AccountId& account_id,
-                                  const std::string& subsystem) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state)
-      .SetGaiaIdMigrationStatusDone(account_id, subsystem);
 }
 
 void SaveKnownUser(const AccountId& account_id) {
