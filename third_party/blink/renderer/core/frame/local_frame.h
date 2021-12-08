@@ -711,6 +711,10 @@ class CORE_EXPORT LocalFrame final
 
   void CreateTextFragmentHandler();
 
+  // Invokes on first paint, this method could be invoked multiple times, refer
+  // to FrameFirstPaint.
+  void OnFirstPaint(bool text_painted, bool image_painted);
+
 #if defined(OS_MAC)
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
@@ -943,6 +947,9 @@ class CORE_EXPORT LocalFrame final
   bool is_subframe_created_by_ad_script_ = false;
 
   bool evict_cached_session_storage_on_freeze_or_unload_ = false;
+
+  // Indicate if the current document's color scheme was notified.
+  bool notified_color_scheme_ = false;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

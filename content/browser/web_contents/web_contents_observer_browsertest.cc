@@ -15,6 +15,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
@@ -23,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/ui_base_switches.h"
 
 using testing::_;
 using testing::NotNull;
@@ -645,6 +647,79 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
   SimulateMouseClickOrTapElementWithId(web_contents(), "text");
   observer.WaitForFocusChangedInPage();
   EXPECT_EQ(blink::mojom::FocusType::kMouse, observer.last_focus_type());
+}
+
+}  // namespace
+
+namespace {
+
+class ColorSchemeObserver : public WebContentsObserver {
+ public:
+  explicit ColorSchemeObserver(WebContentsImpl* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  MOCK_METHOD1(InferredColorSchemeUpdated,
+               void(absl::optional<blink::mojom::PreferredColorScheme>));
+};
+
+class WebContentsObserverColorSchemeBrowserTest
+    : public WebContentsObserverBrowserTest,
+      public testing::WithParamInterface<blink::mojom::PreferredColorScheme> {
+ public:
+  WebContentsObserverColorSchemeBrowserTest() = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebContentsObserverBrowserTest::SetUpCommandLine(command_line);
+    // ShellContentBrowserClient::OverrideWebkitPrefs() overrides the
+    // prefers-color-scheme according to switches::kForceDarkMode
+    // command line.
+    if (GetParam() == blink::mojom::PreferredColorScheme::kDark)
+      command_line->AppendSwitch(switches::kForceDarkMode);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebContentsObserverColorSchemeBrowserTest,
+    ::testing::Values(blink::mojom::PreferredColorScheme::kDark,
+                      blink::mojom::PreferredColorScheme::kLight));
+
+IN_PROC_BROWSER_TEST_P(WebContentsObserverColorSchemeBrowserTest,
+                       ColorSchemeInferred) {
+  ColorSchemeObserver observer(web_contents());
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer,
+                InferredColorSchemeUpdated(
+                    absl::optional<blink::mojom::PreferredColorScheme>()));
+    EXPECT_CALL(
+        observer,
+        InferredColorSchemeUpdated(
+            absl::optional<blink::mojom::PreferredColorScheme>(GetParam())))
+        .WillOnce([&]() { run_loop.Quit(); });
+    GURL url(embedded_test_server()->GetURL("/color-scheme.html"));
+    EXPECT_TRUE(NavigateToURL(web_contents(), url));
+    run_loop.Run();
+  }
+
+  // Navigate to another URL to verify the callback invoked for each navigation
+  // even if the color scheme isn't changed.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer,
+                InferredColorSchemeUpdated(
+                    absl::optional<blink::mojom::PreferredColorScheme>()));
+    EXPECT_CALL(
+        observer,
+        InferredColorSchemeUpdated(
+            absl::optional<blink::mojom::PreferredColorScheme>(GetParam())))
+        .WillOnce([&]() { run_loop.Quit(); });
+    GURL url2(embedded_test_server()->GetURL("/color-scheme-2.html"));
+    EXPECT_TRUE(NavigateToURL(web_contents(), url2));
+    run_loop.Run();
+  }
 }
 
 }  // namespace

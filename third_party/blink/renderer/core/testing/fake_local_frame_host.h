@@ -159,6 +159,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void FrameSizeChanged(const gfx::Size& frame_size) override;
   void DidUpdatePreferredColorScheme(
       blink::mojom::PreferredColorScheme preferred_color_scheme) override;
+  void DidInferColorScheme(
+      blink::mojom::PreferredColorScheme preferred_color_scheme) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

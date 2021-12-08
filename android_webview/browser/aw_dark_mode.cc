@@ -139,4 +139,14 @@ void AwDarkMode::NavigationEntryCommitted(
   UMA_HISTOGRAM_BOOLEAN("Android.WebView.DarkMode.PrefersDarkFromTheme",
                         prefers_dark_from_theme_);
 }
+
+void AwDarkMode::InferredColorSchemeUpdated(
+    absl::optional<blink::mojom::PreferredColorScheme> color_scheme) {
+  if (prefers_dark_from_theme_ && color_scheme.has_value()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Android.WebView.DarkMode.PageDarkenedAccordingToAppTheme",
+        color_scheme.value() == blink::mojom::PreferredColorScheme::kDark);
+  }
+}
+
 }  // namespace android_webview

@@ -34,6 +34,8 @@ class AwDarkMode : public content::WebContentsObserver,
   // content::WebContentsObserver
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
+  void InferredColorSchemeUpdated(
+      absl::optional<blink::mojom::PreferredColorScheme> color_scheme) override;
 
   bool IsAppUsingDarkTheme();
 

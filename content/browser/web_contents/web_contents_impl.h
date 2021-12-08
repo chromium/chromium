@@ -1000,6 +1000,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // observers.
   void OnThemeColorChanged(PageImpl& page) override;
   void OnBackgroundColorChanged(PageImpl& page) override;
+  void DidInferColorScheme(PageImpl& page) override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
   void OnColorChooserFactoryReceiver(

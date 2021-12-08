@@ -104,6 +104,12 @@ void PageImpl::DidChangeBackgroundColor(SkColor background_color,
   }
 }
 
+void PageImpl::DidInferColorScheme(
+    blink::mojom::PreferredColorScheme color_scheme) {
+  main_document_inferred_color_scheme_ = color_scheme;
+  delegate_.DidInferColorScheme(*this);
+}
+
 void PageImpl::SetContentsMimeType(std::string mime_type) {
   contents_mime_type_ = std::move(mime_type);
 }

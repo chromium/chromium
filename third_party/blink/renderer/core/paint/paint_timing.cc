@@ -191,6 +191,8 @@ void PaintTiming::NotifyPaint(bool is_first_paint,
     MarkFirstImagePaint();
   fmp_detector_->NotifyPaint();
   GetFrame()->View()->GetMobileFriendlinessChecker()->NotifyPaint();
+  if (is_first_paint)
+    GetFrame()->OnFirstPaint(text_painted, image_painted);
 }
 
 void PaintTiming::OnPortalActivate() {

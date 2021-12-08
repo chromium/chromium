@@ -5704,6 +5704,7 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
     }
     OnThemeColorChanged(page);
     OnBackgroundColorChanged(page);
+    DidInferColorScheme(page);
     AXTreeIDForMainFrameHasChanged();
   }
 }
@@ -5769,6 +5770,15 @@ void WebContentsImpl::OnBackgroundColorChanged(PageImpl& page) {
       static_cast<RenderWidgetHostViewBase*>(view)->SetContentBackgroundColor(
           page.background_color().value());
     }
+  }
+}
+
+void WebContentsImpl::DidInferColorScheme(PageImpl& page) {
+  // If the page is primary, notify embedders that the current inferred color
+  // scheme for this WebContents has changed.
+  if (page.IsPrimary()) {
+    observers_.NotifyObservers(&WebContentsObserver::InferredColorSchemeUpdated,
+                               page.inferred_color_scheme());
   }
 }
 

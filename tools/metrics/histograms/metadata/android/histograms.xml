@@ -3760,6 +3760,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.DarkMode.PageDarkenedAccordingToAppTheme"
+    enum="Boolean" expires_after="2022-06-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records WebView is darkened or not when the prefers-color-scheme is set to
+    dark according to the app theme not FORCE_DARK_AUTO setting. This histogram
+    is recorded on main frame's color scheme inferred for every committed
+    navigation.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.DarkMode.PrefersDarkFromTheme"
     enum="BooleanYesNo" expires_after="2022-03-24">
   <owner>michaelbai@chromium.org</owner>

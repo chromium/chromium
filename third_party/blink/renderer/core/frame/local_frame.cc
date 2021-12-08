@@ -700,6 +700,25 @@ void LocalFrame::DidAttachDocument() {
   // even after the frame reattaches.
   GetEventHandler().Clear();
   Selection().DidAttachDocument(document);
+  notified_color_scheme_ = false;
+}
+
+void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
+  if (notified_color_scheme_)
+    return;
+
+  if (text_painted || image_painted) {
+    // Infer the document's color scheme according to the background color, this
+    // approach assumes that the background won't be changed after the first
+    // text or image is painted, otherwise, the document will have a jarring
+    // flash which should be avoid by most pages.
+    double h, s, l;
+    View()->DocumentBackgroundColor().GetHSL(h, s, l);
+    GetLocalFrameHostRemote().DidInferColorScheme(
+        l < 0.5 ? mojom::blink::PreferredColorScheme::kDark
+                : mojom::blink::PreferredColorScheme::kLight);
+    notified_color_scheme_ = true;
+  }
 }
 
 bool LocalFrame::CanAccessEvent(

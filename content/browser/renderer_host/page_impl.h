@@ -18,6 +18,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -86,12 +87,20 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
 
+  // Notifies the page's color scheme was inferred.
+  void DidInferColorScheme(blink::mojom::PreferredColorScheme color_scheme);
+
   absl::optional<SkColor> theme_color() const {
     return main_document_theme_color_;
   }
 
   absl::optional<SkColor> background_color() const {
     return main_document_background_color_;
+  }
+
+  absl::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
+      const {
+    return main_document_inferred_color_scheme_;
   }
 
   void SetContentsMimeType(std::string mime_type);
@@ -209,6 +218,10 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // The background color for the underlying document as computed by CSS.
   absl::optional<SkColor> main_document_background_color_;
+
+  // The inferred color scheme of the document.
+  absl::optional<blink::mojom::PreferredColorScheme>
+      main_document_inferred_color_scheme_;
 
   // Contents MIME type for the main document. It can be used to check whether
   // we can do something for special contents.

@@ -5373,6 +5373,13 @@ void RenderFrameHostImpl::DidUpdatePreferredColorScheme(
   preferred_color_scheme_ = preferred_color_scheme;
 }
 
+void RenderFrameHostImpl::DidInferColorScheme(
+    blink::mojom::PreferredColorScheme color_scheme) {
+  if (is_main_frame()) {
+    GetPage().DidInferColorScheme(color_scheme);
+  }
+}
+
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
   // This message is only sent for top-level frames. TODO(avi): when frame tree
   // mirroring works correctly, add a check here to enforce it.

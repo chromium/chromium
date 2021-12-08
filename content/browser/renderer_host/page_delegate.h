@@ -23,6 +23,9 @@ class PageDelegate {
 
   // Called when the main document background color has changed.
   virtual void OnBackgroundColorChanged(PageImpl& page) {}
+
+  // Called when the main document color scheme was inferred.
+  virtual void DidInferColorScheme(PageImpl& page) {}
 };
 
 }  // namespace content
