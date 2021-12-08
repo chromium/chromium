@@ -280,29 +280,23 @@ def AddZlibToPath():
 
 def BuildLibXml2():
   """Download and build libxml2"""
-  # libxml2-2.9.11 is the first version with cmake build files. However,
-  # https://gitlab.gnome.org/GNOME/libxml2/-/merge_requests/109 wasn't merged
-  # when 2.9.11 was released, so xmlwin32version.h.in is missing from the
-  # release tar gz. So we uploaded a slightly tweaked libxml2 like so:
-  # $ curl -O ftp://xmlsoft.org/libxml2/libxml2-2.9.11.tar.gz
-  # $ tar xzf libxml2-2.9.11.tar.gz
-  # $ WIN=include/libxml/xmlwin32version.h.in
-  # $ curl -o libxml2-2.9.11/$WIN \
-  #       https://gitlab.gnome.org/GNOME/libxml2/-/raw/v2.9.11/$WIN
-  # $ rm libxml2-2.9.11.tar.gz
-  # $ tar cf libxml2-2.9.11.tar libxml2-2.9.11
-  # $ gzip -9 libxml2-2.9.11.tar
-  # $ gsutil cp -n -a public-read libxml2-2.9.11.tar.gz \
-  #       gs://chromium-browser-clang/tools
+  # The .tar.gz on GCS was uploaded as follows.
+  # The gitlab page has more up-to-date packages than http://xmlsoft.org/,
+  # and the official releases on xmlsoft.org are only available over ftp too.
+  # $ VER=v2.9.12
+  # $ curl -O \
+  #   https://gitlab.gnome.org/GNOME/libxml2/-/archive/$VER/libxml2-$VER.tar.gz
+  # $ gsutil cp -n -a public-read libxml2-$VER.tar.gz \
+  #   gs://chromium-browser-clang/tools
 
   # TODO(thakis): Use this locally built statically linked libxml2 on all
   # platforms. fewer dynamic deps, and guaranteed(ish) to have same behavior
   # across platforms.
 
-  libxml2_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'libxml2-2.9.11')
+  libxml2_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'libxml2-v2.9.12')
   if os.path.exists(libxml2_dir):
     RmTree(libxml2_dir)
-  zip_name = 'libxml2-2.9.11.tar.gz'
+  zip_name = 'libxml2-v2.9.12.tar.gz'
   DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
   os.chdir(libxml2_dir)
   os.mkdir('build')
