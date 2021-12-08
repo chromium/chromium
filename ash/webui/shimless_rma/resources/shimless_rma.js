@@ -278,6 +278,26 @@ export class ShimlessRma extends ShimlessRmaBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * After the back button is clicked, true until the next state is
+       * processed.
+       * @protected
+       */
+      backButtonClicked_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * After the cancel button is clicked, true until the next state is
+       * processed.
+       * @protected
+       */
+      cancelButtonClicked_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -412,6 +432,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     const pageInfo = StateComponentMapping[state];
     assert(pageInfo);
     this.nextButtonClicked_ = false;
+    this.backButtonClicked_ = false;
+    this.cancelButtonClicked_ = false;
     this.allButtonsDisabled_ = false;
     pageInfo.buttonCancel =
         canCancel ? ButtonState.VISIBLE : ButtonState.HIDDEN;
@@ -493,6 +515,7 @@ export class ShimlessRma extends ShimlessRmaBase {
 
   /** @protected */
   onBackButtonClicked_() {
+    this.backButtonClicked_ = true;
     this.allButtonsDisabled_ = true;
     this.shimlessRmaService_.transitionPreviousState().then(
         (stateResult) => this.processStateResult_(stateResult));
@@ -524,9 +547,12 @@ export class ShimlessRma extends ShimlessRmaBase {
 
   /** @protected */
   onCancelButtonClicked_() {
+    this.cancelButtonClicked_ = true;
     this.allButtonsDisabled_ = true;
-    this.shimlessRmaService_.abortRma().then(
-        (result) => this.handleStandardAndCriticalError_(result.error));
+    this.shimlessRmaService_.abortRma().then((result) => {
+      this.cancelButtonClicked_ = false;
+      this.handleStandardAndCriticalError_(result.error);
+    });
   }
 
   /**

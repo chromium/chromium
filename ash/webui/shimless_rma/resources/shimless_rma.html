@@ -4,8 +4,8 @@
   }
 
   .shimless-footer {
-    text-align: right;
     margin-top: 10px;
+    text-align: end;
   }
 
   cr-button {
@@ -14,16 +14,11 @@
 
   #back {
     border: 0;
-    margin-left: -15px;
-  }
-
-  #back::before {
-    content: "<";
-    padding-right: 5px;
+    margin-inline-start: -15px;
   }
 
   #cancel {
-    margin-right: 5px;
+    margin-inline-end: 5px;
   }
 
   .busy-icon {
@@ -31,9 +26,15 @@
     width: 20px;
   }
 
+  #cancelButtonSpinner,
   #nextButtonCaret,
   #nextButtonSpinner {
     margin-inline-start: 5px;
+  }
+
+  #backButtonCaret,
+  #backButtonSpinner {
+    margin-inline-end: 5px;
   }
 
   #busyStateOverlay {
@@ -58,7 +59,15 @@
       id="back" on-click="onBackButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
-      [[i18n('backButtonLabel')]]
+      <paper-spinner-lite id="backButtonSpinner" class="busy-icon"
+          hidden$="[[!backButtonClicked_]]" active>
+      </paper-spinner-lite>
+      <span id="backButtonCaret" hidden$="[[backButtonClicked_]]">
+        &#60;
+      </span>
+      <span id="backButtonLabel">
+        [[i18n('backButtonLabel')]]
+      </span>
     </cr-button>
   </div>
   <div id="contentContainer"></div>
@@ -67,7 +76,12 @@
       id="cancel" on-click="onCancelButtonClicked_"
       disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
       hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
-      [[i18n('cancelButtonLabel')]]
+      <span id="cancelButtonLabel">
+        [[i18n('cancelButtonLabel')]]
+      </span>
+      <paper-spinner-lite id="cancelButtonSpinner" class="busy-icon"
+          hidden$="[[!cancelButtonClicked_]]" active>
+      </paper-spinner-lite>
     </cr-button>
     <cr-button
       id="next" on-click="onNextButtonClicked_"

@@ -89,6 +89,26 @@ export function shimlessRMAAppTest() {
     return flushTasks();
   }
 
+  /**
+   * Utility function to click back button
+   * @return {Promise}
+   */
+  function clickBack() {
+    const backButton = component.shadowRoot.querySelector('#back');
+    backButton.click();
+    return flushTasks();
+  }
+
+  /**
+   * Utility function to click cancel button
+   * @return {Promise}
+   */
+  function clickCancel() {
+    const cancelButton = component.shadowRoot.querySelector('#cancel');
+    cancelButton.click();
+    return flushTasks();
+  }
+
   test('ShimlessRMALoaded', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
     assertNavButtons();
@@ -249,26 +269,120 @@ export function shimlessRMAAppTest() {
         suppressedErrorMessage(component));
   });
 
-  test('BusyStateButtonSpinners', async () => {
-    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+  test('NextButtonSpinner', async () => {
+    await initializeShimlessRMAApp(
+        [{
+          state: State.kSelectComponents,
+          canCancel: true,
+          canGoBack: true,
+          error: RmadErrorCode.kOk
+        }],
+        fakeChromeVersion[0]);
 
     const initialPage =
-        component.shadowRoot.querySelector('onboarding-landing-page');
+        component.shadowRoot.querySelector('onboarding-select-components-page');
     assertTrue(!!initialPage);
-
-    const resolver = new PromiseResolver();
-    initialPage.onNextButtonClick = () => resolver.promise;
 
     const nextButtonSpinner =
         component.shadowRoot.querySelector('#nextButtonSpinner');
+    const backButtonSpinner =
+        component.shadowRoot.querySelector('#backButtonSpinner');
+    const cancelButtonSpinner =
+        component.shadowRoot.querySelector('#cancelButtonSpinner');
+
+    // Next spinner
+    const nextResolver = new PromiseResolver();
+    initialPage.onNextButtonClick = () => nextResolver.promise;
     assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertTrue(cancelButtonSpinner.hidden);
 
     await clickNext();
     assertFalse(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertTrue(cancelButtonSpinner.hidden);
 
-    resolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    nextResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
     await flushTasks();
 
     assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertTrue(cancelButtonSpinner.hidden);
+  });
+
+  test('BackButtonSpinner', async () => {
+    await initializeShimlessRMAApp(
+        [{
+          state: State.kSelectComponents,
+          canCancel: true,
+          canGoBack: true,
+          error: RmadErrorCode.kOk
+        }],
+        fakeChromeVersion[0]);
+
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-select-components-page');
+    assertTrue(!!initialPage);
+
+    const nextButtonSpinner =
+        component.shadowRoot.querySelector('#nextButtonSpinner');
+    const backButtonSpinner =
+        component.shadowRoot.querySelector('#backButtonSpinner');
+    const cancelButtonSpinner =
+        component.shadowRoot.querySelector('#cancelButtonSpinner');
+
+    // Back spinner
+    const backResolver = new PromiseResolver();
+    service.transitionPreviousState = () => {
+      return backResolver.promise;
+    };
+    await clickBack();
+    assertTrue(nextButtonSpinner.hidden);
+    assertFalse(backButtonSpinner.hidden);
+    assertTrue(cancelButtonSpinner.hidden);
+
+    backResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    await flushTasks();
+    assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertTrue(cancelButtonSpinner.hidden);
+  });
+
+  test('CancelButtonSpinner', async () => {
+    await initializeShimlessRMAApp(
+        [{
+          state: State.kSelectComponents,
+          canCancel: true,
+          canGoBack: true,
+          error: RmadErrorCode.kOk
+        }],
+        fakeChromeVersion[0]);
+
+    const initialPage =
+        component.shadowRoot.querySelector('onboarding-select-components-page');
+    assertTrue(!!initialPage);
+
+    const nextButtonSpinner =
+        component.shadowRoot.querySelector('#nextButtonSpinner');
+    const backButtonSpinner =
+        component.shadowRoot.querySelector('#backButtonSpinner');
+    const cancelButtonSpinner =
+        component.shadowRoot.querySelector('#cancelButtonSpinner');
+
+    // Cancel spinner
+    const cancelResolver = new PromiseResolver();
+    service.abortRma = () => {
+      return cancelResolver.promise;
+    };
+    await clickCancel();
+    assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertFalse(cancelButtonSpinner.hidden);
+
+    cancelResolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
+    await flushTasks();
+    assertTrue(nextButtonSpinner.hidden);
+    assertTrue(backButtonSpinner.hidden);
+    assertTrue(cancelButtonSpinner.hidden);
   });
 }
