@@ -680,6 +680,8 @@ component("base") {
     "task/sequence_manager/associated_thread_id.h",
     "task/sequence_manager/atomic_flag_set.cc",
     "task/sequence_manager/atomic_flag_set.h",
+    "task/sequence_manager/delayed_task_handle_delegate.cc",
+    "task/sequence_manager/delayed_task_handle_delegate.h",
     "task/sequence_manager/enqueue_order.h",
     "task/sequence_manager/enqueue_order_generator.cc",
     "task/sequence_manager/enqueue_order_generator.h",

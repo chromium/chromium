@@ -5,7 +5,9 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TASKS_H_
 
+#include "base/containers/intrusive_heap.h"
 #include "base/pending_task.h"
+#include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -28,13 +30,17 @@ struct BASE_EXPORT PostedTask {
                       Location location,
                       TimeDelta delay = base::TimeDelta(),
                       Nestable nestable = Nestable::kNestable,
-                      TaskType task_type = kTaskTypeNone);
+                      TaskType task_type = kTaskTypeNone,
+                      WeakPtr<DelayedTaskHandleDelegate>
+                          delayed_task_handle_delegate = nullptr);
   explicit PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
                       OnceClosure callback,
                       Location location,
                       TimeTicks delayed_run_time,
                       Nestable nestable = Nestable::kNestable,
-                      TaskType task_type = kTaskTypeNone);
+                      TaskType task_type = kTaskTypeNone,
+                      WeakPtr<DelayedTaskHandleDelegate>
+                          delayed_task_handle_delegate = nullptr);
   PostedTask(PostedTask&& move_from) noexcept;
   PostedTask(const PostedTask&) = delete;
   PostedTask& operator=(const PostedTask&) = delete;
@@ -53,6 +59,9 @@ struct BASE_EXPORT PostedTask {
   // The task runner this task is running on. Can be used by task runners that
   // support posting back to the "current sequence".
   scoped_refptr<SequencedTaskRunner> task_runner;
+  // The delegate for the DelayedTaskHandle, if this task was posted through
+  // PostCancelableDelayedTask(), nullptr otherwise.
+  WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate;
 };
 
 }  // namespace internal
@@ -119,6 +128,19 @@ struct BASE_EXPORT Task : public PendingTask {
   bool cross_thread_;
 #endif
 
+  // Implement the intrusive heap contract.
+  void SetHeapHandle(HeapHandle heap_handle);
+  void ClearHeapHandle();
+  HeapHandle GetHeapHandle() const;
+
+  // Returns true if this task was canceled, either through weak pointer
+  // invalidation or through |delayed_task_handle_delegate_|.
+  bool IsCanceled() const;
+
+  // Indicates that this task will be executed. Used to invalidate
+  // |delayed_task_handle_delegate_|, if any, just before task execution.
+  void WillRunTask();
+
  private:
   // `enqueue_order_` is the primary component used to order tasks (see
   // `TaskOrder`). For immediate tasks, `enqueue_order` is set when posted, but
@@ -126,6 +148,10 @@ struct BASE_EXPORT Task : public PendingTask {
   // otherwise delayed tasks could run before an immediate task posted after the
   // delayed task.
   EnqueueOrder enqueue_order_;
+
+  // The delegate for the DelayedTaskHandle, if this task was posted through
+  // PostCancelableDelayedTask(), nullptr otherwise.
+  WeakPtr<internal::DelayedTaskHandleDelegate> delayed_task_handle_delegate_;
 };
 
 }  // namespace sequence_manager

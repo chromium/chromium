@@ -277,6 +277,7 @@ class BASE_EXPORT TaskQueueImpl {
  private:
   friend class WorkQueue;
   friend class WorkQueueTest;
+  friend class DelayedTaskHandleDelegate;
 
   // A TaskQueueImpl instance can be destroyed or unregistered before all its
   // associated TaskRunner instances are (they are refcounted). Thus we need a
@@ -292,6 +293,7 @@ class BASE_EXPORT TaskQueueImpl {
     explicit GuardedTaskPoster(TaskQueueImpl* outer);
 
     bool PostTask(PostedTask task);
+    DelayedTaskHandle PostCancelableTask(PostedTask task);
 
     void StartAcceptingOperations() {
       operations_controller_.StartAcceptingOperations();
@@ -320,6 +322,9 @@ class BASE_EXPORT TaskQueueImpl {
     bool PostDelayedTask(const Location& location,
                          OnceClosure callback,
                          TimeDelta delay) final;
+    DelayedTaskHandle PostCancelableDelayedTask(const Location& location,
+                                                OnceClosure callback,
+                                                TimeDelta delay) final;
     bool PostNonNestableDelayedTask(const Location& location,
                                     OnceClosure callback,
                                     TimeDelta delay) final;
@@ -342,6 +347,7 @@ class BASE_EXPORT TaskQueueImpl {
     ~DelayedIncomingQueue();
 
     void push(Task task);
+    void remove(HeapHandle heap_handle);
     Task take_top();
     bool empty() const { return queue_.empty(); }
     size_t size() const { return queue_.size(); }
@@ -358,20 +364,7 @@ class BASE_EXPORT TaskQueueImpl {
     Value AsValue(TimeTicks now) const;
 
    private:
-    // An implementation of HeapHandleAccessor that doesn't keep the heap
-    // handles up-to-date. Useful if elements are never accessed using their
-    // handles.
-    // TODO(pmonette): Use a full implementation of HeapHandleAccessor once
-    //                 TaskQueueImpl supports removing tasks from the
-    //                 DelayedIncomingQueue using heap handles.
-    struct NullHeapHandleAccessor {
-      void SetHeapHandle(Task* element, HeapHandle handle) const {}
-      void ClearHeapHandle(Task* element) const {}
-      HeapHandle GetHeapHandle(const Task* element) const {
-        return HeapHandle::Invalid();
-      }
-    };
-    IntrusiveHeap<Task, std::greater<>, NullHeapHandleAccessor> queue_;
+    IntrusiveHeap<Task, std::greater<>> queue_;
 
     // Number of pending tasks in the queue that need high resolution timing.
     int pending_high_res_tasks_ = 0;
@@ -436,6 +429,7 @@ class BASE_EXPORT TaskQueueImpl {
   };
 
   void PostTask(PostedTask task);
+  void RemoveCancelableTask(HeapHandle heap_handle);
 
   void PostImmediateTaskImpl(PostedTask task, CurrentThread current_thread);
   void PostDelayedTaskImpl(PostedTask task, CurrentThread current_thread);

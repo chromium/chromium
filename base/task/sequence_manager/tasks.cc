@@ -25,7 +25,9 @@ Task::Task(internal::PostedTask posted_task,
       nestable(posted_task.nestable),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
-      enqueue_order_(enqueue_order) {
+      enqueue_order_(enqueue_order),
+      delayed_task_handle_delegate_(
+          std::move(posted_task.delayed_task_handle_delegate)) {
   DCHECK(!absl::holds_alternative<base::TimeDelta>(
              posted_task.delay_or_delayed_run_time) ||
          absl::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
@@ -49,33 +51,78 @@ TaskOrder Task::task_order() const {
   return TaskOrder(enqueue_order(), delayed_run_time, sequence_num);
 }
 
-namespace internal {
+void Task::SetHeapHandle(HeapHandle heap_handle) {
+  if (!delayed_task_handle_delegate_)
+    return;
 
-PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
-                       OnceClosure callback,
-                       Location location,
-                       TimeDelta delay,
-                       Nestable nestable,
-                       TaskType task_type)
+  delayed_task_handle_delegate_->SetHeapHandle(heap_handle);
+}
+
+void Task::ClearHeapHandle() {
+  if (!delayed_task_handle_delegate_)
+    return;
+  delayed_task_handle_delegate_->ClearHeapHandle();
+}
+
+HeapHandle Task::GetHeapHandle() const {
+  if (!delayed_task_handle_delegate_)
+    return HeapHandle::Invalid();
+  return delayed_task_handle_delegate_->GetHeapHandle();
+}
+
+bool Task::IsCanceled() const {
+  CHECK(task);
+  if (task.IsCancelled()) {
+    DCHECK(!delayed_task_handle_delegate_);
+    return true;
+  }
+
+  if (delayed_task_handle_delegate_) {
+    return true;
+  }
+
+  return false;
+}
+
+void Task::WillRunTask() {
+  if (!delayed_task_handle_delegate_)
+    return;
+
+  delayed_task_handle_delegate_->WillRunTask();
+}
+
+namespace internal {
+PostedTask::PostedTask(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    OnceClosure callback,
+    Location location,
+    TimeDelta delay,
+    Nestable nestable,
+    TaskType task_type,
+    WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate)
     : callback(std::move(callback)),
       location(location),
       nestable(nestable),
       task_type(task_type),
       delay_or_delayed_run_time(delay),
-      task_runner(std::move(task_runner)) {}
+      task_runner(std::move(task_runner)),
+      delayed_task_handle_delegate(std::move(delayed_task_handle_delegate)) {}
 
-PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
-                       OnceClosure callback,
-                       Location location,
-                       TimeTicks delayed_run_time,
-                       Nestable nestable,
-                       TaskType task_type)
+PostedTask::PostedTask(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    OnceClosure callback,
+    Location location,
+    TimeTicks delayed_run_time,
+    Nestable nestable,
+    TaskType task_type,
+    WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate)
     : callback(std::move(callback)),
       location(location),
       nestable(nestable),
       task_type(task_type),
       delay_or_delayed_run_time(delayed_run_time),
-      task_runner(std::move(task_runner)) {}
+      task_runner(std::move(task_runner)),
+      delayed_task_handle_delegate(std::move(delayed_task_handle_delegate)) {}
 
 PostedTask::PostedTask(PostedTask&& move_from) noexcept = default;
 PostedTask::~PostedTask() = default;

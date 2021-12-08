@@ -11,15 +11,18 @@
 
 #include "base/check.h"
 #include "base/containers/stack_container.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
+#include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_order.h"
 #include "base/task/sequence_manager/wake_up_queue.h"
 #include "base/task/sequence_manager/work_queue.h"
+#include "base/task/task_features.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -73,6 +76,25 @@ bool TaskQueueImpl::GuardedTaskPoster::PostTask(PostedTask task) {
   return true;
 }
 
+DelayedTaskHandle TaskQueueImpl::GuardedTaskPoster::PostCancelableTask(
+    PostedTask task) {
+  // Do not process new PostTasks while we are handling a PostTask (tracing
+  // has to do this) as it can lead to a deadlock and defer it instead.
+  ScopedDeferTaskPosting disallow_task_posting;
+
+  auto token = operations_controller_.TryBeginOperation();
+  if (!token)
+    return DelayedTaskHandle();
+
+  auto delayed_task_handle_delegate =
+      std::make_unique<DelayedTaskHandleDelegate>(outer_);
+  task.delayed_task_handle_delegate = delayed_task_handle_delegate->AsWeakPtr();
+
+  outer_->PostTask(std::move(task));
+  DCHECK(delayed_task_handle_delegate->IsValid());
+  return DelayedTaskHandle(std::move(delayed_task_handle_delegate));
+}
+
 TaskQueueImpl::TaskRunner::TaskRunner(
     scoped_refptr<GuardedTaskPoster> task_poster,
     scoped_refptr<AssociatedThreadId> associated_thread,
@@ -89,6 +111,20 @@ bool TaskQueueImpl::TaskRunner::PostDelayedTask(const Location& location,
   return task_poster_->PostTask(PostedTask(this, std::move(callback), location,
                                            delay, Nestable::kNestable,
                                            task_type_));
+}
+
+DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTask(
+    const Location& location,
+    OnceClosure callback,
+    TimeDelta delay) {
+  if (!FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue)) {
+    return SequencedTaskRunner::PostCancelableDelayedTask(
+        location, std::move(callback), delay);
+  }
+
+  return task_poster_->PostCancelableTask(
+      PostedTask(this, std::move(callback), location, delay,
+                 Nestable::kNestable, task_type_));
 }
 
 bool TaskQueueImpl::TaskRunner::PostNonNestableDelayedTask(
@@ -233,6 +269,20 @@ void TaskQueueImpl::PostTask(PostedTask task) {
     PostImmediateTaskImpl(std::move(task), current_thread);
   } else {
     PostDelayedTaskImpl(std::move(task), current_thread);
+  }
+}
+
+void TaskQueueImpl::RemoveCancelableTask(HeapHandle heap_handle) {
+  // Can only cancel from the current thread.
+  DCHECK(associated_thread_->IsBoundToCurrentThread());
+  DCHECK(heap_handle.IsValid());
+
+  main_thread_only().delayed_incoming_queue.remove(heap_handle);
+
+  // Only update the delayed wake up if the top task is removed.
+  if (heap_handle.index() == 0u) {
+    LazyNow lazy_now(sequence_manager_->main_thread_clock());
+    UpdateWakeUp(&lazy_now);
   }
 }
 
@@ -1370,6 +1420,16 @@ void TaskQueueImpl::DelayedIncomingQueue::push(Task task) {
   if (task.is_high_res)
     pending_high_res_tasks_++;
   queue_.insert(std::move(task));
+}
+
+void TaskQueueImpl::DelayedIncomingQueue::remove(HeapHandle heap_handle) {
+  DCHECK(!empty());
+  DCHECK_LT(heap_handle.index(), queue_.size());
+  Task task = queue_.take(heap_handle);
+  if (task.is_high_res) {
+    pending_high_res_tasks_--;
+    DCHECK_GE(pending_high_res_tasks_, 0);
+  }
 }
 
 Task TaskQueueImpl::DelayedIncomingQueue::take_top() {

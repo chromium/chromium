@@ -230,7 +230,7 @@ bool WorkQueue::RemoveAllCanceledTasksFromFront() {
 
   while (!tasks_.empty()) {
     const auto& pending_task = tasks_.front();
-    if (pending_task.task && !pending_task.task.IsCancelled())
+    if (pending_task.task && !pending_task.IsCanceled())
       break;
     tasks_to_delete->push_back(std::move(tasks_.front()));
     tasks_.pop_front();

@@ -8,6 +8,9 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/task_features.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -94,6 +97,36 @@ TEST(TaskQueueTest, ShutdownQueueBeforeDisabledVoterDeleted) {
 
   // This should complete without DCHECKing.
   voter.reset();
+}
+
+TEST(TaskQueueTest, CanceledTaskRemovedIfFeatureEnabled) {
+  for (bool feature_enabled : {false, true}) {
+    test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(kRemoveCanceledTasksInTaskQueue,
+                                             feature_enabled);
+
+    auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
+        MessagePump::Create(MessagePumpType::DEFAULT));
+    auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+
+    // Get the default task runner.
+    auto task_runner = queue->task_runner();
+    EXPECT_EQ(queue->GetNumberOfPendingTasks(), 0u);
+
+    bool task_ran = false;
+    DelayedTaskHandle delayed_task_handle =
+        task_runner->PostCancelableDelayedTask(
+            FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+            Seconds(20));
+    EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
+
+    // The task is only removed from the queue if the feature is enabled.
+    delayed_task_handle.CancelTask();
+    EXPECT_EQ(queue->GetNumberOfPendingTasks(), feature_enabled ? 0u : 1u);
+
+    // In any case, the task never actually ran.
+    EXPECT_FALSE(task_ran);
+  }
 }
 
 }  // namespace

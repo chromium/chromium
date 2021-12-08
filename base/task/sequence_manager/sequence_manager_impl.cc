@@ -843,6 +843,10 @@ void SequenceManagerImpl::NotifyWillProcessTask(ExecutingTask* executing_task,
   if (recording_policy == TimeRecordingPolicy::DoRecord)
     executing_task->task_timing.RecordTaskStart(time_before_task);
 
+  // Maybe invalidate the delayed task handle. |pending_task| is guaranteed to
+  // be valid here (not canceled).
+  executing_task->pending_task.WillRunTask();
+
   if (!executing_task->task_queue->GetShouldNotifyObservers())
     return;
 
