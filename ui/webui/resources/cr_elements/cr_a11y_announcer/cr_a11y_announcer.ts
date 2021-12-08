@@ -14,9 +14,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 /**
  * 150ms seems to be around the minimum time required for screen readers to
  * read out consecutively queued messages.
- * @type {number}
  */
-export const TIMEOUT_MS = 150;
+export const TIMEOUT_MS: number = 150;
 
 /**
  * A map of an HTML element to its corresponding CrA11yAnnouncerElement. There
@@ -24,9 +23,8 @@ export const TIMEOUT_MS = 150;
  * which the DocumentElement's CrA11yAnnouncerElement becomes hidden or
  * deactivated (eg. when a modal dialog causes the CrA11yAnnouncerElement to
  * become inaccessible).
- * @type {!Map<!HTMLElement, !CrA11yAnnouncerElement>}
  */
-const instances = new Map();
+const instances: Map<HTMLElement, CrA11yAnnouncerElement> = new Map();
 
 export class CrA11yAnnouncerElement extends PolymerElement {
   static get is() {
@@ -37,15 +35,8 @@ export class CrA11yAnnouncerElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  constructor() {
-    super();
-
-    /** @private {?number} */
-    this.currentTimeout_ = null;
-
-    /** @private {!Array<string>} */
-    this.messages_ = [];
-  }
+  private currentTimeout_: number|null = null;
+  private messages_: string[] = [];
 
   disconnectedCallback() {
     super.disconnectedCallback();
@@ -62,8 +53,7 @@ export class CrA11yAnnouncerElement extends PolymerElement {
     }
   }
 
-  /** @param {string} message */
-  announce(message) {
+  announce(message: string) {
     if (this.currentTimeout_ !== null) {
       clearTimeout(this.currentTimeout_);
       this.currentTimeout_ = null;
@@ -72,7 +62,7 @@ export class CrA11yAnnouncerElement extends PolymerElement {
     this.messages_.push(message);
 
     this.currentTimeout_ = setTimeout(() => {
-      const messagesDiv = this.shadowRoot.querySelector('#messages');
+      const messagesDiv = this.shadowRoot!.querySelector('#messages')!;
       messagesDiv.innerHTML = '';
 
       // <if expr="is_macosx">
@@ -94,13 +84,10 @@ export class CrA11yAnnouncerElement extends PolymerElement {
     }, TIMEOUT_MS);
   }
 
-  /**
-   * @param {!HTMLElement=} container
-   * @return {!CrA11yAnnouncerElement}
-   */
-  static getInstance(container = document.body) {
+  static getInstance(container: HTMLElement = document.body):
+      CrA11yAnnouncerElement {
     if (instances.has(container)) {
-      return instances.get(container);
+      return instances.get(container)!;
     }
     assert(container.isConnected);
     const instance = new CrA11yAnnouncerElement();

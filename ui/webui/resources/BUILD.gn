@@ -204,6 +204,7 @@ ts_library("library") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = [
+    "cr_elements/cr_a11y_announcer/cr_a11y_announcer.ts",
     "cr_components/iph_bubble/iph_bubble.ts",
     "cr_elements/cr_container_shadow_mixin.ts",
     "cr_elements/cr_nav_menu_item_style.ts",
@@ -292,7 +293,6 @@ ts_definitions("generate_definitions") {
   out_dir = preprocessed_folder
   js_files = [
     "cr_elements/action_link_css.m.js",
-    "cr_elements/cr_a11y_announcer/cr_a11y_announcer.js",
     "cr_elements/cr_actionable_row_style.m.js",
     "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
     "cr_elements/cr_grid/cr_grid.js",
