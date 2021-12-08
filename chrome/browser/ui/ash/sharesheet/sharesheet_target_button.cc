@@ -24,11 +24,6 @@
 namespace {
 
 // Sizes are in px.
-
-// kButtonWidth = 76px width + 2*8px for padding on left and right
-constexpr int kButtonWidth = 92;
-// kButtonHeight = 88px height + 2*8px for padding on top and bottom.
-constexpr int kButtonHeight = 104;
 // kButtonTextMaxWidth is button max width without padding.
 constexpr int kButtonTextMaxWidth = 76;
 constexpr int kButtonMaxLines = 2;
@@ -137,7 +132,6 @@ SharesheetTargetButton::SharesheetTargetButton(
 }
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
-  label->SetLineHeight(kPrimaryTextLineHeight);
   label->SetMultiLine(true);
   label->SetMaximumWidth(kButtonTextMaxWidth);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -145,11 +139,6 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetTooltipText(label->GetText());
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-}
-
-// Button is 76px width x 88px height + 8px padding along all sides.
-gfx::Size SharesheetTargetButton::CalculatePreferredSize() const {
-  return gfx::Size(kButtonWidth, kButtonHeight);
 }
 
 BEGIN_METADATA(SharesheetTargetButton, views::Button)

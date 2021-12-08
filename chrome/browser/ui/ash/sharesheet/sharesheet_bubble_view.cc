@@ -63,31 +63,26 @@ namespace {
 // can be removed.
 
 // Sizes are in px.
-constexpr int kButtonPadding = 8;
 constexpr int kButtonWidth = 92;
 constexpr int kCornerRadius = 12;
 constexpr int kBubbleTopPaddingFromWindow = 28;
 constexpr int kDefaultBubbleWidth = 416;
-
-// kDefaultBubbleBodyHeight = kTargetViewHeight + kShortSpacing
-constexpr int kDefaultBubbleBodyHeight = 236;
-
-// kExpandedBubbleBodyHeight = kTargetViewHeight + kShortSpacing +
-// kExpandViewPaddingTop + kSubtitleTextLineHeight + kExpandViewPaddingBottom
-// SharesheetTargetButton.kButtonHeight
-constexpr int kExpandedBubbleBodyHeight = 378;
 
 constexpr int kMaxTargetsPerRow = 4;
 constexpr int kMaxRowsForDefaultView = 2;
 
 // TargetViewHeight is 2*kButtonHeight + kButtonPadding
 constexpr int kTargetViewHeight = 216;
+// TargetViewExpandedHeight is default_view_->GetPreferredSize().height() + apps
+// list text + 2*kExpandedViewPaddingTop + expanded_view_->FirstRow().height().
+// TODO(crbug.com/1097623): Update this to a layout that will allow us to get
+// the height of the first row.
 constexpr int kTargetViewExpandedHeight = 382;
 
 constexpr int kExpandViewPaddingTop = 16;
 constexpr int kExpandViewPaddingBottom = 8;
 
-constexpr int kShortSpacing = 20;
+constexpr int kShortSpacing = 10;
 
 constexpr auto kAnimateDelay = base::Milliseconds(100);
 constexpr auto kQuickAnimateTime = base::Milliseconds(100);
@@ -101,7 +96,7 @@ enum { kColumnSetIdTitle, kColumnSetIdTargets, kColumnSetIdZeroState };
 void SetUpTargetColumnSet(views::GridLayout* layout) {
   views::ColumnSet* cs = layout->AddColumnSet(kColumnSetIdTargets);
   for (int i = 0; i < kMaxTargetsPerRow; i++) {
-    cs->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
+    cs->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING, 0,
                   views::GridLayout::ColumnSize::kFixed, kButtonWidth, 0);
   }
 }
@@ -286,6 +281,7 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
   auto* default_layout =
       default_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   SetUpTargetColumnSet(default_layout);
+  default_layout->AddPaddingRow(views::GridLayout::kFixedSize, kShortSpacing);
 
   views::GridLayout* expanded_layout = nullptr;
   std::unique_ptr<views::View> expanded_view;
@@ -298,15 +294,14 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
     views::ColumnSet* cs_expanded_view =
         expanded_layout->AddColumnSet(kColumnSetIdTitle);
     cs_expanded_view->AddColumn(/* h_align */ views::GridLayout::FILL,
-                                /* v_align */ views::GridLayout::CENTER,
+                                /* v_align */ views::GridLayout::LEADING,
                                 /* resize_percent */ kStretchy,
                                 views::GridLayout::ColumnSize::kUsePreferred,
                                 /* fixed_width */ 0, /* min_width */ 0);
     // Add Extended View Title.
     expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                    kExpandViewPaddingTop);
-    expanded_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdTitle,
-                              kSubtitleTextLineHeight);
+    expanded_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdTitle);
     expanded_layout->AddView(CreateShareLabel(
         l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL),
         CONTEXT_SHARESHEET_BUBBLE_BODY, kSubtitleTextLineHeight,
@@ -357,11 +352,6 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
       if (row_count == kMaxRowsForDefaultView) {
         DCHECK(expanded_layout);
         layout_for_target = expanded_layout;
-        // Do not add a padding row if we are at the first row of
-        // |default_layout| or |expanded_layout|.
-      } else if (row_count != 0) {
-        layout_for_target->AddPaddingRow(views::GridLayout::kFixedSize,
-                                         kButtonPadding);
       }
       ++row_count;
       layout_for_target->StartRow(views::GridLayout::kFixedSize,
@@ -615,7 +605,6 @@ void SharesheetBubbleView::CreateBubble() {
 
 void SharesheetBubbleView::ExpandButtonPressed() {
   show_expanded_view_ = !show_expanded_view_;
-  ResizeBubble(kDefaultBubbleWidth, GetBubbleHeight());
 
   // Scrollview has separators that overlaps with |header_body_separator_| and
   // |body_footer_separator_| to create a double line when both are visible, so
@@ -628,11 +617,17 @@ void SharesheetBubbleView::ExpandButtonPressed() {
   expanded_view_separator_->SetVisible(show_expanded_view_);
 
   if (show_expanded_view_) {
+    body_view_->SetPreferredSize(
+        gfx::Size(body_view_->width(), kTargetViewExpandedHeight));
     expand_button_->SetToExpandedState();
     AnimateToExpandedState();
   } else {
+    body_view_->SetPreferredSize(gfx::Size(
+        body_view_->width(), default_view_->GetPreferredSize().height()));
     expand_button_->SetToDefaultState();
   }
+  SizeToPreferredSize();
+  ResizeBubble(kDefaultBubbleWidth, main_view_->GetPreferredSize().height());
 }
 
 void SharesheetBubbleView::AnimateToExpandedState() {
@@ -688,7 +683,7 @@ void SharesheetBubbleView::UpdateAnchorPosition() {
 
 void SharesheetBubbleView::SetToDefaultBubbleSizing() {
   width_ = kDefaultBubbleWidth;
-  height_ = GetBubbleHeight();
+  height_ = main_view_->GetPreferredSize().height();
 }
 
 void SharesheetBubbleView::ShowWidgetWithAnimateFadeIn() {
@@ -752,15 +747,6 @@ void SharesheetBubbleView::CloseWidgetWithReason(
   }
   // Bubble is deleted here.
   delegator_->OnBubbleClosed(active_target_);
-}
-
-// TODO(crbug.com/1097623): Rename this function.
-int SharesheetBubbleView::GetBubbleHeight() {
-  int height = (show_expanded_view_ ? kExpandedBubbleBodyHeight
-                                    : kDefaultBubbleBodyHeight) +
-               header_view_->GetPreferredSize().height() +
-               footer_view_->GetPreferredSize().height();
-  return height;
 }
 
 void SharesheetBubbleView::RecordFormFactorMetric() {
