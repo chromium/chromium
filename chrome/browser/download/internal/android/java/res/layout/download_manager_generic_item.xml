@@ -13,7 +13,7 @@
     android:minHeight="64dp"
     android:clickable="true"
     android:focusable="true"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     app:columnCount="3"
     app:rowCount="2">
 

@@ -18,6 +18,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -149,8 +150,7 @@ abstract class OverlayPanelBase {
         mBarHeight = mContext.getResources().getDimension(bar_height_dimen) * mPxToDp;
 
         final Resources resources = mContext.getResources();
-        mBarBackgroundColor = ApiCompatibilityUtils.getColor(
-                resources, R.color.overlay_panel_bar_background_color);
+        mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);
         mIconColor = SemanticColorUtils.getDefaultIconColor(context);
         mDragHandlebarColor =
                 ApiCompatibilityUtils.getColor(resources, R.color.drag_handlebar_color);

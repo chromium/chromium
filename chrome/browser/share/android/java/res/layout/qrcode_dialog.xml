@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/default_bg_color">
+    android:background="@macro/default_bg_color">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"

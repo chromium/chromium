@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:orientation="horizontal"
-        android:background="@color/default_bg_color">
+        android:background="@macro/default_bg_color">
 
         <ImageView
             android:id="@+id/show_keyboard"

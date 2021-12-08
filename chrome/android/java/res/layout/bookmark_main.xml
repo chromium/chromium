@@ -8,4 +8,4 @@
     android:id="@+id/selectable_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg_color" />
+    android:background="@macro/default_bg_color" />

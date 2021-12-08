@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -233,8 +234,7 @@ public class TabListContainerViewBinderTest extends DummyUiActivityTestCase {
         mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, false);
         assertThat(mRecyclerView.getBackground(), instanceOf(ColorDrawable.class));
         assertThat(((ColorDrawable) mRecyclerView.getBackground()).getColor(),
-                equalTo(ApiCompatibilityUtils.getColor(
-                        mRecyclerView.getResources(), R.color.default_bg_color)));
+                equalTo(SemanticColorUtils.getDefaultBgColor(mRecyclerView.getContext())));
     }
 
     @Test

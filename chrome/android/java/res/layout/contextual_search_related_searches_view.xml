@@ -9,7 +9,7 @@
     android:id="@+id/contextual_search_related_searches_view_id"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/overlay_panel_bar_background_color"
+    android:background="@macro/overlay_panel_bar_background_color"
     android:visibility="invisible">
     <!-- ChipView elements and their container are dynamically added here. -->
 </FrameLayout>

@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     android:padding="@dimen/fre_vertical_spacing">
 
     <ImageView

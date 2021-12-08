@@ -233,7 +233,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom</item>
-        <item name="android:background">@color/overlay_panel_bar_background_color</item>
+        <item name="android:background">@macro/overlay_panel_bar_background_color</item>
         <item name="android:visibility">invisible</item>
         <!-- 60dp padding minus 7dp for fading edge -->
         <item name="android:paddingStart">53dp</item>
@@ -270,7 +270,7 @@
         <item name="android:layout_gravity">bottom</item>
         <item name="android:layout_marginStart">7dp</item>
         <item name="android:layout_marginEnd">7dp</item>
-        <item name="android:background">@color/overlay_panel_bar_background_color</item>
+        <item name="android:background">@macro/overlay_panel_bar_background_color</item>
         <item name="android:ellipsize">end</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:singleLine">true</item>

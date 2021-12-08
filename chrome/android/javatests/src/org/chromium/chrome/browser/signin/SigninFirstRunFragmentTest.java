@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -739,8 +740,8 @@ public class SigninFirstRunFragmentTest {
                     mFragment.getView().findViewById(R.id.signin_fre_progress_spinner);
             // Replace the progress bar with a dummy to allow other checks. Currently the
             // progress bar cannot be stopped otherwise due to some espresso issues (crbug/1115067).
-            progressBar.setIndeterminateDrawable(
-                    new ColorDrawable(mFragment.getResources().getColor(R.color.default_bg_color)));
+            progressBar.setIndeterminateDrawable(new ColorDrawable(
+                    SemanticColorUtils.getDefaultBgColor(mFragment.getContext())));
         });
         onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
         onView(withText(TEST_EMAIL1)).check(matches(not(isDisplayed())));

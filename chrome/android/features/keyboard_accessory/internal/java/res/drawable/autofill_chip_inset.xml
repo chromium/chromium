@@ -5,7 +5,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="@color/default_bg_color" />
+            <solid android:color="@macro/default_bg_color" />
             <corners android:radius="@dimen/keyboard_accessory_bar_item_height" />
         </shape>
     </item>

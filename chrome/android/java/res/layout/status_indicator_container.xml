@@ -9,7 +9,7 @@
     android:id="@+id/status_indicator"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/default_bg_color">
+    android:background="@macro/default_bg_color">
 
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/status_text"

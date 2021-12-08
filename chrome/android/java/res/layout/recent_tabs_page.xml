@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/toolbar_height_no_shadow"
-        android:background="@color/default_bg_color"
+        android:background="@macro/default_bg_color"
         android:focusable="true"
         android:focusableInTouchMode="true" >
 
@@ -25,10 +25,10 @@
             android:paddingTop="@dimen/recent_tabs_group_view_vertical_padding"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:cacheColorHint="@color/default_bg_color"
+            android:cacheColorHint="@macro/default_bg_color"
             android:childDivider="@null"
             android:divider="@null"
-            android:background="@color/default_bg_color"
+            android:background="@macro/default_bg_color"
             android:listSelector="@android:color/transparent"
             android:scrollbarStyle="outsideOverlay" />
 

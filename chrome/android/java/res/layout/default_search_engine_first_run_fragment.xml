@@ -9,7 +9,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/signin_body_background"
+    android:background="@macro/signin_body_background"
     android:contentDescription="@string/search_engine_dialog_title"
     android:orientation="vertical" >
 
@@ -40,7 +40,7 @@
                     android:paddingStart="@dimen/signin_chooser_padding"
                     android:paddingEnd="@dimen/signin_chooser_padding"
                     android:paddingBottom="@dimen/signin_chooser_padding"
-                    android:background="@color/signin_head_background"
+                    android:background="@macro/signin_head_background"
                     android:importantForAccessibility="no"
                     android:textAppearance="@style/TextAppearance.Headline.Primary"
                     android:text="@string/search_engine_dialog_title" />

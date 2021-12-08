@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 
@@ -160,21 +161,13 @@ public class TabListSceneLayer extends SceneLayer {
         TabListSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabListSceneLayer.this);
     }
 
-    /**
-     * @return The background color of the scene layer.
-     */
+    /** Returns the background color of the scene layer. */
     protected int getTabListBackgroundColor(Context context) {
-        int colorId = R.color.default_bg_color;
-
-        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)) {
-            if (mTabModelSelector != null && mTabModelSelector.isIncognitoSelected()) {
-                colorId = R.color.default_bg_color_dark;
-            } else {
-                colorId = R.color.default_bg_color;
-            }
+        if (TabUiFeatureUtilities.isGridTabSwitcherEnabled(context) && mTabModelSelector != null
+                && mTabModelSelector.isIncognitoSelected()) {
+            return context.getColor(R.color.default_bg_color_dark);
         }
-
-        return ApiCompatibilityUtils.getColor(context.getResources(), colorId);
+        return SemanticColorUtils.getDefaultBgColor(context);
     }
 
     @Override

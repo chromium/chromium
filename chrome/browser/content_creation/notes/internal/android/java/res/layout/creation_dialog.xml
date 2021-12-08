@@ -9,7 +9,7 @@
     android:id="@+id/dialog_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     android:orientation="vertical"
     android:contentDescription="@string/content_creation_note_dialog_description"
     android:importantForAccessibility="yes">

@@ -11,4 +11,4 @@
     android:layout_width="match_parent"
     android:clipToPadding="false"
     android:paddingBottom="@dimen/keyboard_accessory_sheet_footer_trailing_margin"
-    android:background="@color/default_bg_color"/>
+    android:background="@macro/default_bg_color"/>
