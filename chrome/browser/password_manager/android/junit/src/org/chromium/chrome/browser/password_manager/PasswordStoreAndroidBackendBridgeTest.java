@@ -174,6 +174,40 @@ public class PasswordStoreAndroidBackendBridgeTest {
     }
 
     @Test
+    public void testGetLoginsForSignonRealmCallsBridgeOnSuccess() {
+        final int kTestTaskId = 1337;
+
+        // Ensure the backend is called with a valid success callback.
+        mBackendBridge.getLoginsForSignonRealm(kTestTaskId, "https://test_signon_realm.com");
+        ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock).getLoginsForSignonRealm(any(), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        byte[] kExpectedList = sTestLogins.build().toByteArray();
+        successCallback.getValue().onResult(kExpectedList);
+        verify(mBridgeJniMock)
+                .onCompleteWithLogins(sDummyNativePointer, kTestTaskId, kExpectedList);
+    }
+
+    @Test
+    public void testGetLoginsForSignonRealmCallsBridgeOnFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        mBackendBridge.getLoginsForSignonRealm(kTestTaskId, "https://test_signon_realm.com");
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock).getLoginsForSignonRealm(any(), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new Exception("Sample failure");
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBridgeJniMock)
+                .onError(
+                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+    }
+
+    @Test
     public void testAddLoginCallsBridgeOnSuccess() {
         final int kTestTaskId = 1337;
 

@@ -35,6 +35,7 @@ source_set("backend") {
 
   deps = [
     ":jni_headers",
+    "//components/autofill/core/browser:browser",
     "//components/password_manager/core/browser:browser",
     "//components/password_manager/core/browser:password_form",
     "//components/sync/model:model",

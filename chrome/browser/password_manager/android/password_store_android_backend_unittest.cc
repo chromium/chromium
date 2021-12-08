@@ -53,12 +53,13 @@ std::vector<std::unique_ptr<PasswordForm>> CreateTestLogins() {
 
 PasswordForm CreateTestLogin(const std::u16string& username_value,
                              const std::u16string& password_value,
-                             GURL url,
+                             const std::string& url,
                              base::Time date_created) {
   PasswordForm form;
   form.username_value = username_value;
   form.password_value = password_value;
-  form.url = url;
+  form.url = GURL(url);
+  form.signon_realm = url;
   form.date_created = date_created;
   return form;
 }
@@ -79,6 +80,7 @@ class MockPasswordStoreAndroidBackendBridge
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (), (override));
   MOCK_METHOD(JobId, GetAutofillableLogins, (), (override));
+  MOCK_METHOD(JobId, GetLoginsForSignonRealm, (const std::string&), (override));
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&), (override));
   MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&), (override));
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&), (override));
@@ -141,6 +143,119 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsNoPSL) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsReply> mock_reply;
+
+  const JobId kFirstJobId{1337};
+  EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+
+  std::string TestURL1("https://firstexample.com");
+  std::string TestURL2("https://secondexample.com");
+
+  std::vector<PasswordFormDigest> forms;
+  forms.push_back(PasswordFormDigest(PasswordForm::Scheme::kHtml, TestURL1,
+                                     GURL(TestURL1)));
+  forms.push_back(PasswordFormDigest(PasswordForm::Scheme::kHtml, TestURL2,
+                                     GURL(TestURL2)));
+  backend().FillMatchingLoginsAsync(mock_reply.Get(), /*include_psl=*/false,
+                                    forms);
+
+  // Imitate login retrieval.
+  PasswordForm matching_signon_realm =
+      CreateTestLogin(kTestUsername, kTestPassword, TestURL1, kTestDateCreated);
+  PasswordForm matching_federated = CreateTestLogin(
+      kTestUsername, kTestPassword,
+      "federation://secondexample.com/google.com/", kTestDateCreated);
+  PasswordForm not_matching =
+      CreateTestLogin(kTestUsername, kTestPassword,
+                      "https://mobile.secondexample.com/", kTestDateCreated);
+
+  const JobId kSecondJobId{1338};
+  EXPECT_CALL(*bridge(), GetLoginsForSignonRealm)
+      .WillOnce(Return(kSecondJobId));
+  // Logins will be retrieved for forms from |forms| in a backwards order.
+  consumer().OnCompleteWithLogins(kFirstJobId,
+                                  {matching_federated, not_matching});
+  RunUntilIdle();
+
+  // Retrieving logins for the last form should trigger the final callback.
+  LoginsResult expected_logins;
+  expected_logins.push_back(std::make_unique<PasswordForm>(matching_federated));
+  expected_logins.push_back(
+      std::make_unique<PasswordForm>(matching_signon_realm));
+  EXPECT_CALL(mock_reply,
+              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+
+  task_environment_.FastForwardBy(kLatencyDelta);
+  consumer().OnCompleteWithLogins(kSecondJobId, {matching_signon_realm});
+  RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(
+      "PasswordManager.PasswordStoreAndroidBackend.FillMatchingLoginsAsync."
+      "Latency",
+      kLatencyDelta, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsReply> mock_reply;
+
+  const JobId kFirstJobId{1337};
+  EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+
+  std::string TestURL1("https://firstexample.com");
+  std::string TestURL2("https://secondexample.com");
+
+  std::vector<PasswordFormDigest> forms;
+  forms.push_back(PasswordFormDigest(PasswordForm::Scheme::kHtml, TestURL1,
+                                     GURL(TestURL1)));
+  forms.push_back(PasswordFormDigest(PasswordForm::Scheme::kHtml, TestURL2,
+                                     GURL(TestURL2)));
+  backend().FillMatchingLoginsAsync(mock_reply.Get(), /*include_psl=*/true,
+                                    forms);
+
+  // Imitate login retrieval.
+  PasswordForm psl_matching =
+      CreateTestLogin(kTestUsername, kTestPassword,
+                      "https://mobile.firstexample.com/", kTestDateCreated);
+  PasswordForm not_matching =
+      CreateTestLogin(kTestUsername, kTestPassword,
+                      "https://nomatchfirstexample.com/", kTestDateCreated);
+  PasswordForm psl_matching_federated = CreateTestLogin(
+      kTestUsername, kTestPassword,
+      "federation://mobile.secondexample.com/google.com/", kTestDateCreated);
+
+  const JobId kSecondJobId{1338};
+  EXPECT_CALL(*bridge(), GetLoginsForSignonRealm)
+      .WillOnce(Return(kSecondJobId));
+  // Logins will be retrieved for forms from |forms| in a backwards order.
+  consumer().OnCompleteWithLogins(kFirstJobId, {psl_matching_federated});
+  RunUntilIdle();
+
+  // Retrieving logins for the last form should trigger the final callback.
+  LoginsResult expected_logins;
+  expected_logins.push_back(std::make_unique<PasswordForm>(psl_matching));
+  expected_logins.push_back(
+      std::make_unique<PasswordForm>(psl_matching_federated));
+  EXPECT_CALL(mock_reply,
+              Run(UnorderedPasswordFormElementsAre(&expected_logins)));
+
+  task_environment_.FastForwardBy(kLatencyDelta);
+  consumer().OnCompleteWithLogins(kSecondJobId, {psl_matching, not_matching});
+  RunUntilIdle();
+  histogram_tester.ExpectTimeBucketCount(
+      "PasswordManager.PasswordStoreAndroidBackend.FillMatchingLoginsAsync."
+      "Latency",
+      kLatencyDelta, 1);
+}
+
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
@@ -162,8 +277,8 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
   const JobId kJobId{13388};
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
 
-  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword,
-                                      GURL(kTestUrl), kTestDateCreated);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), RemoveLogin(form)).WillOnce(Return(kJobId));
   backend().RemoveLoginAsync(form, mock_reply.Get());
 
@@ -198,12 +313,11 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // forms.
   const JobId kRemoveLoginJobId{13388};
   EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kRemoveLoginJobId));
-  PasswordForm form_to_delete =
-      CreateTestLogin(kTestUsername, kTestPassword, GURL(kTestUrl),
+  PasswordForm form_to_delete = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestUrl, base::Time::FromTimeT(1500));
+  PasswordForm form_to_keep =
+      CreateTestLogin(kTestUsername, kTestPassword, "https://differentsite.com",
                       base::Time::FromTimeT(1500));
-  PasswordForm form_to_keep = CreateTestLogin(kTestUsername, kTestPassword,
-                                              GURL("https://differentsite.com"),
-                                              base::Time::FromTimeT(1500));
   consumer().OnCompleteWithLogins(kGetLoginsJobId,
                                   {form_to_delete, form_to_keep});
   RunUntilIdle();
@@ -237,12 +351,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
   // forms.
   const JobId kRemoveLoginJobId{13388};
   EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kRemoveLoginJobId));
-  PasswordForm form_to_delete =
-      CreateTestLogin(kTestUsername, kTestPassword, GURL(kTestUrl),
-                      base::Time::FromTimeT(1500));
-  PasswordForm form_to_keep =
-      CreateTestLogin(kTestUsername, kTestPassword, GURL(kTestUrl),
-                      base::Time::FromTimeT(2500));
+  PasswordForm form_to_delete = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestUrl, base::Time::FromTimeT(1500));
+  PasswordForm form_to_keep = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestUrl, base::Time::FromTimeT(2500));
   consumer().OnCompleteWithLogins(kGetLoginsJobId,
                                   {form_to_delete, form_to_keep});
   RunUntilIdle();
@@ -262,8 +374,8 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
   const JobId kJobId{13388};
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
 
-  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword,
-                                      GURL(kTestUrl), kTestDateCreated);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), AddLogin(form)).WillOnce(Return(kJobId));
   backend().AddLoginAsync(form, mock_reply.Get());
 
@@ -281,8 +393,8 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   const JobId kJobId{13388};
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
 
-  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword,
-                                      GURL(kTestUrl), kTestDateCreated);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   EXPECT_CALL(*bridge(), UpdateLogin(form)).WillOnce(Return(kJobId));
   backend().UpdateLoginAsync(form, mock_reply.Get());
 
@@ -384,8 +496,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
   EXPECT_CALL(*bridge(), AddLogin).WillOnce(Return(kJobId));
-  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword,
-                                      GURL(kTestUrl), kTestDateCreated);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   backend().AddLoginAsync(form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
   task_environment_.FastForwardBy(kLatencyDelta);
@@ -429,8 +541,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
   EXPECT_CALL(*bridge(), UpdateLogin).WillOnce(Return(kJobId));
-  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword,
-                                      GURL(kTestUrl), kTestDateCreated);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   backend().UpdateLoginAsync(form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
   task_environment_.FastForwardBy(kLatencyDelta);
@@ -474,8 +586,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
 
   base::MockCallback<PasswordStoreChangeListReply> mock_reply;
   EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kJobId));
-  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword,
-                                      GURL(kTestUrl), kTestDateCreated);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
   backend().RemoveLoginAsync(form, mock_reply.Get());
   EXPECT_CALL(mock_reply, Run);
   task_environment_.FastForwardBy(kLatencyDelta);

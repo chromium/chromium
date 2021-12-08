@@ -79,10 +79,11 @@ class PasswordStoreAndroidBackend
         this};
   };
 
-  // Wraps the handler for an asynchronous job (if successful). Also provides
-  // means to record metrics about the job (if successful or not). An object of
-  // this type shall be created and stored in |request_for_job_| once an
-  // asynchronous begins, and destroyed once the job is finished.
+  // Wraps the handler for one or multiple asynchronous jobs (if successful).
+  // Also provides means to record metrics about the jobs (if successful or
+  // not). An object of this type shall be created and stored in
+  // |request_for_job_| once an asynchronous begins, and destroyed once jobs are
+  // finished.
   class JobReturnHandler {
    public:
     using ErrorReply = base::OnceClosure;
@@ -90,6 +91,7 @@ class PasswordStoreAndroidBackend
 
     JobReturnHandler();
     JobReturnHandler(LoginsOrErrorReply callback, MetricInfix metric_name);
+    JobReturnHandler(LoginsReply callback, MetricInfix metric_name);
     JobReturnHandler(PasswordStoreChangeListReply callback,
                      MetricInfix metric_infix);
     JobReturnHandler(JobReturnHandler&&);
@@ -117,7 +119,7 @@ class PasswordStoreAndroidBackend
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
 
    private:
-    absl::variant<LoginsOrErrorReply, PasswordStoreChangeListReply>
+    absl::variant<LoginsReply, LoginsOrErrorReply, PasswordStoreChangeListReply>
         success_callback_;
     MetricInfix metric_infix_;
     base::Time start_ = base::Time::Now();
@@ -128,6 +130,8 @@ class PasswordStoreAndroidBackend
   // like a bulk deletion just as well as the normal, rather small job load.
   using JobMap = base::small_map<
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
+  using AccumulatedLoginsReply =
+      base::OnceCallback<void(std::unique_ptr<LoginsResult>)>;
   using AccumulatedPasswordStoreChangeListReply =
       base::OnceCallback<void(std::unique_ptr<PasswordStoreChangeList>)>;
 
@@ -180,6 +184,11 @@ class PasswordStoreAndroidBackend
 
   void QueueNewJob(JobId job_id, JobReturnHandler return_handler);
   JobReturnHandler GetAndEraseJob(JobId job_id);
+
+  // Gets logins matching |form|.
+  void GetLoginsAsync(const PasswordFormDigest& form,
+                      bool include_psl,
+                      LoginsReply callback);
 
   // Filters |logins| created between |delete_begin| and |delete_end| time
   // that match |url_filer| and asynchronously removes them.

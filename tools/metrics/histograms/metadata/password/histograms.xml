@@ -2282,9 +2282,13 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Function">
     <variant name="AddLoginAsync" summary="add a login to"/>
+    <variant name="FillMatchingLoginsAsync"
+        summary="fill matching logins from"/>
     <variant name="GetAllLoginsAsync" summary="retrieve all logins from"/>
     <variant name="GetAutofillableLoginsAsync"
         summary="retrieve autofillable logins from"/>
+    <variant name="GetLoginsAsync"
+        summary="retrieve logins filtered by signon realm from"/>
     <variant name="RemoveLoginAsync" summary="remove a login from"/>
     <variant name="UpdateLoginAsync" summary="update a login in"/>
   </token>
@@ -2303,11 +2307,15 @@ chromium-metrics-reviews@google.com.
   <token key="Function">
     <variant name="AddLoginAsync"
         summary="AddLoginAsync() succeeded to add a login to"/>
+    <variant name="FillMatchingLoginsAsync"
+        summary="succeeded in filling matching logins from"/>
     <variant name="GetAllLoginsAsync"
         summary="GetAllLoginsAsync() succeeded in retrieving all logins from"/>
     <variant name="GetAutofillableLoginsAsync"
         summary="GetAutofillableLoginsAsync() succeeded in retrieving
                  autofillable logins from"/>
+    <variant name="GetLoginsAsync"
+        summary="succeeded in retrieving logins filtered by signon realm from"/>
     <variant name="RemoveLoginAsync"
         summary="RemoveLoginAsync() succeeded in removing a login from"/>
     <variant name="UpdateLoginAsync"
@@ -2327,7 +2335,10 @@ chromium-metrics-reviews@google.com.
   <token key="Function">
     <variant name=""/>
     <variant name=".AddLoginAsync" summary="for AddLoginAsync"/>
+    <variant name=".FillMatchingLoginsAsync"
+        summary="for FillMatchingLoginsAsync"/>
     <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
+    <variant name=".GetLoginsAsync" summary="for GetLoginsAsync"/>
     <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
     <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
   </token>
@@ -2346,7 +2357,11 @@ chromium-metrics-reviews@google.com.
     <variant name=""
         summary="retrieving/adding/updating or removing logins from"/>
     <variant name=".AddLoginAsync" summary="adding a login to"/>
+    <variant name=".FillMatchingLoginsAsync"
+        summary="filling matching logins from"/>
     <variant name=".GetAllLoginsAsync" summary="retrieving all logins from"/>
+    <variant name=".GetLoginsAsync"
+        summary="retrieving logins filtered by signon realm from"/>
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>
     <variant name=".UpdateLoginAsync" summary="updating a login in"/>
   </token>

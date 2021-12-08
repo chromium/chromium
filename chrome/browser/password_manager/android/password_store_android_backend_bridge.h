@@ -67,6 +67,14 @@ class PasswordStoreAndroidBackendBridge {
   // `OnCompleteWithLogins` when the job with the returned JobId succeeds.
   virtual JobId GetAutofillableLogins() WARN_UNUSED_RESULT = 0;
 
+  // Triggers an asynchronous request to retrieve stored passwords with
+  // matching |signon_realm|. The returned results must be validated (e.g
+  // matching "sample.com" also returns logins for "not-sample.com").
+  // The registered `Consumer` is notified with `OnCompleteWithLogins` when the
+  // job with the returned JobId succeeds.
+  virtual JobId GetLoginsForSignonRealm(const std::string& signon_realm)
+      WARN_UNUSED_RESULT = 0;
+
   // Triggers an asynchronous request to add |form| to store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.

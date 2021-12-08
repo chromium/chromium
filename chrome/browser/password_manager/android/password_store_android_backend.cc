@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -32,6 +33,12 @@ namespace password_manager {
 
 namespace {
 
+using autofill::MatchesPattern;
+using base::UTF8ToUTF16;
+using password_manager::GetExpressionForFederatedMatching;
+using password_manager::GetRegexForPSLFederatedMatching;
+using password_manager::GetRegexForPSLMatching;
+
 using JobId = PasswordStoreAndroidBackendBridge::JobId;
 
 std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
@@ -45,12 +52,93 @@ std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
   return password_ptrs;
 }
 
+std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
+                                   bool include_psl) {
+  if (include_psl) {
+    // Check PSL matches and matches for exact signon realm.
+    return GetRegistryControlledDomain(GURL(form.signon_realm));
+  }
+  if (form.scheme == PasswordForm::Scheme::kHtml) {
+    // Check federated matches and matches for exact signon realm.
+    return form.url.host();
+  }
+  // Check matches for exact signon realm.
+  return form.signon_realm;
+}
+
+bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
+                                     const PasswordFormDigest& form_to_match,
+                                     bool include_psl) {
+  if (retrieved_login.signon_realm == form_to_match.signon_realm)
+    return true;
+
+  std::u16string retrieved_login_signon_realm =
+      UTF8ToUTF16(retrieved_login.signon_realm);
+  const bool include_federated =
+      form_to_match.scheme == PasswordForm::Scheme::kHtml;
+
+  if (include_psl) {
+    const std::u16string psl_regex =
+        UTF8ToUTF16(GetRegexForPSLMatching(form_to_match.signon_realm));
+    if (MatchesPattern(retrieved_login_signon_realm, psl_regex))
+      return true;
+    if (include_federated) {
+      const std::u16string psl_federated_regex = UTF8ToUTF16(
+          GetRegexForPSLFederatedMatching(form_to_match.signon_realm));
+      if (MatchesPattern(retrieved_login_signon_realm, psl_federated_regex))
+        return true;
+    }
+  } else if (include_federated) {
+    const std::u16string federated_regex =
+        UTF8ToUTF16("^" + GetExpressionForFederatedMatching(form_to_match.url));
+    return include_federated &&
+           MatchesPattern(retrieved_login_signon_realm, federated_regex);
+  }
+  return false;
+}
+
+void ValidateSignonRealm(const PasswordFormDigest& form_digest_to_match,
+                         bool include_psl,
+                         LoginsReply callback,
+                         LoginsResultOrError logins_or_error) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error))
+    std::move(callback).Run({});
+  LoginsResult retrieved_logins =
+      std::move(absl::get<LoginsResult>(logins_or_error));
+  LoginsResult matching_logins;
+  for (auto it = retrieved_logins.begin(); it != retrieved_logins.end();) {
+    if (MatchesIncludedPSLAndFederation(*it->get(), form_digest_to_match,
+                                        include_psl)) {
+      matching_logins.push_back(std::move(*it));
+      // std::vector::erase returns the iterator for the next element.
+      it = retrieved_logins.erase(it);
+    } else {
+      it++;
+    }
+  }
+  std::move(callback).Run(std::move(matching_logins));
+}
+
+LoginsResult JoinRetrievedLogins(std::vector<LoginsResult> results) {
+  LoginsResult joined_logins;
+  for (auto& logins : results) {
+    std::move(logins.begin(), logins.end(), std::back_inserter(joined_logins));
+  }
+  return joined_logins;
+}
+
 }  // namespace
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
+    MetricInfix metric_infix)
+    : success_callback_(std::move(callback)),
+      metric_infix_(std::move(metric_infix)) {}
+
+PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
+    LoginsReply callback,
     MetricInfix metric_infix)
     : success_callback_(std::move(callback)),
       metric_infix_(std::move(metric_infix)) {}
@@ -219,14 +307,38 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
                                            "GetAutofillableLoginsAsync")));
 }
 
+// TODO(https://crbug.com/1229655): Replace LoginsReply with LoginsOrErrorReply.
 void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     LoginsReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  // TODO(https://crbug.com/1229654): Implement.
-  // Run callback with an empty forms list to facilitate testing of other
-  // backend methods while this method is not implemented.
-  std::move(callback).Run({});
+  if (forms.empty()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  LoginsReply record_metrics_and_reply = base::BindOnce(
+      [](JobReturnHandler handler, LoginsResult logins) {
+        handler.RecordMetrics(/*error=*/absl::nullopt);
+        std::move(handler).Get<LoginsReply>().Run(std::move(logins));
+      },
+      JobReturnHandler(std::move(callback), JobReturnHandler::MetricInfix(
+                                                "FillMatchingLoginsAsync")));
+
+  auto barrier_callback = base::BarrierCallback<LoginsResult>(
+      forms.size(), base::BindOnce(&JoinRetrievedLogins)
+                        .Then(std::move(record_metrics_and_reply)));
+
+  // Create and run a callbacks chain that retrieves the logins.
+  base::RepeatingClosure callbacks_chain = base::DoNothing();
+
+  for (const PasswordFormDigest& form : forms) {
+    callbacks_chain = base::BindRepeating(
+        &PasswordStoreAndroidBackend::GetLoginsAsync,
+        weak_ptr_factory_.GetWeakPtr(), std::move(form), include_psl,
+        barrier_callback.Then(std::move(callbacks_chain)));
+  }
+  std::move(callbacks_chain).Run();
 }
 
 void PasswordStoreAndroidBackend::AddLoginAsync(
@@ -412,6 +524,17 @@ PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
   JobReturnHandler reply = std::move(iter->second);
   request_for_job_.erase(iter);
   return reply;
+}
+
+void PasswordStoreAndroidBackend::GetLoginsAsync(const PasswordFormDigest& form,
+                                                 bool include_psl,
+                                                 LoginsReply callback) {
+  JobId job_id = bridge_->GetLoginsForSignonRealm(
+      FormToSignonRealmQuery(form, include_psl));
+  QueueNewJob(job_id, JobReturnHandler(
+                          base::BindOnce(&ValidateSignonRealm, std::move(form),
+                                         include_psl, std::move(callback)),
+                          JobReturnHandler::MetricInfix("GetLoginsAsync")));
 }
 
 }  // namespace password_manager

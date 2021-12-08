@@ -8,6 +8,7 @@
 #include <ostream>
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -119,6 +120,42 @@ std::string GetRegistryControlledDomain(const GURL& signon_realm) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       signon_realm,
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+std::string GetRegexForPSLMatching(const std::string& signon_realm) {
+  const GURL signon_realm_url(signon_realm);
+  std::string registered_domain = GetRegistryControlledDomain(signon_realm_url);
+  DCHECK(!registered_domain.empty());
+  // We are extending the original SQL query with one that includes more
+  // possible matches based on public suffix domain matching. Using a regexp
+  // here is just an optimization to not have to parse all the stored entries
+  // in the |logins| table. The result (scheme, domain and port) is verified
+  // further down using GURL. See the functions SchemeMatches,
+  // RegistryControlledDomainMatches and PortMatches.
+  // We need to escape . in the domain. Since the domain has already been
+  // sanitized using GURL, we do not need to escape any other characters.
+  base::ReplaceChars(registered_domain, ".", "\\.", &registered_domain);
+  std::string scheme = signon_realm_url.scheme();
+  // We need to escape . in the scheme. Since the scheme has already been
+  // sanitized using GURL, we do not need to escape any other characters.
+  // The scheme soap.beep is an example with '.'.
+  base::ReplaceChars(scheme, ".", "\\.", &scheme);
+  const std::string port = signon_realm_url.port();
+  // For a signon realm such as http://foo.bar/, this regexp will match
+  // domains on the form http://foo.bar/, http://www.foo.bar/,
+  // http://www.mobile.foo.bar/. It will not match http://notfoo.bar/.
+  // The scheme and port has to be the same as the observed form.
+  return "^(" + scheme + ":\\/\\/)([\\w-]+\\.)*" + registered_domain +
+         "(:" + port + ")?\\/$";
+}
+
+std::string GetRegexForPSLFederatedMatching(const std::string& signon_realm) {
+  return "^federation://([\\w-]+\\.)*" +
+         GetRegistryControlledDomain(GURL(signon_realm)) + "/.+$";
+}
+
+std::string GetExpressionForFederatedMatching(const GURL& url) {
+  return base::StringPrintf("federation://%s/", url.host().c_str());
 }
 
 }  // namespace password_manager

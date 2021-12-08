@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
@@ -128,6 +129,16 @@ JobId PasswordStoreAndroidBackendBridgeImpl::GetAutofillableLogins() {
   JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAutofillableLogins(
       base::android::AttachCurrentThread(), java_object_, job_id.value());
+  return job_id;
+}
+
+JobId PasswordStoreAndroidBackendBridgeImpl::GetLoginsForSignonRealm(
+    const std::string& signon_realm) {
+  JobId job_id = GetNextJobId();
+  Java_PasswordStoreAndroidBackendBridgeImpl_getLoginsForSignonRealm(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ConvertUTF8ToJavaString(
+          base::android::AttachCurrentThread(), signon_realm));
   return job_id;
 }
 
