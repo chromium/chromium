@@ -1,0 +1,6 @@
+has_popup_menu.AXPopupValue='menu'
+has_popup_listbox.AXPopupValue='listbox'
+has_popup_tree.AXPopupValue='tree'
+has_popup_grid.AXPopupValue='grid'
+has_popup_dialog.AXPopupValue='dialog'
+not_applicable.AXPopupValue=n/a

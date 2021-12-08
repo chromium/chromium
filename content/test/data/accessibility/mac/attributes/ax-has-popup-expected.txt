@@ -1,0 +1,2 @@
+has_popup.AXHasPopup=1
+not_applicable.AXHasPopup=n/a

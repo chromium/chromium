@@ -70,8 +70,6 @@ NSString* const NSAccessibilityElementBusyAttribute = @"AXElementBusy";
 NSString* const NSAccessibilityFocusableAncestorAttribute =
     @"AXFocusableAncestor";
 NSString* const NSAccessibilityGrabbedAttribute = @"AXGrabbed";
-NSString* const NSAccessibilityHasPopupAttribute = @"AXHasPopup";
-NSString* const NSAccessibilityPopupValueAttribute = @"AXPopupValue";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
     @"AXHighestEditableAncestor";
 NSString* const NSAccessibilityIsMultiSelectableAttribute =
@@ -792,8 +790,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityFocusedAttribute, @"focused"},
       {NSAccessibilityGrabbedAttribute, @"grabbed"},
       {NSAccessibilityHeaderAttribute, @"header"},
-      {NSAccessibilityHasPopupAttribute, @"hasPopup"},
-      {NSAccessibilityPopupValueAttribute, @"popupValue"},
       {NSAccessibilityHelpAttribute, @"help"},
       {NSAccessibilityHighestEditableAncestorAttribute,
        @"highestEditableAncestor"},
@@ -1208,34 +1204,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return @YES;
 
   return @NO;
-}
-
-- (NSNumber*)hasPopup {
-  if (![self instanceActive])
-    return nil;
-  return @(_owner->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
-}
-
-- (NSString*)popupValue {
-  if (![self instanceActive])
-    return nil;
-  int hasPopup = _owner->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup);
-  switch (static_cast<ax::mojom::HasPopup>(hasPopup)) {
-    case ax::mojom::HasPopup::kFalse:
-      return @"false";
-    case ax::mojom::HasPopup::kTrue:
-      return @"true";
-    case ax::mojom::HasPopup::kMenu:
-      return @"menu";
-    case ax::mojom::HasPopup::kListbox:
-      return @"listbox";
-    case ax::mojom::HasPopup::kTree:
-      return @"tree";
-    case ax::mojom::HasPopup::kGrid:
-      return @"grid";
-    case ax::mojom::HasPopup::kDialog:
-      return @"dialog";
-  }
 }
 
 - (id)header {
@@ -3221,12 +3189,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   std::string grabbed;
   if (_owner->GetHtmlAttribute("aria-grabbed", &grabbed))
     [ret addObject:NSAccessibilityGrabbedAttribute];
-
-  if (_owner->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityHasPopupAttribute, NSAccessibilityPopupValueAttribute
-    ]];
-  }
 
   if (_owner->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
     [ret addObject:NSAccessibilitySelectedAttribute];

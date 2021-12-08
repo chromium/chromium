@@ -831,6 +831,13 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
   }
 
+  // Popup
+  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup)) {
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityHasPopupAttribute, NSAccessibilityPopupValueAttribute
+    ]];
+  }
+
   return axAttributes.autorelease();
 }
 
@@ -1029,15 +1036,10 @@ bool IsAXSetter(SEL selector) {
   return @"";
 }
 
-- (NSNumber*)AXRequired {
-  return [self accessibilityRequired];
-}
-
-- (NSString*)AXRole {
-  if (!_node)
+- (NSNumber*)AXHasPopup {
+  if (![self instanceActive])
     return nil;
-
-  return [[self class] nativeRoleFromAXRole:_node->GetRole()];
+  return @(_node->HasIntAttribute(ax::mojom::IntAttribute::kHasPopup));
 }
 
 - (NSString*)AXInvalid {
@@ -1050,6 +1052,39 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::InvalidState::kTrue:
       return @"true";
   }
+}
+
+- (NSString*)AXPopupValue {
+  if (![self instanceActive])
+    return nil;
+  int hasPopup = _node->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup);
+  switch (static_cast<ax::mojom::HasPopup>(hasPopup)) {
+    case ax::mojom::HasPopup::kFalse:
+      return @"false";
+    case ax::mojom::HasPopup::kTrue:
+      return @"true";
+    case ax::mojom::HasPopup::kMenu:
+      return @"menu";
+    case ax::mojom::HasPopup::kListbox:
+      return @"listbox";
+    case ax::mojom::HasPopup::kTree:
+      return @"tree";
+    case ax::mojom::HasPopup::kGrid:
+      return @"grid";
+    case ax::mojom::HasPopup::kDialog:
+      return @"dialog";
+  }
+}
+
+- (NSNumber*)AXRequired {
+  return [self accessibilityRequired];
+}
+
+- (NSString*)AXRole {
+  if (!_node)
+    return nil;
+
+  return [[self class] nativeRoleFromAXRole:_node->GetRole()];
 }
 
 - (NSString*)AXRoleDescription {

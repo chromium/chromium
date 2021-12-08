@@ -40,6 +40,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
     @"AXDetailsElements";
 AX_EXPORT constexpr NSString* const NSAccessibilityDOMIdentifierAttribute =
     @"AXDOMIdentifier";
+AX_EXPORT constexpr NSString* const NSAccessibilityHasPopupAttribute =
+    @"AXHasPopup";
 AX_EXPORT constexpr NSString* const NSAccessibilityInvalidAttribute =
     @"AXInvalid";
 AX_EXPORT constexpr NSString* const
@@ -65,6 +67,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityMathPostscriptsAttribute =
     @"AXMathPostscripts";
 AX_EXPORT constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
     @"AXMathPrescripts";
+AX_EXPORT constexpr NSString* const NSAccessibilityPopupValueAttribute =
+    @"AXPopupValue";
 
 #if defined(MAC_OS_X_VERSION_10_12) && \
     (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)
