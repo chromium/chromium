@@ -725,7 +725,9 @@ class PhotoshopDesktopStory2021(_MediaBrowsingStory):
       'Doc.open':
           'telemetry:reported_by_page:benchmark_begin',
       'Doc.open complete':
-          'telemetry:reported_by_page:benchmark_end'
+          'telemetry:reported_by_page:benchmark_end',
+      'open document end':
+          'telemetry:reported_by_page:time_to_interactive'
     };
   '''
 
