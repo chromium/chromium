@@ -142,8 +142,8 @@ void AccessCodeCastUI::CreatePageHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> receiver) {
   DCHECK(page);
 
-  page_handler_ = std::make_unique<AccessCodeCastHandler>(std::move(receiver),
-                                                          std::move(page));
+  page_handler_ = std::make_unique<AccessCodeCastHandler>(
+      std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AccessCodeCastUI)

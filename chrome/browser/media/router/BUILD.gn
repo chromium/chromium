@@ -249,6 +249,7 @@ source_set("unittests") {
   if (!is_android) {
     sources += [
       # In-browser discovery is not used by Android for now.
+      "discovery/access_code/access_code_cast_discovery_interface_unittest.cc",
       "discovery/dial/device_description_fetcher_unittest.cc",
       "discovery/dial/device_description_service_unittest.cc",
       "discovery/dial/dial_app_discovery_service_unittest.cc",

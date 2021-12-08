@@ -345,4 +345,5 @@ Refer to README.md for content description and update process.
  <item id="publish_note_request" added_in_milestone="98" content_hash_code="01e9f0b8" os_list="android" file_path="components/content_creation/notes/core/server/notes_server_saver.cc" />
  <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />
  <item id="gstatic_change_password_scripts" added_in_milestone="98" content_hash_code="04d28714" os_list="android" file_path="components/password_manager/core/browser/password_scripts_fetcher_impl.cc" />
+ <item id="chrome_cast_discovery_api" added_in_milestone="98" content_hash_code="0502b792" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.cc" />
 </annotations>

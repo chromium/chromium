@@ -331,6 +331,9 @@ hidden="true" so that these annotations don't show up in the document.
     </sender>
   </group>
   <group name="Media">
+    <sender name="Media Router">
+      <traffic_annotation unique_id="chrome_cast_discovery_api"/>
+    </sender>
     <sender name="Plugins">
       <traffic_annotation unique_id="plugins_resource_service"/>
     </sender>

@@ -4448,6 +4448,7 @@ static_library("browser") {
       "//chrome/app/vector_icons",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/enterprise/signals:utils",
+      "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/new_tab_page/chrome_colors:generate_colors_info",
       "//chrome/browser/policy:path_parser",
@@ -4503,6 +4504,9 @@ static_library("browser") {
       "//extensions/buildflags",
     ]
     allow_circular_includes_from += [
+      # TODO(crbug.com/1030821): Eliminate usages of browser.h from Media Router.
+      "//chrome/browser/media/router/discovery:discovery",
+
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
