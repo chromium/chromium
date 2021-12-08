@@ -7333,11 +7333,194 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="CompositorFocusedMedian">
+    <summary>
+      CompositorFocused metrics report the throughput of frames that include
+      compositor thread updates. The median dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CompositorFocusedPercentile95">
+    <summary>
+      CompositorFocused metrics report the throughput of frames that include
+      compositor thread updates. The 95-th percentile dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the 95th percentile will be
+      reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CompositorFocusedVariance">
+    <summary>
+      CompositorFocused metrics report the throughput of frames that include
+      compositor thread updates. The variance of percent dropped frames within a
+      fixed-duration sliding window. So out of all PerecentDroppedFrames of
+      sliding windows the variance will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MainFocusedMedian">
+    <summary>
+      MainFocused metrics report the throughput of frames that include main
+      thread updates. The median dropped frames within a fixed-duration sliding
+      window (as a percentage). So out of all PerecentDroppedFrames of sliding
+      windows the median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MainFocusedPercentile95">
+    <summary>
+      MainFocused metrics report the throughput of frames that include main
+      thread updates. The 95-th percentile dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the 95th percentile will be
+      reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MainFocusedVariance">
+    <summary>
+      MainFocused metrics report the throughput of frames that include main
+      thread updates. The variance of percent dropped frames within a
+      fixed-duration sliding window. So out of all PerecentDroppedFrames of
+      sliding windows the variance will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Median">
+    <summary>
+      The median dropped frames within a fixed-duration sliding window (as a
+      percentage). So out of all PerecentDroppedFrames of sliding windows the
+      median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Percentile95">
     <summary>
       The 95-th percentile dropped frames within a fixed-duration sliding window
       (as a percentage). So out of all PerecentDroppedFrames of sliding windows
       the 95th percentile will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollFocusedMedian">
+    <summary>
+      ScrollFocused metrics reports the throughput with highest priority on
+      scroll interactions. The median dropped frames within a fixed-duration
+      sliding window (as a percentage) with highest priority given to scroll
+      throughput. So out of all PerecentDroppedFrames of sliding windows the
+      median will be reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollFocusedPercentile95">
+    <summary>
+      ScrollFocused metrics reports the throughput with highest priority on
+      scroll interactions. The 95-th percentile dropped frames within a
+      fixed-duration sliding window (as a percentage). So out of all
+      PerecentDroppedFrames of sliding windows the 95th percentile will be
+      reported here.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ScrollFocusedVariance">
+    <summary>
+      ScrollFocused metrics reports the throughput with highest priority on
+      scroll interactions. The variance of percent dropped frames within a
+      fixed-duration sliding window. So out of all PerecentDroppedFrames of
+      sliding windows the variance will be reported here.
     </summary>
     <aggregation>
       <history>
@@ -7465,6 +7648,23 @@ be describing additional metrics about the same event.
   <metric name="TimingSinceFCPWorstCase">
     <summary>
       The Time From FCP when the worst case happened
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Variance">
+    <summary>
+      The variance of percent dropped frames within a fixed-duration sliding
+      window. So out of all PerecentDroppedFrames of sliding windows the
+      variance will be reported here.
     </summary>
     <aggregation>
       <history>

@@ -207,6 +207,7 @@ cc_component("cc") {
     "metrics/throughput_ukm_reporter.h",
     "metrics/total_frame_counter.cc",
     "metrics/total_frame_counter.h",
+    "metrics/ukm_smoothness_data.cc",
     "metrics/ukm_smoothness_data.h",
     "metrics/video_playback_roughness_reporter.cc",
     "metrics/video_playback_roughness_reporter.h",
