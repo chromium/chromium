@@ -220,7 +220,7 @@ OutputDeviceMixer* OutputDeviceMixerManager::AddMixer(
   }
 
   output_params.set_frames_per_buffer(media::AudioLatency::GetRtcBufferSize(
-      output_params.sample_rate(), /*hardware_buffer_size=*/0));
+      output_params.sample_rate(), output_params.frames_per_buffer()));
 
   // base::Unretained(this) is safe here, because |output_device_mixers_|
   // are owned by |this|.
