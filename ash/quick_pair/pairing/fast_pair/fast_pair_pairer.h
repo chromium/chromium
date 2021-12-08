@@ -29,6 +29,7 @@ struct Device;
 enum class AccountKeyFailure;
 enum class PairFailure;
 class FastPairDataEncryptor;
+class FastPairHandshake;
 
 // A FastPairPairer instance is responsible for the pairing procedure to a
 // single device.  Pairing begins on instantiation.
@@ -69,23 +70,6 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate,
                            device::BluetoothDevice* device,
                            bool new_paired_status) override;
 
-  // FastPairGattServiceClientImpl::Factory::Create callback
-  void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
-
-  // FastPairDataEncryptor::Factory::CreateAsync callback
-  // Once the data encryptor is created, triggers a WriteRequestAsync in the
-  // client to be encrypted with the DataEncryptor and written to the device.
-  void OnDataEncryptorCreateAsync(
-      std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor);
-
-  // FastPairGattServiceClient::WriteRequest callback
-  void OnWriteResponse(std::vector<uint8_t> response_bytes,
-                       absl::optional<PairFailure> failure);
-
-  // FastPairDataEncryptor::ParseDecryptedResponse callback
-  void OnParseDecryptedResponse(
-      const absl::optional<DecryptedResponse>& response);
-
   // device::BluetoothDevice::Pair callback
   void OnPairConnected(
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
@@ -120,8 +104,7 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate,
   base::OnceCallback<void(scoped_refptr<Device>, AccountKeyFailure)>
       account_key_failure_callback_;
   base::OnceCallback<void(scoped_refptr<Device>)> pairing_procedure_complete_;
-  std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_;
-  std::unique_ptr<FastPairGattServiceClient> fast_pair_gatt_service_client_;
+  FastPairHandshake* fast_pair_handshake_ = nullptr;
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};
