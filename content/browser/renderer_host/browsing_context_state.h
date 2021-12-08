@@ -52,19 +52,36 @@ namespace content {
 
 // TODO(crbug.com/1270671): Currently it's under implementation and there are
 // two different modes, controlled by a flag: kLegacyOneToOneWithFrameTreeNode,
-// where BrowsingContextState is 1:1 with FrameTreeNode, and
+// where BrowsingContextState is 1:1 with FrameTreeNode and exists for the
+// duration of the FrameTreeNode lifetime, and
 // kSwapForCrossBrowsingInstanceNavigations intended state with the behaviour
-// described above. kLegacyOneToOneWithFrameTreeNode is currently enabled
-// and will be removed once the functionality gated behind
-// kSwapForCrossBrowsingInstanceNavigations is implemented.
+// described above, tied to the lifetime of the RenderFrameHostImpl.
+// kLegacyOneToOneWithFrameTreeNode is currently enabled and will be removed
+// once the functionality gated behind kSwapForCrossBrowsingInstanceNavigations
+// is implemented.
 class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
  public:
+  using RenderFrameProxyHostMap =
+      std::unordered_map<SiteInstanceGroupId,
+                         std::unique_ptr<RenderFrameProxyHost>,
+                         SiteInstanceGroupId::Hasher>;
+
   explicit BrowsingContextState();
+
+  // Returns a const reference to the map of proxy hosts. The keys are
+  // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
+  const RenderFrameProxyHostMap& proxy_hosts() const { return proxy_hosts_; }
+
+  RenderFrameProxyHostMap& proxy_hosts() { return proxy_hosts_; }
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;
 
   virtual ~BrowsingContextState();
+
+ private:
+  // Proxy hosts, indexed by SiteInstanceGroup ID.
+  RenderFrameProxyHostMap proxy_hosts_;
 };
 
 }  // namespace content

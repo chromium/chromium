@@ -112,11 +112,6 @@ using RemoteFramesBroadcastMethodCallback =
 class CONTENT_EXPORT RenderFrameHostManager
     : public SiteInstanceImpl::Observer {
  public:
-  using RenderFrameProxyHostMap =
-      std::unordered_map<SiteInstanceGroupId,
-                         std::unique_ptr<RenderFrameProxyHost>,
-                         SiteInstanceGroupId::Hasher>;
-
   // Functions implemented by our owner that we need.
   //
   // TODO(brettw) Clean this up! These are all the functions in WebContentsImpl
@@ -495,8 +490,9 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
-  const RenderFrameProxyHostMap& GetAllProxyHostsForTesting() const {
-    return proxy_hosts_;
+  const BrowsingContextState::RenderFrameProxyHostMap&
+  GetAllProxyHostsForTesting() const {
+    return browsing_context_state_->proxy_hosts();
   }
 
   // SiteInstanceImpl::Observer
@@ -931,7 +927,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   void PrepareForCollectingPage(
       RenderFrameHostImpl* main_render_frame_host,
       std::set<RenderViewHostImpl*>* render_view_hosts,
-      RenderFrameProxyHostMap* proxy_hosts);
+      BrowsingContextState::RenderFrameProxyHostMap* proxy_hosts);
 
   // Collects all of the page-related state currently owned by
   // RenderFrameHostManager (including relevant RenderViewHosts and
@@ -951,9 +947,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // For now, RenderFrameHost keeps a RenderViewHost in its SiteInstance alive.
   // Eventually, RenderViewHost will be replaced with a page context.
   std::unique_ptr<RenderFrameHostImpl> render_frame_host_;
-
-  // Proxy hosts, indexed by SiteInstanceGroup ID.
-  RenderFrameProxyHostMap proxy_hosts_;
 
   // Temporarily store BrowsingContextState here while it is 1:1 with
   // FrameTreeNode and RenderFrameHostManager so we can do an in-place migration
