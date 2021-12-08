@@ -2075,6 +2075,8 @@ class MetaBuildWrapper(object):
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            env=env, stdin=subprocess.PIPE)
       out, err = p.communicate(input=stdin)
+      out = out.decode('utf-8')
+      err = err.decode('utf-8')
     else:
       p = subprocess.Popen(cmd, shell=False, cwd=self.chromium_src_dir,
                            env=env)
