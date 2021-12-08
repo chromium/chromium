@@ -416,8 +416,9 @@ class ContentVerifierHashTest
 
 // Tests that corruption of a requested extension resource always disables the
 // extension.
+// Flaky test. See crbug.com/1276043.
 IN_PROC_BROWSER_TEST_P(ContentVerifierHashTest,
-                       TamperRequestedResourceKeepComputedHashes) {
+                       DISABLED_TamperRequestedResourceKeepComputedHashes) {
   ASSERT_TRUE(InstallDefaultResourceExtension());
 
   DisableExtension();
