@@ -6,8 +6,6 @@ import {assertInstanceof, assertNotReached} from '../../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import * as error from '../../../error.js';
-// eslint-disable-next-line no-unused-vars
-import {DeviceOperator} from '../../../mojo/device_operator.js';
 import {
   CanceledError,
   ErrorLevel,

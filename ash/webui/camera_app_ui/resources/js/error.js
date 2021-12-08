@@ -7,7 +7,6 @@ import {AppWindow} from './app_window.js';
 import {assertInstanceof} from './chrome_util.js';
 import * as metrics from './metrics.js';
 import {
-  ErrorInfo,  // eslint-disable-line no-unused-vars
   ErrorLevel,
   ErrorType,
 } from './type.js';

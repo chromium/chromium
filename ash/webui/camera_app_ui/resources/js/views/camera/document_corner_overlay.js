@@ -7,7 +7,6 @@ import * as dom from '../../dom.js';
 import {
   Point,
   PolarVector,
-  Vector,  // eslint-disable-line no-unused-vars
   vectorFromPoints,
 } from '../../geometry.js';
 import {I18nString} from '../../i18n_string.js';

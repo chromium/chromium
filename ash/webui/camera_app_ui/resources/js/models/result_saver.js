@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from '../chrome_util.js';
-// eslint-disable-next-line no-unused-vars
-import {Resolution} from '../type.js';
 
 // eslint-disable-next-line no-unused-vars
 import {VideoSaver} from './video_saver.js';
