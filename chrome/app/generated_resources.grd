@@ -5168,6 +5168,30 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPONENTS_CHECKING_LABEL" desc="Checking label">
         Checking for status...
       </message>
+
+      <if expr="chromeos">
+        <message name="IDS_COMPONENTS_OS_TEXT1_LABEL" desc="Begin label text on the os://components page from ChromeOS which directs a user to a dialog showing Chrome browser specific components - enclosing url link.">
+          Looking for browser components? Visit
+        </message>
+        <message name="IDS_COMPONENTS_OS_TEXT2_LABEL" desc="End label text on the os://components page from ChromeOS which directs a user to a dialog showing Chrome browser specific components - enclosing url link.">
+          .
+        </message>
+        <message name="IDS_COMPONENTS_OS_LINK" translateable="false" desc="Label for a button on the os://components page from ChromeOS that will call a new window which allows to change Chrome browser components.">
+          chrome://components
+        </message>
+      </if>
+      <if expr="lacros">
+        <message name="IDS_COMPONENTS_OS_TEXT1_LABEL" desc="Begin label text on the chrome://components page from ChromeOS which directs a user to a dialog showing OS specific components - enclosing url link.">
+          Looking for system components? Visit
+        </message>
+        <message name="IDS_COMPONENTS_OS_TEXT2_LABEL" desc="End label text on the chrome://components page from ChromeOS which directs a user to a dialog showing OS specific components - enclosing url link.">
+          .
+        </message>
+        <message name="IDS_COMPONENTS_OS_LINK" translateable="false" desc="Label for button on the chrome://components page from ChromeOS that will call a new window which allows to change system components.">
+          os://components
+        </message>
+      </if>
+
       <message name="IDS_COMPONENTS_SVC_STATUS_NEW" desc="Service Status">
         New
       </message>
@@ -5557,6 +5581,29 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_ABOUT_BROWSER_SWITCH_PROTOCOL_ERROR" desc="Specific error message when we failed to open the alternative browser, because the URL is not one of http://, https:// or file://">
           Only http, https and file protocols are supported for browser redirects.
+        </message>
+      </if>
+
+      <if expr="chromeos">
+        <message name="IDS_ABOUT_OS_TEXT1_LABEL" desc="Begin label text on the os://about page from ChromeOS which directs a user to a dialog showing Chrome browser specific about page - enclosing url link.">
+          Looking for the browser about page? Visit
+        </message>
+        <message name="IDS_ABOUT_OS_TEXT2_LABEL" desc="End label text on the os://about page from ChromeOS which directs a user to a dialog showing Chrome browser specific about page - enclosing url link.">
+          .
+        </message>
+        <message name="IDS_ABOUT_OS_LINK" translateable="false" desc="Label for button on the os://about page from ChromeOS which shows the user the link to the Chrome browser specific about page.">
+          chrome://about
+        </message>
+      </if>
+      <if expr="lacros">
+        <message name="IDS_ABOUT_OS_TEXT1_LABEL" desc="Begin label text on the chrome://about page from ChromeOS which directs a user to a dialog showing system specific about page - enclosing url link.">
+          Looking for the system about page? Visit
+        </message>
+        <message name="IDS_ABOUT_OS_TEXT2_LABEL" desc="End label text on the chrome://about page from ChromeOS which directs a user to a dialog showing system specific about page - enclosing url link.">
+          .
+        </message>
+        <message name="IDS_ABOUT_OS_LINK" translateable="false" desc="Label for button on the chrome://about page from ChromeOS which shows the user the link to the system specific about page.">
+          os://about
         </message>
       </if>
 

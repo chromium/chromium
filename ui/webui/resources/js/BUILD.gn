@@ -81,6 +81,9 @@ preprocess_if_expr("preprocess_src") {
       "post_message_api_server.js",
     ]
   }
+  if (is_chromeos) {
+    in_files += [ "os_about.js" ]
+  }
 
   # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
   if (is_chromeos_ash) {
@@ -263,6 +266,10 @@ js_modulizer("modulize_local") {
       "post_message_api_client.js",
     ]
   }
+  if (is_chromeos) {
+    input_files += [ "os_about.js" ]
+  }
+
   namespace_rewrites = [
     "cr.search_highlight_utils.Range|Range",
     "Polymer.ArraySplice.calculateSplices|calculateSplices",

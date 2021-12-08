@@ -89,9 +89,6 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
 
   source->AddResourcePath(flags_ui::kFlagsJS, IDR_FLAGS_UI_FLAGS_JS);
   source->AddResourcePath(flags_ui::kFlagsCSS, IDR_FLAGS_UI_FLAGS_CSS);
-#if defined(OS_CHROMEOS)
-  source->AddResourcePath(flags_ui::kFlagsSVG, IDR_OS_FLAGS_UI_FLAGS_SVG);
-#endif
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
   source->UseStringsJs();
   return source;

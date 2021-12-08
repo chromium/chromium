@@ -12,6 +12,9 @@
 <title>$i18n{title}</title>
 
 <link rel="stylesheet" href="flags.css">
+<if expr="lacros or chromeos">
+  <link rel="stylesheet" href="chrome://resources/css/os_header.css">
+</if>
 
 <if expr="is_ios">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">

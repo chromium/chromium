@@ -8,8 +8,23 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_url_handling.h"
+#endif
+
+namespace {
+
+const char kCrosUrlVersionRedirect[] = "crosUrlVersionRedirect";
+
+}  // namespace
 
 VersionHandlerChromeOS::VersionHandlerChromeOS() {}
 
@@ -19,6 +34,7 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
     const base::ListValue* args) {
   VersionHandler::HandleRequestVersionInfo(args);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Start the asynchronous load of the versions.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -36,8 +52,36 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
       base::BindOnce(&chromeos::version_loader::GetARCVersion),
       base::BindOnce(&VersionHandlerChromeOS::OnARCVersion,
                      weak_factory_.GetWeakPtr()));
+
+  const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
+#else
+  const bool showSystemFlagsLink = true;
+#endif
+
+  FireWebUIListener("return-lacros-primary", base::Value(showSystemFlagsLink));
 }
 
+void VersionHandlerChromeOS::RegisterMessages() {
+  VersionHandler::RegisterMessages();
+
+  web_ui()->RegisterDeprecatedMessageCallback(
+      kCrosUrlVersionRedirect,
+      base::BindRepeating(&VersionHandlerChromeOS::HandleCrosUrlVersionRedirect,
+                          base::Unretained(this)));
+}
+
+void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
+    const base::ListValue* args) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  lacros_url_handling::NavigateInAsh(GURL(chrome::kOsUIVersionURL));
+#else
+  // Note: This will only be called by the UI when Lacros is available.
+  DCHECK(crosapi::BrowserManager::Get());
+  crosapi::BrowserManager::Get()->OpenUrl(GURL(chrome::kChromeUIVersionURL));
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void VersionHandlerChromeOS::OnVersion(const std::string& version) {
   FireWebUIListener("return-os-version", base::Value(version));
 }
@@ -49,3 +93,4 @@ void VersionHandlerChromeOS::OnOSFirmware(const std::string& version) {
 void VersionHandlerChromeOS::OnARCVersion(const std::string& version) {
   FireWebUIListener("return-arc-version", base::Value(version));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

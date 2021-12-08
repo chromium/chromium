@@ -54,7 +54,13 @@ class AboutUI : public content::WebUIController {
   AboutUI(const AboutUI&) = delete;
   AboutUI& operator=(const AboutUI&) = delete;
 
-  ~AboutUI() override {}
+  ~AboutUI() override = default;
+
+#if defined(OS_CHROMEOS)
+  bool OverrideHandleWebUIMessage(const GURL& source_url,
+                                  const std::string& message,
+                                  const base::ListValue& args) override;
+#endif
 };
 
 namespace about_ui {

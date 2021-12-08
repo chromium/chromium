@@ -41,9 +41,9 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include "chrome/browser/ui/webui/version/version_handler_chromeos.h"
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -81,6 +81,11 @@ WebUIDataSource* CreateVersionUIDataSource() {
 #else
     {version_ui::kOSName, IDS_VERSION_UI_OS},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
+    {version_ui::kOsVersionHeaderText1, IDS_VERSION_UI_OS_TEXT1_LABEL},
+    {version_ui::kOsVersionHeaderText2, IDS_VERSION_UI_OS_TEXT2_LABEL},
+    {version_ui::kOsVersionHeaderLink, IDS_VERSION_UI_OS_LINK},
+#endif  // defined(OS_CHROMEOS)
 #if defined(OS_ANDROID)
     {version_ui::kGmsName, IDS_VERSION_UI_GMS},
 #endif  // OS_ANDROID
@@ -93,6 +98,7 @@ WebUIDataSource* CreateVersionUIDataSource() {
   html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);
   html_source->AddResourcePath(version_ui::kAboutVersionCSS,
                                IDR_VERSION_UI_CSS);
+
 #if defined(OS_ANDROID)
   html_source->AddResourcePath(version_ui::kAboutVersionMobileCSS,
                                IDR_VERSION_UI_MOBILE_CSS);
@@ -110,7 +116,7 @@ VersionUI::VersionUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   web_ui->AddMessageHandler(std::make_unique<VersionHandlerChromeOS>());
 #elif defined(OS_WIN)
   web_ui->AddMessageHandler(std::make_unique<VersionHandlerWindows>());

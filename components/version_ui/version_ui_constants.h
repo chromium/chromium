@@ -75,6 +75,11 @@ extern const char kPlatform[];
 extern const char kProfilePath[];
 extern const char kProfilePathName[];
 #endif
+#if defined(OS_CHROMEOS)
+extern const char kOsVersionHeaderText1[];
+extern const char kOsVersionHeaderText2[];
+extern const char kOsVersionHeaderLink[];
+#endif
 extern const char kRevision[];
 extern const char kSanitizer[];
 extern const char kTitle[];

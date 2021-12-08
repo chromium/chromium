@@ -2873,8 +2873,6 @@ static_library("ui") {
       "webui/signin/inline_login_handler_modal_delegate.h",
       "webui/signin/signin_helper_chromeos.cc",
       "webui/signin/signin_helper_chromeos.h",
-      "webui/version/version_handler_chromeos.cc",
-      "webui/version/version_handler_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
       "window_sizer/window_sizer_chromeos.h",
     ]
@@ -3130,6 +3128,8 @@ static_library("ui") {
       "views/tabs/tab_scrubber_chromeos.h",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
       "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
+      "webui/version/version_handler_chromeos.cc",
+      "webui/version/version_handler_chromeos.h",
     ]
     deps += [
       "//chrome/app:generated_resources",

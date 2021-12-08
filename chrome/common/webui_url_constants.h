@@ -333,7 +333,6 @@ extern const char kChromeUIVmUrl[];
 extern const char kOsUICroshURL[];
 extern const char kOsUIFileManagerURL[];
 extern const char kOsUITerminalURL[];
-extern const char kOsUIAboutURL[];
 extern const char kOsUIAccountManagerErrorURL[];
 extern const char kOsUIAccountManagerWelcomeURL[];
 extern const char kOsUIAccountMigrationWelcomeURL[];
@@ -344,7 +343,6 @@ extern const char kOsUIArcOverviewTracingURL[];
 extern const char kOsUIArcPowerControlURL[];
 extern const char kOsUIAssistantOptInURL[];
 extern const char kOsUIBluetoothPairingURL[];
-extern const char kOsUIComponentsUrl[];
 extern const char kOsUICrashesUrl[];
 extern const char kOsUICreditsURL[];
 extern const char kOsUICrostiniCreditsURL[];
@@ -380,7 +378,6 @@ extern const char kOsUISmbShareURL[];
 extern const char kOsUISyncInternalsUrl[];
 extern const char kOsUISysInternalsUrl[];
 extern const char kOsUIUserImageURL[];
-extern const char kOsUIVersionURL[];
 extern const char kOsUIVmUrl[];
 
 // Returns true if this web UI is part of the "system UI". Generally this is
@@ -394,7 +391,10 @@ bool IsSystemWebUIHost(base::StringPiece host);
 extern const char kChromeUIAppDisabledHost[];
 extern const char kChromeUIOSSettingsHost[];
 extern const char kChromeUIOSSettingsURL[];
+extern const char kOsUIAboutURL[];
+extern const char kOsUIComponentsUrl[];
 extern const char kOsUIFlagsURL[];
+extern const char kOsUIVersionURL[];
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

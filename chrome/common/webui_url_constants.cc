@@ -350,7 +350,6 @@ const char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
 const char kOsUICroshURL[] = "os://crosh";
 const char kOsUIFileManagerURL[] = "os://file-manager";
 const char kOsUITerminalURL[] = "os://terminal";
-const char kOsUIAboutURL[] = "os://about";
 const char kOsUIAccountManagerErrorURL[] = "os://account-manager-error";
 const char kOsUIAccountManagerWelcomeURL[] = "os://account-manager-welcome";
 const char kOsUIAccountMigrationWelcomeURL[] = "os://account-migration-welcome";
@@ -361,7 +360,6 @@ const char kOsUIArcOverviewTracingURL[] = "os://arc-overview-tracing";
 const char kOsUIArcPowerControlURL[] = "os://arc-power-control";
 const char kOsUIAssistantOptInURL[] = "os://assistant-optin";
 const char kOsUIBluetoothPairingURL[] = "os://bluetooth-pairing";
-const char kOsUIComponentsUrl[] = "os://components";
 const char kOsUICrashesUrl[] = "os://crashes";
 const char kOsUICreditsURL[] = "os://credits";
 const char kOsUICrostiniCreditsURL[] = "os://crostini-credits";
@@ -397,7 +395,6 @@ const char kOsUISmbShareURL[] = "os://smb-share-dialog";
 const char kOsUISyncInternalsUrl[] = "os://sync-internals";
 const char kOsUISysInternalsUrl[] = "os://sys-internals";
 const char kOsUIUserImageURL[] = "os://userimage";
-const char kOsUIVersionURL[] = "os://version";
 const char kOsUIVmUrl[] = "os://vm";
 
 // Keep alphabetized.
@@ -450,7 +447,10 @@ bool IsSystemWebUIHost(base::StringPiece host) {
 const char kChromeUIAppDisabledHost[] = "app-disabled";
 const char kChromeUIOSSettingsHost[] = "os-settings";
 const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
+const char kOsUIAboutURL[] = "os://about";
+const char kOsUIComponentsUrl[] = "os://components";
 const char kOsUIFlagsURL[] = "os://flags";
+const char kOsUIVersionURL[] = "os://version";
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

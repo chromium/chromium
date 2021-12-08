@@ -53,13 +53,18 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
       "trusted-types jstemplate parse-html-subset;");
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"componentsTitle", IDS_COMPONENTS_TITLE},
-      {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
-      {"componentVersion", IDS_COMPONENTS_VERSION},
-      {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
-      {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
-      {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
-      {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
+    {"componentsTitle", IDS_COMPONENTS_TITLE},
+    {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
+    {"componentVersion", IDS_COMPONENTS_VERSION},
+    {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
+    {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
+    {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
+    {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
+#if defined(OS_CHROMEOS)
+    {"os-components-text1", IDS_COMPONENTS_OS_TEXT1_LABEL},
+    {"os-components-text2", IDS_COMPONENTS_OS_TEXT2_LABEL},
+    {"os-components-link", IDS_COMPONENTS_OS_LINK},
+#endif
   };
   source->AddLocalizedStrings(kStrings);
 

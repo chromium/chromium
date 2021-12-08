@@ -82,6 +82,29 @@ function returnCustomizationId(response) {
 }
 // </if>
 
+// <if expr="chromeos or lacros">
+/**
+ * Callback from the backend to inform if Lacros is primary or not.
+ * @param {string} isPrimary True if it is primary.
+ */
+function returnLacrosPrimary(isPrimary) {
+  $('os-link-container').hidden = !isPrimary;
+
+  const crosUrlRedirectButton = $('os-link-href');
+  if (crosUrlRedirectButton) {
+    crosUrlRedirectButton.onclick = crosUrlVersionRedirect;
+  }
+}
+
+/**
+ * Called when the user clicks on the os-link-href button.
+ */
+function crosUrlVersionRedirect() {
+  chrome.send('crosUrlVersionRedirect');
+}
+
+// </if>
+
 function copyToClipboard() {
   navigator.clipboard.writeText($('copy-content').innerText);
 }
@@ -94,6 +117,9 @@ function onLoadWork() {
   // <if expr="chromeos">
   addWebUIListener('return-os-firmware-version', returnOsFirmwareVersion);
   addWebUIListener('return-arc-version', returnARCVersion);
+  // </if>
+  // <if expr="chromeos or lacros">
+  addWebUIListener('return-lacros-primary', returnLacrosPrimary);
   // </if>
 
   chrome.send('requestVersionInfo');

@@ -65,5 +65,10 @@ generate_grd("build_grdp") {
       "icon_visibility.svg",
     ]
   }
+
+  if (is_chromeos) {
+    input_files += [ "os_flags_app_icon.svg" ]
+  }
+
   resource_path_prefix = "images"
 }
