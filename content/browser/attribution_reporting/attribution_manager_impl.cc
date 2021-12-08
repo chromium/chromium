@@ -84,20 +84,20 @@ void RecordDeleteEvent(AttributionManagerImpl::DeleteEvent event) {
 }
 
 ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
-    SentReportInfo::Status status) {
+    SentReport::Status status) {
   switch (status) {
-    case SentReportInfo::Status::kSent:
+    case SentReport::Status::kSent:
       return ConversionReportSendOutcome::kSent;
-    case SentReportInfo::Status::kTransientFailure:
-    case SentReportInfo::Status::kFailure:
+    case SentReport::Status::kTransientFailure:
+    case SentReport::Status::kFailure:
       return ConversionReportSendOutcome::kFailed;
-    case SentReportInfo::Status::kOffline:
-    case SentReportInfo::Status::kRemovedFromQueue:
+    case SentReport::Status::kOffline:
+    case SentReport::Status::kRemovedFromQueue:
       // Offline reports and reports removed from the queue before being sent
       // should never record an outcome.
       NOTREACHED();
       return ConversionReportSendOutcome::kFailed;
-    case SentReportInfo::Status::kDropped:
+    case SentReport::Status::kDropped:
       return ConversionReportSendOutcome::kDropped;
   }
 }
@@ -425,7 +425,7 @@ void AttributionManagerImpl::AddReportsToReporter(
   reporter_->AddReportsToQueue(std::move(reports));
 }
 
-void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
+void AttributionManagerImpl::OnReportSent(SentReport info) {
   DCHECK(info.report.conversion_id.has_value());
 
   // If there was a transient failure, and another attempt is allowed,
@@ -433,7 +433,7 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
   // from storage if it wasn't skipped due to the browser being offline.
 
   bool should_retry = false;
-  if (info.status == SentReportInfo::Status::kTransientFailure) {
+  if (info.status == SentReport::Status::kTransientFailure) {
     info.report.failed_send_attempts++;
     const absl::optional<base::TimeDelta> delay =
         attribution_policy_->GetFailedReportDelay(
@@ -465,8 +465,8 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
               manager->NotifyReportsChanged();
             },
             weak_factory_.GetWeakPtr(), info.report));
-  } else if (info.status == SentReportInfo::Status::kOffline ||
-             info.status == SentReportInfo::Status::kRemovedFromQueue) {
+  } else if (info.status == SentReport::Status::kOffline ||
+             info.status == SentReport::Status::kRemovedFromQueue) {
     // Remove the ID from the set so that subsequent attempts will not be
     // deduplicated.
     size_t num_removed = queued_reports_.erase(info.report.conversion_id);
@@ -511,9 +511,9 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
   }
 
   // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
-  if (info.status != SentReportInfo::Status::kSent &&
-      info.status != SentReportInfo::Status::kFailure &&
-      info.status != SentReportInfo::Status::kDropped) {
+  if (info.status != SentReport::Status::kSent &&
+      info.status != SentReport::Status::kFailure &&
+      info.status != SentReport::Status::kDropped) {
     return;
   }
 

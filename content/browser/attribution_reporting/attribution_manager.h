@@ -12,7 +12,7 @@
 #include "base/observer_list_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 
 namespace base {
 class Time;
@@ -58,7 +58,7 @@ class AttributionManager {
     virtual void OnSourceDeactivated(
         const AttributionStorage::DeactivatedSource& source) {}
 
-    virtual void OnReportSent(const SentReportInfo& info) {}
+    virtual void OnReportSent(const SentReport& info) {}
 
     virtual void OnReportDropped(
         const AttributionStorage::CreateReportResult& result) {}

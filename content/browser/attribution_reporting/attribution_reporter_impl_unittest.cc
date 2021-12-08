@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -50,13 +50,13 @@ class MockNetworkSender : public AttributionReporterImpl::NetworkSender {
               (override));
 };
 
-auto InvokeCallbackWith(SentReportInfo::Status status,
+auto InvokeCallbackWith(SentReport::Status status,
                         int http_response_code = 200) {
   return
       [=](AttributionReport report,
           AttributionReporterImpl::NetworkSender::ReportSentCallback callback) {
         std::move(callback).Run(
-            SentReportInfo(std::move(report), status, http_response_code));
+            SentReport(std::move(report), status, http_response_code));
       };
 }
 
@@ -104,11 +104,10 @@ TEST_F(AttributionReporterImplTest,
   const auto report = GetReport(clock().Now(), AttributionReport::Id(1));
 
   EXPECT_CALL(*sender_, SendReport(report, _))
-      .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+      .WillOnce(InvokeCallbackWith(SentReport::Status::kSent));
 
-  EXPECT_CALL(callback_,
-              Run(SentReportInfo(report, SentReportInfo::Status::kSent,
-                                 /*http_response_code=*/200)));
+  EXPECT_CALL(callback_, Run(SentReport(report, SentReport::Status::kSent,
+                                        /*http_response_code=*/200)));
 
   reporter_->AddReportsToQueue({report});
 
@@ -123,11 +122,10 @@ TEST_F(AttributionReporterImplTest,
       GetReport(clock().Now() - base::Hours(10), AttributionReport::Id(1));
 
   EXPECT_CALL(*sender_, SendReport(report, _))
-      .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+      .WillOnce(InvokeCallbackWith(SentReport::Status::kSent));
 
-  EXPECT_CALL(callback_,
-              Run(SentReportInfo(report, SentReportInfo::Status::kSent,
-                                 /*http_response_code=*/200)));
+  EXPECT_CALL(callback_, Run(SentReport(report, SentReport::Status::kSent,
+                                        /*http_response_code=*/200)));
 
   reporter_->AddReportsToQueue({report});
 
@@ -142,8 +140,8 @@ TEST_F(AttributionReporterImplTest,
       GetReport(clock().Now() - base::Hours(10), AttributionReport::Id(1));
 
   EXPECT_CALL(*sender_, SendReport).Times(0);
-  EXPECT_CALL(callback_, Run(SentReportInfo(
-                             report, SentReportInfo::Status::kRemovedFromQueue,
+  EXPECT_CALL(callback_,
+              Run(SentReport(report, SentReport::Status::kRemovedFromQueue,
                              /*http_response_code=*/0)));
 
   reporter_->AddReportsToQueue({report});
@@ -233,11 +231,10 @@ TEST_F(AttributionReporterImplTest, ManyReportsAddedAtOnce_SentInOrder) {
           GetReport(clock().Now() + base::Minutes(i), AttributionReport::Id(i));
 
       EXPECT_CALL(*sender_, SendReport(report, _))
-          .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+          .WillOnce(InvokeCallbackWith(SentReport::Status::kSent));
 
-      EXPECT_CALL(callback_,
-                  Run(SentReportInfo(report, SentReportInfo::Status::kSent,
-                                     /*http_response_code=*/200)));
+      EXPECT_CALL(callback_, Run(SentReport(report, SentReport::Status::kSent,
+                                            /*http_response_code=*/200)));
 
       reports.push_back(std::move(report));
     }
@@ -266,11 +263,10 @@ TEST_F(AttributionReporterImplTest, ManyReportsAddedSeparately_SentInOrder) {
           GetReport(clock().Now() + base::Minutes(i), AttributionReport::Id(i));
 
       EXPECT_CALL(*sender_, SendReport(report, _))
-          .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
+          .WillOnce(InvokeCallbackWith(SentReport::Status::kSent));
 
-      EXPECT_CALL(callback_,
-                  Run(SentReportInfo(report, SentReportInfo::Status::kSent,
-                                     /*http_response_code=*/200)));
+      EXPECT_CALL(callback_, Run(SentReport(report, SentReport::Status::kSent,
+                                            /*http_response_code=*/200)));
 
       reports.push_back(std::move(report));
     }
@@ -304,9 +300,8 @@ TEST_F(AttributionReporterImplTest, EmbedderDisallowsReporting_ReportNotSent) {
 
   EXPECT_CALL(*sender_, SendReport).Times(0);
 
-  EXPECT_CALL(callback_,
-              Run(SentReportInfo(report, SentReportInfo::Status::kDropped,
-                                 /*http_response_code=*/0)));
+  EXPECT_CALL(callback_, Run(SentReport(report, SentReport::Status::kDropped,
+                                        /*http_response_code=*/0)));
 
   reporter_->AddReportsToQueue({report});
 
@@ -332,24 +327,23 @@ TEST_F(AttributionReporterImplTest, NetworkConnectionTrackerSkipsSends) {
 
     EXPECT_CALL(*sender_, SendReport).Times(0);
     EXPECT_CALL(callback_,
-                Run(SentReportInfo(report1_1, SentReportInfo::Status::kOffline,
-                                   /*http_response_code=*/0)));
+                Run(SentReport(report1_1, SentReport::Status::kOffline,
+                               /*http_response_code=*/0)));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*sender_, SendReport).Times(0);
     EXPECT_CALL(callback_,
-                Run(SentReportInfo(report2_1, SentReportInfo::Status::kOffline,
-                                   /*http_response_code=*/0)));
+                Run(SentReport(report2_1, SentReport::Status::kOffline,
+                               /*http_response_code=*/0)));
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*sender_, SendReport)
-        .WillOnce(InvokeCallbackWith(SentReportInfo::Status::kSent));
-    EXPECT_CALL(callback_,
-                Run(SentReportInfo(report1_2, SentReportInfo::Status::kSent,
-                                   /*http_response_code=*/200)));
+        .WillOnce(InvokeCallbackWith(SentReport::Status::kSent));
+    EXPECT_CALL(callback_, Run(SentReport(report1_2, SentReport::Status::kSent,
+                                          /*http_response_code=*/200)));
     EXPECT_CALL(checkpoint, Call(3));
     EXPECT_CALL(*sender_, SendReport).Times(0);
     EXPECT_CALL(callback_,
-                Run(SentReportInfo(report2_2, SentReportInfo::Status::kOffline,
-                                   /*http_response_code=*/0)));
+                Run(SentReport(report2_2, SentReport::Status::kOffline,
+                               /*http_response_code=*/0)));
   }
 
   SetOffline(true);

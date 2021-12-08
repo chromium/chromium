@@ -188,7 +188,7 @@ void TestAttributionManager::NotifySourceDeactivated(
     observer.OnSourceDeactivated(source);
 }
 
-void TestAttributionManager::NotifyReportSent(const SentReportInfo& info) {
+void TestAttributionManager::NotifyReportSent(const SentReport& info) {
   for (Observer& observer : observers_)
     observer.OnReportSent(info);
 }
@@ -399,8 +399,8 @@ bool operator==(const AttributionReport& a, const AttributionReport& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const SentReportInfo& a, const SentReportInfo& b) {
-  const auto tie = [](const SentReportInfo& info) {
+bool operator==(const SentReport& a, const SentReport& b) {
+  const auto tie = [](const SentReport& info) {
     return std::make_tuple(info.report, info.status, info.http_response_code);
   };
   return tie(a) == tie(b);
@@ -556,31 +556,31 @@ std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
              << ",failed_send_attempts=" << report.failed_send_attempts << "}";
 }
 
-std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status) {
+std::ostream& operator<<(std::ostream& out, SentReport::Status status) {
   switch (status) {
-    case SentReportInfo::Status::kSent:
+    case SentReport::Status::kSent:
       out << "kSent";
       break;
-    case SentReportInfo::Status::kTransientFailure:
+    case SentReport::Status::kTransientFailure:
       out << "kTransientFailure";
       break;
-    case SentReportInfo::Status::kFailure:
+    case SentReport::Status::kFailure:
       out << "kFailure";
       break;
-    case SentReportInfo::Status::kDropped:
+    case SentReport::Status::kDropped:
       out << "kDropped";
       break;
-    case SentReportInfo::Status::kOffline:
+    case SentReport::Status::kOffline:
       out << "kOffline";
       break;
-    case SentReportInfo::Status::kRemovedFromQueue:
+    case SentReport::Status::kRemovedFromQueue:
       out << "kRemovedFromQueue";
       break;
   }
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const SentReportInfo& info) {
+std::ostream& operator<<(std::ostream& out, const SentReport& info) {
   return out << "{report=" << info.report << ",status=" << info.status
              << ",http_response_code=" << info.http_response_code << "}";
 }

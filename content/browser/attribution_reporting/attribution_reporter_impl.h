@@ -27,7 +27,7 @@ namespace content {
 
 class StoragePartitionImpl;
 
-struct SentReportInfo;
+struct SentReport;
 
 // This class is responsible for managing the dispatch of conversion reports to
 // an AttributionReporterImpl::NetworkSender. It maintains a queue of reports
@@ -45,7 +45,7 @@ class CONTENT_EXPORT AttributionReporterImpl
     virtual ~NetworkSender() = default;
 
     // Callback used to notify caller that the requested report has been sent.
-    using ReportSentCallback = base::OnceCallback<void(SentReportInfo)>;
+    using ReportSentCallback = base::OnceCallback<void(SentReport)>;
 
     // Generates and sends a conversion report matching |report|. This should
     // generate a secure POST request with no-credentials.
@@ -53,7 +53,7 @@ class CONTENT_EXPORT AttributionReporterImpl
                             ReportSentCallback sent_callback) = 0;
   };
 
-  using Callback = base::RepeatingCallback<void(SentReportInfo)>;
+  using Callback = base::RepeatingCallback<void(SentReport)>;
 
   AttributionReporterImpl(StoragePartitionImpl* storage_partition,
                           const base::Clock* clock,

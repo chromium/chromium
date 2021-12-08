@@ -24,7 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/test/test_content_browser_client.h"
@@ -188,7 +188,7 @@ class TestAttributionManager : public AttributionManager {
   void NotifyReportsChanged();
   void NotifySourceDeactivated(
       const AttributionStorage::DeactivatedSource& source);
-  void NotifyReportSent(const SentReportInfo& info);
+  void NotifyReportSent(const SentReport& info);
   void NotifyReportDropped(
       const AttributionStorage::CreateReportResult& result);
 
@@ -343,7 +343,7 @@ bool operator==(const StorableSource& a, const StorableSource& b);
 
 bool operator==(const AttributionReport& a, const AttributionReport& b);
 
-bool operator==(const SentReportInfo& a, const SentReportInfo& b);
+bool operator==(const SentReport& a, const SentReport& b);
 
 bool operator==(const AttributionStorage::DeactivatedSource& a,
                 const AttributionStorage::DeactivatedSource& b);
@@ -366,9 +366,9 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression);
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
-std::ostream& operator<<(std::ostream& out, SentReportInfo::Status status);
+std::ostream& operator<<(std::ostream& out, SentReport::Status status);
 
-std::ostream& operator<<(std::ostream& out, const SentReportInfo& info);
+std::ostream& operator<<(std::ostream& out, const SentReport& info);
 
 std::ostream& operator<<(std::ostream& out,
                          StorableSource::AttributionLogic attribution_logic);

@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -201,15 +201,15 @@ void AttributionNetworkSenderImpl::OnReportSent(
                    net_error == net::ERR_CONNECTION_ABORTED ||
                    net_error == net::ERR_CONNECTION_RESET);
 
-  SentReportInfo::Status report_status =
+  SentReport::Status report_status =
       (status == Status::kOk)
-          ? SentReportInfo::Status::kSent
-          : (should_retry ? SentReportInfo::Status::kTransientFailure
-                          : SentReportInfo::Status::kFailure);
+          ? SentReport::Status::kSent
+          : (should_retry ? SentReport::Status::kTransientFailure
+                          : SentReport::Status::kFailure);
 
   std::move(sent_callback)
-      .Run(SentReportInfo(std::move(report), report_status,
-                          headers ? headers->response_code() : 0));
+      .Run(SentReport(std::move(report), report_status,
+                      headers ? headers->response_code() : 0));
 }
 
 }  // namespace content

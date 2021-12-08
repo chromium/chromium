@@ -14,7 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -64,7 +64,7 @@ class AttributionNetworkSenderTest : public testing::Test {
   }
 
  protected:
-  std::vector<SentReportInfo> sent_reports_;
+  std::vector<SentReport> sent_reports_;
 
   // |task_environment_| must be initialized first.
   content::BrowserTaskEnvironment task_environment_;
@@ -74,7 +74,7 @@ class AttributionNetworkSenderTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  void OnReportSent(SentReportInfo info) {
+  void OnReportSent(SentReport info) {
     sent_reports_.push_back(std::move(info));
   }
 
@@ -181,10 +181,9 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_CallbackFired) {
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, ""));
-  EXPECT_THAT(sent_reports_,
-              ElementsAre(SentReportInfo(std::move(report),
-                                         SentReportInfo::Status::kSent,
-                                         /*http_response_code=*/200)));
+  EXPECT_THAT(sent_reports_, ElementsAre(SentReport(
+                                 std::move(report), SentReport::Status::kSent,
+                                 /*http_response_code=*/200)));
 }
 
 TEST_F(AttributionNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
@@ -208,29 +207,27 @@ TEST_F(AttributionNetworkSenderTest, ReportRequestHangs_TimesOut) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
   // Also verify that the sent callback runs if the request times out.
-  // TODO(apaseltiner): Should we propagate the timeout via the SentReportInfo
+  // TODO(apaseltiner): Should we propagate the timeout via the SentReport
   // instead of just setting |http_response_code = 0|?
   EXPECT_THAT(sent_reports_,
-              ElementsAre(SentReportInfo(
-                  std::move(report), SentReportInfo::Status::kTransientFailure,
-                  /*http_response_code=*/0)));
+              ElementsAre(SentReport(std::move(report),
+                                     SentReport::Status::kTransientFailure,
+                                     /*http_response_code=*/0)));
 }
 
 TEST_F(AttributionNetworkSenderTest,
        ReportRequestFailsWithTargetedError_ShouldRetrySet) {
   struct {
     int net_error;
-    SentReportInfo::Status expected_status;
+    SentReport::Status expected_status;
   } kTestCases[] = {
-      {net::ERR_INTERNET_DISCONNECTED,
-       SentReportInfo::Status::kTransientFailure},
-      {net::ERR_TIMED_OUT, SentReportInfo::Status::kTransientFailure},
-      {net::ERR_CONNECTION_ABORTED, SentReportInfo::Status::kTransientFailure},
-      {net::ERR_CONNECTION_TIMED_OUT,
-       SentReportInfo::Status::kTransientFailure},
-      {net::ERR_CONNECTION_REFUSED, SentReportInfo::Status::kFailure},
-      {net::ERR_CERT_DATE_INVALID, SentReportInfo::Status::kFailure},
-      {net::OK, SentReportInfo::Status::kFailure},
+      {net::ERR_INTERNET_DISCONNECTED, SentReport::Status::kTransientFailure},
+      {net::ERR_TIMED_OUT, SentReport::Status::kTransientFailure},
+      {net::ERR_CONNECTION_ABORTED, SentReport::Status::kTransientFailure},
+      {net::ERR_CONNECTION_TIMED_OUT, SentReport::Status::kTransientFailure},
+      {net::ERR_CONNECTION_REFUSED, SentReport::Status::kFailure},
+      {net::ERR_CERT_DATE_INVALID, SentReport::Status::kFailure},
+      {net::OK, SentReport::Status::kFailure},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -267,9 +264,9 @@ TEST_F(AttributionNetworkSenderTest, ReportRequestFailsWithHeaders_NotRetried) {
   // Ensure the request was replied to.
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 
-  EXPECT_THAT(sent_reports_, ElementsAre(SentReportInfo(
-                                 report, SentReportInfo::Status::kFailure,
-                                 /*http_response_code=*/200)));
+  EXPECT_THAT(sent_reports_,
+              ElementsAre(SentReport(report, SentReport::Status::kFailure,
+                                     /*http_response_code=*/200)));
 }
 
 TEST_F(AttributionNetworkSenderTest,
@@ -281,9 +278,9 @@ TEST_F(AttributionNetworkSenderTest,
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kReportUrl, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
 
-  EXPECT_THAT(sent_reports_, ElementsAre(SentReportInfo(
-                                 report, SentReportInfo::Status::kFailure,
-                                 /*http_response_code=*/400)));
+  EXPECT_THAT(sent_reports_,
+              ElementsAre(SentReport(report, SentReport::Status::kFailure,
+                                     /*http_response_code=*/400)));
 }
 
 TEST_F(AttributionNetworkSenderTest,
@@ -354,8 +351,8 @@ TEST_F(AttributionNetworkSenderTest,
       kReportUrl, "", net::HttpStatusCode::HTTP_BAD_REQUEST));
   EXPECT_THAT(
       sent_reports_,
-      ElementsAre(SentReportInfo(
-          std::move(report), SentReportInfo::Status::kFailure,
+      ElementsAre(SentReport(
+          std::move(report), SentReport::Status::kFailure,
           /*http_response_code=*/net::HttpStatusCode::HTTP_BAD_REQUEST)));
 }
 

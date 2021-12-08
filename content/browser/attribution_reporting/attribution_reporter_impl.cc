@@ -11,7 +11,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/network_service_instance.h"
@@ -59,9 +59,9 @@ void AttributionReporterImpl::RemoveAllReportsFromQueue() {
   while (!report_queue_.empty()) {
     AttributionReport report = report_queue_.top();
     report_queue_.pop();
-    callback_.Run(SentReportInfo(std::move(report),
-                                 SentReportInfo::Status::kRemovedFromQueue,
-                                 /*http_response_code=*/0));
+    callback_.Run(SentReport(std::move(report),
+                             SentReport::Status::kRemovedFromQueue,
+                             /*http_response_code=*/0));
   }
 }
 
@@ -103,9 +103,8 @@ void AttributionReporterImpl::SendNextReport() {
     // If there's no network connection, drop the report and tell the manager to
     // retry it later.
     if (offline_) {
-      callback_.Run(SentReportInfo(std::move(report),
-                                   SentReportInfo::Status::kOffline,
-                                   /*http_response_code=*/0));
+      callback_.Run(SentReport(std::move(report), SentReport::Status::kOffline,
+                               /*http_response_code=*/0));
     } else {
       network_sender_->SendReport(std::move(report), callback_);
     }
@@ -114,9 +113,8 @@ void AttributionReporterImpl::SendNextReport() {
     // to make sure we forward that the report was "sent" to ensure it is
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
-    callback_.Run(SentReportInfo(std::move(report),
-                                 SentReportInfo::Status::kDropped,
-                                 /*http_response_code=*/0));
+    callback_.Run(SentReport(std::move(report), SentReport::Status::kDropped,
+                             /*http_response_code=*/0));
   }
   MaybeScheduleNextReport();
 }

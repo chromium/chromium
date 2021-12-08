@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_INFO_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_INFO_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_H_
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -13,7 +13,7 @@ namespace content {
 
 // Struct that contains data about sent reports. Some info is displayed in the
 // Conversion Internals WebUI.
-struct CONTENT_EXPORT SentReportInfo {
+struct CONTENT_EXPORT SentReport {
   enum class Status {
     kSent,
     // The report failed without receiving response headers.
@@ -30,14 +30,12 @@ struct CONTENT_EXPORT SentReportInfo {
     kRemovedFromQueue,
   };
 
-  SentReportInfo(AttributionReport report,
-                 Status status,
-                 int http_response_code);
-  SentReportInfo(const SentReportInfo& other);
-  SentReportInfo& operator=(const SentReportInfo& other);
-  SentReportInfo(SentReportInfo&& other);
-  SentReportInfo& operator=(SentReportInfo&& other);
-  ~SentReportInfo();
+  SentReport(AttributionReport report, Status status, int http_response_code);
+  SentReport(const SentReport& other);
+  SentReport& operator=(const SentReport& other);
+  SentReport(SentReport&& other);
+  SentReport& operator=(SentReport&& other);
+  ~SentReport();
 
   AttributionReport report;
 
@@ -52,4 +50,4 @@ struct CONTENT_EXPORT SentReportInfo {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_INFO_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_SENT_REPORT_H_

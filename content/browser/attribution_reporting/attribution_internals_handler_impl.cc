@@ -15,7 +15,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/sent_report_info.h"
+#include "content/browser/attribution_reporting/sent_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -220,22 +220,22 @@ void AttributionInternalsHandlerImpl::OnSourceDeactivated(
   }
 }
 
-void AttributionInternalsHandlerImpl::OnReportSent(const SentReportInfo& info) {
+void AttributionInternalsHandlerImpl::OnReportSent(const SentReport& info) {
   mojom::WebUIAttributionReport::Status status;
   switch (info.status) {
-    case SentReportInfo::Status::kSent:
+    case SentReport::Status::kSent:
       status = mojom::WebUIAttributionReport::Status::kSent;
       break;
-    case SentReportInfo::Status::kDropped:
+    case SentReport::Status::kDropped:
       status =
           mojom::WebUIAttributionReport::Status::kProhibitedByBrowserPolicy;
       break;
-    case SentReportInfo::Status::kFailure:
+    case SentReport::Status::kFailure:
       status = mojom::WebUIAttributionReport::Status::kNetworkError;
       break;
-    case SentReportInfo::Status::kTransientFailure:
-    case SentReportInfo::Status::kOffline:
-    case SentReportInfo::Status::kRemovedFromQueue:
+    case SentReport::Status::kTransientFailure:
+    case SentReport::Status::kOffline:
+    case SentReport::Status::kRemovedFromQueue:
       NOTREACHED();
       return;
   }

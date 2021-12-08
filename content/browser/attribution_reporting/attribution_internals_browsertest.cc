@@ -316,26 +316,23 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   OverrideWebUIAttributionManager();
 
-  manager_.NotifyReportSent(
-      SentReportInfo(ReportBuilder(SourceBuilder(now).Build())
-                         .SetReportTime(now + base::Hours(3))
-                         .Build(),
-                     SentReportInfo::Status::kSent,
-                     /*http_response_code=*/200));
-  manager_.NotifyReportSent(
-      SentReportInfo(ReportBuilder(SourceBuilder(now).Build())
-                         .SetReportTime(now + base::Hours(4))
-                         .SetPriority(-1)
-                         .Build(),
-                     SentReportInfo::Status::kDropped,
-                     /*http_response_code=*/0));
-  manager_.NotifyReportSent(
-      SentReportInfo(ReportBuilder(SourceBuilder(now).Build())
-                         .SetReportTime(now + base::Hours(5))
-                         .SetPriority(-2)
-                         .Build(),
-                     SentReportInfo::Status::kFailure,
-                     /*http_response_code=*/0));
+  manager_.NotifyReportSent(SentReport(ReportBuilder(SourceBuilder(now).Build())
+                                           .SetReportTime(now + base::Hours(3))
+                                           .Build(),
+                                       SentReport::Status::kSent,
+                                       /*http_response_code=*/200));
+  manager_.NotifyReportSent(SentReport(ReportBuilder(SourceBuilder(now).Build())
+                                           .SetReportTime(now + base::Hours(4))
+                                           .SetPriority(-1)
+                                           .Build(),
+                                       SentReport::Status::kDropped,
+                                       /*http_response_code=*/0));
+  manager_.NotifyReportSent(SentReport(ReportBuilder(SourceBuilder(now).Build())
+                                           .SetReportTime(now + base::Hours(5))
+                                           .SetPriority(-2)
+                                           .Build(),
+                                       SentReport::Status::kFailure,
+                                       /*http_response_code=*/0));
   manager_.SetReportsForWebUI(
       {ReportBuilder(
            SourceBuilder(now)
@@ -471,9 +468,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                  .Build();
   manager_.SetReportsForWebUI({report});
   report.report_time += base::Hours(1);
-  manager_.NotifyReportSent(SentReportInfo(report,
-                                           SentReportInfo::Status::kSent,
-                                           /*http_response_code=*/200));
+  manager_.NotifyReportSent(SentReport(report, SentReport::Status::kSent,
+                                       /*http_response_code=*/200));
 
   // Verify both rows get rendered.
   static constexpr char wait_script[] = R"(
