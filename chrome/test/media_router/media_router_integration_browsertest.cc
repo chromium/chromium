@@ -37,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "media/base/test_data_util.h"
 #include "net/base/filename_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +46,9 @@ using content::WebContents;
 namespace media_router {
 
 namespace {
+
+using ::testing::Optional;
+
 // Command line argument to specify receiver,
 const char kReceiver[] = "receiver";
 // The path relative to <chromium src>/out/<build config> for media router
@@ -192,12 +196,11 @@ void MediaRouterIntegrationBrowserTest::ExecuteJavaScriptAPI(
   ASSERT_TRUE(value->GetAsDictionary(&dict_value));
 
   // Extract the fields.
-  bool passed = false;
-  ASSERT_TRUE(dict_value->GetBoolean("passed", &passed));
   std::string error_message;
   ASSERT_TRUE(dict_value->GetString("errorMessage", &error_message));
 
-  ASSERT_TRUE(passed) << error_message;
+  ASSERT_THAT(dict_value->FindBoolKey("passed"), Optional(true))
+      << error_message;
 }
 
 void MediaRouterIntegrationBrowserTest::StartSessionAndAssertNotFoundError() {
