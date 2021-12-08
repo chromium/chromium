@@ -95,13 +95,8 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
   raw_ptr<AutofillPopupBaseView> view_;
 };
 
-#if defined(OS_CHROMEOS)
-// Fails on ChromeOS. http://crbug.com/1277271
-#define MAYBE_CorrectBoundsTest DISABLED_CorrectBoundsTest
-#else
-#define MAYBE_CorrectBoundsTest CorrectBoundsTest
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, MAYBE_CorrectBoundsTest) {
+// Regression test for crbug.com/391316
+IN_PROC_BROWSER_TEST_F(AutofillPopupBaseViewTest, CorrectBoundsTest) {
   gfx::RectF bounds(100, 150, 5, 5);
   EXPECT_CALL(mock_delegate_, element_bounds())
       .WillRepeatedly(ReturnRef(bounds));

@@ -106,7 +106,6 @@ bool AutofillPopupBaseView::DoShow() {
     // Ensure the bubble border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
-    params.child = true;
     widget->Init(std::move(params));
     widget->AddObserver(this);
 
