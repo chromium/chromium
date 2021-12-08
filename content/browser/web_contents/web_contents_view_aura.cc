@@ -1140,7 +1140,7 @@ void WebContentsViewAura::StartDragging(
       web_contents_->GetBrowserContext()->IsOffTheRecord()
           ? nullptr
           : std::make_unique<ui::DataTransferEndpoint>(
-                web_contents_->GetFocusedFrame()->GetLastCommittedOrigin()));
+                web_contents_->GetMainFrame()->GetLastCommittedOrigin()));
 
   if (!image.isNull())
     data->provider().SetDragImage(image, image_offset);
@@ -1455,7 +1455,7 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
   auto* focused_frame = web_contents_->GetFocusedFrame();
   if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord()) {
     drag_info.data_endpoint = ui::DataTransferEndpoint(
-        web_contents_->GetFocusedFrame()->GetLastCommittedOrigin());
+        web_contents_->GetMainFrame()->GetLastCommittedOrigin());
   }
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();

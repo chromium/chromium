@@ -40,6 +40,8 @@ enum class EndpointType {
 // if the data read is not allowed.)
 class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
  public:
+  // In case DataTransferEndpoint is constructed from a RenderFrameHost object,
+  // please use the origin of its main frame.
   explicit DataTransferEndpoint(const url::Origin& origin,
                                 bool notify_if_restricted = true);
   // This constructor shouldn't be used if |type| == EndpointType::kUrl.

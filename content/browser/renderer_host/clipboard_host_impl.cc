@@ -117,7 +117,7 @@ ClipboardHostImpl::ClipboardHostImpl(
       render_frame_host->GetBrowserContext()->IsOffTheRecord()
           ? nullptr
           : std::make_unique<ui::DataTransferEndpoint>(
-                render_frame_host->GetLastCommittedOrigin()));
+                render_frame_host->GetMainFrame()->GetLastCommittedOrigin()));
 }
 
 void ClipboardHostImpl::Create(
@@ -645,7 +645,7 @@ ClipboardHostImpl::CreateDataEndpoint() {
     return nullptr;
   }
   return std::make_unique<ui::DataTransferEndpoint>(
-      render_frame_host()->GetLastCommittedOrigin(),
+      render_frame_host()->GetMainFrame()->GetLastCommittedOrigin(),
       render_frame_host()->HasTransientUserActivation());
 }
 }  // namespace content
