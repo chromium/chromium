@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_attributed_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
@@ -484,13 +485,29 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   return item;
 }
 
-- (TableViewLinkHeaderFooterItem*)TLDMessageFooterItem {
-  TableViewLinkHeaderFooterItem* item =
-      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+- (TableViewAttributedHeaderFooterItem*)TLDMessageFooterItem {
+  TableViewAttributedHeaderFooterItem* item =
+      [[TableViewAttributedHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  NSString* URLWithTLD =
+      [self.websiteTextItem.textFieldValue stringByAppendingString:@".com"];
   item.text = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
-      base::SysNSStringToUTF16([self.websiteTextItem.textFieldValue
-          stringByAppendingString:@".com"]));
+      base::SysNSStringToUTF16(URLWithTLD));
+
+  NSRange boldedRange = [item.text rangeOfString:URLWithTLD];
+  DCHECK(boldedRange.location != NSNotFound);
+  UIFontDescriptor* baseDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote];
+  UIFontDescriptor* styleDescriptor = [baseDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  UIFont* fontText = [UIFont fontWithDescriptor:styleDescriptor
+                                           size:kUseDefaultFontSize];
+  NSDictionary* boldTextAttribute = [NSDictionary
+      dictionaryWithObjectsAndKeys:fontText, NSFontAttributeName,
+                                   [UIColor colorNamed:kTextSecondaryColor],
+                                   NSForegroundColorAttributeName, nil];
+  item.customTextAttributesOnRange =
+      @{[NSValue valueWithRange:boldedRange] : boldTextAttribute};
   return item;
 }
 
