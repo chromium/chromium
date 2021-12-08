@@ -12,7 +12,7 @@ package enterprise_reporting;
 // user requests an extension or cancels one.
 // This proto must be synced with the server side proto with same name.
 //
-// Next ID: 5.
+// Next ID: 7.
 message ExtensionsWorkflowEvent {
   // ID of the installed app/extension for a Chrome app or extension.
   optional string id = 1;
@@ -36,4 +36,7 @@ message ExtensionsWorkflowEvent {
 
   // User justification describing why the extension is being requested.
   optional string justification = 5;
+
+  // Device name (aka machine name) of a browser device, used for the audit log.
+  optional string device_name = 6;
 }
