@@ -89,6 +89,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:android/sdk_packager",
+    use_python3 = True,
 )
 
 build_recipe(
