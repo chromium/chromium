@@ -87,8 +87,6 @@ extern const base::Feature kTabGroupsAutoCreate;
 
 extern const base::Feature kTabGroupsCollapseFreezing;
 
-extern const base::Feature kTabGroupsFeedback;
-
 extern const base::Feature kTabGroupsNewBadgePromo;
 
 extern const base::Feature kTabGroupsSave;

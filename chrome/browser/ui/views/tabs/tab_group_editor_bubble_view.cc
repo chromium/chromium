@@ -266,17 +266,6 @@ views::Widget* TabGroupEditorBubbleView::Show(
     // TODO(pbos): Add enabling/disabling of
     // TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW item.
 
-    if (base::FeatureList::IsEnabled(features::kTabGroupsFeedback)) {
-      dialog_builder.AddCustomField(
-          std::make_unique<MenuItemFactory>(
-              l10n_util::GetStringUTF16(
-                  IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK),
-              base::BindRepeating(
-                  &TabGroupEditorBubbleDelegate::SendFeedbackPressed,
-                  base::Unretained(bubble_delegate))),
-          TAB_GROUP_HEADER_CXMENU_FEEDBACK);
-    }
-
     std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
 
     // If |header_view| is not null, use |header_view| as the |anchor_view|.
@@ -449,14 +438,6 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   move_menu_item_->SetEnabled(
       tab_strip_model->count() !=
       tab_strip_model->group_model()->GetTabGroup(group_)->tab_count());
-
-  if (base::FeatureList::IsEnabled(features::kTabGroupsFeedback)) {
-    AddChildView(CreateMenuItem(
-        TAB_GROUP_HEADER_CXMENU_FEEDBACK,
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SEND_FEEDBACK),
-        base::BindRepeating(&TabGroupEditorBubbleView::SendFeedbackPressed,
-                            base::Unretained(this))));
-  }
 
   // Setting up the layout.
 
