@@ -562,7 +562,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         FREMobileIdentityConsistencyFieldTrial.setFirstRunTrialGroupForTesting(
                 FREMobileIdentityConsistencyFieldTrial.OLD_FRE_WITH_UMA_DIALOG_GROUP);
         mAccountManagerTestRule.addAccount(
-                AccountManagerTestRule.createChildAccount("account@gmail.com").name);
+                AccountManagerTestRule.generateChildEmail("account@gmail.com"));
         launchFirstRunThroughCustomTab();
         setAppRestrictionsMockInitialized(false);
         // Clear the focus on view to avoid unexpected highlight on background.

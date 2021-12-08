@@ -233,13 +233,13 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * Creates a child account.
+     * Creates an email used to identify child accounts in tests.
      * A child-specific prefix will be appended to the base name so that the created account
      * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
      * {@link FakeAccountManagerFacade}.
      */
-    public static Account createChildAccount(String baseName) {
-        return FakeAccountManagerFacade.createChildAccount(baseName);
+    public static String generateChildEmail(String baseName) {
+        return FakeAccountManagerFacade.generateChildEmail(baseName);
     }
 
     /**

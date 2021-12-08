@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.is;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.accounts.Account;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -50,8 +49,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
-    private static final Account CHILD_ACCOUNT =
-            AccountManagerTestRule.createChildAccount("account@gmail.com");
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
     public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
@@ -104,7 +103,7 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     public void testAccountManagementViewForChildAccount() throws Exception {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT.name);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
@@ -112,7 +111,7 @@ public class AccountManagementFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return mSettingsActivityTestRule.getFragment()
                     .getProfileDataCacheForTesting()
-                    .hasProfileData(CHILD_ACCOUNT.name);
+                    .hasProfileData(CHILD_ACCOUNT_NAME);
         });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -124,7 +123,7 @@ public class AccountManagementFragmentTest {
     @Feature("RenderTest")
     @DisabledTest(message = "https://crbug.com/1272911")
     public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         // The code under test doesn't care what account type this is, though in practice only
         // EDU accounts are supported on devices where the primary account is a child account.
         mAccountManagerTestRule.addAccount("account@school.com");
@@ -136,7 +135,7 @@ public class AccountManagementFragmentTest {
         CriteriaHelper.pollUiThread(() -> {
             return mSettingsActivityTestRule.getFragment()
                     .getProfileDataCacheForTesting()
-                    .hasProfileData(CHILD_ACCOUNT.name);
+                    .hasProfileData(CHILD_ACCOUNT_NAME);
         });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));

@@ -19,7 +19,6 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
 
@@ -163,13 +162,13 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Creates a child account.
+     * Creates an email used to identify child accounts in tests.
      * A child-specific prefix will be appended to the base name so that the created account
      * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
      * {@link FakeAccountManagerFacade}.
      */
-    public static Account createChildAccount(String baseName) {
-        return AccountUtils.createAccountFromName(CHILD_ACCOUNT_NAME_PREFIX + baseName);
+    public static String generateChildEmail(String baseEmail) {
+        return CHILD_ACCOUNT_NAME_PREFIX + baseEmail;
     }
 
     @GuardedBy("mLock")

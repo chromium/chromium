@@ -9,8 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.accounts.Account;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -51,8 +49,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class GoogleServicesSettingsTest {
-    private static final Account CHILD_ACCOUNT =
-            AccountManagerTestRule.createChildAccount("account@gmail.com");
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -90,7 +88,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void allowSigninOptionHiddenFromChildUser() {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT.name);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);

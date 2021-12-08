@@ -11,7 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 
@@ -52,8 +51,8 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class})
 public class FirstRunFlowSequencerTest {
     private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
-    private static final Account CHILD_ACCOUNT =
-            AccountManagerTestRule.createChildAccount(/*baseName=*/"account@gmail.com");
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail(/*baseName=*/"account@gmail.com");
 
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -182,7 +181,7 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testStandardFlowOneChildAccount() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
                 .thenReturn(false);
         mDelegate.isSyncAllowed = true;

@@ -25,10 +25,10 @@ import java.util.List;
 /** Unit tests for {@link AccountUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountUtilsTest {
-    private static final Account CHILD_ACCOUNT1 =
-            FakeAccountManagerFacade.createChildAccount("account1@gmail.com");
-    private static final Account CHILD_ACCOUNT2 =
-            FakeAccountManagerFacade.createChildAccount("account2@gmail.com");
+    private static final Account CHILD_ACCOUNT1 = AccountUtils.createAccountFromName(
+            FakeAccountManagerFacade.generateChildEmail("account1@gmail.com"));
+    private static final Account CHILD_ACCOUNT2 = AccountUtils.createAccountFromName(
+            FakeAccountManagerFacade.generateChildEmail("account2@gmail.com"));
     private static final Account ADULT_ACCOUNT1 =
             AccountUtils.createAccountFromName("adult.account1@gmail.com");
     private static final Account ADULT_ACCOUNT2 =

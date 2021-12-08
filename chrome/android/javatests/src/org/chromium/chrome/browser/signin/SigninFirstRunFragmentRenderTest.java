@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.signin;
 
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.content.res.Configuration;
 import android.support.test.runner.lifecycle.Stage;
 
@@ -79,8 +78,8 @@ public class SigninFirstRunFragmentRenderTest {
     }
 
     private static final String TEST_EMAIL1 = "test.account1@gmail.com";
-    private static final Account CHILD_ACCOUNT =
-            AccountManagerTestRule.createChildAccount("account@gmail.com");
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
     // Disable animations to reduce flakiness.
     @Rule
@@ -273,7 +272,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithChildAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT.name);
+        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
 
         launchActivityWithFragment(orientation);
 
