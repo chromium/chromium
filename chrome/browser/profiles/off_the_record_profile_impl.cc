@@ -372,10 +372,6 @@ ExtensionSpecialStoragePolicy*
   return GetOriginalProfile()->GetExtensionSpecialStoragePolicy();
 }
 
-bool OffTheRecordProfileImpl::IsSupervised() const {
-  return profile_->IsSupervised();
-}
-
 bool OffTheRecordProfileImpl::IsChild() const {
   // TODO(treib): If we ever allow incognito for child accounts, evaluate
   // whether we want to just return false here.

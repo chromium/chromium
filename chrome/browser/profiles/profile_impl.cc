@@ -1036,10 +1036,6 @@ const Profile* ProfileImpl::GetOriginalProfile() const {
   return this;
 }
 
-bool ProfileImpl::IsSupervised() const {
-  return !GetPrefs()->GetString(prefs::kSupervisedUserId).empty();
-}
-
 bool ProfileImpl::IsChild() const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return GetPrefs()->GetString(prefs::kSupervisedUserId) ==

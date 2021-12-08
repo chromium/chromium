@@ -471,7 +471,7 @@ void ProfileMetrics::LogProfileAndroidAccountManagementMenu(
 #endif  // defined(OS_ANDROID)
 
 void ProfileMetrics::LogProfileLaunch(Profile* profile) {
-  if (profile->IsSupervised()) {
+  if (profile->IsChild()) {
     base::RecordAction(
         base::UserMetricsAction("ManagedMode_NewManagedUserWindow"));
   }
