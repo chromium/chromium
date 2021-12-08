@@ -130,6 +130,8 @@ extern const base::Feature kAutofillProfileImportFromUnfocusableFields;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillProfileServerValidation;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillRecordMetricsOfUnownedForms;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRetrieveOverallPredictionsFromCache;
 COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillSaveAndFillVPA;
 COMPONENT_EXPORT(AUTOFILL)

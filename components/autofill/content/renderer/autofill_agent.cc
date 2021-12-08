@@ -555,10 +555,11 @@ void AutofillAgent::FillOrPreviewForm(int32_t id,
     bool filled_some_fields =
         !form_util::FillOrPreviewForm(form, element_, action).empty();
 
-    if (!element_.Form().IsNull())
+    if (!element_.Form().IsNull()) {
       UpdateLastInteractedForm(element_.Form());
-    else
+    } else {
       formless_elements_were_autofilled_ |= filled_some_fields;
+    }
 
     // TODO(crbug.com/1198811): Inform the BrowserAutofillManager about the
     // fields that were actually filled. It's possible that the form has changed
@@ -1280,7 +1281,9 @@ absl::optional<FormData> AutofillAgent::GetSubmittedForm() const {
     } else if (provisionally_saved_form_.has_value()) {
       return absl::make_optional(provisionally_saved_form_.value());
     }
-  } else if (formless_elements_were_autofilled_ ||
+  } else if ((base::FeatureList::IsEnabled(
+                  features::kAutofillRecordMetricsOfUnownedForms) &&
+              formless_elements_were_autofilled_) ||
              (formless_elements_user_edited_.size() != 0 &&
               !form_util::IsSomeControlElementVisible(
                   render_frame()->GetWebFrame(),

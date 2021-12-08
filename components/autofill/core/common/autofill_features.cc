@@ -337,6 +337,11 @@ const base::Feature kAutofillProfileImportFromUnfocusableFields{
 const base::Feature kAutofillProfileServerValidation{
     "AutofillProfileServerValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if the heuristic field parsing utilizes shared labels.
+// TODO(crbug/1275772): Remove if no negative consequences observed.
+const base::Feature kAutofillRecordMetricsOfUnownedForms{
+    "AutofillRecordMetricsOfUnownedForms", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether or not overall prediction are retrieved from the cache.
 const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
     "AutofillRetrieveOverallPredictionsFromCache",
