@@ -265,15 +265,6 @@
           'shards': 25,
         },
       },
-      'Mac10.15 Tests (dbg)': {
-        'experiment_percentage': 100,
-        'args': [
-          '--debug',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'Mac11 Tests (dbg)': {
         'experiment_percentage': 100,
         'args': [
@@ -530,7 +521,6 @@
       # off CQ.
       'Mac10.13 Tests', # https://crbug.com/1042757
       'Mac10.15 Tests', # https://crbug.com/1042757
-      'Mac10.15 Tests (dbg)', # https://crbug.com/1201386
       'Mac11 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
       'Linux TSan Tests',  # https://crbug.com/368525
@@ -614,21 +604,6 @@
         ],
       },
       'Mac10.15 Tests': {
-        # crbug.com/1042757
-        'swarming': {
-          'dimension_sets': [
-            {
-              # These shards are liable to time out when running on macmini7,1.
-              'cores': '8|12',
-            }
-          ],
-        },
-        # crbug.com/1196416
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
-        ],
-      },
-      'Mac10.15 Tests (dbg)': {
         # crbug.com/1042757
         'swarming': {
           'dimension_sets': [
@@ -1839,9 +1814,6 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
-      'Mac10.15 Tests (dbg)': { # https://crbug.com/1265051
-        'experiment_percentage': 100,
-      },
       'Mac11 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
       },
@@ -2407,11 +2379,6 @@
   },
   'performance_test_suite': {
     'modifications': {
-      'Mac10.15 Tests (dbg)': {
-        'args': [
-          '--browser=debug',
-        ],
-      },
       'Mac11 Tests (dbg)': {
         'args': [
           '--browser=debug',
@@ -2923,7 +2890,6 @@
       'Mac10.15 Tests',
       # TODO crbug.com/1277277
       'Mac11 Tests',
-      'Mac10.15 Tests (dbg)',
       'Mac11 Tests (dbg)',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
@@ -2994,11 +2960,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
-      },
-      'Mac10.15 Tests (dbg)': {
-        'swarming': {
-          'shards': 2,
-        },
       },
       'Mac11 Tests (dbg)': {
         'swarming': {
