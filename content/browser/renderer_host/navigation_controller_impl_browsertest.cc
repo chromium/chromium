@@ -1866,16 +1866,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, SubframeOnEmptyPage) {
   // Navigate to a page to force the renderer process to start.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  // Pop open a new window with only the initial entry.
+  // Pop open a new blank window.
   Shell* new_shell = OpenBlankWindow(contents());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetPrimaryFrameTree()
           .root();
-  EXPECT_TRUE(new_shell->web_contents()
-                  ->GetController()
-                  .GetLastCommittedEntry()
-                  ->IsInitialEntry());
 
   // Make a new iframe in it.
   {
@@ -4241,9 +4237,9 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     WebContentsImpl* new_contents =
         static_cast<WebContentsImpl*>(new_shell->web_contents());
     NavigationControllerImpl& controller = new_contents->GetController();
-    // Since the new window did a synchronous about:blank commit but it got
-    // dropped, it is still on the initial NavigationEntry.
-    EXPECT_TRUE(controller.GetLastCommittedEntry()->IsInitialEntry());
+    // Since the new window did a synchronous about:blank commit, it is no
+    // longer the initial NavigationEntry.
+    EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
     // replace the previous entry.
@@ -4263,17 +4259,28 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     NavigationControllerImpl& controller = new_contents->GetController();
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* last_entry = controller.GetLastCommittedEntry();
-    EXPECT_TRUE(last_entry->IsInitialEntry());
+    // Since the new window did a synchronous about:blank commit, it is no
+    // longer the initial NavigationEntry.
+    EXPECT_FALSE(last_entry->IsInitialEntry());
 
     // The window should be on the initial empty document.
     FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to about:blank will be classified as NEW_ENTRY
-    // and will replace the initial entry.
-    NavigateWindowAndCheck(new_contents, GURL("about:blank"));
+    // and will replace the initial entry if renderer initiated, but will be
+    // turned into a reload if it's browser initiated since it's a same-URL
+    // navigation.
+    NavigateWindowAndCheck(new_contents, GURL("about:blank"),
+                           true /* wait_for_previous_navigations */,
+                           false /* expect_same_document */,
+                           renderer_initiated()
+                               ? NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY
+                               : NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+                           renderer_initiated() /* expect_replace */);
     EXPECT_EQ(1, controller.GetEntryCount());
-    EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(renderer_initiated(),
+              last_entry != controller.GetLastCommittedEntry());
     last_entry = controller.GetLastCommittedEntry();
 
     // The window is no longer on the initial empty document.
@@ -4306,7 +4313,9 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     NavigationControllerImpl& controller = new_contents->GetController();
     EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntry* last_entry = controller.GetLastCommittedEntry();
-    EXPECT_TRUE(last_entry->IsInitialEntry());
+    // Since the new window did a synchronous about:blank commit, it is no
+    // longer the initial NavigationEntry.
+    EXPECT_FALSE(last_entry->IsInitialEntry());
 
     // The window should be on the initial empty document.
     FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
@@ -4314,20 +4323,13 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // Navigating the window to about:blank#foo will be classified as a same-
     // document replacement, and will be classified as EXISTING_ENTRY and modify
-    // the last NavigationEntry for browser-initiated navigations, but it will
-    // be classified as NEW_ENTRY for renderer-initiated navigations, because
-    // of how main frame initial empty documents are handled in the renderer.
-    // TODO(https://crbug.com/1215096): Fix the renderer-initiated navigation
-    // case.
+    // the last NavigationEntry for browser-initiated navigations.
     NavigateWindowAndCheck(new_contents, GURL("about:blank#foo"),
                            true /* wait_for_previous_navigations */,
                            true /* expect_same_document */,
-                           renderer_initiated()
-                               ? NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY
-                               : NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY);
+                           NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY);
     EXPECT_EQ(1, controller.GetEntryCount());
-    EXPECT_EQ(renderer_initiated(),
-              last_entry != controller.GetLastCommittedEntry());
+    EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
 
     // The window should still be on the initial empty document.
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
@@ -4358,10 +4360,10 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     NavigateWindowAndCheck(new_contents, GURL("about:blank#foo"),
                            true /* wait_for_previous_navigations */,
                            true /* expect_same_document */,
-                           NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
-                           false /* expect_replace */);
-    EXPECT_EQ(2, controller.GetEntryCount());
-    EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+                           NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+                           true /* expect_replace */);
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
     // Check that we did a same-document navigation (the DSN stays the same).
     EXPECT_EQ(last_entry->GetMainFrameDocumentSequenceNumber(),
               controller.GetLastCommittedEntry()
@@ -4372,12 +4374,12 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
-    // add a new entry.
+    // replace the previous entry.
     NavigateWindowAndCheck(
         new_contents, url_2, true /* wait_for_previous_navigations */,
         false /* expect_same_document */, NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
-        false /* expect_replace */);
-    EXPECT_EQ(3, controller.GetEntryCount());
+        true /* expect_replace */);
+    EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
 
     // The window is no longer on theinitial empty document.
@@ -4452,9 +4454,12 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
-    // replace the previous entry.
-    NavigateWindowAndCheck(new_contents, url_2);
-    EXPECT_EQ(1, controller.GetEntryCount());
+    // add a new entry.
+    NavigateWindowAndCheck(
+        new_contents, url_2, true /* wait_for_previous_navigations */,
+        false /* expect_same_document */, NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY,
+        false /* expect_replace */);
+    EXPECT_EQ(2, controller.GetEntryCount());
     EXPECT_TRUE(controller.GetLastCommittedEntry());
   }
 
@@ -4632,9 +4637,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   {
-    // Pop open a new window with window.open(), which will stay at the initial
-    // NavigationEntry.
-    Shell* new_shell = OpenBlankWindow(contents());
+    // Pop open a new window which won't commit a navigation, so it will stay at
+    // the initial NavigationEntry.
+    GURL no_commit_url(embedded_test_server()->GetURL("/page204.html"));
+    Shell* new_shell = OpenWindow(contents(), no_commit_url);
     WebContentsImpl* new_contents =
         static_cast<WebContentsImpl*>(new_shell->web_contents());
     // Stop the navigation so that it won't affect future navigations.
@@ -4718,17 +4724,17 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationControllerImpl& controller = new_contents->GetController();
   FrameTreeNode* root = new_contents->GetPrimaryFrameTree().root();
   EXPECT_EQ(1, controller.GetEntryCount());
-  EXPECT_TRUE(controller.GetLastCommittedEntry()->IsInitialEntry());
+  NavigationEntry* last_entry = controller.GetLastCommittedEntry();
 
   {
     // Reload the tab.
     FrameNavigateParamsCapturer capturer(root);
     controller.Reload(ReloadType::NORMAL, false /* check_for_repost */);
     capturer.Wait();
-    // Check that the renderer is still alive and the NavigationEntry is no
-    // longer the initial NavigationEntry.
+    // Check that the renderer is still alive and reused the previous entry.
     EXPECT_EQ(1, controller.GetEntryCount());
-    EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
+    EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
+    last_entry = controller.GetLastCommittedEntry();
   }
 
   {
@@ -4737,10 +4743,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     controller.Reload(ReloadType::BYPASSING_CACHE,
                       false /* check_for_repost */);
     capturer.Wait();
-    // Check that the renderer is still alive and the NavigationEntry is no
-    // longer the initial NavigationEntry.
+    // Check that the renderer is still alive and reused the previous entry.
     EXPECT_EQ(1, controller.GetEntryCount());
-    EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
+    EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
+    last_entry = controller.GetLastCommittedEntry();
   }
 
   // Navigate the tab to a page that has an about:blank iframe, which will load
@@ -4749,6 +4755,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "/navigation_controller/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(new_shell, url_with_synchronous_blank_iframe));
   EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+  last_entry = controller.GetLastCommittedEntry();
 
   {
     // Reload the tab. This also reloads the iframe and re-triggers the
@@ -4765,6 +4773,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(ExecJs(new_shell, "true"));
     EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
     EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
+    last_entry = controller.GetLastCommittedEntry();
   }
   {
     // Reload the tab, bypassing the cache. This also reloads the iframe and
@@ -4782,6 +4792,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(ExecJs(new_shell, "true"));
     EXPECT_TRUE(ExecJs(root->child_at(0), "true"));
     EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
   }
 }
 

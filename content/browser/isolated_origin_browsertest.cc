@@ -2021,8 +2021,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, FrameTreeTest) {
   // Have tab1 call window.open() to create blank tab2.
   FrameTreeNode* tab1_root = web_contents()->GetPrimaryFrameTree().root();
   ShellAddedObserver new_shell_observer;
-  ASSERT_TRUE(
-      ExecJs(tab1_root->current_frame_host(), "window.w = window.open()"));
+  ASSERT_TRUE(ExecJs(tab1_root->current_frame_host(),
+                     "window.w = window.open('/nocontent')"));
   Shell* tab2_shell = new_shell_observer.GetShell();
 
   // Create iframe in tab2.

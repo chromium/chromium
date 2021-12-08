@@ -1760,6 +1760,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
               old_popup->GetMainFrame()->GetLastCommittedOrigin());
   }
 
+  // Do a document.open() so that the initial empty document's history entry
+  // won't get replaced.
+  EXPECT_TRUE(ExecJs(old_popup, "document.open();"));
+
   // Navigate the popup to another site.
   GURL other_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
   url::Origin other_origin = url::Origin::Create(other_url);

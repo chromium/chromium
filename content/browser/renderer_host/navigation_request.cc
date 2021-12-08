@@ -7079,21 +7079,7 @@ bool NavigationRequest::
     return false;
   }
 
-  if (!frame_tree_node_->is_on_initial_empty_document()) {
-    // Return if we're not on the initial empty document.
-    return false;
-  }
-
-  if (IsInMainFrame()) {
-    // We don't currently do initial empty document replacement on main frames,
-    // but we always replace the initial NavigationEntry on the next navigation
-    // on the main frame.
-    return frame_tree_node_->navigator()
-        .controller()
-        .GetLastCommittedEntry()
-        ->IsInitialEntry();
-  }
-  return true;
+  return frame_tree_node_->is_on_initial_empty_document();
 }
 
 bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {

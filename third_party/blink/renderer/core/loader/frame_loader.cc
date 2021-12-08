@@ -475,35 +475,6 @@ void FrameLoader::DidFinishSameDocumentNavigation(
   TakeObjectSnapshot();
 }
 
-WebFrameLoadType FrameLoader::HandleInitialEmptyDocumentReplacementIfNeeded(
-    const KURL& url,
-    WebFrameLoadType frame_load_type) {
-  // Converts navigations from the initial empty document to do replacement if
-  // needed. Note that we don't convert reloads or history navigations (so only
-  // kStandard navigations can get converted to do replacement).
-  if (frame_load_type != WebFrameLoadType::kStandard)
-    return frame_load_type;
-
-  if (frame_->Tree().Parent() && IsOnInitialEmptyDocument()) {
-    // Subframe navigations from the initial empty document should always do
-    // replacement.
-    return WebFrameLoadType::kReplaceCurrentItem;
-  }
-
-  if (!frame_->Tree().Parent() && !Client()->BackForwardLength()) {
-    // For main frames, currently only empty-URL navigations will be converted
-    // to do replacement. Note that this will cause the navigation to be
-    // ignored in the browser side, so no NavigationEntry will be added.
-    // TODO(https://crbug.com/1215096): Make the main frame case follow the
-    // behavior of subframes (always replace when navigating from the initial
-    // empty document).
-    if (Opener() && url.IsEmpty())
-      return WebFrameLoadType::kReplaceCurrentItem;
-  }
-
-  return frame_load_type;
-}
-
 bool FrameLoader::AllowRequestForThisFrame(const FrameLoadRequest& request) {
   // If no origin Document* was specified, skip remaining security checks and
   // assume the caller has fully initialized the FrameLoadRequest.
@@ -661,8 +632,13 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
         mojom::blink::WebFeature::kFileSystemUrlNavigation);
   }
 
-  frame_load_type = HandleInitialEmptyDocumentReplacementIfNeeded(
-      resource_request.Url(), frame_load_type);
+  // Convert navigations from the initial empty document to do replacement if
+  // needed. Note that we don't convert reloads or history navigations (so only
+  // kStandard navigations can get converted to do replacement).
+  if (frame_load_type == WebFrameLoadType::kStandard &&
+      IsOnInitialEmptyDocument()) {
+    frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  }
 
   bool same_document_navigation =
       request.GetNavigationPolicy() == kNavigationPolicyCurrentTab &&

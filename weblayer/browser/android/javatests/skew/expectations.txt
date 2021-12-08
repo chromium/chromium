@@ -90,3 +90,8 @@ crbug.com/1191751 [ all ] org.chromium.weblayer.test.CookieManagerTest#testCooki
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.NavigationTest#testIsFormSubmission [ Skip ]
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.TabCallbackTest#testOnRenderProcessGone [ Skip ]
 crbug.com/1191751 [ all ] org.chromium.weblayer.test.ScrollOffsetCallbackTest#testBasic [ Skip ]
+
+# In 98 we changed the implementation to have navigations succeed rather than
+# fail in this case. Unfortunately there is no way to skip tests based on
+# the impl being >= a given version.
+crbug.com/1233480 [ all ] org.chromium.weblayer.test.NavigationTest#testInitialRendererInitiatedNavigationToAboutBlankFails [ Skip ]

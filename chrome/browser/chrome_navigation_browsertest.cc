@@ -983,12 +983,14 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::RenderFrameHost* opener =
       browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
 
-  // 1. Create a new blank window that won't create a NavigationEntry.
+  // 1. Create a new blank window that stays on the initial NavigationEntry.
   content::WebContents* popup = nullptr;
   {
     content::WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(content::ExecJs(
-        opener, content::JsReplace("window.open($1, 'my-popup')", GURL())));
+        opener,
+        content::JsReplace("window.open($1, 'my-popup')",
+                           embedded_test_server()->GetURL("/nocontent"))));
     popup = popup_observer.GetWebContents();
   }
   content::RenderFrameHost* popup_main_rfh = popup->GetMainFrame();
@@ -1005,9 +1007,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     const GURL kSameDocUrl("about:blank#foo");
     content::TestNavigationManager navigation_manager(popup, kSameDocUrl);
     EXPECT_TRUE(content::ExecJs(
-        popup_main_rfh,
-        content::JsReplace("document.querySelector('iframe').src = $1",
-                           kSameDocUrl)));
+        popup_main_rfh, "document.querySelector('iframe').src = '#foo';"));
     navigation_manager.WaitForNavigationFinished();
   }
 
@@ -1033,7 +1033,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     content::WebContentsAddedObserver popup_observer;
     ASSERT_TRUE(content::ExecJs(
         opener,
-        content::JsReplace("var w = window.open($1, 'my-popup')", GURL())));
+        content::JsReplace("var w = window.open($1, 'my-popup')",
+                           embedded_test_server()->GetURL("/nocontent"))));
     popup = popup_observer.GetWebContents();
   }
   // Popup should be on the initial navigation entry.
@@ -1043,8 +1044,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   {
     const GURL kSameDocUrl("about:blank#foo");
     content::TestNavigationManager navigation_manager(popup, kSameDocUrl);
-    EXPECT_TRUE(
-        content::ExecJs(opener, "w.history.replaceState({}, '', '#foo');"));
+    EXPECT_TRUE(content::ExecJs(
+        opener, content::JsReplace("w.location.href = $1", kSameDocUrl)));
     navigation_manager.WaitForNavigationFinished();
   }
   // Popup should no longer be on the initial navigation entry.

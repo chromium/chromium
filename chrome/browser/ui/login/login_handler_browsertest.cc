@@ -1968,12 +1968,13 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithOnlyInitialEntry) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   // Open a new window via JavaScript and navigate it to a page that delivers an
   // auth prompt.
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
-  ASSERT_NE(false, content::EvalJs(contents, "w = window.open();"));
+  ASSERT_NE(false, content::EvalJs(contents, "w = window.open('/nocontent');"));
   content::WebContents* opened_contents =
       browser()->tab_strip_model()->GetWebContentsAt(1);
   NavigationController* opened_controller = &opened_contents->GetController();

@@ -876,7 +876,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   // Run javascript in the blank new tab to load the malware image.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(img_url)))
       .Times(1);
-  content::TestNavigationObserver observer(new_tab_contents);
+  // Wait for 2 navigations to finish: the synchronous about:blank commit
+  // triggered by the window.open() above, and the interstitial page navigation
+  // triggered by Safe Browsing code for the image load below.
+  content::TestNavigationObserver observer(new_tab_contents, 2);
   new_tab_rfh->ExecuteJavaScriptForTests(
       u"var img=new Image();"
       u"img.src=\"" +
@@ -891,8 +894,9 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   EXPECT_TRUE(got_hit_report());
   EXPECT_EQ(img_url, hit_report().malicious_url);
   EXPECT_TRUE(hit_report().is_subresource);
-  // Page report URLs should be empty, since there is no URL for this page.
-  EXPECT_EQ(GURL(), hit_report().page_url);
+  // Page report URLs should be about:blank, as the last committed navigation is
+  // the synchronous about:blank commit.
+  EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().page_url);
   EXPECT_EQ(GURL(), hit_report().referrer_url);
 
   // Proceed through it.

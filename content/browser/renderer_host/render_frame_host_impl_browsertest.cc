@@ -3024,7 +3024,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Create a new about:blank popup and document.write into it.
   WebContentsAddedObserver popup_observer;
-  TestNavigationObserver load_observer(web_contents());
   const char kScript[] = R"(
       // Empty |url| argument means that the popup will commit an initial
       // about:blank.
@@ -3041,25 +3040,23 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Wait for the new popup to be created (this will be before the popup finish
   // the synchronous about:blank commit in the browser).
   WebContents* popup = popup_observer.GetWebContents();
+  content::TestNavigationObserver load_observer(popup);
   EXPECT_EQ(main_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(
       blink::StorageKey(main_origin),
       static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
-  // A round-trip to the renderer process is an indirect way to wait for
-  // DidCommitProvisionalLoad IPC for the synchronous about:blank commit.
-  // WaitForLoadStop cannot be used, because this commit won't raise
-  // NOTIFICATION_LOAD_STOP.
-  EXPECT_EQ(123, EvalJs(popup, "123"));
+  load_observer.WaitForNavigationFinished();
   EXPECT_EQ(main_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
   EXPECT_EQ(
       blink::StorageKey(main_origin),
       static_cast<RenderFrameHostImpl*>(popup->GetMainFrame())->storage_key());
 
-  // The synchronous about:blank commit should be ignored, and won't replace the
-  // initial NavigationEntry.
+  // The synchronous about:blank commit should replace the initial
+  // NavigationEntry.
   EXPECT_EQ(1, popup->GetController().GetEntryCount());
-  EXPECT_TRUE(popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_FALSE(
+      popup->GetController().GetLastCommittedEntry()->IsInitialEntry());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

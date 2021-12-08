@@ -782,6 +782,10 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BackToAboutBlank) {
     InspectHistograms(histograms, kShouldBeAllowedWithoutSniffing, resource);
   }
 
+  // Do a document.open() so that the initial empty document's history entry
+  // won't get replaced.
+  EXPECT_TRUE(ExecJs(popup, "document.open();"));
+
   // Navigate the popup and then go back to the 'about:blank' URL.
   TestNavigationObserver nav_observer(popup);
   ASSERT_TRUE(ExecJs(shell(), "popup.location.href = '/title3.html'"));

@@ -1323,14 +1323,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
         return false;
       }
       break;
-    case NAVIGATION_TYPE_NAV_IGNORE:
-      // If a pending navigation was in progress, this canceled it.  We should
-      // discard it and make sure it is removed from the URL bar.  After that,
-      // there is nothing we can do with this navigation, so we just return to
-      // the caller that nothing has happened.
-      if (pending_entry_)
-        DiscardNonCommittedEntries();
-      return false;
     case NAVIGATION_TYPE_UNKNOWN:
       NOTREACHED();
       break;
@@ -1446,15 +1438,6 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   TraceReturnReason<tracing_category::kNavigation> trace_return(
       "ClassifyNavigation");
   DCHECK(GetLastCommittedEntry());
-  if (navigation_request->is_synchronous_renderer_commit() &&
-      !navigation_request->IsSameDocument() && !rfh->GetParent() &&
-      params.should_replace_current_entry) {
-    // Ignore the synchronous about:blank commit for window.open() to preserve
-    // previous behavior.
-    trace_return.set_return_reason(
-        "synchronous about:blank for window.open(), ignore");
-    return NAVIGATION_TYPE_NAV_IGNORE;
-  }
 
   if (params.did_create_new_entry) {
     // A new entry for either the main frame or a subframe.

@@ -2181,9 +2181,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // navigation.
   WebContents* contents = new_shell->web_contents();
   EXPECT_FALSE(contents->GetController().IsInitialNavigation());
-  // The visible entry should be the initial entry, resulting in about:blank in
-  // the address bar.
-  EXPECT_TRUE(contents->GetController().GetVisibleEntry()->IsInitialEntry());
+  // The visible entry should be the entry for the synchronously committed
+  // about:blank, resulting in about:blank in the address bar.
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            contents->GetController().GetVisibleEntry()->GetURL());
 }
 
 // Crashes under ThreadSanitizer, http://crbug.com/356758.
@@ -3344,6 +3345,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   Shell* new_shell = OpenPopup(shell(), GURL(url::kAboutBlankURL), "foo");
   EXPECT_EQ(shell()->web_contents()->GetSiteInstance(),
             new_shell->web_contents()->GetSiteInstance());
+
+  // Do a document.open() so that the initial empty document's history entry
+  // won't get replaced.
+  EXPECT_TRUE(ExecJs(new_shell, "document.open();"));
 
   // Navigate the popup to a different site.
   EXPECT_TRUE(NavigateToURL(

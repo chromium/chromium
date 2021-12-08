@@ -69,7 +69,15 @@ class WebLocalFrameAdapter
     return std::make_unique<WebLocalFrameAdapter>(local_parent_or_opener);
   }
 
-  GURL GetUrl() const override { return frame_->GetDocument().Url(); }
+  GURL GetUrl() const override {
+    if (frame_->GetDocument().Url().IsEmpty()) {
+      // It's possible for URL to be empty when `frame_` is on the initial empty
+      // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
+      // document's URL about:blank instead of empty in that case.
+      return GURL(url::kAboutBlankURL);
+    }
+    return frame_->GetDocument().Url();
+  }
 
   url::Origin GetOrigin() const override { return frame_->GetSecurityOrigin(); }
 

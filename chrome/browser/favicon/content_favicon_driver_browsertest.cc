@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   EXPECT_TRUE(content::ExecJs(rfh, content::JsReplace(R"(
-        let w = window.open();
+        let w = window.open('/page204.html');
         w.document.write('abc');
         w.document.close();
         w.location.href = $1;)",
