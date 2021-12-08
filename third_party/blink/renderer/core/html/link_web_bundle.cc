@@ -42,6 +42,9 @@ bool LinkWebBundle::IsFeatureEnabled(const ExecutionContext* context) {
 LinkWebBundle::LinkWebBundle(HTMLLinkElement* owner) : LinkResource(owner) {
   UseCounter::Count(owner_->GetDocument().GetExecutionContext(),
                     WebFeature::kSubresourceWebBundles);
+  AddConsoleMessage(
+      "<link rel=\"webbundle\"> is deprecated. See migration guide at "
+      "https://bit.ly/3rpDuEX.");
 }
 LinkWebBundle::~LinkWebBundle() = default;
 
@@ -57,6 +60,10 @@ void LinkWebBundle::NotifyLoadingFinished() {
 }
 
 void LinkWebBundle::OnWebBundleError(const String& message) const {
+  AddConsoleMessage(message);
+}
+
+void LinkWebBundle::AddConsoleMessage(const String& message) const {
   if (!owner_)
     return;
   ExecutionContext* context = owner_->GetDocument().GetExecutionContext();

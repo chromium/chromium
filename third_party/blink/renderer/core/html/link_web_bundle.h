@@ -75,6 +75,7 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
                                CompleteURLCallback complete_url_callback);
 
  private:
+  void AddConsoleMessage(const String& message) const;
   bool ResourcesOrScopesMatch(const KURL& url) const;
   void ReleaseBundleLoader();
 

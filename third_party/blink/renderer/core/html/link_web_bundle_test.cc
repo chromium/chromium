@@ -92,4 +92,16 @@ TEST_F(LinkWebBundleTest, ResourcesAttribute) {
       link->ValidResourceUrls().Contains(KURL("https://test2.example.com")));
 }
 
+TEST_F(LinkWebBundleTest, DeprecationMessage) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete("<!DOCTYPE html><link rel=\"webbundle\">");
+
+  EXPECT_TRUE(std::any_of(ConsoleMessages().begin(), ConsoleMessages().end(),
+                          [](const auto& console_message) {
+                            return console_message.Contains(
+                                "<link rel=\"webbundle\"> is deprecated.");
+                          }));
+}
+
 }  // namespace blink
