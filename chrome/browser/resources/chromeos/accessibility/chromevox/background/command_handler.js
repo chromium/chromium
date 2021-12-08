@@ -789,14 +789,7 @@ CommandHandler.onCommand = function(command) {
       }
       return false;
     case 'contextMenu':
-      if (ChromeVoxState.instance.currentRange) {
-        let actionNode = ChromeVoxState.instance.currentRange.start.node;
-        if (actionNode.role === RoleType.INLINE_TEXT_BOX) {
-          actionNode = actionNode.parent;
-        }
-        actionNode.showContextMenu();
-        return false;
-      }
+      EventGenerator.sendKeyPress(KeyCode.APPS);
       break;
     case 'showHeadingsList':
       (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_heading')).send();

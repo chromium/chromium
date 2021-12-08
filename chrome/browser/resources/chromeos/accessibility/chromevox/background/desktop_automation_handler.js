@@ -93,7 +93,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     this.addListener_(EventType.LIVE_REGION_CHANGED, this.onLiveRegionChanged);
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
-    this.addListener_(EventType.MENU_END, this.onMenuEnd);
+    this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
     this.addListener_(EventType.MENU_START, this.onEventDefault);
     this.addListener_(EventType.RANGE_VALUE_CHANGED, this.onValueChanged);
     this.addListener_(
@@ -683,16 +683,18 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
    * @param {!ChromeVoxEvent} evt
    */
   onMenuEnd(evt) {
-    this.onEventDefault(evt);
-
     // This is a work around for Chrome context menus not firing a focus event
     // after you close them.
     chrome.automation.getFocus(function(focus) {
       if (focus) {
-        const event = new CustomAutomationEvent(
-            EventType.FOCUS, focus,
-            {eventFrom: 'page', eventFromAction: ActionType.FOCUS});
-        this.onFocus(event);
+        // Directly output the node here; do not go through |onFocus| as it
+        // contains a lot of logic that can move the selection (if in an
+        // editable).
+        const range = cursors.Range.fromNode(focus);
+        new Output()
+            .withRichSpeechAndBraille(range, null, OutputEventType.NAVIGATE)
+            .go();
+        ChromeVoxState.instance.setCurrentRange(range);
       }
     }.bind(this));
   }

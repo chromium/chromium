@@ -349,14 +349,11 @@ TEST_F('ChromeVoxBackgroundTest', 'ShowContextMenu', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree('<p>before</p><a href="a">a</a>', function(rootNode) {
     const go = rootNode.find({role: RoleType.LINK});
-    // Menus no longer nest a message loop, so we can launch menu and confirm
-    // expected speech. The menu will not block test shutdown.
     mockFeedback.call(go.focus.bind(go))
         .expectSpeech('a', 'Link')
         .call(doCmd('contextMenu'))
         .expectSpeech(/menu opened/)
         .call(press(KeyCode.ESCAPE))
-        .expectSpeech(/menu closed/)
         .expectSpeech('a', 'Link');
     mockFeedback.replay();
   }.bind(this));

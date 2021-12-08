@@ -2094,3 +2094,26 @@ TEST_F('ChromeVoxEditingTest', 'InputTextBrailleContractions', function() {
     ]);
   });
 });
+
+
+TEST_F('ChromeVoxEditingTest', 'ContextMenus', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <textarea>abc</textarea>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    const textField = root.find({role: RoleType.TEXT_FIELD});
+    mockFeedback.expectSpeech('Text area')
+        .call(() => {
+          textField.setSelection(0, 2);
+        })
+        .expectSpeech('ab', 'selected')
+        .call(doCmd('contextMenu'))
+        .expectSpeech(' menu opened')
+        .call(this.press(KeyCode.ESCAPE))
+        .expectSpeech('ab', 'selected')
+        .replay();
+  });
+});
