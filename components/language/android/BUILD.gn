@@ -28,9 +28,11 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java",
     "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
+    "java/src/org/chromium/components/language/LanguageProfileController.java",
   ]
 
   deps = [
+    ":ulp_delegate_java",
     "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

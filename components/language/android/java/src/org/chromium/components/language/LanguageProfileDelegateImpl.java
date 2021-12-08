@@ -22,10 +22,11 @@ public class LanguageProfileDelegateImpl implements LanguageProfileDelegate {
 
     /**
      * @param accountName Account to get profile or null if the default profile should be returned.
+     * @param timeoutInSeconds Seconds to wait before timing out on call to device.
      * @return A list of language tags ordered by preference for |accountName|
      */
     @Override
-    public List<String> getLanguagePreferences(String accountName) {
+    public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds) {
         // The default implementation always returns an empty list.
         return new ArrayList<String>();
     }
