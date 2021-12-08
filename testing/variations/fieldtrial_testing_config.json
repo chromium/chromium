@@ -5515,27 +5515,6 @@
             ]
         }
     ],
-    "OmniboxOnDeviceHeadNonIncognitoTuningMobile": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "NoDelayWithScore1K",
-                    "params": {
-                        "DelayOnDeviceHeadSuggestRequestMs": "0",
-                        "DemoteOnDeviceSearchSuggestionsMode": "decrease-relevances",
-                        "OnDeviceSuggestMaxScoreForNonUrlInput": "1000"
-                    },
-                    "enable_features": [
-                        "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPedalsBatch2NonEnglish": [
         {
             "platforms": [

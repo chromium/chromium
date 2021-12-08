@@ -1838,18 +1838,6 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
-const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[] =
-    "Omnibox on device head suggestions (incognito only)";
-const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[] =
-    "Google head non personalized search suggestions provided by a compact on "
-    "device model for incognito";
-
-const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoName[] =
-    "Omnibox on device head suggestions (non-incognito only)";
-const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[] =
-    "Google head non personalized search suggestions provided by a compact on "
-    "device model for non-incognito";
-
 const char kOmniboxWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kOmniboxWebUIOmniboxPopupDescription[] =
     "If enabled, uses WebUI to render the omnibox suggestions popup, similar "

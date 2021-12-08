@@ -1053,12 +1053,6 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 extern const char kOmniboxDynamicMaxAutocompleteName[];
 extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 
-extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];
-extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
-
-extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoName[];
-extern const char kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription[];
-
 extern const char kOmniboxWebUIOmniboxPopupName[];
 extern const char kOmniboxWebUIOmniboxPopupDescription[];
 

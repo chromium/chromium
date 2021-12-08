@@ -2160,26 +2160,6 @@ const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
       base::size(kRequestDesktopSiteForTablets1920), nullptr}};
 #endif  // OS_ANDROID
 
-#if defined(OS_ANDROID)
-const FeatureEntry::FeatureParam kOmniboxOnDeviceHeadSuggestRelevance1000[] = {
-    {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput, "1000"},
-    {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode, "decrease-relevances"}};
-const FeatureEntry::FeatureParam
-    kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000[] = {
-        {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs, "0"},
-        {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput, "1000"},
-        {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
-         "decrease-relevances"}};
-
-const FeatureEntry::FeatureVariation
-    kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations[] = {
-        {"relevance-1000", kOmniboxOnDeviceHeadSuggestRelevance1000,
-         base::size(kOmniboxOnDeviceHeadSuggestRelevance1000), nullptr},
-        {"no-delay-relevance-1000",
-         kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000,
-         base::size(kOmniboxOnDeviceHeadSuggestNoDelayRelevance1000), nullptr}};
-#endif  // defined(OS_ANDROID)
-
 // TODO(crbug.com/991082,1015377): Remove after proper support for back-forward
 // cache is implemented.
 const FeatureEntry::FeatureParam kBackForwardCache_ForceCaching[] = {
@@ -4479,22 +4459,6 @@ const FeatureEntry kFeatureEntries[] = {
          // On-clobber has the same variations and forcing IDs as on-focus.
          kOmniboxOnFocusSuggestionsContextualWebVariations,
          "OmniboxGoogleOnContent")},
-
-    {"omnibox-on-device-head-suggestions-incognito",
-     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsIncognitoName,
-     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsIncognitoDescription,
-     kOsAll, FEATURE_VALUE_TYPE(omnibox::kOnDeviceHeadProviderIncognito)},
-
-#if defined(OS_ANDROID)
-    {"omnibox-on-device-head-suggestions-non-incognito",
-     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsNonIncognitoName,
-     flag_descriptions::kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kOnDeviceHeadProviderNonIncognito,
-         kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations,
-         "OmniboxOnDeviceHeadNonIncognitoTuningMobile")},
-#endif  // defined(OS_ANDROID)
 
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,
