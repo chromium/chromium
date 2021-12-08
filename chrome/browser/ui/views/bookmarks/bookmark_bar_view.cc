@@ -1516,7 +1516,8 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
                              false);
   } else {
     // saved tab groups flag
-    if (base::FeatureList::IsEnabled(features::kTabGroupsSave)) {
+    if (base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+        !node->is_permanent_node()) {
       // Record as bookmark folder launch in dev when rendering tab groups from
       // folder data.
       RecordBookmarkFolderLaunch(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
