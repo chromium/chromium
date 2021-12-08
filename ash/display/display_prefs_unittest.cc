@@ -27,11 +27,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_switches.h"
@@ -48,6 +50,10 @@
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace ash {
+
+using testing::DoubleEq;
+using testing::ElementsAre;
+using testing::Optional;
 
 namespace {
 const char kPrimaryIdKey[] = "primary-id";
@@ -232,6 +238,65 @@ class DisplayPrefsTest : public AshTestBase {
         ->GetRegisteredDisplayLayout(list)
         .placement_list[0]
         .ToString();
+  }
+
+  const base::DictionaryValue* ReadPropertiesForDisplay(int64_t display_id) {
+    const base::DictionaryValue* properties =
+        local_state()->GetDictionary(prefs::kDisplayProperties);
+    EXPECT_TRUE(properties);
+    const base::DictionaryValue* property = nullptr;
+    EXPECT_TRUE(
+        properties->GetDictionary(base::NumberToString(display_id), &property));
+    return property;
+  }
+
+  void ExpectMixedMirrorModeParamsPrefs(
+      int64_t source_id,
+      const display::DisplayIdList& dest_ids) {
+    std::vector<std::string> expected_dest_id_strs;
+    for (const int64_t id : dest_ids) {
+      expected_dest_id_strs.push_back(base::NumberToString(id));
+    }
+    SCOPED_TRACE(testing::Message()
+                 << "Expected to read kDisplayMixedMirrorModeParams with "
+                    "mirroring_source_id="
+                 << source_id << " and mirroring_destination_ids="
+                 << base::JoinString(expected_dest_id_strs, ","));
+    const base::DictionaryValue* prefs =
+        local_state()->GetDictionary(prefs::kDisplayMixedMirrorModeParams);
+    ASSERT_TRUE(prefs);
+    EXPECT_THAT(prefs->FindStringKey("mirroring_source_id"),
+                testing::Pointee(base::NumberToString(source_id)));
+    const auto* mirror_ids = prefs->FindListKey("mirroring_destination_ids");
+    ASSERT_TRUE(mirror_ids);
+    display::DisplayIdList pref_dest_ids;
+    for (const auto& value : mirror_ids->GetList()) {
+      int64_t id;
+      EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
+      pref_dest_ids.push_back(id);
+    }
+    EXPECT_EQ(pref_dest_ids, dest_ids);
+  }
+
+  void ExpectExternalDisplayMirrorPrefs(const std::set<int64_t>& display_ids) {
+    std::vector<std::string> expected_display_id_strs;
+    for (const int64_t id : display_ids) {
+      expected_display_id_strs.push_back(base::NumberToString(id));
+    }
+    SCOPED_TRACE(
+        testing::Message()
+        << "Expected to read kExternalDisplayMirrorInfo with list values="
+        << base::JoinString(expected_display_id_strs, ","));
+    const base::Value* prefs =
+        local_state()->Get(prefs::kExternalDisplayMirrorInfo);
+    ASSERT_TRUE(prefs);
+    std::set<int64_t> read_ids;
+    for (const auto& value : prefs->GetList()) {
+      int64_t id;
+      EXPECT_TRUE(base::StringToInt64(value.GetString(), &id));
+      read_ids.insert(id);
+    }
+    EXPECT_EQ(read_ids, display_ids);
   }
 
   display::DisplayConfigurator* display_configurator() {
@@ -1532,6 +1597,237 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   pref_data =
       local_state()->GetDictionary(prefs::kDisplayMixedMirrorModeParams);
   EXPECT_TRUE(pref_data->DictEmpty());
+}
+
+TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
+  UpdateDisplay("480x320/r@1.25");
+
+  const int64_t id0 = display::test::DisplayManagerTestApi(display_manager())
+                          .SetFirstDisplayAsInternalDisplay();
+
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  const base::DictionaryValue* properties = ReadPropertiesForDisplay(id0);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.25f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+
+  LoggedInAsUser();
+
+  // Turn on tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  // Change display settings.
+  display_manager()->UpdateZoomFactor(id0, 1.5);
+  display_manager()->SetDisplayRotation(id0, display::Display::ROTATE_270,
+                                        display::Display::RotationSource::USER);
+  // Verify the settings have been changed.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(id0).zoom_factor(), 1.5);
+  EXPECT_EQ(display_manager()->GetDisplayInfo(id0).GetActiveRotation(),
+            display::Display::ROTATE_270);
+
+  properties = ReadPropertiesForDisplay(id0);
+  // Zoom pref should store the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  // Rotation pref should remain at the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+
+  // Turn off tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  // Zoom should stay at the new value.
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(id0).zoom_factor(), 1.5);
+  // Rotation should restore to the original value.
+  EXPECT_EQ(display_manager()->GetDisplayInfo(id0).GetActiveRotation(),
+            display::Display::ROTATE_90);
+
+  properties = ReadPropertiesForDisplay(id0);
+  // Zoom pref should keep the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  // Rotation pref should remain at the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+}
+
+TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
+  UpdateDisplay("480x320/r@1.25,640x480/l@1.3,320x240@1.2");
+
+  display::DisplayIdList ids = display_manager()->GetCurrentDisplayIdList();
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Set up mixed mirror mode. (Mirror from the first display to the second
+  // display, and extend to third display)
+  const display::MixedMirrorModeParams mixed_params(ids[0], {ids[1]});
+  display_manager()->SetMirrorMode(display::MirrorMode::kMixed, mixed_params);
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1]));
+  // Mixed mirror mode params are properly set.
+  const auto& initial_mixed_params =
+      display_manager()->mixed_mirror_mode_params();
+  ASSERT_TRUE(initial_mixed_params);
+  EXPECT_EQ(initial_mixed_params->source_id, mixed_params.source_id);
+  EXPECT_EQ(initial_mixed_params->destination_ids,
+            mixed_params.destination_ids);
+  const std::set<int64_t> old_ext_mirror_info =
+      display_manager()->external_display_mirror_info();
+  EXPECT_FALSE(old_ext_mirror_info.empty());
+  // Mixed mirror mode params prefs are properly saved.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  const base::DictionaryValue* properties = nullptr;
+
+  // Verify initial stored display prefs.
+  properties = ReadPropertiesForDisplay(ids[0]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.25f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+
+  properties = ReadPropertiesForDisplay(ids[1]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.3f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_270)));
+
+  properties = ReadPropertiesForDisplay(ids[2]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.2f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_0)));
+
+  LoggedInAsUser();
+
+  // Turn on tablet mode and make display changes.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1], ids[2]));
+  // Tablet mode forces normal mirror mode, so mixed params is empty.
+  EXPECT_EQ(display_manager()->mixed_mirror_mode_params(), absl::nullopt);
+  EXPECT_EQ(display_manager()->external_display_mirror_info(),
+            old_ext_mirror_info);
+  // Mixed mirror mode params pref should remain at the original value.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  // Make changes to the display and verify.
+  display_manager()->UpdateZoomFactor(ids[0], 1.5);
+  display_manager()->SetDisplayRotation(ids[0], display::Display::ROTATE_180,
+                                        display::Display::RotationSource::USER);
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(ids[0]).zoom_factor(), 1.5);
+  EXPECT_EQ(display_manager()->GetDisplayInfo(ids[0]).GetActiveRotation(),
+            display::Display::ROTATE_180);
+
+  // Simulate a reboot.
+  LoadDisplayPreferences();
+  display_manager()->UpdateDisplays();
+
+  // Things should stay in tablet mode.
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  // Currently, restarting in tablet mode reverts back to the original mixed
+  // mirror mode, which may be surprising to users. This should be revisited by
+  // crbug.com/733092.
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1]));
+  const auto& loaded_mixed_params =
+      display_manager()->mixed_mirror_mode_params();
+  ASSERT_TRUE(loaded_mixed_params);
+  EXPECT_EQ(loaded_mixed_params->source_id, mixed_params.source_id);
+  EXPECT_EQ(loaded_mixed_params->destination_ids, mixed_params.destination_ids);
+  EXPECT_EQ(display_manager()->external_display_mirror_info(),
+            old_ext_mirror_info);
+  // Mixed mirror mode params pref should remain at the original value.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  // Check stored and loaded display prefs.
+  properties = ReadPropertiesForDisplay(ids[0]);
+  // Zoom factor should persist the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(ids[0]).zoom_factor(), 1.5);
+  // Rotation should remain at the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+  EXPECT_EQ(display_manager()->GetDisplayInfo(ids[0]).GetActiveRotation(),
+            display::Display::ROTATE_90);
+
+  // Properties for the second display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[1]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.3f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_270)));
+
+  // Properties for the third display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[2]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.2f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_0)));
+
+  // Turn off tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+  EXPECT_EQ(display_manager()->mirroring_source_id(), ids[0]);
+  EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
+              ElementsAre(ids[1]));
+  // Original mixed mirror mode params are preserved.
+  const auto& restored_mixed_params =
+      display_manager()->mixed_mirror_mode_params();
+  ASSERT_TRUE(restored_mixed_params);
+  EXPECT_EQ(restored_mixed_params->source_id, mixed_params.source_id);
+  EXPECT_EQ(restored_mixed_params->destination_ids,
+            mixed_params.destination_ids);
+  EXPECT_EQ(display_manager()->external_display_mirror_info(),
+            old_ext_mirror_info);
+  // Mixed mirror mode params pref should remain at the original value.
+  ExpectMixedMirrorModeParamsPrefs(ids[0], {ids[1]});
+  ExpectExternalDisplayMirrorPrefs(old_ext_mirror_info);
+
+  // Check restored display prefs.
+  properties = ReadPropertiesForDisplay(ids[0]);
+  // Zoom factor should remain at the new value.
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.5f)));
+  EXPECT_FLOAT_EQ(display_manager()->GetDisplayInfo(ids[0]).zoom_factor(), 1.5);
+  // Rotation should be restored to the original value.
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_90)));
+  EXPECT_EQ(display_manager()->GetDisplayInfo(ids[0]).GetActiveRotation(),
+            display::Display::ROTATE_90);
+
+  // Properties for the second display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[1]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.3f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_270)));
+
+  // Properties for the third display shouldn't change.
+  properties = ReadPropertiesForDisplay(ids[2]);
+  EXPECT_THAT(properties->FindDoubleKey("display_zoom_factor"),
+              Optional(DoubleEq(1.2f)));
+  EXPECT_THAT(properties->FindIntKey("rotation"),
+              Optional(static_cast<int>(display::Display::ROTATE_0)));
 }
 
 }  // namespace ash

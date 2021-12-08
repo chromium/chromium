@@ -58,7 +58,6 @@ void DisplayConfigurationObserver::StartMirrorMode() {
   // TODO(oshima): Tablet mode defaults to mirror mode until we figure out
   // how to handle this scenario, and we shouldn't save this state.
   // https://crbug.com/733092.
-  save_preference_ = false;
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   was_in_mirror_mode_ = display_manager->IsInMirrorMode();
   display_manager->layout_store()->set_forced_mirror_mode_for_tablet(true);
@@ -72,7 +71,6 @@ void DisplayConfigurationObserver::EndMirrorMode() {
   }
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display_manager->layout_store()->set_forced_mirror_mode_for_tablet(false);
-  save_preference_ = true;
 }
 
 }  // namespace ash

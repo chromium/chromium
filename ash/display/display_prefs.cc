@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -534,9 +535,26 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     // size and modes can change depending on the combination of displays.
     if (display_manager->IsInUnifiedMode())
       continue;
-    property_value.SetInteger("rotation",
-                              static_cast<int>(info.GetRotation(
-                                  display::Display::RotationSource::USER)));
+    // Don't save rotation when in tablet mode, so that if the device is
+    // rebooted into clamshell mode, it won't have an unexpected rotation.
+    // https://crbug.com/733092.
+    // But we should keep any original value so that it can be restored when
+    // exiting tablet mode.
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      const base::Value* original_property =
+          pref_data->FindDictKey(base::NumberToString(id));
+      if (original_property) {
+        absl::optional<int> original_rotation =
+            original_property->FindIntKey("rotation");
+        if (original_rotation) {
+          property_value.SetInteger("rotation", *original_rotation);
+        }
+      }
+    } else {
+      property_value.SetInteger("rotation",
+                                static_cast<int>(info.GetRotation(
+                                    display::Display::RotationSource::USER)));
+    }
 
     display::ManagedDisplayMode mode;
     if (!display.IsInternal() &&
@@ -812,12 +830,16 @@ void DisplayPrefs::MaybeStoreDisplayPrefs() {
   }
 
   store_requested_ = false;
-  StoreCurrentDisplayLayoutPrefs(local_state_);
+  // Don't save certain display properties when in tablet mode, so if
+  // the device is rebooted in clamshell mode, it won't have an unexpected
+  // mirroring layout. https://crbug.com/733092.
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    StoreCurrentDisplayLayoutPrefs(local_state_);
+    StoreExternalDisplayMirrorInfo(local_state_);
+    StoreCurrentDisplayMixedMirrorModeParams(local_state_);
+  }
   StoreCurrentDisplayProperties(local_state_);
   StoreDisplayTouchAssociations(local_state_);
-  StoreExternalDisplayMirrorInfo(local_state_);
-  StoreCurrentDisplayMixedMirrorModeParams(local_state_);
-
   // The display prefs need to be committed immediately to guarantee they're not
   // lost, and are restored properly on reboot. https://crbug.com/936884.
   // This sends a request via mojo to commit the prefs to disk.

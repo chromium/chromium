@@ -3155,14 +3155,14 @@ TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {
   // restore.
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
 
-  // Turn on tablet mode, and expect that it's not possible to persist the
+  // Turn on tablet mode, and expect that it can persist certain
   // display prefs while forced mirror mode is active.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_TRUE(
       display_manager()->layout_store()->forced_mirror_mode_for_tablet());
-  EXPECT_FALSE(Shell::Get()->ShouldSaveDisplaySettings());
+  EXPECT_TRUE(Shell::Get()->ShouldSaveDisplaySettings());
   // Forced mirror mode does not add external displays as candidates for mirror
   // restore.
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
@@ -3192,14 +3192,14 @@ TEST_F(DisplayManagerTest, ForcedMirrorModeExited) {
   // restore.
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
 
-  // Turn on tablet mode, and expect that it's not possible to persist the
+  // Turn on tablet mode, and expect that it can persist certain
   // display prefs while forced mirror mode is active.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_TRUE(
       display_manager()->layout_store()->forced_mirror_mode_for_tablet());
-  EXPECT_FALSE(Shell::Get()->ShouldSaveDisplaySettings());
+  EXPECT_TRUE(Shell::Get()->ShouldSaveDisplaySettings());
   // Forced mirror mode does not add external displays as candidates for mirror
   // restore.
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
