@@ -432,7 +432,6 @@
 <translation id="383629559565718788">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="384082539148746321">ಟೆಂಪ್ಲೇಟ್ ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="3842239759367498783">ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಾಧನ <ph name="TITLE" /> ನಿಂದ ಓದುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
-<translation id="3846214748874656680">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="3846575436967432996">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="385300504083504382">ಪ್ರಾರಂಭ</translation>
@@ -858,7 +857,6 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6820676911989879663">ವಿರಾಮ ತೆಗೆದುಕೊಳ್ಳಿ!</translation>
 <translation id="6836499262298959512">ಅಪಾಯಕಾರಿ ಫೈಲ್</translation>
 <translation id="6837064795450991317">ಡೆಸ್ಕ್‌ಬಾರ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
-<translation id="6850010208275816200">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಆ್ಯಪ್ ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಮೋಡ್‌ನಲ್ಲಿದೆ. ಒಂದು ವೇಳೆ ಆ್ಯಪ್ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಕೇಳಿದರೆ ಮೊದಲು ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ.</translation>
 <translation id="6852052252232534364">ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ಸೆ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ಒಂದು ಅಂಕಿ ಬಾಕಿಯಿದೆ}one{# ಅಂಕಿಗಳು ಬಾಕಿಯಿವೆ}other{# ಅಂಕಿಗಳು ಬಾಕಿಯಿವೆ}}</translation>

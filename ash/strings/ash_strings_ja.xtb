@@ -432,7 +432,6 @@
 <translation id="383629559565718788">キーボード設定を表示</translation>
 <translation id="384082539148746321">テンプレートを削除しますか？</translation>
 <translation id="3842239759367498783">モバイル デバイスで読む: <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">全画面表示を終了</translation>
 <translation id="3846575436967432996">利用可能なネットワーク情報がありません</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="385300504083504382">先頭</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">休憩の時間です！</translation>
 <translation id="6836499262298959512">危険なファイル</translation>
 <translation id="6837064795450991317">デスクバーを非表示にする</translation>
-<translation id="6850010208275816200">アプリが全画面表示になっています。パスワードの入力を求められたら、まず全画面表示を終了してください。</translation>
 <translation id="6852052252232534364">クリックして有効にする</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{残り 1 桁}other{残り # 桁}}</translation>

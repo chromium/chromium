@@ -433,7 +433,6 @@
 <translation id="383629559565718788">Прикажи ги поставките за тастатура</translation>
 <translation id="384082539148746321">Да се избрише шаблонот?</translation>
 <translation id="3842239759367498783">Продолжете со читање од мобилниот уред <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Излези од цел екран</translation>
 <translation id="3846575436967432996">Нема достапни информации за мрежа</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почеток</translation>
@@ -858,7 +857,6 @@
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6836499262298959512">Опасна датотека</translation>
 <translation id="6837064795450991317">Сокриј ја лентата на работната површина</translation>
-<translation id="6850010208275816200">Моменталната апликација е на цел екран. Ако апликацијата ви ја побара лозинката, прво излезете од цел екран.</translation>
 <translation id="6852052252232534364">Кликнете за активирање</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>

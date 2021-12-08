@@ -432,7 +432,6 @@
 <translation id="383629559565718788">कीबोर्ड सेटिंग्ज दाखवा</translation>
 <translation id="384082539148746321">टेंप्लेट हटवायचे आहे का?</translation>
 <translation id="3842239759367498783">तुमच्या मोबाइल डिव्हाइसवरून वाचणे सुरू ठेवा <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">क्षेत्रेमधून बाहेर पडा</translation>
 <translation id="3846575436967432996">कोणतीही नेटवर्क माहिती उपलब्ध नाही</translation>
 <translation id="385051799172605136">मागील</translation>
 <translation id="385300504083504382">सुरुवातीला</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
 <translation id="6836499262298959512">धोकादायक फाइल</translation>
 <translation id="6837064795450991317">डेस्कबार लपवा</translation>
-<translation id="6850010208275816200">तुमचे सध्याचे अ‍ॅप फुल स्क्रीन मोडमध्ये आहे. अ‍ॅपने तुमच्या पासवर्डची विनंती केल्यास, प्रथम फुल स्क्रीनमधून बाहेर पडा.</translation>
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंद</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एक अंक शिल्लक आहे}other{# अंक शिल्लक आहेत}}</translation>

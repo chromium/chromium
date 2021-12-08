@@ -338,6 +338,7 @@
 <translation id="3307642347673023554">ലാപ്ടോപ്പ് മോഡിലേക്ക് മാറി</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിന് പിന്നീട്, തുടർന്നും സൈൻ ഇൻ ചെയ്യാനാവും.</translation>
 <translation id="3321628682574733415">രക്ഷാകർതൃ കോഡ് തെറ്റാണ്</translation>
+<translation id="3340475855009870209">ഡൗൺലോഡ് സ്‌കാൻ ചെയ്യുന്നു <ph name="FILENAME" /></translation>
 <translation id="3341303451326249809">സ്‌ക്രീൻഷോട്ട് ക്യാപ്‌ചർ ചെയ്തു</translation>
 <translation id="334252345105450327">സ്‌ക്രീൻഷോട്ട് എടുക്കൂ</translation>
 <translation id="3351879221545518001">നിലവിൽ നിങ്ങൾ സ്ക്രീൻ കാസ്‌റ്റ് ചെയ്യുന്നു.</translation>
@@ -432,7 +433,6 @@
 <translation id="383629559565718788">കീബോഡ് ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="384082539148746321">ടെം‌പ്ലേറ്റ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="3842239759367498783">നിങ്ങളുടെ <ph name="TITLE" /> എന്ന മൊബൈലിൽ നിന്ന് വായന തുടരുക</translation>
-<translation id="3846214748874656680">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
 <translation id="3846575436967432996">നെറ്റ്‌വർക്ക് വിവരങ്ങളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="385300504083504382">ആരംഭം</translation>
@@ -857,7 +857,6 @@
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
 <translation id="6836499262298959512">അപകടകരമായ ഫയൽ</translation>
 <translation id="6837064795450991317">ഡെസ്‌ക്ബാർ മറയ്ക്കുക</translation>
-<translation id="6850010208275816200">നിങ്ങളുടെ നിലവിലെ ആപ്പ് പൂർണ്ണ സ്ക്രീനിൽ ആണ്. ആപ്പ് നിങ്ങളുടെ പാസ്‌വേഡ് ആവശ്യപ്പെടുകയാണെങ്കിൽ ആദ്യം പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്ത് കടക്കുക.</translation>
 <translation id="6852052252232534364">ക്ലിക്ക് ചെയ്ത് സജീവമാക്കൂ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ഒരു അക്കം ശേഷിക്കുന്നു}other{# അക്കങ്ങൾ ശേഷിക്കുന്നു}}</translation>

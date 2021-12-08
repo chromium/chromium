@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Показати налаштування клавіатури</translation>
 <translation id="384082539148746321">Видалити шаблон?</translation>
 <translation id="3842239759367498783">Продовжити читати з мобільного пристрою <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Вийти з повноекранного режиму</translation>
 <translation id="3846575436967432996">Інформація про мережу не доступна</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">На початок</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Зробіть перерву!</translation>
 <translation id="6836499262298959512">Небезпечний файл</translation>
 <translation id="6837064795450991317">Сховати панель</translation>
-<translation id="6850010208275816200">Поточний додаток розгорнуто на весь екран. Якщо з'явиться запит пароля, спершу вийдіть із цього режиму.</translation>
 <translation id="6852052252232534364">Активувати</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>

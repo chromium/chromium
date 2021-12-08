@@ -183,6 +183,7 @@
 <translation id="3858860766373142691">Izena</translation>
 <translation id="3865414814144988605">Bereizmena</translation>
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
+<translation id="3924044641767672375">Konponketa-prozesua errazteko, wifira konektatzea gomendatzen da. Sarea gorde egingo da.</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
 <translation id="3942420633017001071">Diagnostikoak</translation>
@@ -227,6 +228,7 @@
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
+<translation id="4485626319513081846">Hautatu aukera hau gailua guztiz eraberritu behar bada beste bezero batek bana dezan.</translation>
 <translation id="4511264077854731334">Ataria</translation>
 <translation id="4521826082652183069">Gaiaren ordezko izenaren bat-etortzea</translation>
 <translation id="4536864596629708641">IParen konfigurazioa</translation>
@@ -416,6 +418,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6957231940976260713">Zerbitzuaren izena</translation>
 <translation id="6961170852793647506">Hasteko, jarri dokumentua eskanerrean</translation>
 <translation id="6977381486153291903">Firmwarearen berrikuspena</translation>
+<translation id="6992266763844448459">Hautatu aukera hau gailuak jabe bera izaten jarraituko badu. Esate baterako, hemendik aurrera erakunde bereko beste norbaitek erabili behar badu.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta erabiltzaileen jarduera guztiak atzi ditzake; besteak beste, bisitatutako webguneak, erabilitako pasahitzak eta posta elektronikoa.</translation>
 <translation id="7040230719604914234">Operadorea</translation>
 <translation id="7058278511608979688">Amaitu eta gorde</translation>

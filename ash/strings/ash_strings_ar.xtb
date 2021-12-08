@@ -433,7 +433,6 @@
 <translation id="383629559565718788">عرض إعدادات لوحة المفاتيح</translation>
 <translation id="384082539148746321">هل تريد حذف النموذج؟</translation>
 <translation id="3842239759367498783">متابعة القراءة من جهازك الجوّال <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
 <translation id="3846575436967432996">لا توجد معلومات متاحة حول الشبكة</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="385300504083504382">البداية</translation>
@@ -858,7 +857,6 @@
 <translation id="6820676911989879663">حان وقت الاستراحة</translation>
 <translation id="6836499262298959512">ملف ضار</translation>
 <translation id="6837064795450991317">إخفاء شريط سطح المكتب</translation>
-<translation id="6850010208275816200">يتم عرض التطبيق الحالي في وضع ملء الشاشة. إذا طلب التطبيق إدخال كلمة المرور، يُرجى أولاً الخروج من وضع ملء الشاشة.</translation>
 <translation id="6852052252232534364">انقر للتفعيل.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانية</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{يتبقى رقم واحد}zero{يتبقى # رقم}two{يتبقى رقمان}few{يتبقى # أرقام}many{يتبقى # رقمًا}other{يتبقى # رقم}}</translation>

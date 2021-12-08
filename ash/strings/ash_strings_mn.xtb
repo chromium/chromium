@@ -434,7 +434,6 @@
 <translation id="383629559565718788">Гарын тохиргоог харуулах</translation>
 <translation id="384082539148746321">Загварыг устгах уу?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> гар утаснаасаа үргэлжлүүлэн унших</translation>
-<translation id="3846214748874656680">Бүтэн дэлгэцийг хумих</translation>
 <translation id="3846575436967432996">Сүлжээтэй холбоотой мэдээлэл байхгүй байна</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="385300504083504382">Эхлэл</translation>
@@ -859,7 +858,6 @@
 <translation id="6820676911989879663">Завсарлага аваарай!</translation>
 <translation id="6836499262298959512">Аюултай файл</translation>
 <translation id="6837064795450991317">Дэлгэцийн хэсгийг нуух</translation>
-<translation id="6850010208275816200">Таны одоогийн апп бүтэн дэлгэцээр байна. Хэрэв апп таны нууц үгийг асуувал эхлээд бүтэн дэлгэцээс гарна уу.</translation>
 <translation id="6852052252232534364">Идэвхжүүлэхээр товш</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Нэг цифр үлдсэн}other{# цифр үлдсэн}}</translation>

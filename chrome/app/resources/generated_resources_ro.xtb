@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Dispozitive asociate</translation>
 <translation id="1153636665119721804">Programul Protecție avansată Google</translation>
 <translation id="1155816283571436363">Se conectează la telefon</translation>
+<translation id="1158080958325422608">Schimbă în majuscule</translation>
 <translation id="1158238185437008462">Vezi amintirile</translation>
 <translation id="1161575384898972166">Conectează-te la <ph name="TOKEN_NAME" /> pentru a exporta certificatul client.</translation>
 <translation id="116173250649946226">Administratorul a setat o temă prestabilită care nu poate fi schimbată.</translation>
@@ -693,6 +694,7 @@
 <translation id="1700079447639026019">Site-uri care nu pot folosi niciodată cookie-uri</translation>
 <translation id="1703331064825191675">Nu-ți face griji în privința parolelor</translation>
 <translation id="1703666494654169921">Nu permite site-urilor să folosească dispozitive de realitate virtuală sau date conexe</translation>
+<translation id="1704097193565924901">Scrie cu majusculă</translation>
 <translation id="1704230497453185209">Nu permite site-urilor să redea sunet</translation>
 <translation id="1704970325597567340">Verificarea de siguranță a rulat pe <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Adăugat de administrator</translation>
@@ -3563,6 +3565,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4681453295291708042">Dezactivează Trimiterea în apropiere</translation>
 <translation id="4681930562518940301">Deschide &amp;imaginea originală într-o filă nouă</translation>
 <translation id="4682551433947286597">Imaginile de fundal apar pe ecranul de conectare.</translation>
+<translation id="4683629100208651599">Schimbă în minuscule</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (prestabilit)</translation>
 <translation id="4684427112815847243">Sincronizează tot</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> încearcă să acceseze camera. Dezactivează comutatorul de confidențialitate al camerei pentru a permite accesul.</translation>
@@ -5955,6 +5958,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7257173066616499747">Rețele Wi-Fi</translation>
 <translation id="725758059478686223">Serviciul de printare</translation>
 <translation id="7257666756905341374">Citește datele pe care le copiezi și le inserezi</translation>
+<translation id="7258192266780953209">Transformări</translation>
 <translation id="7258225044283673131">Aplicația nu răspunde. Selectează „Închide forțat” pentru a închide aplicația.</translation>
 <translation id="7262004276116528033">Acest serviciu de conectare este găzduit de <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Încearcă următorii pași pentru remedierea problemelor:

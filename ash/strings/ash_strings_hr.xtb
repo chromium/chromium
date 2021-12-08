@@ -432,7 +432,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="383629559565718788">Prikaz postavki tipkovnice</translation>
 <translation id="384082539148746321">Želite li izbrisati predložak?</translation>
 <translation id="3842239759367498783">Nastavite čitati s mobilnog uređaja <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Izlaz iz punog zaslona</translation>
 <translation id="3846575436967432996">Informacije o mreži nisu dostupne</translation>
 <translation id="385051799172605136">Natrag</translation>
 <translation id="385300504083504382">Početak</translation>
@@ -857,7 +856,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="6820676911989879663">Odmorite se!</translation>
 <translation id="6836499262298959512">Opasna datoteka</translation>
 <translation id="6837064795450991317">Sakrivanje deskbara</translation>
-<translation id="6850010208275816200">Aplikacija se trenutačno prikazuje na cijelom zaslonu. Ako aplikacija zatraži zaporku, prvo izađite iz prikaza preko cijelog zaslona.</translation>
 <translation id="6852052252232534364">Kliknite za aktivaciju</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala jedna brojka}one{Preostala # brojka}few{Preostale # brojke}other{Preostalo # brojki}}</translation>

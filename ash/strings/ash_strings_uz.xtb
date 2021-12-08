@@ -338,6 +338,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3307642347673023554">Laptop rejimiga almashildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> keyinroq kira oladi.</translation>
 <translation id="3321628682574733415">Ota-ona kodi xato kiritildi</translation>
+<translation id="3340475855009870209">Skanerlanadigan <ph name="FILENAME" /> faylini yuklab olish</translation>
 <translation id="3341303451326249809">Skrinshot olindi</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="3351879221545518001">Hozir ekraningiz translatsiya qilinmoqda.</translation>
@@ -432,7 +433,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="383629559565718788">Klaviatura sozlamalarini ochish</translation>
 <translation id="384082539148746321">Andoza oʻchirilsinmi?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> mobil qurilmangizdan o‘qishda davom etish</translation>
-<translation id="3846214748874656680">To‘liq ekran rejimidan chiqish</translation>
 <translation id="3846575436967432996">Tarmoqqa oid ma’lumot mavjud emas</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="385300504083504382">Boshi</translation>
@@ -857,7 +857,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6820676911989879663">Tanaffus qiling</translation>
 <translation id="6836499262298959512">Xavfli fayl</translation>
 <translation id="6837064795450991317">Ish panelini yopish</translation>
-<translation id="6850010208275816200">Joriy ilovangiz butun ekran rejimida. Ilova parol kiritishni soʻrasa, butun ekran rejimidan chiqing.</translation>
 <translation id="6852052252232534364">Faollashtirish</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> soniya</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>

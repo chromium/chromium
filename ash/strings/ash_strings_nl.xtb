@@ -338,6 +338,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
+<translation id="3340475855009870209">Download van <ph name="FILENAME" /> wordt gescand</translation>
 <translation id="3341303451326249809">Screenshot gemaakt</translation>
 <translation id="334252345105450327">Een screenshot maken</translation>
 <translation id="3351879221545518001">Je cast momenteel een scherm.</translation>
@@ -432,7 +433,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="383629559565718788">Toetsenbordinstellingen bekijken</translation>
 <translation id="384082539148746321">Template verwijderen?</translation>
 <translation id="3842239759367498783">Verder lezen vanaf je mobiele apparaat <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Volledig scherm sluiten</translation>
 <translation id="3846575436967432996">Geen netwerkinformatie beschikbaar</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
@@ -857,7 +857,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6820676911989879663">Neem een pauze</translation>
 <translation id="6836499262298959512">Gevaarlijk bestand</translation>
 <translation id="6837064795450991317">Bureaubladbalk verbergen</translation>
-<translation id="6850010208275816200">Je huidige app wordt op volledig scherm getoond. Als de app om je wachtwoord vraagt, moet je eerst het volledige scherm sluiten.</translation>
 <translation id="6852052252232534364">Klik om te activeren</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>

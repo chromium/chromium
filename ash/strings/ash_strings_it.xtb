@@ -433,7 +433,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="383629559565718788">Mostra impostazioni tastiera</translation>
 <translation id="384082539148746321">Vuoi eliminare il modello?</translation>
 <translation id="3842239759367498783">Continua a leggere dal tuo dispositivo mobile <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Esci da schermo intero</translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="385300504083504382">Inizio</translation>
@@ -858,7 +857,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
 <translation id="6836499262298959512">File pericoloso</translation>
 <translation id="6837064795450991317">Nascondi deskbar</translation>
-<translation id="6850010208275816200">L'app aperta in questo momento è a schermo intero. Se l'app richiede la password, prima di tutto esci dallo schermo intero.</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}one{Mancano # cifre}other{Mancano # cifre}}</translation>

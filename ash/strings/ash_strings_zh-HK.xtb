@@ -432,7 +432,6 @@
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="384082539148746321">要刪除範本嗎？</translation>
 <translation id="3842239759367498783">喺流動裝置上繼續閱讀「<ph name="TITLE" />」</translation>
-<translation id="3846214748874656680">關閉全屏幕模式</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">開頭</translation>
@@ -856,7 +855,6 @@
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6836499262298959512">危險檔案</translation>
 <translation id="6837064795450991317">隱藏桌面列</translation>
-<translation id="6850010208275816200">目前應用程式正處於全螢幕模式。如果應用程式需要您的密碼，請先退出全螢幕模式。</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>

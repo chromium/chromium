@@ -432,7 +432,6 @@
 <translation id="383629559565718788">צפייה בהגדרות המקלדת</translation>
 <translation id="384082539148746321">למחוק את התבנית?</translation>
 <translation id="3842239759367498783">אפשר להמשיך לקרוא מהמכשיר הנייד <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">יציאה ממסך מלא</translation>
 <translation id="3846575436967432996">אין מידע רשת זמין</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="385300504083504382">התחלה</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">הגיע הזמן להפסקה</translation>
 <translation id="6836499262298959512">קובץ מסוכן</translation>
 <translation id="6837064795450991317">הסתרת הסרגל של שולחנות העבודה הווירטואליים</translation>
-<translation id="6850010208275816200">האפליקציה הנוכחית מוצגת במסך מלא. אם התבקשת להזין סיסמה, עליך קודם לצאת ממסך מלא.</translation>
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>

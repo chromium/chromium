@@ -433,7 +433,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
 <translation id="384082539148746321">¿Deseas borrar la plantilla?</translation>
 <translation id="3842239759367498783">Sigue leyendo desde tu dispositivo móvil (<ph name="TITLE" />)</translation>
-<translation id="3846214748874656680">Salir de pantalla completa</translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Inicio</translation>
@@ -858,7 +857,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6820676911989879663">Toma un descanso</translation>
 <translation id="6836499262298959512">Archivo peligroso</translation>
 <translation id="6837064795450991317">Ocultar la barra de escritorio</translation>
-<translation id="6850010208275816200">La app actual se muestra en pantalla completa. Deberás salir de este modo si la app solicita tu contraseña.</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Queda un dígito}other{Quedan # dígitos}}</translation>

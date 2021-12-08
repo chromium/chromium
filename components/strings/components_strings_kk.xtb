@@ -650,6 +650,7 @@
 <translation id="3087734570205094154">Астына</translation>
 <translation id="3095940652251934233">Анықтама</translation>
 <translation id="3096100844101284527">Алып кету мекенжайын енгізу</translation>
+<translation id="3098513225387949945">Өшіру тізімінде саясатты өшіруге тең келетін "*" өрнегі болғандықтан еленбеді.</translation>
 <translation id="3105172416063519923">Актив идентификаторы:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS конфигурациясын тексеріп көріңіз.<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Ортаңғы науа</translation>
@@ -1561,6 +1562,7 @@
 <translation id="6008122969617370890">N бастап 1 дейінгі ретпен</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Құпия сөздеріңізді тексеріңіз</translation>
+<translation id="6014851866995737824">"Қосу" немесе "өшіру" тізімі жоқ болғандықтан еленбеді.</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6017514345406065928">Жасыл</translation>
 <translation id="6017850046339264347"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар өздерін басқа мазмұн ретінде көрсететін жалған қолданбалар орнатуы немесе сізді бақылауға пайдаланылатын деректерді жинауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>

@@ -432,7 +432,6 @@
 <translation id="383629559565718788">แสดงการตั้งค่าแป้นพิมพ์</translation>
 <translation id="384082539148746321">ลบเทมเพลตใช่ไหม</translation>
 <translation id="3842239759367498783">อ่านต่อจากอุปกรณ์เคลื่อนที่ <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">ออกจากการแสดงเต็มหน้าจอ</translation>
 <translation id="3846575436967432996">ไม่มีข้อมูลเครือข่ายที่สามารถใช้งานได้</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">พักสายตาหน่อย</translation>
 <translation id="6836499262298959512">ไฟล์นี้ไม่ปลอดภัย</translation>
 <translation id="6837064795450991317">ซ่อนเดสก์บาร์</translation>
-<translation id="6850010208275816200">แอปที่เปิดอยู่แสดงเต็มหน้าจอ หากแอปขอให้ป้อนรหัสผ่าน ขอแนะนำให้ออกจากโหมดเต็มหน้าจอก่อน</translation>
 <translation id="6852052252232534364">คลิกเพื่อเปิดใช้</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> วินาที</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>

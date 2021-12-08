@@ -427,7 +427,6 @@
 <translation id="383629559565718788">Пернетақта параметрлерін көрсету</translation>
 <translation id="384082539148746321">Үлгі жойылсын ба?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> мобильдік құрылғысынан оқи беру</translation>
-<translation id="3846214748874656680">Толық экраннан шығу</translation>
 <translation id="3846575436967432996">Қолжетімді желі мәліметтері жоқ</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="385300504083504382">Басына өту</translation>
@@ -844,7 +843,6 @@
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
 <translation id="6836499262298959512">Қауіпті файл</translation>
 <translation id="6837064795450991317">Іздеу жолағын жасыру</translation>
-<translation id="6850010208275816200">Ағымдағы қолданба толық экран режимінде пайдаланылады. Егер қолданба құпия сөзді сұраса, толық экран режимінен шығыңыз.</translation>
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>

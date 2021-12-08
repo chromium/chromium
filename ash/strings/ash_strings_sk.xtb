@@ -432,7 +432,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="383629559565718788">Zobraziť nastavenia klávesnice</translation>
 <translation id="384082539148746321">Chcete šablónu odstrániť?</translation>
 <translation id="3842239759367498783">Pokračujte v čítaní v mobilnom zariadení <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Ukončiť režim celej obrazovky</translation>
 <translation id="3846575436967432996">Informácie o sieti nie sú k dispozícii</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="385300504083504382">Začiatok</translation>
@@ -857,7 +856,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6820676911989879663">Urobte si prestávku.</translation>
 <translation id="6836499262298959512">Nebezpečný súbor</translation>
 <translation id="6837064795450991317">Skryť panel na ploche</translation>
-<translation id="6850010208275816200">Aktuálna aplikácia je spustená v režime celej obrazovky. Ak vás požiada o heslo, najprv ukončite režim celej obrazovky.</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>

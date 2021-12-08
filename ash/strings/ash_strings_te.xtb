@@ -434,7 +434,6 @@
 <translation id="383629559565718788">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="384082539148746321">టెంప్లేట్‌ను తొలగించాలా?</translation>
 <translation id="3842239759367498783">మీ మొబైల్ పరికరం <ph name="TITLE" /> నుండి చదవడం కొనసాగించండి</translation>
-<translation id="3846214748874656680">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
 <translation id="3846575436967432996">నెట్‌వర్క్ సమాచారం అందుబాటులో లేదు</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
 <translation id="385300504083504382">ప్రారంభం</translation>
@@ -859,7 +858,6 @@
 <translation id="6820676911989879663">విరామం తీసుకోండి!</translation>
 <translation id="6836499262298959512">హానికరమైన ఫైల్</translation>
 <translation id="6837064795450991317">డెస్క్‌బార్‌ను దాచండి</translation>
-<translation id="6850010208275816200">మీ ప్రస్తుత యాప్ ఫుల్ స్క్రీన్ మోడ్‌లో ఉంది. యాప్ మీ పాస్‌వర్డ్ కోసం అడిగితే మొదట ఫుల్ స్క్రీన్ నుండి నిష్క్రమించండి.</translation>
 <translation id="6852052252232534364">యాక్టివేట్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> సెక</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ఒక అంకె మిగిలింది}other{# అంకెలు మిగిలాయి}}</translation>

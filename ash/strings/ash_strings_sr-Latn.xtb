@@ -432,7 +432,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="383629559565718788">Pregledajte podešavanja tastature</translation>
 <translation id="384082539148746321">Želite da izbrišete šablon?</translation>
 <translation id="3842239759367498783">Nastavite da čitate na mobilnom uređaju <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Izađi iz celog ekrana</translation>
 <translation id="3846575436967432996">Nisu dostupne informacije o mreži</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="385300504083504382">Početak</translation>
@@ -857,7 +856,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6820676911989879663">Napravite pauzu!</translation>
 <translation id="6836499262298959512">Opasan fajl</translation>
 <translation id="6837064795450991317">Sakrij traku za radne površine</translation>
-<translation id="6850010208275816200">Aktuelna aplikacija se prikazuje preko celog ekrana. Ako aplikacija traži lozinku, prvo izađite iz prikazivanja preko celog ekrana.</translation>
 <translation id="6852052252232534364">Aktivirajte</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Preostala je jedna cifra}one{Preostala je # cifra}few{Preostale su # cifre}other{Preostalo je # cifara}}</translation>

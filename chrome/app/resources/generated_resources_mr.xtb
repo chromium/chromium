@@ -162,6 +162,7 @@
 <translation id="1152346050262092795">तुमच्या खात्याची पडताळणी करण्यासाठी तुमचा पासवर्ड पुन्हा एंटर करा.</translation>
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
 <translation id="1153636665119721804">Google प्रगत संरक्षण प्रोग्राम</translation>
+<translation id="1155545602507378023">नाही, फक्त या डिव्हाइसवर</translation>
 <translation id="1155816283571436363">तुमच्या फोनशी कनेक्ट करत आहे</translation>
 <translation id="1158080958325422608">अप्परकेस करा</translation>
 <translation id="1158238185437008462">मेमरी पहा</translation>
@@ -396,6 +397,7 @@
 <translation id="1410197035576869800">अ‍ॅप आयकन</translation>
 <translation id="1410616244180625362">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला परवानगी  देणे सुरू ठेवा</translation>
 <translation id="1410806973194718079">धोरणे तपासता आली नाहीत</translation>
+<translation id="1412681350727866021">अतिरिक्त एक्स्टेंशन</translation>
 <translation id="1414315029670184034">साइटना तुमचा कॅमेरा वापरण्याची अनुमती देऊ नका</translation>
 <translation id="1414648216875402825">तुम्ही <ph name="PRODUCT_NAME" /> च्या अस्थिर आवृत्तीवर अपडेट करत आहात ज्यात प्रगतीपथावर असलेली वैशिष्ट्ये आहेत. क्रॅश आणि अनपेक्षित दोष आढळतील. कृपया सावधगिरीसह पुढे जा.</translation>
 <translation id="1415708812149920388">क्लिपबोर्डचा रीड अ‍ॅक्सेस नाकारला</translation>
@@ -948,6 +950,7 @@
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> असलेल्या या डिव्हाइस सह <ph name="ARCHITECTURE_CONTAINER" /> प्रकारचे आर्किटेक्चर कंटेनर इंपोर्ट करू शकत नाही. तुम्ही हा कंटेनर वेगळ्या डिव्हाइसमध्ये रिस्टोअर करण्याचा प्रयत्न करू शकता किंवा तुम्ही या कंटेनर प्रतिमेच्या फाइल Files ॲपमध्ये उघडून ॲक्सेस करू शकता.</translation>
 <translation id="1938351510777341717">बाह्य कमांड</translation>
 <translation id="1940546824932169984">कनेक्‍ट केलेली डिव्हाइस</translation>
+<translation id="1941410638996203291">सुरू होण्याची वेळ <ph name="TIME" /></translation>
 <translation id="1942128823046546853">सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू आणि बदलू शकते</translation>
 <translation id="1942600407708803723">कव्हर बंद केल्यावर शट डाउन करा</translation>
 <translation id="1944528062465413897">ब्लूटूथ पेअरिंग कोड:</translation>
@@ -1326,6 +1329,7 @@
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
 <translation id="2322193970951063277">शीर्षक आणि अधोलेख</translation>
 <translation id="2322318151094136999">साइटला सीरियल पोर्ट अ‍ॅक्सेस करायची असतील तेव्हा विचारा (शिफारस केलेले)</translation>
+<translation id="2322622365472107569">संपण्याची वेळ <ph name="TIME" /></translation>
 <translation id="2323018538045954000">सेव्ह केलेली वाय-फाय नेटवर्क</translation>
 <translation id="2325444234681128157">पासवर्ड लक्षात ठेवा</translation>
 <translation id="2326188115274135041">ऑटोमॅटिक अनलॉक सुरू करण्यासाठी पिन निश्चित करा</translation>
@@ -1431,6 +1435,7 @@
 <translation id="2435248616906486374">नेटवर्क डिस्कनेक्ट झाले</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ला सर्व <ph name="PROTOCOL" /> लिंक उघडण्याची अनुमती द्यायची?</translation>
+<translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड करत आहे</translation>
 <translation id="2440604414813129000">स्त्रो&amp;त पहा</translation>
 <translation id="244231003699905658">चुकीचा ॲड्रेस. कृपया ॲड्रेस तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2442916515643169563">मजकुराची शॅडो</translation>
@@ -1936,6 +1941,7 @@
 <translation id="2935654492420446828">शाळेचे खाते नंतर जोडा</translation>
 <translation id="2936851848721175671">बॅकअप घ्या आणि रिस्टोअर करा</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
+<translation id="2939908794993783865">अतिरिक्त इनॲक्टिव्ह साइट</translation>
 <translation id="2939938020978911855">उपलब्ध असलेले ब्लूटूथ डिव्हाइस दर्शवा</translation>
 <translation id="2941112035454246133">निम्न</translation>
 <translation id="2942279350258725020">Android Messages</translation>
@@ -2081,6 +2087,7 @@
 <translation id="3090589793601454425">हलवू नका</translation>
 <translation id="3090819949319990166">बाह्य crx फाइल <ph name="TEMP_CRX_FILE" /> वर कॉपी करू शकत नाही.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडले</translation>
+<translation id="3093362725605442088">Chrome OS डिव्हाइस आणि घटकाचे सिरीअल नंबर वाचा.</translation>
 <translation id="3093714882666365141">साइटना पेमेंट हँडलर इंस्टॉल करण्याची अनुमती देऊ नका</translation>
 <translation id="3094141017404513551">हे तुमचे ब्राउझिंग <ph name="EXISTING_USER" /> पासून स्वतंत्र करेल</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड आणि इतर ब्राउझर डेटा या गोष्टी प्राथमिक खात्याशी सिंक केल्या आहेत.</translation>
@@ -2268,6 +2275,7 @@
 <translation id="3308852433423051161">Google Assistant लोड करत आहे...</translation>
 <translation id="3309330461362844500">सर्टिफिकेट प्रोफाइल आयडी</translation>
 <translation id="3311445899360743395">या अ‍ॅपशी संबंधित डेटा डिव्हाइसवरून काढला जाऊ शकतो.</translation>
+<translation id="3312883087018430408">विशिष्ट साइट किंवा Chrome चा भाग शोधण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा. उदाहरणार्थ, फक्त Bookmarks शोधण्यासाठी, "@bookmarks" टाइप करा आणि त्यानंतर टॅब किंवा स्पेस दाबा.</translation>
 <translation id="3313622045786997898">सर्टिफिकेट स्वाक्षरी मूल्य</translation>
 <translation id="3313950410573257029">कनेक्शन तपासा</translation>
 <translation id="3315158641124845231"><ph name="PRODUCT_NAME" /> लपवा</translation>
@@ -2687,6 +2695,7 @@
 <translation id="3747077776423672805">ॲप्स काढून टाकण्यासाठी, सेटिंग्ज &gt; Google Play स्टोअर &gt; Android प्राधान्ये व्यवस्थापित करा &gt; ॲप्स किंवा अ‍ॅप्लिकेशन व्यवस्थापक वर जा. नंतर तुम्हाला अनइंस्टॉल करायच्या असलेल्या ॲपवर टॅप करा (ॲप शोधण्‍यासाठी तुम्हाला कदाचित उजवीकडे किंवा डावीकडे स्वाइप करावे लागेल). यानंतर अनइंस्टॉल करा किंंवा बंद करा वर टॅप करा.</translation>
 <translation id="3747220812138541072">तुम्ही टाइप करत असताना दिसणाऱ्या लिखाणाच्या इनलाइन सूचना दाखवा</translation>
 <translation id="3748706263662799310">बग नोंदवा</translation>
+<translation id="3750562496035670393">Chrome ने तुमचा पासवर्ड या डिव्‍हाइसवर सेव्‍ह केला आहे, पण तुम्‍ही तो त्‍याऐवजी तुमच्‍या Google खाते मध्ये सेव्‍ह करू शकता. त्यानंतर, तुम्ही साइन इन केल्यावर तुमच्या Google खाते मधीलदेखील सर्व पासवर्ड उपलब्ध होतील.</translation>
 <translation id="3752253558646317685">फिंगरप्रिंट सेव्ह करण्यासाठी तुमच्या लहान मुलाला त्यांचे बोट उचलण्यास सांगा</translation>
 <translation id="3752582316358263300">ठीक आहे...</translation>
 <translation id="3753033997400164841">एकदा स्टोअर करा. कुठेही वापरा</translation>
@@ -3126,6 +3135,7 @@
 <translation id="4194570336751258953">टॅप-टू-क्लिक सुरू करा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4195814663415092787">तुम्ही सोडले होते तिथून पुढे सुरू करा</translation>
+<translation id="4198268995694216131">अतिरिक्त साइट</translation>
 <translation id="4200689466366162458">कस्टम शब्द</translation>
 <translation id="4200983522494130825">नवीन &amp;टॅब</translation>
 <translation id="4201546031411513170">तुम्ही काय सिंक करायचे हे सेटिंग्जमध्ये कधीही निवडू शकता.</translation>
@@ -3247,6 +3257,7 @@
 <translation id="4341577178275615435">कॅरेट ब्राउझिंग सुरू किंवा बंद करण्यासाठी F7 हा शॉर्टकट वापरा</translation>
 <translation id="4341905082470253054">TPM स्टेटस तपासत आहे...</translation>
 <translation id="434198521554309404">जलद. सुरक्षित. सोपे.</translation>
+<translation id="4343250402091037179">विशिष्ट साइट किंवा Chrome चा भाग शोधण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा.</translation>
 <translation id="434404122609091467">तुमच्या सध्याच्या सेवा पुरवठादारासोबत</translation>
 <translation id="4345587454538109430">कॉंफिगर करा...</translation>
 <translation id="4345732373643853732">सर्व्हरला वापर कर्ता नाव माहीत नाही</translation>
@@ -3999,6 +4010,7 @@
 <translation id="5153234146675181447">फोन विसरा</translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> यासाठी प्रगत सेटिंग्ज</translation>
 <translation id="5154702632169343078">विषय</translation>
+<translation id="5155327081870541046">तुम्हाला शोधायच्या असलेल्या साइटचा शॉर्टकट अ‍ॅड्रेस बारमध्ये एंटर करा जसे की, "@bookmarks". त्यानंतर, तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट दाबा आणि तुमची शोध संज्ञा एंटर करा.</translation>
 <translation id="5157635116769074044">हे पृष्ठ सुरू स्क्रीनवर पिन करा...</translation>
 <translation id="5159094275429367735">Crostini सेट करा</translation>
 <translation id="5159419673777902220">तुमच्या पालकाने एक्स्टेंशन परवानग्या बंद केल्या आहेत</translation>
@@ -4617,6 +4629,7 @@
 <translation id="5816434091619127343">विनंती केलेले प्रिंटर बदल प्रिंटरला वापरता न येण्याजोगा बनवतील.</translation>
 <translation id="5817069030404929329">या डिव्हाइसवरून तुमच्या Google खाते वर पासवर्ड हलवायचे आहेत का?</translation>
 <translation id="5817918615728894473">जोडा</translation>
+<translation id="581840385858998009">वॉलपेपर, अवतार, स्क्रीनसेव्हर आणि बरेच काही कस्टमाइझ करा</translation>
 <translation id="5821565227679781414">शॉर्टकट तयार करा</translation>
 <translation id="5822095611691580107">डाव्या बडची बॅटरी पातळी <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="5825412242012995131">सुरू आहे (शिफारस केलेले)</translation>
@@ -4907,6 +4920,7 @@
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
 <translation id="6119927814891883061">डिव्हाइसला नाव <ph name="DEVICE_NAME" /> द्या</translation>
 <translation id="6120205520491252677">या पृष्‍ठास सुरू स्‍क्रीनवर पिन करा...</translation>
+<translation id="6121773125605585883"><ph name="WEBSITE" /> साठी <ph name="USERNAME" /> वापरकर्ता नावाचा पासवर्ड पहा</translation>
 <translation id="6122081475643980456">तुमचे इंटरनेट कनेक्शन नियंत्रित केले जात आहे</translation>
 <translation id="6122093587541546701">ईमेल (पर्यायी):</translation>
 <translation id="6122095009389448667">क्लिपबोर्ड पाहण्यापासून या साइटला ब्लॉक करणे सुरू ठेवा</translation>
@@ -4983,6 +4997,7 @@
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> मध्ये सेव्ह करता आले नाही</translation>
 <translation id="6209838773933913227">घटक अपडेट होत आहे</translation>
 <translation id="6209908325007204267">तुमच्या डिव्हाइसमध्ये Chrome एंटरप्राइझ अपग्रेड याचा समावेश आहे पण तुमचे वापरकर्ता नाव एंटरप्राइझ खात्याशी संबंधित नाही. कृपया पर्यायी डिव्हाइसवरून g.co/ChromeEnterpriseAccount ला भेट देऊन एक एंटरप्राइझ खाते तयार करा.</translation>
+<translation id="6210282067670792090">अ‍ॅड्रेस बारमध्ये, शोध इंजिन आणि साइट शोधासाठी शॉर्टकटसह हा कीबोर्ड शॉर्टकट वापरा</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{Open All in &amp;New Tab Group}=1{नवीन टॅब गटामध्ये उघडा}other{सर्व ({COUNT}) नवीन टॅब गटामध्ये उघडा}}</translation>
 <translation id="6212039847102026977">प्रगत नेटवर्क वैशिष्ट्ये दर्शवा</translation>
 <translation id="6212168817037875041">डिस्प्ले बंद करा</translation>
@@ -5466,6 +5481,7 @@
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> वापरून कनेक्ट करा</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6711146141291425900">डाउनलोड साठी <ph name="WEB_DRIVE" /> खाते लिंक करा</translation>
+<translation id="6712943853047024245">तुम्ही <ph name="WEBSITE" /> साठी या वापरकर्ता नावासह आधीच पासवर्ड सेव्ह केला आहे</translation>
 <translation id="6713233729292711163">कार्य प्रोफाइल जोडा</translation>
 <translation id="6715803357256707211">तुमच्या Linux ॲप्लिकेशनच्या इंस्टॉलेशन दरम्यान एरर आली. तपशीलांसाठी सूचनेवर क्लिक करा.</translation>
 <translation id="671619610707606484">हे साइटने स्टोअर केलेला <ph name="TOTAL_USAGE" /> डेटा साफ करेल</translation>
@@ -6091,6 +6107,7 @@
 <translation id="7385854874724088939">प्रिंट करण्याचा प्रयत्न करताना काहीतरी चूक झाली. कृपया तुमचा प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7385896526023870365">या एक्स्टेंशनला अतिरिक्त साइट अ‍ॅक्सेस नाही.</translation>
 <translation id="7387273928653486359">स्वीकारण्यायोग्य</translation>
+<translation id="7387951778417998929">डीफॉल्टपेक्षा वेगळे शोध इंजीन वापरण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा. तुम्ही येथे तुमचे डीफॉल्ट शोध इंजीनदेखील बदलू शकता.</translation>
 <translation id="7388209873137778229">फक्त सपोर्ट असलेली डिव्हाइस दाखवली आहेत.</translation>
 <translation id="7392118418926456391">व्हायरस स्कॅन अयशस्वी</translation>
 <translation id="7392915005464253525">बंद केलेली विंडो पु&amp;न्हा उघडा</translation>
@@ -6268,6 +6285,7 @@
 <translation id="7559719679815339381">कृपया प्रतीक्षा करा...कियोस्क ॲप अपडेट होण्याच्या प्रक्रियेत आहे. USB स्टिक काढू नका.</translation>
 <translation id="7560756177962144929">तुमचे <ph name="DEVICE_TYPE" /> सिंक करा</translation>
 <translation id="7561196759112975576">नेहमी</translation>
+<translation id="7562099761826673163">तुमचे डिव्हाइस पर्सनलाइझ करा</translation>
 <translation id="756445078718366910">ब्राउझर विंडो उघडा</translation>
 <translation id="7564847347806291057">प्रक्रिया समाप्त करा</translation>
 <translation id="756503097602602175">तुम्ही <ph name="LINK_BEGIN" />सेटिंग्ज<ph name="LINK_END" /> मधून साइन इन केलेली Google खाती व्यवस्थापित करू शकता. तुम्ही वेबसाइट आणि अ‍ॅप्सना दिलेल्या परवानग्या सर्व खात्यांना लागू होऊ शकतात. साइट किंवा ॲप्सनी तुमची खाते माहिती ॲक्सेस करू नये असे तुम्हाला वाटत असल्यास, तुम्ही तुमच्या<ph name="DEVICE_TYPE" /> मध्ये अतिथी म्हणून साइन इन करू शकता किंवा <ph name="LINK_2_BEGIN" />गुप्त विंडो<ph name="LINK_2_END" /> मध्ये वेब ब्राउझ करू शकता.</translation>
@@ -6583,6 +6601,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="78526636422538552">आणखी Google खाती जोडणे बंद केले आहे</translation>
 <translation id="7853747251428735">अधिक साध&amp;ने</translation>
 <translation id="7855678561139483478">टॅब नवीन विंडोवर हलवा</translation>
+<translation id="7856654138655787862">Chrome OS शी संबंधित निदानाच्या चाचण्या रन करा.</translation>
 <translation id="7857093393627376423">मजकुराबाबत सूचना</translation>
 <translation id="7857949311770343000">तुम्ही अपेक्षा करत होता ते हे नवीन पृष्ठ आहे?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
@@ -7232,6 +7251,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8551588720239073785">तारीख आणि वेळ सेटिंग्ज</translation>
 <translation id="8553342806078037065">इतर लोक व्यवस्थापित करा</translation>
 <translation id="8554899698005018844">कोणतीही भाषा नाही</translation>
+<translation id="855604308879080518">Android अ‍ॅप्सना या Chromebook वर USB डिव्हाइस अ‍ॅक्सेस करू द्या. तुम्ही USB डिव्हाइस प्लग इन केल्यावर परवानगीची विनंती केली जाईल. वैयक्तिक Android अ‍ॅप्स अतिरिक्त परवानग्यांची विनंती करतील.</translation>
 <translation id="8557022314818157177">तुमचे फिंगरप्रिंट कॅप्चर होईपर्यंत तुमच्या सिक्युरिटी कीला स्पर्श करत राहा</translation>
 <translation id="8557180006508471423">तुमच्या Mac वर स्थान सेवा मध्ये "Google Chrome" सुरू करा</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Open All in New Window}=1{नवीन विंडोमध्ये उघडा}other{सर्व ({COUNT}) नवीन विंडोमध्ये उघडा}}</translation>

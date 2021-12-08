@@ -162,6 +162,7 @@
 <translation id="1153636665119721804">Program pokročilé ochrany Google</translation>
 <translation id="1155545602507378023">Ne, pouze toto zařízení</translation>
 <translation id="1155816283571436363">Připojování k telefonu</translation>
+<translation id="1158080958325422608">Změnit na velká písmena</translation>
 <translation id="1158238185437008462">Zobrazit vzpomínky</translation>
 <translation id="1161575384898972166">Chcete-li exportovat certifikát klienta, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
 <translation id="116173250649946226">Administrátor nastavil výchozí motiv, který nelze změnit.</translation>
@@ -696,6 +697,7 @@
 <translation id="1700079447639026019">Weby, které nikdy nemohou používat soubory cookie</translation>
 <translation id="1703331064825191675">Nedělejte si starosti s hesly</translation>
 <translation id="1703666494654169921">Nepovolovat webům používání zařízení nebo dat pro virtuální realitu</translation>
+<translation id="1704097193565924901">Velikost písmen</translation>
 <translation id="1704230497453185209">Nepovolovat webům přehrávat zvuk</translation>
 <translation id="1704970325597567340">Bezpečnostní kontrola proběhla <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Přidáno administrátorem</translation>
@@ -3573,6 +3575,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4681453295291708042">Deaktivovat sdílení nablízko</translation>
 <translation id="4681930562518940301">Otevřít původní &amp;obrázek na nové kartě</translation>
 <translation id="4682551433947286597">Tapety se zobrazí na přihlašovací obrazovce.</translation>
+<translation id="4683629100208651599">Změnit na malá písmena</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (výchozí)</translation>
 <translation id="4684427112815847243">Synchronizovat vše</translation>
 <translation id="4684471265911890182">Aplikace <ph name="APP_NAME" /> se pokouší použít kameru. Pokud chcete povolit přístup, vypněte ochranu soukromí kamery.</translation>
@@ -5970,6 +5973,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7257173066616499747">Sítě Wi-Fi</translation>
 <translation id="725758059478686223">Služba tisku</translation>
 <translation id="7257666756905341374">Číst data, která kopírujete a vkládáte</translation>
+<translation id="7258192266780953209">Transformace</translation>
 <translation id="7258225044283673131">Aplikace neodpovídá. Chcete-li ji zavřít, vyberte Ukončit aplikaci.</translation>
 <translation id="7262004276116528033">Přihlašovací služba je hostována doménou <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Zkuste problém odstranit pomocí následujících kroků:

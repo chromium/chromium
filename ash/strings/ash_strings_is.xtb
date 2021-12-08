@@ -432,7 +432,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="383629559565718788">Sýna lyklaborðsstillingar</translation>
 <translation id="384082539148746321">Eyða sniðmáti?</translation>
 <translation id="3842239759367498783">Haltu áfram að lesa í fartækinu <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Hætta að nota allan skjáinn</translation>
 <translation id="3846575436967432996">Engar netupplýsingar tiltækar</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="385300504083504382">Byrjun</translation>
@@ -857,7 +856,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6820676911989879663">Taktu pásu!</translation>
 <translation id="6836499262298959512">Hættuleg skrá</translation>
 <translation id="6837064795450991317">Fela verkstiku</translation>
-<translation id="6850010208275816200">Núverandi forrit er á öllum skjánum Ef forritið biður þig um aðgangsorð þarftu fyrst að loka öllum skjánum.</translation>
 <translation id="6852052252232534364">Smelltu til að kveikja</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ein tala eftir}one{# tala eftir}other{# tölur eftir}}</translation>

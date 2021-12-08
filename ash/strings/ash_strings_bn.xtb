@@ -432,7 +432,6 @@
 <translation id="383629559565718788">কীবোর্ড সেটিংস দেখান</translation>
 <translation id="384082539148746321">টেমপ্লেট মুছবেন?</translation>
 <translation id="3842239759367498783">আপনার মোবাইল ডিভাইস <ph name="TITLE" /> থেকে পড়ুন</translation>
-<translation id="3846214748874656680">পূর্ণস্ক্রীন থেকে প্রস্থান করুন</translation>
 <translation id="3846575436967432996">কোনো নেটওয়ার্ক সংক্রান্ত তথ্য উপলব্ধ নেই</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="385300504083504382">শুরুর দিকে</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">বিরতি নিন!</translation>
 <translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
 <translation id="6837064795450991317">ডেস্কবার লুকান</translation>
-<translation id="6850010208275816200">আপনার বর্তমান অ্যাপ ফুল স্ক্রিনে দেখছেন। অ্যাপটি পাসওয়ার্ড চাইলে, আগে ফুল স্ক্রিন থেকে বেরিয়ে আসুন।</translation>
 <translation id="6852052252232534364">চালু করতে ক্লিক করুন</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> সে</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{আরও ১টি সংখ্যা লিখতে হবে}one{আরও #টি সংখ্যা লিখতে হবে}other{আরও #টি সংখ্যা লিখতে হবে}}</translation>

@@ -432,7 +432,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="383629559565718788">Afișează setările pentru tastatură</translation>
 <translation id="384082539148746321">Ștergi șablonul?</translation>
 <translation id="3842239759367498783">Continuă să citești de pe dispozitivul mobil <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Ieși din ecranul complet</translation>
 <translation id="3846575436967432996">Nu sunt disponibile informații despre rețele</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="385300504083504382">Început</translation>
@@ -857,7 +856,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>
 <translation id="6836499262298959512">Fișier periculos</translation>
 <translation id="6837064795450991317">Ascunde bara de pe desktop</translation>
-<translation id="6850010208275816200">Aplicația actuală este afișată pe ecran complet. Dacă aplicația solicită parola, mai întâi ieși din ecranul complet.</translation>
 <translation id="6852052252232534364">Dă clic pentru activare</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Încă o cifră}few{Încă # cifre}other{Încă # de cifre}}</translation>

@@ -432,7 +432,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="384082539148746321">Usunąć szablon?</translation>
 <translation id="3842239759367498783">Kontynuuj czytanie przerwane na urządzeniu mobilnym <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Zamknij pełny ekran</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
@@ -857,7 +856,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
 <translation id="6836499262298959512">Niebezpieczny plik</translation>
 <translation id="6837064795450991317">Ukryj pasek</translation>
-<translation id="6850010208275816200">Bieżąca aplikacja działa w trybie pełnoekranowym. Jeśli aplikacja pyta o hasło, najpierw zamknij ten tryb.</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}many{Pozostało # cyfr}other{Pozostało # cyfry}}</translation>

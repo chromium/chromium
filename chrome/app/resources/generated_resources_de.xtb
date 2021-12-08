@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Gekoppelte Geräte</translation>
 <translation id="1153636665119721804">Erweitertes Sicherheitsprogramm von Google</translation>
 <translation id="1155816283571436363">Verbindung zu Ihrem Smartphone wird hergestellt</translation>
+<translation id="1158080958325422608">Großschreibung verwenden</translation>
 <translation id="1158238185437008462">Erinnerungen ansehen</translation>
 <translation id="1161575384898972166">Melden Sie sich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat zu exportieren.</translation>
 <translation id="116173250649946226">Der Administrator hat ein Standarddesign festgelegt, das nicht geändert werden kann.</translation>
@@ -689,6 +690,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1700079447639026019">Websites, die nie Cookies verwenden dürfen</translation>
 <translation id="1703331064825191675">Sie müssen sich keine Sorgen mehr um Ihre Passwörter machen</translation>
 <translation id="1703666494654169921">Websites dürfen keine Virtual-Reality-Geräte oder ‑Daten verwenden</translation>
+<translation id="1704097193565924901">Großschreibung</translation>
 <translation id="1704230497453185209">Websites dürfen keinen Ton wiedergeben</translation>
 <translation id="1704970325597567340">Der Sicherheitscheck wurde am <ph name="DATE" /> durchgeführt</translation>
 <translation id="1706586824377653884">Von Ihrem Administrator hinzugefügt</translation>
@@ -2120,7 +2122,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3154429428035006212">Seit über einem Monat offline</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157665603750177985">Wenn Sie nicht im Inkognitomodus sind, können Websites Cookies verwenden und Ihre Browseraktivitäten auf verschiedenen Websites einsehen, um z. B. Werbung zu personalisieren</translation>
-<translation id="3157931365184549694">Wiederherstellen</translation>
+<translation id="3157931365184549694">Wieder­her­stellen</translation>
 <translation id="3158033540161634471">Fingerabdruck einrichten</translation>
 <translation id="3158770568048368350">Hierdurch wird die Verbindung zu Ihrem Mobilfunknetz möglicherweise kurz getrennt</translation>
 <translation id="3159493096109238499">Beige</translation>
@@ -3559,6 +3561,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4681453295291708042">Nearby Share deaktivieren</translation>
 <translation id="4681930562518940301">&amp;Original in neuem Tab öffnen</translation>
 <translation id="4682551433947286597">Hintergründe werden auf dem Anmeldebildschirm angezeigt.</translation>
+<translation id="4683629100208651599">Kleinschreibung verwenden</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (Standard)</translation>
 <translation id="4684427112815847243">Alles synchronisieren</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> versucht, auf die Kamera zuzugreifen. Schalten Sie den Vertraulichkeitsmodus der Kamera aus, um den Zugriff zu erlauben.</translation>
@@ -5949,6 +5952,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7257173066616499747">WLANs</translation>
 <translation id="725758059478686223">Druckdienst</translation>
 <translation id="7257666756905341374">Daten lesen, die Sie kopieren und einfügen</translation>
+<translation id="7258192266780953209">Transformationen</translation>
 <translation id="7258225044283673131">Die Anwendung reagiert nicht. Wählen Sie "Schließen erzwingen" aus, um die App zu beenden.</translation>
 <translation id="7262004276116528033">Dieser Anmeldedienst wird von <ph name="SAML_DOMAIN" /> gehostet.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Führen Sie diese Schritte zur Fehlerbehebung aus:

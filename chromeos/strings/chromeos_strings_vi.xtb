@@ -182,6 +182,7 @@
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
+<translation id="3924044641767672375">Bạn nên kết nối với Wi-Fi để giúp quy trình sửa chữa dễ dàng hơn. Mạng của bạn sẽ được lưu.</translation>
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
 <translation id="3941014780699102620">Không phân giải được máy chủ</translation>
 <translation id="3942420633017001071">Chẩn đoán</translation>
@@ -226,6 +227,7 @@
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4485626319513081846">Chọn lựa chọn này nếu thiết bị đang được bổ sung hoặc được tân trang lại để phân phối cho một khách hàng mới.</translation>
 <translation id="4511264077854731334">Cổng</translation>
 <translation id="4521826082652183069">Khớp tên thay thế của tiêu đề</translation>
 <translation id="4536864596629708641">Cấu hình IP</translation>
@@ -415,6 +417,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6957231940976260713">Tên dịch vụ</translation>
 <translation id="6961170852793647506">Hãy đặt tài liệu của bạn lên máy quét để bắt đầu</translation>
 <translation id="6977381486153291903">Hiệu chỉnh chương trình cơ sở</translation>
+<translation id="6992266763844448459">Chọn lựa chọn này nếu quyền sở hữu thiết bị không thay đổi. Ví dụ: thiết bị đang được chuyển cho một người khác trong cùng một tổ chức.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
 <translation id="7040230719604914234">Nhà mạng</translation>
 <translation id="7058278511608979688">Kết thúc và lưu</translation>

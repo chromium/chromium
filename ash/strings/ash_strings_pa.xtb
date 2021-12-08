@@ -432,7 +432,6 @@
 <translation id="383629559565718788">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="384082539148746321">ਕੀ ਟੈਮਪਲੇਟ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="3842239759367498783">ਆਪਣੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ <ph name="TITLE" /> ਤੋਂ ਪੜ੍ਹਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
-<translation id="3846214748874656680">ਫੁਲਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="3846575436967432996">ਕੋਈ ਵੀ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="385300504083504382">ਸ਼ੁਰੂਆਤ</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">ਥੋੜ੍ਹੀ ਦੇਰ ਆਰਾਮ ਕਰੋ!</translation>
 <translation id="6836499262298959512">ਖਤਰਨਾਕ ਫ਼ਾਈਲ</translation>
 <translation id="6837064795450991317">ਡੈਸਕਬਾਰ ਲੁਕਾਓ</translation>
-<translation id="6850010208275816200">ਤੁਹਾਡੀ ਮੌਜੂਦਾ ਐਪ ਪੂਰੀ ਸਕ੍ਰੀਨ ਮੋਡ ਵਿੱਚ ਹੈ। ਜੇ ਐਪ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਪੁੱਛਦੀ ਹੈ, ਤਾਂ ਪਹਿਲਾਂ ਪੂਰੀ ਸਕ੍ਰੀਨ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ।</translation>
 <translation id="6852052252232534364">ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ਸਕਿੰਟ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ਇੱਕ ਅੰਕ ਬਾਕੀ}one{# ਅੰਕ ਬਾਕੀ}other{# ਅੰਕ ਬਾਕੀ}}</translation>

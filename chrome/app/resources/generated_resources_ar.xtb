@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">الأجهزة المقترنة</translation>
 <translation id="1153636665119721804">‏برنامج الحماية المتقدّمة من Google</translation>
 <translation id="1155816283571436363">جارٍ الاتصال بهاتفك</translation>
+<translation id="1158080958325422608">تحويل الأحرف إلى أحرف كبيرة</translation>
 <translation id="1158238185437008462">الاطّلاع على الذكريات</translation>
 <translation id="1161575384898972166">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لتصدير شهادة العميل.</translation>
 <translation id="116173250649946226">حدَّد مشرف مؤسستك مظهرًا تلقائيًا لا يمكن تغييره.</translation>
@@ -696,6 +697,7 @@
 <translation id="1700079447639026019">المواقع الإلكترونية التي لا يمكنها استخدام ملفات تعريف الارتباط</translation>
 <translation id="1703331064825191675">لا داعي للقلق مطلقًا بشأن كلمات المرور</translation>
 <translation id="1703666494654169921">عدم السماح للمواقع الإلكترونية باستخدام أجهزة الواقع الافتراضي أو بياناته</translation>
+<translation id="1704097193565924901">تحويل الأحرف الأولى إلى أحرف كبيرة</translation>
 <translation id="1704230497453185209">عدم السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
 <translation id="1704970325597567340">تم تفعيل ميزة "تأكيد السلامة" بتاريخ <ph name="DATE" />.</translation>
 <translation id="1706586824377653884">تمت الإضافة من قبل المشرف</translation>
@@ -3565,6 +3567,7 @@
 <translation id="4681453295291708042">إيقاف ميزة "المشاركة عن قرب"</translation>
 <translation id="4681930562518940301">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
 <translation id="4682551433947286597">تظهر الخلفيات على شاشة تسجيل الدخول.</translation>
+<translation id="4683629100208651599">تحويل الأحرف إلى أحرف صغيرة</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (تلقائي)</translation>
 <translation id="4684427112815847243">مزامنة كل شيء</translation>
 <translation id="4684471265911890182">يحاول التطبيق <ph name="APP_NAME" /> الوصول إلى الكاميرا. عليك إيقاف مفتاح خصوصية الكاميرا للسماح بوصول هذا التطبيق إليها.</translation>
@@ -5957,6 +5960,7 @@
 <translation id="7257173066616499747">‏شبكات Wi-Fi</translation>
 <translation id="725758059478686223">خدمة الطباعة</translation>
 <translation id="7257666756905341374">قراءة البيانات التي نسختها ولصقتها</translation>
+<translation id="7258192266780953209">تحويل حالات الأحرف</translation>
 <translation id="7258225044283673131">التطبيق لا يستجيب. اختَر "فرض الإغلاق" لإغلاق التطبيق.</translation>
 <translation id="7262004276116528033">يستضيف <ph name="SAML_DOMAIN" /> خدمة تسجيل الدخول هذه.</translation>
 <translation id="7264564921322372728">‏<ph name="BEGIN_PARAGRAPH1" />جرِّب الخطوات التالية لتحديد المشاكل وحلّها:

@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Ցուցադրել ստեղնաշարի կարգավորումները</translation>
 <translation id="384082539148746321">Ջնջե՞լ ձևանմուշը</translation>
 <translation id="3842239759367498783">Շարունակեք կարդալ «<ph name="TITLE" />» շարժական սարքից</translation>
-<translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
 <translation id="3846575436967432996">Ցանցի մասին տեղեկություններ չկան</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="385300504083504382">Սկիզբ</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Ընդմիջեք</translation>
 <translation id="6836499262298959512">Վտանգավոր ֆայլ</translation>
 <translation id="6837064795450991317">Թաքցնել աշխատասեղանների տողը</translation>
-<translation id="6850010208275816200">Ընթացիկ հավելվածն օգտագործվում է լիաէկրան ռեժիմում։ Եթե այն գաղտնաբառ պահանջի, նախ դուրս եկեք այս ռեժիմից։</translation>
 <translation id="6852052252232534364">Ակտիվացնել</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> վ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Մնաց 1 թվանշան}one{Մնաց # թվանշան}other{Մնաց # թվանշան}}</translation>

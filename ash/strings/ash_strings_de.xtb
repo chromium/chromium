@@ -432,7 +432,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="383629559565718788">Tastatureinstellungen anzeigen</translation>
 <translation id="384082539148746321">Vorlage löschen?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> auf meinem Mobilgerät weiterlesen</translation>
-<translation id="3846214748874656680">Vollbildmodus beenden</translation>
 <translation id="3846575436967432996">Keine Netzwerkinformationen verfügbar</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="385300504083504382">Anfang</translation>
@@ -857,7 +856,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6820676911989879663">Zeit für eine Pause.</translation>
 <translation id="6836499262298959512">Schädliche Datei</translation>
 <translation id="6837064795450991317">Desktopleiste ausblenden</translation>
-<translation id="6850010208275816200">Ihre aktuelle App wird im Vollbildmodus angezeigt. Wenn Sie von der App nach Ihrem Passwort gefragt werden, beenden Sie zuerst den Vollbildmodus.</translation>
 <translation id="6852052252232534364">Zum Aktivieren klicken</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Noch eine Ziffer}other{Noch # Ziffern}}</translation>

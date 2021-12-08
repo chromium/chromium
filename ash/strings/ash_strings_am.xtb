@@ -432,7 +432,6 @@
 <translation id="383629559565718788">የቁልፍ ሰሌዳ ቅንብሮችን አሳይ</translation>
 <translation id="384082539148746321">ቅንብር ደንቡን ይሰረዝ?</translation>
 <translation id="3842239759367498783">ከእርስዎ ተንቀሳቃሽ መሣሪያ <ph name="TITLE" /> ማንበብ ይቀጥሉ</translation>
-<translation id="3846214748874656680">ከሙሉ ማያገጽ ውጣ</translation>
 <translation id="3846575436967432996">ምንም የአውታረ መረብ መረጃ አይገኝም</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="385300504083504382">መጀመሪያ</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">እረፍት ይውሰዱ!</translation>
 <translation id="6836499262298959512">አደገኛ ፋይል</translation>
 <translation id="6837064795450991317">የዴስክ አሞሌን ደብቅ</translation>
-<translation id="6850010208275816200">የአሁኑ መተግበሪያዎ ሙሉ ማያ ገጽ ነው። መተግበሪያው የይለፍ ቃልዎን ከጠየቀ መጀመሪያ ከሙሉ ማያ ገጽ ይውጡ።</translation>
 <translation id="6852052252232534364">ለማግበር ጠቅ ያድርጉ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ሰከንድ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{አንድ አሃዝ ይቀራል}one{# አሃዞች ይቀራሉ}other{# አሃዞች ይቀራሉ}}</translation>

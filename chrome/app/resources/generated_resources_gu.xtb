@@ -162,6 +162,7 @@
 <translation id="1153636665119721804">Google વિગતવાર સુરક્ષા પ્રોગ્રામ</translation>
 <translation id="1155545602507378023">ના, માત્ર આ ડિવાઇસમાં</translation>
 <translation id="1155816283571436363">તમારા ફોનને કનેક્ટ કરી રહ્યાં છીએ</translation>
+<translation id="1158080958325422608">અપરકેસ કરો</translation>
 <translation id="1158238185437008462">યાદગીરીઓ જુઓ</translation>
 <translation id="1161575384898972166">ક્લાયંટ પ્રમાણપત્ર નિકાસ કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
 <translation id="116173250649946226">તમારા વ્યવસ્થાપકે ડિફૉલ્ટ થીમ સેટ કરી છે જે બદલી શકાતી નથી.</translation>
@@ -691,6 +692,7 @@
 <translation id="1700079447639026019">કુકીનો ક્યારેય ઉપયોગ કરી શકતી નથી એવી સાઇટ</translation>
 <translation id="1703331064825191675">તમારા પાસવર્ડ વિશે ક્યારેય ચિંતા કરશો નહીં</translation>
 <translation id="1703666494654169921">સાઇટને વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ કે ડેટાનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
+<translation id="1704097193565924901">કૅપિટલ કરો</translation>
 <translation id="1704230497453185209">સાઇટને સાઉન્ડ વગાડવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1704970325597567340"><ph name="DATE" />ના રોજ સલામતી માટે તપાસ કરવામાં આવી હતી</translation>
 <translation id="1706586824377653884">તમારા વ્યવસ્થાપક દ્વારા ઉમેરાયેલ</translation>
@@ -3571,6 +3573,7 @@
 <translation id="4681453295291708042">'નજીકના શેર' સુવિધા બંધ કરો</translation>
 <translation id="4681930562518940301">નવા ટેબમાં મૂળ &amp;છબી ખોલો</translation>
 <translation id="4682551433947286597">વૉલપેપર્સ સાઇન-ઇન સ્ક્રીન પર દેખાય છે.</translation>
+<translation id="4683629100208651599">લોઅરકેસ કરો</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ડિફૉલ્ટ)</translation>
 <translation id="4684427112815847243">દરેક વસ્તુ સમન્વયિત કરો</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> ઍપ કૅમેરા ઍક્સેસ કરવાનો પ્રયાસ કરી રહી છે. ઍક્સેસની મંજૂરી આપવા માટે કૅમેરાની પ્રાઇવસી સ્વિચ બંધ કરો.</translation>
@@ -5970,6 +5973,7 @@ USB ડિવાઇસ</translation>
 <translation id="7257173066616499747">Wi-Fi નેટવર્ક્સ</translation>
 <translation id="725758059478686223">પ્રિન્ટિંગ સેવા</translation>
 <translation id="7257666756905341374">તમે કૉપિ અને પેસ્ટ કરો એ ડેટાને વાંચો</translation>
+<translation id="7258192266780953209">રૂપાંતરણો</translation>
 <translation id="7258225044283673131">ઍપ્લિકેશન ચાલી રહી નથી. ઍપ બંધ કરવા માટે "ફરજિયાત બંધ" પસંદ કરો.</translation>
 <translation id="7262004276116528033">આ સાઇન-ઇન સેવા <ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ થયેલી છે.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />સમસ્યા નિવારણ કરવાના આ પગલાં અજમાવી જુઓ:

@@ -162,6 +162,7 @@
 <translation id="1153636665119721804">‏Google کا اعلی تحفظ پروگرام</translation>
 <translation id="1155545602507378023">نہیں، صرف یہ آلہ</translation>
 <translation id="1155816283571436363">آپ کے فون سے رابطہ ہو رہا ہے</translation>
+<translation id="1158080958325422608">بڑے حروف میں تبدیل کریں</translation>
 <translation id="1158238185437008462">یادیں دیکھیں</translation>
 <translation id="1161575384898972166">براہ کرم کلائنٹ سرٹیفکیٹ برآمد کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="116173250649946226">آپ کے منتظم نے ایک ایسی ڈیفالٹ تھیم سیٹ کی ہے جسے تبدیل نہیں کیا جا سکتا۔</translation>
@@ -694,6 +695,7 @@
 <translation id="1700079447639026019">وہ سائٹس جو کبھی بھی کوکیز کا استعمال نہیں کر سکتی ہیں</translation>
 <translation id="1703331064825191675">اپنے پاس ورڈز کے تعلق سے کبھی فکرمند نہ ہوں</translation>
 <translation id="1703666494654169921">سائٹس کو ورچوئل رئیلٹی آلات یا ڈیٹا کا استعمال کرنے کی اجازت نہ دیں</translation>
+<translation id="1704097193565924901">بڑے حرف میں لکھیں</translation>
 <translation id="1704230497453185209">سائٹس کو آواز چلانے کی اجازت نہ دیں</translation>
 <translation id="1704970325597567340">سیفٹی چیک <ph name="DATE" /> کو کیا گیا</translation>
 <translation id="1706586824377653884">آپ کے منتظم کے ذریعے شامل کردہ</translation>
@@ -3572,6 +3574,7 @@
 <translation id="4681453295291708042">قریبی آلات کے ساتھ اشتراک غیر فعال کریں</translation>
 <translation id="4681930562518940301">اصل &amp;تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="4682551433947286597">وال پیپرز سائن ان اسکرین پر ظاہر ہوتے ہیں۔</translation>
+<translation id="4683629100208651599">چھوٹے حروف میں تبدیل کریں</translation>
 <translation id="4683947955326903992">‏%‎<ph name="PERCENTAGE" /> (ڈیفالٹ)</translation>
 <translation id="4684427112815847243">ہر چیز کی مطابقت پذیری کریں</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> کیمرے تک رسائی حاصل کرنے کی کوشش کر رہی ہے۔ رسائی کی اجازت دینے کیلئے کیمرا کی رازداری کا سوئچ آف کریں۔</translation>
@@ -5968,6 +5971,7 @@
 <translation id="7257173066616499747">‏Wi-Fi نیٹ ورکس</translation>
 <translation id="725758059478686223">پرنٹنگ سروس</translation>
 <translation id="7257666756905341374">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اسے پڑھیں</translation>
+<translation id="7258192266780953209">تبدیلیاں</translation>
 <translation id="7258225044283673131">ایپلیکیشن جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
 <translation id="7262004276116528033">اس سائن ان سروس کی میزبانی <ph name="SAML_DOMAIN" />  کرتا ہے</translation>
 <translation id="7264564921322372728">‏<ph name="BEGIN_PARAGRAPH1" />ان ٹربل شوٹنگ اقدامات کو آزمائیں:

@@ -260,7 +260,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2778650143428714839"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="2782591952652094792">Irten edukia kapturatzeko modutik</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
-<translation id="2797741504905337289">Shelf Party</translation>
+<translation id="2797741504905337289">Apal-festa</translation>
 <translation id="2803313416453193357">Ireki karpeta</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2814448776515246190">Pantaila-kaptura partziala</translation>
@@ -280,6 +280,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2942350706960889382">Lupa ainguratua</translation>
 <translation id="2942516765047364088">Apalaren posizioa</translation>
 <translation id="2946119680249604491">Gehitu konexioa</translation>
+<translation id="2960314608273155470">Edukia kapturatzeko modua. Balio lehenetsia <ph name="TYPE" /> <ph name="SOURCE" /> da. Teklatuaren bidez nabigatzeko, sakatu tabuladorea.</translation>
 <translation id="2961963223658824723">Arazoren bat izan da. Saiatu berriro segundo batzuk barru.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Ezin izan dira deskargatu hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
@@ -432,7 +433,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="383629559565718788">Erakutsi teklatuaren ezarpenak</translation>
 <translation id="384082539148746321">Txantiloia ezabatu nahi duzu?</translation>
 <translation id="3842239759367498783">Jarraitu irakurtzen gailu mugikorrean <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Irten pantaila osotik</translation>
 <translation id="3846575436967432996">Ez dago sare-informazio erabilgarririk</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="385300504083504382">Hasiera</translation>
@@ -706,7 +706,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5745612484876805746">Iluntzean, automatikoki aktibatzen da gaueko argia</translation>
 <translation id="5750765938512549687">Desaktibatuta dago Bluetooth-a</translation>
 <translation id="576341972084747908">Arriskutsua da <ph name="FILENAME" /> deskargatzea</translation>
-<translation id="5763928712329149804">Shelf Party desaktibatuta dago.</translation>
+<translation id="5763928712329149804">Apal-festa desaktibatuta dago.</translation>
 <translation id="576453121877257266">Gaueko argia aktibatuta dago.</translation>
 <translation id="5769373120130404283">Pribatutasun-pantaila</translation>
 <translation id="5777841717266010279">Pantaila-partekatzea gelditu nahi duzu?</translation>
@@ -857,7 +857,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6820676911989879663">Hartu atseden</translation>
 <translation id="6836499262298959512">Fitxategi arriskutsua</translation>
 <translation id="6837064795450991317">Ezkutatu lan-eremuen barra</translation>
-<translation id="6850010208275816200">Pantaila osoko moduan dago oraingo aplikazioa. Aplikazioak pasahitza eskatzen badizu, lehenik atera pantaila osoko modutik.</translation>
 <translation id="6852052252232534364">Sakatu aktibatzeko</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 zenbaki geratzen da}other{# zenbaki geratzen dira}}</translation>
@@ -887,6 +886,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7042322267639375032">Tolestu egoeraren eremua</translation>
 <translation id="7045033600005038336">Txantiloia ordeztu nahi duzu?</translation>
 <translation id="7045595904618419789">Abiarazi lupa</translation>
+<translation id="7051244143160304048">Deskonektatu da <ph name="DEVICE_NAME" /></translation>
 <translation id="7055381872777910864">A</translation>
 <translation id="7055910611768509537">Arkatza ez da erabili astebetean baino gehiagoan</translation>
 <translation id="7066646422045619941">Administratzaileak desgaitu du sare hau.</translation>
@@ -914,7 +914,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7302889331339392448">Istanteko azpitituluak desaktibatuta daude.</translation>
 <translation id="7303365578352795231">Beste gailu batean erantzuten.</translation>
 <translation id="7305884605064981971">EDGE</translation>
-<translation id="731589979057211264">Shelf Party aktibatuta dago.</translation>
+<translation id="731589979057211264">Apal-festa aktibatuta dago.</translation>
 <translation id="7319740667687257810">Abiarazlea, ikuspegi partziala</translation>
 <translation id="7346909386216857016">Ados, ulertu dut</translation>
 <translation id="7348093485538360975">Pantailako teklatua</translation>
@@ -1070,7 +1070,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> leihoa dago hautatuta</translation>
 <translation id="8351131234907093545">Sortu oharra</translation>
-<translation id="8364673525741149932">Aktibatu edo desaktibatu Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8364673525741149932">Aktibatu edo desaktibatu Apal-festa. <ph name="STATE_TEXT" /></translation>
 <translation id="8371779926711439835">Joan hurrengo hizkira</translation>
 <translation id="8371991222807690464">Baliteke gailu periferikoaren errendimendua mugatuta egotea gonbidatu moduan</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> hau eta telefonoa automatikoki konektatuko dira</translation>
@@ -1080,6 +1080,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8412677897383510995">Erakutsi bistaratze-ezarpenak</translation>
 <translation id="8413272770729657668">Grabaketa hasteko atzerako kontaketa: 3, 2, 1</translation>
 <translation id="8416730306157376817">% <ph name="BATTERY_PERCENTAGE" /> (kutxa)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> ez dago gailuan.</translation>
 <translation id="8425213833346101688">Aldatu</translation>
 <translation id="8426708595819210923">Arratsalde on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>

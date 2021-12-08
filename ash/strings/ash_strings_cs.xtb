@@ -432,7 +432,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="383629559565718788">Zobrazit nastavení klávesnice</translation>
 <translation id="384082539148746321">Smazat šablonu?</translation>
 <translation id="3842239759367498783">Pokračujte ve čtení v mobilním zařízení <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Ukončit režim na celou obrazovku</translation>
 <translation id="3846575436967432996">Informace o síti nejsou k dispozici</translation>
 <translation id="385051799172605136">Zpět</translation>
 <translation id="385300504083504382">Začátek</translation>
@@ -857,7 +856,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6820676911989879663">Dejte si pauzu.</translation>
 <translation id="6836499262298959512">Nebezpečný soubor</translation>
 <translation id="6837064795450991317">Skrýt plochu</translation>
-<translation id="6850010208275816200">Aktuální aplikace je v režimu celé obrazovky. Pokud vás aplikace požádá o heslo, nejdřív režim celé obrazovky ukončete.</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>

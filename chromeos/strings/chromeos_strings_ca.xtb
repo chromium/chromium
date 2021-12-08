@@ -17,6 +17,7 @@
 <translation id="1175951029573070619">Normal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1195447618553298278">Error desconegut.</translation>
+<translation id="1196959502276349371">Versió <ph name="VERSION" /></translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1204296502688602597">Latència de DNS</translation>
 <translation id="123124571410524056">Possible portal</translation>
@@ -182,6 +183,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
+<translation id="3924044641767672375">Es recomana connectar-se a la Wi-Fi per facilitar el procés de reparació. La teva xarxa es desarà.</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
@@ -226,6 +228,7 @@
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
+<translation id="4485626319513081846">Selecciona aquesta opció si el dispositiu es tornarà a posar a la venda o es restaurarà per enviar-lo a un client nou.</translation>
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Nom alternatiu d'assumpte coincident</translation>
 <translation id="4536864596629708641">Configuració de la IP</translation>
@@ -415,6 +418,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6957231940976260713">Nom del servei</translation>
 <translation id="6961170852793647506">Per començar, col·loca el document a l'escàner</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
+<translation id="6992266763844448459">Selecciona aquesta opció si la propietat del dispositiu no canvia. Per exemple, si el dispositiu s'està transferint a una altra persona dins d'una organització.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>

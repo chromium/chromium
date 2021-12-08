@@ -432,7 +432,6 @@
 <translation id="383629559565718788">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ</translation>
 <translation id="384082539148746321">ລຶບແມ່ແບບອອກບໍ?</translation>
 <translation id="3842239759367498783">ສືບຕໍ່ອ່ານຈາກອຸປະກອນມືຖືຂອງທ່ານ <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="3846575436967432996">ບໍ່​ມີຂໍ້ມູນເຄືອຂ່າຍຢູ່</translation>
 <translation id="385051799172605136">ກັບ​ຄືນ​</translation>
 <translation id="385300504083504382">ການເລີ່ມຕົ້ນ</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">ຢຸດພັກ!</translation>
 <translation id="6836499262298959512">ໄຟລ໌ອັນຕະລາຍ</translation>
 <translation id="6837064795450991317">ເຊື່ອງເດັສບາ</translation>
-<translation id="6850010208275816200">ແອັບປັດຈຸບັນຂອງທ່ານເຕັມຈໍ. ຖ້າແອັບຂໍເອົາລະຫັດຜ່ານຂອງທ່ານ ກະລຸນາອອກຈາກເຕັມຈໍກ່ອນ.</translation>
 <translation id="6852052252232534364">ຄລິກເພື່ອເປີດນຳໃຊ້</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ວິ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ຍັງເຫຼືອໜຶ່ງຕົວເລກ}other{ຍັງເຫຼືອ # ຕົວເລກ}}</translation>

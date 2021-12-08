@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Прегледајте подешавања тастатуре</translation>
 <translation id="384082539148746321">Желите да избришете шаблон?</translation>
 <translation id="3842239759367498783">Наставите да читате на мобилном уређају <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Изађи из целог екрана</translation>
 <translation id="3846575436967432996">Нису доступне информације о мрежи</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Почетак</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Направите паузу!</translation>
 <translation id="6836499262298959512">Опасан фајл</translation>
 <translation id="6837064795450991317">Сакриј траку за радне површине</translation>
-<translation id="6850010208275816200">Актуелна апликација се приказује преко целог екрана. Ако апликација тражи лозинку, прво изађите из приказивања преко целог екрана.</translation>
 <translation id="6852052252232534364">Активирајте</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>

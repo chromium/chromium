@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Tilkoblede enheter</translation>
 <translation id="1153636665119721804">Google Avansert beskyttelse-programmet</translation>
 <translation id="1155816283571436363">Kobler til telefonen</translation>
+<translation id="1158080958325422608">Gjør om til store bokstaver</translation>
 <translation id="1158238185437008462">Se minner</translation>
 <translation id="1161575384898972166">Logg på <ph name="TOKEN_NAME" /> for å eksportere klientsertifikatet.</translation>
 <translation id="116173250649946226">Administratoren har angitt et standardtema som ikke kan endres.</translation>
@@ -689,6 +690,7 @@
 <translation id="1700079447639026019">Nettsteder som aldri kan bruke informasjonskapsler</translation>
 <translation id="1703331064825191675">Slutt å bekymre deg for passordene dine</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
+<translation id="1704097193565924901">Gjør forbokstavene store</translation>
 <translation id="1704230497453185209">Ikke la nettsteder spille av lyd</translation>
 <translation id="1704970325597567340">Sikkerhetssjekken ble kjørt <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Lagt til av administratoren din</translation>
@@ -3549,6 +3551,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4681453295291708042">Slå av nærdeling</translation>
 <translation id="4681930562518940301">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
 <translation id="4682551433947286597">Bakgrunner vises på påloggingsskjermen.</translation>
+<translation id="4683629100208651599">Gjør om til små bokstaver</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> prøver å bruke kameraet. Slå av personvernbryteren for kamera for å gi tilgang.</translation>
@@ -5919,6 +5922,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7257173066616499747">Wi-Fi-nettverk</translation>
 <translation id="725758059478686223">Utskriftstjeneste</translation>
 <translation id="7257666756905341374">lese data du kopierer og limer inn</translation>
+<translation id="7258192266780953209">Transformasjoner</translation>
 <translation id="7258225044283673131">Appen svarer ikke. Velg «Tving avslutning» for å lukke appen.</translation>
 <translation id="7262004276116528033">Verten for denne påloggingstjenesten er <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Prøv denne fremgangsmåten for feilsøking:

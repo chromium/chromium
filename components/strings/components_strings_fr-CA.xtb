@@ -646,6 +646,7 @@
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3095940652251934233">Relevé</translation>
 <translation id="3096100844101284527">Ajouter une adresse de ramassage</translation>
+<translation id="3098513225387949945">Ignoré parce que la liste de désactivation contient un motif égal à « * », ce qui équivaut à désactiver la politique.</translation>
 <translation id="3105172416063519923">Identifiant de ressource :</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifier la configuration du serveur DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Plateau du milieu</translation>
@@ -1555,6 +1556,7 @@
 <translation id="6008122969617370890">Ordre N sur 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Vérifier vos mots de passe</translation>
+<translation id="6014851866995737824">Ignoré parce que la liste « activer » ou « désactiver » est manquante.</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6017514345406065928">Vert</translation>
 <translation id="6017850046339264347">Les cyberpirates à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> pourraient installer des applications trompeuses qui prétendent être autre chose ou collectent des données pouvant être utilisées pour effectuer le suivi de votre activité. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>

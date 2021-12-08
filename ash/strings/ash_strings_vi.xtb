@@ -280,6 +280,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2942350706960889382">Phóng to ở vị trí cố định</translation>
 <translation id="2942516765047364088">Vị trí kệ</translation>
 <translation id="2946119680249604491">Thêm đường kết nối</translation>
+<translation id="2960314608273155470">Chế độ chụp, mặc định là <ph name="SOURCE" /> <ph name="TYPE" />. Nhấn phím Tab để di chuyển bằng bàn phím.</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Không thể tải các tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
@@ -431,7 +432,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
 <translation id="384082539148746321">Bạn muốn xoá mẫu?</translation>
 <translation id="3842239759367498783">Tiếp tục đọc trên thiết bị di động <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
 <translation id="3846575436967432996">Không có thông tin mạng</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="385300504083504382">Phần đầu</translation>
@@ -856,7 +856,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>
 <translation id="6836499262298959512">Tệp nguy hiểm</translation>
 <translation id="6837064795450991317">Ẩn thanh không gian làm việc</translation>
-<translation id="6850010208275816200">Ứng dụng hiện tại đang ở chế độ toàn màn hình. Nếu ứng dụng yêu cầu bạn nhập mật khẩu, trước tiên, hãy thoát khỏi chế độ toàn màn hình.</translation>
 <translation id="6852052252232534364">Nhấp để kích hoạt</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> giây</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
@@ -886,6 +885,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7042322267639375032">Thu gọn khu vực trạng thái</translation>
 <translation id="7045033600005038336">Bạn muốn thay thế mẫu?</translation>
 <translation id="7045595904618419789">Bắt đầu tính năng phóng to</translation>
+<translation id="7051244143160304048">Đã ngắt kết nối <ph name="DEVICE_NAME" /></translation>
 <translation id="7055381872777910864">T4</translation>
 <translation id="7055910611768509537">Bút cảm ứng chưa được sử dụng hơn một tuần nay</translation>
 <translation id="7066646422045619941">Mạng này bị quản trị viên của bạn tắt.</translation>
@@ -1079,6 +1079,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
 <translation id="8413272770729657668">Bắt đầu ghi sau 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Hộp đựng)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> không có trên thiết bị này.</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="8428213095426709021">Cài đặt</translation>

@@ -432,7 +432,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="383629559565718788">Afficher les paramètres du clavier</translation>
 <translation id="384082539148746321">Supprimer le modèle ?</translation>
 <translation id="3842239759367498783">Poursuivre la lecture de "<ph name="TITLE" />" depuis votre appareil mobile</translation>
-<translation id="3846214748874656680">Quitter le mode plein écran</translation>
 <translation id="3846575436967432996">Aucune information disponible concernant le réseau</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="385300504083504382">Début</translation>
@@ -857,7 +856,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6820676911989879663">Faites une pause !</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
 <translation id="6837064795450991317">Masquer la barre de bureau</translation>
-<translation id="6850010208275816200">Votre application actuelle est en plein écran. Si elle vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 chiffre manquant}one{# chiffre manquant}other{# chiffres manquants}}</translation>

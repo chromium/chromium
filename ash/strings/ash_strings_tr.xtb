@@ -432,7 +432,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="383629559565718788">Klavye ayarlarını göster</translation>
 <translation id="384082539148746321">Şablon silinsin mi?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> adlı mobil cihazınızdan okumaya devam edin</translation>
-<translation id="3846214748874656680">Tam ekran modundan çık</translation>
 <translation id="3846575436967432996">Hiçbir ağ bilgisi yok</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlangıç</translation>
@@ -858,7 +857,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
 <translation id="6836499262298959512">Tehlikeli dosya</translation>
 <translation id="6837064795450991317">Masa çubuğunu gizle</translation>
-<translation id="6850010208275816200">Geçerli uygulamanız tam ekran modunda. Uygulama, şifrenizi isterse önce tam ekrandan çıkın.</translation>
 <translation id="6852052252232534364">Etkinleştirmek için tıklayın</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sn.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>

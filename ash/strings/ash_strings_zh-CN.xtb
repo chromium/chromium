@@ -432,7 +432,6 @@
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="384082539148746321">删除此模板？</translation>
 <translation id="3842239759367498783">继续在移动设备“<ph name="TITLE" />”上阅读</translation>
-<translation id="3846214748874656680">退出全屏模式</translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="385300504083504382">开头</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">休息一下！</translation>
 <translation id="6836499262298959512">危险文件</translation>
 <translation id="6837064795450991317">隐藏桌面栏</translation>
-<translation id="6850010208275816200">您当前所用的应用处于全屏模式。如果该应用要求您提供密码，请先退出全屏模式。</translation>
 <translation id="6852052252232534364">点击即可启用</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{还差 1 位数字}other{还差 # 位数字}}</translation>

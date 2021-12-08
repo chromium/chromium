@@ -433,7 +433,6 @@
 <translation id="383629559565718788">कीबोर्ड सेटिंग दिखाएं</translation>
 <translation id="384082539148746321">क्या आपको टेंप्लेट मिटाना है?</translation>
 <translation id="3842239759367498783">अपने मोबाइल डिवाइस से <ph name="TITLE" /> पढ़ना जारी रखें</translation>
-<translation id="3846214748874656680">पूर्णस्क्रीन से बाहर निकलें</translation>
 <translation id="3846575436967432996">कोई नेटवर्क जानकारी उपलब्ध नहीं</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="385300504083504382">टेक्स्ट की शुरुआत में जाएं</translation>
@@ -858,7 +857,6 @@
 <translation id="6820676911989879663">आज के लिए इतना ही!</translation>
 <translation id="6836499262298959512">यह फ़ाइल सुरक्षित नहीं है</translation>
 <translation id="6837064795450991317">डेस्कबार छिपाएं</translation>
-<translation id="6850010208275816200">आपका मौजूदा ऐप्लिकेशन, फ़ुल स्क्रीन मोड में है. अगर ऐप्लिकेशन आपका पासवर्ड मांगे, तो पहले फ़ुल स्क्रीन मोड से बाहर निकलें.</translation>
 <translation id="6852052252232534364">चालू करने के लिए क्लिक करें</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंड</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 अंक डालना बाकी है}one{# अंक डालना बाकी है}other{# अंक डालने बाकी हैं}}</translation>

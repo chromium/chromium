@@ -432,7 +432,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="383629559565718788">Vis tastaturinnstillinger</translation>
 <translation id="384082539148746321">Vil du slette malen?</translation>
 <translation id="3842239759367498783">Fortsett lesingen på mobilenheten <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
 <translation id="3846575436967432996">Ingen nettverksinformasjon tilgjengelig</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="385300504083504382">Begynnelsen</translation>
@@ -857,7 +856,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837064795450991317">Skjul skrivebordslinje</translation>
-<translation id="6850010208275816200">Den nåværende appen er i fullskjerm. Hvis appen spør om passordet ditt, bør du gå ut av fullskjerm først.</translation>
 <translation id="6852052252232534364">Klikk for å aktivere</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ett siffer gjenstår}other{# sifre gjenstår}}</translation>

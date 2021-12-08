@@ -432,7 +432,6 @@
 <translation id="383629559565718788">কীব’ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="384082539148746321">টেমপ্লে’ট মচিবনে?</translation>
 <translation id="3842239759367498783">আপোনাৰ ম’বাইল ডিভাইচ <ph name="TITLE" />ৰ পৰা পঢ়ি থাকক</translation>
-<translation id="3846214748874656680">পূৰ্ণষ্ক্রীণৰ পৰা বাহিৰ হওক</translation>
 <translation id="3846575436967432996">নেটৱৰ্কৰ বিষয়ে কোনো তথ্য নাই</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="385300504083504382">আৰম্ভণি</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">বিৰতি লওক!</translation>
 <translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
 <translation id="6837064795450991317">ডেস্কবাৰ লুকুৱাওক</translation>
-<translation id="6850010208275816200">আপোনাৰ বৰ্তমান এপ্‌টো পূৰ্ণ স্ক্ৰীনৰ ম’ডত আছে। যদি এপ্‌টোৱে আপোনাৰ পাছৱৰ্ড বিচাৰে তেন্তে প্ৰথমে পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ হওক।</translation>
 <translation id="6852052252232534364">সক্ৰিয় কৰিব টিপক</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />ছেকেণ্ড</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{এটা অংক বাকী আছে}one{# টা অংক বাকী আছে}other{# টা অংক বাকী আছে}}</translation>

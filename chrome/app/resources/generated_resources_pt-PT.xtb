@@ -162,6 +162,7 @@
 <translation id="1153636665119721804">Programa de Proteção avançada da Google</translation>
 <translation id="1155545602507378023">Não, apenas neste dispositivo</translation>
 <translation id="1155816283571436363">A ligar ao seu telemóvel…</translation>
+<translation id="1158080958325422608">Colocar em maiúsculas</translation>
 <translation id="1158238185437008462">Ver memórias</translation>
 <translation id="1161575384898972166">Inicie sessão no <ph name="TOKEN_NAME" /> para exportar o certificado de cliente.</translation>
 <translation id="116173250649946226">O seu administrador predefiniu um tema, o qual não pode alterar.</translation>
@@ -695,6 +696,7 @@
 <translation id="1700079447639026019">Sites que nunca podem utilizar cookies</translation>
 <translation id="1703331064825191675">Nunca mais se preocupe com as suas palavras-passe</translation>
 <translation id="1703666494654169921">Não permitir que os sites utilizem dados ou dispositivos de realidade virtual</translation>
+<translation id="1704097193565924901">Letra maiúscula</translation>
 <translation id="1704230497453185209">Não permitir que os sites reproduzam som</translation>
 <translation id="1704970325597567340">A verificação de segurança foi efetuada a <ph name="DATE" />.</translation>
 <translation id="1706586824377653884">Adicionado pelo gestor</translation>
@@ -3575,6 +3577,7 @@ Pretende pará-lo?</translation>
 <translation id="4681453295291708042">Desativar a funcionalidade Partilhar na proximidade</translation>
 <translation id="4681930562518940301">Abrir &amp;imagem original num novo separador</translation>
 <translation id="4682551433947286597">As imagens de fundo aparecem no Ecrã de início de sessão.</translation>
+<translation id="4683629100208651599">Colocar em minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predefinição)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
 <translation id="4684471265911890182">A app <ph name="APP_NAME" /> está a tentar aceder à câmara. Desligue o interruptor de privacidade da câmara para permitir o acesso.</translation>
@@ -5973,6 +5976,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7257173066616499747">Redes Wi-Fi</translation>
 <translation id="725758059478686223">Serviço de impressão</translation>
 <translation id="7257666756905341374">Ler dados que copia e cola</translation>
+<translation id="7258192266780953209">Transformações</translation>
 <translation id="7258225044283673131">A aplicação não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
 <translation id="7262004276116528033">Este serviço de início de sessão é alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Experimente estes passos de resolução de problemas:

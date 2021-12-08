@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
 <translation id="3842239759367498783">Працягвайце чытаць на мабільнай прыладзе <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Выключыць поўнаэкранны рэжым</translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Зрабіце перапынак!</translation>
 <translation id="6836499262298959512">Небяспечны файл</translation>
 <translation id="6837064795450991317">Схаваць панэль</translation>
-<translation id="6850010208275816200">Ваша бягучая праграма знаходзіцца ў поўнаэкранным рэжыме. Выйдзіце з яго, калі праграма патрабуе ад вас увесці пароль.</translation>
 <translation id="6852052252232534364">Націсніце, каб актываваць</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Засталася адна лічба}one{Засталася # лічба}few{Засталося # лічбы}many{Засталося # лічбаў}other{Засталося # лічбы}}</translation>

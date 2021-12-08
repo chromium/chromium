@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Εμφάνιση ρυθμίσεων πληκτρολογίου</translation>
 <translation id="384082539148746321">Διαγραφή προτύπου;</translation>
 <translation id="3842239759367498783">Συνέχεια ανάγνωσης από την κινητή συσκευή σας <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Έξοδος από πλήρη οθόνη</translation>
 <translation id="3846575436967432996">Δεν υπάρχουν διαθέσιμες πληροφορίες δικτύου</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="385300504083504382">Αρχή</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Κάντε ένα διάλειμμα!</translation>
 <translation id="6836499262298959512">Επικίνδυνο αρχείο</translation>
 <translation id="6837064795450991317">Απόκρυψη της γραμμής γραφείων</translation>
-<translation id="6850010208275816200">Η τρέχουσα εφαρμογή σας βρίσκεται σε πλήρη οθόνη. Εάν η εφαρμογή ζητήσει τον κωδικό πρόσβασής σας, εξέλθετε πρώτα από την πλήρη οθόνη.</translation>
 <translation id="6852052252232534364">Κλικ για ενεργ.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> δ.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Απομένει ένα ψηφίο}other{Απομένουν # ψηφία}}</translation>

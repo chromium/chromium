@@ -432,7 +432,6 @@
 <translation id="383629559565718788">किबोर्डका सेटिङहरू देखाउनुहोस्</translation>
 <translation id="384082539148746321">टेम्प्लेट मेटाउने हो?</translation>
 <translation id="3842239759367498783">आफ्नो मोबाइल यन्त्रमार्फत पढ्ने कार्य जारी राख्नुहोस् <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
 <translation id="3846575436967432996">सञ्जाल जानकारी उपलब्ध छैन</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
 <translation id="6836499262298959512">खतरनाक फाइल</translation>
 <translation id="6837064795450991317">डेस्कबार लुकाइयोस्</translation>
-<translation id="6850010208275816200">तपाईंले अहिले प्रयोग गरिरहनुभएको एप फुल स्क्रिन मोडमा चलिरहेको छ। तपाईंले यो एपमा पासवर्ड हाल्नु पर्ने भएमा फुल स्क्रिन मोडबाट बाहिरिएपछि मात्र पासवर्ड हाल्नुहोला।</translation>
 <translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>

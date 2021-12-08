@@ -432,7 +432,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
 <translation id="384082539148746321">Të fshihet shablloni?</translation>
 <translation id="3842239759367498783">Vazhdo të lexosh nga pajisja jote celulare <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Dil nga ekrani i plotë</translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="385300504083504382">Fillimi</translation>
@@ -857,7 +856,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
 <translation id="6836499262298959512">Skedar i rrezikshëm</translation>
 <translation id="6837064795450991317">Fshihe panelin e fushës</translation>
-<translation id="6850010208275816200">Aplikacioni yt aktual është në ekranin e plotë. Nëse aplikacioni kërkon fjalëkalimin, në fillim dil nga ekrani i plotë.</translation>
 <translation id="6852052252232534364">Kliko për ta aktivizuar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Një shifër e mbetur}other{# shifra të mbetura}}</translation>

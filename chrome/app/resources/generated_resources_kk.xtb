@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1153636665119721804">Google Күшейтілген қорғаныс бағдарламасы</translation>
 <translation id="1155816283571436363">Телефоныңызбен байланыс орнатылып жатыр</translation>
+<translation id="1158080958325422608">Бас әріппен жазу</translation>
 <translation id="1158238185437008462">Естеліктерді қарау</translation>
 <translation id="1161575384898972166">Клиент сертификатын экспорттау үшін <ph name="TOKEN_NAME" /> таңбалауышына кіріңіз.</translation>
 <translation id="116173250649946226">Әкімші әдепкі тақырыпты орнатты, оны өзгертуге болмайды.</translation>
@@ -681,12 +682,14 @@
 <translation id="1692115862433274081">Басқа аккаунтты пайдалану</translation>
 <translation id="1692118695553449118">Синхрондау қосылған</translation>
 <translation id="1692210323591458290">Қою күлгін</translation>
+<translation id="1695487653372841667">Google-мен бөлісілетін деректерді қадағалай аласыз. Мұны кез келген уақытта "Параметрлер" бөлімінен өзгертуге болады.</translation>
 <translation id="169675691788639886">Құрылғыда SSH сервері конфигурацияланған. Құпия аккаунттармен кірмеңіз.</translation>
 <translation id="1697150536837697295">Өнер</translation>
 <translation id="1697686431566694143">Файлды өңдеу</translation>
 <translation id="1700079447639026019">Cookie файлдарын пайдалана алмайтын сайттар</translation>
 <translation id="1703331064825191675">Құпия сөздеріңіз жайлы уайымдамаңыз</translation>
 <translation id="1703666494654169921">Сайттардың виртуалды шындық құрылғыларын немесе деректерді пайдалануына рұқсат бермеу</translation>
+<translation id="1704097193565924901">Бас әріпке өзгерту</translation>
 <translation id="1704230497453185209">Сайттардың дыбысты шығаруына рұқсат бермеу</translation>
 <translation id="1704970325597567340">Қауіпсіздік шарасы <ph name="DATE" /> күні қолданылды.</translation>
 <translation id="1706586824377653884">Әкімші енгізген</translation>
@@ -3554,6 +3557,7 @@
 <translation id="4681453295291708042">Nearby Share функциясын өшіру</translation>
 <translation id="4681930562518940301">Түпнұсқа &amp;кескінді жаңа қойындыда ашу</translation>
 <translation id="4682551433947286597">Тұсқағаздар кіру экранында пайда болады.</translation>
+<translation id="4683629100208651599">Кіші әріппен жазу</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (әдепкі)</translation>
 <translation id="4684427112815847243">Барлығын синхрондау</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> камераны пайдаланғалы жатыр. Пайдалануға рұқсат беру үшін камераның құпиялылық функциясын өшіріңіз.</translation>
@@ -5944,6 +5948,7 @@
 <translation id="7257173066616499747">Wi-Fi желілері</translation>
 <translation id="725758059478686223">Басып шығару қызметі</translation>
 <translation id="7257666756905341374">Көшіріп, қойған деректерді оқу</translation>
+<translation id="7258192266780953209">Түрлендіру</translation>
 <translation id="7258225044283673131">Қолданба жауап бермейді. Оны жабу үшін "Қолмен жабу" опциясын таңдаңыз.</translation>
 <translation id="7262004276116528033">Бұл кіру қызметі <ph name="SAML_DOMAIN" /> доменінде орналасқан</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Ақауларды жою үшін осы қадамдарды орындап көріңіз:

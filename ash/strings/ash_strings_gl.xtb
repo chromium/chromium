@@ -433,7 +433,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="383629559565718788">Mostrar a configuración do teclado</translation>
 <translation id="384082539148746321">Queres eliminar o modelo?</translation>
 <translation id="3842239759367498783">Continúa coa lectura desde o dispositivo móbil <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Saír da pantalla completa</translation>
 <translation id="3846575436967432996">Non hai información de rede dispoñible</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Comezo</translation>
@@ -858,7 +857,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
 <translation id="6836499262298959512">Ficheiro perigoso</translation>
 <translation id="6837064795450991317">Ocultar barra de escritorio</translation>
-<translation id="6850010208275816200">A aplicación actual está aberta a pantalla completa. Se che pide o contrasinal, primeiro tes que saír do modo de pantalla completa.</translation>
 <translation id="6852052252232534364">Facer clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>

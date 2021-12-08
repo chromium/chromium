@@ -432,7 +432,6 @@
 <translation id="383629559565718788">کی بورڈ کی ترتیبات دکھائیں</translation>
 <translation id="384082539148746321">تمثیل حذف کریں؟</translation>
 <translation id="3842239759367498783">اپنے موبائل آلہ سے پڑھنا جاری رکھیں <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
 <translation id="3846575436967432996">نیٹ ورک کی کوئی معلومات دستیاب نہیں ہے</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="385300504083504382">شروعات</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">تھوڑا وقفہ لیں!</translation>
 <translation id="6836499262298959512">خطرناک فائل</translation>
 <translation id="6837064795450991317">ڈیسک بار چھپائیں</translation>
-<translation id="6850010208275816200">آپ کی موجودہ ایپ فُل اسکرین وضع میں ہے۔ اگر ایپ آپ کے پاس ورڈ کا مطالبہ کرتی ہے تو پہلے فُل اسکرین وضع سے باہر نکلیں۔</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ایک ہندسہ باقی ہے}other{# ہندسے باقی ہیں}}</translation>

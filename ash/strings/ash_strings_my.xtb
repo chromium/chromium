@@ -432,7 +432,6 @@
 <translation id="383629559565718788">ကီးဘုတ်ဆက်တင်များကို ပြရန်</translation>
 <translation id="384082539148746321">နမူနာ ပုံစံကို ဖျက်မလား။</translation>
 <translation id="3842239759367498783">သင့်မိုဘိုင်းစက်ကိရိယာ <ph name="TITLE" /> မှ ဆက်ဖတ်ပါ</translation>
-<translation id="3846214748874656680">မျက်နှာပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="3846575436967432996">မည်သည့် ကွန်ရက် အချက်လက်မျှ မရနိုင်</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="385300504083504382">အစ</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">ခဏနားပါ။</translation>
 <translation id="6836499262298959512">အန္တရာယ်ဖိုင်</translation>
 <translation id="6837064795450991317">မျက်နှာပြင်ဘား ဝှက်ရန်</translation>
-<translation id="6850010208275816200">လက်ရှိအက်ပ်ကို ဖန်သားပြင်အပြည့် ပြထားသည်။ အက်ပ်က သင်၏စကားဝှက်ကိုတောင်းလျှင် ဖန်သားပြင်အပြည့်မှ ဦးစွာထွက်ပါ။</translation>
 <translation id="6852052252232534364">စတင်ရန်နှိပ်ပါ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ဂဏန်းတစ်လုံး ကျန်သည်}other{ဂဏန်း # လုံး ကျန်သည်}}</translation>

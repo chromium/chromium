@@ -168,6 +168,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2584132361465095047">Add Account…</translation>
 <translation id="2600682495497606169">Clear site cookies</translation>
 <translation id="2625189173221582860">Password copied</translation>
+<translation id="2626236249646841566">Check your connection and try signing in again.</translation>
 <translation id="2647269890314209800">Cookies in Use</translation>
 <translation id="2648803196158606475">Delete Read</translation>
 <translation id="2653659639078652383">Submit</translation>
@@ -363,6 +364,7 @@ Follow the steps below:</translation>
 <translation id="4508750114462689118">Close sign-in promo</translation>
 <translation id="4526249700380860531">View and manage saved passwords at <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Try signing in again.</translation>
+<translation id="4540780316273593836">Something went wrong</translation>
 <translation id="457386861538956877">More...</translation>
 <translation id="4592368184551360546">Keyboard</translation>
 <translation id="461440297010471931">Searching with Google</translation>
@@ -478,6 +480,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Now showing 1 Chrome window}other{Now showing {count} Chrome windows}}</translation>
+<translation id="5704908597376970822">Can't sign in.</translation>
 <translation id="5706552126692816153">Active 1 day ago</translation>
 <translation id="5711039611392265845">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google Services<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">To browse the web privately, add a new tab</translation>

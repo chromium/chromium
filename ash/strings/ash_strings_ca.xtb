@@ -280,6 +280,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2942350706960889382">Lupa acoblada</translation>
 <translation id="2942516765047364088">Posició del prestatge</translation>
 <translation id="2946119680249604491">Afegeix una connexió</translation>
+<translation id="2960314608273155470">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />. Prem la tecla de tabulació per navegar amb el teclat.</translation>
 <translation id="2961963223658824723">S'ha produït un error. Torna-ho a provar d'aquí a uns quants segons.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">No s'han pogut baixar els fitxers de veu en <ph name="LANGUAGE" /></translation>
@@ -431,7 +432,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
 <translation id="384082539148746321">Vols suprimir la plantilla?</translation>
 <translation id="3842239759367498783">Continua la lectura des del dispositiu mòbil <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Surt de la pantalla completa</translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
@@ -856,7 +856,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6836499262298959512">Fitxer perillós</translation>
 <translation id="6837064795450991317">Amaga la barra d'escriptori</translation>
-<translation id="6850010208275816200">L'aplicació actual està oberta en pantalla completa. Si et demana la contrasenya, primer has de sortir de la pantalla completa.</translation>
 <translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
@@ -886,6 +885,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7042322267639375032">Replega l'àrea d'estat</translation>
 <translation id="7045033600005038336">Vols substituir la plantilla?</translation>
 <translation id="7045595904618419789">Inicia la lupa</translation>
+<translation id="7051244143160304048"><ph name="DEVICE_NAME" /> s'ha desconnectat</translation>
 <translation id="7055381872777910864">Dc.</translation>
 <translation id="7055910611768509537">El llapis òptic no s'utilitza des de fa més d'una setmana</translation>
 <translation id="7066646422045619941">L'administrador ha desactivat aquesta xarxa.</translation>
@@ -1079,6 +1079,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
 <translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estoig)</translation>
+<translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> no està disponible en aquest dispositiu.</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8426708595819210923">Bon vespre, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">Configuració</translation>

@@ -432,7 +432,6 @@
 <translation id="383629559565718788">கீபோர்டு அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="384082539148746321">டெம்ப்ளேட்டை நீக்கவா?</translation>
 <translation id="3842239759367498783">உங்கள் மொபைல் ஃபோனில் தொடர்ந்து <ph name="TITLE" />ஐப் படிக்கவும்</translation>
-<translation id="3846214748874656680">முழுத்திரை வேண்டாம்</translation>
 <translation id="3846575436967432996">நெட்வொர்க் தகவல் எதுவும் இல்லை</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="385300504083504382">தொடக்கம்</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">சிறிது நேரம் இடைவேளை எடுத்துக்கொள்ளவும்!</translation>
 <translation id="6836499262298959512">ஆபத்தான ஃபைல்</translation>
 <translation id="6837064795450991317">டெஸ்க்பாரை மறை</translation>
-<translation id="6850010208275816200">தற்போதைய ஆப்ஸ் முழுத்திரையில் உள்ளது. கடவுச்சொல்லை உள்ளிடுமாறு ஆப்ஸில் கேட்கப்பட்டால் முதலில் முழுத்திரையிலிருந்து வெளியேறவும்.</translation>
 <translation id="6852052252232534364">இயக்க கிளிக் செய்யவும்</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> வி</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{இன்னும் ஓர் இலக்கத்தை உள்ளிட வேண்டும்}other{இன்னும் # இலக்கங்களை உள்ளிட வேண்டும்}}</translation>

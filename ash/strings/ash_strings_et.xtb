@@ -433,7 +433,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="383629559565718788">Kuvab klaviatuuriseaded</translation>
 <translation id="384082539148746321">Kas kustutada mall?</translation>
 <translation id="3842239759367498783">Jätkake lugemist mobiilseadmes <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Täisekraanilt väljumine</translation>
 <translation id="3846575436967432996">Võrguteave ei ole saadaval</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="385300504083504382">Algus</translation>
@@ -858,7 +857,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6820676911989879663">Tehke paus!</translation>
 <translation id="6836499262298959512">Ohtlik fail</translation>
 <translation id="6837064795450991317">Peida töölauariba</translation>
-<translation id="6850010208275816200">Praegune rakendus on kuvatud täisekraanil. Kui rakendus küsib teie parooli, väljuge esmalt täisekraanilt.</translation>
 <translation id="6852052252232534364">Klõpsake aktiveerimiseks</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Üks number on jäänud}other{# numbrit on jäänud}}</translation>

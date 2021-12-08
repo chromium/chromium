@@ -432,7 +432,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
 <translation id="384082539148746321">I-delete ang template?</translation>
 <translation id="3842239759367498783">Magpatuloy sa pagbabasa mula sa iyong mobile device na <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Lumabas sa fullscreen</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="385300504083504382">Simula</translation>
@@ -857,7 +856,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6820676911989879663">Magpahinga!</translation>
 <translation id="6836499262298959512">Mapanganib na file</translation>
 <translation id="6837064795450991317">Itago ang deskbar</translation>
-<translation id="6850010208275816200">Naka-full screen ang iyong kasalukuyang app. Kung hihingin ng app ang iyong password, umalis muna sa full screen.</translation>
 <translation id="6852052252232534364">I-activate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Isang digit na lang ang natitira}one{# digit na lang ang natitira}other{# na digit na lang ang natitira}}</translation>

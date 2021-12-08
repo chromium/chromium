@@ -432,7 +432,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
 <translation id="384082539148746321">Vill du radera mallen?</translation>
 <translation id="3842239759367498783">Fortsätt att läsa på din mobila enhet <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Avsluta helskärmsläge</translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
@@ -857,7 +856,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
 <translation id="6836499262298959512">Skadlig fil</translation>
 <translation id="6837064795450991317">Dölj skrivbordsfält</translation>
-<translation id="6850010208275816200">Den aktuella appen visas i helskärmsläge. Om du blir ombedd att ange ditt lösenord måste du först stänga helskärmsläget.</translation>
 <translation id="6852052252232534364">Aktivera</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>

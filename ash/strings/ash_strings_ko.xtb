@@ -432,7 +432,6 @@
 <translation id="383629559565718788">키보드 설정 표시</translation>
 <translation id="384082539148746321">템플릿을 삭제할까요?</translation>
 <translation id="3842239759367498783">휴대기기에서 <ph name="TITLE" /> 계속 읽기</translation>
-<translation id="3846214748874656680">전체화면 종료</translation>
 <translation id="3846575436967432996">네트워크 정보 없음</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="385300504083504382">시작</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
 <translation id="6836499262298959512">위험한 파일</translation>
 <translation id="6837064795450991317">데스크바 숨기기</translation>
-<translation id="6850010208275816200">현재 앱이 전체 화면 모드로 실행 중입니다. 앱에서 비밀번호를 요구하면 먼저 전체 화면을 종료하세요.</translation>
 <translation id="6852052252232534364">클릭하여 활성화</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" />초</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>

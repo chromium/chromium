@@ -432,7 +432,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="383629559565718788">Prikaz nastavitev tipkovnice</translation>
 <translation id="384082539148746321">Želite izbrisati predlogo?</translation>
 <translation id="3842239759367498783">Nadaljevanje branja v mobilni napravi <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Zapri celozaslonski način</translation>
 <translation id="3846575436967432996">Ni podatkov o omrežju</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="385300504083504382">Začetek</translation>
@@ -857,7 +856,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6820676911989879663">Čas za odmor!</translation>
 <translation id="6836499262298959512">Nevarna datoteka</translation>
 <translation id="6837064795450991317">Skrij namizno vrstico</translation>
-<translation id="6850010208275816200">Trenutna aplikacija je v celozaslonskem načinu. Če aplikacija zahteva geslo, najprej zaprite celozaslonski način.</translation>
 <translation id="6852052252232534364">Klik. za akt.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Še ena števka}one{Še # števka}two{Še # števki}few{Še # števke}other{Še # števk}}</translation>

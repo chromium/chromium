@@ -433,7 +433,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="383629559565718788">Billentyűzetbeállítások megjelenítése</translation>
 <translation id="384082539148746321">Törli a sablont?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> olvasásának folytatása a mobileszközön</translation>
-<translation id="3846214748874656680">Teljes képernyő – ki</translation>
 <translation id="3846575436967432996">Nem áll rendelkezésre hálózati információ</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="385300504083504382">A legelejére</translation>
@@ -858,7 +857,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6820676911989879663">Tartson egy kis szünetet!</translation>
 <translation id="6836499262298959512">Veszélyes fájl</translation>
 <translation id="6837064795450991317">Deskbar elrejtése</translation>
-<translation id="6850010208275816200">Az aktuális alkalmazás teljes képernyős módban van. Ha az alkalmazás jelszót kér, először lépjen ki a teljes képernyős módból.</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> mp</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 számjegy maradt}other{# számjegy maradt}}</translation>

@@ -338,6 +338,7 @@
 <translation id="3307642347673023554">გადართულია ლეპტოპის რეჟიმზე</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> მაინც შეძლებს სისტემაში შესვლას მოგვიანებით.</translation>
 <translation id="3321628682574733415">მშობლის კოდი არასწორია</translation>
+<translation id="3340475855009870209">ჩამოტვირთული <ph name="FILENAME" /> სკანირდება</translation>
 <translation id="3341303451326249809">ეკრანის ანაბეჭდი გადაღებულია</translation>
 <translation id="334252345105450327">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3351879221545518001">ამჟამად მიმდინარეობს ეკრანის ტრანსლირება.</translation>
@@ -432,7 +433,6 @@
 <translation id="383629559565718788">კლავიატურის პარამეტრების ჩვენება</translation>
 <translation id="384082539148746321">გსურთ, წაშალოთ შაბლონი?</translation>
 <translation id="3842239759367498783">კითხვის გაგრძელება თქვენი მობილური მოწყობილობიდან <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="3846575436967432996">ქსელის შესახებ ინფორმაცია არ არის</translation>
 <translation id="385051799172605136">უკან</translation>
 <translation id="385300504083504382">დასაწყისი</translation>
@@ -857,7 +857,6 @@
 <translation id="6820676911989879663">შეისვენეთ!</translation>
 <translation id="6836499262298959512">სახიფათო ფაილი</translation>
 <translation id="6837064795450991317">სამუშაო მაგიდების ზოლის დამალვა</translation>
-<translation id="6850010208275816200">ამჟამინდელი აპი გაშვებულია სრულეკრანიან რეჟიმში. თუ აპი პაროლს მოითხოვს, გადით სრულეკრანიანი რეჟიმიდან.</translation>
 <translation id="6852052252232534364">დააწკაპუნეთ გასააქტიურებლად</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> წმ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{დარჩენილია 1 ციფრი}other{დარჩენილია # ციფრი}}</translation>

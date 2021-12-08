@@ -168,6 +168,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2584132361465095047">Account toevoegen…</translation>
 <translation id="2600682495497606169">Sitecookies wissen</translation>
 <translation id="2625189173221582860">Wachtwoord gekopieerd</translation>
+<translation id="2626236249646841566">Check je verbinding en probeer opnieuw in te loggen.</translation>
 <translation id="2647269890314209800">Gebruikte cookies</translation>
 <translation id="2648803196158606475">Gelezen items verwijderen</translation>
 <translation id="2653659639078652383">Verzenden</translation>
@@ -363,6 +364,7 @@ Volg de onderstaande stappen:</translation>
 <translation id="4508750114462689118">Inlogpromo sluiten</translation>
 <translation id="4526249700380860531">Opgeslagen wachtwoorden bekijken en beheren via <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Probeer opnieuw in te loggen.</translation>
+<translation id="4540780316273593836">Er is iets misgegaan</translation>
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4592368184551360546">Toetsenbord</translation>
 <translation id="461440297010471931">Zoeken met Google</translation>
@@ -478,6 +480,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">Versie <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{Er wordt nu 1 Chrome-venster getoond}other{Er worden nu {count} Chrome-vensters getoond}}</translation>
+<translation id="5704908597376970822">Kan niet inloggen.</translation>
 <translation id="5706552126692816153">1 dag geleden actief</translation>
 <translation id="5711039611392265845">Bekijk <ph name="BEGIN_LINK" />Synchronisatie en Google-services<ph name="END_LINK" /> voor meer instellingen die verband houden met privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="5724941645893276623">Voeg een nieuw tabblad toe als je privé wilt browsen</translation>

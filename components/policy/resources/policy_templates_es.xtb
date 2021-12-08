@@ -211,6 +211,7 @@
       Si no se asigna ningún valor a esta política, o si el valor que se obtiene de la sustitución no es un nombre de host válido, no se establece ningún nombre de host en la solicitud DHCP.</translation>
 <translation id="1257550411839719984">Establecer directorio de descargas predeterminado</translation>
 <translation id="1265053460044691532">Limitar el tiempo durante el que un usuario autenticado a través de SAML puede iniciar sesión sin conexión</translation>
+<translation id="1268548671627260798">Lista de URLs exentas de la notificación de pantalla completa</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Habilitar la migración de dispositivos Chromad a la gestión en la nube</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
@@ -382,6 +383,18 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Nota: Esta política también se aplica a las extensiones de componentes, como la extensión Hangout Services.</translation>
 <translation id="148194404518916594">Permitir que los usuarios utilicen la función Tocar para buscar</translation>
+<translation id="1485570394283692769">Controla si se permite que los sitios web envíen solicitudes a puntos finales de red más privados de una manera no segura.
+
+          Esta política está relacionada con la especificación Private Network Access. Consulta https://wicg.github.io/private-network-access/ para obtener más información.
+
+          Un punto final de red es más privado que otro si:
+          1) Su dirección IP es localhost y la del otro no lo es.
+          2) Su dirección IP es privada y la del otro es pública.
+          En el futuro, en función de la evolución de las especificaciones, esta política podría aplicarse a todas las solicitudes de orígenes cruzados dirigidas a IPs privadas o localhost.
+
+          Si esta política no se establece o se le asigna el valor false, el comportamiento predeterminado de las solicitudes enviadas a puntos finales de red más privados dependerá de la configuración personal que el usuario aplique a las marcas de funciones <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> y <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, que pueden definirse mediante pruebas o en la línea de comandos.
+
+          Si se le asigna el valor true, los sitios web podrán enviar solicitudes a cualquier punto final de red, sujetas a otras comprobaciones de orígenes cruzados.</translation>
 <translation id="1486021504508098388">Enviar información sobre la retroiluminación</translation>
 <translation id="1487916040416013623">Si se define esta política, especificará qué servidores deberían tener permiso para la autenticación integrada. La autenticación integrada solo se activará cuando <ph name="PRODUCT_NAME" /> reciba una solicitud de autenticación de un proxy o un servidor que esté incluido en la lista de permitidos.
 
@@ -2746,6 +2759,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se le asigna el valor "Inhabilitada" o no se le asigna ningún valor, los usuarios podrán transferir archivos a Drive con conexiones de datos móviles.</translation>
 <translation id="4248277954659222481">Permitir la reproducción automática de contenido multimedia en una lista de patrones de URL permitidos</translation>
 <translation id="4250680216510889253">No</translation>
+<translation id="4257545866869267519">Configura una lista de URLs exentas de la notificación de pantalla completa. La notificación se muestra cuando el dispositivo sale del modo de suspensión, el modo de brillo bajo o la pantalla de bloqueo, y aparece en una ventana en el modo de pantalla completa. Así, se avisa a los usuarios de que están en modo de pantalla completa, lo que reduce el riesgo de sufrir un ataque de suplantación de identidad (phishing).
+
+          Esta política permite inhabilitar la notificación en URLs específicas que se considerarán fuentes de confianza. Se establece definiendo una lista de patrones de URL con este formato: https://www.chromium.org/administrators/url-blocklist-filter-format. Por ejemplo, las notificaciones se pueden inhabilitar por completo especificando el carácter comodín <ph name="WILDCARD_VALUE" /> para todas las URL.
+
+          Si se configura esta política con una lista vacía o no se le asigna ningún valor, ninguna URL estará exenta de la notificación de pantalla completa.</translation>
 <translation id="4260027436474745627">Si se define esta política, cada uno de los orígenes especificados en una lista separada por comas se ejecutará en un proceso dedicado. El proceso de cada origen especificado solo podrá contener documentos de ese origen y de sus subdominios. Por ejemplo, si se especifica https://a1.example.com/, se permite https://a2.a1.example.com/ en el mismo proceso, pero no https://example.com o https://b.example.com.
 
       Desde <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislar usando un comodín. Por ejemplo, al especificar https://[*.]corp.example.com, se otorgará a cada origen inferior a https://corp.example.com su propio proceso dedicado, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.
@@ -4269,6 +4287,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       De lo contrario, las direcciones IP locales se ocultarán con nombres de host mDNS.
       Ten en cuenta que esta política debilita la protección de las IP locales si así lo necesitan los administradores.</translation>
 <translation id="614662973812186053">Esta política también controla la recopilación de los datos de uso y diagnóstico de Android.</translation>
+<translation id="614665605501218241">Permite que los sitios de la lista envíen solicitudes a puntos finales de red más privados de una manera no segura.</translation>
 <translation id="6154509171634387825">Advertencia: 3DES se eliminará totalmente en la versión 95 de <ph name="PRODUCT_NAME" /> (en torno a octubre del 2021) y esta política dejará de funcionar en ese momento.
 
       Si se asigna el valor true a esta política, se habilitarán los paquetes de cifrado 3DES en TLS. Si se le asigna el valor false, se inhabilitarán estos paquetes. Si no se le asigna ningún valor, los paquetes de cifrado 3DES estarán inhabilitados de forma predeterminada. Esta política se puede usar para mantener temporalmente la compatibilidad con un servidor obsoleto. Se trata de una solución provisional y se debería volver a configurar el servidor.
@@ -4283,6 +4302,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna ningún valor, los usuarios podrán decidir si quieren activar esta función o no.</translation>
 <translation id="6174065452773547810">Si se habilita esta política o no se establece, el dispositivo podrá recibir controles de informes granulares.
       Si se inhabilita esta política, los dispositivos registrados no recibirán controles de informes granulares.</translation>
+<translation id="6174187836314350835">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no están sujetas a comprobaciones de Private Network Access.
+
+          Si no se establece, esta política se comporta como si su valor fuera una lista vacía.
+
+          En el caso de los orígenes no incluidos en los patrones indicados, se usará el valor predeterminado global de la política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> si esta se ha establecido. Si no, se empleará la configuración personal del usuario.
+
+          Para consultar información detallada sobre los patrones de URL válidos, visita https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6178075938488052838">Esta política permite controlar quién puede iniciar una sesión de <ph name="PRODUCT_OS_NAME" />. No impide que los usuarios inicien sesión en cuentas de Google adicionales en Android. Si quieres impedir que esto ocurra, configura la política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica de Android como parte de <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">El hash SHA-256 de la plantilla de escritorio.</translation>
 <translation id="6181618732396778048">No permitir que ningún sitio web solicite acceso de escritura a archivos y directorios</translation>
@@ -4744,6 +4770,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Nota: Aunque la política pueda aceptar varios elementos en <ph name="ENTRIES_FIELD_NAME" />, se ignorarán todos menos el primero.
       Advertencia: Si se establece esta política, es posible que se retrase la aplicación de actualizaciones de software.</translation>
 <translation id="6698632841807204978">Habilitar la impresión en monocromo</translation>
+<translation id="6699740789657890714">Especifica si se permite que los sitios web envíen solicitudes a puntos finales de red más privados de una manera no segura</translation>
 <translation id="6699880231565102694">Habilitar la autenticación de dos factores para hosts de acceso remoto</translation>
 <translation id="6703251016607733593">Si se establece la política, se desactivará la implementación obligatoria de los requisitos de comunicación de la transparencia en los certificados para una lista de hashes <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Los hosts empresariales podrán seguir usando certificados que, de lo contrario, no serían de confianza (por no haberse comunicado públicamente de forma correcta). Para desactivar la implementación obligatoria, el hash debe cumplir una de estas condiciones:
 

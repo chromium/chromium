@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Показване на настройките на клавиатурата</translation>
 <translation id="384082539148746321">Да се изтрие ли шаблонът?</translation>
 <translation id="3842239759367498783">Продължете четенето от мобилното си устройство <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Изход от цял екран</translation>
 <translation id="3846575436967432996">Не е налице информация за мрежата</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">Началото</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Време е за почивка!</translation>
 <translation id="6836499262298959512">Опасен файл</translation>
 <translation id="6837064795450991317">Скриване на лентата с работни кътове</translation>
-<translation id="6850010208275816200">Текущото приложение е в режим на цял екран. Ако то поиска да въведете паролата си, първо излезте от този режим.</translation>
 <translation id="6852052252232534364">Кликнете за активиране</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>

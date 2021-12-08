@@ -400,6 +400,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2184405333245229118">{COUNT,plural, =1{1 helbide}other{# helbide}}</translation>
 <translation id="2187317261103489799">Hauteman (lehenetsia)</translation>
 <translation id="2188375229972301266">Hainbat zulo behean</translation>
+<translation id="2188852899391513400">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea eginbideak pasahitza orain aldatzea gomendatzen du, eta gero gordeta dauzkazun pasahitzak seguruak direla egiaztatzea.</translation>
 <translation id="2202020181578195191">Idatzi balio duen iraungitze-urte bat</translation>
 <translation id="22081806969704220">3. erretilua</translation>
 <translation id="2212735316055980242">Ez da gidalerroa aurkitu</translation>
@@ -890,6 +891,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3827112369919217609">Absolutua</translation>
 <translation id="3827475930221174051">"<ph name="SEARCH_TERM" />" bilaketarekin erlazionatutako jardueretan oinarrituta</translation>
 <translation id="3828924085048779000">Pasaesaldia ezin da hutsik utzi.</translation>
+<translation id="3831065134033923230">Egiaztatu gordeta dauzkazun pasahitzak seguruak direla</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> domeinuak luzapenak instalatu ditu funtzio gehigarriak izan ditzazun. Luzapenek zenbait datu atzi ditzakete.</translation>
 <translation id="3832522519263485449">Hainbat zulo ezkerrean</translation>
 <translation id="3835233591525155343">Gailuaren erabilera</translation>
@@ -1084,6 +1086,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="443673843213245140">Proxya erabiltzeko aukera desgaitu da, baina proxy-konfigurazio esplizitua zehaztu da.</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
 <translation id="4451135742916150903">HID gailuetara konektatzea eska dezake</translation>
+<translation id="4452328064229197696">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea eginbideak gordeta dauzkazun pasahitzak seguruak direla egiaztatzea gomendatzen du.</translation>
 <translation id="4455222631300069614">Aldatu pasahitza</translation>
 <translation id="4460315069258617173">Baimenduta webgune honetako fitxak ixten dituzun arte</translation>
 <translation id="4464826014807964867">Zure erakundeari buruzko informazioa duten webguneak</translation>
@@ -1573,6 +1576,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6051221802930200923">Une honetan ezin zara joan <ph name="SITE" /> webgunera, ziurtagiri-ainguratzea baitarabil. Sareko erroreak eta erasoak aldi baterakoak izan ohi dira; beraz, geroago funtzionatuko du orriak, segur aski.</translation>
 <translation id="6051898664905071243">Orri kopurua:</translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052319569711353666">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Google-ren Pasahitz-kudeatzailea eginbideak pasahitza orain aldatzea gomendatzen du.</translation>
 <translation id="6055888660316801977">Ordainketak egiteko kredentzial segurua bat ez datorrela dioen kredentzial-orria</translation>
 <translation id="6058977677006700226">Gailu guztietan erabili nahi dituzu txartelak?</translation>
 <translation id="6059925163896151826">USB bidezko ailuak</translation>

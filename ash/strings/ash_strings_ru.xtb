@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Показать настройки клавиатуры</translation>
 <translation id="384082539148746321">Удалить шаблон?</translation>
 <translation id="3842239759367498783">Продолжить чтение с мобильного устройства "<ph name="TITLE" />"</translation>
-<translation id="3846214748874656680">Обычный режим</translation>
 <translation id="3846575436967432996">Информация о сетях недоступна</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">В начало</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Пора отдохнуть!</translation>
 <translation id="6836499262298959512">Опасный файл</translation>
 <translation id="6837064795450991317">Скрыть панель</translation>
-<translation id="6850010208275816200">Текущее приложение используется в полноэкранном режиме. Если оно запрашивает пароль, сначала выйдите из этого режима.</translation>
 <translation id="6852052252232534364">Активировать</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}many{Осталось # цифр}other{Осталось # цифры}}</translation>

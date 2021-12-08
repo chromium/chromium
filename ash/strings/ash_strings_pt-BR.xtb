@@ -432,7 +432,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
 <translation id="384082539148746321">Excluir modelo?</translation>
 <translation id="3842239759367498783">Continuar lendo no dispositivo móvel <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Sair da tela cheia</translation>
 <translation id="3846575436967432996">Não há informações de rede disponíveis</translation>
 <translation id="385051799172605136">Voltar</translation>
 <translation id="385300504083504382">Começo</translation>
@@ -857,7 +856,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
 <translation id="6836499262298959512">Arquivo perigoso</translation>
 <translation id="6837064795450991317">Ocultar barra de espaços de trabalho</translation>
-<translation id="6850010208275816200">O app atual está no modo tela cheia. Se o app pedir sua senha, saia da tela cheia antes de digitá-la.</translation>
 <translation id="6852052252232534364">Clique para ativar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>

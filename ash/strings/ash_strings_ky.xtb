@@ -432,7 +432,6 @@
 <translation id="383629559565718788">Баскычтоптун жөндөөлөрүн көрсөтүү</translation>
 <translation id="384082539148746321">Үлгүнү өчүрөсүзбү?</translation>
 <translation id="3842239759367498783"><ph name="TITLE" /> мобилдик түзмөгүңүздөн улантып окуңуз</translation>
-<translation id="3846214748874656680">Толук экран режиминен чыгуу</translation>
 <translation id="3846575436967432996">Бир дагы тармак маалыматы жок</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="385300504083504382">Киришүү</translation>
@@ -857,7 +856,6 @@
 <translation id="6820676911989879663">Тыныгуу алыңыз!</translation>
 <translation id="6836499262298959512">Кооптуу файл</translation>
 <translation id="6837064795450991317">Издөө панелин жашыруу</translation>
-<translation id="6850010208275816200">Учурдагы колдонмо толук экранда көрсөтүлүүдө. Эгер колдонмо сырсөздү киргизүүнү суранса, адегенде толук экран режиминен чыгыңыз.</translation>
 <translation id="6852052252232534364">Иштетүү үчүн басыңыз</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бир сан калды}other{# сан калды}}</translation>

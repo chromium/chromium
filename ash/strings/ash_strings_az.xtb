@@ -432,7 +432,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="383629559565718788">Klaviatura ayarlarını göstərin</translation>
 <translation id="384082539148746321">Şablon silinsin?</translation>
 <translation id="3842239759367498783">Mobil cihazdan oxumağa davam edin <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Tam ekrandan çıxın</translation>
 <translation id="3846575436967432996">Heç bir şəbəkə məlumatı yoxdur</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="385300504083504382">Başlanğıc</translation>
@@ -857,7 +856,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="6820676911989879663">Fasilə verin!</translation>
 <translation id="6836499262298959512">Təhlükəli fayl</translation>
 <translation id="6837064795450991317">Masaüstü paneli gizlədin</translation>
-<translation id="6850010208275816200">Cari tətbiqiniz tam ekranda açılıb. Tətbiq parol tələb edərsə, əvvəlcə tam ekrandan çıxın.</translation>
 <translation id="6852052252232534364">Aktiv etmək üçün klikləyin</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> san</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rəqəm qalıb}other{# rəqəm qalıb}}</translation>

@@ -432,7 +432,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="383629559565718788">Näytä näppäimistöasetukset</translation>
 <translation id="384082539148746321">Poistetaanko malli?</translation>
 <translation id="3842239759367498783">Jatka lukemista mobiililaitteella <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">Sulje koko näytön tila.</translation>
 <translation id="3846575436967432996">Verkon tietoja ei saatavilla</translation>
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="385300504083504382">Alku</translation>
@@ -857,7 +856,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6820676911989879663">Pidä tauko</translation>
 <translation id="6836499262298959512">Vaarallinen tiedosto</translation>
 <translation id="6837064795450991317">Piilota työpöytäpalkki</translation>
-<translation id="6850010208275816200">Nykyinen sovellus näkyy koko näytöllä. Jos sovellus pyytää salasanaa, poistu ensin koko näytön tilasta.</translation>
 <translation id="6852052252232534364">Klikkaa: aktivoi</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vielä yksi numero}other{Vielä # numeroa}}</translation>

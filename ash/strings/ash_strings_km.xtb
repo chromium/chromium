@@ -433,7 +433,6 @@
 <translation id="383629559565718788">បង្ហាញ​ការកំណត់​ក្ដារ​ចុច</translation>
 <translation id="384082539148746321">លុប​ទម្រង់​គំរូឬ?</translation>
 <translation id="3842239759367498783">បន្ដ​អាន​ពី​ឧបករណ៍​ចល័ត​របស់អ្នក <ph name="TITLE" /></translation>
-<translation id="3846214748874656680">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="3846575436967432996">គ្មានព័ត៌មានបណ្តាញទេ</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="385300504083504382">ផ្នែកចាប់ផ្តើម</translation>
@@ -858,7 +857,6 @@
 <translation id="6820676911989879663">សម្រាក​មួយភ្លែត!</translation>
 <translation id="6836499262298959512">ឯកសារ​ដែលមានគ្រោះថ្នាក់</translation>
 <translation id="6837064795450991317">លាក់របារកិច្ចការ</translation>
-<translation id="6850010208275816200">កម្មវិធីបច្ចុប្បន្នរបស់អ្នកកំពុងបង្ហាញពេញអេក្រង់។ ប្រសិនបើកម្មវិធីស្នើសុំពាក្យសម្ងាត់របស់អ្នក សូមចាកចេញពីអេក្រង់ពេញជាមុនសិន។</translation>
 <translation id="6852052252232534364">ចុចដើម្បីបើកដំណើរការ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> វិនាទី</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{នៅសល់មួយខ្ទង់ទៀត}other{នៅសល់ # ខ្ទង់ទៀត}}</translation>
