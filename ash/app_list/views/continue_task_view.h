@@ -80,6 +80,9 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   // Opens the search result related to the view.
   void OpenResult(int event_flags);
 
+  // Removes the search result related to the view.
+  void RemoveResult();
+
   // Builds and returns a raw pointer to `context_menu_model_`.
   ui::SimpleMenuModel* BuildMenuModel();
 

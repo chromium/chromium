@@ -234,7 +234,7 @@ void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
       OpenResult(event_flags);
       break;
     case ContinueTaskCommandId::kRemoveResult:
-      // TODO(anasalar): Implement Remove Suggestion.
+      RemoveResult();
       break;
     default:
       NOTREACHED();
@@ -249,7 +249,11 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
           IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_OPEN),
       ui::ImageModel::FromVectorIcon(kLaunchIcon));
 
-  // TODO(crbug.com/1264530): Add context menu option for removing a suggestion.
+  context_menu_model_->AddItemWithIcon(
+      ContinueTaskCommandId::kRemoveResult,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
+      ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon));
 
   return context_menu_model_.get();
 }
@@ -261,6 +265,14 @@ void ContinueTaskView::OpenResult(int event_flags) {
       AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       AppListLaunchType::kAppSearchResult, index_in_container(),
       false /* launch_as_default */);
+}
+
+void ContinueTaskView::RemoveResult() {
+  // TODO(crbug.com/1264530): The ML service may change the way Search Results
+  // are removed.
+  DCHECK(result());
+  view_delegate_->InvokeSearchResultAction(result()->id(),
+                                           SearchResultActionType::kRemove);
 }
 
 bool ContinueTaskView::IsMenuShowing() const {

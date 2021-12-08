@@ -434,6 +434,33 @@ TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
   EXPECT_EQ("id1", client->last_opened_search_result());
 }
 
+TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  EnsureLauncherShown();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+  SimulateRightClickOrLongPressAt(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+  continue_task_view->ExecuteCommand(ContinueTaskCommandId::kRemoveResult,
+                                     ui::EventFlags::EF_NONE);
+
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
+      {"id1", SearchResultActionType::kRemove}};
+  std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
+      client->GetAndClearInvokedResultActions();
+  EXPECT_EQ(expected_actions, invoked_actions);
+}
+
 TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
