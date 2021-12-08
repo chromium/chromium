@@ -355,6 +355,40 @@ bool DefinitelyNewFormattingContext(const Node& node,
   return false;
 }
 
+inline bool NeedsLegacyBlockFragmentation(const Element& element,
+                                          const ComputedStyle& style) {
+  if (!style.InsideNGFragmentationContext())
+    return false;
+
+  // If we're inside an NG block fragmentation context, all fragmentable boxes
+  // must be laid out by NG natively. We only allow legacy layout objects if
+  // they are monolithic (e.g. replaced content, inline-table, and so
+  // on).
+
+  // Inline display types end up on a line, and are therefore monolithic, so we
+  // can allow those.
+  if (style.IsDisplayInlineType())
+    return false;
+
+  if (style.IsDisplayTableType())
+    return true;
+
+  if (style.IsDisplayGridBox() &&
+      !RuntimeEnabledFeatures::LayoutNGGridFragmentationEnabled())
+    return true;
+
+  // display:flex (and variants) require legacy fallback if NG flex
+  // fragmentation isn't enabled. The same applies to button elements, as they
+  // use flex layout (albeit with some exceptions, but we'll ignore those here).
+  if ((style.IsDisplayFlexibleBox() ||
+       style.IsDeprecatedFlexboxUsingFlexLayout() ||
+       IsA<HTMLButtonElement>(element)) &&
+      !RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled())
+    return true;
+
+  return false;
+}
+
 bool CalculateStyleShouldForceLegacyLayout(const Element& element,
                                            const ComputedStyle& style) {
   Document& document = element.GetDocument();
@@ -405,26 +439,11 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     return true;
   }
 
-  if (style.InsideNGFragmentationContext()) {
-    // If we're inside an NG block fragmentation context, all fragmentable boxes
-    // must be laid out by NG natively. We only allow legacy layout objects if
-    // they are monolithic (e.g. replaced content, inline-table, and so
-    // on). Inline display types end up on a line, and are therefore monolithic,
-    // so we can allow those.
-    if (!style.IsDisplayInlineType()) {
-      if (style.IsDisplayTableType() ||
-          (style.IsDisplayGridBox() &&
-           !RuntimeEnabledFeatures::LayoutNGGridFragmentationEnabled()) ||
-          ((style.IsDisplayFlexibleBox() ||
-            style.IsDeprecatedFlexboxUsingFlexLayout()) &&
-           !RuntimeEnabledFeatures::LayoutNGFlexFragmentationEnabled())) {
-        UseCounter::Count(
-            document,
-            WebFeature::
-                kLegacyLayoutByTableFlexGridBlockInNGFragmentationContext);
-        return true;
-      }
-    }
+  if (NeedsLegacyBlockFragmentation(element, style)) {
+    UseCounter::Count(
+        document,
+        WebFeature::kLegacyLayoutByTableFlexGridBlockInNGFragmentationContext);
+    return true;
   }
 
   return false;
