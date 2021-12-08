@@ -207,6 +207,37 @@ TEST_F(InputMethodControllerTest, AddImeTextSpansToExistingText) {
                 ->GetSuggestionType());
 }
 
+TEST_F(InputMethodControllerTest, AddGrammarCheckSpans) {
+  InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
+                    "sample");
+  Element* div = GetDocument().QuerySelector("div");
+  Node* text = div->firstChild();
+
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 5)));
+
+  Vector<ImeTextSpan> grammar_ime_text_spans;
+  grammar_ime_text_spans.push_back(ImeTextSpan(
+      ImeTextSpan::Type::kGrammarSuggestion, 3, 6, Color(255, 0, 0),
+      ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid, 0, 0));
+  grammar_ime_text_spans.push_back(ImeTextSpan(
+      ImeTextSpan::Type::kGrammarSuggestion, 8, 10, Color(255, 0, 0),
+      ImeTextSpanThickness::kThin, ImeTextSpanUnderlineStyle::kSolid, 0, 0));
+
+  Controller().AddImeTextSpansToExistingText(grammar_ime_text_spans, 0, 10);
+  // The first grammar check span should not be added because it overlaps with
+  // the existing spellcheck span.
+  EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(0u, GetDocument().Markers().Markers()[0]->StartOffset());
+  EXPECT_EQ(5u, GetDocument().Markers().Markers()[0]->EndOffset());
+  EXPECT_EQ(DocumentMarker::MarkerType::kSpelling,
+            GetDocument().Markers().Markers()[0]->GetType());
+  EXPECT_EQ(8u, GetDocument().Markers().Markers()[1]->StartOffset());
+  EXPECT_EQ(10u, GetDocument().Markers().Markers()[1]->EndOffset());
+  EXPECT_EQ(DocumentMarker::MarkerType::kSuggestion,
+            GetDocument().Markers().Markers()[1]->GetType());
+}
+
 TEST_F(InputMethodControllerTest, GetImeTextSpans) {
   InsertHTMLElement("<div id='sample' contenteditable>hello world</div>",
                     "sample");

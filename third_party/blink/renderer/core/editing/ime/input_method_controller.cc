@@ -765,6 +765,18 @@ void InputMethodController::AddImeTextSpans(
                 ephemeral_line_range.StartPosition()))
           continue;
 
+        // Do not add the grammar marker if it overlaps with existing spellcheck
+        // markers.
+        if (suggestion_type == SuggestionMarker::SuggestionType::kGrammar &&
+            !GetDocument()
+                 .Markers()
+                 .MarkersIntersectingRange(
+                     ToEphemeralRangeInFlatTree(ephemeral_line_range),
+                     DocumentMarker::MarkerTypes::Spelling())
+                 .IsEmpty()) {
+          continue;
+        }
+
         GetDocument().Markers().AddSuggestionMarker(
             ephemeral_line_range,
             SuggestionMarkerProperties::Builder()
