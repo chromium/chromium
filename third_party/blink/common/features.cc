@@ -1145,5 +1145,9 @@ const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
 const base::Feature kEarlyCodeCache{"EarlyCodeCache",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Lazy initialize TimeZoneController.
+const base::Feature kLazyInitializeTimeZoneController{
+    "LazyInitializeTimeZoneController", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
