@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/time/default_clock.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"

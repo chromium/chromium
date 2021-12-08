@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/login/auth/cryptohome_authenticator.h"

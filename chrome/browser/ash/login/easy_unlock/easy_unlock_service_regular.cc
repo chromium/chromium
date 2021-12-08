@@ -10,6 +10,11 @@
 #include <utility>
 
 #include "apps/app_lifetime_monitor_factory.h"
+#include "ash/components/proximity_auth/proximity_auth_pref_names.h"
+#include "ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"
+#include "ash/components/proximity_auth/proximity_auth_system.h"
+#include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -36,11 +41,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/proximity_auth/proximity_auth_pref_names.h"
-#include "chromeos/components/proximity_auth/proximity_auth_profile_pref_manager.h"
-#include "chromeos/components/proximity_auth/proximity_auth_system.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

@@ -1,0 +1,5 @@
+include_rules = [
+  "+chromeos/services/device_sync/proto",
+  "+chromeos/services/secure_channel",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
+]

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -66,7 +67,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/user_context.h"

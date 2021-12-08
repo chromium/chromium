@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/proximity_auth/proximity_auth_pref_manager.h"
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 

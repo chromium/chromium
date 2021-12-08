@@ -1331,7 +1331,8 @@
       'filepath': 'tools/perf/core/minidump_unittest.py',
     },
     'multidevice': {
-      'filepath': 'ash/multi_device_setup/'\
+      'filepath': 'ash/components/proximity_auth/'\
+                  '|ash/multi_device_setup/'\
                   '|chrome/browser/ash/cryptauth/'\
                   '|chrome/browser/ash/device_sync/'\
                   '|chrome/browser/ash/multidevice_setup/'\
@@ -1342,7 +1343,6 @@
                   '|chrome/browser/ui/webui/settings/chromeos/multidevice'\
                   '|chrome/test/data/webui/multidevice_setup/'\
                   '|chromeos/components/multidevice/'\
-                  '|chromeos/components/proximity_auth/'\
                   '|chromeos/resources/multidevice_resources.grdp'\
                   '|chromeos/services/device_sync/'\
                   '|chromeos/services/multidevice_setup/'\
@@ -1714,12 +1714,12 @@
         'content/browser/browsing_instance',
     },
     'smartlock': {
-      'filepath': 'ash/public/cpp/smartlock*'\
+      'filepath': 'ash/components/proximity_auth/'\
+                  '|ash/public/cpp/smartlock*'\
                   '|chrome/browser/ash/login/easy_unlock/'\
                   '|chrome/browser/resources/chromeos/quick_unlock/'\
                   '|chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock*'\
                   '|chrome/test/data/webui/settings/chromeos/multidevice_smartlock*'\
-                  '|chromeos/components/proximity_auth/'\
                   '|chromeos/dbus/easy_unlock/',
     },
     'smb': {
