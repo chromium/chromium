@@ -31,6 +31,7 @@
 <translation id="2478931088402984578">Pasirinkite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2567507405773541360">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Chromium“</translation>
 <translation id="2590893390871230428">Sinchronizuoti „Chromium“ duomenis</translation>
+<translation id="259094968798709429">Slaptažodžiai saugomi <ph name="BEGIN_LINK" />Slaptažodžių tvarkytuvėje<ph name="END_LINK" />, todėl juos galite naudoti bet kuriame įrenginyje.</translation>
 <translation id="2650312721222849884">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, įjunkite sinchronizavimą</translation>
 <translation id="2684230048001240293">Nustatykite „Chromium“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="2730884209570016437">„Chromium“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
@@ -44,6 +45,7 @@
 <translation id="3639997914391704523">„Chromium“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="3805899903892079518">„Chromium“ nepasiekia nuotraukų ar vaizdo įr. Įgalinkite prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="3946918322491238254">Vis tiek galėsite peržiūrėti visas žymes, istoriją, slaptažodžius ir kitus nustatymus šiame įrenginyje. Jei atliksite pakeitimų, jie nebus sinchronizuojami su jūsų paskyra.</translation>
+<translation id="4043291146360695975">Slaptažodžiai saugomi Slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
 <translation id="4555020257205549924">Kai ši funkcija bus įjungta, „Chromium“ siūlys versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Dabar galite naudoti „Chromium“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>

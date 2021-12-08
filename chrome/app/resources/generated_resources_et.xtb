@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Seotud seadmed</translation>
 <translation id="1153636665119721804">Google'i täiustatud kaitse programm</translation>
 <translation id="1155816283571436363">Telefoniga ühenduse loomine</translation>
+<translation id="1158080958325422608">Muuda suurtäheliseks</translation>
 <translation id="1158238185437008462">Vaadake mälestusi</translation>
 <translation id="1161575384898972166">Logige sisse rakendusse <ph name="TOKEN_NAME" /> kliendi sertifikaadi eksportimiseks.</translation>
 <translation id="116173250649946226">Administraator on seadistanud vaiketeema, mida ei saa muuta.</translation>
@@ -695,6 +696,7 @@
 <translation id="1700079447639026019">Saidid, mis ei tohi kunagi küpsisefaile kasutada</translation>
 <translation id="1703331064825191675">Te ei pea kunagi oma paroolide pärast muretsema</translation>
 <translation id="1703666494654169921">Ära luba saitidel kasutada VR-seadmeid ega -andmeid</translation>
+<translation id="1704097193565924901">Suurtäht alguses</translation>
 <translation id="1704230497453185209">Ära luba saitidel esitada heli</translation>
 <translation id="1704970325597567340">Ohutuskontroll tehti <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Lisas teie administraator</translation>
@@ -3568,6 +3570,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4681453295291708042">Läheduses jagamise keelamine</translation>
 <translation id="4681930562518940301">Ava &amp;algkujutis uuel vahelehel</translation>
 <translation id="4682551433947286597">Taustapildid kuvatakse sisselogimisekraanil.</translation>
+<translation id="4683629100208651599">Muuda väiketäheliseks</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (vaikeseade)</translation>
 <translation id="4684427112815847243">Sünkrooni kõik</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> üritab kaamerale juurde pääseda. Juurdepääsu lubamiseks lülitage kaamera privaatsuse lüliti välja.</translation>
@@ -5960,6 +5963,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7257173066616499747">WiFi-võrgud</translation>
 <translation id="725758059478686223">Printimisteenus</translation>
 <translation id="7257666756905341374">Kopeeritud ja kleebitud andmete lugemine</translation>
+<translation id="7258192266780953209">Teisendamised</translation>
 <translation id="7258225044283673131">Rakendus ei reageeri. Rakenduse sulgemiseks valige käsk „Sundpeata”.</translation>
 <translation id="7262004276116528033">Sisselogimisteenust hostib <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Proovige neid veaotsingu toiminguid.

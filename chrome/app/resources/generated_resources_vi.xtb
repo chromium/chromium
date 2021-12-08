@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">Thiết bị đã ghép nối</translation>
 <translation id="1153636665119721804">Chương trình Bảo vệ nâng cao của Google</translation>
 <translation id="1155816283571436363">Đang kết nối với điện thoại của bạn</translation>
+<translation id="1158080958325422608">Viết hoa toàn bộ</translation>
 <translation id="1158238185437008462">Xem kỷ niệm</translation>
 <translation id="1161575384898972166">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xuất chứng chỉ ứng dụng khách.</translation>
 <translation id="116173250649946226">Bạn không thể thay đổi giao diện vì đây là giao diện mặc định do quản trị viên đặt.</translation>
@@ -688,12 +689,14 @@
 <translation id="1692115862433274081">Sử dụng một tài khoản khác</translation>
 <translation id="1692118695553449118">Tính năng đồng bộ hóa đang bật</translation>
 <translation id="1692210323591458290">Tím đậm</translation>
+<translation id="1695487653372841667">Bạn có thể kiểm soát những dữ liệu nào được chia sẻ với Google. Bạn có thể thay đổi lựa chọn này bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="169675691788639886">Thiết bị đã định cấu hình máy chủ SSH. Không đăng nhập bằng các tài khoản nhạy cảm.</translation>
 <translation id="1697150536837697295">Nghệ thuật</translation>
 <translation id="1697686431566694143">Chỉnh sửa tệp</translation>
 <translation id="1700079447639026019">Các trang web không bao giờ được dùng cookie</translation>
 <translation id="1703331064825191675">Không bao giờ phải lo lắng về mật khẩu của bạn</translation>
 <translation id="1703666494654169921">Không cho phép trang web sử dụng dữ liệu hoặc thiết bị thực tế ảo của bạn</translation>
+<translation id="1704097193565924901">Viết hoa chữ cái đầu tiên</translation>
 <translation id="1704230497453185209">Không cho phép trang web phát âm thanh</translation>
 <translation id="1704970325597567340">Tính năng kiểm tra an toàn đã chạy vào <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Do quản trị viên thêm</translation>
@@ -3577,6 +3580,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4681453295291708042">Tắt tính năng Chia sẻ lân cận</translation>
 <translation id="4681930562518940301">Mở &amp;hình ảnh gốc trong thẻ mới</translation>
 <translation id="4682551433947286597">Hình nền xuất hiện trên màn hình đăng nhập.</translation>
+<translation id="4683629100208651599">Viết thường</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (mặc định)</translation>
 <translation id="4684427112815847243">Đồng bộ hóa mọi thứ</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> đang cố truy cập vào máy ảnh này. Hãy tắt nút quyền riêng tư khi dùng máy ảnh để cho phép ứng dụng đó truy cập.</translation>
@@ -5969,6 +5973,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7257173066616499747">Mạng Wi-Fi</translation>
 <translation id="725758059478686223">Dịch vụ in</translation>
 <translation id="7257666756905341374">Đọc dữ liệu bạn sao chép và dán</translation>
+<translation id="7258192266780953209">Chuyển đổi</translation>
 <translation id="7258225044283673131">Ứng dụng không phản hồi. Hãy chọn "Buộc đóng" để đóng ứng dụng.</translation>
 <translation id="7262004276116528033">Dịch vụ đăng nhập này do <ph name="SAML_DOMAIN" /> lưu trữ</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Hãy thử các bước khắc phục sự cố sau:

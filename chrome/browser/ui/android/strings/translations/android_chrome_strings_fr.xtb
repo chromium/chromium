@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
+<translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="1843805151597803366">Pour obtenir de meilleures traductions, autorisez la recherche Google à accéder au contenu de la page actuelle</translation>
 <translation id="1856325424225101786">Réinitialiser le mode simplifié ?</translation>
 <translation id="1868024384445905608">Chrome permet désormais de télécharger des fichiers plus vite</translation>
@@ -289,6 +290,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2718846868787000099">Permet d'afficher le contenu dans vos langues favorites. Les sites que vous visitez peuvent voir vos préférences</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Trier par site</translation>
+<translation id="2732063072010454421">Améliorez l'expérience vocale</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Appuyez sur un mot pour lancer une recherche instantanée ou afficher les actions associées</translation>
 <translation id="2760989362628427051">Activer le thème sombre lorsque le thème sombre ou l'économiseur de batterie de votre appareil est activé</translation>
@@ -835,6 +837,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="587735546353481577">Pour suivre un site, accédez-y, ouvrez le menu Chrome et appuyez sur "Suivre".</translation>
 <translation id="5880748256563468367">Accéder au flux</translation>
 <translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites sur lesquels vous utilisez l'Assistant, ainsi que les informations que vous envoyez via celui-ci</translation>
+<translation id="5906513782029855931">Si l'Assistant Google connaît les URL des sites, il peut vous aider à effectuer des tâches. Vous pouvez désactiver l'Assistant dans les paramètres de Chrome.</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5919204609460789179">Mettre à jour <ph name="PRODUCT_NAME" /> pour lancer la synchronisation</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> économisé(s)</translation>

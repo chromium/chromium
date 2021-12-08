@@ -650,6 +650,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3087734570205094154">Bên dưới</translation>
 <translation id="3095940652251934233">Tuyên bố</translation>
 <translation id="3096100844101284527">Thêm địa chỉ nhận hàng</translation>
+<translation id="3098513225387949945">Chính sách bị bỏ qua vì danh sách vô hiệu có chứa một mẫu bằng '*', tương đương với việc vô hiệu hoá chính sách.</translation>
 <translation id="3105172416063519923">ID phần tử:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kiểm tra cấu hình DNS bảo mật<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Khay giữa</translation>
@@ -1564,6 +1565,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6008122969617370890">Thứ tự từ N đến 1</translation>
 <translation id="6008256403891681546">JCB</translation>
 <translation id="6014801569448771146">Kiểm tra mật khẩu của bạn</translation>
+<translation id="6014851866995737824">Chính sách bị bỏ qua vì thiếu danh sách "bật" hoặc "tắt".</translation>
 <translation id="6015796118275082299">Năm</translation>
 <translation id="6017514345406065928">Xanh lục</translation>
 <translation id="6017850046339264347">Những kẻ tấn công trên <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> có thể cài đặt ứng dụng lừa đảo giả vờ là nội dung khác hoặc thu thập dữ liệu có thể dùng để theo dõi bạn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>

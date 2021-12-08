@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Maliwanag</translation>
 <translation id="1810845389119482123">Hindi natapos ang paunang pag-set up ng pag-sync</translation>
 <translation id="1829244130665387512">Hanapin sa page</translation>
+<translation id="1832459821645506983">Oo, payag ako</translation>
 <translation id="1843805151597803366">Para makakuha ng mas mahuhusay na pagsasalin, payagan ang Google Search na gamitin ang kasalukuyang page</translation>
 <translation id="1856325424225101786">I-reset ang Lite mode?</translation>
 <translation id="1868024384445905608">Mas mabilis nang mag-download ng mga file ang Chrome</translation>
@@ -289,6 +290,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2718846868787000099">Para ipakita ang content sa iyong mga gustong wika, makikita ng mga site na binibisita mo ang iyong mga kagustuhan</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Pagbukud-bukurin ayon sa site</translation>
+<translation id="2732063072010454421">Mas magandang karanasan sa paghahanap gamit ang boses</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Mag-tap ng salita upang hanapin agad ito o tingnan ang mga nauugnay na pagkilos</translation>
 <translation id="2760989362628427051">I-on ang madilim na tema kapag naka-on ang madilim na tema o Pantipid ng Baterya ng iyong device</translation>
@@ -835,6 +837,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="587735546353481577">Para subaybayan ang isang site, pumunta sa site, buksan ang menu ng Chrome, at i-tap ang Subaybayan.</translation>
 <translation id="5880748256563468367">Pumunta sa feed</translation>
 <translation id="5884076754568147479">Para tulungan kang tapusin ang mga gawain, matatanggap ng Google ang mga URL at content ng mga site kung saan ka gumamit ng Assistant, gayundin ang impormasyong isinumite mo sa pamamagitan ng Assistant</translation>
+<translation id="5906513782029855931">Kapag alam ang mga URL ng mga site, matutulungan ka ng Google Assistant na tumapos ng mga gawain. Puwede mong i-off ang Assistant sa mga setting ng Chrome.</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5919204609460789179">I-update ang <ph name="PRODUCT_NAME" /> upang simulan ang pag-sync</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ang natipid</translation>

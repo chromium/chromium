@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1153636665119721804">Google の高度な保護機能プログラム</translation>
 <translation id="1155816283571436363">スマートフォンに接続しています</translation>
+<translation id="1158080958325422608">大文字にする</translation>
 <translation id="1158238185437008462">思い出の写真を表示</translation>
 <translation id="1161575384898972166">クライアント証明書をエクスポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="116173250649946226">デフォルトのテーマは管理者が設定しており、変更できません。</translation>
@@ -691,6 +692,7 @@
 <translation id="1700079447639026019">Cookie を使用できないサイト</translation>
 <translation id="1703331064825191675">パスワードを気にする必要はありません</translation>
 <translation id="1703666494654169921">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
+<translation id="1704097193565924901">大文字にする</translation>
 <translation id="1704230497453185209">サイトに音声の再生を許可しない</translation>
 <translation id="1704970325597567340">安全確認を <ph name="DATE" /> に実行しました</translation>
 <translation id="1706586824377653884">管理者により追加</translation>
@@ -3554,6 +3556,7 @@
 <translation id="4681453295291708042">ニアバイシェアを無効にする</translation>
 <translation id="4681930562518940301">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="4682551433947286597">壁紙はログイン画面に表示されます。</translation>
+<translation id="4683629100208651599">小文字にする</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（デフォルト）</translation>
 <translation id="4684427112815847243">すべてを同期する</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> がカメラにアクセスしようとしています。アクセスを許可するには、カメラのプライバシー スイッチをオフにしてください。</translation>
@@ -5934,6 +5937,7 @@
 <translation id="7257173066616499747">Wi-Fi ネットワーク</translation>
 <translation id="725758059478686223">印刷サービス</translation>
 <translation id="7257666756905341374">コピー＆ペーストするデータの読み取り</translation>
+<translation id="7258192266780953209">変換</translation>
 <translation id="7258225044283673131">アプリケーションから応答がありません。終了するには [強制終了] を選択してください。</translation>
 <translation id="7262004276116528033">このログイン サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />次の解決方法をお試しください。

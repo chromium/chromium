@@ -164,6 +164,7 @@
 <translation id="1153636665119721804">Programa ng Advanced na Proteksyon ng Google</translation>
 <translation id="1155545602507378023">Hindi, sa device lang na ito</translation>
 <translation id="1155816283571436363">Pagkonekta sa iyong telepono</translation>
+<translation id="1158080958325422608">Gawing Malalaking Titik</translation>
 <translation id="1158238185437008462">Tingnan ang mga alaala</translation>
 <translation id="1161575384898972166">Mangyaring mag-sign in sa <ph name="TOKEN_NAME" /> upang i-export ang certificate ng client.</translation>
 <translation id="116173250649946226">Nagtakda ang iyong administrator ng default na tema na hindi puwedeng baguhin.</translation>
@@ -698,6 +699,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1700079447639026019">Mga site na hindi kailanman puwedeng gumamit ng cookies</translation>
 <translation id="1703331064825191675">Huwag nang mag-alala sa iyong mga password</translation>
 <translation id="1703666494654169921">Huwag payagan ang mga site na gumamit ng mga virtual reality device o data</translation>
+<translation id="1704097193565924901">I-capitalize</translation>
 <translation id="1704230497453185209">Huwag payagan ang mga site na mag-play ng tunog</translation>
 <translation id="1704970325597567340">Nagpatakbo ng pag-check sa kaligtasan noong <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Idinagdag ng iyong administrator</translation>
@@ -3590,6 +3592,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4681453295291708042">I-disable ang Nearby Share</translation>
 <translation id="4681930562518940301">Buksan ang or&amp;ihinal na larawan sa bagong tab</translation>
 <translation id="4682551433947286597">Lumalabas ang mga wallpaper sa Screen sa Pag-sign in.</translation>
+<translation id="4683629100208651599">Gawing Maliliit na Titik</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">I-sync lahat</translation>
 <translation id="4684471265911890182">Sinusubukan ng <ph name="APP_NAME" /> na i-access ang camera. I-off ang switch ng privacy ng camera para payagan ang access.</translation>
@@ -5987,6 +5990,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7257173066616499747">Mga Wi-Fi network</translation>
 <translation id="725758059478686223">Serbisyo sa Pag-print</translation>
 <translation id="7257666756905341374">Basahin ang data na iyong kinokopya at pine-paste</translation>
+<translation id="7258192266780953209">Mga Pagbabago</translation>
 <translation id="7258225044283673131">Hindi tumutugon ang application. Piliin ang "Puwersahang isara" para isara ang app.</translation>
 <translation id="7262004276116528033">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-sign in</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Subukan ang mga hakbang na ito sa pag-troubleshoot:

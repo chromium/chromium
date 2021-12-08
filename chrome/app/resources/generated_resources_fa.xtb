@@ -163,6 +163,7 @@
 <translation id="1153356358378277386">دستگاه‌های مرتبط‌شده</translation>
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
 <translation id="1155816283571436363">درحال اتصال به تلفن</translation>
+<translation id="1158080958325422608">تبدیل به حروف بزرگ</translation>
 <translation id="1158238185437008462">دیدن خاطرات</translation>
 <translation id="1161575384898972166">لطفاً برای صدور مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
 <translation id="116173250649946226">سرپرستتان طرح زمینه‌ای پیش‌فرض تنظیم کرده است که نمی‌توان تغییر داد.</translation>
@@ -693,6 +694,7 @@
 <translation id="1700079447639026019">سایت‌هایی که هرگز نمی‌توانند از کوکی‌ها استفاده کنند</translation>
 <translation id="1703331064825191675">هرگز نگران گذرواژه‌هایتان نباشید</translation>
 <translation id="1703666494654169921">به سایت‌ها اجازه داده نشود از داده‌ها یا دستگاه‌های واقعیت مجازی استفاده کنند</translation>
+<translation id="1704097193565924901">بزرگ‌نویسی</translation>
 <translation id="1704230497453185209">به سایت‌ها اجازه داده نشود صدا پخش کنند</translation>
 <translation id="1704970325597567340">«بررسی ایمنی» <ph name="DATE" /> اجرا شد</translation>
 <translation id="1706586824377653884">افزوده‌شده توسط سرپرست سیستم</translation>
@@ -3575,6 +3577,7 @@
 <translation id="4681453295291708042">غیرفعال کردن «هم‌رسانی با اطراف»</translation>
 <translation id="4681930562518940301">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
 <translation id="4682551433947286597">تصاویر پس‌زمینه در صفحه ورود به سیستم نمایان می‌شوند.</translation>
+<translation id="4683629100208651599">تبدیل به حروف کوچک</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (پیش‌فرض)</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> می‌خواهد به دوربین دسترسی داشته باشد. برای مجاز کردن دسترسی، کلید «حریم‌خصوصی دوربین» را خاموش کنید.</translation>
@@ -5967,6 +5970,7 @@
 <translation id="7257173066616499747">‏شبکه‌های Wi-Fi</translation>
 <translation id="725758059478686223">سرویس چاپ</translation>
 <translation id="7257666756905341374">خواندن داده‌هایی که کپی و جای‌گذاری می‌کنید</translation>
+<translation id="7258192266780953209">تبدیل‌ها</translation>
 <translation id="7258225044283673131">برنامه پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
 <translation id="7262004276116528033">این خدمات ورود به سیستم توسط <ph name="SAML_DOMAIN" /> میزبانی شده است</translation>
 <translation id="7264564921322372728">‏<ph name="BEGIN_PARAGRAPH1" />این مراحل عیب‌یابی را دنبال کنید:

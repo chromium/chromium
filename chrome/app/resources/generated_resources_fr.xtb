@@ -161,6 +161,7 @@
 <translation id="1153356358378277386">Appareils associés</translation>
 <translation id="1153636665119721804">Programme Protection Avancée de Google</translation>
 <translation id="1155816283571436363">Connexion à votre téléphone</translation>
+<translation id="1158080958325422608">Mettre en majuscules</translation>
 <translation id="1158238185437008462">Voir vos souvenirs</translation>
 <translation id="1161575384898972166">Connectez-vous à <ph name="TOKEN_NAME" /> pour exporter le certificat client.</translation>
 <translation id="116173250649946226">Votre administrateur a défini un thème par défaut qui n'est pas modifiable.</translation>
@@ -693,6 +694,7 @@
 <translation id="1700079447639026019">Sites ne pouvant pas utiliser de cookies</translation>
 <translation id="1703331064825191675">Ne vous souciez plus jamais de vos mots de passe</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
+<translation id="1704097193565924901">Mettre une majuscule</translation>
 <translation id="1704230497453185209">Ne pas autoriser les sites à lire des sons</translation>
 <translation id="1704970325597567340">Contrôle de sécurité effectué le <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Ajouté par votre administrateur</translation>
@@ -3563,6 +3565,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4681453295291708042">Désactiver le Partage à proximité</translation>
 <translation id="4681930562518940301">Ouvrir l'image originale dans un nouvel onglet</translation>
 <translation id="4682551433947286597">Les fonds d'écran s'affichent sur l'écran de connexion.</translation>
+<translation id="4683629100208651599">Mettre en minuscules</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> tente d'accéder à la caméra. Pour lui accorder l'accès, désactivez le paramètre de confidentialité de la caméra.</translation>
@@ -5956,6 +5959,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7257173066616499747">Réseaux Wi-Fi</translation>
 <translation id="725758059478686223">Service d'impression</translation>
 <translation id="7257666756905341374">Accéder aux données que vous copiez et collez</translation>
+<translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">L'application ne répond pas. Sélectionnez "Forcer la fermeture" pour la fermer.</translation>
 <translation id="7262004276116528033">Ce service de connexion est hébergé par <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Suivez ces étapes de dépannage :

@@ -164,6 +164,7 @@
 <translation id="1153636665119721804">Googleৰ সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাৰ প্ৰ’গ্ৰাম</translation>
 <translation id="1155545602507378023">নহয়, কেৱল এই ডিভাইচটো</translation>
 <translation id="1155816283571436363">আপোনাৰ ফ’নটোৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
+<translation id="1158080958325422608">বৰফলা কৰক</translation>
 <translation id="1158238185437008462">স্মৃতিসমূহ চাওক</translation>
 <translation id="1161575384898972166">ক্লায়েণ্টৰ প্ৰমাণপত্ৰখন ৰপ্তানি কৰিবলৈ অনুগ্ৰহ কৰি <ph name="TOKEN_NAME" />ত ছাইন ইন কৰক।</translation>
 <translation id="116173250649946226">আপোনাৰ প্ৰশাসকে এটা ডিফ’ল্ট থীম ছেট কৰিছে যিটো সলনি কৰিব নোৱাৰি।</translation>
@@ -695,6 +696,7 @@
 <translation id="1700079447639026019">কেতিয়াও কুকিসমূহ ব্যৱহাৰ কৰিব নোৱৰা ছাইটসমূহ</translation>
 <translation id="1703331064825191675">আপোনাৰ পাছৱৰ্ডসমূহক লৈ কেতিয়াও চিন্তিত নহ’ব</translation>
 <translation id="1703666494654169921">ছাইটক ভাৰ্ছুৱেল ৰিয়েলিটি ডিভাইচ অথবা ডেটা ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
+<translation id="1704097193565924901">বৰফলাৰ কৰক</translation>
 <translation id="1704230497453185209">ছাইটক ধ্বনি প্লে’ অনুমতি নিদিব</translation>
 <translation id="1704970325597567340"><ph name="DATE" />ত সুৰক্ষা পৰীক্ষা চলোৱা হৈছে</translation>
 <translation id="1706586824377653884">আপোনাৰ প্ৰশাসকৰ দ্বাৰা যোগ কৰা হৈছে</translation>
@@ -3585,6 +3587,7 @@
 <translation id="4681453295291708042">Nearby Share সুবিধাটো অক্ষম কৰক</translation>
 <translation id="4681930562518940301">মূল &amp;প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="4682551433947286597">ছাইন ইন কৰা স্ক্ৰীণত প্ৰদর্শন হোৱা ৱালপেপাৰ।</translation>
+<translation id="4683629100208651599">সৰুফলা কৰক</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ডিফ’ল্ট)</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" />এ কেমেৰা এক্সেছ কৰিবলৈ চেষ্টা কৰি আছে। এক্সেছৰ অনুমতি দিবলৈ কেমেৰাৰ গোপনীয়তাৰ ছুইচটো অফ কৰক।</translation>
@@ -5982,6 +5985,7 @@
 <translation id="7257173066616499747">ৱাই-ফাই নেটৱৰ্কসমূহ</translation>
 <translation id="725758059478686223">প্ৰিণ্টিং সেৱা</translation>
 <translation id="7257666756905341374">আপুনি প্ৰতিলিপি আৰু পে’ষ্ট কৰা ডেটা পঢ়ক</translation>
+<translation id="7258192266780953209">ৰূপান্তৰণ</translation>
 <translation id="7258225044283673131">এপ্লিকেশ্বনটোৱে সঁহাৰি দিয়া নাই। এপ্‌টো বন্ধ কৰিবলৈ "জোৰকৈ বন্ধ কৰক" সুবিধাটো বাছনি কৰক।</translation>
 <translation id="7262004276116528033">এই ছাইন ইন কৰা সেৱাটো <ph name="SAML_DOMAIN" />এ হ’ষ্ট কৰিছে</translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />সমস্যা সমাধানৰ এই পদক্ষেপকেইটা লৈ চাওক:

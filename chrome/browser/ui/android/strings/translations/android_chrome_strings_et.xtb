@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1810845389119482123">Sünkroonimise algseadistus ei jõudnud lõpule</translation>
 <translation id="1829244130665387512">Otsi leheküljelt</translation>
+<translation id="1832459821645506983">Jah, sobib</translation>
 <translation id="1843805151597803366">Paremate tõlgete saamiseks lubage Google'i otsingul praegust lehte kasutada</translation>
 <translation id="1856325424225101786">Kas lähtestada lihtsustatud režiim?</translation>
 <translation id="1868024384445905608">Chrome laadib nüüd faile kiiremini alla</translation>
@@ -289,6 +290,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2718846868787000099">Sisu kuvamiseks teie eelistatud keeltes näevad teie külastatavad saidid teie eelistusi</translation>
 <translation id="2723001399770238859">heli</translation>
 <translation id="2728754400939377704">Sordi saidi alusel</translation>
+<translation id="2732063072010454421">Hankige parem häälotsingu kasutuskogemus</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Puudutage sõna, et kohe otsida või seotud toiminguid näha</translation>
 <translation id="2760989362628427051">Aktiveeri tume teema, kui tume teema või akusäästja on seadmes sisse lülitatud</translation>
@@ -835,6 +837,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="587735546353481577">Saidi jälgimiseks minge saidile, avage Chrome'i menüü ja puudutage nuppu Jälgi.</translation>
 <translation id="5880748256563468367">Ava voog</translation>
 <translation id="5884076754568147479">Selleks et aidata teil toiminguid teha, saadetakse Google'ile nende saitide URL-id ja sisu, millel assistenti kasutate, ning teave, mille assistendi kaudu esitate</translation>
+<translation id="5906513782029855931">Kui teate saitide URL-e, saab Google'i assistent aidata teil ülesandeid täita. Assistendi saab Chrome'i seadetes välja lülitada.</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5919204609460789179">Sünkroonimise alustamiseks värskendage teenust <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> on säästetud</translation>
