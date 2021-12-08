@@ -44,6 +44,13 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="GridTabSwitcherMessageTypes">
+  <variant name="PriceAlertsMessageCard"
+      summary="the promo message for price notifications"/>
+  <variant name="PriceWelcomeMessageCard"
+      summary="the message introducing price chips"/>
+</variants>
+
 <variants name="ProcessName">
   <variant name="BrowserProcess" summary=""/>
   <variant name="GPUProcess" summary=""/>
@@ -7898,6 +7905,19 @@ chromium-metrics-reviews@google.com.
     This histogram records the result of thumbnail fetching in the Grid Tab
     Switcher.
   </summary>
+</histogram>
+
+<histogram name="GridTabSwitcher.{MessageType}.DisableReason"
+    enum="GridTabSwitcherMessageDisableReason" expires_after="2022-06-07">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Records why the {MessageType} is disabled in GridTabSwitcher and will no
+    longer be shown to users. Recorded when the message is disabled. Implemented
+    for Android.
+  </summary>
+  <token key="MessageType" variants="GridTabSwitcherMessageTypes"/>
 </histogram>
 
 <histogram name="GwpAsan.CrashAnalysisResult" enum="GwpAsanCrashAnalysisResult"
