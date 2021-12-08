@@ -118,15 +118,15 @@ int OmniboxChipButton::GetIconSize() const {
 void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget())
     return;
-  SetEnabledTextColors(GetForegroundColor());
+  SetEnabledTextColors(GetTextAndIconColor());
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     show_blocked_icon_ ? icon_off_ : icon_on_,
-                    GetForegroundColor(), GetIconSize(), nullptr));
+                    GetTextAndIconColor(), GetIconSize(), nullptr));
   SetBgColorOverride(GetBackgroundColor());
 }
 
-SkColor OmniboxChipButton::GetMainColor() {
+SkColor OmniboxChipButton::GetTextAndIconColor() {
   switch (theme_) {
     case Theme::kBlue:
       // TODO(crbug.com/1003612): ui::kColorButtonBackgroundProminent does not
@@ -138,17 +138,9 @@ SkColor OmniboxChipButton::GetMainColor() {
   }
 }
 
-SkColor OmniboxChipButton::GetNeutralColor() {
+SkColor OmniboxChipButton::GetBackgroundColor() {
   return views::style::GetColor(*this, label()->GetTextContext(),
                                 views::style::STYLE_DIALOG_BUTTON_DEFAULT);
-}
-
-SkColor OmniboxChipButton::GetForegroundColor() {
-  return GetProminent() ? GetNeutralColor() : GetMainColor();
-}
-
-SkColor OmniboxChipButton::GetBackgroundColor() {
-  return GetProminent() ? GetMainColor() : GetNeutralColor();
 }
 
 void OmniboxChipButton::SetForceExpandedForTesting(
