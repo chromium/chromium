@@ -34,11 +34,6 @@
         "port_name": "mac-mac10.15",
         "specifiers": ["Mac10.15", "Release"]
     },
-    "Mac10.15 Tests (dbg)": {
-        "master": "chromium.mac",
-        "port_name": "mac-mac10.15",
-        "specifiers": ["Mac10.15", "Debug"]
-    },
     "Mac11.0 Tests": {
         "master": "chromium.fyi",
         "port_name": "mac-mac11",
