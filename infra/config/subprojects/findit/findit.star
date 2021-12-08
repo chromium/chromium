@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "builder", "defaults", "goma")
+load("//lib/consoles.star", "consoles")
 load("//lib/ci.star", "rbe_instance", "rbe_jobs")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
@@ -22,6 +23,10 @@ luci.bucket(
     ],
 )
 
+consoles.list_view(
+    name = "findit",
+)
+
 # FindIt builders use a separate pool with a dedicated set of permissions.
 swarming_lib.pool_realm(name = "pools/findit")
 
@@ -36,6 +41,7 @@ defaults.auto_builder_dimension.set(False)
 defaults.bucket.set("findit")
 defaults.build_numbers.set(True)
 defaults.builderless.set(True)
+defaults.list_view.set("findit")
 defaults.ssd.set(True)
 defaults.execution_timeout.set(8 * time.hour)
 defaults.pool.set("luci.chromium.findit")
