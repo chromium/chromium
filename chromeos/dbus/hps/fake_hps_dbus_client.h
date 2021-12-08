@@ -47,15 +47,9 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
     hps_service_is_available_ = is_available;
   }
 
-  // Methods for co-ordinating notify enable/disable in tests.
-  int enable_hps_notify_count() const { return enable_hps_notify_count_; }
-  int disable_hps_notify_count() const { return disable_hps_notify_count_; }
-
  private:
   absl::optional<bool> hps_notify_result_;
   int hps_notify_count_ = 0;
-  int enable_hps_notify_count_ = 0;
-  int disable_hps_notify_count_ = 0;
   bool hps_service_is_available_ = false;
 };
 

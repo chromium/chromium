@@ -46,13 +46,9 @@ void FakeHpsDBusClient::EnableHpsSense(const hps::FeatureConfig& config) {}
 
 void FakeHpsDBusClient::DisableHpsSense() {}
 
-void FakeHpsDBusClient::EnableHpsNotify(const hps::FeatureConfig& config) {
-  ++enable_hps_notify_count_;
-}
+void FakeHpsDBusClient::EnableHpsNotify(const hps::FeatureConfig& config) {}
 
-void FakeHpsDBusClient::DisableHpsNotify() {
-  ++disable_hps_notify_count_;
-}
+void FakeHpsDBusClient::DisableHpsNotify() {}
 
 void FakeHpsDBusClient::WaitForServiceToBeAvailable(
     dbus::ObjectProxy::WaitForServiceToBeAvailableCallback cb) {

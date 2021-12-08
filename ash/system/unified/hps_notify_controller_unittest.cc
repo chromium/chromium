@@ -21,13 +21,10 @@
 
 namespace ash {
 
-// Enables or disables the user pref for the feature. Because this could
-// correctly or incorrectly trigger an asynchronous DBus call, waits for the run
-// loop to empty.
+// Enables or disables the user pref for the feature.
 void SetEnabledPref(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kSnoopingProtectionEnabled, enabled);
-  base::RunLoop().RunUntilIdle();
 }
 
 // A fixture that provides access to a fake daemon and an instance of the
@@ -81,13 +78,6 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
   HpsNotifyController* controller_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Simulates a login. Because this could correctly or incorrectly trigger an
-  // asynchronous DBus call, waits for the run loop to empty.
-  void SimulateLogin() {
-    SimulateUserLogin("testuser@gmail.com");
-    base::RunLoop().RunUntilIdle();
-  }
 };
 
 // A test fixture where no snooper is initially detected (using a minimal set of
@@ -103,19 +93,17 @@ class HpsNotifyControllerTestAbsent : public HpsNotifyControllerTestBase {
 
 // Test that icon is hidden by default.
 TEST_F(HpsNotifyControllerTestAbsent, Hidden) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(false);
-
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_FALSE(controller_->IsIconVisible());
 }
 
 // Test that messages from the daemon toggle the icon.
 TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(true);
-
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_FALSE(controller_->IsIconVisible());
@@ -127,89 +115,6 @@ TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
   controller_->OnHpsNotifyChanged(false);
 
   EXPECT_FALSE(controller_->IsIconVisible());
-}
-
-// Test that daemon signals are only enabled when session and pref state means
-// they will be used.
-TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnPrefs) {
-  // When the service becomes available for the first time, one disable is
-  // performed in case the last session ended in a crash without de-configuring
-  // the daemon.
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
-
-  SimulateLogin();
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
-
-  // Shouldn't configure or message the daemon until the user is ready to start
-  // using the feature.
-  SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
-
-  // Should de-configure the signal when it isn't being used.
-  SetEnabledPref(false);
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
-
-  // Should re-configure and re-poll when the signal becomes relevant again.
-  SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 2);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 2);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
-}
-
-// Test that daemon signals are correctly enabled/disabled when the daemon
-// starts and stops.
-TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnRestarts) {
-  SimulateLogin();
-  SetEnabledPref(true);
-
-  // Should configure when we're both logged in and have our pref enabled. The
-  // clean-up deconfigure always occurs.
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
-
-  // No deconfigure sent when the service shuts down, because it's unreachable.
-  controller_->OnShutdown();
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
-
-  // Should reconfigure as soon as the service becomes available again.
-  controller_->OnRestart();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 2);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
-}
-
-// Test that the service is only re-configured when the user is _both_ logged-in
-// and has enabled the preference.
-TEST_F(HpsNotifyControllerTestAbsent, ReconfigureOnlyIfNecessary) {
-  // Only the clean-up de-configure should have been sent.
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
-
-  // Not logged in, so should not configure the service.
-  SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
-
-  // Only configure when both logged in and pref enabled.
-  SimulateLogin();
-  SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 }
 
 // A test fixture where a snooper is initially detected (using a minimal set of
@@ -225,7 +130,7 @@ class HpsNotifyControllerTestPresent : public HpsNotifyControllerTestBase {
 
 // Test that initial daemon state is considered.
 TEST_F(HpsNotifyControllerTestPresent, HpsState) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
@@ -234,14 +139,13 @@ TEST_F(HpsNotifyControllerTestPresent, HpsState) {
 
 // Test that a user changing their preference toggles the icon.
 TEST_F(HpsNotifyControllerTestPresent, PrefChanged) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(false);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_FALSE(controller_->IsIconVisible());
 
   SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_TRUE(controller_->IsIconVisible());
 }
@@ -257,16 +161,12 @@ TEST_F(HpsNotifyControllerTestPresent, Oobe) {
   session->SwitchActiveUser(AccountId::FromUserEmail("testuser@gmail.com"));
   session->SetSessionState(session_manager::SessionState::OOBE);
 
-  // Shouldn't configure, as the session isn't active.
   SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_FALSE(controller_->IsIconVisible());
 
-  // Triggers an asynchronous DBus method call.
   session->SetSessionState(session_manager::SessionState::ACTIVE);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_TRUE(controller_->IsIconVisible());
 }
@@ -275,13 +175,12 @@ TEST_F(HpsNotifyControllerTestPresent, Oobe) {
 TEST_F(HpsNotifyControllerTestPresent, Login) {
   // Note: login deferred.
 
-  // Shouldn't configure, as the session isn't active.
   SetEnabledPref(true);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   EXPECT_FALSE(controller_->IsIconVisible());
 
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
 
   // Don't show until new user has enabled their preference.
   EXPECT_FALSE(controller_->IsIconVisible());
@@ -292,25 +191,23 @@ TEST_F(HpsNotifyControllerTestPresent, Login) {
 
 // Test that the controller handles service restarts.
 TEST_F(HpsNotifyControllerTestPresent, Restarts) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(true);
 
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
   EXPECT_TRUE(controller_->IsIconVisible());
 
-  // Icon is hidden when service goes down. Could erroneously trigger an
-  // asynchronous DBus method call.
+  // Icon is hidden when service goes down.
   dbus_client_->set_hps_service_is_available(false);
   controller_->OnShutdown();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(controller_->IsIconVisible());
 
-  // Icon returns when service restarts. Controller now polls the DBus service
-  // which responds asynchronously.
+  // Icon returns when service restarts.
   dbus_client_->set_hps_service_is_available(true);
   controller_->OnRestart();
-  base::RunLoop().RunUntilIdle();
 
+  // Controller now polls the DBus service which responds asynchronously.
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
   EXPECT_TRUE(controller_->IsIconVisible());
 }
@@ -326,31 +223,20 @@ class HpsNotifyControllerTestUnavailable : public HpsNotifyControllerTestBase {
             /*params=*/{{"filter_config_case", "1"}}) {}
 };
 
-// Test that the controller waits for the DBus service to be available and
-// doesn't communicate until it is.
+// Test that the controller waits for the DBus service to be available.
 TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(true);
 
-  // Shouldn't send any signals (even the clean-up deconfigure) to a service
-  // that isn't available.
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 0);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
-
   EXPECT_FALSE(controller_->IsIconVisible());
 
-  // Triggers an asynchronous DBus method call.
   dbus_client_->set_hps_service_is_available(true);
   controller_->OnRestart();
-  base::RunLoop().RunUntilIdle();
-
-  // Should now configure and send the initial poll.
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 1);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   // Controller now polls the DBus service which responds asynchronously.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
   EXPECT_TRUE(controller_->IsIconVisible());
 }
 
@@ -359,20 +245,19 @@ class HpsNotifyControllerTestBadParams : public HpsNotifyControllerTestBase {
  public:
   HpsNotifyControllerTestBadParams()
       : HpsNotifyControllerTestBase(
-            /*service_available=*/true,
+            /*service_available=*/false,
             /*service_state=*/true,
-            /*params=*/{{"filter_config_case", "0"}}) {}
+            /*params=*/{}) {}
 };
 
 // Test that the controller gracefully handles invalid feature parameters.
 TEST_F(HpsNotifyControllerTestBadParams, BadParams) {
-  SimulateLogin();
+  SimulateUserLogin("testuser@gmail.com");
   SetEnabledPref(true);
+  base::RunLoop().RunUntilIdle();
 
-  // Should send the clean-up disable even if we currently have a bad config.
-  EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
-  EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+  EXPECT_FALSE(controller_->IsIconVisible());
 }
 
 }  // namespace ash

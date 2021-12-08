@@ -62,19 +62,14 @@ class ASH_EXPORT HpsNotifyController
  private:
   // Updates visibility state as appropriate given the signal, session and
   // preference state. If changed, notifies observers.
-  void UpdateIconVisibility(bool session_active,
-                            bool hps_state,
-                            bool is_enabled);
+  void UpdateIconVisibility(bool logged_in, bool hps_state, bool is_enabled);
 
-  // Requests the start or stop of the HPS snooping signal, so that the daemon
-  // need not be running snooping logic while the user has the feature disabled.
-  // Also updates the cached state of HPS availability.
-  void ReconfigureHps(bool hps_available,
-                      bool session_active,
-                      bool pref_enabled);
-
-  // Configures the daemon, polls its initial state and opts into its signals.
+  // Configures the daemon and opts in to signals from it.
   void StartHpsObservation(bool service_is_available);
+
+  // Re-configures the daemon and polls its initial state (used in case of
+  // daemon restart).
+  void RestartHpsObservation();
 
   // Performs the state update from the daemon response.
   void UpdateHpsState(absl::optional<bool> result);
@@ -87,12 +82,8 @@ class ASH_EXPORT HpsNotifyController
   bool hps_state_ = false;       // The state last reported by the daemon.
   bool session_active_ = false;  // Whether or not there is an active user
                                  // session ongoing.
-  bool pref_enabled_ = false;    // Whether or not the user has enabled the
+  bool is_enabled_ = false;      // Whether or not the user has enabled the
                                  // feature via preferences.
-  bool hps_available_ = false;   // Whether or not the daemon is available for
-                                 // communication.
-  bool hps_configured_ = false;  // Whether or not the daemon has been
-                                 // successfully configured.
 
   base::ScopedObservation<SessionController, SessionObserver>
       session_observation_{this};
