@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/profiles/profile.h"

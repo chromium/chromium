@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile.h"

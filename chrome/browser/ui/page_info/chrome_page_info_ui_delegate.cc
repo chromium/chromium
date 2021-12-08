@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"

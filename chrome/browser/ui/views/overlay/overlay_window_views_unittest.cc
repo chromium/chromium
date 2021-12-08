@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
