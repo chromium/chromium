@@ -1244,37 +1244,37 @@ bool IsAXSetter(SEL selector) {
 // Parameterized text-specific attributes.
 
 - (id)AXLineForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
   // TODO: multiline is not supported on views.
   return @0;
 }
 
 - (id)AXRangeForLine:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
-  DCHECK_EQ(0, [parameter intValue]);
+  if (![parameter isKindOfClass:[NSNumber class]] || [parameter intValue] != 0)
+    return nil;
+
   return [NSValue valueWithRange:{0, [[self getAXValueAsString] length]}];
 }
 
 - (id)AXStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
+  if (![parameter isKindOfClass:[NSValue class]] ||
+      (0 != strcmp([parameter objCType], @encode(NSRange))))
+    return nil;
+
   return [[self getAXValueAsString] substringWithRange:[parameter rangeValue]];
 }
 
 - (id)AXRangeForPosition:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
   // TODO(tapted): Hit-test [parameter pointValue] and return an NSRange.
   NOTIMPLEMENTED();
   return nil;
 }
 
 - (id)AXRangeForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
   NOTIMPLEMENTED();
   return nil;
 }
 
 - (id)AXBoundsForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
   // TODO(tapted): Provide an accessor on AXPlatformNodeDelegate to obtain this
   // from ui::TextInputClient::GetCompositionCharacterBounds().
   NOTIMPLEMENTED();
@@ -1282,20 +1282,23 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (id)AXRTFForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
   NOTIMPLEMENTED();
   return nil;
 }
 
 - (id)AXStyleRangeForIndex:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSNumber class]]);
+  if (![parameter isKindOfClass:[NSNumber class]])
+    return nil;
+
   // TODO(https://crbug.com/958811): Implement this for real.
   return [NSValue
       valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
 }
 
 - (id)AXAttributedStringForRange:(id)parameter {
-  DCHECK([parameter isKindOfClass:[NSValue class]]);
+  if (![parameter isKindOfClass:[NSValue class]])
+    return nil;
+
   // TODO(https://crbug.com/958811): Implement this for real.
   base::scoped_nsobject<NSAttributedString> attributedString(
       [[NSAttributedString alloc]
