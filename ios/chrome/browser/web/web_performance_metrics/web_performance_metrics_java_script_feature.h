@@ -36,6 +36,11 @@ class WebPerformanceMetricsJavaScriptFeature : public web::JavaScriptFeature {
   void LogRelativeFirstInputDelay(double value,
                                   bool is_main_frame,
                                   bool loaded_from_cache);
+
+  // Logs the First Input Delay time across main and sub frames in UMA.
+  void LogAggregateFirstInputDelay(web::WebState* web_state,
+                                   double first_input_delay,
+                                   bool loaded_from_cache);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_WEB_PERFORMANCE_METRICS_WEB_PERFORMANCE_METRICS_JAVA_SCRIPT_FEATURE_H_

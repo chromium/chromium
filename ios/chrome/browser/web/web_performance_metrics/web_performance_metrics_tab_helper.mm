@@ -19,6 +19,7 @@ void WebPerformanceMetricsTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   SetAggregateAbsoluteFirstContentfulPaint(std::numeric_limits<double>::max());
+  SetFirstInputDelayLoggingStatus(false);
 }
 
 void WebPerformanceMetricsTabHelper::WebStateDestroyed(
@@ -35,6 +36,15 @@ WebPerformanceMetricsTabHelper::GetAggregateAbsoluteFirstContentfulPaint()
 void WebPerformanceMetricsTabHelper::SetAggregateAbsoluteFirstContentfulPaint(
     double absolute_first_contentful_paint) {
   aggregate_absolute_first_contentful_paint_ = absolute_first_contentful_paint;
+}
+
+bool WebPerformanceMetricsTabHelper::GetFirstInputDelayLoggingStatus() const {
+  return first_input_delay_has_been_logged;
+}
+
+void WebPerformanceMetricsTabHelper::SetFirstInputDelayLoggingStatus(
+    bool first_input_delay_logging_status) {
+  first_input_delay_has_been_logged = first_input_delay_logging_status;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(WebPerformanceMetricsTabHelper)

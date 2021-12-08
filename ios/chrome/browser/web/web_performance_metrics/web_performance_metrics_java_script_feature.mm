@@ -86,6 +86,8 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
 
     LogRelativeFirstInputDelay(value.value(), message.is_main_frame(),
                                loaded_from_cache.value());
+    LogAggregateFirstInputDelay(web_state, value.value(),
+                                loaded_from_cache.value());
   }
 }
 
@@ -164,5 +166,32 @@ void WebPerformanceMetricsJavaScriptFeature::LogRelativeFirstInputDelay(
           "IOS.Frame.FirstInputDelay.SubFrame.AfterBackForwardCacheRestore",
           delta);
     }
+  }
+}
+
+void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstInputDelay(
+    web::WebState* web_state,
+    double first_input_delay,
+    bool loaded_from_cache) {
+  WebPerformanceMetricsTabHelper* tab_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(web_state);
+
+  if (!tab_helper) {
+    return;
+  }
+
+  bool first_input_delay_has_been_logged =
+      tab_helper->GetFirstInputDelayLoggingStatus();
+
+  if (!first_input_delay_has_been_logged) {
+    base::TimeDelta delta = base::Milliseconds(first_input_delay);
+    if (loaded_from_cache) {
+      UMA_HISTOGRAM_TIMES("PageLoad.InteractiveTiming.FirstInputDelay."
+                          "AfterBackForwardCacheRestore",
+                          delta);
+    } else {
+      UMA_HISTOGRAM_TIMES("PageLoad.InteractiveTiming.FirstInputDelay4", delta);
+    }
+    tab_helper->SetFirstInputDelayLoggingStatus(true);
   }
 }

@@ -38,6 +38,14 @@ class WebPerformanceMetricsTabHelper
   void SetAggregateAbsoluteFirstContentfulPaint(
       double absolute_first_contentful_paint);
 
+  // If the web page has logged its First Input Delay, the function
+  // returns |true| otherwise it returns |false|
+  bool GetFirstInputDelayLoggingStatus() const;
+
+  // Sets the boolean variable that indicates whether the First Input Delay
+  // has been logged in UMA for the current web page.
+  void SetFirstInputDelayLoggingStatus(bool first_input_delay_logging_status);
+
  private:
   friend class web::WebStateUserData<WebPerformanceMetricsTabHelper>;
 
@@ -57,6 +65,10 @@ class WebPerformanceMetricsTabHelper
   // main and subframes.
   double aggregate_absolute_first_contentful_paint_ =
       std::numeric_limits<double>::max();
+
+  // Stores whether the First Input Delay has been logged to UMA for the
+  // current web page
+  bool first_input_delay_has_been_logged = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
