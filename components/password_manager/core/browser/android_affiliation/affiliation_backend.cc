@@ -103,6 +103,41 @@ void AffiliationBackend::CancelPrefetch(const FacetURI& facet_uri,
     facet_managers_.erase(facet_uri);
 }
 
+void AffiliationBackend::KeepPrefetchForFacets(
+    std::vector<FacetURI> facet_uris) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Firstly, check which facets are missing from the |facet_managers_| and
+  // schedule Prefetch() for them.
+  for (const auto& facet : facet_uris) {
+    if (facet_managers_.find(facet) == facet_managers_.end()) {
+      Prefetch(facet, base::Time::Max());
+    }
+  }
+
+  // Now remove facets which which aren't retained anymore.
+  auto retained_facets = base::MakeFlatSet<std::string>(
+      facet_uris, {}, &FacetURI::potentially_invalid_spec);
+
+  std::vector<FacetURI> facets_to_remove;
+  for (const auto& facet_manager_pair : facet_managers_) {
+    if (retained_facets.contains(
+            facet_manager_pair.first.potentially_invalid_spec())) {
+      continue;
+    }
+
+    facet_manager_pair.second->CancelPrefetch(base::Time::Max());
+
+    if (facet_manager_pair.second->CanBeDiscarded())
+      facets_to_remove.push_back(facet_manager_pair.first);
+  }
+
+  for (const auto& facet : facets_to_remove) {
+    facet_managers_.erase(facet);
+    TrimCacheForFacetURI(facet);
+  }
+}
+
 void AffiliationBackend::TrimCacheForFacetURI(const FacetURI& facet_uri) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -114,7 +149,7 @@ void AffiliationBackend::TrimCacheForFacetURI(const FacetURI& facet_uri) {
 void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cache_->RemoveMissingFacetURI(std::move(facet_uris));
+  cache_->RemoveMissingFacetURI(facet_uris);
 }
 
 // static

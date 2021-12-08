@@ -895,4 +895,30 @@ TEST_F(AffiliationBackendTest, DeleteCache) {
   ASSERT_FALSE(base::PathExists(db_path()));
 }
 
+TEST_F(AffiliationBackendTest, KeepPrefetchForFacets) {
+  // Have {kTestFacetURIAlpha1, kTestFacetURIAlpha1, kTestFacetURIBeta1} as a
+  // list of actively fetching facets.
+  ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1), base::Time::Max()));
+  ASSERT_NO_FATAL_FAILURE(PrefetchAndExpectFetch(
+      FacetURI::FromCanonicalSpec(kTestFacetURIBeta1), base::Time::Max()));
+  Prefetch(FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1), base::Time::Max());
+  EXPECT_EQ(2u, backend_facet_manager_count());
+  EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
+
+  AdvanceTime(GetCacheSoftExpiryPeriod() - Epsilon());
+
+  backend()->KeepPrefetchForFacets(
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+       FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)});
+  ASSERT_NO_FATAL_FAILURE(ExpectNeedForFetchAndLetItBeSent());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAndCompleteFetch(FacetURI::FromCanonicalSpec(kTestFacetURIGamma1)));
+  EXPECT_EQ(2u, backend_facet_manager_count());
+  EXPECT_EQ(2u, GetNumOfEquivalenceClassInDatabase());
+
+  consumer_task_runner()->RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
+}
+
 }  // namespace password_manager

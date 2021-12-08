@@ -92,6 +92,12 @@ class OverloadedMockAffiliationService : public MockAffiliationService {
   void ExpectCallToTrimUnusedCache() {
     EXPECT_CALL(*this, TrimUnusedCache).RetiresOnSaturation();
   }
+
+  void ExpectKeepPrefetchForFacets(
+      const std::vector<FacetURI>& expected_facets) {
+    EXPECT_CALL(*this, KeepPrefetchForFacets(expected_facets))
+        .RetiresOnSaturation();
+  }
 };
 
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
@@ -573,6 +579,26 @@ TEST_P(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
                   GetTestObservedWebForm(kTestWebRealmAlpha1, nullptr)),
               testing::UnorderedElementsAre(kTestWebRealmAlpha2,
                                             kTestAndroidRealmAlpha3));
+}
+
+TEST_P(AffiliatedMatchHelperTest, OnLoginsRetained) {
+  std::vector<PasswordForm> forms = {
+      GetTestAndroidCredentials(kTestWebFacetURIAlpha1),
+      GetTestAndroidCredentials(kTestAndroidFacetURIBeta2)};
+  std::vector<FacetURI> expected_facets;
+
+  if (base::FeatureList::IsEnabled(
+          features::kFillingAcrossAffiliatedWebsites)) {
+    expected_facets = {FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1),
+                       FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
+  } else {
+    expected_facets = {FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2)};
+  }
+
+  mock_affiliation_service()->ExpectKeepPrefetchForFacets(expected_facets);
+
+  (static_cast<PasswordStoreInterface::Observer*>(match_helper()))
+      ->OnLoginsRetained(nullptr, forms);
 }
 
 INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,

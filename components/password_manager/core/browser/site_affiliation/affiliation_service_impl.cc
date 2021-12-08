@@ -256,6 +256,16 @@ void AffiliationServiceImpl::CancelPrefetch(
                      base::Unretained(backend_), facet_uri, keep_fresh_until));
 }
 
+void AffiliationServiceImpl::KeepPrefetchForFacets(
+    std::vector<FacetURI> facet_uris) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::KeepPrefetchForFacets,
+                     base::Unretained(backend_), std::move(facet_uris)));
+}
+
 void AffiliationServiceImpl::TrimCacheForFacetURI(const FacetURI& facet_uri) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);

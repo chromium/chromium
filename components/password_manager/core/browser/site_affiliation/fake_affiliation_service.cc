@@ -26,6 +26,8 @@ void FakeAffiliationService::Prefetch(const FacetURI& facet_uri,
 void FakeAffiliationService::CancelPrefetch(
     const FacetURI& facet_uri,
     const base::Time& keep_fresh_until) {}
+void FakeAffiliationService::KeepPrefetchForFacets(
+    std::vector<FacetURI> facet_uris) {}
 void FakeAffiliationService::TrimCacheForFacetURI(const FacetURI& facet_uri) {}
 void FakeAffiliationService::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 }

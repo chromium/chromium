@@ -90,6 +90,7 @@ class AffiliationBackend : public FacetManagerHost,
   void Prefetch(const FacetURI& facet_uri, const base::Time& keep_fresh_until);
   void CancelPrefetch(const FacetURI& facet_uri,
                       const base::Time& keep_fresh_until);
+  void KeepPrefetchForFacets(std::vector<FacetURI> facet_uris);
   void TrimCacheForFacetURI(const FacetURI& facet_uri);
   void TrimUnusedCache(std::vector<FacetURI> facet_uris);
 

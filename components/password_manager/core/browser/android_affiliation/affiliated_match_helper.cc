@@ -15,6 +15,17 @@
 
 namespace password_manager {
 
+namespace {
+
+bool IsFacetValidForAffiliation(const FacetURI& facet) {
+  return facet.IsValidAndroidFacetURI() ||
+         (facet.IsValidWebFacetURI() &&
+          base::FeatureList::IsEnabled(
+              password_manager::features::kFillingAcrossAffiliatedWebsites));
+}
+
+}  // namespace
+
 // static
 constexpr base::TimeDelta AffiliatedMatchHelper::kInitializationDelayOnStartup;
 
@@ -139,7 +150,16 @@ void AffiliatedMatchHelper::OnLoginsChanged(
 
 void AffiliatedMatchHelper::OnLoginsRetained(
     PasswordStoreInterface* /*store*/,
-    const std::vector<PasswordForm>& retained_passwords) {}
+    const std::vector<PasswordForm>& retained_passwords) {
+  std::vector<FacetURI> facets;
+  for (const auto& form : retained_passwords) {
+    FacetURI facet_uri =
+        FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);
+    if (IsFacetValidForAffiliation(facet_uri))
+      facets.push_back(std::move(facet_uri));
+  }
+  affiliation_service_->KeepPrefetchForFacets(std::move(facets));
+}
 
 void AffiliatedMatchHelper::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
@@ -147,12 +167,7 @@ void AffiliatedMatchHelper::OnGetPasswordStoreResults(
   for (const auto& form : results) {
     FacetURI facet_uri =
         FacetURI::FromPotentiallyInvalidSpec(form->signon_realm);
-    if (facet_uri.IsValidAndroidFacetURI())
-      affiliation_service_->Prefetch(facet_uri, base::Time::Max());
-
-    if (facet_uri.IsValidWebFacetURI() &&
-        base::FeatureList::IsEnabled(
-            password_manager::features::kFillingAcrossAffiliatedWebsites))
+    if (IsFacetValidForAffiliation(facet_uri))
       affiliation_service_->Prefetch(facet_uri, base::Time::Max());
 
     facets.push_back(std::move(facet_uri));

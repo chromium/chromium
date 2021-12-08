@@ -43,6 +43,7 @@ class MockAffiliationService : public AffiliationService {
               CancelPrefetch,
               (const FacetURI&, const base::Time&),
               (override));
+  MOCK_METHOD(void, KeepPrefetchForFacets, (std::vector<FacetURI>), (override));
   MOCK_METHOD(void, TrimCacheForFacetURI, (const FacetURI&), (override));
   MOCK_METHOD(void, TrimUnusedCache, (std::vector<FacetURI>), (override));
 
