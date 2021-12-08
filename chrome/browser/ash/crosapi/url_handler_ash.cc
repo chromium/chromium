@@ -6,6 +6,7 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -31,6 +32,14 @@ void ShowOsAppForProfile(Profile* profile,
   // screen profile) then bail out.
   if (Browser::GetCreationStatusForProfile(profile) !=
       Browser::CreationStatus::kOk) {
+    return;
+  }
+
+  Browser* browser = web_app::FindSystemWebAppBrowser(profile, app_type,
+                                                      Browser::TYPE_APP, gurl);
+  if (browser) {
+    // If there is a matching browser we simply activate it and be done!
+    browser->window()->Activate();
     return;
   }
 

@@ -96,12 +96,12 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params);
 
-// Returns a browser that is hosting the given system app type and browser type,
-// or nullptr if not found.
-Browser* FindSystemWebAppBrowser(
-    Profile* profile,
-    SystemAppType app_type,
-    Browser::Type browser_type = Browser::TYPE_APP);
+// Returns a browser that is hosting the given system |app_type|,
+// |browser_type| and |url| (if not empty) or nullptr if not found.
+Browser* FindSystemWebAppBrowser(Profile* profile,
+                                 SystemAppType app_type,
+                                 Browser::Type browser_type = Browser::TYPE_APP,
+                                 const GURL& url = GURL());
 
 // Returns true if the |browser| is a system web app.
 bool IsSystemWebApp(Browser* browser);

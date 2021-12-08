@@ -245,7 +245,8 @@ void FlushSystemWebAppLaunchesForTesting(Profile* profile) {
 
 Browser* FindSystemWebAppBrowser(Profile* profile,
                                  SystemAppType app_type,
-                                 Browser::Type browser_type) {
+                                 Browser::Type browser_type,
+                                 const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
   absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
@@ -267,6 +268,15 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
 
     if (GetAppIdFromApplicationName(browser->app_name()) != app_id.value())
       continue;
+
+    if (!url.is_empty()) {
+      // In case a URL is provided, only allow a browser which shows it.
+      TabStripModel* tab_strip = browser->tab_strip_model();
+      content::WebContents* content =
+          tab_strip->GetWebContentsAt(tab_strip->active_index());
+      if (!content->GetVisibleURL().EqualsIgnoringRef(url))
+        continue;
+    }
 
     if (browser->window()->IsActive()) {
       return browser;
