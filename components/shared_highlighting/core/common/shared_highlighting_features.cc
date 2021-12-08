@@ -13,9 +13,6 @@ const base::Feature kPreemptiveLinkToTextGeneration{
 constexpr base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs{
     &kPreemptiveLinkToTextGeneration, "TimeoutLengthMs", 500};
 
-const base::Feature kSharedHighlightingUseBlocklist{
-    "SharedHighlightingUseBlocklist", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSharedHighlightingV2{"SharedHighlightingV2",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

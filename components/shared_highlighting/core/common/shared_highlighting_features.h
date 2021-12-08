@@ -18,10 +18,6 @@ extern const base::Feature kPreemptiveLinkToTextGeneration;
 // Sets the timeout length for pre-emptive link generation.
 extern const base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs;
 
-// If enabled, a blocklist will disable link generation on certain pages where
-// the feature is unlikely to work correctly.
-extern const base::Feature kSharedHighlightingUseBlocklist;
-
 // Enables the new UI features for highlighted text.
 extern const base::Feature kSharedHighlightingV2;
 

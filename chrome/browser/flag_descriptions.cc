@@ -2785,14 +2785,6 @@ const char kZeroCopyDescription[] =
 const char kEnableVulkanName[] = "Vulkan";
 const char kEnableVulkanDescription[] = "Use vulkan as the graphics backend.";
 
-const char kSharedHighlightingUseBlocklistName[] =
-    "Shared Highlighting blocklist";
-const char kSharedHighlightingUseBlocklistDescription[] =
-    "Uses a blocklist to disable Shared Highlighting link generation on "
-    "certain sites where personalized or dynamic content or other technical "
-    "restrictions make it unlikely that a URL can be generated and actually "
-    "work when shared.";
-
 const char kSharedHighlightingV2Name[] = "Shared Highlighting 2.0";
 const char kSharedHighlightingV2Description[] =
     "Improvements to Shared Highlighting. Including ability to reshare or "

@@ -4968,11 +4968,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "shared-highlighting-use-blocklist",
-    "owners": ["tmartino"],
-    "expiry_milestone": 97
-  },
-  {
     "name": "shared-highlighting-v2",
     "owners": ["kmilka", "cheickcisse@google.com"],
     "expiry_milestone": 99

@@ -29,13 +29,6 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
  public:
   LinkToTextMenuObserverTest();
 
-  void SetUp() override {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {shared_highlighting::kSharedHighlightingUseBlocklist}, {});
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     Reset(false);

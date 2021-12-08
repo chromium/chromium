@@ -6470,10 +6470,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCopyLinkToText)},
 #endif  // !defined(OS_ANDROID)
 
-    {"shared-highlighting-use-blocklist",
-     flag_descriptions::kSharedHighlightingUseBlocklistName,
-     flag_descriptions::kSharedHighlightingUseBlocklistDescription, kOsAll,
-     FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingUseBlocklist)},
     {"shared-highlighting-v2", flag_descriptions::kSharedHighlightingV2Name,
      flag_descriptions::kSharedHighlightingV2Description, kOsAll,
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingV2)},
