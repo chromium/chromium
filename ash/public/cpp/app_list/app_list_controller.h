@@ -82,6 +82,10 @@ class ASH_PUBLIC_EXPORT AppListController {
   // Returns whether the AppList is visible on any display.
   virtual bool IsVisible() = 0;
 
+  // Called when the app list temporary sort order changes.
+  virtual void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order) = 0;
+
  protected:
   AppListController();
   virtual ~AppListController();

@@ -520,6 +520,18 @@ void AppListControllerImpl::ProcessScrollEvent(const ui::ScrollEvent& event) {
   fullscreen_presenter_->ProcessScrollOffset(event.location(), offset);
 }
 
+void AppListControllerImpl::OnTemporarySortOrderChanged(
+    const absl::optional<AppListSortOrder>& new_order) {
+  DCHECK(features::IsProductivityLauncherEnabled());
+  DCHECK(features::IsLauncherAppSortEnabled());
+
+  // Adapt to the new sorting order in clamshell mode.
+  if (!IsTabletMode()) {
+    DCHECK(bubble_presenter_);
+    bubble_presenter_->OnTemporarySortOrderChanged(new_order);
+  }
+}
+
 ShelfAction AppListControllerImpl::ToggleAppList(
     int64_t display_id,
     AppListShowSource show_source,

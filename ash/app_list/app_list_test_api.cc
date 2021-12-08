@@ -19,6 +19,7 @@
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_reorder_undo_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -27,9 +28,12 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -44,6 +48,24 @@ PagedAppsGridView* GetPagedAppsGridView() {
       Shell::Get()->app_list_controller()->presenter()->GetView();
   return AppListView::TestApi(app_list_view).GetRootAppsGridView();
 }
+
+AppListBubbleView* GetAppListBubbleView() {
+  AppListBubbleView* bubble_view = Shell::Get()
+                                       ->app_list_controller()
+                                       ->bubble_presenter_for_test()
+                                       ->bubble_view_for_test();
+  DCHECK(bubble_view) << "Bubble launcher view not yet created. Tests must "
+                         "show the launcher and may need to call "
+                         "WaitForBubbleWindow() if animations are enabled.";
+  return bubble_view;
+}
+
+AppListReorderUndoContainerView* GetReorderUndoContainerViewFromBubble() {
+  DCHECK(features::IsLauncherAppSortEnabled());
+  return GetAppListBubbleView()->apps_page()->reorder_undo_container_for_test();
+}
+
+// WindowAddedWaiter -----------------------------------------------------------
 
 // Waits until a child window is added to a container window.
 class WindowAddedWaiter : public aura::WindowObserver {
@@ -81,25 +103,34 @@ AppListModel* AppListTestApi::GetAppListModel() {
   return AppListModelProvider::Get()->model();
 }
 
-void AppListTestApi::WaitForBubbleWindow() {
+void AppListTestApi::WaitForBubbleWindow(bool wait_for_opening_animation) {
   DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(!Shell::Get()->IsInTabletMode());
 
-  // Do nothing if the window already exists.
+  // Wait for the window only when the app list window does not exist.
   auto* app_list_controller = Shell::Get()->app_list_controller();
-  if (app_list_controller->GetWindow())
-    return;
+  if (!app_list_controller->GetWindow()) {
+    // Wait for a child window to be added to the app list container.
+    aura::Window* container = Shell::GetContainer(
+        Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
+    WindowAddedWaiter waiter(container);
+    waiter.Wait();
 
-  // Wait for a child window to be added to the app list container.
-  aura::Window* container = Shell::GetContainer(
-      Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
-  WindowAddedWaiter waiter(container);
-  waiter.Wait();
+    // App list window exists.
+    aura::Window* app_list_window = app_list_controller->GetWindow();
+    DCHECK(app_list_window);
+    DCHECK_EQ(app_list_window, waiter.added_window());
+  }
 
-  // App list window exists.
-  aura::Window* app_list_window = app_list_controller->GetWindow();
+  if (wait_for_opening_animation)
+    WaitUntilAppListAnimationIdle();
+}
+
+void AppListTestApi::WaitUntilAppListAnimationIdle() {
+  aura::Window* app_list_window =
+      Shell::Get()->app_list_controller()->GetWindow();
   DCHECK(app_list_window);
-  DCHECK_EQ(app_list_window, waiter.added_window());
+  LayerAnimationStoppedWaiter().Wait(app_list_window->layer());
 }
 
 bool AppListTestApi::HasApp(const std::string& app_id) {
@@ -196,17 +227,19 @@ void AppListTestApi::UpdatePagedViewStructure() {
 AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {
   if (features::IsProductivityLauncherEnabled() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
-    AppListBubbleView* bubble_view = Shell::Get()
-                                         ->app_list_controller()
-                                         ->bubble_presenter_for_test()
-                                         ->bubble_view_for_test();
-    DCHECK(bubble_view) << "Bubble launcher view not yet created. Tests must "
-                           "show the launcher and may need to call "
-                           "WaitForBubbleWindow() if animations are enabled.";
-    return bubble_view->apps_page_for_test()->scrollable_apps_grid_view();
+    return GetAppListBubbleView()->apps_page()->scrollable_apps_grid_view();
   }
 
   return GetPagedAppsGridView();
+}
+
+views::View* AppListTestApi::GetBubbleReorderUndoButton() {
+  return GetReorderUndoContainerViewFromBubble()
+      ->GetToastDismissButtonForTest();
+}
+
+bool AppListTestApi::GetBubbleReorderUndoToastVisibility() const {
+  return GetReorderUndoContainerViewFromBubble()->is_toast_visible_for_test();
 }
 
 }  // namespace ash

@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_SYSTEM_TOAST_STYLE_H_
 #define ASH_STYLE_SYSTEM_TOAST_STYLE_H_
 
+#include "ash/ash_export.h"
 #include "base/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -12,6 +13,7 @@
 
 namespace views {
 class ImageView;
+class Label;
 class LabelButton;
 }  // namespace views
 
@@ -25,7 +27,7 @@ namespace ash {
 // the information. The button inside is optional and has certain functionality
 // e.g. dismiss the view or retry. A managed icon will be put ahead of the label
 // inside if `is_managed` is true.
-class SystemToastStyle : public views::View {
+class ASH_EXPORT SystemToastStyle : public views::View {
  public:
   METADATA_HEADER(SystemToastStyle);
 
@@ -37,6 +39,9 @@ class SystemToastStyle : public views::View {
   SystemToastStyle& operator=(const SystemToastStyle&) = delete;
   ~SystemToastStyle() override;
 
+  // Updates the toast label text.
+  void SetText(const std::u16string& text);
+
   views::LabelButton* button() const { return button_; }
 
  private:
@@ -45,6 +50,7 @@ class SystemToastStyle : public views::View {
   gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
 
+  views::Label* label_ = nullptr;
   views::LabelButton* button_ = nullptr;
   views::ImageView* managed_icon_ = nullptr;
 };

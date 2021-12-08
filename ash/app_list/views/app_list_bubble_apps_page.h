@@ -32,6 +32,7 @@ class ContinueSectionView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
+class AppListReorderUndoContainerView;
 
 // The default page for the app list bubble / clamshell launcher. Contains a
 // scroll view with:
@@ -74,6 +75,11 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // view to handle focus.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // Called when the app list temporary sort order changes. If `new_order` is
+  // null, the temporary sort order is cleared.
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
+
   // views::View:
   void Layout() override;
 
@@ -99,6 +105,9 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
   views::Separator* separator_for_test() { return separator_; }
+  AppListReorderUndoContainerView* reorder_undo_container_for_test() {
+    return reorder_undo_container_;
+  }
 
  private:
   friend class AppListTestHelper;
@@ -123,6 +132,7 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
+  AppListReorderUndoContainerView* reorder_undo_container_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
 
   // Adds fade in/out gradients to `scroll_view_`.

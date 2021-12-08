@@ -97,9 +97,9 @@ SystemToastStyle::SystemToastStyle(
         managed_icon_->GetPreferredSize().width() + kToastHorizontalSpacing;
   }
 
-  auto* label = AddChildView(std::make_unique<SystemToastInnerLabel>(text));
-  label->SetMaximumWidth(GetMaximumSize().width() - icon_width);
-  layout->SetFlexForView(label, 1);
+  label_ = AddChildView(std::make_unique<SystemToastInnerLabel>(text));
+  label_->SetMaximumWidth(GetMaximumSize().width() - icon_width);
+  layout->SetFlexForView(label_, 1);
 
   if (!dismiss_text.has_value())
     return;
@@ -113,12 +113,16 @@ SystemToastStyle::SystemToastStyle(
       /*icon=*/nullptr));
   button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  label->SetMaximumWidth(
+  label_->SetMaximumWidth(
       GetMaximumSize().width() - button_->GetPreferredSize().width() -
       icon_width - kToastHorizontalSpacing * 2 - kToastHorizontalSpacing * 2);
 }
 
 SystemToastStyle::~SystemToastStyle() = default;
+
+void SystemToastStyle::SetText(const std::u16string& text) {
+  label_->SetText(text);
+}
 
 gfx::Size SystemToastStyle::GetMaximumSize() const {
   return gfx::Size(kToastMaximumWidth, WorkAreaInsets::ForWindow(

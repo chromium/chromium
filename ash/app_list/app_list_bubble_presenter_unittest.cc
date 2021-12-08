@@ -228,7 +228,7 @@ TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
   GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
 
   PressAndReleaseKey(ui::VKEY_ASSISTANT);
-  AppListTestApi().WaitForBubbleWindow();
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   AppListBubblePresenter* presenter = GetBubblePresenter();
   EXPECT_TRUE(presenter->IsShowing());
@@ -248,7 +248,7 @@ TEST_F(AppListBubblePresenterTest, SearchKeyOpensToAppsPage) {
   GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
 
   PressAndReleaseKey(ui::VKEY_LWIN);  // Search key.
-  AppListTestApi().WaitForBubbleWindow();
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   AppListBubblePresenter* presenter = GetBubblePresenter();
   EXPECT_TRUE(presenter->IsShowing());

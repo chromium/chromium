@@ -28,6 +28,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -151,52 +152,6 @@ std::vector<HoldingSpaceCommandId> GetHoldingSpaceCommandIds() {
     ids.push_back(static_cast<HoldingSpaceCommandId>(i));
   return ids;
 }
-
-// Waiters ---------------------------------------------------------------------
-
-// A class capable of waiting until a layer has stopped animating.
-class LayerAnimationStoppedWaiter : public ui::LayerAnimationObserver {
- public:
-  // Waits until the specified `layer`'s animation is stopped.
-  void Wait(ui::Layer* layer) {
-    if (!layer->GetAnimator()->is_animating())
-      return;
-
-    // Temporarily cache and observe `layer`'s animator.
-    layer_animator_ = layer->GetAnimator();
-    base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
-        layer_animator_observer{this};
-    layer_animator_observer.Observe(layer_animator_);
-
-    // Loop until the `layer`'s animation is stopped.
-    wait_loop_ = std::make_unique<base::RunLoop>();
-    wait_loop_->Run();
-
-    // Reset.
-    layer_animator_ = nullptr;
-    wait_loop_.reset();
-  }
-
- private:
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationScheduled(
-      ui::LayerAnimationSequence* sequence) override {}
-
-  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override {}
-
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
-    if (!layer_animator_->is_animating())
-      wait_loop_->Quit();
-  }
-
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
-    if (!layer_animator_->is_animating())
-      wait_loop_->Quit();
-  }
-
-  ui::LayerAnimator* layer_animator_ = nullptr;
-  std::unique_ptr<base::RunLoop> wait_loop_;
-};
 
 // ViewVisibilityChangedWaiter -------------------------------------------------
 

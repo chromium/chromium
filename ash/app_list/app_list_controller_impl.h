@@ -123,6 +123,8 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   void EndDragFromShelf(AppListViewState app_list_state);
   void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event);
   void ProcessScrollEvent(const ui::ScrollEvent& event);
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order) override;
 
   // In tablet mode, takes the user to the home screen, either by ending
   // Overview Mode/Split View Mode or by minimizing the other windows. Returns

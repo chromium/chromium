@@ -58,6 +58,8 @@ source_set("app_list") {
     "views/app_list_menu_model_adapter.h",
     "views/app_list_page.cc",
     "views/app_list_page.h",
+    "views/app_list_reorder_undo_container_view.cc",
+    "views/app_list_reorder_undo_container_view.h",
     "views/app_list_view.cc",
     "views/app_list_view.h",
     "views/apps_container_view.cc",

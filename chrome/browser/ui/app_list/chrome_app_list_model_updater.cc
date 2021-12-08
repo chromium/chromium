@@ -860,6 +860,9 @@ void ChromeAppListModelUpdater::RequestAppListSort(
       app_list::reorder::GenerateReorderParamsForAppListItems(order,
                                                               GetItems());
 
+  // Send the update in the temporary sorting order to ash.
+  ash::AppListController::Get()->OnTemporarySortOrderChanged(order);
+
   // Notify the ash side of the new positions. Updates are local-only because
   // `temporary_sort_manager_` is active.
   for (const auto& reorder_param : reorder_params)
@@ -952,6 +955,10 @@ void ChromeAppListModelUpdater::EndTemporarySortAndTakeAction(
   }
 
   temporary_sort_manager_.reset();
+
+  // Send the update in the temporary sorting order to ash.
+  ash::AppListController::Get()->OnTemporarySortOrderChanged(
+      /*new_order=*/absl::nullopt);
 }
 
 void ChromeAppListModelUpdater::RevertTemporaryPositions() {

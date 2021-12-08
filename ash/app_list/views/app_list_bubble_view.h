@@ -88,6 +88,8 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;
 
+  AppListBubbleAppsPage* apps_page() { return apps_page_; }
+
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
   AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }

@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_event_targeter.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/constants/ash_features.h"
@@ -288,6 +289,11 @@ bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
   if (!bubble_view_)
     return false;
   return bubble_view_->IsShowingEmbeddedAssistantUI();
+}
+
+void AppListBubblePresenter::OnTemporarySortOrderChanged(
+    const absl::optional<AppListSortOrder>& new_order) {
+  bubble_view_->apps_page()->OnTemporarySortOrderChanged(new_order);
 }
 
 void AppListBubblePresenter::ShowEmbeddedAssistantUI() {

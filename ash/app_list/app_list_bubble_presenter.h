@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
@@ -25,6 +26,7 @@ namespace ash {
 class AppListBubbleEventFilter;
 class AppListBubbleView;
 class AppListControllerImpl;
+enum class AppListSortOrder;
 
 // Manages the UI for the bubble launcher used in clamshell mode. Handles
 // showing and hiding the UI, as well as bounds computations. Only one bubble
@@ -64,6 +66,10 @@ class ASH_EXPORT AppListBubblePresenter
 
   // Switches to the assistant page. Requires the bubble to be open.
   void ShowEmbeddedAssistantUI();
+
+  // Called when the app list temporary sort order changes.
+  void OnTemporarySortOrderChanged(
+      const absl::optional<AppListSortOrder>& new_order);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

@@ -13,6 +13,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/views/app_list_reorder_undo_container_view.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -143,6 +144,13 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   separator_->SetBorder(views::CreateEmptyBorder(kSeparatorInsets));
   separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kSeparatorColor));
+
+  // Add a empty container view. A toast view should be added to
+  // `reorder_undo_container_` when the app list starts temporary sorting.
+  if (features::IsLauncherAppSortEnabled()) {
+    reorder_undo_container_ = scroll_contents->AddChildView(
+        std::make_unique<AppListReorderUndoContainerView>());
+  }
 
   // All apps section.
   scrollable_apps_grid_view_ =
@@ -294,6 +302,12 @@ void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
   continue_section_->DisableFocusForShowingActiveFolder(disabled);
   recent_apps_->DisableFocusForShowingActiveFolder(disabled);
   scrollable_apps_grid_view_->DisableFocusForShowingActiveFolder(disabled);
+}
+
+void AppListBubbleAppsPage::OnTemporarySortOrderChanged(
+    const absl::optional<AppListSortOrder>& new_order) {
+  DCHECK(features::IsLauncherAppSortEnabled());
+  reorder_undo_container_->OnTemporarySortOrderChanged(new_order);
 }
 
 void AppListBubbleAppsPage::Layout() {

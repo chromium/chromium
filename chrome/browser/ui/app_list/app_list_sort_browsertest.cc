@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow();
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListPageMenu);
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow();
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   // Move apps to one folder.
   const std::string folder_id =
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow();
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListNonFolderItemMenu);
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow();
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   // Move apps to one folder.
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow();
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
   // Move apps to one folder.
   app_list_test_api_.CreateFolderWithApps({app1_id_, app2_id_, app3_id_});
@@ -353,4 +353,45 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
       MenuType::kAppListFolderItemMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+}
+
+// Verifies that clicking at the reorder undo toast should revert the temporary
+// sorting order.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySorting) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
+                                   MenuType::kAppListPageMenu);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  // Ensure that the reorder undo toast's bounds update.
+  app_list_test_api_.GetTopLevelAppsGridView()
+      ->GetWidget()
+      ->LayoutRootViewIfNecessary();
+
+  // The toast should be visible.
+  EXPECT_TRUE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
+
+  // Mouse click at the undo button.
+  views::View* reorder_undo_toast_button =
+      app_list_test_api_.GetBubbleReorderUndoButton();
+  event_generator_->MoveMouseTo(
+      reorder_undo_toast_button->GetBoundsInScreen().CenterPoint());
+  event_generator_->ClickLeftButton();
+
+  // Verify that the default app order is recovered.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  // The toast should be hidden.
+  EXPECT_FALSE(app_list_test_api_.GetBubbleReorderUndoToastVisibility());
 }

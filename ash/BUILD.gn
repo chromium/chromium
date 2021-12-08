@@ -2963,6 +2963,8 @@ static_library("test_support") {
     "projector/test/mock_projector_metadata_controller.h",
     "projector/test/mock_projector_ui_controller.cc",
     "projector/test/mock_projector_ui_controller.h",
+    "test/layer_animation_stopped_waiter.cc",
+    "test/layer_animation_stopped_waiter.h",
 
     # These headers declare functions that are implemented inside of //ash, so
     # they cannot live in //ash/public/cpp/BUILD.gn.
