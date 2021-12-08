@@ -1910,7 +1910,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.OperationResult.{Function}"
-    enum="NearbyConnectionsStatus" expires_after="2022-01-01">
+    enum="NearbyConnectionsStatus" expires_after="2023-01-01">
   <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
