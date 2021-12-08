@@ -24,12 +24,13 @@ RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
 
 RemoteWebAuthnMessageHandler::~RemoteWebAuthnMessageHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  OnDisconnecting();
+  DCHECK(!connected());
 }
 
 void RemoteWebAuthnMessageHandler::OnConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  NotifyWebAuthnStateChange();
 }
 
 void RemoteWebAuthnMessageHandler::OnIncomingMessage(
@@ -63,6 +64,8 @@ void RemoteWebAuthnMessageHandler::OnDisconnecting() {
   VLOG(1) << "Number of bound receivers on disconnecting: "
           << receiver_set_.size();
   receiver_set_.Clear();
+
+  NotifyWebAuthnStateChange();
 }
 
 void RemoteWebAuthnMessageHandler::
@@ -89,6 +92,18 @@ void RemoteWebAuthnMessageHandler::AddReceiver(
   }
   mojo::ReceiverId id = receiver_set_.Add(this, std::move(receiver));
   VLOG(1) << "New receiver added. Receiver ID: " << id;
+}
+
+void RemoteWebAuthnMessageHandler::ClearReceivers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  receiver_set_.Clear();
+}
+
+void RemoteWebAuthnMessageHandler::NotifyWebAuthnStateChange() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  extension_notifier_.NotifyStateChange();
 }
 
 base::WeakPtr<RemoteWebAuthnMessageHandler>

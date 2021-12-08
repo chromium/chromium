@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
@@ -146,6 +147,7 @@ FakeDesktopEnvironmentFactory::~FakeDesktopEnvironmentFactory() = default;
 // DesktopEnvironmentFactory implementation.
 std::unique_ptr<DesktopEnvironment> FakeDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   std::unique_ptr<FakeDesktopEnvironment> result(
       new FakeDesktopEnvironment(capture_thread_, options));

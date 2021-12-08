@@ -238,6 +238,7 @@ static_library("common") {
     "chromoting_param_traits_impl.h",
     "client_session.cc",
     "client_session.h",
+    "client_session_events.h",
     "config_file_watcher.cc",
     "config_file_watcher.h",
     "config_watcher.h",

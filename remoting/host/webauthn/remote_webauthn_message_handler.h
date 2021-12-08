@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/protocol/named_message_pipe_handler.h"
 
 namespace remoting {
@@ -45,6 +46,11 @@ class RemoteWebAuthnMessageHandler final
       IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
+  void ClearReceivers();
+
+  // Notifies the WebAuthn proxy extension that the availablitiy of WebAuthn
+  // proxying may have changed.
+  void NotifyWebAuthnStateChange();
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> GetWeakPtr();
 
@@ -58,6 +64,7 @@ class RemoteWebAuthnMessageHandler final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  RemoteWebAuthnExtensionNotifier extension_notifier_;
   mojo::ReceiverSet<mojom::WebAuthnProxy> receiver_set_;
 
   // message ID => mojo callback mappings.

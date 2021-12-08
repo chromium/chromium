@@ -197,6 +197,7 @@ Me2MeDesktopEnvironmentFactory::~Me2MeDesktopEnvironmentFactory() {
 
 std::unique_ptr<DesktopEnvironment> Me2MeDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 

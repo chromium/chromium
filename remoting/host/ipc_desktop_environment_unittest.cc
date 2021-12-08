@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -303,6 +304,10 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   MockClientSessionControl client_session_control_;
   base::WeakPtrFactory<ClientSessionControl> client_session_control_factory_;
 
+  MockClientSessionEvents client_session_events_;
+  base::WeakPtrFactory<MockClientSessionEvents> client_session_events_factory_{
+      &client_session_events_};
+
  private:
   // Runs until there are no references to |task_runner_|.
   base::RunLoop main_run_loop_;
@@ -369,7 +374,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
       task_runner_, task_runner_, io_task_runner_, &daemon_channel_);
   desktop_environment_ = desktop_environment_factory_->Create(
       client_session_control_factory_.GetWeakPtr(),
-      DesktopEnvironmentOptions());
+      client_session_events_factory_.GetWeakPtr(), DesktopEnvironmentOptions());
 
   screen_controls_ = desktop_environment_->CreateScreenControls();
 
@@ -574,7 +579,7 @@ TEST_F(IpcDesktopEnvironmentTest, TouchEventsCapabilities) {
   // Create an environment with multi touch enabled.
   desktop_environment_ = desktop_environment_factory_->Create(
       client_session_control_factory_.GetWeakPtr(),
-      DesktopEnvironmentOptions());
+      client_session_events_factory_.GetWeakPtr(), DesktopEnvironmentOptions());
 
   std::unique_ptr<protocol::MockClipboardStub> clipboard_stub(
       new protocol::MockClipboardStub());

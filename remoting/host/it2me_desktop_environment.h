@@ -65,6 +65,7 @@ class It2MeDesktopEnvironmentFactory : public BasicDesktopEnvironmentFactory {
   // DesktopEnvironmentFactory interface.
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       const DesktopEnvironmentOptions& options) override;
 };
 

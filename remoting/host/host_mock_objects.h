@@ -18,6 +18,7 @@
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
+#include "remoting/host/client_session_events.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/host_status_observer.h"
 #include "remoting/host/input_injector.h"
@@ -115,6 +116,15 @@ class MockClientSessionDetails : public ClientSessionDetails {
   MOCK_CONST_METHOD0(desktop_session_id, uint32_t());
 };
 
+class MockClientSessionEvents : public ClientSessionEvents {
+ public:
+  MockClientSessionEvents();
+  ~MockClientSessionEvents() override;
+
+  MOCK_METHOD(void, OnDesktopAttached, (uint32_t session_id), (override));
+  MOCK_METHOD(void, OnDesktopDetached, (), (override));
+};
+
 class MockClientSessionEventHandler : public ClientSession::EventHandler {
  public:
   MockClientSessionEventHandler();
@@ -151,6 +161,7 @@ class MockDesktopEnvironmentFactory : public DesktopEnvironmentFactory {
 
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       const DesktopEnvironmentOptions& options) override;
 };
 

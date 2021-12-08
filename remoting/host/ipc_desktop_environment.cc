@@ -35,6 +35,7 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
     const DesktopEnvironmentOptions& options)
     : desktop_session_proxy_(
@@ -42,6 +43,7 @@ IpcDesktopEnvironment::IpcDesktopEnvironment(
                                                     caller_task_runner,
                                                     io_task_runner,
                                                     client_session_control,
+                                                    client_session_events,
                                                     desktop_session_connector,
                                                     options)) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
@@ -123,12 +125,14 @@ IpcDesktopEnvironmentFactory::~IpcDesktopEnvironmentFactory() = default;
 
 std::unique_ptr<DesktopEnvironment> IpcDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   return std::make_unique<IpcDesktopEnvironment>(
       audio_task_runner_, caller_task_runner_, io_task_runner_,
-      client_session_control, connector_factory_.GetWeakPtr(), options);
+      client_session_control, client_session_events,
+      connector_factory_.GetWeakPtr(), options);
 }
 
 bool IpcDesktopEnvironmentFactory::SupportsAudioCapture() const {

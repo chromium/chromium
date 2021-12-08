@@ -392,7 +392,8 @@ void DesktopSessionAgent::OnStartSessionAgent(
 
   // Create a desktop environment for the new session.
   desktop_environment_ = delegate_->desktop_environment_factory().Create(
-      weak_factory_.GetWeakPtr(), options);
+      weak_factory_.GetWeakPtr(), /* client_session_events= */ nullptr,
+      options);
 
   // Create the session controller and set the initial screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();

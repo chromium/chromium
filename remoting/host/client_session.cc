@@ -391,8 +391,9 @@ void ClientSession::OnConnectionAuthenticated() {
   options.ApplySessionOptions(session_options);
   // Create the desktop environment. Drop the connection if it could not be
   // created for any reason (for instance the curtain could not initialize).
-  desktop_environment_ =
-      desktop_environment_factory_->Create(weak_factory_.GetWeakPtr(), options);
+  desktop_environment_ = desktop_environment_factory_->Create(
+      client_session_control_weak_factory_.GetWeakPtr(),
+      client_session_events_weak_factory_.GetWeakPtr(), options);
   if (!desktop_environment_) {
     DisconnectSession(protocol::HOST_CONFIGURATION_ERROR);
     return;
@@ -514,7 +515,8 @@ void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
   HOST_LOG << "Client disconnected: " << client_jid_ << "; error = " << error;
 
   // Ignore any further callbacks.
-  weak_factory_.InvalidateWeakPtrs();
+  client_session_control_weak_factory_.InvalidateWeakPtrs();
+  client_session_events_weak_factory_.InvalidateWeakPtrs();
 
   // If the client never authenticated then the session failed.
   if (!is_authenticated_)
@@ -907,6 +909,32 @@ void ClientSession::OnDesktopDisplayChanged(
   SetMouseClampingFilter(display_size);
 
   connection_->client_stub()->SetVideoLayout(layout);
+}
+
+void ClientSession::OnDesktopAttached(uint32_t session_id) {
+  if (remote_webauthn_message_handler_) {
+    // On Windows, only processes running on an attached desktop session can
+    // bind ChromotingHostServices, so we notify the extension that it might be
+    // able to connect now.
+    remote_webauthn_message_handler_->NotifyWebAuthnStateChange();
+  }
+}
+
+void ClientSession::OnDesktopDetached() {
+  // Clear ChromotingSessionServices receivers and all other receivers brokered
+  // by ChromotingSessionServices, as they are scoped to desktop session that
+  // is being detached.
+  // TODO(yuweih): If we decide to start the IPC server per remote session, then
+  // we may just stop the server here instead, which will automatically
+  // disconnect all ongoing IPCs.
+  session_services_receivers_.Clear();
+  if (remote_webauthn_message_handler_) {
+    remote_webauthn_message_handler_->ClearReceivers();
+    remote_webauthn_message_handler_->NotifyWebAuthnStateChange();
+  }
+  if (remote_open_url_message_handler_) {
+    remote_open_url_message_handler_->ClearReceivers();
+  }
 }
 
 void ClientSession::CreateFileTransferMessageHandler(

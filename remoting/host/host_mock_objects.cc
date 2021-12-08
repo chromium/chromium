@@ -73,6 +73,7 @@ MockDesktopEnvironmentFactory::~MockDesktopEnvironmentFactory() = default;
 
 std::unique_ptr<DesktopEnvironment> MockDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
+    base::WeakPtr<ClientSessionEvents> client_session_events,
     const DesktopEnvironmentOptions& options) {
   return base::WrapUnique(CreatePtr());
 }
@@ -93,6 +94,10 @@ MockClientSessionControl::~MockClientSessionControl() = default;
 MockClientSessionDetails::MockClientSessionDetails() = default;
 
 MockClientSessionDetails::~MockClientSessionDetails() = default;
+
+MockClientSessionEvents::MockClientSessionEvents() = default;
+
+MockClientSessionEvents::~MockClientSessionEvents() = default;
 
 MockClientSessionEventHandler::MockClientSessionEventHandler() = default;
 

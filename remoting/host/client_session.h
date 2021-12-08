@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
+#include "remoting/host/client_session_events.h"
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_display_info.h"
@@ -72,6 +73,7 @@ class ClientSession : public protocol::HostStub,
                       public protocol::VideoStream::Observer,
                       public ClientSessionControl,
                       public ClientSessionDetails,
+                      public ClientSessionEvents,
                       public DesktopAndCursorComposerNotifier::EventHandler,
                       public webrtc::MouseCursorMonitor::Callback,
                       public mojom::ChromotingSessionServices {
@@ -162,6 +164,10 @@ class ClientSession : public protocol::HostStub,
   void SetDisableInputs(bool disable_inputs) override;
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
+
+  // ClientSessionEvents interface.
+  void OnDesktopAttached(uint32_t session_id) override;
+  void OnDesktopDetached() override;
 
   // ClientSessionDetails interface.
   uint32_t desktop_session_id() const override;
@@ -391,7 +397,11 @@ class ClientSession : public protocol::HostStub,
 
   // Used to disable callbacks to |this| once DisconnectSession() has been
   // called.
-  base::WeakPtrFactory<ClientSessionControl> weak_factory_{this};
+  base::WeakPtrFactory<ClientSessionControl>
+      client_session_control_weak_factory_{this};
+
+  base::WeakPtrFactory<ClientSessionEvents> client_session_events_weak_factory_{
+      this};
 };
 
 }  // namespace remoting

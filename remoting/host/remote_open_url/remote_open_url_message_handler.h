@@ -33,6 +33,7 @@ class RemoteOpenUrlMessageHandler final
 
   // Adds a receiver to the receiver set.
   void AddReceiver(mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver);
+  void ClearReceivers();
 
   // protocol::NamedMessagePipeHandler overrides.
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;

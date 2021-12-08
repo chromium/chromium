@@ -54,6 +54,12 @@ void RemoteOpenUrlMessageHandler::AddReceiver(
   AddReceiverAndGetReceiverId(std::move(receiver));
 }
 
+void RemoteOpenUrlMessageHandler::ClearReceivers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  receivers_.Clear();
+}
+
 void RemoteOpenUrlMessageHandler::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

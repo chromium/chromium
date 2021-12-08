@@ -25,6 +25,7 @@ namespace remoting {
 class ActionExecutor;
 class AudioCapturer;
 class ClientSessionControl;
+class ClientSessionEvents;
 class FileOperations;
 class InputInjector;
 class KeyboardLayoutMonitor;
@@ -79,7 +80,7 @@ class DesktopEnvironment {
 // Used to create |DesktopEnvironment| instances.
 class DesktopEnvironmentFactory {
  public:
-  virtual ~DesktopEnvironmentFactory() {}
+  virtual ~DesktopEnvironmentFactory() = default;
 
   // Creates an instance of |DesktopEnvironment|. Returns a nullptr pointer if
   // the desktop environment could not be created for any reason (if the curtain
@@ -87,6 +88,7 @@ class DesktopEnvironmentFactory {
   // the created desktop environment.
   virtual std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       const DesktopEnvironmentOptions& options) = 0;
 
   // Returns |true| if created |DesktopEnvironment| instances support audio

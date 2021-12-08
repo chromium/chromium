@@ -45,6 +45,7 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
       const DesktopEnvironmentOptions& options);
 
@@ -100,6 +101,7 @@ class IpcDesktopEnvironmentFactory
   // DesktopEnvironmentFactory implementation.
   std::unique_ptr<DesktopEnvironment> Create(
       base::WeakPtr<ClientSessionControl> client_session_control,
+      base::WeakPtr<ClientSessionEvents> client_session_events,
       const DesktopEnvironmentOptions& options) override;
   bool SupportsAudioCapture() const override;
 
