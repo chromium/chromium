@@ -2884,6 +2884,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, HostBindingsSyncIntegration) {
             "unsynced value");
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsTest, NoJavascriptUrlOnDevtools) {
+  // As per crbug/1115460 one could use javascript: url as a homepage URL and then trigger homepage
+  // navigation (e.g. via keyboard shortcut) to execute in the context of the privileged devtools
+  // frontend.
+  OpenDevToolsWindow("about:blank", true);
+
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  wc->GetController().LoadURL(GURL("javascript:window.xss=true"),
+                              content::Referrer(), ui::PAGE_TRANSITION_TYPED,
+                              std::string());
+  EXPECT_EQ(false, content::EvalJs(wc, "!!window.xss"));
+}
+
 class DevToolsSyncTest : public SyncTest {
  public:
   DevToolsSyncTest() : SyncTest(SyncTest::SINGLE_CLIENT) {}
