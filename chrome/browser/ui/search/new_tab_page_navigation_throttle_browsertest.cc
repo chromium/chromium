@@ -185,4 +185,22 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
   histogram_tester.ExpectTotalCount("Tab.NewTabOnload.Other", 1);
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleFencedFrameTest,
+                       FencedFrameShouldNotAffectTitle) {
+  ASSERT_TRUE(https_test_server()->Start());
+  GURL ntp_url = https_test_server()->GetURL("/instant_extended.html");
+  SetNewTabPage(ntp_url.spec());
+
+  GURL title_url = https_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), title_url));
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
+
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), ntp_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+  // Fenced frames should not update the title of the web contents.
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
+}
+
 }  // namespace
