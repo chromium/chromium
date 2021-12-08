@@ -41,7 +41,7 @@ class OsSettingsResult : public ChromeSearchResult {
  public:
   OsSettingsResult(Profile* profile,
                    const chromeos::settings::mojom::SearchResultPtr& result,
-                   double relevance_score,
+                   float relevance_score,
                    const gfx::ImageSkia& icon,
                    const std::u16string& query);
   ~OsSettingsResult() override;

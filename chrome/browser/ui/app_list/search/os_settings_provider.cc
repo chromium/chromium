@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -42,7 +41,7 @@ using Subpage = chromeos::settings::mojom::Subpage;
 using Section = chromeos::settings::mojom::Section;
 
 constexpr char kOsSettingsResultPrefix[] = "os-settings://";
-constexpr double kScoreEps = 1.0e-5;
+constexpr float kScoreEps = 1e-5f;
 
 constexpr size_t kNumRequestedResults = 5u;
 constexpr size_t kMaxShownResults = 2u;
@@ -66,36 +65,34 @@ void LogError(Error error) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.OsSettingsProvider.Error", error);
 }
 
-bool ContainsBetterAncestor(Subpage subpage,
-                            const double score,
-                            const chromeos::settings::Hierarchy* hierarchy,
-                            const base::flat_map<Subpage, double>& subpages,
-                            const base::flat_map<Section, double>& sections) {
-  // Returns whether or not a higher-scoring ancestor subpage or section of
-  // |subpage| is present within |subpages| or |sections|.
+bool ContainsAncestor(Subpage subpage,
+                      const chromeos::settings::Hierarchy* hierarchy,
+                      const base::flat_set<Subpage>& subpages,
+                      const base::flat_set<Section>& sections) {
+  // Returns whether or not an ancestor subpage or section of |subpage| is
+  // present within |subpages| or |sections|.
   const auto& metadata = hierarchy->GetSubpageMetadata(subpage);
 
   // Check parent subpage if one exists.
   if (metadata.parent_subpage) {
     const auto it = subpages.find(metadata.parent_subpage);
-    if ((it != subpages.end() && it->second >= score) ||
-        ContainsBetterAncestor(metadata.parent_subpage.value(), score,
-                               hierarchy, subpages, sections))
+    if (it != subpages.end() ||
+        ContainsAncestor(metadata.parent_subpage.value(), hierarchy, subpages,
+                         sections))
       return true;
   }
 
   // Check section.
   const auto it = sections.find(metadata.section);
-  return it != sections.end() && it->second >= score;
+  return it != sections.end();
 }
 
-bool ContainsBetterAncestor(Setting setting,
-                            const double score,
-                            const chromeos::settings::Hierarchy* hierarchy,
-                            const base::flat_map<Subpage, double>& subpages,
-                            const base::flat_map<Section, double>& sections) {
-  // Returns whether or not a higher-scoring ancestor subpage or section of
-  // |setting| is present within |subpages| or |sections|.
+bool ContainsAncestor(Setting setting,
+                      const chromeos::settings::Hierarchy* hierarchy,
+                      const base::flat_set<Subpage>& subpages,
+                      const base::flat_set<Section>& sections) {
+  // Returns whether or not an ancestor subpage or section of |setting| is
+  // present within |subpages| or |sections|.
   const auto& metadata = hierarchy->GetSettingMetadata(setting);
 
   // Check primary subpage only. Alternate subpages aren't used enough for the
@@ -103,15 +100,14 @@ bool ContainsBetterAncestor(Setting setting,
   if (metadata.primary.second) {
     const auto parent_subpage = metadata.primary.second.value();
     const auto it = subpages.find(parent_subpage);
-    if ((it != subpages.end() && it->second >= score) ||
-        ContainsBetterAncestor(parent_subpage, score, hierarchy, subpages,
-                               sections))
+    if (it != subpages.end() ||
+        ContainsAncestor(parent_subpage, hierarchy, subpages, sections))
       return true;
   }
 
   // Check section.
   const auto it = sections.find(metadata.primary.first);
-  return it != sections.end() && it->second >= score;
+  return it != sections.end();
 }
 
 }  // namespace
@@ -119,7 +115,7 @@ bool ContainsBetterAncestor(Setting setting,
 OsSettingsResult::OsSettingsResult(
     Profile* profile,
     const chromeos::settings::mojom::SearchResultPtr& result,
-    const double relevance_score,
+    const float relevance_score,
     const gfx::ImageSkia& icon,
     const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
@@ -302,7 +298,7 @@ void OsSettingsProvider::OnSearchReturned(
     int i = 0;
     for (const auto& result :
          FilterResults(query, sorted_results, hierarchy_)) {
-      const double score = 1.0 - i * kScoreEps;
+      const float score = 1.0f - i * kScoreEps;
       search_results.emplace_back(std::make_unique<OsSettingsResult>(
           profile_, result, score, icon_, last_query_));
       ++i;
@@ -365,8 +361,8 @@ OsSettingsProvider::FilterResults(
     const std::vector<chromeos::settings::mojom::SearchResultPtr>& results,
     const chromeos::settings::Hierarchy* hierarchy) {
   base::flat_set<std::string> seen_urls;
-  base::flat_map<Subpage, double> seen_subpages;
-  base::flat_map<Section, double> seen_sections;
+  base::flat_set<Subpage> seen_subpages;
+  base::flat_set<Section> seen_sections;
   std::vector<SettingsResultPtr> clean_results;
 
   for (const SettingsResultPtr& result : results) {
@@ -395,26 +391,22 @@ OsSettingsProvider::FilterResults(
     seen_urls.insert(url);
     clean_results.push_back(result.Clone());
     if (result->type == SettingsResultType::kSubpage)
-      seen_subpages.insert(
-          std::make_pair(result->id->get_subpage(), result->relevance_score));
+      seen_subpages.insert(result->id->get_subpage());
     if (result->type == SettingsResultType::kSection)
-      seen_sections.insert(
-          std::make_pair(result->id->get_section(), result->relevance_score));
+      seen_sections.insert(result->id->get_section());
   }
 
   // Iterate through the clean results a second time. Remove subpage or setting
-  // results that have a higher-scoring ancestor subpage or section also present
-  // in the results.
+  // results that have an ancestor subpage or section also present in the
+  // results.
   for (size_t i = 0; i < clean_results.size(); ++i) {
     const auto& result = clean_results[i];
     if ((result->type == SettingsResultType::kSubpage &&
-         ContainsBetterAncestor(result->id->get_subpage(),
-                                result->relevance_score, hierarchy_,
-                                seen_subpages, seen_sections)) ||
+         ContainsAncestor(result->id->get_subpage(), hierarchy_, seen_subpages,
+                          seen_sections)) ||
         (result->type == SettingsResultType::kSetting &&
-         ContainsBetterAncestor(result->id->get_setting(),
-                                result->relevance_score, hierarchy_,
-                                seen_subpages, seen_sections))) {
+         ContainsAncestor(result->id->get_setting(), hierarchy_, seen_subpages,
+                          seen_sections))) {
       clean_results.erase(clean_results.begin() + i);
       --i;
     }
