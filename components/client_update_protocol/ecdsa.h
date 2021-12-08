@@ -35,6 +35,11 @@ class Ecdsa {
 
   ~Ecdsa();
 
+  struct RequestParameters {
+    std::string query_cup2key;
+    std::string hash_hex;
+  };
+
   // Initializes this instance of CUP-ECDSA with a versioned public key.
   // |key_version| must be non-negative. |public_key| is expected to be a
   // DER-encoded ASN.1 SubjectPublicKeyInfo containing an ECDSA public key.
@@ -52,6 +57,15 @@ class Ecdsa {
   // initialize a separate CUP-ECDSA instance for each one.
   void SignRequest(const base::StringPiece& request_body,
                    std::string* query_params);
+
+  // Generates freshness/authentication data for an outgoing ping.
+  // |request_body| contains the body of the ping in UTF-8. Returns the
+  // parameters that must be sent to the server for ECDSA authentication.
+  //
+  // This method will store internal state in this instance used by calls to
+  // ValidateResponse(); if you need to have multiple pings in flight,
+  // initialize a separate CUP-ECDSA instance for each one.
+  RequestParameters SignRequest(const base::StringPiece& request_body);
 
   // Validates a response given to a ping previously signed with
   // SignRequest(). |response_body| contains the body of the response in

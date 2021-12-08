@@ -26,7 +26,9 @@ extern const base::Feature kAutofillAssistantInTabTriggering;
 extern const base::Feature kAutofillAssistantFeedbackChip;
 extern const base::Feature kAutofillAssistantLoadDFMForTriggerScripts;
 extern const base::Feature kAutofillAssistantProactiveHelp;
+extern const base::Feature kAutofillAssistantSignGetActionsRequests;
 extern const base::Feature kAutofillAssistantUrlHeuristics;
+extern const base::Feature kAutofillAssistantVerifyGetActionsResponses;
 
 }  // namespace features
 }  // namespace autofill_assistant

@@ -112,6 +112,15 @@ void Ecdsa::SignRequest(const base::StringPiece& request_body,
                         std::string* query_params) {
   DCHECK(query_params);
 
+  Ecdsa::RequestParameters request_parameters = SignRequest(request_body);
+
+  *query_params = base::StringPrintf("cup2key=%s&cup2hreq=%s",
+                                     request_parameters.query_cup2key.c_str(),
+                                     request_parameters.hash_hex.c_str());
+}
+
+Ecdsa::RequestParameters Ecdsa::SignRequest(
+    const base::StringPiece& request_body) {
   // Generate a random nonce to use for freshness, build the cup2key query
   // string, and compute the SHA-256 hash of the request body. Set these
   // two pieces of data aside to use during ValidateResponse().
@@ -134,9 +143,10 @@ void Ecdsa::SignRequest(const base::StringPiece& request_body,
       base::HexEncode(&request_hash_.front(), request_hash_.size());
   request_hash_hex = base::ToLowerASCII(request_hash_hex);
 
-  *query_params = base::StringPrintf("cup2key=%s&cup2hreq=%s",
-                                     request_query_cup2key_.c_str(),
-                                     request_hash_hex.c_str());
+  RequestParameters request_parameters;
+  request_parameters.query_cup2key = request_query_cup2key_;
+  request_parameters.hash_hex = request_hash_hex;
+  return request_parameters;
 }
 
 bool Ecdsa::ValidateResponse(const base::StringPiece& response_body,

@@ -467,10 +467,10 @@ enum PolicyType {
 message CUPRequestData {
   // A serialized ScriptActionRequestProto.
   optional bytes request = 1;
-  // The ID of the public key that the client will use to verify the response
-  // signature.
-  optional bytes public_key_id = 2;
-  optional bytes nonce = 3;
+  // Combination of public key id and random nonce.
+  optional bytes query_cup2key = 2;
+  // SHA2 hash of the request.
+  optional bytes hash_hex = 3;
 }
 
 message ScriptActionRequestProto {
