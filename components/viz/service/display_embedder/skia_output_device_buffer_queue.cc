@@ -41,6 +41,10 @@ NOINLINE void CheckForLoopFailuresBufferQueue() {
   g_last_reshape_failure = now;
 }
 
+// See |needs_background_image| for details.
+constexpr size_t kNumberOfBackgroundImages = 2u;
+constexpr gfx::Size kBackgroundImageSize(4, 4);
+
 }  // namespace
 
 namespace viz {
@@ -241,11 +245,8 @@ bool SkiaOutputDeviceBufferQueue::IsPrimaryPlaneOverlay() const {
 void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
     const absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>&
         plane) {
-  if (background_image_ && !background_image_is_scheduled_) {
-    background_image_->BeginPresent();
-    presenter_->ScheduleBackground(background_image_.get());
-    background_image_is_scheduled_ = true;
-  }
+  // See |needs_background_image|.
+  MaybeScheduleBackgroundImage();
 
   if (plane) {
     // If the current_image_ is nullptr, it means there is no change on the
@@ -637,11 +638,8 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const gfx::Size& size,
 
   overlay_transform_ = transform;
 
-  if (needs_background_image_ && !background_image_) {
-    background_image_ =
-        presenter_->AllocateSingleImage(color_space, gfx::Size(4, 4));
-    background_image_is_scheduled_ = false;
-  }
+  // See |needs_background_image|.
+  MaybeAllocateBackgroundImages();
 
   if (color_space_ == color_space && image_size_ == size)
     return true;
@@ -674,6 +672,40 @@ bool SkiaOutputDeviceBufferQueue::RecreateImages() {
 
   DCHECK(images_.empty() || images_.size() == number_to_allocate);
   return !images_.empty();
+}
+
+void SkiaOutputDeviceBufferQueue::MaybeAllocateBackgroundImages() {
+  if (!needs_background_image_ || !background_images_.empty())
+    return;
+
+  background_images_ = presenter_->AllocateImages(
+      color_space_, kBackgroundImageSize, kNumberOfBackgroundImages);
+  DCHECK(!background_images_.empty());
+
+  // Clear the background images to avoid undesired artifacts.
+  for (auto& image : background_images_) {
+    image->BeginWriteSkia();
+    image->sk_surface()->getCanvas()->clear(SkColors::kTransparent);
+    image->EndWriteSkia(/*force_flush*/ true);
+  }
+}
+
+void SkiaOutputDeviceBufferQueue::MaybeScheduleBackgroundImage() {
+  if (!needs_background_image_)
+    return;
+
+  if (current_background_image_)
+    current_background_image_->EndPresent({});
+  current_background_image_ = GetNextBackgroundImage();
+  current_background_image_->BeginPresent();
+  presenter_->ScheduleBackground(current_background_image_);
+}
+
+OutputPresenter::Image* SkiaOutputDeviceBufferQueue::GetNextBackgroundImage() {
+  DCHECK_EQ(background_images_.size(), kNumberOfBackgroundImages);
+  return current_background_image_ == background_images_.front().get()
+             ? background_images_.back().get()
+             : background_images_.front().get();
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(

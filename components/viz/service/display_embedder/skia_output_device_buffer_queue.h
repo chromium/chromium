@@ -89,6 +89,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   gfx::Size GetSwapBuffersSize();
   bool RecreateImages();
 
+  void MaybeAllocateBackgroundImages();
+  void MaybeScheduleBackgroundImage();
+  OutputPresenter::Image* GetNextBackgroundImage();
+
   std::unique_ptr<OutputPresenter> presenter_;
 
   scoped_refptr<gpu::SharedContextState> context_state_;
@@ -145,17 +149,22 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 #endif
   // Set to true if no image is to be used for the primary plane of this frame.
   bool current_frame_has_no_primary_plane_ = false;
-  // Whether the platform needs an occluded background image. Wayland needs it
-  // for opaque accelerated widgets and event wiring.
+  // Whether or not the platform needs occluded background images. Wayland needs
+  // it for opaque accelerated widgets and event wiring. Please see details on
+  // the number of background images below.
   bool needs_background_image_ = false;
+  // 4x4 small images that will be scaled to cover an opaque region.
+  // It's required to have two background images to be scheduled so that
+  // Desktop Wayland compositors are able to apply state changes to root
+  // surfaces. Otherwise, they unref the attached buffer after processing it
+  // and never update the state changes of the root surface, which leads to
+  // a broken resize opetion.
+  std::vector<std::unique_ptr<OutputPresenter::Image>> background_images_;
+  OutputPresenter::Image* current_background_image_ = nullptr;
   // Whether the platform supports non-backed solid color overlays. The Wayland
   // backend is able to delegate these overlays without buffer backings
   // depending on the availability of a certain protocol.
   bool supports_non_backed_solid_color_images_ = false;
-  // A 4x4 small image that will be scaled to cover an opaque region.
-  std::unique_ptr<OutputPresenter::Image> background_image_;
-  // Set to true if background has been scheduled in a frame.
-  bool background_image_is_scheduled_ = false;
   // Whether |SchedulePrimaryPlane| needs to wait for a paint before scheduling
   // This works around an edge case for unpromoting fullscreen quads.
   bool primary_plane_waiting_on_paint_ = false;
