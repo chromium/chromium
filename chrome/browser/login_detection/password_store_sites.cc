@@ -38,10 +38,15 @@ void PasswordStoreSites::OnLoginsChanged(
 
 void PasswordStoreSites::OnLoginsRetained(
     password_manager::PasswordStoreInterface* /*store*/,
-    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
+    const std::vector<password_manager::PasswordForm>& retained_passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Fetch the login list again.
-  password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  password_sites_ = std::set<std::string>();
+  for (const auto& entry : retained_passwords) {
+    if (!entry.url.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+    password_sites_->insert(GetSiteNameForURL(entry.url));
+  }
 }
 
 void PasswordStoreSites::OnGetPasswordStoreResults(
