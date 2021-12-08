@@ -134,6 +134,25 @@ class ImagesGrid extends PolymerElement {
   }
 
   /**
+   * @param {number} index
+   * @param {ImageTile} tile
+   * @return {string}
+   */
+  getClassForImg_(index, tile) {
+    if (tile.preview.length < 2) {
+      return '';
+    }
+    switch (index) {
+      case 0:
+        return 'left';
+      case 1:
+        return 'right';
+      default:
+        return '';
+    }
+  }
+
+  /**
    * Notify trusted code that a user selected an image.
    * @private
    * @param {!Event} e
