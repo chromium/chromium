@@ -157,7 +157,7 @@ void ExtensionsMenuView::Populate() {
   // If so this needs to be created before being added to a widget, constructor
   // would do.
   auto footer = CreateBubbleMenuItem(
-      EXTENSIONS_SETTINGS_ID, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSION),
+      EXTENSIONS_SETTINGS_ID, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS),
       base::BindRepeating(&chrome::ShowExtensions, browser_, std::string()));
 
   // Extension icons are larger-than-favicon as they contain internal padding

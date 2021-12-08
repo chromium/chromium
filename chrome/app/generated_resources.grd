@@ -4691,7 +4691,10 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSIONS_PINNED_BY_ADMIN" desc="The text indicating that an extension has been 'pinned' to the toolbar by the controlling administrator (sentence case).">
             Pinned by your administrator
           </message>
-          <message name="IDS_MANAGE_EXTENSION" desc="The 'Manage extensions' text in the context menu for when right-clicking on extension icons (sentence case).">
+          <message name="IDS_MANAGE_EXTENSION" desc="The text for the button in the extension's context menu used to open the chrome://extensions/?id=xxx page and manage a specific extension (sentence case).">
+            Manage extension
+          </message>
+          <message name="IDS_MANAGE_EXTENSIONS" desc="The text of the button in the extensions toolbar menu used to open the chrome://extensions page and manage all extensions (sentence case).">
             Manage extensions
           </message>
           <message name="IDS_EXTENSION_ACTION_INSPECT_POPUP" desc="The text for the right-click menu of page and browser actions which shows the popup and opens the developer tools (sentence case).">
@@ -4744,7 +4747,10 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSIONS_PINNED_BY_ADMIN" desc="The text indicating that an extension has been 'pinned' to the toolbar by the controlling administrator (title case).">
             Pinned by your Administrator
           </message>
-          <message name="IDS_MANAGE_EXTENSION" desc="The 'Manage Extensions' text in the context menu for when right-clicking on extension icons (title case).">
+          <message name="IDS_MANAGE_EXTENSION" desc="The text for the button in the extension's context menu used to open the chrome://extensions/?id=xxx page and manage a specific extension (title case).">
+            Manage Extension
+          </message>
+          <message name="IDS_MANAGE_EXTENSIONS" desc="The text for the button in the extensions toolbar menu used to open the chrome://extensions page and manage all extensions (title case).">
             Manage Extensions
           </message>
           <message name="IDS_EXTENSION_ACTION_INSPECT_POPUP" desc="The text for the right-click menu of page and browser actions which shows the popup and opens the developer tools (title case).">
