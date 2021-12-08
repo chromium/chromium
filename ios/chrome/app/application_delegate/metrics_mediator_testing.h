@@ -8,11 +8,6 @@
 #include "net/base/network_change_notifier.h"
 
 @interface MetricsMediator (TestingAddition)
-- (void)processCrashReportsPresentAtStartup;
-- (void)connectionTypeChanged:(net::NetworkChangeNotifier::ConnectionType)type;
-- (void)setBreakpadUploadingEnabled:(BOOL)enableUploading;
-- (void)setReporting:(BOOL)enableReporting;
-- (BOOL)isMetricsReportingEnabledWifiOnly;
 + (void)recordNumTabAtStartup:(int)numTabs;
 + (void)recordNumTabAtResume:(int)numTabs;
 + (void)recordNumNTPTabAtStartup:(int)numTabs;

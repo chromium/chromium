@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/stat.h>
 #include <sys/sysctl.h>
 
 #include "base/auto_reset.h"
@@ -47,13 +48,25 @@ namespace {
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
 
-void DeleteAllReportsInDirectory(base::FilePath directory) {
+// Delete breakpad reports after 60 days.
+void DeleteOldReportsInDirectory(base::FilePath directory) {
   base::FileEnumerator enumerator(directory, false,
                                   base::FileEnumerator::FILES);
   base::FilePath cur_file;
   while (!(cur_file = enumerator.Next()).value().empty()) {
-    if (cur_file.BaseName().value() != kReporterLogFilename)
-      base::DeleteFile(cur_file);
+    if (cur_file.BaseName().value() != kReporterLogFilename) {
+      time_t now = time(nullptr);
+      struct stat st;
+      if (lstat(cur_file.value().c_str(), &st) != 0) {
+        continue;
+      }
+
+      // 60 days.
+      constexpr time_t max_breakpad_report_age_sec = 60 * 60 * 24 * 60;
+      if (st.st_mtime <= now - max_breakpad_report_age_sec) {
+        base::DeleteFile(cur_file);
+      }
+    }
   }
 }
 
@@ -171,6 +184,10 @@ void Start() {
 }
 
 void SetEnabled(bool enabled) {
+  // Caches the uploading flag in NSUserDefaults, so that we can access the
+  // value immediately on startup, such as in safe mode or extensions.
+  crash_helper::common::SetUserEnabledUploading(enabled);
+
   // It is necessary to always call |MainThreadFreezeDetector setEnabled| as
   // the function will update its preference based on finch.
   [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
@@ -179,6 +196,7 @@ void SetEnabled(bool enabled) {
   // here, because if Crashpad fails to init, do not unintentionally enable
   // breakpad.
   if (common::CanUseCrashpad()) {
+    crash_reporter::SetUploadConsent(enabled);
     return;
   }
 
@@ -192,74 +210,38 @@ void SetEnabled(bool enabled) {
   }
 }
 
-// Breakpad only.
-void SetBreakpadUploadingEnabled(bool enabled) {
-  if (!crash_reporter::IsBreakpadRunning())
-    return;
-  if (enabled) {
+void UploadCrashReports() {
+  if (crash_reporter::IsCrashpadRunning()) {
+    static dispatch_once_t once_token;
+    dispatch_once(&once_token, ^{
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&ProcessIntermediateDumps));
+      return;
+    });
+  }
+
+  if (crash_reporter::IsBreakpadRunning()) {
     static dispatch_once_t once_token;
     dispatch_once(&once_token, ^{
       [[BreakpadController sharedInstance]
           setUploadCallback:UploadResultHandler];
+
+      // Clean old breakpad files here. Breakpad-only as Crashpad has it's own
+      // database cleaner.
+      base::FilePath crash_directory;
+      base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&DeleteOldReportsInDirectory, crash_directory));
     });
-  }
-  [[BreakpadController sharedInstance] setUploadingEnabled:enabled];
-}
-
-// Caches the uploading flag in NSUserDefaults, so that we can access the value
-// immediately on startup, such as in safe mode or extensions.
-void SetUserEnabledUploading(bool uploading_enabled) {
-  [app_group::GetGroupUserDefaults()
-      setBool:uploading_enabled ? YES : NO
-       forKey:base::SysUTF8ToNSString(
-                  common::kCrashReportsUploadingEnabledKey)];
-}
-
-void SetUploadingEnabled(bool enabled) {
-  if (enabled && [UIApplication sharedApplication].applicationState ==
-                     UIApplicationStateInactive) {
-    return;
-  }
-
-  if (crash_reporter::IsCrashpadRunning()) {
-    crash_reporter::SetUploadConsent(enabled);
-    [[MainThreadFreezeDetector sharedInstance] prepareCrashReportsForUpload:^(){
-    }];
-    return;
-  }
-
-  if (common::CanUseCrashpad()) {
-    return;
-  }
-
-  if ([MainThreadFreezeDetector sharedInstance].canUploadBreakpadCrashReports) {
-    SetBreakpadUploadingEnabled(enabled);
-  } else {
-    [[MainThreadFreezeDetector sharedInstance]
-        prepareCrashReportsForUpload:^() {
-          SetBreakpadUploadingEnabled(enabled);
-        }];
+    [[BreakpadController sharedInstance] setUploadingEnabled:YES];
   }
 }
 
-void CleanupCrashReports(BOOL after_upgrade) {
-  if (crash_reporter::IsCrashpadRunning()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ProcessIntermediateDumps));
-    return;
-  }
-
-  if (common::CanUseCrashpad()) {
-    return;
-  }
-
-  if (after_upgrade) {
-    base::FilePath crash_directory;
-    base::PathService::Get(ios::DIR_CRASH_DUMPS, &crash_directory);
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&DeleteAllReportsInDirectory, crash_directory));
+void PauseBreakpadUploads() {
+  if (crash_reporter::IsBreakpadRunning()) {
+    [[BreakpadController sharedInstance] setUploadingEnabled:NO];
   }
 }
 

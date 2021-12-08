@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
+#include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/task_environment.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
+#include "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,6 +51,7 @@ class SafeModeViewControllerTest : public PlatformTest {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment;
   id mock_breakpad_controller_;
   std::unique_ptr<ScopedBlockSwizzler>
       breakpad_controller_shared_instance_swizzler_;
@@ -58,41 +62,13 @@ class SafeModeViewControllerTest : public PlatformTest {
 // reports to upload. +[SafeModeViewController hasSuggestions] does not depend
 // on the value of crash_helper::IsEnabled or
 // crash_helper::IsUploadingEnabled.
-// TODO(crbug.com/1173776): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_HasSuggestions HasSuggestions
-#else
-#define MAYBE_HasSuggestions DISABLED_HasSuggestions
-#endif
-TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
+TEST_F(SafeModeViewControllerTest, HasSuggestions) {
   // Test when crash reporter is disabled.
-  crash_helper::SetUserEnabledUploading(false);
-  EXPECT_FALSE([SafeModeViewController hasSuggestions]);
-
-  crash_helper::SetUploadingEnabled(false);
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      // Calling SetUploadingEnabled() for the first time kicks off several
-      // asynchronous calls that ultimately result in MainThreadFreezeDetector's
-      // |-canUploadBreakpadCrashReports| being flipped to YES.  Subsequent
-      // calls will perform synchronously after |canUploadBreakpadCrashReports|
-      // is YES.  The OCMock verification calls below expect these selectors to
-      // be called synchronously, so wait until |canUploadBreakpadCrashReports|
-      // is YES before continuing the test.
-      // TODO(crbug.com/931826): Remove timing assumptions for the OCMock
-      // verification calls below.
-      base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return [MainThreadFreezeDetector sharedInstance]
-            .canUploadBreakpadCrashReports;
-      }));
-  EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
-  EXPECT_FALSE([SafeModeViewController hasSuggestions]);
-
-  crash_helper::SetUploadingEnabled(true);
-  EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
+  crash_helper::common::SetUserEnabledUploading(false);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
 
   // Test when crash reporter is enabled.
-  crash_helper::SetUserEnabledUploading(true);
+  crash_helper::common::SetUserEnabledUploading(true);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
@@ -106,7 +82,7 @@ TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   crash_helper::SetEnabled(true);
 
   [[mock_breakpad_controller_ expect] setUploadingEnabled:NO];
-  crash_helper::SetUploadingEnabled(false);
+  crash_helper::PauseBreakpadUploads();
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
@@ -121,9 +97,7 @@ TEST_F(SafeModeViewControllerTest, MAYBE_HasSuggestions) {
   [[mock_breakpad_controller_ expect]
       setUploadCallback:reinterpret_cast<BreakpadUploadCompletionCallback>(
                             [OCMArg anyPointer])];
-  crash_helper::SetUploadingEnabled(true);
-  EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);
-
+  crash_helper::UploadCrashReports();
   [mock_breakpad_controller_ cr_expectGetCrashReportCount:0];
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
   EXPECT_OCMOCK_VERIFY(mock_breakpad_controller_);

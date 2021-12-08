@@ -27,6 +27,7 @@
 #include "ios/chrome/app/safe_mode_app_state_agent.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -55,6 +56,7 @@
 #import "ios/testing/scoped_block_swizzler.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
+#import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -266,16 +268,17 @@ class AppStateTest : public BlockCleanupTest {
         safe_mode_swizzle_block_));
   }
 
-  void swizzleMetricsMediatorDisableReporting() {
-    metrics_mediator_called_ = NO;
+  void swizzleBreakpadUploadingDisabled() {
+    breakpad_disabled_called_ = NO;
 
-    metrics_mediator_swizzle_block_ = ^{
-      metrics_mediator_called_ = YES;
+    breakpad_swizzle_block_ = ^{
+      breakpad_disabled_called_ = YES;
     };
 
-    metrics_mediator_swizzler_.reset(new ScopedBlockSwizzler(
-        [MetricsMediator class], @selector(disableReporting),
-        metrics_mediator_swizzle_block_));
+    breakpad_swizzler_.reset(
+        new ScopedBlockSwizzler([BreakpadController class],
+                                NSSelectorFromString(@"setUploadingEnabled:"),
+                                breakpad_swizzle_block_));
   }
 
   void swizzleHandleStartupParameters(
@@ -431,8 +434,7 @@ class AppStateTest : public BlockCleanupTest {
   }
   ChromeBrowserState* getBrowserState() { return browser_state_.get(); }
 
-  BOOL metricsMediatorHasBeenCalled() { return metrics_mediator_called_; }
-
+  BOOL breakpadUploadingHasBeenDisabled() { return breakpad_disabled_called_; }
 
  private:
   web::WebTaskEnvironment task_environment_;
@@ -452,12 +454,12 @@ class AppStateTest : public BlockCleanupTest {
   ScenesBlock connected_scenes_swizzle_block_;
   DecisionBlock safe_mode_swizzle_block_;
   HandleStartupParam handle_startup_swizzle_block_;
-  ProceduralBlock metrics_mediator_swizzle_block_;
+  ProceduralBlock breakpad_swizzle_block_;
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> connected_scenes_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> handle_startup_swizzler_;
-  std::unique_ptr<ScopedBlockSwizzler> metrics_mediator_swizzler_;
-  __block BOOL metrics_mediator_called_;
+  std::unique_ptr<ScopedBlockSwizzler> breakpad_swizzler_;
+  __block BOOL breakpad_disabled_called_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
@@ -725,7 +727,6 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
 
   // Simulate background before going to foreground.
   [[getStartupInformationMock() expect] expireFirstUserActionRecorder];
-  swizzleMetricsMediatorDisableReporting();
   [getAppStateWithMock() applicationDidEnterBackground:application
                                           memoryHelper:memoryHelper];
 
@@ -836,6 +837,7 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
   id application = [OCMockObject niceMockForClass:[UIApplication class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
   StubBrowserInterfaceProvider* interfaceProvider = getInterfaceProvider();
+  crash_helper::SetEnabled(true);
 
   std::unique_ptr<Browser> browser = std::make_unique<TestBrowser>();
   id startupInformation = getStartupInformationMock();
@@ -850,7 +852,7 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
   interfaceProvider.incognitoInterface.browser = browser.get();
   [[[browserLauncher stub] andReturn:interfaceProvider] interfaceProvider];
 
-  swizzleMetricsMediatorDisableReporting();
+  swizzleBreakpadUploadingDisabled();
 
   // Simulate launching the app before going to background. This is to start
   // initialization process.
@@ -866,7 +868,8 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(startupInformation);
-  EXPECT_TRUE(metricsMediatorHasBeenCalled());
+  EXPECT_TRUE(breakpadUploadingHasBeenDisabled());
+  crash_helper::SetEnabled(false);
 }
 
 // Tests that -applicationDidEnterBackground do nothing if the application has

@@ -220,7 +220,6 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
-    "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp_snippets:ntp_snippets",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/search_engines",

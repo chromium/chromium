@@ -30,6 +30,13 @@ bool UserEnabledUploading() {
       boolForKey:base::SysUTF8ToNSString(kCrashReportsUploadingEnabledKey)];
 }
 
+void SetUserEnabledUploading(bool enabled) {
+  [app_group::GetGroupUserDefaults()
+      setBool:enabled ? YES : NO
+       forKey:base::SysUTF8ToNSString(
+                  common::kCrashReportsUploadingEnabledKey)];
+}
+
 bool CanUseCrashpad() {
   static bool can_use_crashpad = [app_group::GetGroupUserDefaults()
       boolForKey:base::SysUTF8ToNSString(kCrashpadStartOnNextRun)];

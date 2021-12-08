@@ -71,9 +71,6 @@ void SetIntegerUserPref(ChromeBrowserState* browser_state,
                         const char* pref_name,
                         int value);
 
-// Sets the state of using cellular network.
-void SetWWANStateTo(bool value);
-
 // Sets the state of first launch.
 void SetFirstLaunchStateTo(bool value);
 

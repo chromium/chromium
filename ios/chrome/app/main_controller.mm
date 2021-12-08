@@ -168,8 +168,8 @@ NSString* const kLogSiriShortcuts = @"LogSiriShortcuts";
 // Constants for deferred sending of queued feedback.
 NSString* const kSendQueuedFeedback = @"SendQueuedFeedback";
 
-// Constants for deferring the deletion of pre-upgrade crash reports.
-NSString* const kCleanupCrashReports = @"CleanupCrashReports";
+// Constants for deferring the upload of crash reports.
+NSString* const kUploadCrashReports = @"UploadCrashReports";
 
 // Constants for deferring the cleanup of snapshots on disk.
 NSString* const kCleanupSnapshots = @"CleanupSnapshots";
@@ -331,8 +331,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)startFreeMemoryMonitoring;
 // Asynchronously schedules the reset of the failed startup attempt counter.
 - (void)scheduleStartupAttemptReset;
-// Asynchronously schedules the cleanup of crash reports.
-- (void)scheduleCrashReportCleanup;
+// Asynchronously schedules the upload of crash reports.
+- (void)scheduleCrashReportUpload;
 // Asynchronously schedules the cleanup of discarded session files on disk.
 - (void)scheduleDiscardedSessionsCleanup;
 // Asynchronously schedules the cleanup of snapshots on disk.
@@ -870,12 +870,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
-- (void)scheduleCrashReportCleanup {
+- (void)scheduleCrashReportUpload {
   [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kCleanupCrashReports
+      enqueueBlockNamed:kUploadCrashReports
                   block:^{
-                    bool afterUpgrade = [self isFirstLaunchAfterUpgrade];
-                    crash_helper::CleanupCrashReports(afterUpgrade);
+                    crash_helper::UploadCrashReports();
                   }];
 }
 
@@ -907,7 +906,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)scheduleStartupCleanupTasks {
-  [self scheduleCrashReportCleanup];
+  [self scheduleCrashReportUpload];
 
   // ClearSessionCookies() is not synchronous.
   if (cookie_util::ShouldClearSessionCookies()) {
@@ -1148,7 +1147,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)crashIfRequested {
   if (experimental_flags::IsStartupCrashEnabled()) {
-    // Flush out the value cached for breakpad::SetUploadingEnabled().
+    // Flush out the value cached for crash_helper::SetEnabled().
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     int* x = NULL;

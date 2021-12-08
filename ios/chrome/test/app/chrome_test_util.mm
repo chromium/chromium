@@ -201,14 +201,6 @@ void SetIntegerUserPref(ChromeBrowserState* browser_state,
   pref.SetValue(value);
 }
 
-void SetWWANStateTo(bool value) {
-  MainController* mainController = chrome_test_util::GetMainController();
-  net::NetworkChangeNotifier::ConnectionType connectionType =
-      value ? net::NetworkChangeNotifier::CONNECTION_4G
-            : net::NetworkChangeNotifier::CONNECTION_WIFI;
-  [mainController.metricsMediator connectionTypeChanged:connectionType];
-}
-
 void SetFirstLaunchStateTo(bool value) {
   [[PreviousSessionInfo sharedInstance] setIsFirstSessionAfterUpgrade:value];
 }

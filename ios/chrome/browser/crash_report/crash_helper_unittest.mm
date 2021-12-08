@@ -111,22 +111,22 @@ TEST_F(BreakpadHelperTest, HasReportToUpload) {
 }
 
 TEST_F(BreakpadHelperTest, IsUploadingEnabled) {
-  crash_helper::SetUserEnabledUploading(true);
+  crash_helper::common::SetUserEnabledUploading(true);
   EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
   crash_helper::SetEnabled(false);
-  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
+  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
   EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
 
-  crash_helper::SetUserEnabledUploading(false);
+  crash_helper::common::SetUserEnabledUploading(false);
   EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] stop];
   crash_helper::SetEnabled(false);
   EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
   [[mock_breakpad_controller_ expect] start:NO];
   crash_helper::SetEnabled(true);
-  EXPECT_FALSE(crash_helper::common::UserEnabledUploading());
+  EXPECT_TRUE(crash_helper::common::UserEnabledUploading());
 }
 
 TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {

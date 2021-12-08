@@ -32,6 +32,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #include "ios/chrome/browser/chrome_constants.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
@@ -305,9 +306,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [[PreviousSessionInfo sharedInstance] resetMemoryWarningFlag];
   [[PreviousSessionInfo sharedInstance] stopRecordingMemoryFootprint];
 
-  // Turn off uploading of crash reports and metrics, in case the method of
-  // communication changes while in the background.
-  [MetricsMediator disableReporting];
+  // Turn off uploading of crash reports. This prevents failed uploads that will
+  // not be retried in Breakpad.
+  crash_helper::PauseBreakpadUploads();
 
   GetApplicationContext()->OnAppEnterBackground();
 }
@@ -375,6 +376,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         startRecordingMemoryFootprintWithInterval:
             base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
+
+  // This will be a no-op if upload already started.
+  crash_helper::UploadCrashReports();
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {

@@ -37,11 +37,8 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // Returns YES if the metrics pref is enabled.  Does not take into account the
 // wifi-only option or wwan state.
 - (BOOL)areMetricsEnabled;
-// Return YES if uploading is allowed, based on user preferences.
-- (BOOL)isUploadingEnabled;
 // Starts or stops the metrics service and crash report recording and/or
-// uploading, based on the current user preferences. Makes sure helper
-// mechanisms and the wwan state observer are set up if necessary. Must be
+// uploading, based on the current user preferences. Must be
 // called both on initialization and after user triggered preference change.
 // |isUserTriggered| is used to distinguish between those cases.
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered;
@@ -56,8 +53,6 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
 // Logs in UserDefaults the current date with kAppEnteredBackgroundDateKey as
 // key.
 + (void)logDateInUserDefaults;
-// Disables reporting in breakpad and metrics service.
-+ (void)disableReporting;
 // Logs that the application is in background and the number of memory warnings
 // for this session.
 + (void)applicationDidEnterBackground:(NSInteger)memoryWarningCount;

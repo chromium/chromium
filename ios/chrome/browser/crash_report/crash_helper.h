@@ -18,16 +18,15 @@ void Start();
 // Enables/Disables crash handling.
 void SetEnabled(bool enabled);
 
-// Enable/Disable uploading crash reports.
-void SetUploadingEnabled(bool enabled);
+// Process and begin uploading pending crash reports if application is active.
+// If application state is inactive or backgrounded, this is a no-op. Can be
+// called multiple times, but will only take effect the first time (when app
+// state is active) for Crashpad. For Breakpad, this can be called to start
+// uploads and restart uploads after -PauseBreakpadUploads() is called.
+void UploadCrashReports();
 
-// Sets the user preferences related to Breakpad and cache them to be used on
-// next startup to check if safe mode must be started.
-void SetUserEnabledUploading(bool enabled);
-
-// For breakpad, if |after_upgrade| is true, delete all pending reports.  For
-// crashpad, regardless of |after_upgrade|, process pending intermediate dumps.
-void CleanupCrashReports(bool after_upgrade);
+// For breakpad, it is necessary to pause uploads when entering the background.
+void PauseBreakpadUploads();
 
 // Process any pending crashpad reports, and mark them as
 // 'uploaded_in_recovery_mode'.

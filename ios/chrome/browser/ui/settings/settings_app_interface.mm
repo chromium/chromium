@@ -75,13 +75,6 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   chrome_test_util::WaitForBreakpadQueue();
 }
 
-+ (void)setCellularNetworkEnabled:(BOOL)cellularNetworkEnabled {
-  chrome_test_util::SetWWANStateTo(cellularNetworkEnabled);
-  // Breakpad uses dispatch_async to update its state. Wait to get to a
-  // consistent state.
-  chrome_test_util::WaitForBreakpadQueue();
-}
-
 + (BOOL)isBreakpadEnabled {
   return chrome_test_util::IsBreakpadEnabled();
 }
