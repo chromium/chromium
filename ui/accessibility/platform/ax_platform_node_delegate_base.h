@@ -194,12 +194,6 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
       const AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result) const override;
 
-  // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
-  gfx::Rect GetClippedScreenBoundsRect(
-      AXOffscreenResult* offscreen_result = nullptr) const override;
-  gfx::Rect GetUnclippedScreenBoundsRect(
-      AXOffscreenResult* offscreen_result = nullptr) const;
-
   // Do a *synchronous* hit test of the given location in global screen physical
   // pixel coordinates, and the node within this node's subtree (inclusive)
   // that's hit, if any.

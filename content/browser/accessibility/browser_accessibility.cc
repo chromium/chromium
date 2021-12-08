@@ -405,36 +405,6 @@ gfx::RectF BrowserAccessibility::GetLocation() const {
   return GetData().relative_bounds.bounds;
 }
 
-gfx::Rect BrowserAccessibility::GetClippedScreenBoundsRect(
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
-                       ui::AXClippingBehavior::kClipped, offscreen_result);
-}
-
-gfx::Rect BrowserAccessibility::GetUnclippedScreenBoundsRect(
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
-                       ui::AXClippingBehavior::kUnclipped, offscreen_result);
-}
-
-gfx::Rect BrowserAccessibility::GetClippedRootFrameBoundsRect(
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(ui::AXCoordinateSystem::kRootFrame,
-                       ui::AXClippingBehavior::kClipped, offscreen_result);
-}
-
-gfx::Rect BrowserAccessibility::GetUnclippedRootFrameBoundsRect(
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(ui::AXCoordinateSystem::kRootFrame,
-                       ui::AXClippingBehavior::kUnclipped, offscreen_result);
-}
-
-gfx::Rect BrowserAccessibility::GetClippedFrameBoundsRect(
-    ui::AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(ui::AXCoordinateSystem::kFrame,
-                       ui::AXClippingBehavior::kUnclipped, offscreen_result);
-}
-
 gfx::Rect BrowserAccessibility::GetUnclippedRootFrameHypertextRangeBoundsRect(
     const int start_offset,
     const int end_offset,

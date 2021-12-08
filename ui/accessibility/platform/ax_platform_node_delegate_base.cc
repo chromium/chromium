@@ -591,18 +591,6 @@ gfx::Rect AXPlatformNodeDelegateBase::GetInnerTextRangeBoundsRect(
   return gfx::Rect();
 }
 
-gfx::Rect AXPlatformNodeDelegateBase::GetClippedScreenBoundsRect(
-    AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
-                       AXClippingBehavior::kClipped, offscreen_result);
-}
-
-gfx::Rect AXPlatformNodeDelegateBase::GetUnclippedScreenBoundsRect(
-    AXOffscreenResult* offscreen_result) const {
-  return GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
-                       AXClippingBehavior::kUnclipped, offscreen_result);
-}
-
 gfx::NativeViewAccessible AXPlatformNodeDelegateBase::HitTestSync(
     int screen_physical_pixel_x,
     int screen_physical_pixel_y) const {

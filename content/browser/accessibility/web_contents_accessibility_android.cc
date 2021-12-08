@@ -1033,7 +1033,7 @@ void WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (node) {
     node->manager()->ScrollToMakeVisible(
-        *node, gfx::Rect(node->GetClippedFrameBoundsRect().size()));
+        *node, gfx::Rect(node->GetUnclippedFrameBoundsRect().size()));
   }
 }
 

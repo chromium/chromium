@@ -365,8 +365,19 @@ class AX_EXPORT AXPlatformNodeDelegate {
       const AXClippingBehavior clipping_behavior,
       AXOffscreenResult* offscreen_result = nullptr) const = 0;
 
-  virtual gfx::Rect GetClippedScreenBoundsRect(
-      AXOffscreenResult* offscreen_result = nullptr) const = 0;
+  // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
+  gfx::Rect GetClippedScreenBoundsRect(
+      AXOffscreenResult* offscreen_result = nullptr) const;
+  gfx::Rect GetUnclippedScreenBoundsRect(
+      AXOffscreenResult* offscreen_result = nullptr) const;
+  gfx::Rect GetClippedRootFrameBoundsRect(
+      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+  gfx::Rect GetUnclippedRootFrameBoundsRect(
+      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+  gfx::Rect GetClippedFrameBoundsRect(
+      ui::AXOffscreenResult* offscreen_result = nullptr) const;
+  gfx::Rect GetUnclippedFrameBoundsRect(
+      ui::AXOffscreenResult* offscreen_result = nullptr) const;
 
   // Return the bounds of the text range given by text offsets relative to
   // GetHypertext in the coordinate system indicated. If the clipping behavior

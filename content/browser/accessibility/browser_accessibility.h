@@ -253,18 +253,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // for (const auto& child : AllChildren()) {}.
   AllChildrenRange AllChildren() const { return AllChildrenRange(this); }
 
-  // Derivative utils for AXPlatformNodeDelegate::GetBoundsRect
-  gfx::Rect GetClippedScreenBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const override;
-  gfx::Rect GetUnclippedScreenBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
-  gfx::Rect GetClippedRootFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
-  gfx::Rect GetUnclippedRootFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
-  gfx::Rect GetClippedFrameBoundsRect(
-      ui::AXOffscreenResult* offscreen_result = nullptr) const;
-
   // Derivative utils for AXPlatformNodeDelegate::GetHypertextRangeBoundsRect
   gfx::Rect GetUnclippedRootFrameHypertextRangeBoundsRect(
       const int start_offset,
