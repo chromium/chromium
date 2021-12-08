@@ -1437,7 +1437,8 @@ const FeatureEntry::FeatureParam kNtpChromeCartModuleAbandonedCartDiscount[] = {
     {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountUseUtmParam,
      "true"},
     {"partner-merchant-pattern",
-     "(electronicexpress.com|zazzle.com|wish.com|homesquare.com|iherb.com)"}};
+     "(electronicexpress.com|zazzle.com|wish.com|homesquare.com|iherb.com|"
+     "zappos.com)"}};
 const FeatureEntry::FeatureParam kNtpChromeCartModuleHeuristicsImprovement[] = {
     {ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, "true"}};
 const FeatureEntry::FeatureParam kNtpChromeCartModuleRBDAndCouponDiscount[] = {

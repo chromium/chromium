@@ -494,6 +494,9 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
         GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), nullptr);
   } else if (navigation_url.host() == kGStoreHost) {
     is_add_to_cart = url.spec().find("O2JPA") != std::string::npos;
+  } else if (url.DomainIs("zappos.com")) {
+    is_add_to_cart = url.spec().find("mobileapi/v1/cart?displayRewards=true") !=
+                     std::string::npos;
   } else {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
   }
