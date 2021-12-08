@@ -895,7 +895,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   PrefService* prefs = profile->GetPrefs();
   if (update.in_developer_mode) {
-    if (profile->IsSupervised())
+    if (profile->IsChild())
       return RespondNow(Error(kCannotUpdateSupervisedProfileSettingsError));
     prefs->SetBoolean(prefs::kExtensionsUIDeveloperMode,
                       *update.in_developer_mode);
@@ -1108,7 +1108,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
     return RespondNow(Error(kCouldNotFindWebContentsError));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsSupervised()) {
+  if (profile->IsChild()) {
     return RespondNow(
         Error("Supervised users cannot load unpacked extensions."));
   }
@@ -1694,8 +1694,8 @@ DeveloperPrivateChoosePathFunction::~DeveloperPrivateChoosePathFunction() {}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
-  return RespondNow(OneArgument(base::Value(
-      Profile::FromBrowserContext(browser_context())->IsSupervised())));
+  return RespondNow(OneArgument(
+      base::Value(Profile::FromBrowserContext(browser_context())->IsChild())));
 }
 
 DeveloperPrivateIsProfileManagedFunction::
