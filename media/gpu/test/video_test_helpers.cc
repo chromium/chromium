@@ -355,35 +355,10 @@ bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
     return IsH264SPSNALU(data, size);
   } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
     return IsHevcSPSNALU(data, size);
-  } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    Vp8Parser parser;
-    Vp8FrameHeader frame_header;
-    if (!parser.ParseFrame(data, size, &frame_header)) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-    // Stream configuration is present in a keyframe in vp8.
-    return frame_header.IsKeyframe();
-  } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    Vp9Parser parser(false);
-    parser.SetStream(data, size, nullptr);
-    Vp9FrameHeader frame_header;
-    std::unique_ptr<DecryptConfig> null_config;
-    gfx::Size allocated_size;
-    Vp9Parser::Result result =
-        parser.ParseNextFrame(&frame_header, &allocated_size, &null_config);
-    if (result != Vp9Parser::kOk) {
-      // Let the VDA figure out there's something wrong with the stream.
-      return false;
-    }
-    // Stream configuration is present in a keyframe in vp9.
-    return frame_header.IsKeyframe();
-  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    // TODO(hiroh): Implement this.
-    return false;
   }
-  // Shouldn't happen at this point.
-  LOG(FATAL) << "Invalid profile: " << GetProfileName(profile);
+
+  LOG(FATAL) << "HasConfigInfo() should be called only for H264/HEVC stream: "
+             << GetProfileName(profile);
   return false;
 }
 

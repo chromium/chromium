@@ -308,9 +308,14 @@ void VideoDecoderClient::DecodeNextFragmentTask() {
     return;
   }
   bitstream_buffer->set_timestamp(base::TimeTicks::Now().since_origin());
-  bool has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
-      bitstream_buffer->data(), bitstream_buffer->data_size(),
-      video_->Profile());
+
+  bool has_config_info = false;
+  if (video_->Codec() == media::VideoCodec::kH264 ||
+      video_->Codec() == media::VideoCodec::kHEVC) {
+    has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
+        bitstream_buffer->data(), bitstream_buffer->data_size(),
+        video_->Profile());
+  }
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(
       CallbackThunk<decltype(&VideoDecoderClient::DecodeDoneTask),
