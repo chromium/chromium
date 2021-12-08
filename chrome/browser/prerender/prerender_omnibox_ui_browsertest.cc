@@ -177,4 +177,64 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
+// This test starts two different url prerendering by
+// AutocompleteActionPredictor, and checks that the second one is going to
+// cancel the first one.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
+                       CancelAutocompleteActionPredictorOldPrerendering) {
+  Observe(GetActiveWebContents());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+
+  // Attempt to prerender a direct URL input.
+  ASSERT_TRUE(GetAutocompleteActionPredictor());
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+  content::test::PrerenderHostObserver old_prerender_observer(
+      *GetActiveWebContents(), kPrerenderingUrl);
+  const GURL kNewUrl = embedded_test_server()->GetURL("/empty.html?newUrl");
+  GetAutocompleteActionPredictor()->StartPrerendering(
+      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+  EXPECT_NE(prerender_helper().GetHostForUrl(kPrerenderingUrl),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+  GetAutocompleteActionPredictor()->StartPrerendering(
+      kNewUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+
+  old_prerender_observer.WaitForDestroyed();
+  StartOmniboxPrerenderingAndWaitForActivation(kNewUrl);
+
+  EXPECT_TRUE(IsPrerenderingNavigation());
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kNewUrl);
+}
+
+// This test starts same url prerendering twice by AutocompleteActionPredictor,
+// and checks that the second one will not trigger cancellation mechanism.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
+                       AutocompleteActionPredictorSameURL) {
+  base::HistogramTester histogram_tester;
+  Observe(GetActiveWebContents());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+
+  // Attempt to prerender a direct URL input.
+  ASSERT_TRUE(GetAutocompleteActionPredictor());
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/empty.html?prerender");
+  GetAutocompleteActionPredictor()->StartPrerendering(
+      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+  GetAutocompleteActionPredictor()->StartPrerendering(
+      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 1, 0);
+
+  StartOmniboxPrerenderingAndWaitForActivation(kPrerenderingUrl);
+
+  EXPECT_TRUE(IsPrerenderingNavigation());
+  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
+}
+
 }  // namespace

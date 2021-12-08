@@ -8,9 +8,13 @@ namespace content {
 
 PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
-    int frame_tree_node_id)
+    int frame_tree_node_id,
+    const GURL& prerendering_url)
     : prerender_host_registry_(std::move(prerender_host_registry)),
-      frame_tree_node_id_(frame_tree_node_id) {}
+      frame_tree_node_id_(frame_tree_node_id),
+      prerendering_url_(prerendering_url) {
+  DCHECK(!prerendering_url_.is_empty());
+}
 
 PrerenderHandleImpl::~PrerenderHandleImpl() {
   // TODO(https://crbug.com/1166085): Use proper FinalStatus after the
@@ -19,6 +23,10 @@ PrerenderHandleImpl::~PrerenderHandleImpl() {
     prerender_host_registry_->CancelHost(
         frame_tree_node_id_, PrerenderHost::FinalStatus::kDestroyed);
   }
+}
+
+GURL PrerenderHandleImpl::GetInitialPrerenderingUrl() {
+  return prerendering_url_;
 }
 
 }  // namespace content

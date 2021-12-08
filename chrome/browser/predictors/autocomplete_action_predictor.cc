@@ -185,6 +185,9 @@ void AutocompleteActionPredictor::CancelPrerender() {
     no_state_prefetch_handle_->OnCancel();
     no_state_prefetch_handle_.reset();
   }
+
+  // TODO(https://crbug.com/1166085): Find a proper way to reset
+  // prerender_handle_ here.
 }
 
 void AutocompleteActionPredictor::StartPrerendering(
@@ -203,19 +206,22 @@ void AutocompleteActionPredictor::StartPrerendering(
       return;
     }
 
-    // TODO(https://crbug.com/1166085): Cancel an ongoing prerender if exists
-    // and start a new one when its request URL is different from the URL of the
-    // ongoing prerender. Otherwise, the new request is ignored.
-    // TODO(https://crbug.com/1166085): Add tests covering the code path of
-    // StartPrerendering.
-    std::unique_ptr<content::PrerenderHandle> new_prerender_handle =
-        web_contents.StartPrerendering(
-            url, content::PrerenderTriggerType::kEmbedder, "_DirectURLInput");
-    // This check is to avoid unintentional cancellation, due to the fact that
-    // StartPrerendering may return nullptr in cases such as requesting same
-    // prerendering url.
-    if (new_prerender_handle)
-      prerender_handle_ = std::move(new_prerender_handle);
+    // TODO(https://crbug.com/1166085): Reset the handle upon prerendering
+    // activation/cancellation. There is a case that a user input the same url
+    // after activation/cancellation, and this mechanism prevents the user from
+    // starting a new prerendering.
+    if (prerender_handle_) {
+      // `url` has already been prerendered. Avoid starting new prerendering.
+      if (prerender_handle_->GetInitialPrerenderingUrl() == url) {
+        return;
+      }
+      // `url` does not matched with previously prerendered url. Reset the
+      // handle to trigger cancellation.
+      prerender_handle_.reset();
+    }
+
+    prerender_handle_ = web_contents.StartPrerendering(
+        url, content::PrerenderTriggerType::kEmbedder, "_DirectURLInput");
   } else if (base::FeatureList::IsEnabled(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =
@@ -326,6 +332,10 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
         NoStatePrefetchStatus::kNotStarted);
   }
+
+  // TODO(https://crbug.com/1166085): Find a proper way to reset
+  // prerender_handle_ here.
+
   UpdateDatabaseFromTransitionalMatches(opened_url);
 }
 
