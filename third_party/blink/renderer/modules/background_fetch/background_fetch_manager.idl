@@ -10,5 +10,9 @@
 ] interface BackgroundFetchManager {
     [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchManagerFetch] Promise<BackgroundFetchRegistration> fetch(DOMString id, (RequestInfo or sequence<RequestInfo>) requests, optional BackgroundFetchOptions options = {});
     [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchManagerGet] Promise<BackgroundFetchRegistration?> get(DOMString id);
-    [CallWith=ScriptState, MeasureAs=BackgroundFetchManagerGetIds] Promise<FrozenArray<DOMString>> getIds();
+    [
+      CallWith = ScriptState, RaisesException, MeasureAs =
+      BackgroundFetchManagerGetIds
+    ] Promise<FrozenArray<DOMString>>
+    getIds();
 };

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_bridge.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_icon_loader.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
@@ -164,6 +165,14 @@ ScriptPromise BackgroundFetchManager::fetch(
   if (!registration_->active()) {
     exception_state.ThrowTypeError(
         "No active registration available on the ServiceWorkerRegistration.");
+    return ScriptPromise();
+  }
+
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in a fenced frame tree.");
     return ScriptPromise();
   }
 
@@ -359,6 +368,14 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
   if (!registration_->active())
     return ScriptPromise::CastUndefined(script_state);
 
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in a fenced frame tree.");
+    return ScriptPromise();
+  }
+
   ScriptState::Scope scope(script_state);
 
   if (id.IsEmpty()) {
@@ -496,7 +513,16 @@ void BackgroundFetchManager::DidGetRegistration(
   NOTREACHED();
 }
 
-ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state) {
+ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
+  LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
+  if (window && window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "backgroundFetch is not allowed in a fenced frame tree.");
+    return ScriptPromise();
+  }
+
   // Creating a Background Fetch registration requires an activated worker, so
   // if |registration_| has not been activated we can skip the Mojo roundtrip.
   if (!registration_->active()) {

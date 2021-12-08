@@ -49,7 +49,8 @@ class MODULES_EXPORT BackgroundFetchManager final
   ScriptPromise get(ScriptState* script_state,
                     const String& id,
                     ExceptionState& exception_state);
-  ScriptPromise getIds(ScriptState* script_state);
+  ScriptPromise getIds(ScriptState* script_state,
+                       ExceptionState& exception_state);
 
   void Trace(Visitor* visitor) const override;
 

@@ -84,6 +84,8 @@ const KEYS = {
   "usb.requestDevice"                           : "00000000-0000-0000-0000-00000000002A",
 
   "navigator.share"                             : "00000000-0000-0000-0000-00000000002B",
+
+  "background-fetch"                            : "00000000-0000-0000-0000-00000000002C",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

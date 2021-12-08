@@ -993,9 +993,10 @@ class BackgroundFetchFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
-// Tests that UKM records that the background fetch is denied in a fenced frame.
+// Tests that background fetch UKM is not recorded in a fenced frame. The
+// renderer should have checked and disallowed the request for fenced frames.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
-                       RecordBackgroundFetchUkmEvent) {
+                       NoRecordBackgroundFetchUkmEvent) {
   // Load a fenced frame.
   GURL fenced_frame_url(https_server()->GetURL("/fenced_frames/title1.html"));
   content::RenderFrameHost* fenced_frame =
@@ -1014,27 +1015,21 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   RegisterServiceWorker(fenced_frame);
 
   constexpr char kExpectedError[] =
-      "TypeError - This origin does not have permission to start a fetch.";
+      "NotAllowedError - Failed to execute 'fetch' on "
+      "'BackgroundFetchManager': backgroundFetch is not allowed in a fenced "
+      "frame tree.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
   std::vector<const ukm::mojom::UkmEntry*> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
-  ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, ukm::builders::BackgroundFetch::kHasTitleName, 1);
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, ukm::builders::BackgroundFetch::kNumRequestsInFetchName,
-      ukm::GetExponentialBucketMin(kNumRequestsInFetch,
-                                   kUkmEventDataBucketSpacing));
-  // In a fenced frame, it should be denied.
-  test_ukm_recorder_->ExpectEntryMetric(
-      entry, ukm::builders::BackgroundFetch::kDeniedDueToPermissionsName, 1);
+  ASSERT_EQ(0u, entries.size());
 }
 
-// Tests that UKM record works based on the outer most main frame. So, the
-// fenced frame loaded not from the same origin is not be recorded.
+// Tests that UKM record works based on the outer most main frame. This test is
+// to check non-same origin case, but actually the background fetch UKM is not
+// recorded in a fenced frame regardless of origin difference because the
+// renderer should have checked and disallowed the request for fenced frames.
 IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
                        NoRecordBackgroundFetchUkmEventNotInSameOrigin) {
   net::EmbeddedTestServer cross_origin_server(
@@ -1061,7 +1056,9 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
   RegisterServiceWorker(fenced_frame);
 
   constexpr char kExpectedError[] =
-      "TypeError - This origin does not have permission to start a fetch.";
+      "NotAllowedError - Failed to execute 'fetch' on "
+      "'BackgroundFetchManager': backgroundFetch is not allowed in a fenced "
+      "frame tree.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
   std::vector<const ukm::mojom::UkmEntry*> entries =

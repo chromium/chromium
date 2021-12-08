@@ -67,6 +67,19 @@ void BackgroundFetchServiceImpl::CreateForFrame(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(render_frame_host);
 
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    // The renderer should have checked and disallowed the request for fenced
+    // frames and throw exception in blink::BackgroundFetchManager. Ignore the
+    // request and mark it as bad if it didn't happen for some reason.
+    // TODO(crbug.com/1271051) Follow-up on this line depending on the
+    // conclusion at
+    // https://groups.google.com/a/chromium.org/g/navigation-dev/c/BZLlGsL2-64
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::BFSI_CREATE_FOR_FRAME_FENCED_FRAME);
+    return;
+  }
+
   auto* rfhi = static_cast<RenderFrameHostImpl*>(render_frame_host);
   RenderProcessHost* render_process_host = rfhi->GetProcess();
   DCHECK(render_process_host);
