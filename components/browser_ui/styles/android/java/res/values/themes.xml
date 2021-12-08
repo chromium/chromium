@@ -52,8 +52,6 @@
         <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_100</item>
 
         <!-- Custom semantic names -->
-        <!-- Will support dynamic colors in the future. -->
-        <item name="default_bg_color">@color/default_bg_color</item>
         <!-- Supports dynamic colors now. -->
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
@@ -148,8 +146,6 @@
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <!-- Will support dynamic colors in the future. -->
-        <item name="default_bg_color">@color/default_bg_color</item>
         <!-- Supports dynamic colors now. -->
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>

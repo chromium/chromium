@@ -23,9 +23,6 @@
     <!-- Used in SwitchMaterial thumb tint list for the disabled state. -->
     <attr name="colorFixedOnSurfaceAlpha38OverSurface" format="color"/>
 
-    <!-- Semantic names that will support dynamic colors but not yet. -->
-    <attr name="default_bg_color" format="color"/>
-
     <!-- Splintered semantic names that support dynamic colors. -->
     <attr name="default_bg_color_dynamic" format="color"/>
     <attr name="divider_line_bg_color_dynamic" format="color"/>
