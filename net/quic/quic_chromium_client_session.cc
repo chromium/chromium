@@ -191,28 +191,28 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
 base::Value NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
     base::StringPiece reason) {
-  base::DictionaryValue dict;
-  dict.SetString("connection_id", connection_id.ToString());
-  dict.SetString("reason", reason);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("connection_id", connection_id.ToString());
+  dict.SetStringKey("reason", reason);
+  return dict;
 }
 
 base::Value NetLogQuicMigrationSuccessParams(
     quic::QuicConnectionId connection_id) {
-  base::DictionaryValue dict;
-  dict.SetString("connection_id", connection_id.ToString());
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("connection_id", connection_id.ToString());
+  return dict;
 }
 
 base::Value NetLogProbingResultParams(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress* peer_address,
     bool is_success) {
-  base::DictionaryValue dict;
-  dict.SetString("network", base::NumberToString(network));
-  dict.SetString("peer address", peer_address->ToString());
-  dict.SetBoolean("is_success", is_success);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("network", base::NumberToString(network));
+  dict.SetStringKey("peer address", peer_address->ToString());
+  dict.SetBoolKey("is_success", is_success);
+  return dict;
 }
 
 // Histogram for recording the different reasons that a QUIC session is unable
@@ -309,12 +309,12 @@ base::Value NetLogQuicPushPromiseReceivedParams(
     spdy::SpdyStreamId stream_id,
     spdy::SpdyStreamId promised_stream_id,
     NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("headers",
               ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.SetInteger("id", stream_id);
-  dict.SetInteger("promised_stream_id", promised_stream_id);
-  return std::move(dict);
+  dict.SetIntKey("id", stream_id);
+  dict.SetIntKey("promised_stream_id", promised_stream_id);
+  return dict;
 }
 
 // TODO(fayang): Remove this when necessary data is collected.
@@ -3373,9 +3373,10 @@ void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
 
 base::Value QuicChromiumClientSession::GetInfoAsValue(
     const std::set<HostPortPair>& aliases) {
-  base::DictionaryValue dict;
-  dict.SetString("version", ParsedQuicVersionToString(connection()->version()));
-  dict.SetInteger("open_streams", GetNumActiveStreams());
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("version",
+                    ParsedQuicVersionToString(connection()->version()));
+  dict.SetIntKey("open_streams", GetNumActiveStreams());
 
   std::vector<base::Value> stream_list;
   auto* stream_list_ptr = &stream_list;
@@ -3409,7 +3410,7 @@ base::Value QuicChromiumClientSession::GetInfoAsValue(
   }
   dict.SetKey("aliases", base::Value(std::move(alias_list)));
 
-  return std::move(dict);
+  return dict;
 }
 
 bool QuicChromiumClientSession::gquic_zero_rtt_disabled() const {
