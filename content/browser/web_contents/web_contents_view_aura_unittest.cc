@@ -39,6 +39,17 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #endif
 
+#if defined(OS_LINUX)
+#include "ui/ozone/buildflags.h"
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+#include "ui/base/x/selection_utils.h"
+#include "ui/base/x/x11_os_exchange_data_provider.h"
+#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto_util.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // defined(OS_LINUX)
+
 namespace content {
 namespace {
 
@@ -407,6 +418,91 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   ASSERT_TRUE(drop_complete_data_->drop_data.filenames.empty());
 #endif
 }
+
+TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
+  WebContentsViewAura* view = GetView();
+
+  const base::FilePath filename(FILE_PATH_LITERAL("image.jpg"));
+  const GURL source_url("file:///image.jpg");
+  const std::string file_contents = "contents";
+  const std::string url_spec = "http://example.com/image.jpg";
+  const GURL url(url_spec);
+  const std::u16string url_title = u"";
+  const std::u16string html = u"<img src='http://example.com/image.jpg'>";
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+
+#if defined(OS_LINUX)
+#if BUILDFLAG(OZONE_PLATFORM_X11)
+  // FileContents drag-drop in X relies on XDragDropClient::InitDrag() setting
+  // window property 'XdndDirectSave0' to filename. Since XDragDropClient is not
+  // created in this unittest, we will set this property manually to allow
+  // XOSExchangeDataProvider::GetFileContents() to succeed.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
+    x11::Window xwindow = x11::CreateDummyWindow("Test Window");
+    x11::SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
+                           x11::GetAtom("text/plain"), "image.jpg");
+    data = std::make_unique<ui::OSExchangeData>(
+        std::make_unique<ui::XOSExchangeDataProvider>(
+            xwindow, xwindow, ui::SelectionFormatMap()));
+  }
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // defined(OS_LINUX)
+
+  // As per WebContentsViewAura::PrepareDragData(), we must call
+  // SetFileContents() before SetURL() to get the expected contents since
+  // SetURL() creates a synthesized <filename>.url shortcut.
+  data->SetFileContents(filename, file_contents);
+  data->SetURL(url, url_title);
+  data->SetHtml(html, GURL());
+  data->MarkOriginatedFromRenderer();
+
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+
+  // Simulate drag enter.
+  EXPECT_EQ(nullptr, view->current_drop_data_);
+  view->OnDragEntered(event);
+  ASSERT_NE(nullptr, view->current_drop_data_);
+
+  EXPECT_EQ(base::ASCIIToUTF16(url_spec), *view->current_drop_data_->text);
+  EXPECT_EQ(url_spec, view->current_drop_data_->url);
+  EXPECT_EQ(url_title, view->current_drop_data_->url_title);
+  EXPECT_TRUE(view->current_drop_data_->filenames.empty());
+  EXPECT_EQ(file_contents, view->current_drop_data_->file_contents);
+  EXPECT_TRUE(view->current_drop_data_->file_contents_image_accessible);
+  EXPECT_EQ(source_url, view->current_drop_data_->file_contents_source_url);
+  EXPECT_EQ(FILE_PATH_LITERAL("jpg"),
+            view->current_drop_data_->file_contents_filename_extension);
+  EXPECT_EQ("", view->current_drop_data_->file_contents_content_disposition);
+
+  // Simulate drop.
+  auto callback = base::BindOnce(&WebContentsViewAuraTest::OnDropComplete,
+                                 base::Unretained(this));
+  view->RegisterDropCallbackForTesting(std::move(callback));
+
+  base::RunLoop run_loop;
+  async_drop_closure_ = run_loop.QuitClosure();
+
+  view->OnPerformDrop(event, std::move(data));
+  run_loop.Run();
+
+  CheckDropData(view);
+
+  EXPECT_EQ(base::ASCIIToUTF16(url_spec), drop_complete_data_->drop_data.text);
+  EXPECT_EQ(url_spec, drop_complete_data_->drop_data.url);
+  EXPECT_EQ(url_title, drop_complete_data_->drop_data.url_title);
+  EXPECT_TRUE(drop_complete_data_->drop_data.filenames.empty());
+  EXPECT_EQ(file_contents, drop_complete_data_->drop_data.file_contents);
+  EXPECT_TRUE(drop_complete_data_->drop_data.file_contents_image_accessible);
+  EXPECT_EQ(source_url,
+            drop_complete_data_->drop_data.file_contents_source_url);
+  EXPECT_EQ(FILE_PATH_LITERAL("jpg"),
+            drop_complete_data_->drop_data.file_contents_filename_extension);
+  EXPECT_EQ("",
+            drop_complete_data_->drop_data.file_contents_content_disposition);
+}
+
 #endif
 
 #if defined(OS_WIN)
@@ -548,6 +644,7 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
 TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   WebContentsViewAura* view = GetView();
   auto data = std::make_unique<ui::OSExchangeData>();
+  data->MarkOriginatedFromRenderer();
 
   const std::string url_spec = "https://www.wikipedia.org/";
   const GURL url(url_spec);
@@ -573,7 +670,11 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   EXPECT_EQ(url_title, view->current_drop_data_->url_title);
 
   // Virtual files should not have been retrieved if url data present.
-  ASSERT_TRUE(view->current_drop_data_->filenames.empty());
+  EXPECT_TRUE(view->current_drop_data_->filenames.empty());
+  // Shortcut *.url file contents created by SetURL() should be ignored
+  // (https://crbug.com/1274395).
+  EXPECT_TRUE(view->current_drop_data_->file_contents_source_url.is_empty());
+  EXPECT_TRUE(view->current_drop_data_->file_contents.empty());
 
   // Simulate drop (completes asynchronously since virtual file data is
   // present).
@@ -593,7 +694,10 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   EXPECT_EQ(url_title, drop_complete_data_->drop_data.url_title);
 
   // Virtual files should not have been retrieved if url data present.
-  ASSERT_TRUE(drop_complete_data_->drop_data.filenames.empty());
+  EXPECT_TRUE(drop_complete_data_->drop_data.filenames.empty());
+  EXPECT_TRUE(
+      drop_complete_data_->drop_data.file_contents_source_url.is_empty());
+  EXPECT_TRUE(drop_complete_data_->drop_data.file_contents.empty());
 }
 #endif
 

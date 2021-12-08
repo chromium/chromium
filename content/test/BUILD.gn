@@ -2794,6 +2794,12 @@ test("content_unittests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+    if (ozone_platform_x11) {
+      deps += [
+        "//ui/base/x",
+        "//ui/gfx/x",
+      ]
+    }
   }
 
   if (is_mac) {
