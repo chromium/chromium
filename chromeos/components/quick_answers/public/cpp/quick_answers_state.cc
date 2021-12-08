@@ -199,6 +199,11 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
          use_text_annotator_for_testing_;
 }
 
+bool QuickAnswersState::IsSettingsEnforced() {
+  return pref_change_registrar_->prefs()->IsManagedPreference(
+      ash::quick_answers::prefs::kQuickAnswersEnabled);
+}
+
 void QuickAnswersState::InitializeObserver(
     QuickAnswersStateObserver* observer) {
   if (prefs_initialized_)

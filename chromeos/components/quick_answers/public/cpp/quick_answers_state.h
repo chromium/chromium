@@ -61,6 +61,8 @@ class QuickAnswersState {
 
   bool ShouldUseQuickAnswersTextAnnotator();
 
+  bool IsSettingsEnforced();
+
   bool settings_enabled() const { return settings_enabled_; }
   quick_answers::prefs::ConsentStatus consent_status() const {
     return consent_status_;

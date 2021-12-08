@@ -54,11 +54,17 @@ bool ShouldShowQuickAnswers() {
   if (!ash::QuickAnswersState::Get()->is_eligible())
     return false;
 
+  bool settings_enabled = ash::QuickAnswersState::Get()->settings_enabled();
+  // Respect the managed settings.
+  if (ash::QuickAnswersState::Get()->IsSettingsEnforced())
+    return settings_enabled;
+
+  if (settings_enabled)
+    return true;
+
   bool should_show_consent = ash::QuickAnswersState::Get()->consent_status() ==
                              ash::quick_answers::prefs::ConsentStatus::kUnknown;
-  bool settings_enabled = ash::QuickAnswersState::Get()->settings_enabled();
-
-  return should_show_consent || settings_enabled;
+  return should_show_consent;
 }
 
 }  // namespace
