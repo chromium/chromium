@@ -145,10 +145,11 @@ void NotifierStateTracker::OnStringListPrefChanged(
   const PrefService* pref_service = profile_->GetPrefs();
   CHECK(pref_service);
   const base::ListValue* pref_list = pref_service->GetList(pref_name);
-  for (size_t i = 0; i < pref_list->GetList().size(); ++i) {
-    std::string element;
-    if (pref_list->GetString(i, &element) && !element.empty())
-      ids_field->insert(element);
+  base::Value::ConstListView pref_list_view = pref_list->GetList();
+  for (size_t i = 0; i < pref_list_view.size(); ++i) {
+    const std::string* element = pref_list_view[i].GetIfString();
+    if (element && !element->empty())
+      ids_field->insert(*element);
     else
       LOG(WARNING) << i << "-th element is not a string for " << pref_name;
   }
