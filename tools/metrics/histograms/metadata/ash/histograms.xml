@@ -31,6 +31,21 @@ chromium-metrics-reviews@google.com.
       summary="Metrics related to in app to home gesture's nudes and usage."/>
 </variants>
 
+<variants name="DeviceActiveClientState">
+  <variant name="CheckingIn"
+      summary="The device active reporting client is in Checking In State"/>
+  <variant name="CheckingMembershipOprf"
+      summary="The device active reporting client is in Oprf State"/>
+  <variant name="CheckingMembershipQuery"
+      summary="The device active reporting client is in Query State"/>
+  <variant name="HealthCheck"
+      summary="The device active reporting client is in Health Check State"/>
+  <variant name="Idle"
+      summary="The device active reporting client is in Idle State"/>
+  <variant name="Unknown"
+      summary="The device active reporting client is in Unknown State"/>
+</variants>
+
 <variants name="DisplayModes">
   <variant name="ClamshellMode" summary="Clamshell mode"/>
   <variant name="TabletMode" summary="Tablet mode"/>
@@ -1315,6 +1330,50 @@ chromium-metrics-reviews@google.com.
     the following steps (1) click on task window 'A' (2) Alt+Tab to task 'Z'(3)
     click on task window 'B', then this will result in a sample recorded for the
     time delta between activating task window 'A'and 'B'.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.Duration.{DeviceActiveClientState}"
+    units="ms" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record the total duration to transition between DeviceActivityClient states.
+    States are defined in //ash/components/device_activity_client.h. ChromeOS
+    only. {DeviceActiveClientState}
+  </summary>
+  <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.QueryMembershipResult"
+    enum="BooleanSuccess" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Whether the private set membership query response is true or false.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.Response.{DeviceActiveClientState}"
+    enum="DeviceActiveClientPsmResponse" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Record the PsmResponse whenever a response is received from the server.
+    PsmResponse is defined in //ash/components/device_activity_client.h.
+    ChromeOS only. {DeviceActiveClientState}
+  </summary>
+  <token key="DeviceActiveClientState" variants="DeviceActiveClientState"/>
+</histogram>
+
+<histogram name="Ash.DeviceActiveClient.StateCount"
+    enum="DeviceActiveClientState" expires_after="2022-11-01">
+  <owner>hirthanan@google.com</owner>
+  <owner>chromeos-data-team@google.com</owner>
+  <summary>
+    Recorded every time the DeviceActivityClient enters a new state in its FSM.
+    States are defined in //ash/components/device_activity_client.h. ChromeOS
+    only.
   </summary>
 </histogram>
 

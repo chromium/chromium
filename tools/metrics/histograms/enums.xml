@@ -20448,6 +20448,28 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="RollbackDisallowed"/>
 </enum>
 
+<enum name="DeviceActiveClientPsmResponse">
+<!-- This must be kept current with DeviceActivityClient::PsmResponse
+        located in ash/components/device_activity/device_activity_client.h -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Timeout"/>
+</enum>
+
+<enum name="DeviceActiveClientState">
+<!-- This must be kept current with DeviceActivityClient::State
+        located in ash/components/device_activity/device_activity_client.h -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Idle"/>
+  <int value="2" label="CheckingMembershipOprf"/>
+  <int value="3" label="CheckingMembershipQuery"/>
+  <int value="4" label="CheckingIn"/>
+  <int value="5" label="HealthCheck"/>
+</enum>
+
 <enum name="DeviceIdMismatch">
   <int value="0" label="BOTH_NONEMPTY"/>
   <int value="1" label="SYNC_EMPTY"/>

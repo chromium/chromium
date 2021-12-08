@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -50,12 +51,29 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
     : public chromeos::NetworkStateHandlerObserver {
  public:
   // Tracks the state the client is in, given the use case (i.e DAILY).
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class State {
-    kIdle,  // Wait on network connection OR |report_timer_| to trigger.
-    kCheckingMembershipOprf,   // Phase 1 of the |CheckMembership| request.
-    kCheckingMembershipQuery,  // Phase 2 of the |CheckMembership| request.
-    kCheckingIn,               // |CheckIn| PSM device active request.
-    kHealthCheck,              // Query to perform server health check.
+    kUnknown = 0,  // Default value, typically we should never be in this state.
+    kIdle = 1,     // Wait on network connection OR |report_timer_| to trigger.
+    kCheckingMembershipOprf = 2,   // Phase 1 of the |CheckMembership| request.
+    kCheckingMembershipQuery = 3,  // Phase 2 of the |CheckMembership| request.
+    kCheckingIn = 4,               // |CheckIn| PSM device active request.
+    kHealthCheck = 5,              // Query to perform server health check.
+    kMaxValue = kHealthCheck,
+  };
+
+  // Categorize PSM response codes which will be used when bucketing UMA
+  // histograms.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PsmResponse {
+    kUnknown = 0,  // Uncategorized response type returned.
+    kSuccess = 1,  // Successfully completed PSM request.
+    kError = 2,    // Error completing PSM request.
+    kTimeout = 3,  // Timed out while completing PSM request.
+    kMaxValue = kTimeout,
   };
 
   // Fires device active pings while the device network is connected.
@@ -148,6 +166,11 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   // Time the device last transitioned out of idle state.
   base::Time last_transition_out_of_idle_time_;
+
+  // Generated when entering new |state_| and reset when leaving |state_|.
+  // This field is only used to determine total state duration, which is
+  // reported to UMA via. histograms.
+  base::ElapsedTimer state_timer_;
 
   // Generated on demand each time the state machine leaves the idle state.
   // Client Generates protos used in request body of Oprf and Query requests.

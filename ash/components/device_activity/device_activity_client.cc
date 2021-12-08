@@ -7,6 +7,9 @@
 #include "ash/components/device_activity/fresnel_pref_names.h"
 #include "ash/components/device_activity/fresnel_service.pb.h"
 #include "base/i18n/time_formatting.h"
+// TODO(https://crbug.com/1269900): Migrate to use SFUL library.
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,19 +41,91 @@ constexpr base::TimeDelta kImportRequestTimeout = base::Seconds(10);
 constexpr base::TimeDelta kOprfRequestTimeout = base::Seconds(10);
 constexpr base::TimeDelta kQueryRequestTimeout = base::Seconds(60);
 
-// Default response code to use before retrieving the response code from the
-// actual response body.
-constexpr int32_t kDefaultResponseCode = -1;
-
-// Response code representing a successfully completed network request.
-constexpr int32_t kSuccessResponseCode = 200;
-
 // TODO(https://crbug.com/1272922): Move shared configuration constants to
 // separate file.
 const char kFresnelHealthCheckEndpoint[] = "/v1/fresnel/healthCheck";
 const char kFresnelImportRequestEndpoint[] = "/v1/fresnel/psmRlweImport";
 const char kFresnelOprfRequestEndpoint[] = "/v1/fresnel/psmRlweOprf";
 const char kFresnelQueryRequestEndpoint[] = "/v1/fresnel/psmRlweQuery";
+
+// UMA histograms defined in:
+// //tools/metrics/histograms/metadata/ash/histograms.xml.
+//
+// Count number of times a state has been entered.
+const char kHistogramStateCount[] = "Ash.DeviceActiveClient.StateCount";
+
+// Duration histogram uses State variant in order to create
+// unique histograms measuring durations by State.
+const char kHistogramDurationPrefix[] = "Ash.DeviceActiveClient.Duration";
+
+// Response histogram uses State variant in order to create
+// unique histograms measuring responses by State.
+const char kHistogramResponsePrefix[] = "Ash.DeviceActiveClient.Response";
+
+// Count the number of boolean membership request results.
+const char kDeviceActiveClientQueryMembershipResult[] =
+    "Ash.DeviceActiveClient.QueryMembershipResult";
+
+// Generates the full histogram name for histogram variants based on state.
+std::string HistogramVariantName(const std::string& histogram_prefix,
+                                 DeviceActivityClient::State state) {
+  switch (state) {
+    case DeviceActivityClient::State::kIdle:
+      return base::StrCat({histogram_prefix, ".Idle"});
+    case DeviceActivityClient::State::kCheckingMembershipOprf:
+      return base::StrCat({histogram_prefix, ".CheckingMembershipOprf"});
+    case DeviceActivityClient::State::kCheckingMembershipQuery:
+      return base::StrCat({histogram_prefix, ".CheckingMembershipQuery"});
+    case DeviceActivityClient::State::kCheckingIn:
+      return base::StrCat({histogram_prefix, ".CheckingIn"});
+    case DeviceActivityClient::State::kHealthCheck:
+      return base::StrCat({histogram_prefix, ".HealthCheck"});
+    default:
+      NOTREACHED() << "Invalid State.";
+      return base::StrCat({histogram_prefix, ".Unknown"});
+  }
+}
+
+void RecordStateCountMetric(DeviceActivityClient::State state) {
+  base::UmaHistogramEnumeration(kHistogramStateCount, state);
+}
+
+void RecordQueryMembershipResultBoolean(bool is_member) {
+  base::UmaHistogramBoolean(kDeviceActiveClientQueryMembershipResult,
+                            is_member);
+}
+
+// Histogram sliced by duration and state.
+void RecordDurationStateMetric(DeviceActivityClient::State state,
+                               const base::TimeDelta duration) {
+  std::string duration_state_histogram_name =
+      HistogramVariantName(kHistogramDurationPrefix, state);
+  base::UmaHistogramCustomTimes(duration_state_histogram_name, duration,
+                                base::Milliseconds(1), base::Seconds(100),
+                                100 /* number of histogram buckets */);
+}
+
+// Histogram slices by PSM response and state.
+void RecordResponseStateMetric(DeviceActivityClient::State state,
+                               int net_code) {
+  // Mapping status code to PsmResponse is used to record UMA histograms
+  // for responses by state.
+  DeviceActivityClient::PsmResponse response;
+  switch (net_code) {
+    case net::OK:
+      response = DeviceActivityClient::PsmResponse::kSuccess;
+      break;
+    case net::ERR_TIMED_OUT:
+      response = DeviceActivityClient::PsmResponse::kTimeout;
+      break;
+    default:
+      response = DeviceActivityClient::PsmResponse::kError;
+      break;
+  }
+
+  base::UmaHistogramEnumeration(
+      HistogramVariantName(kHistogramResponsePrefix, state), response);
+}
 
 std::unique_ptr<network::ResourceRequest> GenerateResourceRequest(
     const std::string& request_method,
@@ -206,9 +281,6 @@ GURL DeviceActivityClient::GetFresnelURL() const {
   GURL::Replacements replacements;
 
   switch (state_) {
-    case State::kHealthCheck:
-      replacements.SetPathStr(kFresnelHealthCheckEndpoint);
-      break;
     case State::kCheckingMembershipOprf:
       replacements.SetPathStr(kFresnelOprfRequestEndpoint);
       break;
@@ -218,8 +290,13 @@ GURL DeviceActivityClient::GetFresnelURL() const {
     case State::kCheckingIn:
       replacements.SetPathStr(kFresnelImportRequestEndpoint);
       break;
-    case State::kIdle:
+    case State::kHealthCheck:
+      replacements.SetPathStr(kFresnelHealthCheckEndpoint);
+      break;
+    case State::kIdle:  // Fallthrough to |kUnknown| case.
+    case State::kUnknown:
       NOTREACHED();
+      break;
   }
 
   return base_url.ReplaceComponents(replacements);
@@ -279,8 +356,13 @@ void DeviceActivityClient::TransitionToHealthCheck() {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
+  state_timer_ = base::ElapsedTimer();
+
   // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kHealthCheck;
+
+  // Report UMA histogram for transitioning state to |kHealthCheck|.
+  RecordStateCountMetric(state_);
 
   auto resource_request = GenerateResourceRequest(
       net::HttpRequestHeaders::kGetMethod, GetFresnelURL(), api_key_);
@@ -302,21 +384,15 @@ void DeviceActivityClient::OnHealthCheckDone(
     std::unique_ptr<std::string> response_body) {
   DCHECK_EQ(state_, State::kHealthCheck);
 
-  int32_t response_code = kDefaultResponseCode;
-  const network::mojom::URLResponseHead* response_info =
-      url_loader_->ResponseInfo();
-
-  if (response_info && response_info->headers) {
-    response_code = response_info->headers->response_code();
-  }
-
-  // TODO(https://crbug.com/1262216): Add UMA histogram for response code by
-  // request type.
-  VLOG(1) << "Health Check Request returned response code " << response_code;
-
   // Use RAII to reset |url_loader_| after current function scope.
   // Resetting |url_loader_| also invalidates the |response_info| variable.
   auto url_loader = std::move(url_loader_);
+
+  int net_code = url_loader->NetError();
+  RecordResponseStateMetric(state_, net_code);
+
+  // Record duration of |kHealthCheck| state.
+  RecordDurationStateMetric(state_, state_timer_.Elapsed());
 
   // Transition back to kIdle state after performing a health check on servers.
   TransitionToIdle();
@@ -326,12 +402,18 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf() {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!url_loader_);
 
+  state_timer_ = base::ElapsedTimer();
+
   // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kCheckingMembershipOprf;
+
+  // Report UMA histogram for transitioning state to |kCheckingMembershipOprf|.
+  RecordStateCountMetric(state_);
 
   // Generate PSM Oprf request body.
   const auto status_or_oprf_request = psm_rlwe_client_->CreateOprfRequest();
   if (!status_or_oprf_request.ok()) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
@@ -365,31 +447,26 @@ void DeviceActivityClient::TransitionToCheckMembershipOprf() {
 
 void DeviceActivityClient::OnCheckMembershipOprfDone(
     std::unique_ptr<std::string> response_body) {
-  int32_t response_code = kDefaultResponseCode;
-  const network::mojom::URLResponseHead* response_info =
-      url_loader_->ResponseInfo();
-  if (response_info && response_info->headers) {
-    response_code = response_info->headers->response_code();
-  }
+  DCHECK_EQ(state_, State::kCheckingMembershipOprf);
 
   // Use RAII to reset |url_loader_| after current function scope.
   // Resetting |url_loader_| also invalidates the |response_info| variable.
   auto url_loader = std::move(url_loader_);
 
-  // TODO(https://crbug.com/1262216): Report UMA histogram response codes of
-  // Oprf request.
-  VLOG(1) << "Oprf Check Membership request returned response code "
-          << response_code;
+  int net_code = url_loader->NetError();
+  RecordResponseStateMetric(state_, net_code);
 
   // Convert serialized response body to oprf response protobuf.
   FresnelPsmRlweOprfResponse psm_oprf_response;
   if (!response_body || !psm_oprf_response.ParseFromString(*response_body)) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
 
   // Parse |fresnel_oprf_response| for oprf_response.
   if (!psm_oprf_response.has_rlwe_oprf_response()) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
@@ -397,6 +474,7 @@ void DeviceActivityClient::OnCheckMembershipOprfDone(
   psm_rlwe::PrivateMembershipRlweOprfResponse oprf_response =
       psm_oprf_response.rlwe_oprf_response();
 
+  RecordDurationStateMetric(state_, state_timer_.Elapsed());
   TransitionToCheckMembershipQuery(oprf_response);
 }
 
@@ -405,13 +483,19 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
   DCHECK_EQ(state_, State::kCheckingMembershipOprf);
   DCHECK(!url_loader_);
 
+  state_timer_ = base::ElapsedTimer();
+
   // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kCheckingMembershipQuery;
+
+  // Report UMA histogram for transitioning state to |kCheckingMembershipQuery|.
+  RecordStateCountMetric(state_);
 
   // Generate PSM Query request body.
   const auto status_or_query_request =
       psm_rlwe_client_->CreateQueryRequest(oprf_response);
   if (!status_or_query_request.ok()) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
@@ -445,31 +529,26 @@ void DeviceActivityClient::TransitionToCheckMembershipQuery(
 
 void DeviceActivityClient::OnCheckMembershipQueryDone(
     std::unique_ptr<std::string> response_body) {
-  int32_t response_code = kDefaultResponseCode;
-  const network::mojom::URLResponseHead* response_info =
-      url_loader_->ResponseInfo();
-  if (response_info && response_info->headers) {
-    response_code = response_info->headers->response_code();
-  }
+  DCHECK_EQ(state_, State::kCheckingMembershipQuery);
 
   // Use RAII to reset |url_loader_| after current function scope.
   // Resetting |url_loader_| also invalidates the |response_info| variable.
   auto url_loader = std::move(url_loader_);
 
-  // TODO(https://crbug.com/1262216): Report UMA histogram for response codes of
-  // Query request.
-  VLOG(1) << "Query Check Membership request returned response code "
-          << response_code;
+  int net_code = url_loader->NetError();
+  RecordResponseStateMetric(state_, net_code);
 
   // Convert serialized response body to fresnel query response protobuf.
   FresnelPsmRlweQueryResponse psm_query_response;
   if (!response_body || !psm_query_response.ParseFromString(*response_body)) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
 
   // Parse |fresnel_query_response| for psm query_response.
   if (!psm_query_response.has_rlwe_query_response()) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
@@ -479,6 +558,7 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
   auto status_or_response = psm_rlwe_client_->ProcessResponse(query_response);
   if (!status_or_response.ok()) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
     return;
   }
@@ -490,12 +570,17 @@ void DeviceActivityClient::OnCheckMembershipQueryDone(
 
   bool is_psm_id_member = membership_response.is_member();
 
+  // Record the query membership result to UMA histogram.
+  RecordQueryMembershipResultBoolean(is_psm_id_member);
+
   if (!is_psm_id_member) {
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToCheckIn();
   } else {
     // Update local state to signal ping has already been sent for current day.
     local_state_->SetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
                           last_transition_out_of_idle_time_);
+    RecordDurationStateMetric(state_, state_timer_.Elapsed());
     TransitionToIdle();
   }
 }
@@ -504,8 +589,13 @@ void DeviceActivityClient::TransitionToCheckIn() {
   DCHECK_EQ(state_, State::kCheckingMembershipQuery);
   DCHECK(!url_loader_);
 
+  state_timer_ = base::ElapsedTimer();
+
   // |state_| must be set correctly in order to generate correct URL.
   state_ = State::kCheckingIn;
+
+  // Report UMA histogram for transitioning state to |kCheckingIn|.
+  RecordStateCountMetric(state_);
 
   std::string current_psm_id_str = current_day_psm_id_.value().sensitive_id();
 
@@ -541,28 +631,23 @@ void DeviceActivityClient::TransitionToCheckIn() {
 
 void DeviceActivityClient::OnCheckInDone(
     std::unique_ptr<std::string> response_body) {
-  int32_t response_code = kDefaultResponseCode;
-  const network::mojom::URLResponseHead* response_info =
-      url_loader_->ResponseInfo();
-  if (response_info && response_info->headers) {
-    response_code = response_info->headers->response_code();
-  }
-
-  // TODO(https://crbug.com/1262216): Report UMA histogram for response codes of
-  // Import request.
-  VLOG(1) << "Check In request returned response code " << response_code;
+  DCHECK_EQ(state_, State::kCheckingIn);
 
   // Use RAII to reset |url_loader_| after current function scope.
   // Resetting |url_loader_| also invalidates the |response_info| variable.
   auto url_loader = std::move(url_loader_);
 
-  // Successful import request - device active was imported successfully.
-  if (response_code == kSuccessResponseCode) {
+  int net_code = url_loader->NetError();
+  RecordResponseStateMetric(state_, net_code);
+
+  // Successful import request - PSM ID was imported successfully.
+  if (net_code == net::OK) {
     // Update local state pref to record reporting device active.
     local_state_->SetTime(prefs::kDeviceActiveLastKnownDailyPingTimestamp,
                           last_transition_out_of_idle_time_);
   }
 
+  RecordDurationStateMetric(state_, state_timer_.Elapsed());
   TransitionToIdle();
 }
 
@@ -572,6 +657,9 @@ void DeviceActivityClient::TransitionToIdle() {
 
   current_day_window_id_ = absl::nullopt;
   current_day_psm_id_ = absl::nullopt;
+
+  // Report UMA histogram for transitioning state back to |kIdle|.
+  RecordStateCountMetric(state_);
 }
 
 }  // namespace device_activity

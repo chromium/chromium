@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/network/network_state_handler_observer.h"
@@ -252,6 +253,7 @@ class DeviceActivityClientTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<DeviceActivityClient> device_activity_client_;
   std::string wifi_network_service_path_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DeviceActivityClientTest, DefaultStatesAreInitializedProperly) {
@@ -525,6 +527,64 @@ TEST_F(DeviceActivityClientTest, CheckMembershipOnLocalStateReset) {
   // powerwash.
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kCheckingMembershipOprf);
+}
+
+TEST_F(DeviceActivityClientTest, InitialUmaHistogramStateCount) {
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActiveClient.StateCount",
+      DeviceActivityClient::State::kCheckingMembershipOprf, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActiveClient.StateCount",
+      DeviceActivityClient::State::kCheckingMembershipQuery, 0);
+  histogram_tester_.ExpectBucketCount("Ash.DeviceActiveClient.StateCount",
+                                      DeviceActivityClient::State::kCheckingIn,
+                                      0);
+}
+
+TEST_F(DeviceActivityClientTest, IncrementSuccessfulQueryMembershipHistogram) {
+  // Device active reporting starts membership check on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // Mock successful |kCheckingMembershipOprf|, |kCheckingMembershipQuery|, and
+  // |kCheckingIn| requests.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(
+      "Ash.DeviceActiveClient.QueryMembershipResult", 1);
+}
+
+TEST_F(DeviceActivityClientTest, UmaHistogramStateCountAfterFirstCheckIn) {
+  // Device active reporting starts membership check on network connect.
+  SetWifiNetworkState(shill::kStateOnline);
+
+  // Mock successful |kCheckingMembershipOprf|, |kCheckingMembershipQuery|, and
+  // |kCheckingIn| requests.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GetFresnelTestEndpoint(kPsmOprfRequestEndpoint),
+      psm_test_data_->fresnel_oprf_response.SerializeAsString(), net::HTTP_OK);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GetFresnelTestEndpoint(kPsmQueryRequestEndpoint),
+      psm_test_data_->fresnel_query_response.SerializeAsString(), net::HTTP_OK);
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GetFresnelTestEndpoint(kPsmImportRequestEndpoint), std::string(),
+      net::HTTP_OK);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActiveClient.StateCount",
+      DeviceActivityClient::State::kCheckingMembershipOprf, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Ash.DeviceActiveClient.StateCount",
+      DeviceActivityClient::State::kCheckingMembershipQuery, 1);
+  histogram_tester_.ExpectBucketCount("Ash.DeviceActiveClient.StateCount",
+                                      DeviceActivityClient::State::kCheckingIn,
+                                      1);
 }
 
 }  // namespace device_activity
