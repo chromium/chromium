@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,21 +100,23 @@ public class ImplicitPriceDropSubscriptionsManager {
     @VisibleForTesting
     void initializeSubscriptions() {
         if (!shouldInitializeSubscriptions()) return;
+        // TODO(crbug.com/1271234): Cleanup the usage of PriceDropNotificationManager. When user
+        // turns off price notification, we still subscribe for tabs. Now we call this method only
+        // to record notification opt-in metrics.
+        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
         Map<String, Tab> urlTabMapping = new HashMap<>();
         TabModel normalTabModel = mTabModelSelector.getModel(false);
         for (int index = 0; index < normalTabModel.getCount(); index++) {
             Tab tab = normalTabModel.getTabAt(index);
-            if (!hasOfferId(tab) || !isStaleTab(tab)) {
-                continue;
+            boolean tabEligible = hasOfferId(tab) && isStaleTab(tab);
+            RecordHistogram.recordBooleanHistogram(
+                    "Commerce.Subscriptions.TabEligible", tabEligible);
+            if (tabEligible) {
+                urlTabMapping.put(tab.getOriginalUrl().getSpec(), tab);
             }
-            urlTabMapping.put(tab.getOriginalUrl().getSpec(), tab);
         }
         List<CommerceSubscription> subscriptions = new ArrayList<>();
         for (Tab tab : urlTabMapping.values()) {
-            if (!hasOfferId(tab)) {
-                continue;
-            }
-
             CommerceSubscription subscription =
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                             ShoppingPersistedTabData.from(tab).getMainOfferId(),
@@ -157,7 +161,7 @@ public class ImplicitPriceDropSubscriptionsManager {
     }
 
     private boolean shouldInitializeSubscriptions() {
-        if ((!mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded())
+        if ((!PriceTrackingUtilities.isPriceDropNotificationEligible())
                 || (System.currentTimeMillis()
                                 - mSharedPreferencesManager.readLong(
                                         CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
