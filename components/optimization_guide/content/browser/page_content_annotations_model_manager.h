@@ -56,6 +56,13 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
 
+  // Runs |callback| with true when the model that powers |BatchAnnotate| for
+  // the given annotation type is ready to execute. If the model is ready now,
+  // the callback is run immediately. If the model will never become ready, due
+  // to feature flags for example, the callback run with false.
+  void NotifyWhenModelAvailable(AnnotationType type,
+                                base::OnceCallback<void(bool)> callback);
+
   // Returns the model info associated with the given AnnotationType, if it is
   // available and loaded.
   // TODO(crbug/1249632): Add support for more than just page topics.

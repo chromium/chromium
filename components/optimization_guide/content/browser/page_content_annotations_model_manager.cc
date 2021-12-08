@@ -475,6 +475,28 @@ void PageContentAnnotationsModelManager::
   out_content_annotations->categories = final_categories;
 }
 
+void PageContentAnnotationsModelManager::NotifyWhenModelAvailable(
+    AnnotationType type,
+    base::OnceCallback<void(bool)> callback) {
+  if (type == AnnotationType::kPageTopics &&
+      on_demand_page_topics_model_executor_) {
+    on_demand_page_topics_model_executor_->AddOnModelUpdatedCallback(
+        base::BindOnce(std::move(callback), true));
+    return;
+  }
+
+  if (type == AnnotationType::kContentVisibility &&
+      page_visibility_model_executor_) {
+    page_visibility_model_executor_->AddOnModelUpdatedCallback(
+        base::BindOnce(std::move(callback), true));
+    return;
+  }
+
+  // TODO(crbug/1249632): Add support for page entities.
+
+  std::move(callback).Run(false);
+}
+
 absl::optional<ModelInfo>
 PageContentAnnotationsModelManager::GetModelInfoForType(
     AnnotationType type) const {

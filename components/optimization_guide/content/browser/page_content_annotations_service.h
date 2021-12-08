@@ -84,6 +84,13 @@ class PageContentAnnotationsService : public KeyedService,
   // available.
   absl::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
 
+  // Runs |callback| with true when the model that powers |BatchAnnotate| for
+  // the given annotation type is ready to execute. If the model is ready now,
+  // the callback is run immediately. If the model file will never be available,
+  // the callback is run with false.
+  void NotifyWhenModelAvailable(AnnotationType type,
+                                base::OnceCallback<void(bool)> callback);
+
   // EntityMetadataProvider:
   void GetMetadataForEntityId(
       const std::string& entity_id,

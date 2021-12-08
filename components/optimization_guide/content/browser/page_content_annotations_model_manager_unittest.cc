@@ -834,6 +834,85 @@ TEST_F(PageContentAnnotationsModelManagerTest, GetModelInfoForType) {
       model_manager()->GetModelInfoForType(AnnotationType::kContentVisibility));
 }
 
+TEST_F(PageContentAnnotationsModelManagerTest,
+       NotifyWhenModelAvailable_NotAvailable) {
+  absl::optional<bool> topics_callback_success;
+  absl::optional<bool> visibility_callback_success;
+
+  model_manager()->NotifyWhenModelAvailable(
+      AnnotationType::kPageTopics,
+      base::BindOnce([](absl::optional<bool>* out_success,
+                        bool success) { *out_success = success; },
+                     &topics_callback_success));
+  model_manager()->NotifyWhenModelAvailable(
+      AnnotationType::kContentVisibility,
+      base::BindOnce([](absl::optional<bool>* out_success,
+                        bool success) { *out_success = success; },
+                     &visibility_callback_success));
+
+  ASSERT_TRUE(topics_callback_success);
+  ASSERT_TRUE(visibility_callback_success);
+  EXPECT_FALSE(*topics_callback_success);
+  EXPECT_FALSE(*visibility_callback_success);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       NotifyWhenModelAvailable_TopicsOnly) {
+  SetupPageTopicsV2ModelExecutor();
+
+  absl::optional<bool> topics_callback_success;
+  absl::optional<bool> visibility_callback_success;
+
+  model_manager()->NotifyWhenModelAvailable(
+      AnnotationType::kPageTopics,
+      base::BindOnce([](absl::optional<bool>* out_success,
+                        bool success) { *out_success = success; },
+                     &topics_callback_success));
+  model_manager()->NotifyWhenModelAvailable(
+      AnnotationType::kContentVisibility,
+      base::BindOnce([](absl::optional<bool>* out_success,
+                        bool success) { *out_success = success; },
+                     &visibility_callback_success));
+
+  ASSERT_TRUE(topics_callback_success);
+  ASSERT_TRUE(visibility_callback_success);
+  EXPECT_TRUE(*topics_callback_success);
+  EXPECT_FALSE(*visibility_callback_success);
+}
+
+TEST_F(PageContentAnnotationsModelManagerTest,
+       NotifyWhenModelAvailable_VisibilityOnly) {
+  proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+  proto::PageTopicsModelMetadata page_topics_model_metadata;
+  page_topics_model_metadata.set_version(123);
+  page_topics_model_metadata.mutable_output_postprocessing_params()
+      ->mutable_visibility_params()
+      ->set_category_name("DO NOT EVALUATE");
+  page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
+  SendPageVisibilityModelToExecutor(any_metadata);
+
+  absl::optional<bool> topics_callback_success;
+  absl::optional<bool> visibility_callback_success;
+
+  model_manager()->NotifyWhenModelAvailable(
+      AnnotationType::kPageTopics,
+      base::BindOnce([](absl::optional<bool>* out_success,
+                        bool success) { *out_success = success; },
+                     &topics_callback_success));
+  model_manager()->NotifyWhenModelAvailable(
+      AnnotationType::kContentVisibility,
+      base::BindOnce([](absl::optional<bool>* out_success,
+                        bool success) { *out_success = success; },
+                     &visibility_callback_success));
+
+  ASSERT_TRUE(topics_callback_success);
+  ASSERT_TRUE(visibility_callback_success);
+  EXPECT_FALSE(*topics_callback_success);
+  EXPECT_TRUE(*visibility_callback_success);
+}
+
 class PageContentAnnotationsModelManagerEntitiesOnlyTest
     : public PageContentAnnotationsModelManagerTest {
  public:

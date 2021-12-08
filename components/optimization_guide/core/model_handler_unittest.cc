@@ -198,5 +198,60 @@ TEST_F(ModelHandlerTest, Execute) {
       1);
 }
 
+TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_RunsImmediately) {
+  CreateModelHandler();
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/com.foo.Duration");
+  proto::Duration model_metadata;
+  model_metadata.set_seconds(123);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      any_metadata);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+
+  bool callback_run = false;
+  model_handler()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+
+  EXPECT_TRUE(callback_run);
+}
+
+TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_RunsOnUpdate) {
+  CreateModelHandler();
+
+  bool callback_run = false;
+  model_handler()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+  EXPECT_FALSE(callback_run);
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/com.foo.Duration");
+  proto::Duration model_metadata;
+  model_metadata.set_seconds(123);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      any_metadata);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+
+  EXPECT_TRUE(callback_run);
+}
+
+TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_NeverRun) {
+  CreateModelHandler();
+
+  bool callback_run = false;
+  model_handler()->AddOnModelUpdatedCallback(
+      base::BindOnce([](bool* flag) { *flag = true; }, &callback_run));
+  EXPECT_FALSE(callback_run);
+
+  // Resets model_handler
+  CreateModelHandler();
+
+  EXPECT_FALSE(callback_run);
+}
+
 }  // namespace
 }  // namespace optimization_guide

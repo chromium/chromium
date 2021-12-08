@@ -134,6 +134,17 @@ absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
 #endif
 }
 
+void PageContentAnnotationsService::NotifyWhenModelAvailable(
+    AnnotationType type,
+    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  DCHECK(model_manager_);
+  model_manager_->NotifyWhenModelAvailable(type, std::move(callback));
+#else
+  std::move(callback).Run(false);
+#endif
+}
+
 void PageContentAnnotationsService::ExtractRelatedSearches(
     const HistoryVisit& visit,
     content::WebContents* web_contents) {

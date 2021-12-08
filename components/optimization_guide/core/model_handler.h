@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
@@ -123,12 +124,29 @@ class ModelHandler : public OptimizationTargetModelObserver {
             &ModelExecutor<OutputType, InputTypes...>::UpdateModelFile,
             background_executor_->GetBackgroundWeakPtr(),
             model_info.GetModelFilePath()));
+
+    // Run any observing callbacks after the model file is posted to the
+    // background thread so that any model execution requests are posted to the
+    // background thread after the model update.
+    on_model_updated_callbacks_.Notify();
   }
 
   // Returns whether a model is available to be executed. Virtual for testing.
   virtual bool ModelAvailable() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return model_available_;
+  }
+
+  // Runs |callback| now if |ModelAvailable()| or the next time |OnModelUpdated|
+  // is called.
+  void AddOnModelUpdatedCallback(base::OnceClosure callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (ModelAvailable()) {
+      std::move(callback).Run();
+      return;
+    }
+    // callbacks are not bound locally are are safe to be destroyed at any time.
+    on_model_updated_callbacks_.AddUnsafe(std::move(callback));
   }
 
   absl::optional<ModelInfo> GetModelInfo() const {
@@ -192,6 +210,11 @@ class ModelHandler : public OptimizationTargetModelObserver {
 
   // Set in |OnModelUpdated|.
   absl::optional<ModelInfo> model_info_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Populated with callbacks if |AddOnModelUpdatedCallback| is called before a
+  // model file is available, then is notified when |OnModelUpdated| is called.
+  base::OnceClosureList on_model_updated_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Set in |OnModelUpdated|.
   bool model_available_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
