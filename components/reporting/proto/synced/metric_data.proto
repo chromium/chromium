@@ -97,6 +97,37 @@ message NetworksTelemetry {
   optional HttpsLatencyRoutineData https_latency_data = 2;
 }
 
+// Security level of the thunderbolt bus.
+enum ThunderboltSecurityLevel {
+  UNSPECIFIED_THUNDERBOLT_SECURITY_LEVEL = 0;
+  // All devices are automatically connected by the firmware. No user approval
+  // is needed.
+  THUNDERBOLT_SECURITY_NONE_LEVEL = 1;
+  // User is asked whether the device is allowed to be connected.
+  THUNDERBOLT_SECURITY_USER_LEVEL = 2;
+  // User is asked whether the device is allowed to be connected. In addition
+  // the device is sent a challenge that should match the expected one based on
+  // a random key written to the key sysfs attribute
+  THUNDERBOLT_SECURITY_SECURE_LEVEL = 3;
+  // The firmware automatically creates tunnels for thunderbolt.
+  THUNDERBOLT_SECURITY_DP_ONLY_LEVEL = 4;
+  // The firmware automatically creates tunnels for the USB controller and
+  // Display Port in a dock. All PCIe links downstream of the dock are removed.
+  THUNDERBOLT_SECURITY_USB_ONLY_LEVEL = 5;
+  // PCIE tunneling is disabled.
+  THUNDERBOLT_SECURITY_NO_PCIE_LEVEL = 6;
+};
+
+message ThunderboltInfo {
+  optional ThunderboltSecurityLevel security_level = 1;
+}
+
+// currently we are only reporting bus device info for thunderbolt, though we
+// will certainly add more in the future.
+message BusDeviceInfo {
+  optional ThunderboltInfo thunderbolt_info = 1;
+}
+
 // Information about keylocker. This is supported on Intel CPUs.
 message KeylockerInfo {
   // If keylocker is supported on the devices CPUs.
@@ -115,6 +146,8 @@ message CpuInfo {
 message InfoData {
   // CPU info for the device.
   optional CpuInfo cpu_info = 1;
+  // Bus Device info for the device.
+  optional BusDeviceInfo bus_device_info = 2;
 }
 
 // Audio telemetry data recorded intermittently
