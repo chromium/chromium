@@ -305,25 +305,8 @@ void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
   DCHECK(request_context !=
          optimization_guide::proto::RequestContext::CONTEXT_UNSPECIFIED);
 
-  // TODO(crbug/1275612): Hook this up into hints manager to actually fetch.
-  for (const auto& url : urls) {
-    base::flat_map<optimization_guide::proto::OptimizationType,
-                   optimization_guide::OptimizationGuideDecisionWithMetadata>
-        decisions;
-    decisions.reserve(optimization_types.size());
-    for (const auto optimization_type : optimization_types) {
-      optimization_guide::OptimizationMetadata metadata;
-      optimization_guide::OptimizationTypeDecision optimization_type_decision =
-          hints_manager_->CanApplyOptimization(url, optimization_type,
-                                               &metadata);
-      optimization_guide::OptimizationGuideDecision decision =
-          optimization_guide::ChromeHintsManager::
-              GetOptimizationGuideDecisionFromOptimizationTypeDecision(
-                  optimization_type_decision);
-      decisions[optimization_type] = {decision, metadata};
-    }
-    callback.Run(url, decisions);
-  }
+  hints_manager_->CanApplyOptimizationOnDemand(urls, optimization_types,
+                                               request_context, callback);
 }
 
 void OptimizationGuideKeyedService::AddHintForTesting(

@@ -25,7 +25,6 @@
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OptimizationGuideNavigationData;
@@ -43,7 +42,6 @@ class HintsFetcherFactory;
 class OptimizationFilter;
 class OptimizationMetadata;
 class OptimizationGuideStore;
-enum class OptimizationTargetDecision;
 enum class OptimizationTypeDecision;
 class StoreUpdateData;
 class TabUrlProvider;
@@ -117,6 +115,17 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const GURL& navigation_url,
       proto::OptimizationType optimization_type,
       OptimizationGuideDecisionCallback callback);
+
+  // Invokes |callback| with the decision for all types contained in
+  // |optimization_types| for each URL contained in |urls|, when sufficient
+  // information has been collected to make decisions. If information is not
+  // available for all URLs, the remote Optimization Guide Service will be
+  // contacted to fetch information for those URLs using |request_context|.
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      proto::RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
   // Clears all fetched hints from |hint_cache_|.
   void ClearFetchedHints();
@@ -239,6 +248,38 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const base::flat_set<GURL>& urls_fetched,
       absl::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
+
+  // Called when the on demand hints have been fetched from the remote
+  // Optimization Guide Service and are ready for parsing. This is used when
+  // fetching hints on demand.
+  void OnOnDemandHintsFetched(
+      const base::flat_set<std::string>& hosts_fetched,
+      const base::flat_set<GURL>& urls_fetched,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      absl::optional<std::unique_ptr<proto::GetHintsResponse>>
+          get_hints_response);
+
+  // Called when information is ready such that we can invoke the on-demand
+  // hints callback.
+  void OnReadyToInvokeOnDemandHintsCallbackForURLs(
+      const base::flat_set<GURL>& urls_fetched,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback);
+
+  // Returns decisions for |url| and |optimization_types| based on what's cached
+  // locally.
+  base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
+  GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
+      const GURL& url,
+      const base::flat_set<proto::OptimizationType>& optimization_types);
+
+  // Invokes |callback| for |url| and |optimization_types| based on what is
+  // cached on device.
+  void InvokeOnDemandHintsCallbackForURL(
+      const GURL& url,
+      const base::flat_set<proto::OptimizationType>& optimization_types,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
   // Called when the hints for a navigation have been fetched from the remote
   // Optimization Guide Service and are ready for parsing. This is used when

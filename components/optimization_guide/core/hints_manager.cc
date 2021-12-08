@@ -257,6 +257,33 @@ std::unique_ptr<proto::Configuration> ReadComponentFile(
   return config;
 }
 
+// Logs information that will be requested from the remote Optimization Guide
+// service.
+void MaybeLogGetHintRequestInfo(
+    proto::RequestContext request_context,
+    const base::flat_set<proto::OptimizationType>&
+        registered_optimization_types,
+    const std::vector<GURL>& urls_to_fetch,
+    const std::vector<std::string>& hosts_to_fetch) {
+  if (!switches::IsDebugLogsEnabled())
+    return;
+
+  DVLOG(0) << "OptimizationGuide: Starting fetch for request context "
+           << proto::RequestContext_Name(request_context);
+  DVLOG(0) << "OptimizationGuide: Registered Optimization Types: ";
+  for (const auto& optimization_type : registered_optimization_types) {
+    DVLOG(0) << "OptimizationGuide: Optimization Type: "
+             << proto::OptimizationType_Name(optimization_type);
+  }
+  DVLOG(0) << "OptimizationGuide: URLs and Hosts: ";
+  for (const auto& url : urls_to_fetch) {
+    DVLOG(0) << "OptimizationGuide: URL: " << url;
+  }
+  for (const auto& host : hosts_to_fetch) {
+    DVLOG(0) << "OptimizationGuide: Host: " << host;
+  }
+}
+
 }  // namespace
 
 HintsManager::HintsManager(
@@ -652,20 +679,9 @@ void HintsManager::FetchHintsForActiveTabs() {
   // Add hosts of active tabs to list of hosts to fetch for. Since we are mainly
   // fetching for updated information on tabs, add those to the front of the
   // list.
-  if (switches::IsDebugLogsEnabled()) {
-    DVLOG(0) << "OptimizationGuide: ActiveTabsFetching starting fetch for: ";
-    DVLOG(0) << "OptimizationGuide: Registered Optimization Types: ";
-    for (const auto& optimization_type : registered_optimization_types_) {
-      DVLOG(0) << "OptimizationGuide: Optimization Type: "
-               << proto::OptimizationType_Name(optimization_type);
-    }
-    DVLOG(0) << "OptimizationGuide: URLs and Hosts: ";
-  }
   base::flat_set<std::string> top_hosts_set =
       base::flat_set<std::string>(top_hosts.begin(), top_hosts.end());
   for (const auto& url : active_tab_urls_to_refresh) {
-    if (switches::IsDebugLogsEnabled())
-      DVLOG(0) << "OptimizationGuide: URL: " << url;
     if (!url.has_host() ||
         top_hosts_set.find(url.host()) == top_hosts_set.end()) {
       continue;
@@ -673,10 +689,11 @@ void HintsManager::FetchHintsForActiveTabs() {
     if (!hint_cache_->HasHint(url.host())) {
       top_hosts_set.insert(url.host());
       top_hosts.insert(top_hosts.begin(), url.host());
-      if (switches::IsDebugLogsEnabled())
-        DVLOG(0) << "OptimizationGuide: Host: " << url.host();
     }
   }
+  MaybeLogGetHintRequestInfo(proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+                             registered_optimization_types_,
+                             active_tab_urls_to_refresh, top_hosts);
 
   batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
@@ -930,6 +947,138 @@ bool HintsManager::HasLoadedOptimizationBlocklist(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return blocklist_optimization_filters_.find(optimization_type) !=
          blocklist_optimization_filters_.end();
+}
+
+base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
+HintsManager::GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
+    const GURL& url,
+    const base::flat_set<proto::OptimizationType>& optimization_types) {
+  base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
+      decisions;
+
+  for (const auto optimization_type : optimization_types) {
+    OptimizationMetadata metadata;
+    OptimizationTypeDecision type_decision =
+        CanApplyOptimization(url, optimization_type, &metadata);
+    OptimizationGuideDecision decision =
+        GetOptimizationGuideDecisionFromOptimizationTypeDecision(type_decision);
+    decisions[optimization_type] = {decision, metadata};
+  }
+
+  return decisions;
+}
+
+void HintsManager::CanApplyOptimizationOnDemand(
+    const std::vector<GURL>& urls,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
+    proto::RequestContext request_context,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug/1275612): Check whether we have consent to fetch.
+
+  InsertionOrderedSet<GURL> urls_to_fetch;
+  InsertionOrderedSet<std::string> hosts_to_fetch;
+  for (const auto& url : urls) {
+    base::flat_map<proto::OptimizationType,
+                   OptimizationGuideDecisionWithMetadata>
+        decisions = GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
+            url, optimization_types);
+
+    bool has_something_to_fetch_for = false;
+    if (!hint_cache_->HasURLKeyedEntryForURL(url)) {
+      urls_to_fetch.insert(url);
+      has_something_to_fetch_for = true;
+    }
+    // We check for the hint being loaded mostly for code simplicity. If we just
+    // check for the presence in the cache and the hint wasn't loaded, we need
+    // to run the load callback and then invoke the callbacks. However, as the
+    // fetch will just ignore the host if cached, this is ok since the callback
+    // from the fetch will initiate the loading of the hint and the resulting
+    // callback to be run.
+    if (!hint_cache_->HasHint(url.host()) ||
+        (hint_cache_->GetHostKeyedHintIfLoaded(url.host()) == nullptr)) {
+      hosts_to_fetch.insert(url.host());
+      has_something_to_fetch_for = true;
+    }
+    if (!has_something_to_fetch_for) {
+      callback.Run(url, decisions);
+    }
+  }
+
+  if (urls_to_fetch.empty() && hosts_to_fetch.empty()) {
+    // Nothing to fetch for.
+    return;
+  }
+
+  MaybeLogGetHintRequestInfo(request_context, registered_optimization_types_,
+                             urls_to_fetch.vector(), hosts_to_fetch.vector());
+
+  // Fetch the data for the entries we don't have all information for.
+  if (!batch_update_hints_fetcher_) {
+    DCHECK(hints_fetcher_factory_);
+    batch_update_hints_fetcher_ = hints_fetcher_factory_->BuildInstance();
+  }
+  batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
+      hosts_to_fetch.vector(), urls_to_fetch.vector(),
+      registered_optimization_types_, request_context, application_locale_,
+      base::BindOnce(&HintsManager::OnOnDemandHintsFetched,
+                     weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch.set(),
+                     urls_to_fetch.set(), optimization_types, callback));
+}
+
+void HintsManager::OnOnDemandHintsFetched(
+    const base::flat_set<std::string>& hosts_requested,
+    const base::flat_set<GURL>& urls_requested,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+    absl::optional<std::unique_ptr<proto::GetHintsResponse>>
+        get_hints_response) {
+  if (!get_hints_response.has_value() || !get_hints_response.value()) {
+    OnReadyToInvokeOnDemandHintsCallbackForURLs(urls_requested,
+                                                optimization_types, callback);
+    return;
+  }
+
+  // TODO(crbug/1278015: Figure out if the update time duration is the right
+  // one.
+  hint_cache_->UpdateFetchedHints(
+      std::move(*get_hints_response),
+      clock_->Now() + features::GetActiveTabsFetchRefreshDuration(),
+      hosts_requested, urls_requested,
+      base::BindOnce(&HintsManager::OnReadyToInvokeOnDemandHintsCallbackForURLs,
+                     weak_ptr_factory_.GetWeakPtr(), urls_requested,
+                     optimization_types, callback));
+
+  if (switches::IsDebugLogsEnabled())
+    DVLOG(0) << "OptimizationGuide: OnOnDemandHintsFetched complete";
+}
+
+void HintsManager::OnReadyToInvokeOnDemandHintsCallbackForURLs(
+    const base::flat_set<GURL>& urls,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& url : urls) {
+    // Load the hint for host if we have a host-keyed hint before invoking the
+    // callbacks so we have all the necessary information to make the decision.
+    LoadHintForHost(
+        url.host(),
+        base::BindOnce(&HintsManager::InvokeOnDemandHintsCallbackForURL,
+                       weak_ptr_factory_.GetWeakPtr(), url, optimization_types,
+                       callback));
+  }
+}
+
+void HintsManager::InvokeOnDemandHintsCallbackForURL(
+    const GURL& url,
+    const base::flat_set<proto::OptimizationType>& optimization_types,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
+  base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
+      decisions = GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
+          url, optimization_types);
+  callback.Run(url, decisions);
 }
 
 void HintsManager::CanApplyOptimizationAsync(
@@ -1243,6 +1392,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
       "OptimizationGuide.HintsManager.ConcurrentPageNavigationFetches",
       page_navigation_hints_fetchers_.size());
 
+  MaybeLogGetHintRequestInfo(proto::CONTEXT_PAGE_NAVIGATION,
+                             registered_optimization_types_, urls, hosts);
   bool fetch_attempted = it->second->FetchOptimizationGuideServiceHints(
       hosts, urls, registered_optimization_types_,
       proto::CONTEXT_PAGE_NAVIGATION, application_locale_,
@@ -1257,24 +1408,6 @@ void HintsManager::MaybeFetchHintsForNavigation(
     if (!hosts.empty() && !urls.empty()) {
       race_navigation_recorder.set_race_attempt_status(
           RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL);
-      DVLOG(0) << "OptimizationGuide: Fetch hints for Navigation: ";
-      DVLOG(0) << "OptimizationGuide: Registered Optimization Types: ";
-      for (const auto& optimization_type : registered_optimization_types_) {
-        DVLOG(0) << "OptimizationGuide: Optimization Type: "
-                 << proto::OptimizationType_Name(optimization_type);
-      }
-      if (!hosts.empty()) {
-        DVLOG(0) << "OptimizationGuide: Fetching for hosts: ";
-        for (const auto& host : hosts) {
-          DVLOG(0) << "OptimizationGuide: Host: " << host;
-        }
-      }
-      if (!urls.empty()) {
-        DVLOG(0) << "OptimizationGuide: Fetching for URLs: ";
-        for (const auto& optimization_guide_url : urls) {
-          DVLOG(0) << "OptimizationGuide: URL: " << optimization_guide_url;
-        }
-      }
     }
   } else {
     race_navigation_recorder.set_race_attempt_status(

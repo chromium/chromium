@@ -3139,6 +3139,122 @@ TEST_F(HintsManagerFetchingTest, NewOptTypeRegisteredClearsHintCache) {
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHost, 1);
 }
 
+TEST_F(HintsManagerFetchingTest,
+       CanApplyOptimizationOnDemandDecisionMetadataComesFromFetch) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            ASSERT_EQ(decisions.size(), 1u);
+            auto it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
+            ASSERT_TRUE(it != decisions.end());
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+            EXPECT_TRUE(
+                it->second.metadata.public_image_metadata().has_value());
+
+            run_loop->Quit();
+          },
+          run_loop.get()));
+  run_loop->Run();
+}
+
+TEST_F(
+    HintsManagerFetchingTest,
+    CanApplyOptimizationOnDemandDecisionMultipleTypesBothHostAndURLKeyedMixedFetch) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes(
+      {proto::NOSCRIPT, proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()},
+      {proto::NOSCRIPT, proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            ASSERT_EQ(decisions.size(), 2u);
+            auto it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
+            ASSERT_TRUE(it != decisions.end());
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+            EXPECT_TRUE(
+                it->second.metadata.public_image_metadata().has_value());
+
+            it = decisions.find(proto::NOSCRIPT);
+            ASSERT_TRUE(it != decisions.end());
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+
+            run_loop->Quit();
+          },
+          run_loop.get()));
+  run_loop->Run();
+}
+
+TEST_F(HintsManagerFetchingTest,
+       CanApplyOptimizationOnDemandDecisionFailedFetchDoesNotStrandCallback) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes(
+      {proto::NOSCRIPT, proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory({HintsFetcherEndState::kFetchFailed}));
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()},
+      {proto::NOSCRIPT, proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             const base::flat_map<proto::OptimizationType,
+                                  OptimizationGuideDecisionWithMetadata>&
+                 decisions) {
+            ASSERT_EQ(decisions.size(), 2u);
+            auto it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
+            ASSERT_TRUE(it != decisions.end());
+            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
+
+            // Should still populate with what's on device.
+            it = decisions.find(proto::NOSCRIPT);
+            ASSERT_TRUE(it != decisions.end());
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+
+            run_loop->Quit();
+          },
+          run_loop.get()));
+  run_loop->Run();
+}
+
 class HintsManagerFetchingNoBatchUpdateTest : public HintsManagerTest {
  public:
   HintsManagerFetchingNoBatchUpdateTest() {
