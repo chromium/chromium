@@ -55,12 +55,6 @@ class PromotionalTabsEnabledPolicyTest
       const PromotionalTabsEnabledPolicyTest&) = delete;
 
  protected:
-  static std::string GetWhatsNewAutoURL() {
-    GURL url(chrome::kChromeUIWhatsNewURL);
-    return net::AppendQueryParameter(url, "auto", "true")
-        .possibly_invalid_spec();
-  }
-
   PromotionalTabsEnabledPolicyTest() {
     const std::vector<base::Feature> kEnabledFeatures = {
       features::kChromeWhatsNewUI,
@@ -142,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
       // One or more onboarding tabs should show.
       EXPECT_NE(url.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
       // Welcome should override What's New.
-      EXPECT_NE(url.possibly_invalid_spec(), GetWhatsNewAutoURL());
+      EXPECT_NE(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
       EXPECT_FALSE(search::IsNTPOrRelatedURL(url, browser()->profile())) << url;
       break;
   }
@@ -235,9 +229,8 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest, RunTest) {
     case BooleanPolicy::kNotConfigured:
     case BooleanPolicy::kTrue:
       EXPECT_EQ(tab_strip->count(), 2);
-      // Whats's New should show with auto=true query param and be the active
-      // tab.
-      EXPECT_EQ(url.possibly_invalid_spec(), GetWhatsNewAutoURL());
+      // Whats's New should show and be the active tab.
+      EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
       EXPECT_EQ(0, tab_strip->active_index());
       // The second tab should be the NTP.
       const auto& url_tab1 = tab_strip->GetWebContentsAt(1)->GetURL();

@@ -44,11 +44,20 @@ export class WhatsNewAppElement extends PolymerElement {
   private isAutoOpen_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 
-  connectedCallback() {
-    super.connectedCallback();
+  constructor() {
+    super();
 
     const queryParams = new URLSearchParams(window.location.search);
     this.isAutoOpen_ = queryParams.has('auto');
+
+    // There are no subpages in What's New. Also remove the query param here
+    // since its value is recorded.
+    window.history.replaceState(undefined /* stateObject */, '', '/');
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
     WhatsNewProxyImpl.getInstance().initialize().then(
         url => this.handleUrlResult_(url));
   }
