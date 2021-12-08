@@ -81,7 +81,7 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
 }
 #endif  // BUILDFLAG(USE_VAAPI)
 
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
 std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Size& visible_size,
@@ -134,7 +134,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
   }
   return nullptr;
 }
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#endif  // BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
 
 }  // namespace
 
