@@ -144,16 +144,6 @@ class SettingsImportDataDialogElement extends
   }
 
   private onBrowserProfileSelectionChange_() {
-    // <if expr="is_win">
-    // https://github.com/nvaccess/nvda/issues/13116: Set the selected value in
-    // a timeout to avoid NVDA bugging out from content changing on the page.
-    setTimeout(() => {
-      this.selected_ =
-          this.browserProfiles_[this.$.browserSelect.selectedIndex];
-    });
-    return;
-    // </if>
-
     this.selected_ = this.browserProfiles_[this.$.browserSelect.selectedIndex];
   }
 
