@@ -2043,6 +2043,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.PageShow.Persisted.Unacked.Status" units="status"
+    expires_after="2022-10-01">
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <summary>
+    When we send a PageLifecycleState update that should trigger a pageshow
+    event with its persisted flag set but the renderer does not ack it and then
+    the renderer exits, this records the status of the process. This is an enum
+    (base::TerminationStatus in base/process/kill.h) but the values vary by
+    platform so we cannot use a regular enum metric. This is temporary debugging
+    for https://crbug.com/1234634.
+  </summary>
+</histogram>
+
+<histogram name="Event.PageShow.Persisted.Unacked.Time" units="ms"
+    expires_after="2022-10-01">
+  <owner>hajimehoshi@chromium.org</owner>
+  <owner>fergal@chromium.org</owner>
+  <summary>
+    When we send a PageLifecycleState update that should trigger a pageshow
+    event with its persisted flag set but the renderer does not ack it and then
+    the renderer exits, this records the time interval between sending the
+    update and exiting. This is temporary debugging for
+    https://crbug.com/1234634.
+  </summary>
+</histogram>
+
 <histogram name="Event.PassiveListeners" enum="EventResultType"
     expires_after="2022-04-10">
   <owner>dtapuska@chromium.org</owner>
