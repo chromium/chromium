@@ -2165,6 +2165,9 @@ extern const char kNtpRealboxPedalsDescription[];
 extern const char kNtpRealboxSuggestionAnswersName[];
 extern const char kNtpRealboxSuggestionAnswersDescription[];
 
+extern const char kNtpRealboxTailSuggestName[];
+extern const char kNtpRealboxTailSuggestDescription[];
+
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
 

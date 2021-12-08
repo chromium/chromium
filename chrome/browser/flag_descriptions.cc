@@ -3748,6 +3748,10 @@ const char kNtpRealboxSuggestionAnswersName[] =
 const char kNtpRealboxSuggestionAnswersDescription[] =
     "Shows suggestion answers in the NTP Realbox when enabled.";
 
+const char kNtpRealboxTailSuggestName[] = "NTP Realbox Tail Suggest";
+const char kNtpRealboxTailSuggestDescription[] =
+    "Properly formats the tail suggestions to match the Omnibox";
+
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
     "Allows viewing of simplified web pages by selecting 'Customize and "

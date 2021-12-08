@@ -49628,6 +49628,7 @@ from previous Chrome versions.
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
   <int value="-1624412478" label="OptimizationGuideModelDownloading:disabled"/>
+  <int value="-1623394051" label="NtpRealboxTailSuggest:disabled"/>
   <int value="-1623003151"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
@@ -53816,6 +53817,7 @@ from previous Chrome versions.
   <int value="1473157145" label="EcheSWAResizing:enabled"/>
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>
+  <int value="1474433736" label="NtpRealboxTailSuggest:enabled"/>
   <int value="1474861626" label="disable-multi-mirroring"/>
   <int value="1475210901" label="AvatarToolbarButton:disabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>

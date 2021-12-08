@@ -5020,6 +5020,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxSuggestionAnswersName,
      flag_descriptions::kNtpRealboxSuggestionAnswersDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kNtpRealboxSuggestionAnswers)},
+
+    {"ntp-realbox-tail-suggest", flag_descriptions::kNtpRealboxTailSuggestName,
+     flag_descriptions::kNtpRealboxTailSuggestDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kNtpRealboxTailSuggest)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)

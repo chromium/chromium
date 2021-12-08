@@ -261,6 +261,10 @@ const base::Feature kNtpRealboxPedals{"NtpRealboxPedals",
 const base::Feature kNtpRealboxSuggestionAnswers{
     "NtpRealboxSuggestionAnswers", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable Tail Suggest Formatting in the NTP Realbox.
+const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable the first batch of Pedals on Android. The Pedals,
 // which will be enabled on Android, should be already enabled on desktop.
 const base::Feature kOmniboxPedalsAndroidBatch1{
