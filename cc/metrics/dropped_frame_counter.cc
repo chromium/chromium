@@ -12,6 +12,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/total_frame_counter.h"
