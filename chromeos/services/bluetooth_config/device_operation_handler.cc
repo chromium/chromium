@@ -78,6 +78,11 @@ void DeviceOperationHandler::HandleFinishedOperation(bool success) {
 // operation occurring if Bluetooth disables. If we don't, we can remove this
 // observer.
 void DeviceOperationHandler::OnAdapterStateChanged() {
+  if (current_operation_) {
+    BLUETOOTH_LOG(DEBUG) << "Device with id: " << current_operation_->device_id
+                         << " adapter state changed during operation: "
+                         << current_operation_->operation;
+  }
   if (IsBluetoothEnabled())
     return;
 }
@@ -85,16 +90,25 @@ void DeviceOperationHandler::OnAdapterStateChanged() {
 void DeviceOperationHandler::EnqueueOperation(Operation operation,
                                               const std::string& device_id,
                                               OperationCallback callback) {
+  BLUETOOTH_LOG(DEBUG) << "Device with id: " << device_id
+                       << " enqueueing operation: " << operation << " ("
+                       << (queue_.size() + 1) << " operations already queued)";
   queue_.emplace(operation, device_id, std::move(callback));
   ProcessQueue();
 }
 
 void DeviceOperationHandler::ProcessQueue() {
-  if (current_operation_)
+  if (current_operation_) {
+    BLUETOOTH_LOG(DEBUG) << "Device with id: " << current_operation_->device_id
+                         << " continuing operation: "
+                         << current_operation_->operation;
     return;
+  }
 
-  if (queue_.empty())
+  if (queue_.empty()) {
+    BLUETOOTH_LOG(DEBUG) << "No operations queued";
     return;
+  }
 
   PerformNextOperation();
 }
@@ -114,6 +128,7 @@ void DeviceOperationHandler::PerformNextOperation() {
   BLUETOOTH_LOG(EVENT) << "Device with id: " << current_operation_->device_id
                        << " starting operation: "
                        << current_operation_->operation;
+
   switch (current_operation_->operation) {
     case Operation::kConnect:
       PerformConnect(current_operation_->device_id);

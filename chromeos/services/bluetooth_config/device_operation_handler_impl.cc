@@ -61,11 +61,17 @@ void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
     return;
   }
 
-  device->Forget(
-      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), /*success=*/true),
-      base::BindOnce(&DeviceOperationHandlerImpl::OnOperationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), /*success=*/false));
+  // We do not expect "Forget" operations to ever fail, so don't bother passing
+  // success and failure callbacks here.
+  device->Forget(base::DoNothing(), base::BindOnce(
+                                        [](const std::string device_id) {
+                                          BLUETOOTH_LOG(ERROR)
+                                              << "Forget failed, device id: "
+                                              << device_id;
+                                        },
+                                        device_id));
+
+  HandleFinishedOperation(/*success=*/true);
 }
 
 void DeviceOperationHandlerImpl::OnDeviceConnect(

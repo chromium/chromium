@@ -257,19 +257,14 @@ TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
   EXPECT_EQ(results()[0],
             std::make_tuple(device_id, Operation::kForget, false));
 
-  // Add the device and simulate BluetoothDevice::Forget() failing.
+  // Add and forget the device.
   AddDevice(&device_id);
   ForgetDevice(device_id);
-  EXPECT_TRUE(HasPendingForgetCallback());
-  InvokePendingForgetCallback(/*success=*/false);
-  EXPECT_EQ(results()[1],
-            std::make_tuple(device_id, Operation::kForget, false));
 
-  // Simulate BluetoothDevice::Forget() succeeding.
-  ForgetDevice(device_id);
-  EXPECT_TRUE(HasPendingForgetCallback());
-  InvokePendingForgetCallback(/*success=*/true);
-  EXPECT_EQ(results()[2], std::make_tuple(device_id, Operation::kForget, true));
+  // Forgetting a device will never fail, and the handler will immediately
+  // notify that the operation finished successfully, so don't bother checking
+  // for pending callbacks.
+  EXPECT_EQ(results()[1], std::make_tuple(device_id, Operation::kForget, true));
 }
 
 TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {
