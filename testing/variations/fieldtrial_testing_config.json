@@ -6302,27 +6302,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Prefetch_Prefetch1_NSP6_Small_20210301",
+                    "name": "Prefetch_2_With_Decoys_20211129",
                     "params": {
                         "dns_canary_url": "http://dns-tunnel-check.googlezip.net/connect",
                         "do_no_state_prefetch": "true",
+                        "ineligible_decoy_request_probability": "1",
                         "lite_mode_only": "false",
-                        "max_srp_prefetches": "1",
-                        "max_subresource_count_per_prerender": "6",
-                        "tls_canary_url": "http://tls-tunnel-check.googlezip.net/connect"
+                        "max_srp_prefetches": "5",
+                        "max_subresource_count_per_prerender": "0",
+                        "start_spare_renderer": "true",
+                        "tls_canary_url": "http://tls-tunnel-check.googlezip.net/connect",
+                        "use_speculation_rules": "true"
                     },
                     "enable_features": [
                         "IsolatePrerenders",
                         "IsolatePrerendersMustProbeOrigin"
-                    ]
-                },
-                {
-                    "name": "NoPrefetches_CounterFactualControl_Small_2_20210301",
-                    "params": {
-                        "max_srp_prefetches": "0"
-                    },
-                    "enable_features": [
-                        "IsolatePrerenders"
                     ]
                 }
             ]
