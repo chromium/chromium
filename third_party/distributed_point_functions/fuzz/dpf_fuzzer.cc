@@ -241,8 +241,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Always evaluate on alpha.
   evaluation_points.push_back(alpha);
 
+  int32_t previous_log_domain_size = 0;
   for (int i = level_step - 1; i < static_cast<int>(num_levels);
        i += level_step) {
+    // If any gap in the log_domain_sizes used in successive evaluations is
+    // larger than 62, validation will fail in `EvaluateAndCheckLevel`.
+    int32_t current_log_domain_size = parameters[i].log_domain_size();
+    if (current_log_domain_size - previous_log_domain_size > 62)
+      return 0;
+    previous_log_domain_size = current_log_domain_size;
+
     switch (parameters[i].value_type().integer().bitsize()) {
       case 8:
         EvaluateAndCheckLevel<uint8_t>(i, evaluation_points, alpha, beta, ctx0,
