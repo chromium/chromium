@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
@@ -136,6 +137,10 @@ public class ScreenshotMonitor {
             }
         } finally {
             cursor.close();
+        }
+
+        if (TextUtils.isEmpty(imageHeightString) || TextUtils.isEmpty(imageWidthString)) {
+            return false;
         }
 
         // Verify that it is in a screenshot directory.  We don't check the file extension because
