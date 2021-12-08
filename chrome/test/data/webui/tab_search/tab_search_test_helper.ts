@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {ProfileData} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertGE, assertLE} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * Override the specified function and parameters for the given class to avoid
  * scroll animations that delay the scrollTop property updates.
  * @param {!Object} klass
- * @param {string} functionName
  */
-export function disableAnimationBehavior(klass, functionName) {
+export function disableAnimationBehavior(klass: any, functionName: string) {
   const originalFunction = klass.prototype[functionName];
-  klass.prototype[functionName] = function(options) {
+  klass.prototype[functionName] = function(options: any) {
     const args = [];
     if (typeof options === 'object' && options !== null) {
       let noAnimationOptions = Object.assign({}, options);
@@ -28,10 +28,9 @@ export function disableAnimationBehavior(klass, functionName) {
 /**
  * Assert that the tabItem HTML element is fully visible within the current
  * scroll view.
- * @param {!HTMLElement} tabsDiv
- * @param {!HTMLElement} tabItem
  */
-export function assertTabItemInViewBounds(tabsDiv, tabItem) {
+export function assertTabItemInViewBounds(
+    tabsDiv: HTMLElement, tabItem: HTMLElement) {
   assertGE(tabItem.offsetTop, tabsDiv.scrollTop);
 
   assertLE(
@@ -40,35 +39,32 @@ export function assertTabItemInViewBounds(tabsDiv, tabItem) {
 }
 
 /**
- * @param {!HTMLElement} tabsDiv The HTML element containing a list of tab
- *     items.
- * @param {!NodeList<!HTMLElement>} tabItems A list of tab items.
- * @param {number} index The tab item's index in the list of tab items.
+ * @param tabsDiv The HTML element containing a list of tab items.
+ * @param tabItems A list of tab items.
+ * @param index The tab item's index in the list of tab items.
  */
 export function assertTabItemAndNeighborsInViewBounds(
-    tabsDiv, tabItems, index) {
+    tabsDiv: HTMLElement, tabItems: NodeListOf<HTMLElement>, index: number) {
   if (index > 0) {
-    assertTabItemInViewBounds(tabsDiv, tabItems[index - 1]);
+    assertTabItemInViewBounds(tabsDiv, tabItems[index - 1]!);
   }
 
-  assertTabItemInViewBounds(tabsDiv, tabItems[index]);
+  assertTabItemInViewBounds(tabsDiv, tabItems[index]!);
 
   if (index < tabItems.length - 1) {
-    assertTabItemInViewBounds(tabsDiv, tabItems[index + 1]);
+    assertTabItemInViewBounds(tabsDiv, tabItems[index + 1]!);
   }
 }
 
 /**
  * Initialize a mock ProfileData object with defaults that would be set
  * by the Mojo IPC logic.
- * @param {!ProfileData} profileData
  */
-export function initProfileDataWithDefaults(profileData) {
-  // Initialize undefined array properties
+export function initProfileDataWithDefaults(profileData: ProfileData) {
   ['tabGroups', 'recentlyClosedTabs', 'recentlyClosedTabGroups'].forEach(
       (arrayProp) => {
         if (!profileData.hasOwnProperty(arrayProp)) {
-          profileData[arrayProp] = [];
+          (profileData as {[key: string]: any})[arrayProp] = [];
         }
       });
   if (!profileData.hasOwnProperty('recentlyClosedSectionExpanded')) {
@@ -78,19 +74,13 @@ export function initProfileDataWithDefaults(profileData) {
 
 /**
  * Initialize the loadTimeData with the provided data and defaults.
- * @param {Object=} loadTimeOverriddenData
  */
-export function initLoadTimeDataWithDefaults(loadTimeOverriddenData) {
-  if (!loadTimeOverriddenData) {
-    loadTimeOverriddenData = {};
-  }
-  if (!loadTimeOverriddenData.hasOwnProperty('shortcutText')) {
-    loadTimeOverriddenData.shortcutText = '';
-  }
-  if (!loadTimeOverriddenData.hasOwnProperty(
-          'recentlyClosedDefaultItemDisplayCount')) {
-    loadTimeOverriddenData.recentlyClosedDefaultItemDisplayCount = 5;
-  }
-
-  loadTimeData.overrideValues(loadTimeOverriddenData);
+export function initLoadTimeDataWithDefaults(
+    loadTimeOverriddenData: {[key: string]: string} = {}) {
+  loadTimeData.overrideValues(Object.assign(
+      {
+        shortcutText: '',
+        recentlyClosedDefaultItemDisplayCount: 5,
+      },
+      loadTimeOverriddenData));
 }

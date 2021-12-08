@@ -27,15 +27,15 @@ ts_library("build_ts") {
                     target_gen_dir),
   ]
   in_files = [
-    "bimap_test.js",
-    "fuzzy_search_test.js",
+    "bimap_test.ts",
+    "fuzzy_search_test.ts",
     "infinite_list_test.js",
     "tab_search_app_focus_test.js",
     "tab_search_app_test.js",
     "tab_search_item_test.js",
-    "tab_search_test_data.js",
-    "tab_search_test_helper.js",
-    "test_tab_search_api_proxy.js",
+    "tab_search_test_data.ts",
+    "tab_search_test_helper.ts",
+    "test_tab_search_api_proxy.ts",
   ]
   deps = [ "//chrome/browser/resources/tab_search:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]

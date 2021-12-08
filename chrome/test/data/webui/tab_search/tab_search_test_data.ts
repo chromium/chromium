@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import {RecentlyClosedTab, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, RecentlyClosedTab, Tab, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
 
-/** @type {number} */
-export const SAMPLE_WINDOW_HEIGHT = 448;
+export const SAMPLE_WINDOW_HEIGHT: number = 448;
 
-/** @type {!Array} */
-export const SAMPLE_WINDOW_DATA = [
+export const SAMPLE_WINDOW_DATA: Window[] = [
   {
     active: true,
     height: SAMPLE_WINDOW_HEIGHT,
@@ -22,6 +20,12 @@ export const SAMPLE_WINDOW_DATA = [
         url: {url: 'https://www.google.com'},
         lastActiveTimeTicks: {internalValue: BigInt(5)},
         lastActiveElapsedText: '',
+        active: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        isDefaultFavicon: false,
+        pinned: false,
+        showIcon: false,
       },
       {
         alertStates: [],
@@ -31,6 +35,12 @@ export const SAMPLE_WINDOW_DATA = [
         url: {url: 'https://www.amazon.com'},
         lastActiveTimeTicks: {internalValue: BigInt(4)},
         lastActiveElapsedText: '',
+        active: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        isDefaultFavicon: false,
+        pinned: false,
+        showIcon: false,
       },
       {
         alertStates: [],
@@ -40,6 +50,12 @@ export const SAMPLE_WINDOW_DATA = [
         url: {url: 'https://www.apple.com'},
         lastActiveTimeTicks: {internalValue: BigInt(3)},
         lastActiveElapsedText: '',
+        active: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        isDefaultFavicon: false,
+        pinned: false,
+        showIcon: false,
       },
     ],
   },
@@ -55,6 +71,12 @@ export const SAMPLE_WINDOW_DATA = [
         url: {url: 'https://www.bing.com/'},
         lastActiveTimeTicks: {internalValue: BigInt(2)},
         lastActiveElapsedText: '',
+        active: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        isDefaultFavicon: false,
+        pinned: false,
+        showIcon: false,
       },
       {
         alertStates: [],
@@ -64,6 +86,12 @@ export const SAMPLE_WINDOW_DATA = [
         url: {url: 'https://www.yahoo.com'},
         lastActiveTimeTicks: {internalValue: BigInt(1)},
         lastActiveElapsedText: '',
+        active: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        isDefaultFavicon: false,
+        pinned: false,
+        showIcon: false,
       },
       {
         alertStates: [],
@@ -73,19 +101,25 @@ export const SAMPLE_WINDOW_DATA = [
         url: {url: 'https://www.apple.com/'},
         lastActiveTimeTicks: {internalValue: BigInt(0)},
         lastActiveElapsedText: '',
+        active: false,
+        faviconUrl: undefined,
+        groupId: undefined,
+        isDefaultFavicon: false,
+        pinned: false,
+        showIcon: false,
       },
     ],
   }
 ];
 
-/** @type {!Array<RecentlyClosedTab>} */
-export const SAMPLE_RECENTLY_CLOSED_DATA = [
+export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
   {
     tabId: 100,
     title: 'PayPal',
     url: {url: 'https://www.paypal.com'},
     lastActiveTime: {internalValue: BigInt(11)},
     lastActiveElapsedText: '',
+    groupId: undefined,
   },
   {
     tabId: 101,
@@ -93,69 +127,64 @@ export const SAMPLE_RECENTLY_CLOSED_DATA = [
     url: {url: 'https://www.stripe.com'},
     lastActiveTime: {internalValue: BigInt(12)},
     lastActiveElapsedText: '',
+    groupId: undefined,
   },
 ];
 
-/** @return {!Array} */
-export function sampleData() {
+export function sampleData(): ProfileData {
   return {
     windows: SAMPLE_WINDOW_DATA,
     recentlyClosedTabs: [],
     tabGroups: [],
     recentlyClosedTabGroups: [],
+    recentlyClosedSectionExpanded: false,
   };
 }
 
-/**
- * @param count
- * @return {!Array<string>}
- */
-export function sampleSiteNames(count) {
+export function sampleSiteNames(count: number): string[] {
   return Array.from({length: count}, (_, i) => (i + 1).toString());
 }
 
 /**
  * Generates sample tabs based on some given site names.
- * @param {!Array<string>} siteNames
- * @param {boolean} hasIndex Whether the items have an index property.
- * @return {!Array<!Tab>}
+ * @param hasIndex Whether the items have an index property.
  */
-export function generateSampleTabsFromSiteNames(siteNames, hasIndex = true) {
+export function generateSampleTabsFromSiteNames(
+    siteNames: string[], hasIndex: boolean = true): Tab[] {
   return siteNames.map((siteName, i) => {
-    const tab = /** @type {!Tab} */ ({
+    const tab: Tab = {
       alertStates: [],
       tabId: i + 1,
       title: siteName,
       url: {url: 'https://www.' + siteName.toLowerCase() + '.com'},
       lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
       lastActiveElapsedText: '',
-    });
 
-    if (hasIndex) {
-      tab.index = i;
-    }
+      active: false,
+      faviconUrl: undefined,
+      groupId: undefined,
+      index: hasIndex ? i : 0,
+      isDefaultFavicon: false,
+      pinned: false,
+      showIcon: false,
+    };
 
     return tab;
   });
 }
 
-/**
- * @param {string} titlePrefix
- * @param {number} count
- * @param {Token} groupId
- * @return {!Array<!RecentlyClosedTab>}
- */
 export function generateSampleRecentlyClosedTabs(
-    titlePrefix, count, groupId = undefined) {
+    titlePrefix: string, count: number, groupId?: Token): RecentlyClosedTab[] {
   return Array.from({length: count}, (_, i) => {
     const tabId = i + 1;
-    const tab = /** @type {RecentlyClosedTab} */ ({
+    const tab: RecentlyClosedTab = {
       tabId,
       title: `${titlePrefix} ${tabId}`,
       url: {url: `https://www.sampletab.com?q=${tabId}`},
       lastActiveTime: {internalValue: BigInt(count - i)},
       lastActiveElapsedText: '',
-    });
+      groupId: undefined,
+    };
 
     if (groupId !== undefined) {
       tab.groupId = groupId;
@@ -167,10 +196,9 @@ export function generateSampleRecentlyClosedTabs(
 
 /**
  * Generates profile data for a window with a series of tabs.
- * @param {!Array<string>} siteNames
- * @return {!Object}
  */
-export function generateSampleDataFromSiteNames(siteNames) {
+export function generateSampleDataFromSiteNames(siteNames: string[]):
+    ProfileData {
   return {
     windows: [{
       active: true,
@@ -180,15 +208,11 @@ export function generateSampleDataFromSiteNames(siteNames) {
     recentlyClosedTabs: [],
     tabGroups: [],
     recentlyClosedTabGroups: [],
+    recentlyClosedSectionExpanded: false,
   };
 }
 
-/**
- * @param {!bigint} high
- * @param {!bigint} low
- * @return {!Token}
- */
-export function sampleToken(high, low) {
+export function sampleToken(high: bigint, low: bigint): Token {
   const token = new Token();
   token.high = high;
   token.low = low;

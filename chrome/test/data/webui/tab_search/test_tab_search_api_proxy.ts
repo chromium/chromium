@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageRemote, ProfileData} from 'chrome://tab-search.top-chrome/tab_search.js';
-
+import {PageCallbackRouter, PageRemote, ProfileData, SwitchToTabInfo, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {TabSearchApiProxy} */
-export class TestTabSearchApiProxy extends TestBrowserProxy {
+export class TestTabSearchApiProxy extends TestBrowserProxy implements
+    TabSearchApiProxy {
+  callbackRouter: PageCallbackRouter;
+  callbackRouterRemote: PageRemote;
+  private profileData_?: ProfileData;
+
   constructor() {
     super([
       'closeTab',
@@ -18,61 +21,49 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
       'showUI',
     ]);
 
-    /** @type {!PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!PageRemote} */
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
-
-    /** @private {ProfileData} */
-    this.profileData_;
   }
 
-  /** @override */
-  closeTab(tabId, withSearch, closedTabIndex) {
+  closeTab(tabId: number, withSearch: boolean, closedTabIndex: number) {
     this.methodCalled('closeTab', [tabId, withSearch, closedTabIndex]);
   }
 
-  /** @override */
   getProfileData() {
     this.methodCalled('getProfileData');
-    return Promise.resolve({profileData: this.profileData_});
+    return Promise.resolve({profileData: this.profileData_!});
   }
 
-  /** @override */
-  openRecentlyClosedEntry(id, withSearch, isTab, index) {
+  openRecentlyClosedEntry(
+      id: number, withSearch: boolean, isTab: boolean, index: number) {
     this.methodCalled(
         'openRecentlyClosedEntry', [id, withSearch, isTab, index]);
   }
 
-  /** @override */
-  switchToTab(tabInfo, withSearch, switchedTabIndex) {
-    this.methodCalled('switchToTab', [tabInfo, withSearch, switchedTabIndex]);
+  switchToTab(
+      info: SwitchToTabInfo, withSearch: boolean, switchedTabIndex: number) {
+    this.methodCalled('switchToTab', [info, withSearch, switchedTabIndex]);
   }
 
-  /** @override */
-  saveRecentlyClosedExpandedPref(expanded) {
+  saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
   }
 
-  /** @override */
   showUI() {
     this.methodCalled('showUI');
   }
 
-  /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
   }
 
-  /** return {!PageRemote} */
   getCallbackRouterRemote() {
     return this.callbackRouterRemote;
   }
 
-  /** @param {ProfileData} profileData */
-  setProfileData(profileData) {
+  setProfileData(profileData: ProfileData) {
     this.profileData_ = profileData;
   }
 }

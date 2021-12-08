@@ -8,16 +8,15 @@ import {get as deepGet} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import Fuse from './fuse.js';
 import {ItemData} from './tab_data.js';
 
-export type FuzzySearchOptions =
-    Fuse.IFuseOptions<ItemData>&{useFuzzySearch: boolean};
+export type FuzzySearchOptions<T extends ItemData> =
+    Fuse.IFuseOptions<T>&{useFuzzySearch: boolean};
 
 /**
  * @return A new array of entries satisfying the input. If no search input is
  *     present, returns a shallow copy of the records.
  */
-export function fuzzySearch(
-    input: string, records: ItemData[],
-    options: FuzzySearchOptions): ItemData[] {
+export function fuzzySearch<T extends ItemData>(
+    input: string, records: T[], options: FuzzySearchOptions<T>): T[] {
   if (input.length === 0) {
     return [...records];
   }
@@ -38,8 +37,8 @@ export function fuzzySearch(
           acc.push(name as string);
           return acc;
         }, [] as string[]);
-    result = new Fuse<ItemData>(records, options).search(input).map(result => {
-      const item = cloneTabDataObj(result.item);
+    result = new Fuse<T>(records, options).search(input).map(result => {
+      const item = cloneTabDataObj<T>(result.item);
       item.highlightRanges = keyNames.reduce((acc, key) => {
         const match = result.matches!.find(e => e.key === key);
         if (match) {
@@ -63,7 +62,7 @@ export function fuzzySearch(
   return result;
 }
 
-function cloneTabDataObj(tabData: ItemData): ItemData {
+function cloneTabDataObj<T extends ItemData>(tabData: T): T {
   const clone = Object.assign({}, tabData);
   clone.highlightRanges = {};
   Object.setPrototypeOf(clone, Object.getPrototypeOf(tabData));
@@ -92,9 +91,8 @@ function convertToRanges(matches: ReadonlyArray<Fuse.RangeTuple>):
  * for how to calculate score and `prioritizeMatchResult` for how to calculate
  * priority.
  */
-function exactSearch(
-    searchText: string, records: ItemData[],
-    options: Fuse.IFuseOptions<ItemData>): ItemData[] {
+function exactSearch<T extends ItemData>(
+    searchText: string, records: T[], options: Fuse.IFuseOptions<T>): T[] {
   if (searchText.length === 0) {
     return records;
   }
@@ -221,8 +219,8 @@ function scoringFunction(
  * 3. All remaining items with a search key matching the searchText elsewhere in
  *    the string.
  */
-function prioritizeMatchResult(
-    searchText: string, keys: string[], result: ItemData[]): ItemData[] {
+function prioritizeMatchResult<T extends ItemData>(
+    searchText: string, keys: string[], result: T[]): T[] {
   const itemsMatchingStringStart = [];
   const itemsMatchingWordStart = [];
   const others = [];
