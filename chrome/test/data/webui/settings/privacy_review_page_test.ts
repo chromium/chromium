@@ -70,6 +70,10 @@ suite('PrivacyReviewPage', function() {
 
   teardown(function() {
     page.remove();
+    // Reset route to default. The route is updated as we navigate through the
+    // cards, but the browser instance is shared among the tests, so otherwise
+    // the next test will be initialized to the same card as the previous test.
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   /**
