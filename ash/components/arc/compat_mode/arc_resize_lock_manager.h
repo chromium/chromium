@@ -63,6 +63,7 @@ class ArcResizeLockManager : public KeyedService,
   void EnableResizeLock(aura::Window* window);
   void DisableResizeLock(aura::Window* window);
   void UpdateResizeLockState(aura::Window* window);
+  void UpdateShadow(aura::Window* window);
 
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
 

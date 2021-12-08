@@ -334,10 +334,11 @@ TEST_F(ArcResizeLockManagerTest, TestShadowPropertyChange) {
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
                           ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   EXPECT_FALSE(resize_shadow_updated);
+  // Any resize lock type change must trigger resize shadow update.
   resize_shadow_updated = false;
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
                           ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
-  EXPECT_FALSE(resize_shadow_updated);
+  EXPECT_TRUE(resize_shadow_updated);
 
   // Unlocked for non-resize locked windows.
   resize_shadow_updated = false;

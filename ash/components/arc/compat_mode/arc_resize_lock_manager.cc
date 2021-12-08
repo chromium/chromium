@@ -301,11 +301,6 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   }
 
   UpdateResizeLockState(window);
-
-  window->SetProperty(ash::kResizeShadowTypeKey, ash::ResizeShadowType::kLock);
-  // Show lock shadow effect on window. ash::Shell may not exist in tests.
-  if (ash::Shell::HasInstance())
-    ash::Shell::Get()->resize_shadow_controller()->ShowShadow(window);
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
@@ -349,6 +344,30 @@ void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {
   // As we updated the resize lock state above, we need to update compat mode
   // button.
   compat_mode_button_controller_->Update(pref_delegate_, window);
+
+  // Even if resize lock doesn't get enabled or disabled, we need to ensure to
+  // update this as resize shadow can be updated in an intermediate state when
+  // exo commites the next state.
+  UpdateShadow(window);
+}
+
+void ArcResizeLockManager::UpdateShadow(aura::Window* window) {
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  const bool resize_lock_enabled =
+      resize_lock_type == ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE ||
+      resize_lock_type == ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
+  const auto resize_shadow_type = resize_lock_enabled
+                                      ? ash::ResizeShadowType::kLock
+                                      : ash::ResizeShadowType::kUnlock;
+  window->SetProperty(ash::kResizeShadowTypeKey, resize_shadow_type);
+  // ash::Shell may not exist in tests.
+  if (ash::Shell::HasInstance()) {
+    if (resize_lock_enabled) {
+      ash::Shell::Get()->resize_shadow_controller()->ShowShadow(window);
+    } else {
+      ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
+    }
+  }
 }
 
 }  // namespace arc
