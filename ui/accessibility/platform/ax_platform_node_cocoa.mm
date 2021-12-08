@@ -802,10 +802,7 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
-  // Anything focusable or any control:
-  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
-      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
-      _node->HasState(ax::mojom::State::kFocusable)) {
+  if (ui::SupportsRequired(role)) {
     [axAttributes addObject:NSAccessibilityRequiredAttributeChrome];
   }
 
