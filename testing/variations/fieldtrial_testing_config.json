@@ -9149,5 +9149,20 @@
                 }
             ]
         }
+    ],
+    "WinDelaySpellcheckServiceInit": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinDelaySpellcheckServiceInit"
+                    ]
+                }
+            ]
+        }
     ]
 }
