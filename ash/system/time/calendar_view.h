@@ -143,6 +143,9 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // the current month's first row.
   void ScrollOneMonthWithAnimation(bool is_scrolling_up);
 
+  // Scrolls up/down one row based on `is_scrolling_up`.
+  void ScrollOneRowWithAnimation(bool is_scrolling_up);
+
   // Back to the landing view.
   void ResetToToday();
 
