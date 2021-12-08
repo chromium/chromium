@@ -159,8 +159,10 @@ ScopedJavaLocalRef<jbyteArray> BrowserImpl::GetBrowserPersisterCryptoKey(
 }
 
 ScopedJavaLocalRef<jbyteArray> BrowserImpl::GetMinimalPersistenceState(
-    JNIEnv* env) {
-  return base::android::ToJavaByteArray(env, GetMinimalPersistenceState());
+    JNIEnv* env,
+    int max_navigations_per_tab) {
+  return base::android::ToJavaByteArray(
+      env, GetMinimalPersistenceState(max_navigations_per_tab, 0));
 }
 
 void BrowserImpl::RestoreStateIfNecessary(
@@ -215,8 +217,9 @@ void BrowserImpl::OnFragmentPause(JNIEnv* env) {
 #endif
 
 std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState(
+    int max_navigations_per_tab,
     int max_size_in_bytes) {
-  return PersistMinimalState(this, max_size_in_bytes);
+  return PersistMinimalState(this, max_navigations_per_tab, max_size_in_bytes);
 }
 
 void BrowserImpl::SetWebPreferences(blink::web_pref::WebPreferences* prefs) {
@@ -343,7 +346,7 @@ std::string BrowserImpl::GetPersistenceId() {
 
 std::vector<uint8_t> BrowserImpl::GetMinimalPersistenceState() {
   // 0 means use the default max.
-  return GetMinimalPersistenceState(0);
+  return GetMinimalPersistenceState(0, 0);
 }
 
 bool BrowserImpl::IsRestoringPreviousState() {

@@ -19,4 +19,7 @@ interface IWebLayerClient {
   Intent createRemoteMediaServiceIntent() = 7;
   int getPresentationApiNotificationId() = 8;
   int getRemotePlaybackApiNotificationId() = 9;
+
+  // Added in Version 98.
+  int getMaxNavigationsPerTabForInstanceState() = 10;
 }

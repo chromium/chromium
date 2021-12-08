@@ -97,6 +97,39 @@ public class BrowserFragmentLifecycleTest {
         waitForTabToFinishRestore(getTab(), url);
     }
 
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(98)
+    public void setMaxNavigationsPerTabForInstanceState() throws Throwable {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> Browser.setMaxNavigationsPerTabForInstanceState(4));
+
+        // Navigate to 5 urls.
+        mActivityTestRule.launchShellWithUrl("about:blank");
+        final String url1 = "data:text,foo";
+        mActivityTestRule.navigateAndWait(getTab(), url1, false);
+        final String url2 = mActivityTestRule.getTestDataURL("simple_page.html");
+        mActivityTestRule.navigateAndWait(getTab(), url2, false);
+        final String url3 = mActivityTestRule.getTestDataURL("simple_page2.html");
+        mActivityTestRule.navigateAndWait(getTab(), url3, false);
+        final String url4 = mActivityTestRule.getTestDataURL("simple_page3.html");
+        mActivityTestRule.navigateAndWait(getTab(), url4, false);
+        final String url5 = mActivityTestRule.getTestDataURL("simple_page4.html");
+        mActivityTestRule.navigateAndWait(getTab(), url5, false);
+
+        mActivityTestRule.recreateActivity();
+
+        // The max set to 4, so only 4 navigation entries should be persisted.
+        waitForTabToFinishRestore(getTab(), url5);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final NavigationController navigationController =
+                    mActivityTestRule.getActivity().getTab().getNavigationController();
+            Assert.assertEquals(4, navigationController.getNavigationListSize());
+            Assert.assertEquals(
+                    Uri.parse(url5), navigationController.getNavigationEntryDisplayUri(3));
+        });
+    }
+
     private void destroyFragment(CallbackHelper helper) {
         FragmentManager fm = mActivityTestRule.getActivity().getSupportFragmentManager();
         fm.beginTransaction()

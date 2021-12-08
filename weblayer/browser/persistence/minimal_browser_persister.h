@@ -16,9 +16,12 @@ class BrowserImpl;
 // Returns a byte array that can later be used to restore the state (Tabs and
 // navigations) of a Browser. This does not store the full state, only a
 // minimal state. For example, it may not include all tabs or all navigations.
-// |max_size_in_bytes| is provided for tests and allows specifying the max.
-// A value of 0 means use the default max.
+// |max_navigations_per_tab| is the max number of navigations to persist per
+// tab. Depending upon space requirements, the max number of navigations may not
+// be honored. |max_size_in_bytes| is provided for tests and allows specifying
+// the max. A value of 0 means use the default max.
 std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
+                                         int max_navigations_per_tab = 0,
                                          int max_size_in_bytes = 0);
 
 // Restores the state previously created via PersistMinimalState(). When

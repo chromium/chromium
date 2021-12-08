@@ -40,6 +40,31 @@ public class Browser {
     private final ObserverList<BrowserControlsOffsetCallback> mBrowserControlsOffsetCallbacks;
     private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
 
+    private static int sMaxNavigationsPerTabForInstanceState;
+
+    /**
+     * Sets the maximum number of navigations saved when persisting a Browsers instance state. The
+     * max applies to each Tab in the Browser. For example, if a value of 6 is supplied and the
+     * Browser has 4 tabs, then up to 24 navigation entries may be saved. The supplied value is
+     * a recommendation, for various reasons it may not be honored. A value of 0 results in
+     * using the default.
+     *
+     * @param value The maximum number of navigations to persist.
+     *
+     * @throws IllegalArgumentException If {@code value} is less than 0.
+     *
+     * @since 98
+     */
+    public static void setMaxNavigationsPerTabForInstanceState(int value) {
+        ThreadCheck.ensureOnUiThread();
+        if (value < 0) throw new IllegalArgumentException("Max must be >= 0");
+        sMaxNavigationsPerTabForInstanceState = value;
+    }
+
+    static int getMaxNavigationsPerTabForInstanceState() {
+        return sMaxNavigationsPerTabForInstanceState;
+    }
+
     // Constructor for test mocking.
     protected Browser() {
         mImpl = null;

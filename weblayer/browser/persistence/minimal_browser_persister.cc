@@ -266,13 +266,16 @@ bool PersistTabStatePrimaryPass(const SessionID& browser_session_id,
 // commands, false if size exceeded.
 bool PersistTabStateSecondaryPass(const SessionID& browser_session_id,
                                   Tab* tab,
+                                  int max_navigations_per_tab,
                                   MinimalPersister* builder) {
   NavigationEntryIterator iterator(tab);
   if (iterator.at_end())
     return true;
 
   const SessionID& session_id = GetSessionIDForTab(tab);
-  for (int i = 0; i < 5; ++i) {
+  // Subtract 1 from `max_navigations_per_tab` as the first pass wrote a
+  // navigation.
+  for (int i = 0; i < max_navigations_per_tab - 1; ++i) {
     // Skips the navigation that was written during the first pass.
     if (!iterator.Next())
       return true;
@@ -313,6 +316,7 @@ int GetActiveTabIndex(BrowserImpl* browser) {
 }  // namespace
 
 std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
+                                         int max_navigations_per_tab,
                                          int max_size_in_bytes) {
   MinimalPersister builder(max_size_in_bytes == 0 ? kMaxSizeInBytes
                                                   : max_size_in_bytes);
@@ -342,9 +346,15 @@ std::vector<uint8_t> PersistMinimalState(BrowserImpl* browser,
       return builder.ToByteArray();
   }
 
+  // Use a default of 5 for the max number of navigations to persist.
+  if (max_navigations_per_tab == 0)
+    max_navigations_per_tab = 5;
+
   for (Tab* tab : tabs) {
-    if (!PersistTabStateSecondaryPass(browser_session_id, tab, &builder))
+    if (!PersistTabStateSecondaryPass(browser_session_id, tab,
+                                      max_navigations_per_tab, &builder)) {
       return builder.ToByteArray();
+    }
   }
 
   return builder.ToByteArray();
