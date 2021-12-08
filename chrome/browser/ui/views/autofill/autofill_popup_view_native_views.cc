@@ -173,7 +173,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(kKeyIcon);
 
   if (icon_str == "clearIcon")
-    return ImageViewFromVectorIcon(omnibox::kClearIcon);
+    return ImageViewFromVectorIcon(kBackspaceIcon);
 
   if (icon_str == "globeIcon")
     return ImageViewFromVectorIcon(kGlobeIcon);
