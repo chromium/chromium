@@ -916,8 +916,11 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
                              GENERIC_READ | GENERIC_EXECUTE, &granted_access,
                              &granted_access_status) &&
       granted_access_status;
-  if (!access_check)
+  if (!access_check) {
+    PLOG(ERROR) << "Sandbox cannot access executable. Check filesystem "
+                   "permissions are valid. See https://bit.ly/31yqMJR.";
     return SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK;
+  }
 
   return SBOX_ALL_OK;
 }
