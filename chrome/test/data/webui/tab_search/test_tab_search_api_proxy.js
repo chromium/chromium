@@ -4,7 +4,7 @@
 
 import {PageCallbackRouter, PageRemote, ProfileData} from 'chrome://tab-search.top-chrome/tab_search.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {TabSearchApiProxy} */
 export class TestTabSearchApiProxy extends TestBrowserProxy {

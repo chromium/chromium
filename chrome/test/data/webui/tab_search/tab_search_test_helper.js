@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertGE, assertLE} from '../../chai_assert.js';
+import {assertGE, assertLE} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * Override the specified function and parameters for the given class to avoid

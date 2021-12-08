@@ -96,7 +96,6 @@ if (include_js_tests) {
       "settings/privacy_sandbox_browsertest.js",
       "settings/settings_idle_load_browsertest.js",
       "support_tool/support_tool_browsertest.js",
-      "tab_search/tab_search_browsertest.js",
       "text_defaults_browsertest.js",
       "webui_resource_async_browsertest.js",
       "whats_new/whats_new_browsertest.js",
@@ -447,6 +446,7 @@ if (include_js_tests) {
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
       "read_later/read_later_browsertest.js",
+      "tab_search/tab_search_browsertest.js",
       "usb_internals_browsertest.js",
     ]
     if (is_chromeos_ash) {
@@ -625,6 +625,7 @@ generate_grd("build_grd") {
     "downloads:build_grdp",
     "read_later:build_grdp",
     "settings:build_grdp",
+    "tab_search:build_grdp",
   ]
 
   grdp_files = [
@@ -633,6 +634,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/read_later/resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
+    "$target_gen_dir/tab_search/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
   ]
 

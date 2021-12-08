@@ -6,8 +6,8 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField, TabsRemovedInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
 
-import {assertEquals, assertGT, assertNotEquals} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+import {assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
