@@ -229,13 +229,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
     // - Raw size minus extras, for large buckets and direct-mapped allocations
     //   (see also the comment in CanStoreRawSize() for more info). This is
     //   equal to requested size.
-    size_t size_to_ajdust;
-    if (LIKELY(!CanStoreRawSize())) {
-      size_to_ajdust = bucket->slot_size;
-    } else {
-      size_to_ajdust = GetRawSize();
-    }
-    return root->AdjustSizeForExtrasSubtract(size_to_ajdust);
+    return root->AdjustSizeForExtrasSubtract(GetUtilizedSlotSize());
   }
 
   // Returns the total size of the slots that are currently provisioned.
