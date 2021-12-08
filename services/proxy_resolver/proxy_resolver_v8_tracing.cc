@@ -861,7 +861,7 @@ void Job::SaveDnsToLocalCache(const std::string& host,
 
 std::string Job::MakeDnsCacheKey(const std::string& host,
                                  net::ProxyResolveDnsOperation op) {
-  return base::StringPrintf("%d:%s", op, host.c_str());
+  return base::StringPrintf("%d:%s", static_cast<int>(op), host.c_str());
 }
 
 void Job::HandleAlertOrError(bool is_alert,
