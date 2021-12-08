@@ -1513,6 +1513,9 @@
   <message desc="Further describes a list-like element with a number of items. e.g. This will be combined with other messages to produce: List with 3 items." name="IDS_CHROMEVOX_LIST_WITH_ITEMS">
     {COUNT, plural, =1{with # item} other{with # items}}
   </message>
+  <message desc="Further describes the level of nesting of a list-like element on the last item. e.g. This will be combined with other messages to produce: List end nested level 2." name="IDS_CHROMEVOX_LIST_NESTED_LEVEL">
+    {COUNT, plural, =1{} other{nested level #}}
+  </message>
   <!-- TODO(crbug.com/999781): This should not need ICU msg format. Fix where the message is used. -->  <message desc="Further describes a list-like element with a number of items in braille." name="IDS_CHROMEVOX_LIST_WITH_ITEMS_BRL">
     {COUNT, plural, =1{+#} other{+#}}
   </message>

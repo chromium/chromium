@@ -2212,6 +2212,58 @@ TEST_F('ChromeVoxBackgroundTest', 'NonModalDialogHeadingJump', function() {
   });
 });
 
+TEST_F('ChromeVoxBackgroundTest', 'LevelEndsForNestedLists', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div>
+      <ul>
+        <li>Berries
+          <ul>
+            <li>Strawberries</li>
+            <li>Blueberries</li>
+            <li>Raspberries</li>
+          </ul>
+        </li>
+        <li>Citruses
+          <ul>
+              <li>Oranges
+                <ul>
+                  <li>Grapefruits</li>
+                  <li>Mandarins</li>
+                </ul>
+              </li>
+          </ul>
+        </li>
+        <li>Bananas</li>
+      </ul>
+    </div>
+  `;
+
+  this.runWithLoadedTree(site, function(root) {
+    const blueberries = root.find({attributes: {name: 'Blueberries'}});
+    const grapefruits = root.find({attributes: {name: 'Grapefruits'}});
+
+    mockFeedback
+        .call(() => {
+          ChromeVoxState.instance.setCurrentRange(
+              cursors.Range.fromNode(blueberries));
+        })
+        .call(doCmd('nextObject'))
+        .expectSpeech(
+            '◦ Raspberries', 'List item', 'List end', 'nested level 2')
+        .call(() => {
+          ChromeVoxState.instance.setCurrentRange(
+              cursors.Range.fromNode(grapefruits));
+        })
+        .call(doCmd('nextObject'))
+        .expectSpeech('■ Mandarins', 'List item', 'List end', 'nested level 3')
+        .call(doCmd('nextObject'))
+        // Nested level is not mentioned for level 1.
+        .expectSpeech('• Bananas', 'List item', 'List end')
+        .replay();
+  });
+});
+
 TEST_F('ChromeVoxBackgroundTest', 'NavigationByList', function() {
   const mockFeedback = this.createMockFeedback();
   const site = `

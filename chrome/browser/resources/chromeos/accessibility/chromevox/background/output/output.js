@@ -774,6 +774,8 @@ Output = class {
               owner.formatAsStateValue_(node, token, buff, options, ruleStr);
             } else if (token === 'phoneticReading') {
               owner.formatPhoneticReading_(node, buff);
+            } else if (token === 'listNestedLevel') {
+              owner.formatListNestedLevel_(node, buff);
             } else if (tree.firstChild) {
               owner.formatCustomFunction_(
                   node, token, tree, buff, options, ruleStr);
@@ -1440,6 +1442,22 @@ Output = class {
     const text =
         PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
     this.append_(buff, text);
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @param {!Array<Spannable>} buff
+   */
+  formatListNestedLevel_(node, buff) {
+    let level = 0;
+    let current = node;
+    while (current) {
+      if (current.role === RoleType.LIST) {
+        level += 1;
+      }
+      current = current.parent;
+    }
+    this.append_(buff, level.toString());
   }
 
   /**
@@ -2590,7 +2608,7 @@ Output.RULES = {
     abstractList: {
       startOf: `$nameFromNode $role @@list_with_items($setSize)
           $restriction $description`,
-      endOf: `@end_of_container($role)`
+      endOf: `@end_of_container($role) @@list_nested_level($listNestedLevel)`
     },
     abstractNameFromContents: {
       speak: `$nameOrDescendants $node(activeDescendant) $value $state
