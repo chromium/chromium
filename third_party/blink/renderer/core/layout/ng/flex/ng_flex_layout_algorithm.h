@@ -124,8 +124,12 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   // This will be set during block fragmentation once we've processed the first
   // flex item in a given line. It is used to check if we're at a valid class A
-  // or B breakpoint within a column flex container.
+  // or C breakpoint within a column flex container.
   wtf_size_t last_line_idx_to_process_first_child_ = kNotFound;
+  // This will be set during block fragmentation once we've processed the first
+  // flex line. It is used to check if we're at a valid class A or C breakpoint
+  // within a row flex container.
+  bool has_processed_first_line_ = false;
 
   FlexLayoutAlgorithm algorithm_;
   DevtoolsFlexInfo* layout_info_for_devtools_;

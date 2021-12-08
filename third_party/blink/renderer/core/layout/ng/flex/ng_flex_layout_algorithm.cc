@@ -52,10 +52,10 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
                  child_percentage_size_,
                  &Node().GetDocument()),
       layout_info_for_devtools_(layout_info_for_devtools) {
-  // TODO(almaher): Support multi-line fragmentation.
+  // TODO(almaher): Support multi-line column fragmentation.
   involved_in_block_fragmentation_ =
       InvolvedInBlockFragmentation(container_builder_) &&
-      !algorithm_.IsMultiline();
+      (!algorithm_.IsMultiline() || is_horizontal_flow_);
 }
 
 bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
@@ -1169,6 +1169,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   for (auto entry = item_iterator.NextItem();
        NGFlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem()) {
+    wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
     const NGBreakToken* item_break_token = entry.token;
@@ -1193,7 +1194,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // TODO(almaher): Once we add support for row break tokens, set
     // |has_inflow_child_break_inside_| to false when adding item break tokens.
     if (container_builder_.HasInflowChildBreakInside() &&
-        !is_horizontal_flow_) {
+        (!is_horizontal_flow_ ||
+         last_line_idx_to_process_first_child_ != flex_line_idx)) {
       // But if the break happened in the same flow, we'll now just finish
       // layout of the fragment. No more siblings should be processed.
       break;
@@ -1231,8 +1233,13 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     // containers.
     NGBreakStatus break_status = NGBreakStatus::kContinue;
     if (!early_break_ && ConstraintSpace().HasBlockFragmentation()) {
-      bool has_container_separation =
-          last_line_idx_to_process_first_child_ == flex_line_idx;
+      bool has_container_separation = false;
+      if (is_horizontal_flow_) {
+        has_container_separation = has_processed_first_line_;
+      } else {
+        has_container_separation =
+            last_line_idx_to_process_first_child_ == flex_line_idx;
+      }
       break_status = BreakBeforeChildIfNeeded(
           ConstraintSpace(), flex_item->ng_input_node, *layout_result,
           ConstraintSpace().FragmentainerOffsetAtBfc() + offset.block_offset,
@@ -1241,7 +1248,14 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
 
     if (break_status == NGBreakStatus::kBrokeBefore) {
       ConsumeRemainingFragmentainerSpace(line_output);
-      return NGLayoutResult::kSuccess;
+      // If we broke before an item in a row container, make sure that all
+      // items in that row have been processed before returning.
+      if (!is_horizontal_flow_ ||
+          flex_item_idx == line_output.line_items.size() - 1) {
+        return NGLayoutResult::kSuccess;
+      }
+      last_line_idx_to_process_first_child_ = flex_line_idx;
+      continue;
     }
     if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
       return NGLayoutResult::kNeedsEarlierBreak;
@@ -1279,6 +1293,10 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       // TODO(almaher): How will this work with fragmentation?
       PropagateBaselineFromChild(flex_item->Style(), fragment,
                                  offset.block_offset, &fallback_baseline);
+    }
+    if (!has_processed_first_line_ &&
+        flex_item_idx == line_output.line_items.size() - 1) {
+      has_processed_first_line_ = true;
     }
     last_line_idx_to_process_first_child_ = flex_line_idx;
   }
