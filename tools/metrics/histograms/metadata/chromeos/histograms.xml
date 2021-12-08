@@ -1379,6 +1379,24 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.SecurityAnomalyUploadSuccess" enum="Boolean"
+    expires_after="2022-04-03">
+  <owner>jorgelo@chromium.org</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records the result (boolean success or failure) of attempting to report a
+    Chrome OS system as anomalous via the crash reporting service.
+
+    Reporting is only attempted if one or more anomalies are detected (see the
+    previous histogram's description for the types of anomalies considered),
+    *and* once per boot, even if reporting fails.
+
+    So this histogram will be recorded at most once per boot, and only if a
+    system is detected as anomalous (i.e. presents any of the tracked
+    anomalies.)
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
     enum="BooleanToggled" expires_after="2022-10-29">
