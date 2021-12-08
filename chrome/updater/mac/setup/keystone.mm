@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -98,6 +99,60 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     return false;
   }
   return true;
+}
+
+bool CreateEmptyFileInDirectory(const base::FilePath& dir,
+                                const std::string& file_name) {
+  constexpr int kPermissionsMask = base::FILE_PERMISSION_READ_BY_USER |
+                                   base::FILE_PERMISSION_WRITE_BY_USER |
+                                   base::FILE_PERMISSION_READ_BY_GROUP |
+                                   base::FILE_PERMISSION_READ_BY_OTHERS;
+
+  if (!base::PathExists(dir)) {
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(dir, &error) ||
+        !base::SetPosixFilePermissions(dir, kPermissionsMask)) {
+      LOG(ERROR) << "Failed to create '" << dir.value().c_str()
+                 << "': " << base::File::ErrorToString(error);
+      return false;
+    }
+  }
+
+  base::FilePath file_path = dir.AppendASCII(file_name);
+  base::File file(file_path,
+                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  file.Close();
+
+  if (!base::PathExists(file_path)) {
+    LOG(ERROR) << "Failed to create file: " << file_path.value().c_str();
+    return false;
+  }
+  if (!base::SetPosixFilePermissions(file_path, kPermissionsMask)) {
+    LOG(ERROR) << "Failed to set permissions: " << file_path.value().c_str();
+    return false;
+  }
+
+  return true;
+}
+
+bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
+  // If not all Keystone launchctl plist files are present, Keystone installer
+  // will proceed regardless of the bundle state. The empty launchctl files
+  // created here are used to make legacy Keystone installer believe that a
+  // healthy newer version updater already exists and thus won't over-install.
+  if (scope == UpdaterScope::kSystem &&
+      !CreateEmptyFileInDirectory(
+          GetLibraryFolderPath(scope)->Append("LaunchDaemons"),
+          "com.google.keystone.daemon.plist")) {
+    return false;
+  }
+
+  base::FilePath launch_agent_dir =
+      GetLibraryFolderPath(scope)->Append("LaunchAgents");
+  return CreateEmptyFileInDirectory(launch_agent_dir,
+                                    "com.google.keystone.agent.plist") &&
+         CreateEmptyFileInDirectory(launch_agent_dir,
+                                    "com.google.keystone.xpcservice.plist");
 }
 
 void MigrateKeystoneTickets(
@@ -193,7 +248,8 @@ bool ConvertKeystone(UpdaterScope scope,
   MigrateKeystoneTickets(scope, register_callback);
   // TODO(crbug.com/1250524): Flush prefs, then delete the tickets to mitigate
   // duplicate imports.
-  return CopyKeystoneBundle(scope);
+
+  return CopyKeystoneBundle(scope) && CreateKeystoneLaunchCtlPlistFiles(scope);
 }
 
 }  // namespace updater
