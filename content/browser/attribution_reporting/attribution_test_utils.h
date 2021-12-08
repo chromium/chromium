@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
@@ -50,6 +51,23 @@ class MockAttributionReportingContentBrowserClient
                const url::Origin* impression_origin,
                const url::Origin* conversion_origin,
                const url::Origin* reporting_origin),
+              (override));
+};
+
+class MockAttributionHost : public AttributionHost {
+ public:
+  explicit MockAttributionHost(WebContents* contents);
+
+  ~MockAttributionHost() override;
+
+  MOCK_METHOD(void,
+              RegisterImpression,
+              (const blink::Impression& impression),
+              (override));
+
+  MOCK_METHOD(void,
+              RegisterConversion,
+              (blink::mojom::ConversionPtr conversion),
               (override));
 };
 

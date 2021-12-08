@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
 #include <memory>
 
-#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
@@ -25,6 +22,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
@@ -32,6 +30,8 @@
 namespace content {
 
 namespace {
+
+using ::testing::Field;
 
 // WebContentsObserver that waits until a source is available on a
 // navigation handle for a finished navigation.
@@ -82,53 +82,6 @@ class SourceObserver : public TestNavigationObserver {
   absl::optional<blink::Impression> last_impression_;
   bool waiting_for_null_impression_ = false;
   base::RunLoop impression_loop_;
-};
-
-// A mock attribution host which waits until an impression registration
-// mojo message is received. Tracks the last seen impression data.
-class TestAttributionHost : public AttributionHost {
- public:
-  explicit TestAttributionHost(WebContents* contents)
-      : AttributionHost(contents) {
-    SetReceiverImplForTesting(this);
-  }
-
-  ~TestAttributionHost() override { SetReceiverImplForTesting(nullptr); }
-
-  void RegisterImpression(const blink::Impression& impression) override {
-    last_impression_data_ = impression.impression_data;
-    num_impressions_++;
-
-    // Don't quit the run loop if we have not seen the expected number of
-    // impressions.
-    if (num_impressions_ < expected_num_impressions_)
-      return;
-    impression_waiter_.Quit();
-  }
-
-  // Returns the last impression data after |expected_num_impressions| have been
-  // observed.
-  uint64_t WaitForNumImpressions(size_t expected_num_impressions) {
-    if (expected_num_impressions == num_impressions_)
-      return last_impression_data_;
-    expected_num_impressions_ = expected_num_impressions;
-    impression_waiter_.Run();
-    return last_impression_data_;
-  }
-
-  size_t num_impressions() { return num_impressions_; }
-
-  void ResetImpressionWaitData() {
-    last_impression_data_ = 0;
-    num_impressions_ = 0;
-    expected_num_impressions_ = 0;
-  }
-
- private:
-  uint64_t last_impression_data_ = 0;
-  size_t num_impressions_ = 0;
-  size_t expected_num_impressions_ = 0;
-  base::RunLoop impression_waiter_;
 };
 
 class AttributionSourceDisabledBrowserTest : public ContentBrowserTest {
@@ -714,7 +667,11 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestAttributionHost host(web_contents());
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression(
+                        Field(&blink::Impression::impression_data, 200UL)))
+      .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag({id: 'link',
@@ -722,11 +679,7 @@ IN_PROC_BROWSER_TEST_F(
                         data: '200',
                         destination: 'https://a.com',
                         registerAttributionSource: true});)"));
-
-  EXPECT_EQ(200UL, host.WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host.num_impressions());
-
-  host.ResetImpressionWaitData();
+  loop.Run();
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     document.getElementById("link").removeAttribute("registerattributionsource");)"));
@@ -736,7 +689,6 @@ IN_PROC_BROWSER_TEST_F(
   // navigation message, it would be observed before the NavigateToURL() call
   // finishes.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -746,7 +698,14 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestAttributionHost host(web_contents());
+  base::RunLoop loop1, loop2;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression(
+                        Field(&blink::Impression::impression_data, 200UL)))
+      .WillOnce([&]() { loop1.Quit(); });
+  EXPECT_CALL(host, RegisterImpression(
+                        Field(&blink::Impression::impression_data, 300UL)))
+      .WillOnce([&]() { loop2.Quit(); });
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag({id: 'link',
@@ -754,11 +713,7 @@ IN_PROC_BROWSER_TEST_F(
                         data: '200',
                         destination: 'https://a.com',
                         registerAttributionSource: true});)"));
-
-  EXPECT_EQ(200UL, host.WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host.num_impressions());
-
-  host.ResetImpressionWaitData();
+  loop1.Run();
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     let link = document.getElementById("link");
@@ -766,8 +721,7 @@ IN_PROC_BROWSER_TEST_F(
     link.setAttribute("attributionsourceeventid", "300");
     link.setAttribute("registerattributionsource", "");)"));
 
-  EXPECT_EQ(300UL, host.WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host.num_impressions());
+  loop2.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -780,7 +734,8 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression).Times(0);
 
   RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
   EXPECT_TRUE(ExecJs(subframe, R"(
@@ -791,7 +746,6 @@ IN_PROC_BROWSER_TEST_F(
                         registerAttributionSource: true});)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
@@ -915,16 +869,18 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestAttributionHost host(web_contents());
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression(
+                        Field(&blink::Impression::impression_data, 200UL)))
+      .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
       attributionSourceEventId: "200",
       attributionDestination: "https://a.com",
     });)"));
-
-  EXPECT_EQ(200UL, host.WaitForNumImpressions(1));
-  EXPECT_EQ(1u, host.num_impressions());
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -934,7 +890,8 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression).Times(0);
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -942,7 +899,6 @@ IN_PROC_BROWSER_TEST_F(
     });)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -952,7 +908,8 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression).Times(0);
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -960,7 +917,6 @@ IN_PROC_BROWSER_TEST_F(
     });)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -970,7 +926,8 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterImpression).Times(0);
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -979,7 +936,6 @@ IN_PROC_BROWSER_TEST_F(
     });)"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_impressions());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,

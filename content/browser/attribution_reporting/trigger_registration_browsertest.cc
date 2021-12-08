@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
 #include <memory>
 
 #include "base/bind.h"
-#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -19,6 +18,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 #include "url/gurl.h"
 
@@ -26,56 +26,15 @@ namespace content {
 
 namespace {
 
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::Pointee;
+
 // Well known path for registering conversions.
 const std::string kWellKnownUrl =
     ".well-known/attribution-reporting/trigger-attribution";
 
 }  // namespace
-
-// A mock attribution host which waits until a conversion registration
-// mojo message is received. Tracks the last seen conversion data.
-class TestAttributionHost : public AttributionHost {
- public:
-  explicit TestAttributionHost(WebContents* contents)
-      : AttributionHost(contents) {
-    SetReceiverImplForTesting(this);
-  }
-
-  ~TestAttributionHost() override { SetReceiverImplForTesting(nullptr); }
-
-  void RegisterConversion(blink::mojom::ConversionPtr conversion) override {
-    last_conversion_ = std::move(conversion);
-    num_conversions_++;
-
-    // Don't quit the run loop if we have not seen the expected number of
-    // conversions.
-    if (num_conversions_ < expected_num_conversions_)
-      return;
-    conversion_waiter_.Quit();
-  }
-
-  // Returns the last conversion data after |expected_num_conversions| have been
-  // observed.
-  uint64_t WaitForNumConversions(size_t expected_num_conversions) {
-    if (expected_num_conversions == num_conversions_)
-      return last_conversion_->conversion_data;
-    expected_num_conversions_ = expected_num_conversions;
-    conversion_waiter_.Run();
-    return last_conversion_->conversion_data;
-  }
-
-  size_t num_conversions() { return num_conversions_; }
-
-  const blink::mojom::ConversionPtr& last_conversion() const {
-    return last_conversion_;
-  }
-
- private:
-  blink::mojom::ConversionPtr last_conversion_ = nullptr;
-  size_t num_conversions_ = 0;
-  size_t expected_num_conversions_ = 0;
-  base::RunLoop conversion_waiter_;
-};
 
 class AttributionTriggerDisabledBrowserTest : public ContentBrowserTest {
  public:
@@ -114,12 +73,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
 
   EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 class AttributionTriggerRegistrationBrowserTest
@@ -153,12 +112,19 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(
+      host,
+      RegisterConversion(Pointee(AllOf(
+          Field(&blink::mojom::Conversion::conversion_data, 123UL),
+          Field(&blink::mojom::Conversion::event_source_trigger_data, 0UL),
+          Field(&blink::mojom::Conversion::priority, 0)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
-  EXPECT_EQ(123UL, host.WaitForNumConversions(1));
-  EXPECT_EQ(0UL, host.last_conversion()->event_source_trigger_data);
-  EXPECT_EQ(0, host.last_conversion()->priority);
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -166,13 +132,20 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(
+      host,
+      RegisterConversion(Pointee(AllOf(
+          Field(&blink::mojom::Conversion::conversion_data, 123UL),
+          Field(&blink::mojom::Conversion::event_source_trigger_data, 456UL)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(
       ExecJs(web_contents(),
              "registerConversion({data: 123, eventSourceTriggerData: 456})"));
-  EXPECT_EQ(123UL, host.WaitForNumConversions(1));
-  EXPECT_EQ(456UL, host.last_conversion()->event_source_trigger_data);
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -180,12 +153,18 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(
+      host, RegisterConversion(Pointee(
+                AllOf(Field(&blink::mojom::Conversion::conversion_data, 123UL),
+                      Field(&blink::mojom::Conversion::priority, 456)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(
       ExecJs(web_contents(), "registerConversion({data: 123, priority: 456})"));
-  EXPECT_EQ(123UL, host.WaitForNumConversions(1));
-  EXPECT_EQ(456, host.last_conversion()->priority);
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -193,7 +172,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "/page_with_conversion_measurement_disabled.html")));
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "trigger-data=200");
@@ -203,7 +183,6 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   load_observer.WaitForResourceCompletion(redirect_url);
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -211,7 +190,8 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
 
   GURL registration_url =
       embedded_test_server()->GetURL("/" + kWellKnownUrl + "?trigger-data=200");
@@ -228,7 +208,6 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   // navigation message, it would be observed before the NavigateToURL() call
   // finishes.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -237,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
 
   // Create a url that does the following redirect chain b.test ->
   // a.test/.well-known/...; this conversion registration should not be allowed,
@@ -259,7 +239,6 @@ IN_PROC_BROWSER_TEST_F(
   // navigation message, it would be observed before the NavigateToURL() call
   // finishes.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -267,7 +246,15 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(
+      host,
+      RegisterConversion(Pointee(AllOf(
+          Field(&blink::mojom::Conversion::conversion_data, 200UL),
+          Field(&blink::mojom::Conversion::event_source_trigger_data, 0UL)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   // Create a url that does the following redirect chain b.test -> a.test ->
   // a.test/.well-known/...; this conversion registration should be allowed.
@@ -280,19 +267,19 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createTrackingPixel($1);", registration_url)));
-  EXPECT_EQ(200UL, host.WaitForNumConversions(1));
-  EXPECT_EQ(0UL, host.last_conversion()->event_source_trigger_data);
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
                        ConversionRegistrationInPreload_NotReceived) {
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
+
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(
                                  "/page_with_preload_conversion_ping.html")));
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -300,14 +287,20 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestAttributionHost host(web_contents());
+
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  // Conversion data and event source trigger data should be defaulted to 0.
+  EXPECT_CALL(
+      host,
+      RegisterConversion(Pointee(AllOf(
+          Field(&blink::mojom::Conversion::conversion_data, 0UL),
+          Field(&blink::mojom::Conversion::event_source_trigger_data, 0UL)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(web_contents(), "createTrackingPixel(\"server-redirect?" +
                                          kWellKnownUrl + "\");"));
-
-  // Conversion data and event source trigger data should be defaulted to 0.
-  EXPECT_EQ(0UL, host.WaitForNumConversions(1));
-  EXPECT_EQ(0UL, host.last_conversion()->event_source_trigger_data);
+  loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
@@ -315,18 +308,24 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_subframe_conversion.html")));
-  TestAttributionHost host(web_contents());
+
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(
+      host,
+      RegisterConversion(Pointee(AllOf(
+          Field(&blink::mojom::Conversion::conversion_data, 200u),
+          Field(&blink::mojom::Conversion::event_source_trigger_data, 0u)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
                      JsReplace("createTrackingPixel($1);", redirect_url)));
-  EXPECT_EQ(200u, host.WaitForNumConversions(1));
-  EXPECT_EQ(0u, host.last_conversion()->event_source_trigger_data);
+  loop.Run();
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(1u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -339,7 +338,8 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
 
   GURL redirect_url = https_server()->GetURL(
       "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -350,7 +350,6 @@ IN_PROC_BROWSER_TEST_F(
   load_observer.WaitForResourceCompletion(redirect_url);
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -367,7 +366,14 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  TestAttributionHost host(web_contents());
+  base::RunLoop loop;
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(
+      host,
+      RegisterConversion(Pointee(AllOf(
+          Field(&blink::mojom::Conversion::conversion_data, 200u),
+          Field(&blink::mojom::Conversion::event_source_trigger_data, 0u)))))
+      .WillOnce([&]() { loop.Quit(); });
 
   GURL redirect_url = https_server()->GetURL(
       "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -375,11 +381,9 @@ IN_PROC_BROWSER_TEST_F(
   ResourceLoadObserver load_observer(shell());
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
                      JsReplace("createTrackingPixel($1);", redirect_url)));
-  EXPECT_EQ(200u, host.WaitForNumConversions(1));
-  EXPECT_EQ(0u, host.last_conversion()->event_source_trigger_data);
+  loop.Run();
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(1u, host.num_conversions());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -410,7 +414,16 @@ IN_PROC_BROWSER_TEST_F(
                      .expected_conversion = false}};
 
   for (const auto& test_case : kTestCases) {
-    TestAttributionHost host(web_contents());
+    base::RunLoop loop;
+    MockAttributionHost host(web_contents());
+    if (test_case.expected_conversion) {
+      EXPECT_CALL(
+          host, RegisterConversion(Pointee(
+                    Field(&blink::mojom::Conversion::conversion_data, 200UL))))
+          .WillOnce([&]() { loop.Quit(); });
+    } else {
+      EXPECT_CALL(host, RegisterConversion).Times(0);
+    }
 
     // Secure hosts must be served from the https server.
     net::EmbeddedTestServer* page_server = (test_case.page_host == kSecureHost)
@@ -432,12 +445,11 @@ IN_PROC_BROWSER_TEST_F(
                   redirect_url)));
 
     if (test_case.expected_conversion)
-      EXPECT_EQ(200UL, host.WaitForNumConversions(1));
+      loop.Run();
 
     // Navigate the page. By the time the navigation finishes, we will have
     // received any conversion mojo messages.
     EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-    EXPECT_EQ(test_case.expected_conversion, host.num_conversions());
   }
 }
 
@@ -472,7 +484,8 @@ IN_PROC_BROWSER_TEST_F(
                                               innermost_iframe_url)));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  TestAttributionHost host(web_contents());
+  MockAttributionHost host(web_contents());
+  EXPECT_CALL(host, RegisterConversion).Times(0);
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -483,7 +496,6 @@ IN_PROC_BROWSER_TEST_F(
   load_observer.WaitForResourceCompletion(redirect_url);
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  EXPECT_EQ(0u, host.num_conversions());
 }
 
 }  // namespace content

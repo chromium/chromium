@@ -44,6 +44,15 @@ MockAttributionReportingContentBrowserClient::
 MockAttributionReportingContentBrowserClient::
     ~MockAttributionReportingContentBrowserClient() = default;
 
+MockAttributionHost::MockAttributionHost(WebContents* web_contents)
+    : AttributionHost(web_contents) {
+  SetReceiverImplForTesting(this);
+}
+
+MockAttributionHost::~MockAttributionHost() {
+  SetReceiverImplForTesting(nullptr);
+}
+
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }
