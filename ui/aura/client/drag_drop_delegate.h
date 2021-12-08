@@ -69,7 +69,7 @@ class AURA_EXPORT DragDropDelegate {
   // instead.
   virtual ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) = 0;
+      std::unique_ptr<ui::OSExchangeData> data);
 
   // Invoked during a drag and drop session when the user release the mouse, but
   // the drop is held because of the DataTransferPolicyController.
