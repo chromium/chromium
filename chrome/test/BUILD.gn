@@ -1753,7 +1753,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/policy/test/policy_browsertest.cc",
       "../browser/policy/test/policy_statistics_collector_browsertest.cc",
       "../browser/policy/test/policy_test_google_browsertest.cc",
-      "../browser/policy/test/promotional_tabs_enabled_policy_browsertest.cc",
       "../browser/policy/test/proxy_policies_browsertest.cc",
       "../browser/policy/test/restore_on_startup_policy_browsertest.cc",
       "../browser/policy/test/safe_browsing_policy_browsertest.cc",
@@ -2211,7 +2210,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/importer/edge_importer_browsertest_win.cc",
         "../browser/importer/ie_importer_browsertest_win.cc",
         "../browser/net/chrome_mojo_proxy_resolver_win_browsertest.cc",
-        "../browser/policy/test/locale_policy_browsertest.cc",
         "../browser/printing/pdf_to_emf_converter_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/profiles/profile_shortcut_manager_browsertest_win.cc",
@@ -2312,7 +2310,6 @@ if (!is_android && !is_fuchsia) {
     } else {
       # !is_mac
       sources += [
-        "../browser/policy/test/full_screen_allowed_policy_browsertest.cc",
         "../browser/ui/views/create_application_shortcut_view_browsertest.cc",
       ]
 
@@ -2355,7 +2352,6 @@ if (!is_android && !is_fuchsia) {
     if (!is_chromeos_ash) {
       sources += [
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
-        "../browser/policy/test/hardware_acceleration_mode_enabled_browsertest.cc",
         "../browser/policy/test/variation_restrict_parameter_policy_browsertest.cc",
         "../browser/profiles/profile_window_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
@@ -3454,15 +3450,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/notifications/notifier_settings_test_observer.cc",
         "../browser/notifications/notifier_settings_test_observer.h",
         "../browser/policy/login_policy_test_base_browsertest.cc",
-        "../browser/policy/test/accessibility_policy_browsertest.cc",
-        "../browser/policy/test/arc_policy_browsertest.cc",
-        "../browser/policy/test/assistant_policy_browsertest.cc",
-        "../browser/policy/test/audio_output_allowed_browsertest.cc",
         "../browser/policy/test/note_taking_on_lock_screen_policy_browsertest.cc",
-        "../browser/policy/test/session_length_limit_policy_browsertest.cc",
-        "../browser/policy/test/suggested_content_policy_browsertest.cc",
         "../browser/policy/test/system_features_policy_browsertest.cc",
-        "../browser/policy/test/unified_desktop_enabled_browsertest.cc",
         "../browser/process_singleton_browsertest.cc",
         "../browser/renderer_context_menu/quick_answers_menu_observer_browsertest.cc",
         "../browser/sessions/session_restore_browsertest_chromeos.cc",

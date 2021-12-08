@@ -195,11 +195,26 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos_ash) {
+    sources += [
+      "test/accessibility_policy_browsertest.cc",
+      "test/arc_policy_browsertest.cc",
+      "test/assistant_policy_browsertest.cc",
+      "test/audio_output_allowed_browsertest.cc",
+      "test/session_length_limit_policy_browsertest.cc",
+      "test/suggested_content_policy_browsertest.cc",
+      "test/unified_desktop_enabled_browsertest.cc",
+    ]
+
     deps += [
+      "//ash/components/arc:arc_test_support",
+      "//ash/components/arc:prefs",
+      "//ash/components/arc/session:session",
+      "//ash/components/audio:audio",
       "//chrome/browser/chromeos",
       "//chromeos/cryptohome",
       "//chromeos/dbus/constants",
       "//chromeos/dbus/userdataauth",
+      "//chromeos/services/assistant/public/cpp",
       "//components/account_id",
     ]
   }
@@ -218,15 +233,20 @@ source_set("browser_tests") {
   if (is_win) {
     sources += [
       "test/audio_process_high_priority_enabled_browsertest.cc",
+      "test/locale_policy_browsertest.cc",
       "test/network_service_sandbox_enabled_browsertest.cc",
     ]
   }
 
   if (!is_android) {
-    sources += [ "cloud/component_cloud_policy_browsertest.cc" ]
+    sources += [
+      "cloud/component_cloud_policy_browsertest.cc",
+      "test/promotional_tabs_enabled_policy_browsertest.cc",
+    ]
 
     deps += [
       "//chrome/browser/ui:ui",
+      "//chrome/common:version_header",
       "//chrome/test:test_support",
     ]
   }
@@ -244,6 +264,11 @@ source_set("browser_tests") {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h",
+      "test/hardware_acceleration_mode_enabled_browsertest.cc",
     ]
+  }
+
+  if (!is_android && !is_mac) {
+    sources += [ "test/full_screen_allowed_policy_browsertest.cc" ]
   }
 }
