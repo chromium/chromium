@@ -30,7 +30,7 @@ constexpr size_t kMaximumCBORHeaderLength = 512 * 1024;
 
 namespace signed_exchange_prologue {
 
-constexpr size_t BeforeFallbackUrl::kEncodedSizeInBytes =
+const size_t BeforeFallbackUrl::kEncodedSizeInBytes =
     sizeof(kSignedExchangeMagic) + kFallbackUrlLengthFieldSizeInBytes;
 
 size_t Parse2BytesEncodedLength(base::span<const uint8_t> input) {

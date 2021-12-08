@@ -674,6 +674,6 @@ void BluetoothAdapter::RemoveTimedOutDevices() {
 }
 
 // static
-constexpr base::TimeDelta BluetoothAdapter::timeoutSec = base::Seconds(180);
+const base::TimeDelta BluetoothAdapter::timeoutSec = base::Seconds(180);
 
 }  // namespace device

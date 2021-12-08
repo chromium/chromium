@@ -623,7 +623,7 @@ void ConfigurePartitionAlloc() {
 }  // namespace allocator
 }  // namespace base
 
-constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
+const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &base::internal::PartitionMalloc,           // alloc_function
     &base::internal::PartitionMallocUnchecked,  // alloc_unchecked_function
     &base::internal::PartitionCalloc,    // alloc_zero_initialized_function
