@@ -3684,6 +3684,7 @@ static_library("browser") {
       "commerce/coupons/coupon_service.h",
       "commerce/coupons/coupon_service_factory.cc",
       "commerce/coupons/coupon_service_factory.h",
+      "commerce/coupons/coupon_service_observer.h",
       "component_updater/desktop_sharing_hub_component_installer.cc",
       "component_updater/desktop_sharing_hub_component_installer.h",
       "component_updater/intervention_policy_database_component_installer.cc",

@@ -223,6 +223,29 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
 }
 
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       FreeListing_OnCouponInvalidated) {
+  AutofillOfferData offer = CreateTestOfferWithOrigins(
+      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
+  offer.promo_code = "FREEFALL1234";
+  EXPECT_CALL(mock_coupon_service_, GetCouponDisplayTimestamp(offer))
+      .Times(1)
+      .WillOnce(::testing::Return(base::Time::Now() -
+                                  commerce::kCouponDisplayInterval.Get() -
+                                  base::Seconds(1)));
+  ShowBubble(&offer);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+
+  AutofillOfferData offer2 = CreateTestOfferWithOrigins(
+      {GURL("https://www.example.com/first/").DeprecatedGetOriginAsURL()});
+  offer2.promo_code = "FREEFALL5678";
+  controller()->OnCouponInvalidated(offer2);
+  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
+
+  controller()->OnCouponInvalidated(offer);
+  EXPECT_FALSE(controller()->GetOfferNotificationBubbleView());
+}
+
 class OfferNotificationBubbleControllerImplPrerenderTest
     : public OfferNotificationBubbleControllerImplTest {
  public:

@@ -54,6 +54,8 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<AutofillOfferData> CreatePromoCodeOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
+  void DeleteFreeListingCouponForUrl(const GURL& url);
+
   void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
                                  const std::vector<GURL>& domains);
 
