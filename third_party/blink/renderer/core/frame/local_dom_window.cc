@@ -1372,6 +1372,13 @@ int LocalDOMWindow::outerHeight() const {
     return 0;
 
   LocalFrame* frame = GetFrame();
+
+  // FencedFrames should return innerHeight to prevent passing
+  // arbitrary data through the window height.
+  if (frame->IsInFencedFrameTree()) {
+    return innerHeight();
+  }
+
   Page* page = frame->GetPage();
   if (!page)
     return 0;
@@ -1390,6 +1397,13 @@ int LocalDOMWindow::outerWidth() const {
     return 0;
 
   LocalFrame* frame = GetFrame();
+
+  // FencedFrames should return innerWidth to prevent passing
+  // arbitrary data through the window width.
+  if (frame->IsInFencedFrameTree()) {
+    return innerWidth();
+  }
+
   Page* page = frame->GetPage();
   if (!page)
     return 0;

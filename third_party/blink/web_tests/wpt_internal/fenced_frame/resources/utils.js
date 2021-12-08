@@ -86,6 +86,9 @@ const KEYS = {
   "navigator.share"                             : "00000000-0000-0000-0000-00000000002B",
 
   "background-fetch"                            : "00000000-0000-0000-0000-00000000002C",
+
+  "window.outersize"                            : "00000000-0000-0000-0000-00000000002D",
+  "window.innersize"                            : "00000000-0000-0000-0000-00000000002E",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
