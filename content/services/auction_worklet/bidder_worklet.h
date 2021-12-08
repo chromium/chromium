@@ -18,7 +18,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/trusted_bidding_signals.h"
+#include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -100,10 +100,9 @@ class BidderWorklet : public mojom::BidderWorklet {
     base::Time auction_start_time;
 
     // Set while loading is in progress.
-    std::unique_ptr<TrustedBiddingSignals> trusted_bidding_signals;
+    std::unique_ptr<TrustedSignals> trusted_bidding_signals;
     // Results of loading trusted bidding signals.
-    std::unique_ptr<TrustedBiddingSignals::Result>
-        trusted_Bidding_signals_result;
+    std::unique_ptr<TrustedSignals::Result> trusted_bidding_signals_result;
     // Error message returned by attempt to load `trusted_bidding_signals_`.
     // Errors loading it are not fatal, so such errors are cached here and only
     // reported on bid completion.
@@ -160,14 +159,14 @@ class BidderWorklet : public mojom::BidderWorklet {
                    double browser_signal_bid,
                    ReportWinCallbackInternal callback);
 
-    void GenerateBid(const absl::optional<std::string>& auction_signals_json,
-                     const absl::optional<std::string>& per_buyer_signals_json,
-                     const url::Origin& browser_signal_top_window_origin,
-                     const url::Origin& browser_signal_seller_origin,
-                     base::Time auction_start_time,
-                     std::unique_ptr<TrustedBiddingSignals::Result>
-                         trusted_bidding_signals_result,
-                     GenerateBidCallbackInternal callback);
+    void GenerateBid(
+        const absl::optional<std::string>& auction_signals_json,
+        const absl::optional<std::string>& per_buyer_signals_json,
+        const url::Origin& browser_signal_top_window_origin,
+        const url::Origin& browser_signal_seller_origin,
+        base::Time auction_start_time,
+        std::unique_ptr<TrustedSignals::Result> trusted_bidding_signals_result,
+        GenerateBidCallbackInternal callback);
 
     void ConnectDevToolsAgent(
         mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
@@ -214,11 +213,11 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   void OnTrustedBiddingSignalsDownloaded(
       GenerateBidTaskList::iterator task,
-      std::unique_ptr<TrustedBiddingSignals::Result> result,
+      std::unique_ptr<TrustedSignals::Result> result,
       absl::optional<std::string> error_msg);
 
   // Checks if the script has been loaded successfully, and the
-  // TrustedBiddingSignals load has finished (successfully or not). If so, calls
+  // TrustedSignals load has finished (successfully or not). If so, calls
   // generateBid(), and invokes `load_script_and_generate_bid_callback_` with
   // the resulting bid, if any. May only be called once BidderWorklet has
   // successfully loaded.

@@ -21,7 +21,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/report_bindings.h"
-#include "content/services/auction_worklet/trusted_bidding_signals.h"
+#include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -223,7 +223,7 @@ void BidderWorklet::GenerateBid(
       trusted_bidding_signals_keys_.has_value() &&
       !trusted_bidding_signals_keys_->empty()) {
     generate_bid_task->trusted_bidding_signals =
-        std::make_unique<TrustedBiddingSignals>(
+        TrustedSignals::LoadBiddingSignals(
             url_loader_factory_.get(), *trusted_bidding_signals_keys_,
             top_window_origin.host(), *trusted_bidding_signals_url_, v8_helper_,
             base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
@@ -386,8 +386,7 @@ void BidderWorklet::V8State::GenerateBid(
     const url::Origin& browser_signal_top_window_origin,
     const url::Origin& browser_signal_seller_origin,
     base::Time auction_start_time,
-    std::unique_ptr<TrustedBiddingSignals::Result>
-        trusted_bidding_signals_result,
+    std::unique_ptr<TrustedSignals::Result> trusted_bidding_signals_result,
     GenerateBidCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
 
@@ -452,7 +451,7 @@ void BidderWorklet::V8State::GenerateBid(
   if (!trusted_bidding_signals_result) {
     trusted_signals = v8::Null(isolate);
   } else {
-    trusted_signals = trusted_bidding_signals_result->GetSignals(
+    trusted_signals = trusted_bidding_signals_result->GetBiddingSignals(
         v8_helper_.get(), context,
         *interest_group.trusted_bidding_signals_keys);
   }
@@ -718,12 +717,12 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
 
 void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     GenerateBidTaskList::iterator task,
-    std::unique_ptr<TrustedBiddingSignals::Result> result,
+    std::unique_ptr<TrustedSignals::Result> result,
     absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
-  task->trusted_Bidding_signals_result = std::move(result);
+  task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals.reset();
 
   GenerateBidIfReady(task);
@@ -741,7 +740,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           base::Unretained(v8_state_.get()), task->auction_signals_json,
           task->per_buyer_signals_json, task->top_window_origin,
           task->seller_origin, task->auction_start_time,
-          std::move(task->trusted_Bidding_signals_result),
+          std::move(task->trusted_bidding_signals_result),
           base::BindOnce(&BidderWorklet::DeliverBidCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }

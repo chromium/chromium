@@ -18,7 +18,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "content/services/auction_worklet/trusted_scoring_signals.h"
+#include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -93,12 +93,15 @@ class SellerWorklet : public mojom::SellerWorklet {
     url::Origin browser_signal_top_window_origin;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
-    std::vector<GURL> browser_signal_ad_components;
+    // While these are URLs, it's more concenient to store these as strings
+    // rather than GURLs, both for creating a v8 array from, and for sharing
+    // ScoringSignals code with BidderWorklets.
+    std::vector<std::string> browser_signal_ad_components;
     uint32_t browser_signal_bidding_duration_msecs;
 
     ScoreAdCallback callback;
 
-    std::unique_ptr<TrustedScoringSignals> trusted_scoring_signals;
+    std::unique_ptr<TrustedSignals> trusted_scoring_signals;
 
     // Error message from downloading trusted scoring signals, if any. Prepended
     // to errors passed to the ScoreAdCallback.
@@ -129,11 +132,11 @@ class SellerWorklet : public mojom::SellerWorklet {
         const std::string& ad_metadata_json,
         double bid,
         blink::mojom::AuctionAdConfigPtr auction_config,
-        std::unique_ptr<TrustedScoringSignals::Result> trusted_scoring_signals,
+        std::unique_ptr<TrustedSignals::Result> trusted_scoring_signals,
         const url::Origin& browser_signal_top_window_origin,
         const url::Origin& browser_signal_interest_group_owner,
         const GURL& browser_signal_render_url,
-        const std::vector<GURL>& browser_signal_ad_components,
+        const std::vector<std::string>& browser_signal_ad_components,
         uint32_t browser_signal_bidding_duration_msecs,
         ScoreAdCallbackInternal callback);
 
@@ -193,7 +196,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   // V8 thread.
   void OnTrustedScoringSignalsDownloaded(
       ScoreAdTaskList::iterator task,
-      std::unique_ptr<TrustedScoringSignals::Result> result,
+      std::unique_ptr<TrustedSignals::Result> result,
       absl::optional<std::string> error_msg);
 
   void DeliverScoreAdCallbackOnUserThread(ScoreAdTaskList::iterator task,
