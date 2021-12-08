@@ -637,6 +637,7 @@ crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conv
 crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_30.html [ Failure ]
 crbug.com/654187 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/framebufferblit/conversion_31.html [ Failure ]
 crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conversion_33.html [ Failure ]
+crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
 crbug.com/929398 [ mac nvidia-0xfe9 no-passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 crbug.com/756537 [ mac nvidia ] deqp/functional/gles3/shaderoperator/* [ Failure ]
@@ -656,8 +657,7 @@ crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shad
 crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shadermatrix/mul_dynamic_mediump.html [ RetryOnFailure ]
 crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shadermatrix/sub_const.html [ RetryOnFailure ]
 crbug.com/1199098 [ mac nvidia-0xfe9 no-passthrough ] deqp/functional/gles3/shadermatrix/sub_dynamic.html [ RetryOnFailure ]
-
-crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
+crbug.com/1276186 [ mac nvidia-0xfe9 no-passthrough ] conformance/textures/misc/format-filterable-renderable.html [ Failure ]
 
 # Mac AMD
 # AMD Radeon HD 8870M (1002:6821)
@@ -866,6 +866,7 @@ crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transf
 crbug.com/1027605 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/transformfeedback/random_separate_triangles.html [ Failure ]
 crbug.com/1217713 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/shaderindexing/mat_00.html [ Failure ]
 crbug.com/1217713 [ mac amd-0x679e no-passthrough ] deqp/functional/gles3/shaderindexing/mat_02.html [ Failure ]
+crbug.com/1276186 [ mac amd-0x679e no-passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # Mac / M1 / OpenGL
 crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
@@ -987,6 +988,7 @@ crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/
 crbug.com/1092734 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-2d-rgb565-rgb-unsigned_byte.html [ Failure ]
 crbug.com/1126631 [ android android-pixel-2 passthrough ] conformance2/textures/webgl_canvas/tex-3d-r11f_g11f_b10f-rgb-half_float.html [ RetryOnFailure ]
 crbug.com/1143323 [ android android-pixel-2 passthrough ] conformance/rendering/draw-arrays-out-of-bounds.html [ Failure ]
+crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]

@@ -549,6 +549,7 @@ crbug.com/1230781 [ mac amd-0x6821 ] conformance/canvas/to-data-url-test.html [ 
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1236072 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/1227774 [ mac amd debug-x64 angle-opengl ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/1276186 [ mac amd-0x679e angle-opengl ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
