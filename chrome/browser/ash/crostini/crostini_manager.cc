@@ -2032,19 +2032,8 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostini(
     ContainerId container_id,
     CrostiniResultCallback callback,
     RestartObserver* observer) {
-  RestartOptions options;
-  auto it = restart_options_.find(container_id);
-  if (it != restart_options_.end()) {
-    options = std::move(it->second);
-    restart_options_.erase(it);
-  }
-  return RestartCrostiniWithOptions(std::move(container_id), std::move(options),
+  return RestartCrostiniWithOptions(std::move(container_id), RestartOptions(),
                                     std::move(callback), observer);
-}
-
-void CrostiniManager::SetRestartOptions(ContainerId container_id,
-                                        RestartOptions restart_options) {
-  restart_options_[container_id] = std::move(restart_options);
 }
 
 CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(

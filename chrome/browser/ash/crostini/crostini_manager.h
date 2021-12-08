@@ -460,12 +460,6 @@ class CrostiniManager : public KeyedService,
                                        CrostiniResultCallback callback,
                                        RestartObserver* observer = nullptr);
 
-  // Set options for the next restart of |container_id|. The restart will
-  // consume the options.
-  // TODO(crbug:1261319): Get rid of the need for this.
-  void SetRestartOptions(ContainerId container_id,
-                         RestartOptions restart_options);
-
   // Aborts a restart. A "next" restarter with the same ContainerId will run, if
   // there is one. |callback| will be called once the restart has finished
   // aborting
@@ -864,9 +858,6 @@ class CrostiniManager : public KeyedService,
   std::map<ContainerId, ExportLxdContainerResultCallback>
       export_lxd_container_callbacks_;
   std::map<ContainerId, CrostiniResultCallback> import_lxd_container_callbacks_;
-
-  // Restart options that are required to start particular containers
-  std::map<ContainerId, RestartOptions> restart_options_;
 
   // Callbacks to run after Tremplin is started, keyed by vm_name. These are
   // used if StartTerminaVm completes but we need to wait from Tremplin to

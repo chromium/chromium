@@ -708,13 +708,14 @@ void CrostiniHandler::HandleCreateContainer(base::Value::ConstListView args) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
   }
-  if (options.image_server_url || options.image_alias) {
-    auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-    crostini_manager->SetRestartOptions(container_id, std::move(options));
-  }
 
+  crostini::CrostiniManager::GetForProfile(profile_)
+      ->RestartCrostiniWithOptions(container_id, std::move(options),
+                                   base::DoNothing());
   apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
   intent->extras = container_id.ToMap();
+
+  // The Terminal will be added as an observer to the above restart.
   LaunchTerminal(std::move(intent));
 }
 
