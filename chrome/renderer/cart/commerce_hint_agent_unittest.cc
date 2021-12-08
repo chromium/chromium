@@ -778,6 +778,19 @@ TEST(CommerceHintAgentTest, IsAddToCart) {
   }
 }
 
+TEST(CommerceHintAgentTest, IsAddToCart_SkipLengthLimit) {
+  std::string str = "a";
+  for (int i = 0; i < 12; ++i) {
+    str += str;
+  }
+  // This is equal to length limit in CommerceHintAgent.
+  EXPECT_EQ(str.size(), 4096U);
+
+  str += "/add-to-cart";
+  EXPECT_FALSE(CommerceHintAgent::IsAddToCart(str));
+  EXPECT_TRUE(CommerceHintAgent::IsAddToCart(str, true));
+}
+
 TEST(CommerceHintAgentTest, IsVisitCart) {
   for (auto* str : kVisitCart) {
     EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
