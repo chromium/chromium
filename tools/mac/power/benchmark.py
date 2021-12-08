@@ -93,6 +93,8 @@ def main():
     # This is the average brightness from UMA data.
     driver.SetMainDisplayBrightness(65)
 
+    driver.WaitBatteryNotFull()
+
     # Measure or Profile all defined scenarios.
     browser_factory = lambda browser_name: browsers.MakeBrowserDriver(
         browser_name,

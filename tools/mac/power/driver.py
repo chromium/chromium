@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import ctypes
+import io
 import json
 import logging
 import os
+import pandas as pd
 import signal
 import subprocess
 import sys
@@ -64,6 +66,35 @@ class DriverContext:
     ]
     DisplayServices.DisplayServicesSetBrightness(main_display,
                                                  brightness_level / 100)
+
+  def WaitBatteryNotFull(self):
+    # Empirical evidence has shown that right after a full battery charge, the
+    # current capacity stays equal to the maximum capacity for several minutes,
+    # despite the fact that power is definitely consumed. To ensure that power
+    # consumption estimates from battery level are meaningful, wait until the
+    # battery is no longer reporting being fully charged before benchmarking.
+
+    power_sampler_args = [
+        self._power_sample_path, "--sample-on-notification",
+        "--samplers=battery", "--sample-count=1"
+    ]
+
+    logging.info('Waiting for battery to no longer be full')
+
+    while True:
+      power_sampler_output = subprocess.check_output(power_sampler_args)
+      power_sampler_data = pd.read_csv(io.BytesIO(power_sampler_output))
+      max_capacity = power_sampler_data.iloc[0]['battery_max_capacity(Ah)']
+      current_capacity = power_sampler_data.iloc[0][
+          'battery_current_capacity(Ah)']
+
+      logging.info(
+          f'Battery level is {100 * current_capacity / max_capacity:.2f}%')
+
+      if max_capacity != current_capacity:
+        return
+
+    logging.info('Battery is no longer full')
 
   def CheckEnv(self, throw_on_bad_env: bool):
     """Verifies that the environment is conducive to proper profiling or
