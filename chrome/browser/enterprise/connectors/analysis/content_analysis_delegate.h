@@ -286,7 +286,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       const base::FilePath& path,
       safe_browsing::BinaryUploadService::Result result,
-      const safe_browsing::BinaryUploadService::Request::Data& data);
+      safe_browsing::BinaryUploadService::Request::Data data);
 
   // Updates |final_result_| following the precedence established by the
   // FinalResult enum.

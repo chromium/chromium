@@ -106,7 +106,7 @@ StringAnalysisRequest::~StringAnalysisRequest() {
 }
 
 void StringAnalysisRequest::GetRequestData(DataCallback callback) {
-  std::move(callback).Run(result_, data_);
+  std::move(callback).Run(result_, std::move(data_));
 }
 
 bool ContentAnalysisActionAllowsDataUse(
@@ -628,7 +628,7 @@ void ContentAnalysisDelegate::OnGotFileInfo(
     std::unique_ptr<BinaryUploadService::Request> request,
     const base::FilePath& path,
     BinaryUploadService::Result result,
-    const BinaryUploadService::Request::Data& data) {
+    BinaryUploadService::Request::Data data) {
   auto it = std::find(data_.paths.begin(), data_.paths.end(), path);
   DCHECK(it != data_.paths.end());
   size_t index = std::distance(data_.paths.begin(), it);

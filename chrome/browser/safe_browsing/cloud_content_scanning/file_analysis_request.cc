@@ -120,7 +120,7 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   return {file_size <= BinaryUploadService::kMaxUploadSizeBytes
               ? BinaryUploadService::Result::SUCCESS
               : BinaryUploadService::Result::FILE_TOO_LARGE,
-          file_data};
+          std::move(file_data)};
 }
 
 bool IsZipFile(const base::FilePath::StringType& extension,
@@ -298,7 +298,14 @@ void FileAnalysisRequest::CacheResultAndData(BinaryUploadService::Result result,
 
 void FileAnalysisRequest::RunCallback() {
   if (!data_callback_.is_null()) {
-    std::move(data_callback_).Run(cached_result_, cached_data_);
+    // Manually copy `cached_data_` since it is move-only.
+    BinaryUploadService::Request::Data data;
+    data.hash = cached_data_.hash;
+    data.mime_type = cached_data_.mime_type;
+    data.path = cached_data_.path;
+    data.size = cached_data_.size;
+
+    std::move(data_callback_).Run(cached_result_, std::move(data));
   }
 }
 

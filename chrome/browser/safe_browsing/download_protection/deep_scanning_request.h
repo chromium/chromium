@@ -174,7 +174,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
                         const base::FilePath& current_path,
                         std::unique_ptr<FileAnalysisRequest> request,
                         BinaryUploadService::Result result,
-                        const BinaryUploadService::Request::Data& data);
+                        BinaryUploadService::Request::Data data);
 
   // Helper function to simplify checking if the report-only feature is set in
   // conjunction with the corresponding policy value.

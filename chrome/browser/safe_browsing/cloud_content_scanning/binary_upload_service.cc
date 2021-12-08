@@ -360,7 +360,7 @@ void BinaryUploadService::OnGetInstanceID(Request* request,
 
 void BinaryUploadService::OnGetRequestData(Request* request,
                                            Result result,
-                                           const Request::Data& data) {
+                                           Request::Data data) {
   if (!IsActive(request))
     return;
 
@@ -595,7 +595,10 @@ void BinaryUploadService::RecordRequestMetrics(
 }
 
 BinaryUploadService::Request::Data::Data() = default;
-BinaryUploadService::Request::Data::Data(const Data&) = default;
+BinaryUploadService::Request::Data::Data(Data&&) = default;
+BinaryUploadService::Request::Data&
+BinaryUploadService::Request::Data::operator=(
+    BinaryUploadService::Request::Data&& other) = default;
 BinaryUploadService::Request::Data::~Data() = default;
 
 BinaryUploadService::Request::Request(ContentAnalysisCallback callback,

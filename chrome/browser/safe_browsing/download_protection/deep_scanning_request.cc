@@ -488,7 +488,7 @@ void DeepScanningRequest::OnGotRequestData(
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request,
     BinaryUploadService::Result result,
-    const BinaryUploadService::Request::Data& data) {
+    BinaryUploadService::Request::Data data) {
   file_metadata_.insert({current_path, enterprise_connectors::FileMetadata(
                                            final_path.AsUTF8Unsafe(), data.hash,
                                            data.mime_type, data.size)});

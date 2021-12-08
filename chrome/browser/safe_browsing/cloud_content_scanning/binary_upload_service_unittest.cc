@@ -236,7 +236,7 @@ class BinaryUploadServiceTest : public testing::Test {
               data.contents = "contents";
               data.size = data.contents.size();
               std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
-                                      data);
+                                      std::move(data));
             }));
     return request;
   }
@@ -271,7 +271,7 @@ TEST_F(BinaryUploadServiceTest, FailsForLargeFile) {
           Invoke([](BinaryUploadService::Request::DataCallback callback) {
             BinaryUploadService::Request::Data data;
             std::move(callback).Run(BinaryUploadService::Result::FILE_TOO_LARGE,
-                                    data);
+                                    std::move(data));
           }));
   UploadForDeepScanning(std::move(request));
 
