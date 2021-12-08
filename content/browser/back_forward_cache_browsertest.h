@@ -260,6 +260,39 @@ class HighCacheSizeBackForwardCacheBrowserTest
   const size_t kBackForwardCacheSize = 5;
 };
 
+// An implementation of PageLifecycleStateManager::TestDelegate for testing.
+class PageLifecycleStateManagerTestDelegate
+    : public PageLifecycleStateManager::TestDelegate {
+ public:
+  explicit PageLifecycleStateManagerTestDelegate(
+      PageLifecycleStateManager* manager);
+
+  ~PageLifecycleStateManagerTestDelegate() override;
+
+  // Waits for the renderer finishing to set the state of being in back/forward
+  // cache.
+  void WaitForInBackForwardCacheAck();
+
+  void OnStoreInBackForwardCacheSent(base::OnceClosure cb);
+  void OnDisableJsEvictionSent(base::OnceClosure cb);
+  void OnRestoreFromBackForwardCacheSent(base::OnceClosure cb);
+
+ private:
+  // PageLifecycleStateManager::TestDelegate:
+  void OnLastAcknowledgedStateChanged(
+      const blink::mojom::PageLifecycleState& old_state,
+      const blink::mojom::PageLifecycleState& new_state) override;
+  void OnUpdateSentToRenderer(
+      const blink::mojom::PageLifecycleState& new_state) override;
+  void OnDeleted() override;
+
+  raw_ptr<PageLifecycleStateManager> manager_;
+  base::OnceClosure store_in_back_forward_cache_sent_;
+  base::OnceClosure store_in_back_forward_cache_ack_received_;
+  base::OnceClosure restore_from_back_forward_cache_sent_;
+  base::OnceClosure disable_eviction_sent_;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACK_FORWARD_CACHE_BROWSERTEST_H_

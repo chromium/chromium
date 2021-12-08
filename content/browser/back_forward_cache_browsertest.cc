@@ -735,6 +735,71 @@ class ThemeColorObserver : public WebContentsObserver {
   bool observed_ = false;
 };
 
+PageLifecycleStateManagerTestDelegate::PageLifecycleStateManagerTestDelegate(
+    PageLifecycleStateManager* manager)
+    : manager_(manager) {
+  manager->SetDelegateForTesting(this);
+}
+
+PageLifecycleStateManagerTestDelegate::
+    ~PageLifecycleStateManagerTestDelegate() {
+  if (manager_)
+    manager_->SetDelegateForTesting(nullptr);
+}
+
+void PageLifecycleStateManagerTestDelegate::WaitForInBackForwardCacheAck() {
+  DCHECK(manager_);
+  if (manager_->last_acknowledged_state().is_in_back_forward_cache) {
+    return;
+  }
+  base::RunLoop loop;
+  store_in_back_forward_cache_ack_received_ = loop.QuitClosure();
+  loop.Run();
+}
+
+void PageLifecycleStateManagerTestDelegate::OnStoreInBackForwardCacheSent(
+    base::OnceClosure cb) {
+  store_in_back_forward_cache_sent_ = std::move(cb);
+}
+
+void PageLifecycleStateManagerTestDelegate::OnDisableJsEvictionSent(
+    base::OnceClosure cb) {
+  disable_eviction_sent_ = std::move(cb);
+}
+
+void PageLifecycleStateManagerTestDelegate::OnRestoreFromBackForwardCacheSent(
+    base::OnceClosure cb) {
+  restore_from_back_forward_cache_sent_ = std::move(cb);
+}
+
+void PageLifecycleStateManagerTestDelegate::OnLastAcknowledgedStateChanged(
+    const blink::mojom::PageLifecycleState& old_state,
+    const blink::mojom::PageLifecycleState& new_state) {
+  if (store_in_back_forward_cache_ack_received_ &&
+      new_state.is_in_back_forward_cache)
+    std::move(store_in_back_forward_cache_ack_received_).Run();
+}
+
+void PageLifecycleStateManagerTestDelegate::OnUpdateSentToRenderer(
+    const blink::mojom::PageLifecycleState& new_state) {
+  if (store_in_back_forward_cache_sent_ && new_state.is_in_back_forward_cache) {
+    std::move(store_in_back_forward_cache_sent_).Run();
+  }
+
+  if (disable_eviction_sent_ && new_state.eviction_enabled == false) {
+    std::move(disable_eviction_sent_).Run();
+  }
+
+  if (restore_from_back_forward_cache_sent_ &&
+      !new_state.is_in_back_forward_cache) {
+    std::move(restore_from_back_forward_cache_sent_).Run();
+  }
+}
+
+void PageLifecycleStateManagerTestDelegate::OnDeleted() {
+  manager_ = nullptr;
+}
+
 // Check the visible URL in the omnibox is properly updated when restoring a
 // document from the BackForwardCache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, VisibleURL) {
