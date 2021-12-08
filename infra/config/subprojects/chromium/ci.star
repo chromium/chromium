@@ -6058,18 +6058,6 @@ ci.mac_thin_tester(
 )
 
 ci.mac_thin_tester(
-    name = "Mac10.15 Tests (dbg)",
-    branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    console_view_entry = consoles.console_view_entry(
-        category = "debug",
-        short_name = "15",
-    ),
-    cq_mirrors_console_view = "mirrors",
-    main_console_view = "main",
-    triggered_by = ["ci/Mac Builder (dbg)"],
-)
-
-ci.mac_thin_tester(
     name = "Mac11 Tests (dbg)",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     console_view_entry = consoles.console_view_entry(
