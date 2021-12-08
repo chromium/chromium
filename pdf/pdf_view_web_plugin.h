@@ -337,10 +337,21 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // the plugin are moved off the main thread.
   void OnInvokePrintDialog(int32_t /*result*/);
 
-  // Callback to set the viewport information in accessibility tree
+  // Callback to set the document information in the accessibility tree
   // asynchronously.
-  void OnSetAccessibilityViewportInfo(
-      const AccessibilityViewportInfo& viewport_info);
+  void OnSetAccessibilityDocInfo(AccessibilityDocInfo doc_info);
+
+  // Callback to set the page information in the accessibility tree
+  // asynchronously.
+  void OnSetAccessibilityPageInfo(
+      AccessibilityPageInfo page_info,
+      std::vector<AccessibilityTextRunInfo> text_runs,
+      std::vector<AccessibilityCharInfo> chars,
+      AccessibilityPageObjects page_objects);
+
+  // Callback to set the viewport information in the accessibility tree
+  // asynchronously.
+  void OnSetAccessibilityViewportInfo(AccessibilityViewportInfo viewport_info);
 
   // May be null in unit tests.
   pdf::mojom::PdfService* GetPdfService();
