@@ -757,7 +757,21 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
     // Even if we ignore the error, record the warning in metrics and DevTools.
     base::UmaHistogramEnumeration(kPreflightWarningHistogramName,
                                   histogram_error);
-    if (status && devtools_observer_) {
+    if (devtools_observer_) {
+      if (!status) {
+        // Set the resource IP address space to the target IP address space for
+        // better error messages in DevTools. If the resource address space had
+        // not matched, the request would likely have failed with
+        // `CorsError::kInvalidPrivateNetwork`. If the error happened before we
+        // ever obtained a connection to the remote endpoint, then this value
+        // is incorrect - we cannot tell what value it would have been. Given
+        // that this is used for debugging only, the slight incorrectness is
+        // worth the increased debuggability.
+        status = CorsErrorStatus(mojom::CorsError::kInvalidResponse,
+                                 request_.target_ip_address_space,
+                                 request_.target_ip_address_space);
+      }
+
       ReportCorsErrorToDevTools(*status, /*is_warning=*/true);
     }
 

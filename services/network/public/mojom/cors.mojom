@@ -20,6 +20,10 @@ enum CorsPreflightPolicy {
 enum CorsError {
   // Access control
   kDisallowedByMode,
+
+  // This value is only used in warnings reported to DevTools. It indicates that
+  // the preflight request failed due to a non-CORS net error (for example,
+  // `net::ERR_EMPTY_RESPONSE`).
   kInvalidResponse,
 
   // Not allowed wildcard origin was found in Access-Control-Allow-Origin
