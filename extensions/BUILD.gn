@@ -367,10 +367,7 @@ source_set("chrome_extensions_browsertests") {
 # chrome_extensions_browsertests.
 source_set("chrome_extensions_interactive_uitests") {
   testonly = true
-  sources = [
-    "browser/app_window/app_window_interactive_uitest.cc",
-    "browser/guest_view/mime_handler_view/mime_handler_view_interactive_uitest.cc",
-  ]
+  sources = [ "browser/guest_view/mime_handler_view/mime_handler_view_interactive_uitest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

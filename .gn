@@ -71,7 +71,6 @@ default_args = {
 # "gn check" or "gn gen --check".
 no_check_targets = [
   "//extensions:chrome_extensions_browsertests",  # 26 errors
-  "//extensions:chrome_extensions_interactive_uitests",  # 2 errors
 
   "//headless:headless_browsertests",  # 47 errors
   "//headless:headless_browsertests__exec",
