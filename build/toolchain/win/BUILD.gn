@@ -142,20 +142,12 @@ template("msvc_toolchain") {
       sys_include_flags = ""
     }
 
-    # ninja does not have -t msvc other than windows, and lld doesn't depend on
-    # mt.exe in PATH on non-Windows, so it's not needed there anyways.
-    if (host_os != "win") {
+    if (host_os != "win" || (use_lld && defined(invoker.sys_lib_flags))) {
       linker_wrapper = ""
       sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space.
-    } else if (defined(invoker.sys_lib_flags)) {
-      # Invoke ninja as wrapper instead of tool wrapper, because python
-      # invocation requires higher cpu usage compared to ninja invocation, and
-      # the python wrapper is only needed to work around link.exe problems.
-      # TODO(thakis): Remove wrapper once lld-link can merge manifests without
-      # relying on mt.exe being in %PATH% on Windows, https://crbug.com/872740
-      linker_wrapper = "ninja -t msvc -e $env -- "  # Note trailing space.
-      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space.
     } else {
+      # link.exe must be run under a wrapper to set up the environment
+      # (it needs %LIB% set to find libraries), and to work around its bugs.
       # Note trailing space:
       linker_wrapper =
           "$python_path $tool_wrapper_path link-wrapper $env False "
