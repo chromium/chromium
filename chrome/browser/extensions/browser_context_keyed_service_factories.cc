@@ -53,15 +53,12 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "ppapi/buildflags/buildflags.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
-#include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
-#endif
-
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 #endif
