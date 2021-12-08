@@ -548,19 +548,19 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // Try pairing to first device.
     await selectDevice(device.deviceProperties);
-    await flushTasks();
+    await waitAfterNextRender(bluetoothPairingUi);
 
     // Try pairing to second device, before first device has completed pairing.
     await selectDevice(device1.deviceProperties);
-    await flushTasks();
+    await waitAfterNextRender(bluetoothPairingUi);
 
     // Try pairing to third device, before first device has completed pairing.
     await selectDevice(device2.deviceProperties);
-    await flushTasks();
+    await waitAfterNextRender(bluetoothPairingUi);
 
     // Simulate device pairing cancellation.
     deviceHandler.completePairDevice(/*success=*/ false);
-    await flushTasks();
+    await waitAfterNextRender(bluetoothPairingUi);
 
     assertEquals(deviceHandler.getPairDeviceCalledCount(), 2);
 
