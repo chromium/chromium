@@ -17,6 +17,8 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
+#include "components/prefs/pref_service.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 const char kIsolatedPrerenderLimitNSPSubresourcesCmdLineFlag[] =
     "isolated-prerender-max-subresource-per-prerender";
@@ -237,7 +239,8 @@ base::TimeDelta PrefetchProxyMaxRetryAfterDelta() {
   return base::Seconds(max_seconds);
 }
 
-bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
+bool PrefetchProxySendDecoyRequestForIneligiblePrefetch(
+    PrefService* pref_service) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "prefetch-proxy-never-send-decoy-requests-for-testing")) {
     return false;
@@ -245,6 +248,18 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "prefetch-proxy-always-send-decoy-requests-for-testing")) {
     return true;
+  }
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kIsolatePrerenders, "disable_decoys_for_msbb", true)) {
+    std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+        helper = unified_consent::UrlKeyedDataCollectionConsentHelper::
+            NewAnonymizedDataCollectionConsentHelper(pref_service);
+    if (helper->IsEnabled()) {
+      // The user opted-in to Make Search and Browsing Better, no need to send
+      // a decoy request.
+      return false;
+    }
   }
 
   double probability = base::GetFieldTrialParamByFeatureAsDouble(

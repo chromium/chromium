@@ -8,6 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(PrefetchProxyParamsTest, PrefetchPosition_DefaultEmpty) {
@@ -74,9 +77,13 @@ TEST(PrefetchProxyParamsTest, DecoyProbabilityClampedZero) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kIsolatePrerenders,
       {{"ineligible_decoy_request_probability", "-1"}});
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterBooleanPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
 
   for (size_t i = 0; i < 100; i++) {
-    EXPECT_FALSE(PrefetchProxySendDecoyRequestForIneligiblePrefetch());
+    EXPECT_FALSE(
+        PrefetchProxySendDecoyRequestForIneligiblePrefetch(&pref_service));
   }
 }
 
@@ -85,8 +92,34 @@ TEST(PrefetchProxyParamsTest, DecoyProbabilityClampedOne) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kIsolatePrerenders,
       {{"ineligible_decoy_request_probability", "2"}});
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterBooleanPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
 
   for (size_t i = 0; i < 100; i++) {
-    EXPECT_TRUE(PrefetchProxySendDecoyRequestForIneligiblePrefetch());
+    EXPECT_TRUE(
+        PrefetchProxySendDecoyRequestForIneligiblePrefetch(&pref_service));
+  }
+}
+
+TEST(PrefetchProxyParamsTest, NoDecoysForMSBB) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders,
+      {{"ineligible_decoy_request_probability", "1"},
+       {"disable_decoys_for_msbb", "true"}});
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterBooleanPref(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  for (size_t i = 0; i < 100; i++) {
+    EXPECT_FALSE(
+        PrefetchProxySendDecoyRequestForIneligiblePrefetch(&pref_service));
+  }
+
+  pref_service.SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  for (size_t i = 0; i < 100; i++) {
+    EXPECT_TRUE(
+        PrefetchProxySendDecoyRequestForIneligiblePrefetch(&pref_service));
   }
 }

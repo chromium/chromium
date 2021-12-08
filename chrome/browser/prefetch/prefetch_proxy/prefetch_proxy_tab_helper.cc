@@ -1502,7 +1502,8 @@ void PrefetchProxyTabHelper::OnGotEligibilityResult(
       // Consider whether to send a decoy request to mask any user state (i.e.:
       // cookies), and if so randomly decide whether to send a decoy request.
       if (ShouldConsiderDecoyRequestForStatus(*status) &&
-          PrefetchProxySendDecoyRequestForIneligiblePrefetch()) {
+          PrefetchProxySendDecoyRequestForIneligiblePrefetch(
+              profile_->GetPrefs())) {
         prefetch_container->SetIsDecoy(true);
         page_->urls_to_prefetch_.push_back(prefetch_container);
         prefetch_container->SetPrefetchStatus(

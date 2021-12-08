@@ -11,6 +11,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 // This command line flag enables NoStatePrefetch on Prefetch Proxy.
 extern const char kIsolatedPrerenderEnableNSPCmdLineFlag[];
 
@@ -108,8 +110,10 @@ base::TimeDelta PrefetchProxyMaxRetryAfterDelta();
 // Returns true if an ineligible prefetch request should be put on the network,
 // but not cached, to disguise the presence of cookies (or other criteria). The
 // return value is randomly decided based on variation params since always
-// sending the decoy request is expensive from a data use perspective.
-bool PrefetchProxySendDecoyRequestForIneligiblePrefetch();
+// sending the decoy request is expensive from a data use perspective. Decoys
+// may be disabled for users that opted-in to "Make Search and Browsing Better".
+bool PrefetchProxySendDecoyRequestForIneligiblePrefetch(
+    PrefService* pref_service);
 
 // Returns true if any domain can issue private prefetches using the Google
 // proxy. Normally, this is restricted to Google domains.
