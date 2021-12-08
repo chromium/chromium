@@ -32,6 +32,48 @@ namespace ash {
 namespace {
 
 constexpr char kPrimaryAccountEmail[] = "primaryaccount@gmail.com";
+constexpr char kSecondaryAccount1Email[] = "secondaryAccount1@gmail.com";
+constexpr char kSecondaryAccount2Email[] = "secondaryAccount2@gmail.com";
+
+account_manager::Account CreateAccount(const std::string& email,
+                                       const std::string& gaia_id) {
+  account_manager::AccountKey key(gaia_id,
+                                  ::account_manager::AccountType::kGaia);
+  return {key, email};
+}
+
+class MockObserver : public AccountAppsAvailability::Observer {
+ public:
+  MockObserver() = default;
+  ~MockObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnAccountAvailableInArc,
+              (const account_manager::Account&),
+              (override));
+  MOCK_METHOD(void,
+              OnAccountUnavailableInArc,
+              (const account_manager::Account&),
+              (override));
+};
+
+base::flat_set<account_manager::Account> GetAccountsAvailableInArcSync(
+    AccountAppsAvailability* availability) {
+  base::flat_set<account_manager::Account> result;
+  base::RunLoop run_loop;
+  availability->GetAccountsAvailableInArc(base::BindLambdaForTesting(
+      [&result,
+       &run_loop](const base::flat_set<account_manager::Account>& accounts) {
+        result = accounts;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return result;
+}
+
+MATCHER_P(AccountEqual, other, "") {
+  return arg.key == other.key && arg.raw_email == other.raw_email;
+}
 
 }  // namespace
 
@@ -100,6 +142,142 @@ TEST_F(AccountAppsAvailabilityTest, InitializationPrefIsPersistedOnDisk) {
 
   account_apps_availability = CreateAccountAppsAvailability();
   EXPECT_TRUE(account_apps_availability->IsInitialized());
+}
+
+TEST_F(AccountAppsAvailabilityTest, CallsBeforeInitialization) {
+  const AccountInfo secondary_account_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  EXPECT_FALSE(account_apps_availability->IsInitialized());
+  // Make secondary account unavailable in ARC.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account,
+                                                        false);
+  base::flat_set<account_manager::Account> result;
+  base::RunLoop run_loop;
+  account_apps_availability->GetAccountsAvailableInArc(
+      base::BindLambdaForTesting(
+          [&result, &run_loop](
+              const base::flat_set<account_manager::Account>& accounts) {
+            result = accounts;
+            run_loop.Quit();
+          }));
+
+  // Wait for initialization and for `GetAccountsAvailableInArc` call
+  // completion.
+  run_loop.Run();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+
+  // Only primary account is available, secondary account was removed.
+  EXPECT_EQ(result.size(), 1ul);
+  EXPECT_THAT(result, Contains(AccountEqual(primary_account)));
+}
+
+TEST_F(AccountAppsAvailabilityTest, GetAccountsAvailableInArc) {
+  const AccountInfo secondary_account_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  // Wait for initialization to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+  // All accounts are available after initialization:
+  auto accounts =
+      GetAccountsAvailableInArcSync(account_apps_availability.get());
+  EXPECT_EQ(accounts.size(), 2ul);
+  EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
+  EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account)));
+
+  // Remove an account from ARC.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account,
+                                                        false);
+  auto accounts_1 =
+      GetAccountsAvailableInArcSync(account_apps_availability.get());
+  EXPECT_EQ(accounts_1.size(), 1ul);
+  EXPECT_THAT(accounts_1, Contains(AccountEqual(primary_account)));
+}
+
+TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
+  const AccountInfo secondary_account_1_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount1Email);
+  const account_manager::Account primary_account =
+      CreateAccount(kPrimaryAccountEmail, primary_account_info()->gaia);
+  const account_manager::Account secondary_account_1 =
+      CreateAccount(kSecondaryAccount1Email, secondary_account_1_info.gaia);
+
+  auto account_apps_availability = CreateAccountAppsAvailability();
+  // Wait for initialization to finish.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_apps_availability->IsInitialized());
+  // All accounts are available after initialization:
+  {
+    auto accounts =
+        GetAccountsAvailableInArcSync(account_apps_availability.get());
+    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
+    EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_1)));
+  }
+
+  // Remove an account from ARC.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        false);
+  {
+    auto accounts =
+        GetAccountsAvailableInArcSync(account_apps_availability.get());
+    EXPECT_EQ(accounts.size(), 1l);
+    EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
+  }
+
+  const AccountInfo secondary_account_2_info =
+      identity_test_env()->MakeAccountAvailable(kSecondaryAccount2Email);
+  const account_manager::Account secondary_account_2 =
+      CreateAccount(kSecondaryAccount2Email, secondary_account_2_info.gaia);
+  // Add the account to ARC.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_2,
+                                                        true);
+  {
+    auto accounts =
+        GetAccountsAvailableInArcSync(account_apps_availability.get());
+    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
+    EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_2)));
+  }
+
+  // Remove the first account again.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        false);
+  // Add the second account again.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_2,
+                                                        true);
+  {
+    auto accounts =
+        GetAccountsAvailableInArcSync(account_apps_availability.get());
+    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
+    EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_2)));
+  }
+
+  // Add the first account back.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_1,
+                                                        true);
+  // Remove the second account.
+  account_apps_availability->SetIsAccountAvailableInArc(secondary_account_2,
+                                                        false);
+  {
+    auto accounts =
+        GetAccountsAvailableInArcSync(account_apps_availability.get());
+    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
+    EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_1)));
+  }
 }
 
 }  // namespace ash

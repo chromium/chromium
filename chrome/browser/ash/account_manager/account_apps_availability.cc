@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -52,6 +53,52 @@ bool IsPrefInitialized(PrefService* prefs) {
   const base::DictionaryValue* accounts =
       prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
   return accounts && (accounts->DictSize() > 0 || IsActiveDirectoryUser());
+}
+
+void CompleteGetAccountsAvailableInArc(
+    const base::flat_set<std::string>& gaia_ids_in_arc,
+    base::OnceCallback<void(const base::flat_set<account_manager::Account>&)>
+        callback,
+    const std::vector<account_manager::Account>& all_accounts) {
+  base::flat_set<account_manager::Account> result;
+  for (const auto& account : all_accounts) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia)
+      continue;
+
+    if (gaia_ids_in_arc.contains(account.key.id()))
+      result.insert(account);
+  }
+
+  DCHECK_EQ(result.size(), gaia_ids_in_arc.size());
+  if (result.size() != gaia_ids_in_arc.size()) {
+    LOG(ERROR) << "Expected " << gaia_ids_in_arc.size() << " accounts, but "
+               << result.size() << " accounts were found in Account Manager.";
+    // TODO(crbug.com/1277453): Repair prefs if this happens.
+  }
+  std::move(callback).Run(result);
+}
+
+base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
+  base::flat_set<std::string> result;
+  const base::DictionaryValue* accounts =
+      prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
+  if (!accounts) {
+    LOG(ERROR) << "Couldn't find "
+               << account_manager::prefs::kAccountAppsAvailability
+               << " dict in prefs";
+    return result;
+  }
+  // See structure of `accounts` at the top of the file.
+  for (const auto dict : accounts->DictItems()) {
+    absl::optional<bool> is_available =
+        dict.second.FindBoolKey(account_manager::prefs::kIsAvailableInArcKey);
+    if (!is_available.has_value() || !is_available.value())
+      continue;
+
+    result.insert(dict.first);
+  }
+
+  return result;
 }
 
 // Return `true` if account with `gaia_id` should be available in ARC.
@@ -200,7 +247,9 @@ void AccountAppsAvailability::GetAccountsAvailableInArc(
     return;
   }
 
-  NOTIMPLEMENTED();
+  account_manager_facade_->GetAccounts(
+      base::BindOnce(&CompleteGetAccountsAvailableInArc,
+                     GetGaiaIdsAvailableInArc(prefs_), std::move(callback)));
 }
 
 void AccountAppsAvailability::OnRefreshTokenUpdatedForAccount(
