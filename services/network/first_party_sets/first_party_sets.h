@@ -51,18 +51,6 @@ class FirstPartySets {
   // Has no effect if `kFirstPartySets` is disabled.
   void ParseAndSet(base::File sets_file);
 
-  // Returns whether the `site` is same-party with the `party_context`, and
-  // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
-  // same as the owners of every member of `party_context` and of
-  // `top_frame_site`? Note: if `site` is not a member of a First-Party Set
-  // (with more than one member), then this returns false. If `top_frame_site`
-  // is nullptr, then it is ignored.
-  bool IsContextSamePartyWithSite(
-      const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
-      bool infer_singleton_sets) const;
-
   // Computes the SameParty context, indicating whether `site` is same-party
   // with `top_frame_site` (if not nullptr) and `party_context`. The context
   // includes the real context type, plus some additional "hypothetical" context
@@ -115,6 +103,18 @@ class FirstPartySets {
       const net::SchemefulSite& site) const;
 
  private:
+  // Returns whether the `site` is same-party with the `party_context`, and
+  // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
+  // same as the owners of every member of `party_context` and of
+  // `top_frame_site`? Note: if `site` is not a member of a First-Party Set
+  // (with more than one member), then this returns false. If `top_frame_site`
+  // is nullptr, then it is ignored.
+  bool IsContextSamePartyWithSite(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      bool infer_singleton_sets) const;
+
   // Parses the contents of `raw_sets` as a collection of First-Party Set
   // declarations, and assigns to `sets_`.
   void OnReadSetsFile(const std::string& raw_sets);
