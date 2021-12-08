@@ -4856,7 +4856,7 @@
             ]
         }
     ],
-    "MacCAOverlayQuadsM97": [
+    "MacCAOverlayQuads": [
         {
             "platforms": [
                 "mac"
