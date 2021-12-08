@@ -4349,12 +4349,12 @@
   {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "yashard" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
   },
   {
     "name": "paint-preview-startup",
     "owners": [ "ckitagawa", "fredmello", "yashard" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
   },
   {
     "name": "partitioned-cookies",
