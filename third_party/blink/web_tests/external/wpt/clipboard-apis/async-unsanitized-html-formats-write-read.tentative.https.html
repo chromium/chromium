@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Async Clipboard custom write -> Async Clipboard custom read test</title>
+<title>Async Clipboard unsanitized HTML write -> Async Clipboard unsanitized HTML read test</title>
 <link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
 <body>Body needed for test_driver.click()</body>
 <script src="/resources/testharness.js"></script>
@@ -11,12 +11,30 @@
 <script>
 'use strict';
 
+// This function removes extra spaces between tags in html. For example, the
+// following html: "<p> Hello </p>   <body> World </body>" would turn into this
+//           html: "<p> Hello </p> <body> World </body>"
+// We remove the extra spaces because in html they are considered equivalent,
+// but when we are comparing for equality the spaces make a difference.
+function reformatHtml(html) {
+  const parser = new DOMParser();
+  const htmlString =
+        parser.parseFromString(html, 'text/html').documentElement.innerHTML;
+  const reformattedString = htmlString.replace(/\>\s*\</g, '> <');
+  return reformattedString;
+}
+
+// Writes a payload with custom content and checks to ensure the correct data
+// was written successfully.
 promise_test(async t => {
   await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
   await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
-  const format1 = 'application/x-custom-format-clipboard-test-format-1';
+
+  // Create and write unsanitized version of standard HTML and custom formats.
+  const format1 = 'text/html';
   const format2 = 'application/x-custom-format-clipboard-test-format-2';
-  const blobInput1 = new Blob(['input data 1'], {type: format1});
+  const textInput = '<style>p {color:blue}</style><p>Hello World</p>';
+  const blobInput1 = new Blob([textInput], {type: 'text/html'});
   const blobInput2 = new Blob(['input data 2'], {type: format2});
   const clipboardItemInput = new ClipboardItem(
       {[format1]: blobInput1, [format2]: blobInput2},
@@ -24,30 +42,25 @@ promise_test(async t => {
   await waitForUserActivation();
   await navigator.clipboard.write([clipboardItemInput]);
 
-  // Items may not be readable on the sanitized clipboard after custom format
-  // write.
-  await promise_rejects_dom(t, 'DataError',
-      navigator.clipboard.read());
-
-  // Items should be readable on a custom format clipboard after custom format
-  // write.
+  // Read unsanitized version of HTML format.
   await waitForUserActivation();
   const clipboardItems = await navigator.clipboard.read(
     {unsanitized: [format1, format2]});
+
   assert_equals(clipboardItems.length, 1);
   const clipboardItem = clipboardItems[0];
   assert_true(clipboardItem instanceof ClipboardItem);
-  // This test can't verify clipboardItem.types, because its size and values
-  // are both platform-dependent.
 
   const blobOutput1 = await clipboardItem.getType(format1);
   assert_equals(blobOutput1.type, format1);
   const data1 = await (new Response(blobOutput1)).text();
-  assert_equals(data1, 'input data 1');
+  const outputHtml = reformatHtml(data1);
+  const inputHtml = reformatHtml(textInput);
+  assert_equals(outputHtml, inputHtml);
 
   const blobOutput2 = await clipboardItem.getType(format2);
   assert_equals(blobOutput2.type, format2);
   const data2 = await (new Response(blobOutput2)).text();
   assert_equals(data2, 'input data 2');
-}, 'Verify write and read clipboard given 2 platform-neutral custom format inputs');
+}, 'Verify write and read unsanitized content to the clipboard given text/html format as input');
 </script>
