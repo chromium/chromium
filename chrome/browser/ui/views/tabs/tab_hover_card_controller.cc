@@ -13,9 +13,16 @@
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
@@ -25,6 +32,33 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
+
+// Fetches the Omnibox drop-down widget, or returns null if the drop-down is
+// not visible.
+void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
+#if defined(OS_LINUX)
+  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
+  // by other secondary UI Widgets (such as the omnibox Widget, see
+  // crbug.com/1226536).
+  widget->StackAtTop();
+#else   // !deifned(OS_LINUX)
+  // Hover card should always render above omnibox (see crbug.com/1272106).
+  if (!browser || !widget)
+    return;
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return;
+  auto* const popup_view = browser_view->GetLocationBarView()
+                               ->omnibox_view()
+                               ->model()
+                               ->get_popup_view();
+  if (!popup_view || !popup_view->IsOpen())
+    return;
+  widget->StackAboveWidget(
+      static_cast<OmniboxPopupContentsView*>(popup_view)->GetWidget());
+#endif  // !defined(OS_LINUX)
+}
 
 base::TimeDelta GetPreviewImageCaptureDelay(
     ThumbnailImage::CaptureReadiness readiness) {
@@ -302,13 +336,8 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
   UpdateCardContent(target_tab_);
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
-
-#if defined(OS_LINUX)
-  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
-  // by other secondary UI Widgets (such as the omnibox Widget, see
-  // crbug.com/1226536).
-  hover_card_->GetWidget()->StackAtTop();
-#endif
+  FixWidgetStackOrder(hover_card_->GetWidget(),
+                      tab_strip_->controller()->GetBrowser());
 
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();
