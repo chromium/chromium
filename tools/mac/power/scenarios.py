@@ -180,7 +180,7 @@ class NavigationScenario(ScenarioWithBrowserOSADriver):
       "https://google.com", "https://www.google.com/search?q=computers",
       "https://www.youtube.com",
       "https://www.youtube.com/results?search_query=computers",
-      "https://bit.ly/chrome-clocks-and-sleep"
+      "https://docs.google.com/document/d/1Ll-8Nvo6JlhzKEttst8GHWCc7_A8Hluy2fX99cy4Sfg/edit?usp=sharing"
   ]
 
   def __init__(self,
@@ -246,7 +246,7 @@ def MakeScenarioDriver(scenario_name,
     return NavigationScenario(
         browser_driver,
         navigation_duration=datetime.timedelta(seconds=15),
-        navigation_cycles=140)
+        navigation_cycles=70)
   if "zero_window" == scenario_name:
     return ZeroWindowScenario(browser_driver, datetime.timedelta(minutes=60))
   return None
