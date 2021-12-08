@@ -205,7 +205,7 @@ void FlagImpl::AssertValidType(FlagFastTypeId rhs_type_id,
 
   if (lhs_runtime_type_id == rhs_runtime_type_id) return;
 
-#if defined(ABSL_FLAGS_INTERNAL_HAS_RTTI)
+#ifdef ABSL_INTERNAL_HAS_RTTI
   if (*lhs_runtime_type_id == *rhs_runtime_type_id) return;
 #endif
 

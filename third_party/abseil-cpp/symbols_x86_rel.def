@@ -78,7 +78,9 @@ EXPORTS
     ??$ParseFloat@$09@strings_internal@absl@@YA?AUParsedFloat@01@PBD0W4chars_format@1@@Z
     ??$ParseFloat@$0BA@@strings_internal@absl@@YA?AUParsedFloat@01@PBD0W4chars_format@1@@Z
     ??$ParseFormatString@UParsedFormatConsumer@ParsedFormatBase@str_format_internal@absl@@@str_format_internal@absl@@YA_NVstring_view@1@UParsedFormatConsumer@ParsedFormatBase@01@@Z
+    ??$PopDead@I@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AAEPAUHashtablezInfo@container_internal@2@I@Z
     ??$Prepend@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QAEX$$QAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
+    ??$Register@AAI@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QAEPAUHashtablezInfo@container_internal@2@AAI@Z
     ??$STLStringResizeUninitializedAmortized@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@strings_internal@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@I@Z
     ??$SetEdge@$00@CordRepBtree@cord_internal@absl@@QAE?AUOpResult@012@_NPAUCordRep@12@I@Z
     ??$SetEdge@$0A@@CordRepBtree@cord_internal@absl@@QAE?AUOpResult@012@_NPAUCordRep@12@I@Z
@@ -605,9 +607,8 @@ EXPORTS
     ?ParseTime@absl@@YA_NVstring_view@1@0VTimeZone@1@PAVTime@1@PAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?PermissionDeniedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?Poke@Waiter@synchronization_internal@absl@@QAEXXZ
-    ?PopDead@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AAEPAUHashtablezInfo@container_internal@3@XZ
     ?Post@Waiter@synchronization_internal@absl@@QAEXXZ
-    ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEXXZ
+    ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEXI@Z
     ?PrepareToModify@Status@absl@@AAEXXZ
     ?Prepend@Cord@absl@@QAEXABV12@@Z
     ?Prepend@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@Vstring_view@3@I@Z
@@ -645,7 +646,6 @@ EXPORTS
     ?Rebuild@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@@Z
     ?ReclaimThreadIdentity@synchronization_internal@absl@@YAXPAX@Z
     ?RecordInsertSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@II@Z
-    ?Register@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QAEPAUHashtablezInfo@container_internal@3@XZ
     ?Register@CycleClockSource@base_internal@absl@@CAXP6A_JXZ@Z
     ?RegisterAbortHook@raw_logging_internal@absl@@YAXP6AXPBDH000@Z@Z
     ?RegisterCondVarTracer@absl@@YAXP6AXPBDPBX@Z@Z

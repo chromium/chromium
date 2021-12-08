@@ -478,15 +478,11 @@ void swap(btree_map<K, V, C, A> &x, btree_map<K, V, C, A> &y) {
 // absl::erase_if(absl::btree_map<>, Pred)
 //
 // Erases all elements that satisfy the predicate pred from the container.
+// Returns the number of erased elements.
 template <typename K, typename V, typename C, typename A, typename Pred>
-void erase_if(btree_map<K, V, C, A> &map, Pred pred) {
-  for (auto it = map.begin(); it != map.end();) {
-    if (pred(*it)) {
-      it = map.erase(it);
-    } else {
-      ++it;
-    }
-  }
+typename btree_map<K, V, C, A>::size_type erase_if(
+    btree_map<K, V, C, A> &map, Pred pred) {
+  return container_internal::btree_access::erase_if(map, std::move(pred));
 }
 
 // absl::btree_multimap
@@ -809,15 +805,11 @@ void swap(btree_multimap<K, V, C, A> &x, btree_multimap<K, V, C, A> &y) {
 // absl::erase_if(absl::btree_multimap<>, Pred)
 //
 // Erases all elements that satisfy the predicate pred from the container.
+// Returns the number of erased elements.
 template <typename K, typename V, typename C, typename A, typename Pred>
-void erase_if(btree_multimap<K, V, C, A> &map, Pred pred) {
-  for (auto it = map.begin(); it != map.end();) {
-    if (pred(*it)) {
-      it = map.erase(it);
-    } else {
-      ++it;
-    }
-  }
+typename btree_multimap<K, V, C, A>::size_type erase_if(
+    btree_multimap<K, V, C, A> &map, Pred pred) {
+  return container_internal::btree_access::erase_if(map, std::move(pred));
 }
 
 namespace container_internal {

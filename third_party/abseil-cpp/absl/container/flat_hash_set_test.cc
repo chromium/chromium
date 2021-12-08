@@ -143,31 +143,31 @@ TEST(FlatHashSet, EraseIf) {
   // Erase all elements.
   {
     flat_hash_set<int> s = {1, 2, 3, 4, 5};
-    erase_if(s, [](int) { return true; });
+    EXPECT_EQ(erase_if(s, [](int) { return true; }), 5);
     EXPECT_THAT(s, IsEmpty());
   }
   // Erase no elements.
   {
     flat_hash_set<int> s = {1, 2, 3, 4, 5};
-    erase_if(s, [](int) { return false; });
+    EXPECT_EQ(erase_if(s, [](int) { return false; }), 0);
     EXPECT_THAT(s, UnorderedElementsAre(1, 2, 3, 4, 5));
   }
   // Erase specific elements.
   {
     flat_hash_set<int> s = {1, 2, 3, 4, 5};
-    erase_if(s, [](int k) { return k % 2 == 1; });
+    EXPECT_EQ(erase_if(s, [](int k) { return k % 2 == 1; }), 3);
     EXPECT_THAT(s, UnorderedElementsAre(2, 4));
   }
   // Predicate is function reference.
   {
     flat_hash_set<int> s = {1, 2, 3, 4, 5};
-    erase_if(s, IsEven);
+    EXPECT_EQ(erase_if(s, IsEven), 2);
     EXPECT_THAT(s, UnorderedElementsAre(1, 3, 5));
   }
   // Predicate is function pointer.
   {
     flat_hash_set<int> s = {1, 2, 3, 4, 5};
-    erase_if(s, &IsEven);
+    EXPECT_EQ(erase_if(s, &IsEven), 2);
     EXPECT_THAT(s, UnorderedElementsAre(1, 3, 5));
   }
 }

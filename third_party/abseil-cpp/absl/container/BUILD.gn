@@ -66,6 +66,7 @@ absl_source_set("flat_hash_map") {
     ":hash_function_defaults",
     ":raw_hash_map",
     "//third_party/abseil-cpp/absl/algorithm:container",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
   ]
 }
@@ -90,6 +91,7 @@ absl_source_set("node_hash_map") {
     ":node_slot_policy",
     ":raw_hash_map",
     "//third_party/abseil-cpp/absl/algorithm:container",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
   ]
 }
@@ -102,6 +104,7 @@ absl_source_set("node_hash_set") {
     ":node_slot_policy",
     ":raw_hash_set",
     "//third_party/abseil-cpp/absl/algorithm:container",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/memory",
   ]
 }

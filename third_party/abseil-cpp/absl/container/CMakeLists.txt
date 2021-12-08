@@ -274,6 +274,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::container_memory
+    absl::core_headers
     absl::hash_function_defaults
     absl::raw_hash_map
     absl::algorithm_container
@@ -347,6 +348,7 @@ absl_cc_library(
     ${ABSL_DEFAULT_COPTS}
   DEPS
     absl::container_memory
+    absl::core_headers
     absl::hash_function_defaults
     absl::node_slot_policy
     absl::raw_hash_map
@@ -381,6 +383,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
+    absl::core_headers
     absl::hash_function_defaults
     absl::node_slot_policy
     absl::raw_hash_set

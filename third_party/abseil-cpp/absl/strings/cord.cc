@@ -468,46 +468,6 @@ static inline bool PrepareAppendRegion(CordRep* root, char** region,
   return true;
 }
 
-template <bool has_length>
-void Cord::InlineRep::GetAppendRegion(char** region, size_t* size,
-                                      size_t length) {
-  auto constexpr method = CordzUpdateTracker::kGetAppendRegion;
-
-  CordRep* root = tree();
-  size_t sz = root ? root->length : inline_size();
-  if (root == nullptr) {
-    size_t available = kMaxInline - sz;
-    if (available >= (has_length ? length : 1)) {
-      *region = data_.as_chars() + sz;
-      *size = has_length ? length : available;
-      set_inline_size(has_length ? sz + length : kMaxInline);
-      return;
-    }
-  }
-
-  size_t extra = has_length ? length : (std::max)(sz, kMinFlatLength);
-  CordzUpdateScope scope(root ? data_.cordz_info() : nullptr, method);
-  CordRep* rep = root ? cord_internal::RemoveCrcNode(root)
-                      : MakeFlatWithExtraCapacity(extra);
-  if (PrepareAppendRegion(rep, region, size, length)) {
-    CommitTree(root, rep, scope, method);
-    return;
-  }
-
-  // Allocate new node.
-  CordRepFlat* new_node = CordRepFlat::New(extra);
-  new_node->length = std::min(new_node->Capacity(), length);
-  *region = new_node->Data();
-  *size = new_node->length;
-
-  if (btree_enabled()) {
-    rep = CordRepBtree::Append(ForceBtree(rep), new_node);
-  } else {
-    rep = Concat(rep, new_node);
-  }
-  CommitTree(root, rep, scope, method);
-}
-
 // Computes the memory side of the provided edge which must be a valid data edge
 // for a btrtee, i.e., a FLAT, EXTERNAL or SUBSTRING of a FLAT or EXTERNAL node.
 static bool RepMemoryUsageDataEdge(const CordRep* rep,

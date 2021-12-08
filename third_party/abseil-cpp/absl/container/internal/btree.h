@@ -830,6 +830,7 @@ class btree_node {
   template <typename N, typename R, typename P>
   friend struct btree_iterator;
   friend class BtreeNodePeer;
+  friend struct btree_access;
 };
 
 template <typename Node, typename Reference, typename Pointer>
@@ -964,6 +965,7 @@ struct btree_iterator {
   friend class btree_multiset_container;
   template <typename TreeType, typename CheckerType>
   friend class base_checker;
+  friend struct btree_access;
 
   const key_type &key() const { return node->key(position); }
   slot_type *slot() { return node->slot(position); }
@@ -1336,6 +1338,8 @@ class btree {
   allocator_type get_allocator() const { return allocator(); }
 
  private:
+  friend struct btree_access;
+
   // Internal accessor routines.
   node_type *root() { return root_.template get<2>(); }
   const node_type *root() const { return root_.template get<2>(); }
@@ -2529,6 +2533,48 @@ int btree<P>::internal_verify(const node_type *node, const key_type *lo,
   }
   return count;
 }
+
+struct btree_access {
+  template <typename BtreeContainer, typename Pred>
+  static auto erase_if(BtreeContainer &container, Pred pred)
+      -> typename BtreeContainer::size_type {
+    const auto initial_size = container.size();
+    auto &tree = container.tree_;
+    auto *alloc = tree.mutable_allocator();
+    for (auto it = container.begin(); it != container.end();) {
+      if (!pred(*it)) {
+        ++it;
+        continue;
+      }
+      auto *node = it.node;
+      if (!node->leaf()) {
+        // Handle internal nodes normally.
+        it = container.erase(it);
+        continue;
+      }
+      // If this is a leaf node, then we do all the erases from this node
+      // at once before doing rebalancing.
+
+      // The current position to transfer slots to.
+      int to_pos = it.position;
+      node->value_destroy(it.position, alloc);
+      while (++it.position < node->finish()) {
+        if (pred(*it)) {
+          node->value_destroy(it.position, alloc);
+        } else {
+          node->transfer(node->slot(to_pos++), node->slot(it.position),
+                         alloc);
+        }
+      }
+      const int num_deleted = node->finish() - to_pos;
+      tree.size_ -= num_deleted;
+      node->set_finish(to_pos);
+      it.position = to_pos;
+      it = tree.rebalance_after_delete(it);
+    }
+    return initial_size - container.size();
+  }
+};
 
 }  // namespace container_internal
 ABSL_NAMESPACE_END

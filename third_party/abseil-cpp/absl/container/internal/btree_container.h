@@ -228,6 +228,7 @@ class btree_container {
   }
 
  protected:
+  friend struct btree_access;
   Tree tree_;
 };
 

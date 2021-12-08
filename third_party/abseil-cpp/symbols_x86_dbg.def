@@ -423,7 +423,9 @@ EXPORTS
     ??$Pointer@$01D@?$LayoutImpl@V?$tuple@IPAUCordRep@cord_internal@absl@@I@__1@std@@U?$integer_sequence@I$0A@$00@absl@@U?$integer_sequence@I$0A@$00$01@5@@internal_layout@container_internal@absl@@QBEPAIPAD@Z
     ??$Pointer@$0A@$$CBD@?$LayoutImpl@V?$tuple@IPAUCordRep@cord_internal@absl@@I@__1@std@@U?$integer_sequence@I$S@absl@@U?$integer_sequence@I$0A@@5@@internal_layout@container_internal@absl@@QBEPBIPBD@Z
     ??$Pointer@$0A@D@?$LayoutImpl@V?$tuple@IPAUCordRep@cord_internal@absl@@I@__1@std@@U?$integer_sequence@I$S@absl@@U?$integer_sequence@I$0A@@5@@internal_layout@container_internal@absl@@QBEPAIPAD@Z
+    ??$PopDead@I@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AAEPAUHashtablezInfo@container_internal@2@I@Z
     ??$Prepend@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@$0A@@Cord@absl@@QAEX$$QAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
+    ??$Register@AAI@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QAEPAUHashtablezInfo@container_internal@2@AAI@Z
     ??$STLStringResizeUninitialized@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@X@strings_internal@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@I@Z
     ??$STLStringResizeUninitializedAmortized@V?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@strings_internal@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@I@Z
     ??$Seconds@H$0A@@absl@@YA?AVDuration@0@H@Z
@@ -2318,10 +2320,9 @@ EXPORTS
     ?PiecewiseChunkSize@hash_internal@absl@@YAIXZ
     ?PointerToRep@Status@absl@@CAIPAUStatusRep@status_internal@2@@Z
     ?Poke@Waiter@synchronization_internal@absl@@QAEXXZ
-    ?PopDead@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@AAEPAUHashtablezInfo@container_internal@3@XZ
     ?Post@PerThreadSem@synchronization_internal@absl@@CAXPAUThreadIdentity@base_internal@3@@Z
     ?Post@Waiter@synchronization_internal@absl@@QAEXXZ
-    ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEXXZ
+    ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEXI@Z
     ?PrepareToModify@Status@absl@@AAEXXZ
     ?Prepend@Cord@absl@@QAEXABV12@@Z
     ?Prepend@Cord@absl@@QAEXVstring_view@2@@Z
@@ -2372,7 +2373,6 @@ EXPORTS
     ?Ref@CordRep@cord_internal@absl@@SAPAU123@PAU123@@Z
     ?Ref@Status@absl@@CAXI@Z
     ?RefCordRep@CordzInfo@cord_internal@absl@@QBEPAUCordRep@23@XZ
-    ?Register@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QAEPAUHashtablezInfo@container_internal@3@XZ
     ?Register@CycleClockSource@base_internal@absl@@CAXP6A_JXZ@Z
     ?RegisterAbortHook@raw_logging_internal@absl@@YAXP6AXPBDH000@Z@Z
     ?RegisterCondVarTracer@absl@@YAXP6AXPBDPBX@Z@Z
@@ -3153,8 +3153,8 @@ EXPORTS
     ?day@?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@cctz@time_internal@absl@@QBEHXZ
     ?day@?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@absl@@QBEHXZ
     ?day_difference@impl@detail@cctz@time_internal@absl@@YA_J_JCC0CC@Z
-    ?days_per_4years@impl@detail@cctz@time_internal@absl@@YAH_JC@Z
-    ?days_per_century@impl@detail@cctz@time_internal@absl@@YAH_JC@Z
+    ?days_per_4years@impl@detail@cctz@time_internal@absl@@YAHH@Z
+    ?days_per_century@impl@detail@cctz@time_internal@absl@@YAHH@Z
     ?days_per_month@impl@detail@cctz@time_internal@absl@@YAH_JC@Z
     ?days_per_year@impl@detail@cctz@time_internal@absl@@YAH_JC@Z
     ?deallocate@?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@__1@std@@QAEXPAPAPBVImpl@time_zone@cctz@time_internal@absl@@I@Z

@@ -788,4 +788,12 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_CLASS_TEMPLATE_ARGUMENT_DEDUCTION 1
 #endif
 
+// `ABSL_INTERNAL_HAS_RTTI` determines whether abseil is being compiled with
+// RTTI support.
+#ifdef ABSL_INTERNAL_HAS_RTTI
+#error ABSL_INTERNAL_HAS_RTTI cannot be directly set
+#elif !defined(__GNUC__) || defined(__GXX_RTTI)
+#define ABSL_INTERNAL_HAS_RTTI 1
+#endif  // !defined(__GNUC__) || defined(__GXX_RTTI)
+
 #endif  // ABSL_BASE_CONFIG_H_

@@ -61,13 +61,10 @@ HashtablezSampler& GlobalHashtablezSampler() {
   return *sampler;
 }
 
-// TODO(bradleybear): The comments at this constructors declaration say that the
-// fields are not initialized, but this definition does initialize the fields.
-// Something needs to be cleaned up.
-HashtablezInfo::HashtablezInfo() { PrepareForSampling(); }
+HashtablezInfo::HashtablezInfo() = default;
 HashtablezInfo::~HashtablezInfo() = default;
 
-void HashtablezInfo::PrepareForSampling() {
+void HashtablezInfo::PrepareForSampling(size_t inline_element_size_value) {
   capacity.store(0, std::memory_order_relaxed);
   size.store(0, std::memory_order_relaxed);
   num_erases.store(0, std::memory_order_relaxed);
@@ -85,6 +82,7 @@ void HashtablezInfo::PrepareForSampling() {
   // instead.
   depth = absl::GetStackTrace(stack, HashtablezInfo::kMaxStackDepth,
                               /* skip_count= */ 0);
+  inline_element_size = inline_element_size_value;
 }
 
 static bool ShouldForceSampling() {
@@ -110,8 +108,8 @@ static bool ShouldForceSampling() {
 HashtablezInfo* SampleSlow(int64_t* next_sample, size_t inline_element_size) {
   if (ABSL_PREDICT_FALSE(ShouldForceSampling())) {
     *next_sample = 1;
-    HashtablezInfo* result = GlobalHashtablezSampler().Register();
-    result->inline_element_size = inline_element_size;
+    HashtablezInfo* result =
+        GlobalHashtablezSampler().Register(inline_element_size);
     return result;
   }
 
@@ -137,9 +135,7 @@ HashtablezInfo* SampleSlow(int64_t* next_sample, size_t inline_element_size) {
     return SampleSlow(next_sample, inline_element_size);
   }
 
-  HashtablezInfo* result = GlobalHashtablezSampler().Register();
-  result->inline_element_size = inline_element_size;
-  return result;
+  return GlobalHashtablezSampler().Register(inline_element_size);
 #endif
 }
 

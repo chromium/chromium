@@ -59,7 +59,8 @@ class SampleRecorder {
   ~SampleRecorder();
 
   // Registers for sampling.  Returns an opaque registration info.
-  T* Register();
+  template <typename... Targs>
+  T* Register(Targs&&... args);
 
   // Unregisters the sample.
   void Unregister(T* sample);
@@ -81,7 +82,8 @@ class SampleRecorder {
  private:
   void PushNew(T* sample);
   void PushDead(T* sample);
-  T* PopDead();
+  template <typename... Targs>
+  T* PopDead(Targs... args);
 
   std::atomic<size_t> dropped_samples_;
   std::atomic<size_t> size_estimate_;
@@ -163,7 +165,8 @@ void SampleRecorder<T>::PushDead(T* sample) {
 }
 
 template <typename T>
-T* SampleRecorder<T>::PopDead() {
+template <typename... Targs>
+T* SampleRecorder<T>::PopDead(Targs... args) {
   absl::MutexLock graveyard_lock(&graveyard_.init_mu);
 
   // The list is circular, so eventually it collapses down to
@@ -175,12 +178,13 @@ T* SampleRecorder<T>::PopDead() {
   absl::MutexLock sample_lock(&sample->init_mu);
   graveyard_.dead = sample->dead;
   sample->dead = nullptr;
-  sample->PrepareForSampling();
+  sample->PrepareForSampling(std::forward<Targs>(args)...);
   return sample;
 }
 
 template <typename T>
-T* SampleRecorder<T>::Register() {
+template <typename... Targs>
+T* SampleRecorder<T>::Register(Targs&&... args) {
   int64_t size = size_estimate_.fetch_add(1, std::memory_order_relaxed);
   if (size > max_samples_.load(std::memory_order_relaxed)) {
     size_estimate_.fetch_sub(1, std::memory_order_relaxed);
@@ -188,10 +192,14 @@ T* SampleRecorder<T>::Register() {
     return nullptr;
   }
 
-  T* sample = PopDead();
+  T* sample = PopDead(args...);
   if (sample == nullptr) {
     // Resurrection failed.  Hire a new warlock.
     sample = new T();
+    {
+      absl::MutexLock sample_lock(&sample->init_mu);
+      sample->PrepareForSampling(std::forward<Targs>(args)...);
+    }
     PushNew(sample);
   }
 
