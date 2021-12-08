@@ -38,15 +38,19 @@ export interface GetColorsCSSOptions {
   lockTheme?: 'light' | 'dark';
 }
 
-const DEFAULT_CSS = `
+// Use a ternary expression that can only be evaluated at runtime here to force
+// closure to leave these string constants as variables instead of inlining them
+// in the below template strings. Not doing this results in a unreasonable file
+// size increase. See b/209520919.
+const DEFAULT_CSS = window ? `
 {{- render_variables_as_css(Modes.DEFAULT) -}}
-`;
+` : '';
 
-const DARK_MODE_OVERRIDES_CSS = `
+const DARK_MODE_OVERRIDES_CSS = window ? `
 {{- render_variables_as_css(Modes.DARK) -}}
-`;
+` : '';
 
-const UNTYPED_CSS = `
+const UNTYPED_CSS = window ? `
 {%- if untyped_css %}
 {%- for group_name, vars in untyped_css.items() %}
   /* {{group_name}} */
@@ -55,9 +59,9 @@ const UNTYPED_CSS = `
 {%-     endfor %}
 {%-   endfor %}
 {% endif -%}
-`;
+` : '';
 
-const TYPOGRAPHY_CSS = `
+const TYPOGRAPHY_CSS = window ? `
 {%- if typography.font_families or typography.typefaces %}
   /* font families */
 {%-   for name, value in typography.font_families.items() %}
@@ -74,7 +78,7 @@ const TYPOGRAPHY_CSS = `
 
 {%-   endfor %}
 {% endif -%}
-`;
+` : '';
 
 /**
  * Returns a string containing all semantic colors exported in this file as

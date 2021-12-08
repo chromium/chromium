@@ -26,7 +26,11 @@ export interface GetColorsCSSOptions {
   lockTheme?: 'light' | 'dark';
 }
 
-const DEFAULT_CSS = `
+// Use a ternary expression that can only be evaluated at runtime here to force
+// closure to leave these string constants as variables instead of inlining them
+// in the below template strings. Not doing this results in a unreasonable file
+// size increase. See b/209520919.
+const DEFAULT_CSS = window ? `
   --google-grey-900-rgb: 32, 33, 36;
   --google-grey-900: rgb(var(--google-grey-900-rgb));
 
@@ -42,9 +46,9 @@ const DEFAULT_CSS = `
   --cros-disabled-opacity: 0.38;
 
   --cros-reference-opacity: var(--cros-disabled-opacity);
-`;
+` : '';
 
-const DARK_MODE_OVERRIDES_CSS = `
+const DARK_MODE_OVERRIDES_CSS = window ? `
   --cros-text-color-primary-rgb: 255, 255, 255;
   --cros-text-color-primary: rgb(var(--cros-text-color-primary-rgb));
 
@@ -55,11 +59,11 @@ const DARK_MODE_OVERRIDES_CSS = `
   --cros-bg-color-elevation-1: rgb(var(--cros-bg-color-elevation-1-rgb));
 
   --cros-reference-opacity: 1;
-`;
+` : '';
 
-const UNTYPED_CSS = ``;
+const UNTYPED_CSS = window ? `` : '';
 
-const TYPOGRAPHY_CSS = `
+const TYPOGRAPHY_CSS = window ? `
   /* font families */
   --cros-font-family-test: 'Google Sans', 'Noto Sans', sans-serif;
   --cros-font-family-other: Roboto, 'Noto Sans', sans-serif;
@@ -70,7 +74,7 @@ const TYPOGRAPHY_CSS = `
   --cros-headline-1-font-size: 15px;
   --cros-headline-1-font-weight: 500;
   --cros-headline-1-line-height: 22px;
-`;
+` : '';
 
 /**
  * Returns a string containing all semantic colors exported in this file as
