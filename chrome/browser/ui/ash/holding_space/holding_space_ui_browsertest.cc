@@ -2106,12 +2106,12 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
-  WaitForText(secondary_label, u"Being scanned");
+  WaitForText(secondary_label, u"Scanning");
   EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleBlue300);
 
   // The accessible name should indicate that the download is being scanning.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
-            base::UTF16ToUTF8(u"Download being scanned " + target_file_name));
+            base::UTF16ToUTF8(u"Download scanning " + target_file_name));
 
   // Stop scanning and mark that the download is *not* malicious.
   UpdateInProgressDownloadIsDangerousMixedContentOrMightBeMalicious(
