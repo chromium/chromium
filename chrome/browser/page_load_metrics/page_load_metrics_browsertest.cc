@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/os_buildflags.h"
 #include "chrome/browser/page_load_metrics/observers/aborts_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
@@ -3147,10 +3148,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
+#if BUILDFLAG(IS_MAC)  // crbug.com/1277391
+#define MAYBE_PageLCPAnimatedImage DISABLED_PageLCPAnimatedImage
+#else
+#define MAYBE_PageLCPAnimatedImage PageLCPAnimatedImage
+#endif
 // Tests that an animated image's reported LCP values are smaller than its load
 // times, when the feature flag for animated image reporting is enabled.
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAnimatedLCPFlag,
-                       PageLCPAnimatedImage) {
+                       MAYBE_PageLCPAnimatedImage) {
   test_animated_image_lcp(/*smaller=*/true, /*animated=*/true);
 }
 
