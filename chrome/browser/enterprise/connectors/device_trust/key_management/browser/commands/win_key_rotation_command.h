@@ -25,7 +25,7 @@ class WinKeyRotationCommand : public KeyRotationCommand {
   using RunGoogleUpdateElevatedCommandFn =
       HRESULT (*)(const wchar_t* command,
                   const std::vector<std::string>& args,
-                  UINT* return_code);
+                  DWORD* return_code);
 
   // The second constructor is used in tests to override the behaviour of
   // Google Update.

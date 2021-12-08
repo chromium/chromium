@@ -45,7 +45,8 @@ const int kMaxCommandArgs = 9;
 // this code is duped in two places including this one.
 HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
                                        const std::vector<std::string>& args,
-                                       UINT* return_code) {
+                                       DWORD* return_code) {
+  DCHECK(return_code);
   if (args.size() > kMaxCommandArgs)
     return E_INVALIDARG;
 
@@ -111,23 +112,26 @@ HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
   // If the call requires the return code of the elevated command, poll until
   // we get it.  Waiting for 10 seconds with a polling frenquency of 1 second
   // are pretty arbitrary choices.
-  if (return_code) {
-    base::Time wait_until = base::Time::Now() + base::Seconds(10);
-    while (base::Time::Now() < wait_until) {
-      hr = app_command->get_status(return_code);
-      if (FAILED(hr) || *return_code == COMMAND_STATUS_ERROR ||
-          *return_code == COMMAND_STATUS_COMPLETE) {
-        break;
-      }
-
-      base::PlatformThread::Sleep(base::Seconds(1));
+  base::Time wait_until = base::Time::Now() + base::Seconds(10);
+  UINT status = COMMAND_STATUS_INIT;
+  while (base::Time::Now() < wait_until) {
+    hr = app_command->get_status(&status);
+    if (FAILED(hr) || status == COMMAND_STATUS_ERROR ||
+        status == COMMAND_STATUS_COMPLETE) {
+      break;
     }
+
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
-  // If the command never completed, tell caller it timed out.
-  if (*return_code != COMMAND_STATUS_ERROR &&
-      *return_code != COMMAND_STATUS_COMPLETE) {
-    hr = E_ABORT;
+  // If the command completed get the final exit code.  Otherwise if the
+  // command did not terminate in error, tell caller it timed out.
+  if (SUCCEEDED(hr)) {
+    if (status == COMMAND_STATUS_COMPLETE) {
+      hr = app_command->get_exitCode(return_code);
+    } else if (status != COMMAND_STATUS_ERROR) {
+      hr = E_ABORT;
+    }
   }
 
   return hr;
@@ -165,7 +169,7 @@ void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
             std::string token_base64;
             base::Base64Encode(params.dm_token, &token_base64);
 
-            UINT return_code = installer::ROTATE_DTKEY_FAILED;
+            DWORD return_code = installer::ROTATE_DTKEY_FAILED;
 
             // Omaha does not support concurrent elevated commands.  If this
             // fails for that reason, wait a little and try again.  Retry count
