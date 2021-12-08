@@ -137,6 +137,9 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::vector<AutofillAssistantState> GetStateHistory() {
     return state_history_;
   }
+  std::vector<ElementAreaProto> GetTouchableElementAreaHistory() {
+    return touchable_element_area_history_;
+  }
 
   const std::vector<Details>& GetDetails() { return details_; }
 
@@ -172,6 +175,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   raw_ptr<WebController> web_controller_ = nullptr;
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
+  std::vector<ElementAreaProto> touchable_element_area_history_;
   std::string status_message_;
   std::string tts_message_;
   std::string bubble_message_;

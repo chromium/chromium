@@ -45,6 +45,13 @@ using ::testing::StrictMock;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArgs;
 
+ElementAreaProto MakeElementAreaProto(const std::string& id) {
+  Selector touchable_element({id});
+  ElementAreaProto area;
+  *area.add_touchable()->add_elements() = touchable_element.proto;
+  return area;
+}
+
 const char* kScriptPath = "script_path";
 
 class ScriptExecutorTest : public testing::Test,
@@ -1196,12 +1203,33 @@ TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
 }
 
 TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
-  SetupInterrupt("interrupt", "interrupt_trigger");
+  RegisterInterrupt("interrupt", "interrupt_trigger");
+
+  ActionsResponseProto interrupt_actions;
+  InitInterruptActions(&interrupt_actions, "interrupt");
+  ElementAreaProto interrupt_area =
+      MakeElementAreaProto(/* id = */ "interrupt_area");
+  *interrupt_actions.add_actions()
+       ->mutable_set_touchable_area()
+       ->mutable_element_area() = interrupt_area;
+  auto* interrupt_prompt = interrupt_actions.add_actions()->mutable_prompt();
+  *interrupt_prompt->add_choices()
+       ->mutable_auto_select_when()
+       ->mutable_match() = ToSelectorProto("end_prompt");
+
+  EXPECT_CALL(mock_service_, OnGetActions("interrupt", _, _, _, _, _))
+      .WillRepeatedly(
+          RunOnceCallback<5>(net::HTTP_OK, Serialize(interrupt_actions)));
 
   // Main script has a prompt with an "auto_select" element. This functions very
   // much like a WaitForDom, except for the UI changes triggered by the switches
   // between PROMPT and RUNNING states.
   ActionsResponseProto interruptible;
+  ElementAreaProto interruptible_area =
+      MakeElementAreaProto(/* id = */ "interruptible_area");
+  *interruptible.add_actions()
+       ->mutable_set_touchable_area()
+       ->mutable_element_area() = interruptible_area;
   auto* prompt_action = interruptible.add_actions()->mutable_prompt();
   prompt_action->set_allow_interrupt(true);
   *prompt_action->add_choices()->mutable_auto_select_when()->mutable_match() =
@@ -1237,15 +1265,30 @@ TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
   // - show prompt (enter PROMPT state)
   // - notice interrupt_trigger element
   // - run interrupt (enter RUNNING state)
+  // - show the interrupt's prompt (enter PROMPT state)
+  // - the interrupt finishes (enter RUNNING state)
   // - show prompt again (enter PROMPT state)
   // - notice end_prompt element
   // - end prompt, continue main script (enter RUNNING state)
   // - run tell, which sets message to "done"
-  EXPECT_THAT(delegate_.GetStateHistory(),
-              ElementsAre(AutofillAssistantState::PROMPT,
-                          AutofillAssistantState::RUNNING,
-                          AutofillAssistantState::PROMPT,
-                          AutofillAssistantState::RUNNING));
+  EXPECT_THAT(
+      delegate_.GetStateHistory(),
+      ElementsAre(
+          AutofillAssistantState::PROMPT, AutofillAssistantState::RUNNING,
+          AutofillAssistantState::PROMPT, AutofillAssistantState::RUNNING,
+          AutofillAssistantState::PROMPT, AutofillAssistantState::RUNNING));
+  // Expected scenario:
+  // - the main script's SetTouchableArea sets |interruptible_area|
+  // - the interrupt starts
+  // - the interrupt's SetTouchableArea sets |interrupt_area|
+  // - the area is cleaned up at the end of the interrupt's prompt
+  // - when the main script resumes, we restore |interruptible_area|
+  // - the area is cleaned up again at the end of the main script's prompt
+  EXPECT_THAT(
+      delegate_.GetTouchableElementAreaHistory(),
+      ElementsAre(interruptible_area, interrupt_area,
+                  ElementAreaProto::default_instance(), interruptible_area,
+                  ElementAreaProto::default_instance()));
   EXPECT_EQ("done", delegate_.GetStatusMessage());
 }
 
