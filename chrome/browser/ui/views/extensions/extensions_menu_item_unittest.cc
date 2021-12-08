@@ -47,6 +47,9 @@ class ExtensionsMenuItemViewTest : public ExtensionsToolbarUnitTest {
 void ExtensionsMenuItemViewTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
 
+  // TODO(crbug.com/1263310): This widget only tests behavior of
+  // MenuItemType::kExtensions. Once MenuItemType::kSiteAccess is implemented,
+  // add a separate widget and test accordingly.
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_POPUP);
   init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -67,7 +70,8 @@ void ExtensionsMenuItemViewTest::SetUp() {
   controller_->SetActionName(initial_extension_name_);
   controller_->SetTooltip(initial_tooltip_);
   auto menu_item = std::make_unique<ExtensionsMenuItemView>(
-      browser(), std::move(controller), true);
+      ExtensionsMenuItemView::MenuItemType::kExtensions, browser(),
+      std::move(controller), true);
   primary_button_ = menu_item->primary_action_button_for_testing();
   pin_button_ = menu_item->pin_button_for_testing();
   context_menu_button_ = menu_item->context_menu_button_for_testing();

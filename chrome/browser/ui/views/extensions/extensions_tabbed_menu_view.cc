@@ -206,7 +206,8 @@ void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
       ExtensionActionViewController::Create(id, browser_,
                                             extensions_container_);
   auto item = std::make_unique<ExtensionsMenuItemView>(
-      browser_, std::move(controller), allow_pinning_);
+      ExtensionsMenuItemView::MenuItemType::kExtensions, browser_,
+      std::move(controller), allow_pinning_);
   installed_items_->AddChildViewAt(std::move(item), index);
 }
 

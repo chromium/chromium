@@ -295,8 +295,9 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.
-  auto* item = new ExtensionsMenuItemView(browser_, std::move(controller),
-                                          allow_pinning_);
+  auto* item = new ExtensionsMenuItemView(
+      ExtensionsMenuItemView::MenuItemType::kExtensions, browser_,
+      std::move(controller), allow_pinning_);
   extensions_menu_items_.insert(item);
   InsertMenuItem(item);
   // Sanity check that the item was added.
