@@ -220,7 +220,7 @@ bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   state_ = state;
 
   if (!view_) {
-    view_ = PasswordGenerationPopupView::Create(this);
+    view_ = PasswordGenerationPopupView::Create(GetWeakPtr());
 
     // Treat popup as being hidden if creation fails.
     if (!view_) {

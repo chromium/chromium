@@ -47,7 +47,7 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
   ~GeneratedPasswordBox() override = default;
 
   // Fills the view with strings provided by |controller|.
-  void Init(PasswordGenerationPopupController* controller);
+  void Init(base::WeakPtr<PasswordGenerationPopupController> controller);
 
   void UpdatePassword(const std::u16string& password) {
     password_label_->SetText(password);
@@ -76,11 +76,11 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
 
   raw_ptr<views::Label> suggestion_label_ = nullptr;
   raw_ptr<views::Label> password_label_ = nullptr;
-  raw_ptr<PasswordGenerationPopupController> controller_ = nullptr;
+  base::WeakPtr<PasswordGenerationPopupController> controller_ = nullptr;
 };
 
 void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
-    PasswordGenerationPopupController* controller) {
+    base::WeakPtr<PasswordGenerationPopupController> controller) {
   controller_ = controller;
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
@@ -165,7 +165,7 @@ BEGIN_METADATA(PasswordGenerationPopupViewViews,
 END_METADATA
 
 PasswordGenerationPopupViewViews::PasswordGenerationPopupViewViews(
-    PasswordGenerationPopupController* controller,
+    base::WeakPtr<PasswordGenerationPopupController> controller,
     views::Widget* parent_widget)
     : AutofillPopupBaseView(controller, parent_widget),
       controller_(controller) {
@@ -288,7 +288,7 @@ gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
 }
 
 PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
-    PasswordGenerationPopupController* controller) {
+    base::WeakPtr<PasswordGenerationPopupController> controller) {
   if (!controller->container_view())
     return nullptr;
 

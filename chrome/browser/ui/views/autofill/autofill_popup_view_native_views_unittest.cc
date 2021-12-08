@@ -84,7 +84,7 @@ class AutofillPopupViewNativeViewsTest : public ChromeViewsTestBase {
   void CreateAndShowView(const std::vector<int>& ids) {
     autofill_popup_controller_.set_suggestions(ids);
     view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
-        &autofill_popup_controller_, widget_.get());
+        autofill_popup_controller_.GetWeakPtr(), widget_.get());
     widget_->SetContentsView(view_.get());
 
     widget_->Show();
@@ -165,7 +165,7 @@ TEST_F(AutofillPopupViewNativeViewsTest,
   autofill_popup_controller_.set_suggestions(
       {autofill::PopupItemId::POPUP_ITEM_ID_CLEAR_FORM});
   view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
-      &autofill_popup_controller_, widget_.get());
+      autofill_popup_controller_.GetWeakPtr(), widget_.get());
   widget_->SetContentsView(view_.get());
   widget_->Show();
   view_->Show();
@@ -279,7 +279,7 @@ TEST_F(AutofillPopupViewNativeViewsTest, ClickDisabledEntry) {
   opt_int_suggestion.is_loading = autofill::Suggestion::IsLoading(true);
   autofill_popup_controller_.set_suggestions({opt_int_suggestion});
   view_ = std::make_unique<autofill::AutofillPopupViewNativeViews>(
-      &autofill_popup_controller_, widget_.get());
+      autofill_popup_controller_.GetWeakPtr(), widget_.get());
   widget_->SetContentsView(view_.get());
   widget_->Show();
 

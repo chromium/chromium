@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "ui/android/view_android.h"
 
@@ -19,7 +19,8 @@ class AutofillPopupController;
 
 class AutofillPopupViewAndroid : public AutofillPopupView {
  public:
-  explicit AutofillPopupViewAndroid(AutofillPopupController* controller);
+  explicit AutofillPopupViewAndroid(
+      base::WeakPtr<AutofillPopupController> controller);
 
   AutofillPopupViewAndroid(const AutofillPopupViewAndroid&) = delete;
   AutofillPopupViewAndroid& operator=(const AutofillPopupViewAndroid&) = delete;
@@ -61,7 +62,7 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   // screen space available).
   bool WasSuppressed();
 
-  raw_ptr<AutofillPopupController> controller_;  // weak.
+  base::WeakPtr<AutofillPopupController> controller_;  // weak.
 
   // The index of the last item the user long-pressed (they will be shown a
   // confirmation dialog).

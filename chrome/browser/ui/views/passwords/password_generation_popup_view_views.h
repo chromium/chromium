@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
@@ -19,7 +20,7 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
                                          public PasswordGenerationPopupView {
  public:
   PasswordGenerationPopupViewViews(
-      PasswordGenerationPopupController* controller,
+      base::WeakPtr<PasswordGenerationPopupController> controller,
       views::Widget* parent_widget);
 
   PasswordGenerationPopupViewViews(const PasswordGenerationPopupViewViews&) =
@@ -55,7 +56,7 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   raw_ptr<views::Label> help_label_ = nullptr;
 
   // Controller for this view. Weak reference.
-  raw_ptr<PasswordGenerationPopupController> controller_;
+  base::WeakPtr<PasswordGenerationPopupController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_

@@ -35,7 +35,7 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillPopupViewAndroid::AutofillPopupViewAndroid(
-    AutofillPopupController* controller)
+    base::WeakPtr<AutofillPopupController> controller)
     : controller_(controller), deleting_index_(-1) {}
 
 AutofillPopupViewAndroid::~AutofillPopupViewAndroid() {}
@@ -207,15 +207,14 @@ AutofillPopupView* AutofillPopupView::Create(
     auto adapter =
         std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
     auto accessory_view =
-        std::make_unique<AutofillKeyboardAccessoryView>(adapter.get());
+        std::make_unique<AutofillKeyboardAccessoryView>(adapter->GetWeakPtr());
     if (!accessory_view->Initialize())
       return nullptr;  // Don't create an adapter without initialized view.
     adapter->SetAccessoryView(std::move(accessory_view));
     return adapter.release();
   }
 
-  auto popup_view =
-      std::make_unique<AutofillPopupViewAndroid>(controller.get());
+  auto popup_view = std::make_unique<AutofillPopupViewAndroid>(controller);
   if (!popup_view->Init() || popup_view->WasSuppressed())
     return nullptr;
   return popup_view.release();

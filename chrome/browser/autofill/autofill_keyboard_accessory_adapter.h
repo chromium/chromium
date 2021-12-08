@@ -60,6 +60,10 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
     view_ = std::move(view);
   }
 
+  base::WeakPtr<AutofillKeyboardAccessoryAdapter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // AutofillPopupView implementation.
   void Show() override;

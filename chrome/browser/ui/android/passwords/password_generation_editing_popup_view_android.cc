@@ -21,7 +21,7 @@ using base::android::ScopedJavaLocalRef;
 
 PasswordGenerationEditingPopupViewAndroid::
     PasswordGenerationEditingPopupViewAndroid(
-        PasswordGenerationPopupController* controller)
+        base::WeakPtr<PasswordGenerationPopupController> controller)
     : controller_(controller) {}
 
 void PasswordGenerationEditingPopupViewAndroid::Dismissed(
@@ -98,6 +98,6 @@ void PasswordGenerationEditingPopupViewAndroid::PasswordSelectionUpdated() {}
 
 // static
 PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
-    PasswordGenerationPopupController* controller) {
+    base::WeakPtr<PasswordGenerationPopupController> controller) {
   return new PasswordGenerationEditingPopupViewAndroid(controller);
 }

@@ -587,7 +587,8 @@ void AutofillPopupItemView::AddedToWidget() {
 }
 
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
   std::vector<std::u16string> text;
 
   auto suggestion = controller->GetSuggestionAt(GetLineNumber());
@@ -655,14 +656,16 @@ void AutofillPopupItemView::OnMouseEntered(const ui::MouseEvent& event) {
   // don't want to show a preview.
   if (!mouse_observed_outside_of_item_)
     return;
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
   if (controller)
     controller->SetSelectedLine(GetLineNumber());
 }
 
 void AutofillPopupItemView::OnMouseExited(const ui::MouseEvent& event) {
   mouse_observed_outside_of_item_ = true;
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
   if (controller)
     controller->SelectionCleared();
 }
@@ -673,7 +676,8 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
   // current item.
   if (!mouse_observed_outside_of_item_)
     return;
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
   if (controller && event.IsOnlyLeftMouseButton() &&
       HitTestPoint(event.location())) {
     controller->AcceptSuggestion(GetLineNumber());
@@ -681,7 +685,8 @@ void AutofillPopupItemView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void AutofillPopupItemView::OnGestureEvent(ui::GestureEvent* event) {
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
   if (!controller)
     return;
   switch (event->type()) {
@@ -701,7 +706,8 @@ void AutofillPopupItemView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void AutofillPopupItemView::CreateContent() {
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -1097,7 +1103,8 @@ AutofillPopupFooterView* AutofillPopupFooterView::Create(
 }
 
 void AutofillPopupFooterView::CreateContent() {
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
 
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -1229,7 +1236,8 @@ AutofillPopupWarningView* AutofillPopupWarningView::Create(
 
 void AutofillPopupWarningView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
   if (!controller)
     return;
 
@@ -1238,7 +1246,8 @@ void AutofillPopupWarningView::GetAccessibleNodeData(
 }
 
 void AutofillPopupWarningView::CreateContent() {
-  AutofillPopupController* controller = popup_view()->controller();
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
 
   int horizontal_margin = GetHorizontalMargin();
   int vertical_margin = AutofillPopupBaseView::GetCornerRadius();
@@ -1318,7 +1327,7 @@ END_METADATA
 /************** AutofillPopupViewNativeViews **************/
 
 AutofillPopupViewNativeViews::AutofillPopupViewNativeViews(
-    AutofillPopupController* controller,
+    base::WeakPtr<AutofillPopupController> controller,
     views::Widget* parent_widget)
     : AutofillPopupBaseView(controller, parent_widget),
       controller_(controller) {
@@ -1707,7 +1716,7 @@ AutofillPopupView* AutofillPopupView::Create(
     return nullptr;
 #endif
 
-  return new AutofillPopupViewNativeViews(controller.get(), observing_widget);
+  return new AutofillPopupViewNativeViews(controller, observing_widget);
 }
 
 }  // namespace autofill

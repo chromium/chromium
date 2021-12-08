@@ -72,7 +72,7 @@ SkColor AutofillPopupBaseView::GetWarningColor() const {
 }
 
 AutofillPopupBaseView::AutofillPopupBaseView(
-    AutofillPopupViewDelegate* delegate,
+    base::WeakPtr<AutofillPopupViewDelegate> delegate,
     views::Widget* parent_widget)
     : delegate_(delegate), parent_widget_(parent_widget) {}
 
@@ -234,7 +234,7 @@ void AutofillPopupBaseView::UpdateClipPath() {
 }
 
 gfx::Rect AutofillPopupBaseView::GetContentAreaBounds() const {
-  content::WebContents* web_contents = delegate()->GetWebContents();
+  content::WebContents* web_contents = delegate_->GetWebContents();
   if (web_contents)
     return web_contents->GetContainerBounds();
 
@@ -247,7 +247,7 @@ gfx::Rect AutofillPopupBaseView::GetContentAreaBounds() const {
 
 gfx::Rect AutofillPopupBaseView::GetTopWindowBounds() const {
   views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
-      delegate()->container_view());
+      delegate_->container_view());
   // Find root in window tree.
   while (widget && widget->parent()) {
     widget = widget->parent();
@@ -277,7 +277,7 @@ gfx::Rect AutofillPopupBaseView::GetOptionalPositionAndPlaceArrowOnBubble(
       /*content_area_bounds=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
       /*bubble_preferred_size=*/preferred_size,
-      /*right_to_left=*/delegate()->IsRTL(),
+      /*right_to_left=*/delegate_->IsRTL(),
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
       autofill::features::kAutofillMaximumPixelsToMoveSuggestionopupToCenter
@@ -311,7 +311,7 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
           ? top_window_bounds
           : content_area_bounds;
 
-  gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate()->element_bounds());
+  gfx::Rect element_bounds = gfx::ToEnclosingRect(delegate_->element_bounds());
 
   // If the element exceeds the content area, ensure that the popup is still
   // visually attached to the input element.
@@ -341,7 +341,7 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
           ? GetOptionalPositionAndPlaceArrowOnBubble(
                 element_bounds, max_bounds_for_popup, preferred_size)
           : CalculatePopupBounds(preferred_size, max_bounds_for_popup,
-                                 element_bounds, delegate()->IsRTL(),
+                                 element_bounds, delegate_->IsRTL(),
                                  /*horizontally_centered=*/false);
 
   // Account for the scroll view's border so that the content has enough space.

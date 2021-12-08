@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
@@ -25,7 +26,8 @@ class AutofillPopupController;
 class AutofillKeyboardAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
-  explicit AutofillKeyboardAccessoryView(AutofillPopupController* controller);
+  explicit AutofillKeyboardAccessoryView(
+      base::WeakPtr<AutofillPopupController> controller);
 
   AutofillKeyboardAccessoryView(const AutofillKeyboardAccessoryView&) = delete;
   AutofillKeyboardAccessoryView& operator=(
@@ -65,7 +67,10 @@ class AutofillKeyboardAccessoryView
 
  private:
   // Weak reference to owner of this class. Always outlives this view.
-  raw_ptr<AutofillPopupController> controller_;
+  // TODO(crbug.com/1277218): Is this really the case?
+  // AutofillPopupControllerImpl::HideViewAndDie() calls this class's Hide(),
+  // which does not delete itself.
+  base::WeakPtr<AutofillPopupController> controller_;
 
   // Call to confirm a requested deletion.
   base::OnceClosure confirm_deletion_;

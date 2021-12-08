@@ -132,7 +132,9 @@ void AutofillPopupControllerImpl::Show(
     FireControlsChangedEvent(true);
 
     if (autoselect_first_suggestion) {
-      SetSelectedLine(0);
+      // TODO(crbug.com/1276850, crbug.com/1277218): Replace with
+      // SetSelectedLine().
+      SetSelectedLineHelper(0);
     }
   } else {
     if (selected_line_ && *selected_line_ >= GetLineCount())
@@ -486,7 +488,8 @@ void AutofillPopupControllerImpl::SelectNextLine() {
   if (new_selected_line >= GetLineCount())
     new_selected_line = 0;
 
-  SetSelectedLine(new_selected_line);
+  // TODO(crbug.com/1276850,crbug.com/1277218): Replace with SetSelectedLine().
+  SetSelectedLineHelper(new_selected_line);
 }
 
 void AutofillPopupControllerImpl::SelectPreviousLine() {
@@ -501,7 +504,8 @@ void AutofillPopupControllerImpl::SelectPreviousLine() {
   if (new_selected_line < 0)
     new_selected_line = GetLineCount() - 1;
 
-  SetSelectedLine(new_selected_line);
+  // TODO(crbug.com/1276850,crbug.com/1277218): Replace with SetSelectedLine().
+  SetSelectedLineHelper(new_selected_line);
 }
 
 bool AutofillPopupControllerImpl::RemoveSelectedLine() {
