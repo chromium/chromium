@@ -180,6 +180,11 @@ int AppListTestApi::GetTopListItemCount() {
   return GetAppListModel()->top_level_item_list()->item_count();
 }
 
+views::View* AppListTestApi::GetLastItemInAppsGridView() {
+  AppsGridView* grid = GetTopLevelAppsGridView();
+  return grid->view_model()->view_at(grid->view_model()->view_size() - 1);
+}
+
 PaginationModel* AppListTestApi::GetPaginationModel() {
   return GetPagedAppsGridView()->pagination_model();
 }

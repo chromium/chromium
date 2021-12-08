@@ -1883,7 +1883,7 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
       if (item_list_->FindItemIndex(item_id, &final_item_list_index) &&
           final_item_list_index > 0 &&
           !item_list_->item_at(final_item_list_index - 1)->is_page_break()) {
-        item_list_->AddPageBreakItemAfter(
+        model_->AddPageBreakItemAfter(
             item_list_->item_at(final_item_list_index - 1));
       }
     }

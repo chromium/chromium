@@ -64,6 +64,10 @@ class ASH_EXPORT AppListTestApi {
   // Returns the item count of the top list.
   int GetTopListItemCount();
 
+  // Returns the last app list item view in the top level apps grid. Requires
+  // the app list UI to be shown.
+  views::View* GetLastItemInAppsGridView();
+
   // Returns the pagination model.
   PaginationModel* GetPaginationModel();
 
