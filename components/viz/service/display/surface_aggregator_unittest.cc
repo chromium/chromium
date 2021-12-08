@@ -773,6 +773,91 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RotatedClip) {
       ElementsAre(AllOf(IsAggregatedRenderPassQuad(), HasTransform(rotate))));
 }
 
+// Validate that implicit clipping when quads are drawn to an intermediate
+// render pass texture the same size as the render pass output_rect is
+// maintained even if the root render pass for a surface is merged into the
+// embedding render pass and there is no intermediate texture.
+TEST_F(SurfaceAggregatorValidSurfaceTest, ClipMergedPasses) {
+  // The grandchild surface is larger than the child surface, making it possible
+  // for a SolidColorDrawQuad from the granchild surface to draw beyond the
+  // child surface intermediate render pass texture when surfaces are merged
+  // together and intermediate textures are skipped.
+  constexpr gfx::Rect grandchild_child_rect(150, 150);
+  constexpr gfx::Rect child_rect(100, 100);
+  constexpr gfx::Size root_size(200, 200);
+
+  auto grandchild_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &this->manager_, kArbitraryFrameSinkId1, false);
+  TestSurfaceIdAllocator grandchild_surface_id(
+      grandchild_support->frame_sink_id());
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+
+  {
+    auto frame = CompositorFrameBuilder()
+                     .AddRenderPass(RenderPassBuilder(grandchild_child_rect)
+                                        .AddSolidColorQuad(
+                                            gfx::Rect(grandchild_child_rect),
+                                            SK_ColorBLUE))
+                     .Build();
+    grandchild_support->SubmitCompositorFrame(
+        grandchild_surface_id.local_surface_id(), std::move(frame));
+  }
+
+  {
+    // There is a 150x150 SurfaceDrawQuad translated 50,50 inside of a 100x100
+    // CompositorFrame. As a result, only a 50x50 portion of the SurfaceDrawQuad
+    // can be drawn and the rest extends outside the output_rect and should be
+    // clipped.
+    auto frame = CompositorFrameBuilder()
+                     .AddRenderPass(RenderPassBuilder(child_rect)
+                                        .AddSurfaceQuad(
+                                            grandchild_child_rect,
+                                            SurfaceRange(grandchild_surface_id))
+                                        .SetQuadToTargetTranslation(50, 50))
+                     .Build();
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(frame));
+  }
+
+  {
+    // The SurfaceDrawQuad here is using 150x150 as the rect/visible_rect which
+    // is intentionally bigger than the 100x100 output_rect of the child
+    // surface.
+    auto frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(root_size)
+                    .AddSurfaceQuad(grandchild_child_rect,
+                                    SurfaceRange(child_surface_id))
+                    .SetQuadToTargetTranslation(50, 50)
+                    .AddSolidColorQuad(gfx::Rect(root_size), SK_ColorWHITE))
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+  EXPECT_EQ(1u, aggregated_frame.render_pass_list.size());
+
+  auto& render_pass = aggregated_frame.render_pass_list[0];
+  EXPECT_THAT(render_pass->quad_list,
+              ElementsAre(IsSolidColorQuad(SK_ColorBLUE),
+                          IsSolidColorQuad(SK_ColorWHITE)));
+
+  // Make sure there is a 150x150 solid color quad in the final frame.
+  auto* clipped_quad = render_pass->quad_list.ElementAt(0);
+  EXPECT_EQ(clipped_quad->rect, grandchild_child_rect);
+  EXPECT_EQ(clipped_quad->visible_rect, grandchild_child_rect);
+  EXPECT_TRUE(clipped_quad->shared_quad_state->clip_rect);
+
+  // Only a 50x50 chunk of the 150x150 solid color quad should be visible. This
+  // is due to the child surface root render pass output_rect being added to the
+  // surface clip rect. Even if the visible_rect is wrong this ensures the
+  // merged and unmerged cases produce the same output.
+  EXPECT_THAT(clipped_quad->shared_quad_state->clip_rect,
+              testing::Optional(gfx::Rect(100, 100, 50, 50)));
+}
+
 TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassSimpleFrame) {
   std::vector<Quad> quads[2] = {
       {Quad::SolidColorQuad(SK_ColorWHITE, gfx::Rect(5, 5)),

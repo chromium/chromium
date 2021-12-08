@@ -235,6 +235,26 @@ bool RenderPassNeedsFullDamage(const ResolvedPassData& resolved_pass) {
          aggregation.in_pixel_moving_filter_pass;
 }
 
+// Computes an enclosing rect in target render pass coordinate space that bounds
+// where |quad| may contribute pixels. This rect is computed by transforming the
+// quads |visible_rect|, which is known to be contained by the quads |rect|, and
+// transforming it into target render pass coordinate space. The rect is then
+// clipped by SharedQuadState |clip_rect| if one exists.
+//
+// Since a quad can only damage pixels it can draw to, the drawable rect is also
+// the maximum damage rect a quad can contribute (ignoring pixel-moving
+// filters).
+gfx::Rect ComputeDrawableRectForQuad(const DrawQuad* quad) {
+  const SharedQuadState* sqs = quad->shared_quad_state;
+
+  gfx::Rect drawable_rect = cc::MathUtil::MapEnclosingClippedRect(
+      sqs->quad_to_target_transform, quad->visible_rect);
+  if (sqs->clip_rect)
+    drawable_rect.Intersect(*sqs->clip_rect);
+
+  return drawable_rect;
+}
+
 }  // namespace
 
 constexpr base::TimeDelta SurfaceAggregator::kHistogramMinTime;
@@ -557,15 +577,22 @@ void SurfaceAggregator::HandleSurfaceQuad(
     const SurfaceDrawQuad* surface_quad,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& added_clip_rect,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
     bool* damage_rect_in_quad_space_valid,
     const MaskFilterInfoExt& mask_filter_info) {
+  DCHECK(target_transform.Preserves2dAxisAlignment());
+
   SurfaceId primary_surface_id = surface_quad->surface_range.end();
   const ResolvedFrameData* resolved_frame =
       GetResolvedFrame(surface_quad->surface_range);
+
+  // |added_clip_rect| should be bounded by the output_rect of the render pass
+  // that contains |surface_quad|.
+  absl::optional<gfx::Rect> surface_clip_rect = CalculateClipRect(
+      added_clip_rect, source_pass.output_rect, target_transform);
 
   // If a new surface is going to be emitted, add the surface_quad rect to
   // |surface_damage_rect_list_| for overlays. The whole quad is considered
@@ -573,22 +600,12 @@ void SurfaceAggregator::HandleSurfaceQuad(
   if (needs_surface_damage_rect_list_ &&
       (!resolved_frame ||
        (resolved_frame->surface_id() != primary_surface_id))) {
-    const SharedQuadState* surface_quad_sqs = surface_quad->shared_quad_state;
-
-    // TODO(crbug.com/1261917, crbug.com/1257765 and crbug.com/1263146):
-    // Integer overflows caused by huge rect sizes in surface_quad->visible_rect
-    // occur in some crash dumps. Use sqs->visible_quad_layer_rect instead
-    // because it seems more accurate in those crash dumps. Revisit this comment
-    // after the huge rect size bug is fixed.
-    gfx::Rect default_damage_rect = cc::MathUtil::MapEnclosingClippedRect(
-        surface_quad_sqs->quad_to_target_transform,
-        surface_quad_sqs->visible_quad_layer_rect);
-    if (surface_quad_sqs->clip_rect) {
-      default_damage_rect.Intersect(surface_quad_sqs->clip_rect.value());
-    }
-
-    AddSurfaceDamageToDamageList(default_damage_rect, target_transform,
-                                 clip_rect, dest_pass,
+    // If using a fallback surface the surface content may be stretched or have
+    // gutter. If the surface is missing the content will be filled with a solid
+    // color. In both cases we no longer have frame-to-frame damage so treat the
+    // entire SurfaceDrawQuad visible_rect as damaged.
+    AddSurfaceDamageToDamageList(ComputeDrawableRectForQuad(surface_quad),
+                                 target_transform, surface_clip_rect, dest_pass,
                                  /*resolved_frame=*/nullptr);
   }
 
@@ -596,8 +613,9 @@ void SurfaceAggregator::HandleSurfaceQuad(
   // SolidColorDrawQuad with the provided default background color. This
   // can happen after a Viz process crash.
   if (!resolved_frame) {
-    EmitDefaultBackgroundColorQuad(surface_quad, target_transform, clip_rect,
-                                   dest_pass, mask_filter_info);
+    EmitDefaultBackgroundColorQuad(surface_quad, target_transform,
+                                   surface_clip_rect, dest_pass,
+                                   mask_filter_info);
     return;
   }
 
@@ -612,17 +630,18 @@ void SurfaceAggregator::HandleSurfaceQuad(
         parent_device_scale_factor / fallback_frame.device_scale_factor();
     fallback_rect =
         gfx::ScaleToEnclosingRect(fallback_rect, scale_ratio, scale_ratio);
-    fallback_rect = gfx::IntersectRects(fallback_rect, surface_quad->rect);
+    fallback_rect =
+        gfx::IntersectRects(fallback_rect, surface_quad->visible_rect);
 
-    EmitGutterQuadsIfNecessary(surface_quad->rect, fallback_rect,
+    EmitGutterQuadsIfNecessary(surface_quad->visible_rect, fallback_rect,
                                surface_quad->shared_quad_state,
-                               target_transform, clip_rect,
+                               target_transform, surface_clip_rect,
                                fallback_frame.metadata.root_background_color,
                                dest_pass, mask_filter_info);
   }
 
-  EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, source_pass,
-                     surface_quad, target_transform, clip_rect, dest_pass,
+  EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, surface_quad,
+                     target_transform, surface_clip_rect, dest_pass,
                      ignore_undamaged, damage_rect_in_quad_space,
                      damage_rect_in_quad_space_valid, mask_filter_info);
 }
@@ -630,10 +649,9 @@ void SurfaceAggregator::HandleSurfaceQuad(
 void SurfaceAggregator::EmitSurfaceContent(
     const ResolvedFrameData& resolved_frame,
     float parent_device_scale_factor,
-    const CompositorRenderPass& source_pass,
     const SurfaceDrawQuad* surface_quad,
     const gfx::Transform& target_transform,
-    const absl::optional<gfx::Rect>& clip_rect,
+    const absl::optional<gfx::Rect>& added_clip_rect,
     AggregatedRenderPass* dest_pass,
     bool ignore_undamaged,
     gfx::Rect* damage_rect_in_quad_space,
@@ -727,24 +745,22 @@ void SurfaceAggregator::EmitSurfaceContent(
       copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
       mask_filter_info.CanMergeMaskFilterInfo(*render_pass_list.back());
 
-  absl::optional<gfx::Rect> quads_clip;
-  // Intersect the transformed surface visible rect and the clip rect to
-  // create a smaller cliprect for the quad.
-  gfx::Rect surface_quad_clip_rect = cc::MathUtil::MapEnclosingClippedRect(
-      surface_quad_sqs->quad_to_target_transform, surface_quad_visible_rect);
-  if (surface_quad_sqs->clip_rect) {
-    surface_quad_clip_rect.Intersect(*surface_quad_sqs->clip_rect);
+  absl::optional<gfx::Rect> surface_quad_clip;
+  if (merge_pass || needs_surface_damage_rect_list_) {
+    // Compute a clip rect in |dest_pass| coordinate space to ensure merged
+    // surface cannot draw outside where a non-merged surface would draw. An
+    // enclosing rect in |surface_quad| target render pass coordinate space is
+    // computed, then transformed into |dest_pass| coordinate space and finally
+    // that is intersected with existing |added_clip_rect|.
+    surface_quad_clip = CalculateClipRect(
+        added_clip_rect, ComputeDrawableRectForQuad(surface_quad),
+        target_transform);
   }
-
-  surface_quad_clip_rect.Intersect(source_pass.output_rect);
-
-  quads_clip =
-      CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
 
   if (needs_surface_damage_rect_list_) {
     AddSurfaceDamageToDamageList(/*default_damage_rect=*/gfx::Rect(),
-                                 combined_transform, quads_clip, dest_pass,
-                                 &resolved_frame);
+                                 combined_transform, surface_quad_clip,
+                                 dest_pass, &resolved_frame);
   }
 
   if (frame.metadata.delegated_ink_metadata) {
@@ -823,8 +839,8 @@ void SurfaceAggregator::EmitSurfaceContent(
 
   if (merge_pass) {
     CopyQuadsToPass(resolved_frame, resolved_root_pass, dest_pass,
-                    frame.device_scale_factor(), combined_transform, quads_clip,
-                    surface, mask_filter_info);
+                    frame.device_scale_factor(), combined_transform,
+                    surface_quad_clip, surface, mask_filter_info);
   } else {
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
         surface_quad_sqs, scaled_quad_to_target_transform, target_transform,
@@ -834,7 +850,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         gfx::ScaleToEnclosingRect(surface_quad_sqs->visible_quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
-        quads_clip, mask_filter_info, dest_pass);
+        added_clip_rect, mask_filter_info, dest_pass);
 
     // At this point, we need to calculate three values in order to construct
     // the CompositorRenderPassDrawQuad:
