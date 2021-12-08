@@ -435,7 +435,8 @@ class TopIconAnimation : public AppListFolderView::Animation,
       // Return the item bounds in AppListFolderView coordinates.
       gfx::RectF bounds_in_folder(item->GetLocalBounds());
       views::View::ConvertRectToTarget(item, folder_view_, &bounds_in_folder);
-      items_bounds.emplace_back(gfx::ToRoundedRect(bounds_in_folder));
+      items_bounds.emplace_back(
+          folder_view_->GetMirroredRect(gfx::ToRoundedRect(bounds_in_folder)));
     }
     return items_bounds;
   }
