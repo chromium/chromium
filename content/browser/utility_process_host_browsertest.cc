@@ -142,9 +142,7 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchProcessAndCrash) {
 }
 
 #if defined(OS_WIN)
-// Times out. crbug.com/927298.
-IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
-                       DISABLED_LaunchElevatedProcess) {
+IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest, LaunchElevatedProcess) {
   RunUtilityProcess(true, false);
 }
 
