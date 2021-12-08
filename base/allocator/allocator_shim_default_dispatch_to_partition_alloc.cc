@@ -393,6 +393,24 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   base::ThreadSafePartitionRoot::FreeNoHooks(address);
 }
 
+#if defined(OS_APPLE)
+// Normal free() path on Apple OSes:
+// 1. size = GetSizeEstimate(ptr);
+// 2. if (size) FreeDefiniteSize(ptr, size)
+//
+// So we don't need to re-check that the pointer is owned in Free(), and we
+// can use the size.
+void PartitionFreeDefiniteSize(const AllocatorDispatch*,
+                               void* address,
+                               size_t size,
+                               void* context) {
+  ScopedDisallowAllocations guard{};
+  // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
+  // still useful though, as we avoid double-checking that the address is owned.
+  base::ThreadSafePartitionRoot::FreeNoHooks(address);
+}
+#endif  // defined(OS_APPLE)
+
 size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
                                 void* address,
                                 void* context) {
@@ -621,11 +639,18 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &base::internal::PartitionGetSizeEstimate,  // get_size_estimate_function
     nullptr,                                    // batch_malloc_function
     nullptr,                                    // batch_free_function
-    nullptr,                                    // free_definite_size_function
-    &base::internal::PartitionAlignedAlloc,     // aligned_malloc_function
-    &base::internal::PartitionAlignedRealloc,   // aligned_realloc_function
-    &base::internal::PartitionFree,             // aligned_free_function
-    nullptr,                                    // next
+#if defined(OS_APPLE)
+    // On Apple OSes, free_definite_size() is always called from free(), since
+    // get_size_estimate() is used to determine whether an allocation belongs to
+    // the current zone. It makes sense to optimize for it.
+    &base::internal::PartitionFreeDefiniteSize,
+#else
+    nullptr,  // free_definite_size_function
+#endif
+    &base::internal::PartitionAlignedAlloc,    // aligned_malloc_function
+    &base::internal::PartitionAlignedRealloc,  // aligned_realloc_function
+    &base::internal::PartitionFree,            // aligned_free_function
+    nullptr,                                   // next
 };
 
 // Intercept diagnostics symbols as well, even though they are not part of the

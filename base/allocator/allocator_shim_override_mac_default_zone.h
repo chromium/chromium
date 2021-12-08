@@ -172,7 +172,7 @@ void* MallocZoneMemalign(malloc_zone_t* zone, size_t alignment, size_t size) {
 }
 
 void MallocZoneFreeDefiniteSize(malloc_zone_t* zone, void* ptr, size_t size) {
-  return ShimFree(ptr, nullptr);
+  return ShimFreeDefiniteSize(ptr, size, nullptr);
 }
 
 malloc_introspection_t g_mac_malloc_introspection{};
