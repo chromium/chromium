@@ -617,27 +617,44 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
   }
 
   PendingAccessRequest& pending_request = *queue.front();
-  const extensions::Extension* extension = pending_request.extension;
 
   if (media_id.is_null()) {
     std::move(pending_request.callback)
         .Run(blink::MediaStreamDevices(),
              blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
              nullptr);
-  } else {
-    blink::MediaStreamDevices devices;
-    std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
-        pending_request.request, web_contents, media_id, media_id.audio_share,
-        pending_request.request.disable_local_echo,
-        display_notification_ && ShouldDisplayNotification(extension),
-        GetApplicationTitle(web_contents, extension), &devices);
-    std::move(pending_request.callback)
-        .Run(devices, blink::mojom::MediaStreamRequestResult::OK,
-             std::move(ui));
+
+    queue.pop_front();
+    if (!queue.empty())
+      ProcessQueuedAccessRequest(queue, web_contents);
+    return;
   }
 
-  queue.pop_front();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (policy::DlpContentManager::Get()->IsScreenCaptureRestricted(media_id)) {
+    std::move(pending_request.callback)
+        .Run(blink::MediaStreamDevices(),
+             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+             nullptr);
 
+    queue.pop_front();
+    if (!queue.empty())
+      ProcessQueuedAccessRequest(queue, web_contents);
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  const extensions::Extension* extension = pending_request.extension;
+  blink::MediaStreamDevices devices;
+  std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
+      pending_request.request, web_contents, media_id, media_id.audio_share,
+      pending_request.request.disable_local_echo,
+      display_notification_ && ShouldDisplayNotification(extension),
+      GetApplicationTitle(web_contents, extension), &devices);
+  std::move(pending_request.callback)
+      .Run(devices, blink::mojom::MediaStreamRequestResult::OK, std::move(ui));
+
+  queue.pop_front();
   if (!queue.empty())
     ProcessQueuedAccessRequest(queue, web_contents);
 }
