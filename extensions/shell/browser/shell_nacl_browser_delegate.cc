@@ -154,10 +154,4 @@ ShellNaClBrowserDelegate::GetMapUrlToLocalFilePathCallback(
       base::Owned(std::move(extensions)));
 }
 
-bool ShellNaClBrowserDelegate::IsNonSfiModeAllowed(
-    const base::FilePath& profile_directory,
-    const GURL& manifest_url) {
-  return false;
-}
-
 }  // namespace extensions

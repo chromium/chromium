@@ -142,12 +142,8 @@ void NaClHostMessageFilter::OnLaunchNaCl(
     IPC::Message* reply_msg) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // TODO(crbug.com/1273132): Remove.
   bool nonsfi_mode_allowed = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH) && \
-    (defined(ARCH_CPU_X86_FAMILY) || defined(ARCH_CPU_ARMEL))
-  nonsfi_mode_allowed = NaClBrowser::GetDelegate()->IsNonSfiModeAllowed(
-      profile_directory_, GURL(launch_params.manifest_url));
-#endif
 
   auto map_url_callback =
       nacl::NaClBrowser::GetDelegate()->GetMapUrlToLocalFilePathCallback(

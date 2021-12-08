@@ -40,24 +40,10 @@
 #include "extensions/common/url_pattern.h"
 #endif
 
-namespace {
-
-// These are temporarily needed for testing non-sfi mode on ChromeOS without
-// passing command-line arguments to Chrome.
-const char* const kAllowedNonSfiOrigins[] = {
-    "6EAED1924DB611B6EEF2A664BD077BE7EAD33B8F",  // see http://crbug.com/355141
-    "4EB74897CB187C7633357C2FE832E0AD6A44883A"   // see http://crbug.com/355141
-};
-
-}  // namespace
-
 NaClBrowserDelegateImpl::NaClBrowserDelegateImpl(
     ProfileManager* profile_manager)
     : profile_manager_(profile_manager), inverse_debug_patterns_(false) {
   DCHECK(profile_manager_);
-  for (size_t i = 0; i < base::size(kAllowedNonSfiOrigins); ++i) {
-    allowed_nonsfi_origins_.insert(kAllowedNonSfiOrigins[i]);
-  }
 }
 
 NaClBrowserDelegateImpl::~NaClBrowserDelegateImpl() {
@@ -180,20 +166,6 @@ NaClBrowserDelegateImpl::GetMapUrlToLocalFilePathCallback(
 #else
   return base::BindRepeating([](const GURL& url, bool use_blocking_api,
                                 base::FilePath* file_path) { return false; });
-#endif
-}
-
-bool NaClBrowserDelegateImpl::IsNonSfiModeAllowed(
-    const base::FilePath& profile_directory,
-    const GURL& manifest_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* registry = extensions::ExtensionRegistry::Get(
-      profile_manager_->GetProfileByPath(profile_directory));
-  return IsExtensionOrSharedModuleAllowed(
-      manifest_url, &registry->enabled_extensions(), allowed_nonsfi_origins_);
-#else
-  return false;
 #endif
 }
 

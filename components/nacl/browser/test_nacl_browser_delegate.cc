@@ -55,9 +55,3 @@ bool TestNaClBrowserDelegate::URLMatchesDebugPatterns(
     const GURL& manifest_url) {
   return false;
 }
-
-bool TestNaClBrowserDelegate::IsNonSfiModeAllowed(
-    const base::FilePath& profile_directory,
-    const GURL& manifest_url) {
-  return false;
-}

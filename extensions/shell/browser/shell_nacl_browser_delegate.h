@@ -42,8 +42,6 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
       const base::FilePath& profile_directory) override;
   void SetDebugPatterns(const std::string& debug_patterns) override;
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
-  bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                           const GURL& manifest_url) override;
 
  private:
   content::BrowserContext* browser_context_;  // Not owned.

@@ -42,8 +42,6 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
       const base::FilePath& profile_directory) override;
   void SetDebugPatterns(const std::string& debug_patterns) override;
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
-  bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                           const GURL& manifest_url) override;
 
  private:
   // Creates a NaCl infobar and delegate for the given render process and view
@@ -57,7 +55,6 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
 
   raw_ptr<ProfileManager> profile_manager_;
   bool inverse_debug_patterns_;
-  std::set<std::string> allowed_nonsfi_origins_;
 };
 
 
