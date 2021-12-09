@@ -135,7 +135,6 @@ template("ios_test_runner_wrapper") {
       data += invoker.data
     }
     data += [
-      "//.vpython",
       "//ios/build/bots/scripts/",
 
       # Variations test utilities used by variations_runner script.

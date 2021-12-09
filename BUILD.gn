@@ -1228,9 +1228,6 @@ if (!is_ios) {
 
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md
   script_test("blink_web_tests") {
-    if (is_mac) {
-      run_under_python2 = true
-    }
     script = _common_web_test_script
 
     args = _common_web_test_args
@@ -1377,8 +1374,6 @@ if (!is_ios) {
   }
 
   script_test("devtools_web_tests") {
-    run_under_python2 = true
-
     # This target differs from :blink_web_tests in that it uses the
     # same test harness but runs an entirely different set of tests
     # and doesn't have a dependency on the web_test directory at all.
@@ -1396,8 +1391,6 @@ if (!is_ios) {
   }
 
   script_test("webgpu_blink_web_tests") {
-    run_under_python2 = true
-
     # This target differs from :blink_web_tests in that it uses the same
     # test harness and a few additional flags but, more importantly, only runs
     # the web_tests/wpt_internal/webgpu tests, so it doesn't have a data

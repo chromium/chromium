@@ -33,7 +33,6 @@ config("executable_config") {
 # Files required to run on Fuchsia on isolated swarming clients.
 group("deployment_resources") {
   data = [
-    "//.vpython",
     "//build/fuchsia/",
     "//build/util/lib/",
     "//third_party/fuchsia-sdk/sdk/.build-id/",

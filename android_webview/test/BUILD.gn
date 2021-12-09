@@ -40,7 +40,6 @@ if (android_64bit_target_cpu) {
 script_test("system_webview_crx_smoke_tests") {
   script =
       "//android_webview/test/components/run_webview_component_smoketest.py"
-  run_under_python2 = true
   args = [ "--webview-package-name=$system_webview_package_name" ]
   data = [ "//android_webview/test/components/crx_smoke_tests.py" ]
   data_deps = [

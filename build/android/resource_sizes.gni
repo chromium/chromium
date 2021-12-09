@@ -32,10 +32,7 @@ template("android_resource_sizes_test") {
       "@WrappedPath(.)",
     ]
 
-    data = [
-      "//.vpython",
-      "//.vpython3",
-    ]
+    data = []
     if (defined(invoker.trichrome_chrome_path)) {
       data += [
         invoker.trichrome_chrome_path,

@@ -2920,7 +2920,6 @@ template("chrome_test_apk_tmpl") {
                              "enable_lint",
                              "enforce_resource_overlays_in_tests",
                              "shared_libraries",
-                             "use_vpython3",
                            ])
 
     testonly = true
