@@ -637,7 +637,8 @@ void ProfileImpl::SetBooleanSetting(SettingType type, bool value) {
       safe_browsing::SetSafeBrowsingState(
           pref_service,
           value ? safe_browsing::SafeBrowsingState::STANDARD_PROTECTION
-                : safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+                : safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING,
+          /*is_esb_enabled_in_sync=*/false);
 #endif
       break;
     case SettingType::UKM_ENABLED: {

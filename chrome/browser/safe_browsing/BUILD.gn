@@ -292,6 +292,8 @@ static_library("safe_browsing") {
         "incident_reporting/tracked_preference_incident.h",
         "services_delegate_desktop.cc",
         "services_delegate_desktop.h",
+        "tailored_security/consented_notification_desktop.cc",
+        "tailored_security/consented_notification_desktop.h",
       ]
       if (is_mac) {
         sources += [
@@ -323,6 +325,7 @@ static_library("safe_browsing") {
         ":verdict_cache_manager_factory",
         "//build:branding_buildflags",
         "//build:chromeos_buildflags",
+        "//chrome/app/vector_icons:vector_icons",
         "//chrome/common",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",

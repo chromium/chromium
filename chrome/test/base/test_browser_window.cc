@@ -112,6 +112,10 @@ ui::NativeTheme* TestBrowserWindow::GetNativeTheme() {
   return nullptr;
 }
 
+const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
+  return nullptr;
+}
+
 int TestBrowserWindow::GetTopControlsHeight() const {
   return 0;
 }

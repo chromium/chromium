@@ -69,7 +69,8 @@ static jint JNI_SafeBrowsingBridge_GetSafeBrowsingState(JNIEnv* env) {
 static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(JNIEnv* env,
                                                         jint state) {
   return safe_browsing::SetSafeBrowsingState(
-      GetPrefService(), static_cast<SafeBrowsingState>(state));
+      GetPrefService(), static_cast<SafeBrowsingState>(state),
+      /*is_esb_enabled_in_sync=*/false);
 }
 
 static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(JNIEnv* env) {

@@ -88,6 +88,8 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
         prefs::kSafeBrowsingScoutReportingEnabled, false);
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kSafeBrowsingEventTimestamps);
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   }
 };
 

@@ -31,7 +31,8 @@ void EnableEsbAndShowSettings(content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SetSafeBrowsingState(profile->GetPrefs(),
-                       SafeBrowsingState::ENHANCED_PROTECTION);
+                       SafeBrowsingState::ENHANCED_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/false);
   if (!chrome::FindBrowserWithWebContents(web_contents))
     return;
   chrome::ShowSafeBrowsingEnhancedProtection(

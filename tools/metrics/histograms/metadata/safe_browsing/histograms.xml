@@ -1737,6 +1737,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.TailoredSecurityConsented{Status}{PromptType}Outcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-22">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of displaying the {PromptType} when a signed-in, syncing
+    user changes their account tailored security setting to {Status}.
+  </summary>
+  <token key="Status">
+    <variant name="Disabled" summary="disabled"/>
+    <variant name="Enabled" summary="enabled"/>
+  </token>
+  <token key="PromptType">
+    <variant name="Message" summary="android message"/>
+    <variant name="Notification" summary="desktop notification"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenCompletion"
     enum="BooleanSuccess" expires_after="2022-09-09">
   <owner>bdea@chromium.org</owner>

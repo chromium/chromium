@@ -582,6 +582,9 @@ Chromium is unable to recover your settings.
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
         Chromium isn't your default browser
       </message>
+      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_TITLE" desc="The title of the notification asking if the user wants to enable Enhanced Safe Browsing">
+        Also turn on in Chromium?
+      </message>
       <if expr="is_win">
         <!-- Try Chrome Toast Dialog -->
         <message name="IDS_TRY_TOAST_HEADING" desc="Top line of the try-chrome-again dialog">

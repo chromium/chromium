@@ -148,7 +148,8 @@ void TailoredSecurityUnconsentedModalAndroid::HandleMessageAccepted() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   SetSafeBrowsingState(profile->GetPrefs(),
-                       SafeBrowsingState::ENHANCED_PROTECTION);
+                       SafeBrowsingState::ENHANCED_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/false);
   ShowSafeBrowsingSettings(web_contents_);
 }
 

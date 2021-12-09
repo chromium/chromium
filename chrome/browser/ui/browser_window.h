@@ -83,6 +83,7 @@ class SharingHubBubbleView;
 }  // namespace sharing_hub
 
 namespace ui {
+class ColorProvider;
 class NativeTheme;
 }
 
@@ -191,6 +192,9 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the native theme associated with the frame.
   virtual ui::NativeTheme* GetNativeTheme() = 0;
+
+  // Returns the ColorProvider associated with the frame.
+  virtual const ui::ColorProvider* GetColorProvider() const = 0;
 
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to

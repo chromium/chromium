@@ -6696,6 +6696,40 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Turn on
       </message>
 
+      <!-- Tailored Security Prompt for Consented Desktop users -->
+      <message name="IDS_TAILORED_SECURITY_DISPLAY_SOURCE" desc="The name of the source showing the notification">
+        Safe Browsing
+      </message>
+      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification asking if the user wants to enable Enhanced Safe Browsing">
+        With Enhanced Safe Browsing, you&#x2019;ll get Chrome&#x2019;s strongest security
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_ACCEPT" desc="The text on the 'accept' button asking if the user wants to enable Enhanced Safe Browsing">
+          Turn On
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_ACCEPT" desc="The text on the 'accept' button asking if the user wants to enable Enhanced Safe Browsing">
+          Turn on
+        </message>
+      </if>
+      <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TITLE" desc="The title of the notification telling the user that Enhanced Safe Browsing was disabled">
+        Enhanced Safe Browsing is off
+      </message>
+      <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification telling the user that Enhanced Safe Browsing was disabled">
+        You&#x2019;re getting standard protection
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_ON" desc="The text on the 'turn on' button asking if the user wants to re-enable Enhanced Safe Browsing">
+          Turn Back On
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_ON" desc="The text on the 'turn on' button asking if the user wants to re-enable Enhanced Safe Browsing">
+          Turn back on
+        </message>
+      </if>
+
       <!-- Password Manager -->
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_MANAGER_CANCEL_BUTTON" desc="Label for the 'dismiss' button in the Manage Password bubble/Update Password infobar. These UIs ask the user if they wish to perform some action with saved passwords, e.g. updating or deleting them; the button dismisses the UI without taking the suggested action.">

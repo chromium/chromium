@@ -75667,6 +75667,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Accepted"/>
   <int value="1" label="Dismissed"/>
   <int value="2" label="Settings"/>
+  <int value="3" label="Shown"/>
+  <int value="4" label="Rejected"/>
 </enum>
 
 <enum name="SafeBrowsingUserConsentVsUrlCheckRaceResult">

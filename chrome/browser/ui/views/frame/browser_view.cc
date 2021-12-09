@@ -1165,6 +1165,10 @@ ui::NativeTheme* BrowserView::GetNativeTheme() {
   return views::ClientView::GetNativeTheme();
 }
 
+const ui::ColorProvider* BrowserView::GetColorProvider() const {
+  return views::ClientView::GetColorProvider();
+}
+
 int BrowserView::GetTopControlsHeight() const {
   if (top_controls_slide_controller_ &&
       top_controls_slide_controller_->IsEnabled()) {

@@ -73,6 +73,12 @@ extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                    selection == SafeBrowsingSetting::ENHANCED);
 
+  // Set ESB not set in sync with Account ESB through TailoredSecurity.
+  if (selection == SafeBrowsingSetting::ENHANCED) {
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+  }
+
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
 
