@@ -92,7 +92,7 @@ bool CanSpecifyHostPermission(const Extension* extension,
 bool ParseHostsFromJSON(Extension* extension,
                         std::vector<std::string>* hosts,
                         std::u16string* error) {
-  if (!extension->manifest()->HasKey(keys::kHostPermissions))
+  if (!extension->manifest()->FindKey(keys::kHostPermissions))
     return true;
 
   const base::Value* permissions = nullptr;
@@ -204,7 +204,7 @@ bool ParseHelper(Extension* extension,
                  APIPermissionSet* api_permissions,
                  URLPatternSet* host_permissions,
                  std::u16string* error) {
-  if (!extension->manifest()->HasKey(key))
+  if (!extension->manifest()->FindKey(key))
     return true;
 
   const base::Value* permissions = nullptr;

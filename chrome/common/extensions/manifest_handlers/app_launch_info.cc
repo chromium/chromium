@@ -32,8 +32,7 @@ bool ReadLaunchDimension(const extensions::Manifest* manifest,
                          int* target,
                          bool is_valid_container,
                          std::u16string* error) {
-  const base::Value* temp = nullptr;
-  if (manifest->Get(key, &temp)) {
+  if (const base::Value* temp = manifest->FindPath(key)) {
     if (!is_valid_container) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValueContainer,
@@ -133,17 +132,16 @@ bool AppLaunchInfo::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
-  const base::Value* temp = NULL;
-
   // Launch URL can be either local (to chrome-extension:// root) or an absolute
   // web URL.
-  if (extension->manifest()->Get(keys::kLaunchLocalPath, &temp)) {
-    if (extension->manifest()->Get(keys::kLaunchWebURL, NULL)) {
+  if (const base::Value* temp =
+          extension->manifest()->FindPath(keys::kLaunchLocalPath)) {
+    if (extension->manifest()->FindPath(keys::kLaunchWebURL)) {
       *error = errors::kLaunchPathAndURLAreExclusive;
       return false;
     }
 
-    if (extension->manifest()->Get(keys::kWebURLs, NULL)) {
+    if (extension->manifest()->FindPath(keys::kWebURLs)) {
       *error = errors::kLaunchPathAndExtentAreExclusive;
       return false;
     }
@@ -167,7 +165,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     }
 
     launch_local_path_ = launch_path;
-  } else if (extension->manifest()->Get(keys::kLaunchWebURL, &temp)) {
+  } else if (const base::Value* temp =
+                 extension->manifest()->FindPath(keys::kLaunchWebURL)) {
     if (!temp->is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,
@@ -266,9 +265,9 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
 
 bool AppLaunchInfo::LoadLaunchContainer(Extension* extension,
                                         std::u16string* error) {
-  const base::Value* tmp_launcher_container = NULL;
-  if (!extension->manifest()->Get(keys::kLaunchContainer,
-                                  &tmp_launcher_container))
+  const base::Value* tmp_launcher_container =
+      extension->manifest()->FindPath(keys::kLaunchContainer);
+  if (tmp_launcher_container == nullptr)
     return true;
 
   if (!tmp_launcher_container->is_string()) {

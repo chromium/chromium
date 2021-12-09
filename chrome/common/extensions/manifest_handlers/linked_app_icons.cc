@@ -55,8 +55,8 @@ LinkedAppIconsHandler::~LinkedAppIconsHandler() {
 bool LinkedAppIconsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<LinkedAppIcons> linked_app_icons(new LinkedAppIcons);
 
-  const base::Value* icons_value = nullptr;
-  if (extension->manifest()->Get(keys::kLinkedAppIcons, &icons_value)) {
+  if (const base::Value* icons_value =
+          extension->manifest()->FindPath(keys::kLinkedAppIcons)) {
     if (!icons_value->is_list()) {
       *error = base::UTF8ToUTF16(
           extensions::manifest_errors::kInvalidLinkedAppIcons);

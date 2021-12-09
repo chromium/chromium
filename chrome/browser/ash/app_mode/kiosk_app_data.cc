@@ -230,7 +230,7 @@ class KioskAppData::WebstoreDataParser
     }
 
     std::string required_platform_version;
-    if (manifest.HasPath(
+    if (manifest.FindPath(
             extensions::manifest_keys::kKioskRequiredPlatformVersion) &&
         (!manifest.GetString(
              extensions::manifest_keys::kKioskRequiredPlatformVersion,

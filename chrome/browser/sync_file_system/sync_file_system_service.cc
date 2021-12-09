@@ -686,7 +686,7 @@ void SyncFileSystemService::OnExtensionUninstalled(
   // the uninstall will not be sync'ed and the user might be using the
   // same app key in other installs, so avoid purging the remote folder.
   if (extensions::Manifest::IsUnpackedLocation(extension->location()) &&
-      extension->manifest()->HasKey(extensions::manifest_keys::kKey)) {
+      extension->manifest()->FindKey(extensions::manifest_keys::kKey)) {
     flag = RemoteFileSyncService::UNINSTALL_AND_KEEP_REMOTE;
   }
 

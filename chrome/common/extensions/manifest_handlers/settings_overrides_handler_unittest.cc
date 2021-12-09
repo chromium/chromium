@@ -156,7 +156,8 @@ TEST(OverrideSettingsTest, ParseManifest) {
   scoped_refptr<Extension> extension = CreateExtension(kManifest, &error);
   ASSERT_TRUE(extension.get());
 #if defined(OS_WIN) || defined(OS_MAC)
-  ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+  ASSERT_TRUE(
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 
   SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
       extension->GetManifestData(manifest_keys::kSettingsOverride));
@@ -180,7 +181,7 @@ TEST(OverrideSettingsTest, ParseManifest) {
   EXPECT_EQ(GURL("http://www.homepage.com"), *settings_override->homepage);
 #else
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -190,7 +191,8 @@ TEST(OverrideSettingsTest, ParsePrepopulatedId) {
       CreateExtension(kPrepopulatedManifest, &error);
   ASSERT_TRUE(extension.get());
 #if defined(OS_WIN) || defined(OS_MAC)
-  ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+  ASSERT_TRUE(
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 
   SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
       extension->GetManifestData(manifest_keys::kSettingsOverride));
@@ -204,7 +206,7 @@ TEST(OverrideSettingsTest, ParsePrepopulatedId) {
   EXPECT_EQ(3, *search_engine->prepopulated_id);
 #else
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -214,7 +216,8 @@ TEST(OverrideSettingsTest, ParseManifestBrokenHomepageButCorrectStartupPages) {
       CreateExtension(kManifestBrokenHomepageButCorrectStartupPages, &error);
   ASSERT_TRUE(extension.get());
 #if defined(OS_WIN) || defined(OS_MAC)
-  ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+  ASSERT_TRUE(
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 
   SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
       extension->GetManifestData(manifest_keys::kSettingsOverride));
@@ -223,7 +226,7 @@ TEST(OverrideSettingsTest, ParseManifestBrokenHomepageButCorrectStartupPages) {
             settings_override->startup_pages);
 #else
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -233,7 +236,8 @@ TEST(OverrideSettingsTest, ParseManifestBrokenStartupPagesButCorrectHomepage) {
       CreateExtension(kManifestBrokenStartupPagesButCorrectHomepage, &error);
   ASSERT_TRUE(extension.get());
 #if defined(OS_WIN) || defined(OS_MAC)
-  ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+  ASSERT_TRUE(
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
   SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
       extension->GetManifestData(manifest_keys::kSettingsOverride));
   ASSERT_TRUE(settings_override);
@@ -241,7 +245,7 @@ TEST(OverrideSettingsTest, ParseManifestBrokenStartupPagesButCorrectHomepage) {
   EXPECT_EQ(GURL("http://www.homepage.com"), *settings_override->homepage);
 #else
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -259,7 +263,7 @@ TEST(OverrideSettingsTest, ParseBrokenManifestEmptySettingsOverride) {
 #else
   ASSERT_TRUE(extension.get());
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -276,7 +280,7 @@ TEST(OverrideSettingsTest, ParseBrokenManifestHomepage) {
 #else
   ASSERT_TRUE(extension.get());
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -293,7 +297,7 @@ TEST(OverrideSettingsTest, ParseBrokenManifestStartupPages) {
 #else
   ASSERT_TRUE(extension.get());
   EXPECT_FALSE(
-      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
 }
 
@@ -338,7 +342,7 @@ TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
 #else
     ASSERT_TRUE(extension.get());
     EXPECT_FALSE(
-        extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+        extension->manifest()->FindPath(manifest_keys::kSettingsOverride));
 #endif
   }
 }

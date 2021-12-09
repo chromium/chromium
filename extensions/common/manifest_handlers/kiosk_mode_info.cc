@@ -106,18 +106,18 @@ KioskModeHandler::~KioskModeHandler() {
 
 bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   const Manifest* manifest = extension->manifest();
-  DCHECK(manifest->HasKey(keys::kKioskEnabled) ||
-         manifest->HasKey(keys::kKioskOnly));
+  DCHECK(manifest->FindKey(keys::kKioskEnabled) ||
+         manifest->FindKey(keys::kKioskOnly));
 
   bool kiosk_enabled = false;
-  if (manifest->HasKey(keys::kKioskEnabled) &&
+  if (manifest->FindKey(keys::kKioskEnabled) &&
       !manifest->GetBoolean(keys::kKioskEnabled, &kiosk_enabled)) {
     *error = manifest_errors::kInvalidKioskEnabled;
     return false;
   }
 
   bool kiosk_only = false;
-  if (manifest->HasKey(keys::kKioskOnly) &&
+  if (manifest->FindKey(keys::kKioskOnly) &&
       !manifest->GetBoolean(keys::kKioskOnly, &kiosk_only)) {
     *error = manifest_errors::kInvalidKioskOnly;
     return false;
@@ -135,7 +135,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
   // Kiosk secondary apps key is optional.
   std::vector<SecondaryKioskAppInfo> secondary_apps;
   std::set<std::string> secondary_app_ids;
-  if (manifest->HasKey(keys::kKioskSecondaryApps)) {
+  if (manifest->FindKey(keys::kKioskSecondaryApps)) {
     const base::Value* secondary_apps_value = nullptr;
     if (!manifest->GetList(keys::kKioskSecondaryApps, &secondary_apps_value)) {
       *error = manifest_errors::kInvalidKioskSecondaryApps;
@@ -177,7 +177,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
 
   // Optional kiosk.required_platform_version key.
   std::string required_platform_version;
-  if (manifest->HasPath(keys::kKioskRequiredPlatformVersion) &&
+  if (manifest->FindPath(keys::kKioskRequiredPlatformVersion) &&
       (!manifest->GetString(keys::kKioskRequiredPlatformVersion,
                             &required_platform_version) ||
        !KioskModeInfo::IsValidPlatformVersion(required_platform_version))) {
@@ -187,7 +187,7 @@ bool KioskModeHandler::Parse(Extension* extension, std::u16string* error) {
 
   // Optional kiosk.always_update key.
   bool always_update = false;
-  if (manifest->HasPath(keys::kKioskAlwaysUpdate) &&
+  if (manifest->FindPath(keys::kKioskAlwaysUpdate) &&
       !manifest->GetBoolean(keys::kKioskAlwaysUpdate, &always_update)) {
     *error = manifest_errors::kInvalidKioskAlwaysUpdate;
     return false;

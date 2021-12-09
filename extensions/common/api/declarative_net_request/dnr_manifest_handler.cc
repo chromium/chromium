@@ -31,7 +31,7 @@ DNRManifestHandler::DNRManifestHandler() = default;
 DNRManifestHandler::~DNRManifestHandler() = default;
 
 bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
-  DCHECK(extension->manifest()->HasKey(
+  DCHECK(extension->manifest()->FindKey(
       dnr_api::ManifestKeys::kDeclarativeNetRequest));
 
   bool has_permission =

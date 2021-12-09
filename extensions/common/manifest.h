@@ -168,14 +168,12 @@ class Manifest final {
     return type_ == TYPE_CHROMEOS_SYSTEM_EXTENSION;
   }
 
-  // These access the wrapped manifest value, returning false when the property
-  // does not exist or if the manifest type can't access it.
-  // TODO(karandeepb): These methods should be changed to use base::StringPiece.
-  // Better, we should pass a list of path components instead of a unified
-  // |path| to do away with our usage of deprecated base::Value methods.
-  bool HasKey(const std::string& key) const;
-  bool HasPath(const std::string& path) const;
-  bool Get(const std::string& path, const base::Value** out_value) const;
+  // These access the wrapped manifest value, returning nullptr when the
+  // property does not exist or if the manifest type can't access it.
+  const base::Value* FindKey(base::StringPiece path) const;
+  const base::Value* FindPath(base::StringPiece path) const;
+  // TODO(crbug/1187061): Update these methods to use non-deprecated
+  // base::Value methods.
   bool GetBoolean(const std::string& path, bool* out_value) const;
   bool GetInteger(const std::string& path, int* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;

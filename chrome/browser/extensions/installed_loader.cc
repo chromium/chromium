@@ -631,9 +631,9 @@ void InstalledLoader::RecordExtensionsMetrics() {
     // we want to know how many extensions have a given type of action as part
     // of their code, rather than as part of the extension action redesign
     // (which gives each extension an action).
-    if (extension->manifest()->HasKey(manifest_keys::kPageAction))
+    if (extension->manifest()->FindKey(manifest_keys::kPageAction))
       ++page_action_count;
-    else if (extension->manifest()->HasKey(manifest_keys::kBrowserAction))
+    else if (extension->manifest()->FindKey(manifest_keys::kBrowserAction))
       ++browser_action_count;
     else
       ++no_action_count;

@@ -600,7 +600,7 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   // Check for |converted_from_user_script| first, since it affects the type
   // returned by GetType(). This is needed to determine if the manifest version
   // is valid.
-  if (manifest_->HasKey(keys::kConvertedFromUserScript)) {
+  if (manifest_->FindKey(keys::kConvertedFromUserScript)) {
     manifest_->GetBoolean(keys::kConvertedFromUserScript,
                           &converted_from_user_script_);
   }
@@ -677,7 +677,7 @@ bool Extension::LoadVersion(std::u16string* error) {
     *error = errors::kInvalidVersion;
     return false;
   }
-  if (manifest_->HasKey(keys::kVersionName)) {
+  if (manifest_->FindKey(keys::kVersionName)) {
     if (!manifest_->GetString(keys::kVersionName, &version_name_)) {
       *error = errors::kInvalidVersionName;
       return false;
@@ -691,12 +691,12 @@ bool Extension::LoadAppFeatures(std::u16string* error) {
                   errors::kInvalidWebURLs, errors::kInvalidWebURL, error)) {
     return false;
   }
-  if (manifest_->HasKey(keys::kDisplayInLauncher) &&
+  if (manifest_->FindKey(keys::kDisplayInLauncher) &&
       !manifest_->GetBoolean(keys::kDisplayInLauncher, &display_in_launcher_)) {
     *error = errors::kInvalidDisplayInLauncher;
     return false;
   }
-  if (manifest_->HasKey(keys::kDisplayInNewTabPage)) {
+  if (manifest_->FindKey(keys::kDisplayInNewTabPage)) {
     if (!manifest_->GetBoolean(keys::kDisplayInNewTabPage,
                                &display_in_new_tab_page_)) {
       *error = errors::kInvalidDisplayInNewTabPage;
@@ -714,8 +714,8 @@ bool Extension::LoadExtent(const char* key,
                            const char* list_error,
                            const char* value_error,
                            std::u16string* error) {
-  const base::Value* temp_pattern_value = nullptr;
-  if (!manifest_->Get(key, &temp_pattern_value))
+  const base::Value* temp_pattern_value = manifest_->FindPath(key);
+  if (temp_pattern_value == nullptr)
     return true;
 
   if (!temp_pattern_value->is_list()) {
@@ -788,7 +788,7 @@ bool Extension::LoadSharedFeatures(std::u16string* error) {
 }
 
 bool Extension::LoadDescription(std::u16string* error) {
-  if (manifest_->HasKey(keys::kDescription) &&
+  if (manifest_->FindKey(keys::kDescription) &&
       !manifest_->GetString(keys::kDescription, &description_)) {
     *error = errors::kInvalidDescription;
     return false;
@@ -831,7 +831,7 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
 }
 
 bool Extension::LoadShortName(std::u16string* error) {
-  if (manifest_->HasKey(keys::kShortName)) {
+  if (manifest_->FindKey(keys::kShortName)) {
     std::u16string localized_short_name;
     if (!manifest_->GetString(keys::kShortName, &localized_short_name) ||
         localized_short_name.empty()) {

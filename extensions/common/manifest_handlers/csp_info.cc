@@ -101,8 +101,7 @@ std::u16string GetInvalidManifestKeyError(base::StringPiece key) {
 // corresponding Value.
 const base::Value* GetManifestPath(const Extension* extension,
                                    const char* path) {
-  const base::Value* value = nullptr;
-  return extension->manifest()->Get(path, &value) ? value : nullptr;
+  return extension->manifest()->FindPath(path);
 }
 
 const char* GetDefaultExtensionPagesCSP(Extension* extension) {
@@ -237,7 +236,7 @@ bool CSPHandler::ParseCSPDictionary(Extension* extension,
                                     std::u16string* error) {
   // keys::kSandboxedPagesCSP shouldn't be used when using
   // keys::kContentSecurityPolicy as a dictionary.
-  if (extension->manifest()->HasPath(keys::kSandboxedPagesCSP)) {
+  if (extension->manifest()->FindPath(keys::kSandboxedPagesCSP)) {
     *error = errors::kSandboxPagesCSPKeyNotAllowed;
     return false;
   }

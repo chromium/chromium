@@ -151,7 +151,7 @@ Value ChromePolicyConversionsClient::GetExtensionPolicies(
   for (const scoped_refptr<const extensions::Extension>& extension :
        *extension_set) {
     // Skip this extension if it's not an enterprise extension.
-    if (!extension->manifest()->HasPath(
+    if (!extension->manifest()->FindPath(
             extensions::manifest_keys::kStorageManagedSchema)) {
       continue;
     }

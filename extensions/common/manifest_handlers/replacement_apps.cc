@@ -71,8 +71,9 @@ const std::string& ReplacementAppsInfo::GetReplacementAndroidApp(
 
 bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
                                      std::u16string* error) {
-  const base::Value* app_value = nullptr;
-  if (!extension->manifest()->Get(keys::kReplacementWebApp, &app_value)) {
+  const base::Value* app_value =
+      extension->manifest()->FindPath(keys::kReplacementWebApp);
+  if (app_value == nullptr) {
     return true;
   }
 
@@ -94,8 +95,9 @@ bool ReplacementAppsInfo::LoadWebApp(const Extension* extension,
 
 bool ReplacementAppsInfo::LoadAndroidApp(const Extension* extension,
                                          std::u16string* error) {
-  const base::Value* app_value = nullptr;
-  if (!extension->manifest()->Get(keys::kReplacementAndroidApp, &app_value)) {
+  const base::Value* app_value =
+      extension->manifest()->FindPath(keys::kReplacementAndroidApp);
+  if (app_value == nullptr) {
     return true;
   }
 

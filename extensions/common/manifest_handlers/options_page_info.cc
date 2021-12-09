@@ -178,15 +178,14 @@ bool OptionsPageManifestHandler::Parse(Extension* extension,
   const Manifest* manifest = extension->manifest();
 
   std::string options_page_string;
-  if (manifest->HasPath(keys::kOptionsPage) &&
+  if (manifest->FindPath(keys::kOptionsPage) &&
       !manifest->GetString(keys::kOptionsPage, &options_page_string)) {
     *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidOptionsPage,
                                                  keys::kOptionsPage);
     return false;
   }
 
-  const base::Value* options_ui_value = NULL;
-  ignore_result(manifest->Get(keys::kOptionsUI, &options_ui_value));
+  const base::Value* options_ui_value = manifest->FindPath(keys::kOptionsUI);
 
   std::unique_ptr<OptionsPageInfo> info =
       OptionsPageInfo::Create(extension, options_ui_value, options_page_string,

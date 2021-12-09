@@ -273,9 +273,9 @@ bool LoadFileBrowserHandlers(const std::string& extension_id,
 
 bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
                                      std::u16string* error) {
-  const base::Value* file_browser_handlers_value = nullptr;
-  if (!extension->manifest()->Get(keys::kFileBrowserHandlers,
-                                  &file_browser_handlers_value)) {
+  const base::Value* file_browser_handlers_value =
+      extension->manifest()->FindPath(keys::kFileBrowserHandlers);
+  if (file_browser_handlers_value == nullptr) {
     return true;
   }
 

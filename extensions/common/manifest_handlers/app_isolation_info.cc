@@ -60,7 +60,7 @@ bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
 
   // We should only be parsing if the extension has the key in the manifest,
   // or is a platform app (which we already handled).
-  DCHECK(extension->manifest()->HasPath(keys::kIsolation));
+  DCHECK(extension->manifest()->FindPath(keys::kIsolation));
 
   const base::Value* isolation_list = nullptr;
   if (!extension->manifest()->GetList(keys::kIsolation, &isolation_list)) {

@@ -60,7 +60,7 @@ bool CheckManifestV2RestrictedFeatures(const Extension* extension,
   }
 
   auto check_path = [error, extension](const char* path) {
-    if (extension->manifest()->HasPath(path)) {
+    if (extension->manifest()->FindPath(path)) {
       *error = base::UTF8ToUTF16(ErrorUtils::FormatErrorMessage(
           errors::kBackgroundSpecificationInvalidForManifestV3, path));
       return false;
@@ -175,8 +175,9 @@ bool BackgroundInfo::Parse(const Extension* extension, std::u16string* error) {
 bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
                                            const std::string& key,
                                            std::u16string* error) {
-  const base::Value* background_scripts_value = nullptr;
-  if (!extension->manifest()->Get(key, &background_scripts_value))
+  const base::Value* background_scripts_value =
+      extension->manifest()->FindPath(key);
+  if (background_scripts_value == nullptr)
     return true;
 
   CHECK(background_scripts_value);
@@ -202,8 +203,9 @@ bool BackgroundInfo::LoadBackgroundScripts(const Extension* extension,
 bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
                                         const std::string& key,
                                         std::u16string* error) {
-  const base::Value* background_page_value = nullptr;
-  if (!extension->manifest()->Get(key, &background_page_value))
+  const base::Value* background_page_value =
+      extension->manifest()->FindPath(key);
+  if (background_page_value == nullptr)
     return true;
 
   if (!background_page_value->is_string()) {
@@ -243,9 +245,9 @@ bool BackgroundInfo::LoadBackgroundPage(const Extension* extension,
 bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
     const Extension* extension,
     std::u16string* error) {
-  const base::Value* scripts_value = nullptr;
-  if (!extension->manifest()->Get(keys::kBackgroundServiceWorkerScript,
-                                  &scripts_value)) {
+  const base::Value* scripts_value =
+      extension->manifest()->FindPath(keys::kBackgroundServiceWorkerScript);
+  if (scripts_value == nullptr) {
     return true;
   }
 
@@ -257,9 +259,9 @@ bool BackgroundInfo::LoadBackgroundServiceWorkerScript(
 
   background_service_worker_script_ = scripts_value->GetString();
 
-  const base::Value* scripts_type = nullptr;
-  if (!extension->manifest()->Get(keys::kBackgroundServiceWorkerType,
-                                  &scripts_type)) {
+  const base::Value* scripts_type =
+      extension->manifest()->FindPath(keys::kBackgroundServiceWorkerType);
+  if (scripts_type == nullptr) {
     background_service_worker_type_ = BackgroundServiceWorkerType::kClassic;
     return true;
   }
@@ -300,11 +302,10 @@ bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
     return true;
   }
 
-  const base::Value* background_persistent = NULL;
-  if (!extension->manifest()->Get(keys::kBackgroundPersistent,
-                                  &background_persistent)) {
+  const base::Value* background_persistent =
+      extension->manifest()->FindPath(keys::kBackgroundPersistent);
+  if (background_persistent == nullptr)
     return true;
-  }
 
   if (!background_persistent->is_bool()) {
     *error = errors::kInvalidBackgroundPersistent;
@@ -322,9 +323,9 @@ bool BackgroundInfo::LoadBackgroundPersistent(const Extension* extension,
 
 bool BackgroundInfo::LoadAllowJSAccess(const Extension* extension,
                                        std::u16string* error) {
-  const base::Value* allow_js_access = NULL;
-  if (!extension->manifest()->Get(keys::kBackgroundAllowJsAccess,
-                                  &allow_js_access))
+  const base::Value* allow_js_access =
+      extension->manifest()->FindPath(keys::kBackgroundAllowJsAccess);
+  if (allow_js_access == nullptr)
     return true;
 
   if (!allow_js_access->is_bool()) {

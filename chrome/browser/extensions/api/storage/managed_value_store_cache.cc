@@ -177,7 +177,7 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemas(
 
 bool ManagedValueStoreCache::ExtensionTracker::UsesManagedStorage(
     const Extension* extension) const {
-  return extension->manifest()->HasPath(manifest_keys::kStorageManagedSchema);
+  return extension->manifest()->FindPath(manifest_keys::kStorageManagedSchema);
 }
 
 // static
