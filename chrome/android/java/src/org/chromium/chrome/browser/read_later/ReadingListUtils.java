@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.read_later;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUndoController;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
@@ -59,6 +62,38 @@ public final class ReadingListUtils {
     public static boolean isSwappableReadingListItem(@Nullable BookmarkId id) {
         return ReadingListFeatures.shouldAllowBookmarkTypeSwapping()
                 && id.getType() == BookmarkType.READING_LIST;
+    }
+
+    /**
+     * Attempts to type swap and show the save flow when the "Add to reading list" menu item
+     * is selected but there's an existing bookmark.
+     *
+     * @param activity The current Activity.
+     * @param bottomsheetController The BottomsheetController, used to show the save flow.
+     * @param bookmarkModel The BookmarkModel which is used for bookmark operations.
+     * @param bookmarkId The existing BookmarkId.
+     * @param bookmarkType The intended bookmark type.
+     * @return Whether the given bookmark item has been type-swapped and the save flow shown.
+     */
+    public static boolean maybeTypeSwapAndShowSaveFlow(@NonNull Activity activity,
+            @NonNull BottomSheetController bottomsheetController,
+            @NonNull BookmarkModel bookmarkModel, @NonNull BookmarkId bookmarkId,
+            @BookmarkType int bookmarkType) {
+        if (!ReadingListFeatures.shouldAllowBookmarkTypeSwapping() || bookmarkId == null
+                || bookmarkId.getType() != BookmarkType.NORMAL
+                || bookmarkType != BookmarkType.READING_LIST) {
+            return false;
+        }
+
+        // When selecting the "Add to reading list" menu item while a regular bookmark exists,
+        // remove the regular bookmark first so the save flow is shown.
+        List<BookmarkId> bookmarkIds = new ArrayList<>();
+        bookmarkIds.add(bookmarkId);
+        ReadingListUtils.typeSwapBookmarksIfNecessary(
+                bookmarkModel, bookmarkIds, bookmarkModel.getReadingListFolder());
+        BookmarkUtils.showSaveFlow(activity, bookmarkModel, bottomsheetController,
+                /*fromExplicitTrackUi=*/false, bookmarkIds.get(0), /*wasBookmarkMoved=*/true);
+        return true;
     }
 
     /**

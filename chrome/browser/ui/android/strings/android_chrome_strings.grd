@@ -3513,10 +3513,16 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_BOOKMARK_PAGE_SAVED_LOCATION" desc="App-based message shown after user adds a new bookmark to specify the location of a bookmark. [CHAR_LIMIT=32]">
         in <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph>
       </message>
+      <message name="IDS_BOOKMARK_PAGE_MOVED_LOCATION" desc="App-based message shown after user moves a bookmark to specify the location of a bookmark. [CHAR_LIMIT=32]">
+        to <ph name="PRODUCT_NAME">%1$s<ex>Reading List</ex></ph>
+      </message>
 
       <!-- Power bookmarks strings-->
       <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE" desc="The title when a user chooses save a bookmarks.">
         Bookmark saved
+      </message>
+      <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE_MOVE" desc="The title when a user chooses to move a bookmark.">
+        Bookmark moved
       </message>
       <message name="IDS_PRICE_TRACKING_TITLE" desc="The title when a user chooses to track the price of a product.">
         Tracking price

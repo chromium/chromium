@@ -88,7 +88,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -1919,26 +1918,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 return;
             }
 
-            // TODO(crbug.com/1150559): Make getUserBookmarkIdForTab return BookmarkItem instead,
-            // currently it's a sync call that doesn't check loading states, and only checks the
-            // bookmark backend and managed bookmarks.
-            BookmarkItem currentBookmarkItem = null;
-            if (ReadingListFeatures.isReadingListEnabled()) {
-                currentBookmarkItem =
-                        bookmarkModel.getReadingListItem(tabToBookmark.getOriginalUrl());
+            BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tabToBookmark);
+            if (ReadingListUtils.maybeTypeSwapAndShowSaveFlow(this,
+                        mRootUiCoordinator.getBottomSheetController(), bookmarkModel, bookmarkId,
+                        bookmarkType)) {
+                return;
             }
 
-            if (currentBookmarkItem == null) {
-                // Note we get user bookmark ID over just a bookmark ID here: Managed bookmarks
-                // can't be edited. If the current URL is only bookmarked by managed bookmarks, this
-                // will return INVALID_ID.
-                // TODO(bauerb): This does not take partner bookmarks into account.
-                final BookmarkId bookmarkId = bridge.getUserBookmarkIdForTab(tabToBookmark);
-                if (bookmarkId != null) {
-                    currentBookmarkItem = bookmarkModel.getBookmarkById(bookmarkId);
-                }
-            }
-
+            BookmarkItem currentBookmarkItem =
+                    bookmarkId == null ? null : bookmarkModel.getBookmarkById(bookmarkId);
             onBookmarkModelLoaded(tabToBookmark, currentBookmarkItem, bookmarkModel, bookmarkType,
                     fromExplicitTrackUi);
         });

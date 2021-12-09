@@ -130,6 +130,20 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testBookmarkSaveFlow_BookmarkMoved() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            mBookmarkSaveFlowCoordinator.show(
+                    id, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/true);
+            return null;
+        });
+        mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
+                "bookmark_save_flow_bookmark_moved");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testBookmarkSaveFlow_WithShoppingListItem() throws IOException {
         TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
@@ -140,7 +154,8 @@ public class BookmarkSaveFlowTest {
                                                           .setProductClusterId(1234L)
                                                           .build());
             mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
-            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false, meta.build());
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false,
+                    /*wasBookmarkMoved=*/false, meta.build());
             return null;
         });
         mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
@@ -161,7 +176,8 @@ public class BookmarkSaveFlowTest {
                                                           .setProductClusterId(1234L)
                                                           .build());
             mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
-            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/true, meta.build());
+            mBookmarkSaveFlowCoordinator.show(
+                    id, /*fromHeuristicEntryPoint=*/true, /*wasBookmarkMoved=*/false, meta.build());
             return null;
         });
         mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
@@ -181,7 +197,8 @@ public class BookmarkSaveFlowTest {
                             .setShoppingSpecifics(
                                     ShoppingSpecifics.newBuilder().setProductClusterId(1234L));
             mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
-            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false, meta.build());
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false,
+                    /*wasBookmarkMoved=*/false, meta.build());
             return null;
         });
         doAnswer((invocation) -> {
@@ -201,7 +218,8 @@ public class BookmarkSaveFlowTest {
     public void testBookmarkSaveFlowEdit() throws IOException {
         TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false);
+            mBookmarkSaveFlowCoordinator.show(
+                    id, /*fromHeuristicEntryPoint=*/false, /*wasBookmarkMoved=*/false);
             return null;
         });
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -219,7 +237,8 @@ public class BookmarkSaveFlowTest {
     public void testBookmarkSaveFlowChooseFolder() throws IOException {
         TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false);
+            mBookmarkSaveFlowCoordinator.show(
+                    id, /*fromHeuristicEntryPoint=*/false, /*wasBookmarkMoved=*/false);
             return null;
         });
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

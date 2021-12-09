@@ -76,7 +76,7 @@ public class BookmarkSaveFlowCoordinator {
      * @param bookmarkId The {@link BookmarkId} which was saved.
      */
     public void show(BookmarkId bookmarkId) {
-        show(bookmarkId, /*fromExplicitTrackUi=*/false);
+        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false);
     }
 
     /**
@@ -86,18 +86,20 @@ public class BookmarkSaveFlowCoordinator {
      *         point. This will change the UI of the bookmark save flow, either adding type-specific
      *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
      *         bookmark. This will be false when adding a normal bookmark.
+     * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
      */
-    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi) {
+    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved) {
         assert mBookmarkModel.isBookmarkModelLoaded();
-        show(bookmarkId, fromExplicitTrackUi, mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
+        show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved,
+                mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
     }
 
-    void show(
-            BookmarkId bookmarkId, boolean fromExplicitTrackUi, @Nullable PowerBookmarkMeta meta) {
+    void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
+            @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
-        mMediator.show(bookmarkId, meta, fromExplicitTrackUi);
+        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
 
         AccessibilityManager am =
                 (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
