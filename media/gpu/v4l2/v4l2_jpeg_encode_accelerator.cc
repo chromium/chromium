@@ -1609,15 +1609,27 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
       }
       memmove(dst_ptr + compressed_data_offset, dst_ptr, buffer_size);
     } else if (output_buffer_pixelformat_ == V4L2_PIX_FMT_JPEG) {
-      // Move data after SOI and APP0 marker for exif room.
+      // V4L2_PIX_FMT_JPEG refers to a valid JPEG bitstream. It does not
+      // imply a standard JFIF bitstream with JFIF-APP0 markers.
+      // Move data after SOI to make room for APP1 marker and EXIF data.
+      // If an APP0 marker is found directly after the SOI marker, skip
+      // over it.
       // The JPEG from V4L2_PIX_FMT_JPEG is
-      // SOI-APP0-DQT-marker1-marker2-...-markerN-compressed stream-EOI
-      // |......| <- src_data_offset = len(SOI) + len(APP0)
+      // SOI-marker1-marker2-...-SOS-compressed stream-EOI
+      // |......| <- src_data_offset = len(SOI) + len(APP0) (if APP0 found)
       // |...................| <- data_offset = len(SOI) + len(APP1)
       size_t data_offset =
           sizeof(kJpegStart) + sizeof(kAppSegment) + exif_buffer_size;
-      size_t app0_length = 2 + ((dst_ptr[4] << 16) | dst_ptr[5]);
-      size_t src_data_offset = sizeof(kJpegStart) + app0_length;
+      size_t src_data_offset = sizeof(kJpegStart);
+      // Check for APP0 segment following SOI marker and skip over it if found
+      if (dst_ptr[2] == JPEG_MARKER_PREFIX && dst_ptr[3] == JPEG_APP0) {
+        src_data_offset += 2 + ((dst_ptr[4] << 8) | dst_ptr[5]);
+        if (src_data_offset >= buffer_size) {
+          LOG(WARNING)
+              << "APP0 segment from encoder extends beyond JPEG buffer";
+          return 0;
+        }
+      }
       buffer_size -= src_data_offset;
       if (buffer_size + data_offset > output_buffer_sizeimage_) {
         LOG(WARNING) << "JPEG buffer is too small for the EXIF metadata";
