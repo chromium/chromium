@@ -6224,6 +6224,11 @@ ci.memory_builder(
     # TODO(crbug.com/1030593): Builds take more than 3 hours sometimes. Remove
     # once the builds are faster.
     execution_timeout = 6 * time.hour,
+    # TODO(crbug.com/1256388) Remove this once it can be determined why it
+    # causes the builder to time out.
+    experiments = {
+        "luci.recipes.use_python3": 0,
+    },
     main_console_view = "main",
 )
 
