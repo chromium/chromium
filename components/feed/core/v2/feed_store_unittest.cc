@@ -138,6 +138,7 @@ TEST_F(FeedStoreTest, OverwriteStream) {
     content_id {
       content_domain: "root"
     }
+    root_event_id: "\b{"
     next_page_token: "page-2"
     shared_state_ids {
       content_domain: "render_data"
@@ -260,6 +261,7 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
     content_id {
       content_domain: "root"
     }
+    root_event_id: "\b{"
     next_page_token: "page-2"
     shared_state_ids {
       content_domain: "render_data"

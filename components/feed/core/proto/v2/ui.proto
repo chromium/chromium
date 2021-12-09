@@ -55,6 +55,9 @@ message LoggingParameters {
   bool logging_enabled = 4;
   // Whether view actions may be recorded.
   bool view_actions_enabled = 5;
+  // The EventID of the first page response. Must be present for attention
+  // logging.
+  bytes root_event_id = 6;
 }
 
 // A horizontal slice of UI to be presented in the vertical-scrolling feed.

@@ -312,6 +312,8 @@ class FeedStream : public FeedApi,
 
   bool IsEnabledAndVisible();
 
+  LoggingParameters GetLoggingParameters(const StreamType& stream_type);
+
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -367,8 +369,6 @@ class FeedStream : public FeedApi,
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
   void LoadTaskComplete(const LoadStreamTask::Result& result);
   void UploadActionsComplete(UploadActionsTask::Result result);
-  LoggingParameters GetLoggingParameters(const StreamType& stream_type);
-
   void ClearAll();
 
   bool IsFeedEnabledByEnterprisePolicy();

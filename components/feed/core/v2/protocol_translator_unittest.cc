@@ -123,6 +123,27 @@ TEST(ProtocolTranslatorTest, EmptyResponse) {
   EXPECT_TRUE(TranslateWireResponse(response).model_update_request);
 }
 
+TEST(ProtocolTranslatorTest, RootEventIdPresent) {
+  feedwire::Response response = EmptyWireResponse();
+  response.mutable_feed_response()
+      ->mutable_feed_response_metadata()
+      ->mutable_event_id()
+      ->set_time_usec(123);
+  EXPECT_EQ(TranslateWireResponse(response)
+                .model_update_request->stream_data.root_event_id(),
+            response.mutable_feed_response()
+                ->mutable_feed_response_metadata()
+                ->event_id()
+                .SerializeAsString());
+}
+
+TEST(ProtocolTranslatorTest, RootEventIdNotPresent) {
+  feedwire::Response response = EmptyWireResponse();
+  EXPECT_EQ(TranslateWireResponse(response)
+                .model_update_request->stream_data.root_event_id(),
+            "");
+}
+
 TEST(ProtocolTranslatorTest, WasSignedInRequest) {
   feedwire::Response response = EmptyWireResponse();
   for (bool was_signed_in_request_state : {true, false}) {
@@ -324,6 +345,9 @@ TEST(ProtocolTranslatorTest, TranslateRealResponse) {
 
   const std::string want = R"(source: 0
 stream_data: {
+  root_event_id: )"
+                           "\"\\b\xEF\xBF\xBD\xEF\xBF\xBD\\u0007\""
+                           R"(
   last_added_time_millis: 10627200000
   shared_state_ids {
     content_domain: "render_data"

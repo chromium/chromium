@@ -33,6 +33,7 @@ ContentId MakeNoticeCardContentContentId(int id_number);
 ContentId MakeSharedStateContentId(int id_number);
 ContentId MakeRootId(int id_number = 0);
 ContentId MakeSharedStateId(int id_number = 0);
+std::string MakeRootEventId(int id_number = 123);
 feedstore::StreamStructure MakeStream(int id_number = 0);
 feedstore::StreamStructure MakeCluster(int id_number, ContentId parent);
 feedstore::StreamStructure MakeNoticeCardCluster(ContentId parent);
