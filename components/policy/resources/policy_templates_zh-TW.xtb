@@ -210,6 +210,7 @@
       如果不設定這項政策，或是替換後的值不是有效的主機名稱，則系統不會在 DHCP 要求中設定主機名稱。</translation>
 <translation id="1257550411839719984">設定預設的下載目錄</translation>
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
+<translation id="1268548671627260798">排除全螢幕通知的網址清單</translation>
 <translation id="127264587838521316">啟用 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求</translation>
 <translation id="1272798957154751008">允許將 Chromad 裝置遷移至雲端管理服務</translation>
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
@@ -380,6 +381,16 @@
 
       注意：這項政策也適用於元件擴充功能，例如 Hangout Services 擴充功能。</translation>
 <translation id="148194404518916594">允許使用「輕觸搜尋」功能</translation>
+<translation id="1485570394283692769">控制是否允許網站以不安全的方式，向更私密的網路端點傳送要求。這項政策與私人網路存取權規格有關。詳情請參閱 https://wicg.github.io/private-network-access/。
+
+          當網路端點符合以下條件時，私密程度較高：
+          1) 其 IP 位址為 localhost，且其他網路端點的 IP 位址不是 localhost。
+          2) 其 IP 位址為私人位址，且其他網路端點的 IP 位址為公開位址。
+          根據未來的規格演進而定，這項政策可能會套用至所有導向私人 IP 或 localhost 的跨來源要求。
+
+          如果不設定這項政策或設為 False，向更私密的網路端點傳送要求的預設行為將取決於使用者對 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> 和 <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> 功能旗標的個人設定，使用者可以透過實際測試或指令列來進行設定。
+
+          如果將這項政策設為 True，網站即可向任何網路端點傳送要求，並且需經過其他跨來源檢查。</translation>
 <translation id="1486021504508098388">回報背光資訊</translation>
 <translation id="1487916040416013623">你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
 
@@ -2711,6 +2722,11 @@
       如果將這項政策設為停用或不設定，使用者可在使用行動網路連線時，將檔案傳輸至雲端硬碟。</translation>
 <translation id="4248277954659222481">允許符合網址模式許可清單的網頁自動播放媒體</translation>
 <translation id="4250680216510889253">否</translation>
+<translation id="4257545866869267519">設定要從全螢幕通知排除的網址清單。當裝置從休眠、低亮度或螢幕鎖定回到一般使用狀態，且視窗處於全螢幕模式時，系統將會顯示通知。這是為了讓使用者意識到自己處於全螢幕模式，用以減少網路詐騙攻擊的風險。
+
+          這項政策允許將特定網址視為信任來源時，為其停用通知。設定方式為根據這個格式 (https://www.chromium.org/administrators/url-blocklist-filter-format) 指定網址模式格式的清單。例如，可以透過指定萬用字元 <ph name="WILDCARD_VALUE" /> 比對所有網址，一併停用通知。
+
+          將這項政策設為空白清單或不設定，則表示不會從全螢幕通知排除任何網址。</translation>
 <translation id="4260027436474745627">如果設定這項政策，逗號分隔清單中指定的每個來源就會在獨立程序中執行。每個指定來源的程序都只能容納來自相同來源及其子網域的文件。舉例來說，如果指定 https://a1.example.com/，https://a2.a1.example.com/ 就能使用同一個程序，但是 https://example.com 和 https://b.example.com 並不能使用同一個程序。
 
       自 <ph name="PRODUCT_NAME" /> 第 77 版起，你也可以使用萬用字元來指定要隔離的來源範圍。舉例來說，如果指定 https://[*.]corp.example.com，則 https://corp.example.com 底下的每個來源都會在獨立程序中執行，其中包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
@@ -4219,6 +4235,7 @@
       否則系統會透過 mDNS 主機名稱隱藏本機 IP 位址。
       請注意，如果系統管理員必須使用此政策，此政策將降低系統對本機 IP 的保護程度。</translation>
 <translation id="614662973812186053">這項政策也可以控制 Android 使用資料和診斷資料的收集設定。</translation>
+<translation id="614665605501218241">允許列出的網站譯不安全的方式，向更私密的網路端點傳送要求。</translation>
 <translation id="6154509171634387825">警告：我們將從 <ph name="PRODUCT_NAME" /> 第 95 版中 (約在 2021 年 10 月推出) 完全移除 3DES，屆時這項政策也會停止運作。
       如果將這項政策設為 True，系統會啟用傳輸層安全標準 (TLS) 中的 3DES 加密套件。如果設為 False，系統將停用這些加密套件。如果不設定這項政策，3DES 加密套件會預設為停用。這項政策可以暫時維持與過時伺服器的相容性。這種做法是權宜之計，正確的做法是重新設定伺服器。
       </translation>
@@ -4232,6 +4249,13 @@
       如果未設定這項政策，使用者可自行決定要啟用或停用這項功能。</translation>
 <translation id="6174065452773547810">如果將這項政策設為 Enabled 或不設定，裝置就能取得精細回報控制項。
       如果將這項政策設為 Disabled，表示已註冊的裝置不會取得精細回報控制項。</translation>
+<translation id="6174187836314350835">網址模式清單。來自相符來源提供的網站所傳送的要求，不受私人網路存取權檢查應響。
+
+          如果不設定，這項政策的運作方式會如同已設為空白清單。
+
+          如果來源不符合此處指定的模式，系統會根據 <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定套用全域預設值。
+
+          如果想進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/intl/zh_tw/policies/url-patterns。</translation>
 <translation id="6178075938488052838">這項政策可控管哪些使用者能夠啟動 <ph name="PRODUCT_OS_NAME" />工作階段，但不會禁止使用者在 Android 應用程式中登入其他 Google 帳戶。如要禁止使用者登入其他 Google 帳戶，你可以在 <ph name="ARC_POLICY_POLICY_NAME" /> 中設定 Android 專屬的 <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> 政策。</translation>
 <translation id="6181304954168534748">桌面範本的 SHA-256 雜湊。</translation>
 <translation id="6181618732396778048">不允許任何網站要求檔案和目錄的寫入權限。</translation>
@@ -4677,6 +4701,7 @@
       注意：雖然這項政策可接受 <ph name="ENTRIES_FIELD_NAME" /> 中的多個項目，但除了第一個項目外，其他項目都會遭到忽略。
       警告：設定這項政策可能導致軟體更新延遲套用。</translation>
 <translation id="6698632841807204978">啟用單色列印</translation>
+<translation id="6699740789657890714">指定是否允許網站以不安全的方式，向更私密的網路端點傳送要求</translation>
 <translation id="6699880231565102694">為遠端存取主機啟用雙重驗證機制</translation>
 <translation id="6703251016607733593">設定這項政策後，系統不會強制要求列出的 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊依憑證透明化規定公開憑證。此外，因為未依規定對外公開而不受信任的憑證，企業主機也可以繼續使用。雜湊必須符合以下其中一項條件，才能不強制要求公開憑證：
 

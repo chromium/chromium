@@ -207,6 +207,7 @@
       Se a política não for definida ou se o valor pós-substituição não for um nome de host válido, nenhum nome de host será definido na solicitação de DHCP.</translation>
 <translation id="1257550411839719984">Definir diretório de download padrão</translation>
 <translation id="1265053460044691532">Limite o tempo pelo qual um usuário autenticado via SAML pode fazer login off-line</translation>
+<translation id="1268548671627260798">Lista de URLs isentos de notificações sobre a tela cheia</translation>
 <translation id="127264587838521316">Ativa as solicitações de instalação de extensões do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
 <translation id="1274997165432133392">Cookies e outros dados do site</translation>
@@ -378,6 +379,18 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Observação: essa política também se aplica a extensões de componentes, como a extensão do Hangout Services.</translation>
 <translation id="148194404518916594">Permitir que os usuários usem o recurso Pesquisa por toque</translation>
+<translation id="1485570394283692769">Controla se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura.
+
+          Esta política está relacionada à especificação Private Network Access. Para ver mais detalhes, acesse https://wicg.github.io/private-network-access/ (link em inglês).
+
+          Um endpoint de rede é mais particular que outro se:
+          1) o endereço IP dele for localhost e o do outro não for;
+          2) o endereço IP dele for particular e o do outro for público.
+          No futuro, dependendo da evolução das especificações, esta política poderá ser aplicada a todas as solicitações de origem cruzada direcionadas ao localhost ou a IPs particulares.
+
+          Quando esta política for deixada sem definição ou for definida como falsa, o comportamento padrão para solicitações para endpoints de rede mais particulares vai depender da configuração pessoal do usuário para as sinalizações de recurso <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> e <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, que podem ser definidas por versões de teste ou na linha de comando.
+
+          Quando a política for definida como verdadeira, os sites terão permissão para fazer solicitações para qualquer endpoint de rede, sujeito a outras verificações de origem cruzada.</translation>
 <translation id="1486021504508098388">Enviar informações sobre as luzes de fundo</translation>
 <translation id="1487916040416013623">Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
 
@@ -2735,6 +2748,11 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como desativada ou não for definida, o usuário poderá transferir arquivos para o Drive mesmo em conexões celulares.</translation>
 <translation id="4248277954659222481">Permitir reprodução automática de mídia em uma lista de permissões de padrões de URL</translation>
 <translation id="4250680216510889253">Não</translation>
+<translation id="4257545866869267519">Configurar uma lista de URLs isentos de notificação sobre a tela cheia. A notificação é mostrada quando o dispositivo retorna da suspensão, do modo de baixo brilho ou da tela de bloqueio e tem uma janela em tela cheia. Ela informa aos usuários que eles estão no modo de tela cheia, o que reduz o risco de ataques de phishing.
+
+          Esta política permite desativar a notificação para URLs específicos que serão considerados como fontes confiáveis. A definição dela é feita especificando uma lista de padrões de URL no formato explicado em https://www.chromium.org/administrators/url-blocklist-filter-format. Por exemplo, é possível desativar as notificações por completo especificando o caractere curinga <ph name="WILDCARD_VALUE" />, que corresponde a todos os URLs.
+
+           Se a política for definida como uma lista vazia ou for deixada sem definição, nenhum URL estará isento da notificação sobre a tela cheia.</translation>
 <translation id="4260027436474745627">Se a política for definida, cada uma das origens indicadas em uma lista separada por vírgulas será executada no próprio processo. Cada processo de uma origem indicada só poderá conter documentos da origem em questão e dos subdomínios dela. Por exemplo, se https://a1.example.com/ for especificada, https://a2.a1.example.com/ será permitida no mesmo processo, mas https://example.com ou https://b.example.com não serão.
 
       Desde o <ph name="PRODUCT_NAME" /> 77, também é possível especificar um intervalo de origens isoladas usando um caractere curinga. Por exemplo, se https://[*.]corp.example.com for especificada, todas as origens abaixo de https://corp.example.com ganharão um processo dedicado, incluindo a própria https://corp.example.com, a https://a1.corp.example.com e a https://a2.a1.corp.example.com.
@@ -4271,6 +4289,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Caso contrário, os endereços IP locais serão ocultos com os nomes de host de mDNS.
       Observe que, se exigida pelos administradores, esta política enfraquece a proteção dos IPs locais.</translation>
 <translation id="614662973812186053">Esta política também controla a coleta de dados de uso e diagnóstico do Android.</translation>
+<translation id="614665605501218241">Permitir que os sites da lista façam solicitações para endpoints de rede mais particulares de forma não segura.</translation>
 <translation id="6154509171634387825">Aviso: o padrão 3DES será completamente removido na versão 95 do <ph name="PRODUCT_NAME" /> por volta de outubro de 2021, e esta política só funcionará até essa data.
 
       Se esta política for definida como verdadeira, os pacotes de criptografia 3DES em TLS serão ativados. Se ela for definida como falsa, eles serão desativados. Se for deixada sem definição, os pacotes de criptografia 3DES serão desativados por padrão. Esta política pode ser usada para manter temporariamente a compatibilidade com um servidor desatualizado. Esta é uma medida provisória e o servidor precisará ser reconfigurado.
@@ -4285,6 +4304,13 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política não for definida, o usuário poderá escolher ativar ou desativar esse recurso.</translation>
 <translation id="6174065452773547810">Se a política for ativada ou deixada sem definição, o dispositivo poderá receber controles de geração de relatórios granulares.
       Se a política for desativada, os dispositivos registrados não receberão controles de geração de relatórios granulares.</translation>
+<translation id="6174187836314350835">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de Private Network Access.
+
+          Se esta política for deixada sem definição, ela se comportará como se a lista tivesse sido definida como vazia.
+
+          No caso de origens não cobertas pelos padrões especificados aqui, o valor padrão geral usado será o da política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" />, se ela estiver definida, ou o da configuração pessoal do usuário.
+
+          Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6178075938488052838">Esta política controla quem pode iniciar uma sessão do <ph name="PRODUCT_OS_NAME" />. Ela não impede que os usuários façam login em outras Contas do Google no Android. Para impedir essa ação, configure a política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica para Android como parte da <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">A hash SHA-256 do modelo de espaço de trabalho.</translation>
 <translation id="6181618732396778048">Não permitir que qualquer site solicite acesso de gravação de arquivos ou diretórios</translation>
@@ -4743,6 +4769,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Observação: ainda que a política possa aceitar vários itens em <ph name="ENTRIES_FIELD_NAME" />, todos eles serão ignorados, com exceção do primeiro.
       Aviso: a configuração dessa política pode atrasar as atualizações de software.</translation>
 <translation id="6698632841807204978">Ativar impressão monocromática</translation>
+<translation id="6699740789657890714">Especifica se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura</translation>
 <translation id="6699880231565102694">Ativar autenticação de dois fatores para hosts de acesso remoto</translation>
 <translation id="6703251016607733593">A definição da política desativa a aplicação dos requisitos de divulgação da Transparência dos certificados para uma lista de hashes <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Os hosts comerciais podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que eles não foram divulgados publicamente de maneira adequada. Para desativar a aplicação, o hash precisa atender a uma destas condições:
 

@@ -207,6 +207,7 @@
       このポリシーを未設定のままにした場合、または置き換えた後の値が有効なホスト名ではない場合、DHCP リクエストにホスト名は設定されません。</translation>
 <translation id="1257550411839719984">デフォルトのダウンロード ディレクトリを設定する</translation>
 <translation id="1265053460044691532">SAML 経由で認証されたユーザーがオフラインでログインできる時間を制限する</translation>
+<translation id="1268548671627260798">全画面表示の通知から除外する URL のリスト</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> 拡張機能のインストールのリクエストを有効にする</translation>
 <translation id="1272798957154751008">Chromad デバイスのクラウド管理への移行を有効にします</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
@@ -378,6 +379,18 @@
 
       注: このポリシーは、ハングアウト サービス拡張機能のようなコンポーネント型拡張機能にも適用されます。</translation>
 <translation id="148194404518916594">ユーザーは「タップして検索」を使用できる</translation>
+<translation id="1485570394283692769">より限定されたプライベート ネットワークのエンドポイントに対して、ウェブサイトからの安全でない方法でのリクエストを許可するかどうかを制御します。
+
+          このポリシーはプライベート ネットワーク アクセスの仕様に関連したものです。詳しくは https://wicg.github.io/private-network-access/ をご覧ください。
+
+          次に該当するネットワーク エンドポイントは、アクセスがより限定されます。
+          1）IP アドレスがローカルホストである（ローカルホストでないエンドポイントと比較して）。
+          2）IP アドレスがプライベートである（パブリックなエンドポイントと比較して）。
+          仕様の発展に応じて、このポリシーは将来的にプライベート IP またはローカルホストに対するすべてのクロスオリジンのリクエストに適用される可能性があります。
+
+          このポリシーを設定しない場合や False に設定した場合、より限定されたプライベート ネットワーク エンドポイントに送信されたリクエストがデフォルトで許可またはブロックされるかは、ユーザーの個人設定で <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> の機能フラグがどのように設定されているかによって決まります。なお、これらのフラグは、フィールド トライアルまたはコマンドラインで設定できます。
+
+          このポリシーを True に設定した場合は、他のクロスオリジン チェックに合格することを条件として、ウェブサイトから任意のネットワーク エンドポイントにリクエストを送信できます。</translation>
 <translation id="1486021504508098388">バックライト情報を報告する</translation>
 <translation id="1487916040416013623">このポリシーでは、統合認証を許可するサーバーを指定できます。統合認証は、<ph name="PRODUCT_NAME" /> がこの許可されたリストに含まれているプロキシやサーバーから認証チャレンジを取得するときにのみ有効になります。
 
@@ -2668,6 +2681,11 @@
       このポリシーを無効に設定するか未設定のままにした場合、ユーザーはモバイル接続時にドライブにファイルを転送できます。</translation>
 <translation id="4248277954659222481">メディアの自動再生を許可する URL パターンのリストを指定する</translation>
 <translation id="4250680216510889253">いいえ</translation>
+<translation id="4257545866869267519">全画面表示の通知から除外する URL のリストを設定します。この通知は、デバイスがスリープ画面、暗い画面、またはロック画面から復帰するときに、ウィンドウが全画面モードになっていると表示されます。これは全画面モードになっていることをユーザーに知らせるためのもので、これによりフィッシング攻撃のリスクを軽減します。
+
+          このポリシーを使用すると、信頼できる提供元と判断される特定の URL の通知を無効にできます。URL パターンのリストは、https://www.chromium.org/administrators/url-blocklist-filter-format で定められている形式で指定します。たとえば、すべての URL に一致するワイルドカード文字「<ph name="WILDCARD_VALUE" />」を指定すると、通知を一切無効にすることができます。
+
+          このポリシーを空のリストに設定するか未設定のままにした場合は、どの URL も全画面表示の通知から除外されません。</translation>
 <translation id="4260027436474745627">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元はそれぞれ独自のプロセスで実行されます。指定した発行元のプロセスで使用できるのは、発行元およびそのサブドメインのドキュメントだけです。たとえば、https://a1.example.com/ を指定した場合、https://a2.a1.example.com/ は同一のプロセスで実行されますが、https://example.com や https://b.example.com はこの限りではありません。
 
       <ph name="PRODUCT_NAME" /> 77 以降であれば、ワイルドカードを使用し、分離する発行元の範囲を指定できます。たとえば、https://[*.]corp.example.com を指定した場合、https://corp.example.com 以下の発行元に対して同じ独自プロセスが適用されます。これには https://corp.example.com 自体が該当するほか、https://a1.corp.example.com や https://a2.a1.corp.example.com も含まれます。
@@ -2782,6 +2800,23 @@
 
       このポリシーが false の場合、OS のアップグレード後に初めてブラウザを起動したときにウェルカム ページは再表示されません。</translation>
 <translation id="441686537793821907">外部の拡張機能のインストールを許可しない</translation>
+<translation id="4420613474328461583"><ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise コネクタ サービス設定のリストで、Chrome でファイルがダウンロードされた場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページからダウンロードされるファイルを分析のためコネクタが送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、Chrome は分析サービスからの応答を待ってから、ダウンロードされたファイルへのユーザーのアクセスを許可します。その他の整数値を設定した場合、Chrome はユーザーにファイルへのアクセスを直ちに許可します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> フィールドでは、パスワードで保護されているファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、分析可能なサイズより大きいファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。learn_more_url フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。language フィールドでは、メッセージの言語を指定します（省略可）。このフィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。custom_messages リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
+
+      このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="4423597592074154136">プロキシ設定を手動で指定する</translation>
 <translation id="4424004842303301809">データ漏洩防止イベントのレポートを無効にする</translation>
 <translation id="4427173305799125784">PDF ビューアで PDF に注釈を追加できない</translation>
@@ -2902,6 +2937,7 @@
       詳しくは、https://www.chromestatus.com/feature/5675755719622656 をご覧ください。
       このポリシーが有効な場合、サイトでは移動と同時に新しいウィンドウやタブを開くことができます。
       このポリシーが無効または未設定の場合、サイトでは移動と同時に新しいウィンドウやタブを開くことはできません。</translation>
+<translation id="457430673056611745">OnPrint <ph name="PRODUCT_NAME" /> Enterprise コネクタの設定ポリシー</translation>
 <translation id="4578265298946081589">ユーザーのログアウト時に再起動しません。</translation>
 <translation id="4581507927311097234">ユーザー入力が行われなくなってから画面をオフにするまでの時間（ミリ秒）</translation>
 <translation id="4582338216073557489">このポリシーを None に設定した場合、<ph name="PRODUCT_NAME" /> は、キャッシュされたファイルをディスクに保存する際に、デフォルトのキャッシュ サイズを使用します。ユーザーはこの設定を変更できません。
@@ -4124,6 +4160,7 @@
       それ以外の場合、ローカル IP アドレスは mDNS のホスト名で隠されます。
       管理者がこのポリシーを有効にした場合、ローカル IP の保護が弱まることに注意してください。</translation>
 <translation id="614662973812186053">このポリシーでは Android の使用状況と診断データの収集も管理できます。</translation>
+<translation id="614665605501218241">ウェブサイトがリストに指定されている場合、より限定されたプライベート ネットワークのエンドポイントに対して、そのサイトからの安全でない方法でのリクエストを許可する。</translation>
 <translation id="6154509171634387825">警告: 3DES は <ph name="PRODUCT_NAME" /> バージョン 95（2021 年 10 月頃公開）で完全に削除され、それ以後、このポリシーも機能しなくなります。
 
       このポリシーを true に設定した場合は、TLS の 3DES 暗号スイートが有効になります。false に設定した場合は無効になります。このポリシーを未設定のままにした場合は、デフォルトで 3DES 暗号スイートが無効になります。このポリシーは、古いサーバーとの一時的な互換性の保持に使用できます。これは暫定的な措置であり、サーバーの再設定が必要です。
@@ -4137,6 +4174,13 @@
 
       このポリシーを未設定のままにした場合、ユーザーはこの機能をオンまたはオフに指定できます。</translation>
 <translation id="6174065452773547810">このポリシーを有効に設定するか未設定のままにした場合、デバイスで詳細なレポート コントロールを受けることができます。このポリシーを無効に設定した場合、登録済みデバイスは詳細なレポート コントロールを受けません。</translation>
+<translation id="6174187836314350835">URL パターンのリスト。このリストのパターンと一致するオリジンのウェブサイトから送信されたリクエストは、プライベート ネットワーク アクセスのチェック対象外となります。
+
+          リストを指定しない場合、このポリシーは空のリストを指定したときと同様に動作します。
+
+          ここで指定したパターンに含まれていないオリジンについては、グローバル デフォルト値として、<ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> ポリシーで値が設定されていればその値、設定されていなければユーザーの個人設定の値が使用されます。
+
+          有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
 <translation id="6178075938488052838">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> セッションを開始できるユーザーを管理します。このポリシーを設定しても、ユーザーが Android で他の Google アカウントにログインすることを防ぐことはできません。ログインを防ぐには、<ph name="ARC_POLICY_POLICY_NAME" /> の一部として Android 用の <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> ポリシーを設定してください。</translation>
 <translation id="6181304954168534748">デスク テンプレートの SHA-256 ハッシュです。</translation>
 <translation id="6181618732396778048">どのサイトにもファイルとディレクトリへの書き込みアクセスの要求を許可しない</translation>
@@ -4544,6 +4588,7 @@
       注: ポリシーの <ph name="ENTRIES_FIELD_NAME" /> には複数の項目を指定できますが、最初の項目以外は無視されます。
       警告: このポリシーを設定した場合、ソフトウェア更新の適用が遅れる可能性があります。</translation>
 <translation id="6698632841807204978">白黒印刷を有効にする</translation>
+<translation id="6699740789657890714">より限定されたプライベート ネットワークのエンドポイントに対して、ウェブサイトからの安全でない方法でのリクエストを許可するかどうかを指定する</translation>
 <translation id="6699880231565102694">リモート アクセス ホストの 2 段階認証プロセスを有効にする</translation>
 <translation id="6703251016607733593">このポリシーを設定した場合、リストで指定された <ph name="SUBJECT_PUBLIC_KEY_INFO" /> ハッシュに対して、Certificate Transparency（証明書の透明性）の開示要件の適用が無効になります。企業のホストでは、適切に公開されていないことを理由に通常であれば信頼できないものとして扱われる証明書を、引き続き使用できるようになります。適用を無効にするには、ハッシュが次のいずれかの条件を満たしている必要があります。
 
@@ -5759,6 +5804,23 @@
 
       このポリシーを無効にするか、未設定のままにすると、パケットは送信されません。</translation>
 <translation id="816783746144552109">デバイスでの使用を許可する Chrome の最小バージョンを設定する。</translation>
+<translation id="8169492352330154095"><ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する Chrome Enterprise コネクタ サービス設定のリストで、Chrome にファイルが添付されている場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページに添付されるファイルを分析のためコネクタが送信すべきかどうかと、そのファイルの分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。「有効」パターンに該当するタグは、ページの URL がそのタグに関連付けられているパターンと一致し、同じタグの「無効」パターンとは一致しない場合に分析リクエストに含められます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、Chrome は分析サービスからの応答を待ってから、ページにファイルへのアクセスを許可します。その他の整数値を設定した場合、Chrome はページにファイルへのアクセスをただちに許可します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> フィールドでは、パスワードで保護されているファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、分析可能なサイズより大きいファイルをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。learn_more_url フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。language フィールドでは、メッセージの言語を指定します（省略可）。このフィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。custom_messages リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
+
+      このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="8171924760436219650">ログイン画面でマウスのメインボタンを右に切り替える</translation>
 <translation id="8173864651667424191">「画像として印刷する」オプションが使用可能な場合、「画像として印刷する」オプションは PDF ドキュメントの印刷プレビューでデフォルトで設定されます。</translation>
 <translation id="8176035528522326671">企業ユーザーがメインのマルチプロフィール ユーザーとしてのみ操作できるようにする（企業の管理対象ユーザーに対するデフォルトの動作）</translation>
@@ -6007,6 +6069,11 @@
       このポリシーを設定しない場合は、デフォルト値の 3 が使用されます。
 
       このポリシーを設定した場合は、制限を超えないように、古いスナップショットが必要に応じて削除されます。このポリシーを 0 に設定した場合、スナップショットは作成されません。</translation>
+<translation id="8447347049334673364">このポリシーを設定することで、既存の拡張機能関連ポリシーで管理されている設定もすべて含め、<ph name="PRODUCT_NAME" /> の拡張機能の設定を管理できます。このポリシーは、設定済みの以前のポリシーよりも優先されます。
+
+      このポリシーでは、特定の設定のみを指定するには拡張機能 ID または更新 URL を使用します。また、「<ph name="DEFAULT_SCOPE" />」という特別な ID でデフォルトの設定を指定できます。デフォルトの設定は、このポリシーでカスタムの設定が指定されていないすべての拡張機能に適用されます。更新 URL を使用すると、拡張機能マニフェストにその更新 URL が指定された拡張機能に対して設定が適用されます（http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy）。「override_update_url」フラグが true に設定されている場合、拡張機能は、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ポリシーまたはこのポリシーの「update_url」フィールドで指定された「更新」URL を使用してインストールおよび更新されます。「update_url」が Chrome ウェブストアの URL の場合、「override_update_url」フラグは無視されます。
+
+      注: <ph name="MS_AD_NAME" /> ドメインに登録されていない <ph name="MS_WIN_NAME" /> インスタンスと、MDM 経由で管理されていない、または MCX 経由でドメインに登録されていない <ph name="MAC_OS_NAME" /> インスタンスの場合、強制的にインストールされるのは Chrome ウェブストアに公開されているアプリと拡張機能のみとなります。</translation>
 <translation id="8451988835943702790">新しいタブ ページをホームページとして使用する</translation>
 <translation id="8455529558077979314">プライバシー スクリーン設定</translation>
 <translation id="8455551509936646199">再起動する曜日（デバイスのローカル タイムゾーン）です。frequency が「WEEKLY」に指定されている場合にのみ使用されます。</translation>
@@ -6217,6 +6284,21 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="8703488928438047864">ボードの状態を報告する</translation>
 <translation id="8704831857353097849">無効なプラグインのリスト</translation>
+<translation id="8704915028294851978"><ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise コネクタに適用する <ph name="PRODUCT_NAME" /> Enterprise Connectors サービス設定のリストです。これは <ph name="PRODUCT_NAME" /> からページまたはファイルが印刷された場合に呼び出されます。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、特定のページで印刷が呼び出されたときに、分析のためデータを送信すべきかどうかと、分析リクエストにどのタグを含めるかをコネクタで判別する際に使用されます。分析は、リクエストにタグが少なくとも 1 つ含まれる場合に行われます。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> フィールドを 1 に設定した場合、<ph name="PRODUCT_NAME" /> は分析サービスからの応答を待ってから、印刷ページの印刷プレビュー ダイアログの表示を許可します。その他の整数値を設定した場合、<ph name="PRODUCT_NAME" /> は印刷プレビュー ダイアログをただちに表示します。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> フィールドでは、<ph name="PRODUCT_NAME" /> で分析可能なサイズより大きいファイルまたはページをブロックするか許可するかを指定します。
+
+      <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> フィールドでは、分析リクエストに含まれるタグのうち、「バイパス可能」警告が表示された時点でユーザーがスキャン チェックのバイパスを選択した場合に、その理由を入力するよう求めるタグを指定します。このフィールドを設定しない場合、理由は不要とみなされます。
+
+      <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。管理者は、200 文字以内でメッセージを設定できます。
+
+      このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="8705895771006864851">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> に組み込みの翻訳ツールバーを表示し、右クリックのコンテキスト メニューに翻訳オプションを表示して、ユーザーが必要な場面で翻訳機能を使用できるようにします。このポリシーを False に設定した場合、組み込みの翻訳機能はすべて使用できなくなります。
 
       このポリシーを設定した場合、ユーザーはこの機能を変更できません。このポリシーを未設定のままにした場合、ユーザーは設定を変更できます。</translation>

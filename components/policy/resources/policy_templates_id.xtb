@@ -211,6 +211,7 @@
       Jika kebijakan tidak disetel atau jika nilai setelah substitusi bukan berupa hostname yang valid, tidak ada hostname yang akan disetel dalam permintaan DHCP.</translation>
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
+<translation id="1268548671627260798">Daftar URL yang dikecualikan dari notifikasi layar penuh</translation>
 <translation id="127264587838521316">Mengaktifkan permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Mengaktifkan migrasi perangkat Chromad ke pengelolaan cloud</translation>
 <translation id="1274997165432133392">Cookie dan data situs lainnya</translation>
@@ -381,6 +382,18 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Catatan: Kebijakan ini juga berlaku untuk ekstensi komponen, seperti ekstensi Layanan Hangout.</translation>
 <translation id="148194404518916594">Izinkan pengguna menggunakan fitur Sentuh untuk Menelusuri</translation>
+<translation id="1485570394283692769">Mengontrol apakah situs diizinkan untuk membuat permintaan ke endpoint jaringan yang lebih pribadi dengan cara yang tidak aman.
+
+          Kebijakan ini berkaitan dengan spesifikasi Akses Jaringan Pribadi. Lihat https://wicg.github.io/private-network-access/ untuk detail selengkapnya.
+
+          Endpoint jaringan bersifat lebih pribadi dibanding endpoint lain jika:
+          1) Alamat IP-nya adalah localhost sedangkan yang lain bukan.
+          2) Alamat IP-nya bersifat pribadi, sedangkan yang lain bersifat publik.
+          Di masa mendatang, tergantung pada evolusi spesifikasi, kebijakan ini dapat berlaku untuk semua permintaan lintas asal yang ditujukan ke IP pribadi atau localhost.
+
+          Jika kebijakan ini tidak disetel atau disetel ke salah (false), perilaku default untuk permintaan ke endpoint jaringan yang lebih pribadi akan bergantung pada konfigurasi pribadi pengguna untuk tombol fitur <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" />, dan <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> yang dapat disetel berdasarkan uji coba kolom atau command line.
+
+          Jika kebijakan ini disetel ke benar (true), situs akan diizinkan untuk membuat permintaan ke endpoint jaringan mana saja, bergantung pada pemeriksaan lintas asal lainnya.</translation>
 <translation id="1486021504508098388">Melaporkan info lampu latar</translation>
 <translation id="1487916040416013623">Menyetel kebijakan akan menentukan server mana yang diizinkan untuk autentikasi terintegrasi. Autentikasi terintegrasi hanya aktif jika <ph name="PRODUCT_NAME" /> mendapat pernyataan autentikasi dari proxy atau dari server yang ada di daftar yang diizinkan.
 
@@ -2745,6 +2758,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentransfer file ke Drive melalui koneksi seluler.</translation>
 <translation id="4248277954659222481">Izinkan pemutaran otomatis media pada pola URL yang diizinkan</translation>
 <translation id="4250680216510889253">Tidak</translation>
+<translation id="4257545866869267519">Mengonfigurasi daftar URL yang dikecualikan dari notifikasi layar penuh. Notifikasi ditampilkan saat perangkat keluar dari mode tidur, kecerahan rendah, atau layar kunci dan memiliki jendela dalam mode layar penuh. Setelan ini memastikan pengguna mengetahui bahwa mereka sedang dalam mode layar penuh, yang mengurangi risiko serangan phishing.
+
+          Kebijakan ini memungkinkan penonaktifan notifikasi untuk URL tertentu yang akan dianggap sebagai sumber tepercaya. Kebijakan ini disetel dengan menentukan daftar pola URL yang diformat sesuai dengan format berikut ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Misalnya, penonaktifan semua notifikasi dapat dilakukan dengan menentukan karakter pengganti <ph name="WILDCARD_VALUE" /> agar cocok dengan semua URL.
+
+          Jika kebijakan ini disetel ke daftar kosong atau tidak disetel, tidak ada URL yang akan dikecualikan dari notifikasi layar penuh.</translation>
 <translation id="4260027436474745627">Jika kebijakan ini disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan berjalan dalam proses khusus. Setiap proses asal bernama hanya akan diizinkan untuk memuat dokumen dari asal tersebut dan subdomainnya. Misalnya, menentukan https://a1.example.com/ akan mengizinkan https://a2.a1.example.com/ dalam proses yang sama, tetapi tidak mengizinkan https://example.com atau https://b.example.com.
 
       Sejak <ph name="PRODUCT_NAME" /> 77, Anda juga dapat menentukan rentang asal yang akan diisolasi menggunakan karakter pengganti. Misalnya, menentukan https://[*.]corp.example.com akan memberi setiap asal di bawah https://corp.example.com proses khususnya sendiri, termasuk https://corp.example.com itu sendiri, https://a1.corp.example.com, dan https://a2.a1.corp.example.com.
@@ -4271,6 +4289,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika tidak, alamat IP lokal akan disembunyikan dengan hostname mDNS.
       Perlu diingat bahwa kebijakan ini akan melemahkan perlindungan IP lokal jika dibutuhkan oleh administrator.</translation>
 <translation id="614662973812186053">Kebijakan ini juga mengontrol pengumpulan data diagnostik dan penggunaan Android.</translation>
+<translation id="614665605501218241">Mengizinkan situs yang terdaftar untuk membuat permintaan ke endpoint jaringan yang lebih pribadi dengan cara yang tidak aman.</translation>
 <translation id="6154509171634387825">Peringatan: 3DES akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> versi 95 (sekitar Oktober 2021) dan kebijakan ini akan berhenti berfungsi.
 
       Jika kebijakan disetel ke benar (true), cipher suite 3DES di TLS akan diaktifkan. Jika kebijakan disetel ke salah (false), cipher suite 3DES di TLS akan dinonaktifkan. Jika kebijakan tidak disetel, cipher suite 3DES akan dinonaktifkan secara default. Kebijakan ini dapat digunakan untuk sementara waktu mempertahankan kompatibilitas dengan server yang sudah tidak berlaku. Ini adalah tindakan sementara dan server harus dikonfigurasi ulang.
@@ -4285,6 +4304,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan fitur ini.</translation>
 <translation id="6174065452773547810">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat akan diizinkan menerima kontrol pelaporan terperinci.
       Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan menerima kontrol pelaporan terperinci.</translation>
+<translation id="6174187836314350835">Daftar Pola URL. Permintaan yang dimulai dari situs yang ditayangkan dengan pencocokan asal tidak tunduk pada pemeriksaan Akses Jaringan Pribadi.
+
+          Jika tidak disetel, kebijakan ini berperilaku sebagaimana jika disetel ke daftar kosong.
+
+          Untuk asal yang tidak tercakup oleh pola yang ditentukan di sini, nilai default global akan digunakan dari kebijakan <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> jika disetel, atau dari konfigurasi pribadi pengguna jika kebijakan tersebut tidak disetel.
+
+          Untuk informasi selengkapnya tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6178075938488052838">Kebijakan ini mengontrol siapa yang dapat memulai sesi <ph name="PRODUCT_OS_NAME" />. Kebijakan ini tidak mencegah pengguna login ke akun Google lain dalam Android. Jika Anda ingin mencegah tindakan ini, konfigurasikan kebijakan <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> khusus Android sebagai bagian dari <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">Hash SHA-256 template desktop.</translation>
 <translation id="6181618732396778048">Jangan izinkan situs apa pun meminta akses tulis ke file atau direktori</translation>
@@ -4747,6 +4773,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Catatan: Meskipun kebijakan dapat menerima beberapa item dalam <ph name="ENTRIES_FIELD_NAME" />, semua item kecuali yang pertama akan diabaikan.
       Peringatan: Jika kebijakan ini disetel, penerapan update software mungkin tertunda.</translation>
 <translation id="6698632841807204978">Aktifkan pencetakan monokrom</translation>
+<translation id="6699740789657890714">Menentukan apakah akan mengizinkan situs untuk membuat permintaan ke endpoint jaringan yang lebih pribadi dengan cara yang tidak aman</translation>
 <translation id="6699880231565102694">Mengaktifkan autentikasi dua faktor untuk hosting akses jarak jauh</translation>
 <translation id="6703251016607733593">Jika kebijakan ditetapkan, penerapan persyaratan pengungkapan Transparansi Sertifikat akan dinonaktifkan untuk daftar hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />. Host perusahaan tetap dapat menggunakan sertifikat yang tidak tepercaya (karena tidak diungkapkan secara publik dengan sesuai). Untuk menonaktifkan penerapan, hash harus memenuhi salah satu ketentuan berikut:
 

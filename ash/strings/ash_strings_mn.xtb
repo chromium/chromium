@@ -35,6 +35,7 @@
 <translation id="1175572348579024023">Гүйлгэх</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1181037720776840403">Хасах</translation>
+<translation id="118437560755358292">Нэмэлт аюулгүй байдлын үүднээс нууц үг эсвэл ПИН оруулна уу</translation>
 <translation id="118532027333893379">Бүтэн дэлгэцийн зургийг авахын тулд дурын газар товшино уу</translation>
 <translation id="1190609913194133056">Мэдэгдлийн төв</translation>
 <translation id="1190678134285018527">Төхөөрөмж өмнөх хувилбар луу буцах шаардлагатай</translation>
@@ -338,6 +339,7 @@
 <translation id="3307642347673023554">Зөөврийн компьютерын горим руу сэлгэсэн</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> дараа нэвтрэх боломжтой хэвээр байна.</translation>
 <translation id="3321628682574733415">Эцэг эхийн код буруу байна</translation>
+<translation id="3339826665088060472">Дэлгэцийн агшин болон дэлгэцийн бичлэг авах хэрэгсэл болох Дэлгэцийн зураг авах онцлог</translation>
 <translation id="3340475855009870209">Таталтыг скан хийж байна <ph name="FILENAME" /></translation>
 <translation id="3341303451326249809">Дэлгэцийн агшныг авсан</translation>
 <translation id="334252345105450327">Дэлгэцийн агшин авах</translation>
@@ -395,6 +397,7 @@
 <translation id="3606978283550408104">Брайль дэлгэц холбогдсон.</translation>
 <translation id="3615926715408477684">Мобайл датаг идэвхжүүлснээр Bluetooth-г мөн идэвхжүүлнэ</translation>
 <translation id="3616883743181209306">Цэсийг дэлгэцийн баруун дээд булан руу зөөсөн.</translation>
+<translation id="3619536907358025872">Дэлгэцийн зураг авах горимын тохиргоо</translation>
 <translation id="3621202678540785336">Оролт</translation>
 <translation id="3621712662352432595">Аудио тохиргоонууд</translation>
 <translation id="3626281679859535460">Цайралт</translation>
@@ -494,6 +497,7 @@
 <translation id="4269883910223712419">Энэ төхөөрөмжийн админ дараах зүйлсийг хийх боломжтой:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. End товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Баруун сумыг дарна уу.</translation>
 <translation id="4279490309300973883">Толин тусгал үүсгэх</translation>
+<translation id="4283888303416325161">Нэмэлт аюулгүй байдлын үүднээс нууц үг оруулна уу</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="429402653707266969">Самбарын байршлыг асаах/унтраах</translation>
 <translation id="4294319844246081198">Өглөөний мэнд <ph name="GIVEN_NAME" />,</translation>
@@ -762,6 +766,7 @@
 <translation id="607652042414456612">Таны компьютер ойролцоо байгаа Bluetooth төхөөрөмж дээр илрэх боломжтой бөгөөд <ph name="ADDRESS" /> хаяг бүхий "<ph name="NAME" />" нэрээр гарч ирэх болно.</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6121838516699723042"><ph name="FILENAME" />-н таталтыг баталгаажуулах</translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
 <translation id="6134259848159370930">Төхөөрөмж, апп, тохиргоо, вебээс хайна уу.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>

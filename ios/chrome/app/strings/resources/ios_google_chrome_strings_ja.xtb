@@ -50,6 +50,7 @@
 <translation id="4214277427269650960">このサイトと Chrome にログインしてください。同期は後でオンにできます。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4249068189593983585">Chrome の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
+<translation id="4267862249323750454">パスワードは <ph name="BEGIN_LINK" />Google パスワード マネージャー<ph name="END_LINK" />に保存され、どのデバイスからでも使用できます。</translation>
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>
 <translation id="4698415050768537821">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
@@ -70,6 +71,7 @@
 <translation id="6063091872902370735">Chrome へのログインを許可する</translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>
+<translation id="6387994324662817823">パスワードは、このデバイスの Google パスワード マネージャーにのみ保存されます。</translation>
 <translation id="6427126399757991875">組織で Chrome を設定しています...</translation>
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
 <translation id="6634107063912726160">ログアウトすると、Chrome で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>

@@ -162,6 +162,7 @@
 <translation id="1153636665119721804">Program rozšírenej ochrany Google</translation>
 <translation id="1155545602507378023">Nie, iba v tomto zariadení</translation>
 <translation id="1155816283571436363">Pripája sa k vášmu telefónu</translation>
+<translation id="1158080958325422608">Zmeniť na veľké písmená</translation>
 <translation id="1158238185437008462">Zobraziť spomienky</translation>
 <translation id="1161575384898972166">Ak chcete exportovať certifikát klienta, prihláste sa do <ph name="TOKEN_NAME" />.</translation>
 <translation id="116173250649946226">Váš správca nastavil predvolený motív, ktorý sa nedá zmeniť.</translation>
@@ -697,6 +698,7 @@
 <translation id="1700079447639026019">Weby, ktoré nemôžu nikdy používať súbory cookie</translation>
 <translation id="1703331064825191675">Už si nemusíte robiť starosti o heslá</translation>
 <translation id="1703666494654169921">Nepovoliť webom používať zariadenia alebo údaje virtuálnej reality</translation>
+<translation id="1704097193565924901">Veľkosť písmen</translation>
 <translation id="1704230497453185209">Nepovoliť webom prehrávať zvuk</translation>
 <translation id="1704970325597567340">Kontrola bezpečnosti prebehla <ph name="DATE" /></translation>
 <translation id="1706586824377653884">Pridané správcom</translation>
@@ -3575,6 +3577,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4681453295291708042">Zakázať Zdieľanie nablízku</translation>
 <translation id="4681930562518940301">Otvoriť pôvodný &amp;obrázok na novej karte</translation>
 <translation id="4682551433947286597">Tapety sa zobrazia na prihlasovacej obrazovke.</translation>
+<translation id="4683629100208651599">Zmeniť na malé písmená</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (predvolené)</translation>
 <translation id="4684427112815847243">Synchronizovať všetko</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> sa snaží získať prístup k fotoaparátu. Ak chcete prístup povoliť, vypnite prepínač ochrany súkromia fotoaparátu.</translation>
@@ -5971,6 +5974,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7257173066616499747">Siete Wi‑Fi</translation>
 <translation id="725758059478686223">Tlačová služba</translation>
 <translation id="7257666756905341374">Čítať údaje, ktoré kopírujete a prilepujete</translation>
+<translation id="7258192266780953209">Transformácie</translation>
 <translation id="7258225044283673131">Aplikácia nereaguje. Zavrite ju výberom možnosti Vynútiť zavretie.</translation>
 <translation id="7262004276116528033">Túto prihlasovaciu službu hostí doména <ph name="SAML_DOMAIN" /></translation>
 <translation id="7264564921322372728"><ph name="BEGIN_PARAGRAPH1" />Vyskúšajte tieto kroky na riešenie problémov:

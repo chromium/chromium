@@ -132,6 +132,7 @@
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
+<translation id="1832459821645506983">예</translation>
 <translation id="1843805151597803366">번역을 개선하려면 Google 검색을 통해 현재 페이지를 사용하세요.</translation>
 <translation id="1856325424225101786">라이트 모드를 재설정하시겠습니까?</translation>
 <translation id="1868024384445905608">이제 Chrome에서 파일을 더 빠르게 다운로드합니다.</translation>
@@ -289,6 +290,7 @@
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2728754400939377704">사이트별 정렬</translation>
+<translation id="2732063072010454421">더 나은 음성 검색 환경을 경험해 보세요</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">단어를 탭하여 즉시 검색하거나 관련 작업을 확인하세요</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
@@ -835,6 +837,7 @@
 <translation id="587735546353481577">사이트를 팔로우하려면 사이트로 이동해서 Chrome 메뉴를 연 다음 팔로우를 탭합니다.</translation>
 <translation id="5880748256563468367">피드로 이동</translation>
 <translation id="5884076754568147479">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다.</translation>
+<translation id="5906513782029855931">사이트의 URL을 알려 주시면 Google 어시스턴트가 작업을 도와드릴 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지하실 수 있습니다.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> 저장됨</translation>

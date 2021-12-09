@@ -211,6 +211,7 @@
       Politika ayarlanmadan bırakılırsa veya değişiklikten sonraki değer geçerli bir ana makine adı değilse DHCP isteğinde ana makine adı ayarlanmaz.</translation>
 <translation id="1257550411839719984">Varsayılan indirme dizinini ayarlama</translation>
 <translation id="1265053460044691532">SAML kullanarak kimlik doğrulaması yapmış kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırla</translation>
+<translation id="1268548671627260798">Tam ekran bildiriminden muaf olan URL'lerin listesi</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> uzantı yükleme isteklerini etkinleştirir</translation>
 <translation id="1272798957154751008">Chromad cihazların bulut yönetimine taşınmasını etkinleştir</translation>
 <translation id="1274997165432133392">Çerezler ve diğer site verileri</translation>
@@ -381,6 +382,18 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Bu politika, Hangout Hizmetleri uzantısı gibi bileşen uzantıları için de geçerlidir.</translation>
 <translation id="148194404518916594">Kullanıcıların Dokun ve Ara özelliğini kullanmalarına izin ver</translation>
+<translation id="1485570394283692769">Web sitelerinin daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin verilip verilmediğini kontrol eder.
+
+          Bu politika Özel Ağ Erişimi spesifikasyonuyla alakalıdır. Daha fazla ayrıntı için https://wicg.github.io/private-network-access/ sayfasına bakabilirsiniz.
+
+          Bir ağ uç noktası aşağıdaki koşullarda diğerinden daha gizlidir:
+          1) IP adresi localhost iken diğerininki değilse.
+          2) IP adresi özelken diğerininki herkese açıksa.
+          Bu politika ileride spesifikasyonların değişimine bağlı olarak, özel IP'lere veya localhost'a yönelik tüm çapraz kaynak istekleri için geçerli olabilir.
+
+          Bu politika ayarlanmadığında veya yanlış değerine ayarlandığında daha özel ağ uç noktalarına yapılan istekler için varsayılan davranış, kullanıcının <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> ve <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> özellik bayraklarıyla ilgili kişisel yapılandırmasına bağlıdır. Bu özellik bayrakları, saha denemeleri tarafından veya komut satırında ayarlanmış olabilir.
+
+          Bu politika, Doğru değerine ayarlandığında, güvenli olmayan web sitelerinin, diğer çapraz kaynak kontrollerine tabi olarak herhangi bir ağ uç noktasına istekte bulunmasına izin verilir.</translation>
 <translation id="1486021504508098388">Arka ışık bilgilerini raporla</translation>
 <translation id="1487916040416013623">Politikanın ayarlanması, entegre kimlik doğrulama için hangi sunuculara izin verileceğini belirtir. Entegre kimlik doğrulaması yalnızca <ph name="PRODUCT_NAME" /> bir proxy veya söz konusu izin verilenler listesindeki bir sunucudan kimlik doğrulaması daveti aldığında etkinleşir.
 
@@ -2729,6 +2742,11 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar hücresel bağlantı kullanırken Drive'a dosya aktarabilir.</translation>
 <translation id="4248277954659222481">URL kalıpları izin verilenler listesinde medyanın otomatik olarak oynatılmasına izin ver</translation>
 <translation id="4250680216510889253">Hayır</translation>
+<translation id="4257545866869267519">Tam ekran bildiriminden muaf olan URL'lerin listesini yapılandırır. Bildirim, cihaz uykudan, düşük parlaklıktan veya kilit ekranından döndüğünde ve tam ekran modunda penceresi varken gösterilir. Bunun nedeni kullanıcıların tam ekran modunda olduklarını anlamalarını sağlayıp kimlik avı saldırıları riskini azaltmaktır.
+
+          Bu politika sayesinde güvenilir kaynak olarak kabul edilecek belirli URL'ler için bildirimin devre dışı bırakılması sağlanır. Politika bu biçime (https://www.chromium.org/administrators/url-blocklist-filter-format) göre biçimlendirilmiş bir URL kalıpları listesi belirtilerek ayarlanır. Örneğin, tüm URL'lerle eşleşen <ph name="WILDCARD_VALUE" /> joker karakterini belirterek bildirimleri tamamen devre dışı bırakmak mümkündür.
+
+          Bu politikanın boş bir listeye ayarlanması veya ayarlamadan bırakılması hiçbir URL'nin tam ekran bildiriminden muaf olmadığı anlamına gelir.</translation>
 <translation id="4260027436474745627">Bu politika ayarlanırsa virgülle ayrılmış listede adı verilen her kaynak özel işlem içinde çalışır. Adı verilen her kaynağın işleminde yalnızca o kaynaktan ve kaynağın alt alan adlarından dokümanlar bulunabilir. Örneğin, https://a1.example.com/ alan adı tanımlandığında aynı işlem içerisinde https://a2.a1.example.com/ bulunabilir ancak https://example.com veya https://b.example.com bulunamaz.
 
       77. <ph name="PRODUCT_NAME" /> sürümünden itibaren, joker karakter kullanarak izole edilecek bir kaynak aralığı belirlemek mümkündür. Örneğin, https://[*.]corp.example.com alan adı belirlenirse, https://corp.example.com alan adının kendisi, https://a1.corp.example.com ve https://a2.a1.corp.example.com dahil olmak üzere https://corp.example.com alan adının altında bulunan her bir kaynak kendi özel işlemi içinde çalışır.
@@ -4240,6 +4258,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Aksi takdirde, yerel IP adresleri mDNS ana makine adlarıyla gizlenir.
       Bu politikanın, yöneticilerin ihtiyaç duyması halinde yerel IP'lerin korunmasını zayıflattığını lütfen unutmayın.</translation>
 <translation id="614662973812186053">Bu politika, Android kullanımını ve teşhis verilerini toplama çalışmalarını da kontrol eder.</translation>
+<translation id="614665605501218241">Listelenen sitelerin, daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin ver.</translation>
 <translation id="6154509171634387825">Uyarı: 3DES, 95 sürümünde (Ekim 2021 civarında) <ph name="PRODUCT_NAME" /> ürününden tamamen kaldırılacak ve bu politika artık kullanılamayacaktır.
 
       Politika doğru değerine ayarlanırsa TLS'de 3DES şifre paketleri etkinleştirilir. Politika yanlış değerine ayarlanırsa bunlar devre dışı bırakılır. Politika ayarlanmazsa 3DES şifre paketleri varsayılan olarak devre dışı bırakılır. Bu politika eski bir sunucuyla uyumluluğu sürdürmek için geçici olarak kullanılabilir. Bu geçici bir tedbir olup sunucu yeniden yapılandırılmalıdır.
@@ -4254,6 +4273,13 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Politika ayarlanmadan bırakılırsa kullanıcılar bu özelliğin etkinleştirilip etkineştirilmeyeceğine kendileri karar verebilir.</translation>
 <translation id="6174065452773547810">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz, ayrıntılı raporlama kontrolleri alabilir.
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar ayrıntılı raporlama kontrolleri alamaz.</translation>
+<translation id="6174187836314350835">URL kalıpları listesi. Eşleşen kaynakların sunduğu web sitelerinden başlatılan istekler, özel ağ erişimi kontrollerine tabi değildir.
+
+          Bu politika ayarlanmazsa boş listeye ayarlanmış gibi davranır.
+
+          Burada belirtilen kalıpların dışında kalan kaynaklar için <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> politikası ayarlandıysa buradaki değer, aksi takdirde kullanıcının kişisel yapılandırması genel varsayılan değer olarak kullanılır.
+
+          Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
 <translation id="6178075938488052838">Bu politika, kimin bir <ph name="PRODUCT_OS_NAME" /> oturumu başlatabileceğini kontrol eder. Kullanıcıların Android'de başka Google hesapları ile oturum açmalarını engellemez. Bunu engellemek isterseniz Android'e özgü <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> politikasını <ph name="ARC_POLICY_POLICY_NAME" /> politikası kapsamında yapılandırın.</translation>
 <translation id="6181304954168534748">Masa şablonunun SHA-256 karması.</translation>
 <translation id="6181618732396778048">Hiçbir sitenin dosya ve dizinlere yazma erişimi istemesine izin verme</translation>
@@ -4698,6 +4724,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Not: Politika <ph name="ENTRIES_FIELD_NAME" /> alanında birden çok öğe kabul edebilir, ancak birinci öğe hariç diğerleri yok sayılır.
       Uyarı: Bu politikayı ayarlamak, yazılım güncellemelerinin uygulanmasını geciktirebilir.</translation>
 <translation id="6698632841807204978">Tek renk yazdırmayı etkinleştir</translation>
+<translation id="6699740789657890714">Web sitelerinin, daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin verilip verilmeyeceğini belirtir</translation>
 <translation id="6699880231565102694">Uzaktan erişim ana makineleri için iki öğeli kimlik doğrulamayı etkinleştir</translation>
 <translation id="6703251016607733593">Politikanın ayarlanması, <ph name="SUBJECT_PUBLIC_KEY_INFO" /> karmaları listesi için Sertifika Şeffaflığı açıklama gereksinimlerinin uygulanmasını kapatır. Kurumsal ana makineler, aksi halde güvenilmeyecek olan (uygun bir şekilde herkese açık olarak açıklanmadığından) sertifikaları kullanmaya devam edebilir. Uygulamanın kapatılması için karmanın aşağıdaki koşullardan birini karşılaması gerekir:
 
