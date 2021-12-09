@@ -234,8 +234,6 @@ class BrowserDataMigrator {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            ManipulateMigrationAttemptCount);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
-                           IsMigrationRequiredOnWorker);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CopyDirectory);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, SetupTmpDir);
@@ -248,11 +246,6 @@ class BrowserDataMigrator {
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);
-
-  // The method includes a blocking operation. It checks if lacros user data dir
-  // already exists or not. Check if lacros is enabled or not beforehand.
-  static bool IsMigrationRequiredOnWorker(base::FilePath user_data_dir,
-                                          const std::string& user_id_hash);
 
   // Increments the migration attempt count stored in
   // `kMigrationAttemptCountPref` by 1 for the user identified by
@@ -280,11 +273,10 @@ class BrowserDataMigrator {
       std::unique_ptr<MigrationProgressTracker> progress_tracker,
       scoped_refptr<CancelFlag> cancel_flag);
 
-  // This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
-  // thread or called directly from `MaybeRestartToMigrate()`.
-  static void MaybeRestartToMigrateCallback(const AccountId& account_id,
-                                            const std::string& user_id_hash,
-                                            bool is_required);
+  // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
+  // the migration.
+  static void RestartToMigrate(const AccountId& account_id,
+                               const std::string& user_id_hash);
 
   // Called on UI thread once migration is finished.
   static void MigrateInternalFinishedUIThread(base::OnceClosure callback,

@@ -280,8 +280,7 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     return;
   if (force_migration_switch == kBrowserDataMigrationForceMigration) {
     LOG(WARNING) << "`kBrowserDataMigrationForceMigration` switch is present.";
-    MaybeRestartToMigrateCallback(account_id, user_id_hash,
-                                  true /* is_required */);
+    RestartToMigrate(account_id, user_id_hash);
     return;
   }
 
@@ -305,10 +304,13 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
            "enabled again.";
 
     // If lacros is not enabled other than reaching the maximum retry count of
-    // profile migration, clear the retry count. This will allow users to reset
-    // the retry count by disabling lacros and re-enabling lacros back.
+    // profile migration, clear the retry count and
+    // `kProfileMigrationCompletedForUserPref`. This will allow users to retry
+    // profile migration after disabling and re-enabling lacros.
     ClearMigrationAttemptCountForUser(g_browser_process->local_state(),
                                       user_id_hash);
+    crosapi::browser_util::ClearProfileMigrationCompletedForUser(
+        g_browser_process->local_state(), user_id_hash);
     return;
   }
 
@@ -355,52 +357,24 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
         << "Restarting to run profile migration since data wipe is required.";
     // If data wipe is required, no need for a further check to determine if
     // lacros data dir exists or not.
-    MaybeRestartToMigrateCallback(account_id, user_id_hash,
-                                  true /* is_required */);
+    RestartToMigrate(account_id, user_id_hash);
     return;
   }
 
-  if (!crosapi::browser_util::IsProfileMigrationCompletedForUser(
+  if (crosapi::browser_util::IsProfileMigrationCompletedForUser(
           g_browser_process->local_state(), user_id_hash)) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING) << "Profile migration has not been completed yet.";
-    MaybeRestartToMigrateCallback(account_id, user_id_hash,
-                                  true /* is_required */);
+    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises,
+    // remove this log message.
+    LOG(WARNING) << "Profile migration has been completed already.";
     return;
-  } else {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING) << "Calling IsMigrationRequiredOnWorker() to determine if "
-                    "migration is required.";
-    // Check if profile migration is required by checking if lacros data
-    // directory exists even if profile migration is marked as completed. This
-    // is needed because until the official release because lacros user data
-    // directory can be wiped by disabling and re-enabling lacros.
-    base::FilePath user_data_dir;
-    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-      LOG(ERROR) << "Could not get the original user data dir path.";
-      return;
-    }
-
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-        base::BindOnce(&BrowserDataMigrator::IsMigrationRequiredOnWorker,
-                       user_data_dir, user_id_hash),
-        base::BindOnce(&MaybeRestartToMigrateCallback, account_id,
-                       user_id_hash));
   }
+
+  RestartToMigrate(account_id, user_id_hash);
 }
 
 // static
-void BrowserDataMigrator::MaybeRestartToMigrateCallback(
-    const AccountId& account_id,
-    const std::string& user_id_hash,
-    bool is_required) {
-  if (!is_required)
-    return;
-
+void BrowserDataMigrator::RestartToMigrate(const AccountId& account_id,
+                                           const std::string& user_id_hash) {
   LOG(WARNING) << "Restarting to start profile migration.";
   SetMigrationStep(g_browser_process->local_state(),
                    MigrationStep::kRestartCalled);
@@ -416,19 +390,6 @@ void BrowserDataMigrator::MaybeRestartToMigrateCallback(
   SessionManagerClient::Get()->RequestBrowserDataMigration(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
       base::BindOnce(&OnRestartRequestResponse));
-}
-
-// static
-// Returns true if lacros user data dir doesn't exist.
-bool BrowserDataMigrator::IsMigrationRequiredOnWorker(
-    base::FilePath user_data_dir,
-    const std::string& user_id_hash) {
-  // Use `GetUserProfileDir()` to manually get base name for profile dir so that
-  // this method can be called even before user profile is created.
-  base::FilePath profile_data_dir =
-      user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
-
-  return !base::DirectoryExists(profile_data_dir.Append(kLacrosDir));
 }
 
 // static
