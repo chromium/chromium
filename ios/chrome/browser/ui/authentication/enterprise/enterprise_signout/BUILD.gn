@@ -11,15 +11,10 @@ source_set("enterprise_signout") {
     "enterprise_signout_view_controller.mm",
   ]
   deps = [
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_google_chrome_strings",
-    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy/resources:enterprise_grey_icon_large",
-    "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
