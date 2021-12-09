@@ -6,9 +6,11 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/policy/policy_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -981,6 +983,44 @@ void ExpectSyncConsentHistogram(
 
   // Check fakeIdentity2 is signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
+}
+
+// Tests that when the syncTypesListDisabled policy is enabled, the signin promo
+// description is updated and when opening the sign-in screen a policy warning
+// is displayed.
+- (void)testSynTypesDisabledPolicy {
+  // Set policy.
+  std::vector<base::Value> values;
+  values.push_back(base::Value("tabs"));
+  policy_test_utils::SetPolicy(base::Value(std::move(values)),
+                               policy::key::kSyncTypesListDisabled);
+
+  // Check that the promo description is updated.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityLabel(l10n_util::GetNSString(
+                  IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED)),
+              grey_sufficientlyVisible(), nil)]
+
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  NSString* policyText =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE);
+  policyText = [policyText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
+                                                     withString:@""];
+  policyText = [policyText stringByReplacingOccurrencesOfString:@"END_LINK"
+                                                     withString:@""];
+
+  // Check that the policy warning is presented.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(policyText),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end
