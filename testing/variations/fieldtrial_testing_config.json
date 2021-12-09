@@ -190,7 +190,7 @@
                 {
                     "name": "EnabledWithMessages_20210831",
                     "params": {
-                        "max-number": "10",
+                        "max-number": "100",
                         "site-id": "78FakAwAN0tK1KeaPYj0PoiAHrrQ"
                     },
                     "enable_features": [
