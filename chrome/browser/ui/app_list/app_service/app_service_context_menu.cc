@@ -74,6 +74,23 @@ void CreateNewWindow(bool incognito, bool post_task) {
       incognito, /*should_trigger_session_restore=*/false);
 }
 
+void ShowOptionsPage(AppListControllerDelegate* controller,
+                     Profile* profile,
+                     const std::string& app_id,
+                     bool post_task) {
+  DCHECK(controller);
+  DCHECK(profile);
+
+  if (post_task) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(ShowOptionsPage, controller, profile, app_id,
+                                  /*post_task=*/false));
+    return;
+  }
+
+  controller->ShowOptionsPage(profile, app_id);
+}
+
 }  // namespace
 
 AppServiceContextMenu::AppServiceContextMenu(
@@ -142,7 +159,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       break;
 
     case ash::OPTIONS:
-      controller()->ShowOptionsPage(profile(), app_id());
+      ShowOptionsPage(controller(), profile(), app_id(), /*post_task=*/true);
       ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
