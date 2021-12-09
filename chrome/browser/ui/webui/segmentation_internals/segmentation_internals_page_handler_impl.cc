@@ -61,3 +61,8 @@ void SegmentationInternalsPageHandlerImpl::OnServiceStatusChanged(
     int status_flag) {
   page_->OnServiceStatusChanged(is_initialized, status_flag);
 }
+
+void SegmentationInternalsPageHandlerImpl::OnSegmentInfoAvailable(
+    const std::vector<std::string>& segment_info) {
+  page_->OnSegmentInfoAvailable(segment_info);
+}

@@ -24,6 +24,11 @@ function initialize() {
         $('service-status').textContent = String(status);
       });
 
+  getProxy().getCallbackRouter().onSegmentInfoAvailable.addListener(
+      () => {
+          // TODO(qinmin): display the segment info on internal page.
+      });
+
   getProxy().getServiceStatus();
 }
 

@@ -140,6 +140,7 @@ source_set("unit_tests") {
     "selection/segment_score_provider_unittest.cc",
     "selection/segment_selector_unittest.cc",
     "selection/segmentation_result_prefs_unittest.cc",
+    "service_proxy_impl_unittest.cc",
     "signals/histogram_signal_handler_unittest.cc",
     "signals/signal_filter_processor_unittest.cc",
     "signals/user_action_signal_handler_unittest.cc",

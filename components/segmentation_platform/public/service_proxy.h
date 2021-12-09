@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SERVICE_PROXY_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_SERVICE_PROXY_H_
 
+#include <vector>
+
 #include "base/observer_list_types.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
@@ -16,8 +18,10 @@ class ServiceProxy {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called whenever the service status changes.
+    // Called whenever the servoice status changes.
     virtual void OnServiceStatusChanged(bool is_initialized, int status_flag) {}
+    virtual void OnSegmentInfoAvailable(
+        const std::vector<std::string>& segment_info) {}
   };
 
   virtual ~ServiceProxy() = default;

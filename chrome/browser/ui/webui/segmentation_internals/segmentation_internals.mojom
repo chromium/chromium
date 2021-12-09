@@ -49,4 +49,8 @@ interface Page {
   // SegmentationPlatformServiceImpl for description of each bit in the flag.
   OnServiceStatusChanged(bool is_initialized,
                          int32 status_flag);
+
+  // Notifies the page when all segment info becomes available from the service.
+  // |segment_info| is an array of serialized string for all the segment,
+  OnSegmentInfoAvailable(array<string> segment_info);
 };

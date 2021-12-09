@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SEGMENTATION_INTERNALS_SEGMENTATION_INTERNALS_PAGE_HANDLER_IMPL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom.h"
@@ -42,8 +43,10 @@ class SegmentationInternalsPageHandlerImpl
       GetSegmentCallback callback,
       const segmentation_platform::SegmentSelectionResult& result);
 
-  // SegmentationPlatformService::Observer overrides.
+  // segmentation_platform::ServiceProxy::Observer overrides.
   void OnServiceStatusChanged(bool is_initialized, int status_flag) override;
+  void OnSegmentInfoAvailable(
+      const std::vector<std::string>& segment_info) override;
 
   mojo::Receiver<segmentation_internals::mojom::PageHandler> receiver_;
   mojo::Remote<segmentation_internals::mojom::Page> page_;
