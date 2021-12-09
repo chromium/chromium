@@ -25,6 +25,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
+#include "components/search_provider_logos/switches.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -96,6 +97,33 @@ jboolean TemplateUrlServiceAndroid::IsSearchByImageAvailable(
          !default_search_provider->image_url().empty() &&
          default_search_provider->image_url_ref().IsValid(
              template_url_service_->search_terms_data());
+}
+
+jboolean TemplateUrlServiceAndroid::DoesDefaultSearchEngineHaveLogo(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  // |kSearchProviderLogoURL| applies to all search engines (Google or
+  // third-party).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          search_provider_logos::switches::kSearchProviderLogoURL)) {
+    return true;
+  }
+
+  // Google always has a logo.
+  if (IsDefaultSearchEngineGoogle(env, obj))
+    return true;
+
+  // Third-party search engines can have a doodle specified via the command
+  // line, or a static logo or doodle from the TemplateURLService.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          search_provider_logos::switches::kThirdPartyDoodleURL)) {
+    return true;
+  }
+  const TemplateURL* default_search_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  return default_search_provider &&
+         (default_search_provider->doodle_url().is_valid() ||
+          default_search_provider->logo_url().is_valid());
 }
 
 jboolean TemplateUrlServiceAndroid::IsDefaultSearchEngineGoogle(

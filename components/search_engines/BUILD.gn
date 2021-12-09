@@ -72,6 +72,7 @@ static_library("search_engines") {
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/search_provider_logos:switches",
     "//components/strings",
     "//components/url_formatter",
     "//components/variations",

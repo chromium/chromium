@@ -90,10 +90,10 @@ public class LogoLoadHelperUnitTest {
         doReturn(true).when(mMockProfile2).isOffTheRecord();
 
         mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(true).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
 
         mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridge);
 
@@ -135,7 +135,7 @@ public class LogoLoadHelperUnitTest {
     @Test
     public void testDSEChangedOnRegularProfileAndDoesNotHaveLogo() {
         mProfileSupplier.set(mMockProfile1);
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 

@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker.BlockDrawForInitialTa
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.search_engines.TemplateUrlService;
 
 import java.util.List;
 
@@ -89,6 +90,8 @@ public class AppLaunchDrawBlockerUnitTest {
     @Mock
     private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
     @Mock
+    private TemplateUrlService mTemplateUrlService;
+    @Mock
     private Supplier<Boolean> mShouldIgnoreIntentSupplier;
     @Mock
     private Supplier<Boolean> mIsTabletSupplier;
@@ -111,6 +114,7 @@ public class AppLaunchDrawBlockerUnitTest {
     public void setUp() {
         when(mView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mShouldIgnoreIntentSupplier.get()).thenReturn(false);
         when(mIsTabletSupplier.get()).thenReturn(false);
         when(mShouldShowTabSwitcherOnStartSupplier.get()).thenReturn(false);
@@ -128,7 +132,7 @@ public class AppLaunchDrawBlockerUnitTest {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, false);
 
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
         mStartStopWithNativeObserver.onStopWithNative();
 
         assertTrue("SearchEngineHadLogo pref isn't written.",
@@ -385,7 +389,7 @@ public class AppLaunchDrawBlockerUnitTest {
     private void setSearchEngineHasLogo(boolean hasLogo) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, hasLogo);
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(hasLogo);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(hasLogo);
     }
 
     /**

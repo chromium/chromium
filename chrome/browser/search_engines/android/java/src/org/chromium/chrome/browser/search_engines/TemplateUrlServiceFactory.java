@@ -35,18 +35,10 @@ public class TemplateUrlServiceFactory {
         sTemplateUrlService = service;
     }
 
-    /**
-     * TODO(crbug.com/968156): Move to TemplateUrlServiceHelper.
-     */
-    public static boolean doesDefaultSearchEngineHaveLogo() {
-        return TemplateUrlServiceFactoryJni.get().doesDefaultSearchEngineHaveLogo();
-    }
-
     // Natives interface is public to allow mocking in tests outside of
     // org.chromium.chrome.browser.search_engines package.
     @NativeMethods
     public interface Natives {
         TemplateUrlService getTemplateUrlService();
-        boolean doesDefaultSearchEngineHaveLogo();
     }
 }

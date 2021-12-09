@@ -115,7 +115,7 @@ public class LogoLoadHelper {
         }
 
         // If default search engine doesn't have logo, pass in null.
-        if (!TemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()) {
+        if (!TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo()) {
             mHasLogoLoadedForCurrentSearchEngine = true;
             mToolbar.onLogoAvailable(/*logoImage=*/null, /*contentDescription=*/null);
             return;

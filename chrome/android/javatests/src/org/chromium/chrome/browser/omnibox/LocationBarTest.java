@@ -45,7 +45,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -185,6 +184,9 @@ public class LocationBarTest {
     private void setupSearchEngineLogo(String url) {
         boolean isGoogle = url.equals(GOOGLE_URL);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Do not show a logo image on NTP, unless the default engine is Google, to avoid
+            // occasional timeout in loading it.
+            doReturn(isGoogle).when(mTemplateUrlService).doesDefaultSearchEngineHaveLogo();
             doReturn(isGoogle).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
             doReturn(url).when(mSearchEngineLogoUtils).getSearchLogoUrl(mTemplateUrlService);
             doReturn(true)
@@ -633,7 +635,6 @@ public class LocationBarTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1227573")
     public void testOmniboxSearchEngineLogo_unfocusedOnSRP_nonGoogleSearchEngine() {
         setupSearchEngineLogo(NON_GOOGLE_URL);
         startActivityNormally();
