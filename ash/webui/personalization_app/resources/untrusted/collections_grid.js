@@ -444,6 +444,26 @@ export class CollectionsGrid extends PolymerElement {
   }
 
   /**
+   * @param {!ImageTile} tile
+   * @return {string}
+   */
+  getClassForEmptyTile_(tile) {
+    return `photo-inner-container ${
+        (this.isGooglePhotosTile_(tile) ? 'google-photos-empty' :
+                                          'photo-empty')}`;
+  }
+
+  /**
+   * @param {!ImageTile} tile
+   * @return {string}
+   */
+  getImageUrlForEmptyTile_(tile) {
+    return `//personalization/common/${
+        (this.isGooglePhotosTile_(tile) ? 'google_photos.svg' :
+                                          'no_images.svg')}`;
+  }
+
+  /**
    * Notify trusted code that a user selected a collection.
    * @private
    * @param {!Event} e

@@ -31,15 +31,16 @@
       </template>
       <template is="dom-if" if="[[isEmptyTile_(item)]]">
         <div tabindex$="[[tabIndex]]" role="button" aria-disabled="[[!isSelectableTile_(item)]]"
-            class="photo-inner-container photo-empty" selectable$="[[isSelectableTile_(item)]]"
+            class$="[[getClassForEmptyTile_(item)]]" selectable$="[[isSelectableTile_(item)]]"
             on-click="onCollectionSelected_" on-keypress="onCollectionSelected_">
           <div class$="[[getClassForImagesContainer_(item)]]">
-            <img src="//personalization/common/no_images.svg" aria-hidden="true">
+            <img src$="[[getImageUrlForEmptyTile_(item)]]" aria-hidden="true">
           </div>
           <div class="photo-text-container">
             <p title$="[[item.name]]">[[item.name]]</p>
             <p title$="[[item.count]]">[[item.count]]</p>
           </div>
+          <div class="photo-gradient-mask" hidden$="[[!isGooglePhotosTile_(item)]]"></div>
         </div>
       </template>
       <template is="dom-if" if="[[isImageTile_(item)]]">

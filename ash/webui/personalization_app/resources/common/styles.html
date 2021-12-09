@@ -122,12 +122,15 @@
       height: 50%;
     }
     .photo-images-container.photo-images-container-0 img {
-      flex: 0 1 0;
-      height: initial;
+      flex: none;
+      height: 64px;
       margin: 12px;
       min-width: initial;
-      object-fit: scale-down;
       width: initial;
+    }
+    .google-photos-empty .photo-images-container.photo-images-container-0 {
+      /* Google Photos tile's zero state should stay white even in dark mode. */
+      background-color: white;
     }
     @keyframes scale-up {
       from {
@@ -201,7 +204,7 @@
     .photo-gradient-mask {
       background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
           rgba(var(--google-grey-900-rgb), 55%));
-      border-radius: 12px;
+      border-radius: 0 0 12px 12px;
       height: 50%;
       left: 0;
       position: absolute;

@@ -66,6 +66,7 @@ static_resource_files = [
   "icon_192.png",
 
   "common/base.css",
+  "common/google_photos.svg",
   "common/no_images.svg",
 
   "trusted/index.html",
