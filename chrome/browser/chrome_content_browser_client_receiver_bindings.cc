@@ -324,7 +324,7 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
   chrome::internal::PopulateChromeFrameBinders(map, render_frame_host);
-  chrome::internal::PopulateChromeWebUIFrameBinders(map);
+  chrome::internal::PopulateChromeWebUIFrameBinders(map, render_frame_host);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();

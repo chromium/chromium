@@ -243,15 +243,9 @@ class HistoryClustersServiceTestBase : public testing::Test {
 class HistoryClustersServiceTest : public HistoryClustersServiceTestBase {
  public:
   HistoryClustersServiceTest() {
-    scoped_feature_list_.InitAndEnableFeature(kJourneys);
+    scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
   }
 };
-
-TEST_F(HistoryClustersServiceTest, ApplicationLocaleLanguage) {
-  EXPECT_EQ(
-      history_clusters_service_test_api_->GetServiceApplicationLocaleLanguage(),
-      "en");
-}
 
 TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   base::HistogramTester histogram_tester;
@@ -421,7 +415,7 @@ TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesUnitTest) {
 TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kJourneys, {{"JourneysMaxVisitsToCluster", "20"}});
+      internal::kJourneys, {{"JourneysMaxVisitsToCluster", "20"}});
 
   history::ContextID context_id = reinterpret_cast<history::ContextID>(1);
   auto visit = GetHardcodedTestVisits()[0];
@@ -751,7 +745,7 @@ class HistoryClustersServiceJourneysDisabledTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
-            kJourneys,
+            internal::kJourneys,
             kPersistContextAnnotationsInHistoryDb,
         });
   }
@@ -919,9 +913,9 @@ class HistoryClustersServiceMaxKeywordsTest
   HistoryClustersServiceMaxKeywordsTest() {
     // Set the max keyword phrases to 5.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kJourneys, {
-                       {kMaxKeywordPhrases.name, "5"},
-                   });
+        internal::kJourneys, {
+                                 {kMaxKeywordPhrases.name, "5"},
+                             });
   }
 };
 TEST_F(HistoryClustersServiceMaxKeywordsTest,

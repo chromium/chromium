@@ -4688,7 +4688,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"history-journeys", flag_descriptions::kJourneysName,
      flag_descriptions::kJourneysDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(history_clusters::kJourneys)},
+     FEATURE_VALUE_TYPE(history_clusters::internal::kJourneys)},
 
     {"history-journeys-omnibox-action",
      flag_descriptions::kJourneysOmniboxActionName,

@@ -14,6 +14,10 @@ namespace history_clusters {
 // Params & helpers functions
 
 // Returns true if Journeys in the Chrome History WebUI is enabled.
+// Callers with access to `HistoryClustersService` should use
+// `HistoryClustersService::IsJourneysEnabled` which has precomputed this value
+// with the g_browser_process locale. Renderer process callers will have to
+// use this function directly.
 bool IsJourneysEnabled(const std::string& application_locale);
 
 // A comma (or colon) separated list of allowed locales and languages for which
@@ -65,9 +69,11 @@ extern const base::FeatureParam<int> kNumVisitsToAlwaysShowAboveTheFold;
 
 // Features
 
+namespace internal {
 // Enables Journeys in the Chrome History WebUI. This flag shouldn't be checked
 // directly. Instead use `IsJourneysEnabled()` for the system language filter.
 extern const base::Feature kJourneys;
+}  // namespace internal
 
 // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
 // for this to take effect.

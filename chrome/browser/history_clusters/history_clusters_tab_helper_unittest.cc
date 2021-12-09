@@ -58,7 +58,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
   HistoryClustersTabHelperTest() {
     // This needs to be initialized as early as possible to avoid data races
     // with tasks on other threads checking if features are enabled.
-    feature_list_.InitAndEnableFeature(history_clusters::kJourneys);
+    feature_list_.InitAndEnableFeature(history_clusters::internal::kJourneys);
   }
 
   // ChromeRenderViewHostTestHarness:

@@ -17,7 +17,7 @@ TEST(HistoryClustersFeaturesTest, PlainEnabled) {
   EXPECT_FALSE(IsJourneysEnabled(" random junk "));
 
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({kJourneys, kOmniboxAction}, {});
+  features.InitWithFeatures({internal::kJourneys, kOmniboxAction}, {});
 
   EXPECT_TRUE(IsJourneysEnabled(""));
   EXPECT_TRUE(IsJourneysEnabled("en"));
@@ -30,7 +30,7 @@ TEST(HistoryClustersFeaturesTest, LocaleOrLanguageAllowlist) {
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
       {{
-           kJourneys,
+           internal::kJourneys,
            // Test that we're tolerant of spaces, colons, whole locales, as well
            // as primary language subcodes.
            {{"JourneysLocaleOrLanguageAllowlist", "en, fr:de:zh-TW"}},

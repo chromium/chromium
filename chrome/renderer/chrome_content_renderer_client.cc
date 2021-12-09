@@ -588,14 +588,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
     new webapps::WebPageMetadataAgent(render_frame);
 
 #if defined(OS_ANDROID)
-  const base::Feature& kSearchResultExtractorFeature =
-      features::kContinuousSearch;
+  const bool search_result_extractor_enabled =
+      base::FeatureList::IsEnabled(features::kContinuousSearch);
 #else
-  const base::Feature& kSearchResultExtractorFeature =
-      history_clusters::kJourneys;
+  const bool search_result_extractor_enabled =
+      history_clusters::IsJourneysEnabled(RenderThread::Get()->GetLocale());
 #endif
-  if (render_frame->IsMainFrame() &&
-      base::FeatureList::IsEnabled(kSearchResultExtractorFeature)) {
+  if (render_frame->IsMainFrame() && search_result_extractor_enabled) {
     continuous_search::SearchResultExtractorImpl::Create(render_frame);
   }
 

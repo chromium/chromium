@@ -140,6 +140,7 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
+#include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
@@ -154,7 +155,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_service.h"
 #include "components/search/ntp_features.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -673,7 +674,8 @@ void PopulateChromeFrameBinders(
 }
 
 void PopulateChromeWebUIFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
+    content::RenderFrameHost* render_frame_host) {
   RegisterWebUIControllerInterfaceBinder<::mojom::BluetoothInternalsHandler,
                                          BluetoothInternalsUI>(map);
 
@@ -727,7 +729,11 @@ void PopulateChromeWebUIFrameBinders(
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
       NewTabPageThirdPartyUI>(map);
 
-  if (base::FeatureList::IsEnabled(history_clusters::kJourneys)) {
+  auto* history_clusters_service =
+      HistoryClustersServiceFactory::GetForBrowserContext(
+          render_frame_host->GetProcess()->GetBrowserContext());
+  if (history_clusters_service &&
+      history_clusters_service->IsJourneysEnabled()) {
     RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
                                            HistoryUI>(map);
   }

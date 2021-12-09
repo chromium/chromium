@@ -22,7 +22,7 @@ namespace history_clusters {
 class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
  public:
   HistoryClustersHandlerBrowserTest() {
-    feature_list_.InitWithFeatures({history_clusters::kJourneys}, {});
+    feature_list_.InitWithFeatures({history_clusters::internal::kJourneys}, {});
   }
   ~HistoryClustersHandlerBrowserTest() override = default;
 

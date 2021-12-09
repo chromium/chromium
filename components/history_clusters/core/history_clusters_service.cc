@@ -40,7 +40,6 @@
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
@@ -289,7 +288,8 @@ HistoryClustersService::HistoryClustersService(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
-    : application_locale_language_(l10n_util::GetLanguage(application_locale)),
+    : is_journeys_enabled_(
+          ::history_clusters::IsJourneysEnabled(application_locale)),
       history_service_(history_service),
       visit_deletion_observer_(this),
       post_processing_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -354,9 +354,9 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
       visit_context_annotations.status.navigation_end_signals &&
       (visit_context_annotations.status.ukm_page_end_signals ||
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
-    // If the main kMemories feature is enabled, we want to persist visits.
+    // If the main Journeys feature is enabled, we want to persist visits.
     // And if the persist-only switch is enabled, we also want to persist them.
-    if (base::FeatureList::IsEnabled(kJourneys) ||
+    if (IsJourneysEnabled() ||
         base::FeatureList::IsEnabled(kPersistContextAnnotationsInHistoryDb)) {
       history_service_->AddContextAnnotationsForVisit(
           visit_context_annotations.visit_row.visit_id,
@@ -426,7 +426,7 @@ void HistoryClustersService::RemoveVisits(
 
 bool HistoryClustersService::DoesQueryMatchAnyCluster(
     const std::string& query) {
-  if (!base::FeatureList::IsEnabled(kJourneys))
+  if (!IsJourneysEnabled())
     return false;
 
   // We don't want any omnibox jank for low-end devices.

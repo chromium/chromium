@@ -35,7 +35,8 @@ void PopulateChromeFrameBinders(
 // GetInterface() handler callbacks for chrome-specific document-scoped
 // interfaces used from WebUI pages (e.g. chrome://bluetooth-internals).
 void PopulateChromeWebUIFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map);
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
+    content::RenderFrameHost* render_frame_host);
 
 // PopulateChromeWebUIFrameInterfaceBrokers registers BrowserInterfaceBrokers
 // for each WebUI, these brokers are used to handle that WebUI's JavaScript
