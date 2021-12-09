@@ -16,8 +16,6 @@ RuntimeManagerImpl* RuntimeManagerImpl::GetForWebContents(
 
 RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents) {}
 
-RuntimeManagerImpl::RuntimeManagerImpl() = default;
-
 RuntimeManagerImpl::~RuntimeManagerImpl() = default;
 
 void RuntimeManagerImpl::AddObserver(RuntimeObserver* observer) {
@@ -41,7 +39,7 @@ void RuntimeManagerImpl::SetUIState(UIState state) {
   }
 }
 
-base::WeakPtr<RuntimeManagerImpl> RuntimeManagerImpl::GetWeakPtr() {
+base::WeakPtr<RuntimeManager> RuntimeManagerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

@@ -70,7 +70,7 @@ Controller::Controller(
     content::WebContents* web_contents,
     Client* client,
     const base::TickClock* tick_clock,
-    base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+    base::WeakPtr<RuntimeManager> runtime_manager,
     std::unique_ptr<Service> service,
     std::unique_ptr<AutofillAssistantTtsController> tts_controller,
     ukm::UkmRecorder* ukm_recorder,

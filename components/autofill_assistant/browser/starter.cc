@@ -168,7 +168,7 @@ GetImplicitTriggeringDebugParametersFromCommandLine() {
 Starter::Starter(content::WebContents* web_contents,
                  StarterPlatformDelegate* platform_delegate,
                  ukm::UkmRecorder* ukm_recorder,
-                 base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+                 base::WeakPtr<RuntimeManager> runtime_manager,
                  const base::TickClock* tick_clock)
     : content::WebContentsObserver(web_contents),
       current_ukm_source_id_(

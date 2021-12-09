@@ -91,7 +91,7 @@ static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents,
     jboolean shown) {
-  RuntimeManagerImpl* runtime_manager = RuntimeManagerImpl::GetForWebContents(
+  RuntimeManager* runtime_manager = RuntimeManager::GetForWebContents(
       content::WebContents::FromJavaWebContents(jweb_contents));
   if (runtime_manager)
     runtime_manager->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
@@ -659,7 +659,7 @@ void ClientAndroid::CreateController(
   controller_ = std::make_unique<Controller>(
       GetWebContents(), /* client= */ this,
       base::DefaultTickClock::GetInstance(),
-      RuntimeManagerImpl::GetForWebContents(GetWebContents())->GetWeakPtr(),
+      RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), std::move(tts_controller), ukm::UkmRecorder::Get(),
       AnnotateDomModelServiceFactory::GetInstance()->GetForBrowserContext(
           GetWebContents()->GetBrowserContext()));

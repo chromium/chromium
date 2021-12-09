@@ -19,7 +19,7 @@
 #include "components/autofill_assistant/browser/element_area.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/metrics.h"
-#include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/script_tracker.h"
@@ -66,7 +66,7 @@ class Controller : public ScriptExecutorDelegate,
   Controller(content::WebContents* web_contents,
              Client* client,
              const base::TickClock* tick_clock,
-             base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+             base::WeakPtr<RuntimeManager> runtime_manager,
              std::unique_ptr<Service> service,
              std::unique_ptr<AutofillAssistantTtsController> tts_controller,
              ukm::UkmRecorder* ukm_recorder,
@@ -456,7 +456,7 @@ class Controller : public ScriptExecutorDelegate,
   ClientSettings settings_;
   const raw_ptr<Client> client_;
   const raw_ptr<const base::TickClock> tick_clock_;
-  base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
+  base::WeakPtr<RuntimeManager> runtime_manager_;
 
   // Lazily instantiate in GetWebController().
   std::unique_ptr<WebController> web_controller_;
