@@ -1169,8 +1169,11 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetCompositorFocusedMedian(smoothness_data.compositor_focused_median)
       .SetCompositorFocusedPercentile95(
           smoothness_data.compositor_focused_percentile_95)
-      .SetCompositorFocusedVariance(
-          smoothness_data.compositor_focused_variance);
+      .SetCompositorFocusedVariance(smoothness_data.compositor_focused_variance)
+      .SetScrollFocusedMedian(smoothness_data.scroll_focused_median)
+      .SetScrollFocusedPercentile95(
+          smoothness_data.scroll_focused_percentile_95)
+      .SetScrollFocusedVariance(smoothness_data.scroll_focused_variance);
   if (smoothness_data.worst_smoothness_after1sec >= 0)
     builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
   if (smoothness_data.worst_smoothness_after2sec >= 0)

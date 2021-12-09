@@ -68,6 +68,7 @@ struct CC_EXPORT FrameInfo {
 
   bool WasCompositorUpdateDropped() const;
   bool WasMainUpdateDropped() const;
+  bool WasScrollUpdateDropped() const;
 
  private:
   bool was_merged = false;

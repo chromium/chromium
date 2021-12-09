@@ -163,4 +163,15 @@ bool FrameInfo::WasMainUpdateDropped() const {
   return false;
 }
 
+bool FrameInfo::WasScrollUpdateDropped() const {
+  switch (scroll_thread) {
+    case SmoothEffectDrivingThread::kCompositor:
+      return WasCompositorUpdateDropped();
+    case SmoothEffectDrivingThread::kMain:
+      return WasMainUpdateDropped();
+    case SmoothEffectDrivingThread::kUnknown:
+      return false;
+  }
+}
+
 }  // namespace cc
