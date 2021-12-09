@@ -409,9 +409,6 @@ extern const char kDocumentTransitionDescription[];
 extern const char kDocumentTransitionSlowdownFactorName[];
 extern const char kDocumentTransitionSlowdownFactorDescription[];
 
-extern const char kEnableAutofillAccountWalletStorageName[];
-extern const char kEnableAutofillAccountWalletStorageDescription[];
-
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 

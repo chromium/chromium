@@ -612,12 +612,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUpdateHistoryEntryPointsInIncognito)},
-    {"enable-autofill-account-wallet-storage",
-     flag_descriptions::kEnableAutofillAccountWalletStorageName,
-     flag_descriptions::kEnableAutofillAccountWalletStorageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableAccountWalletStorage)},
     {"reading-list-messages", flag_descriptions::kReadingListMessagesName,
      flag_descriptions::kReadingListMessagesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kReadingListMessages)},

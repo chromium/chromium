@@ -141,11 +141,6 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kEnableAutofillAccountWalletStorageName[] =
-    "Enable the account data storage for autofill";
-const char kEnableAutofillAccountWalletStorageDescription[] =
-    "Enable the ephemeral storage for account data for autofill.";
-
 const char kEnableAutofillAddressSavePromptAddressVerificationName[] =
     "Autofill Address Save Prompts Address Verification";
 const char kEnableAutofillAddressSavePromptAddressVerificationDescription[] =

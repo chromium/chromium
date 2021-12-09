@@ -676,11 +676,6 @@ const char kDocumentTransitionSlowdownFactorDescription[] =
     "Slows down animations triggered by documentTransition JavaScript API for "
     "debugging.";
 
-const char kEnableAutofillAccountWalletStorageName[] =
-    "Enable the account data storage for autofill";
-const char kEnableAutofillAccountWalletStorageDescription[] =
-    "Enable the ephemeral storage for account data for autofill.";
-
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =

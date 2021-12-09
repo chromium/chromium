@@ -128,9 +128,6 @@ extern const char kDownloadVcardDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-extern const char kEnableAutofillAccountWalletStorageName[];
-extern const char kEnableAutofillAccountWalletStorageDescription[];
-
 // Title and description for the flag to enable address verification support in
 // autofill address save prompts.
 extern const char kEnableAutofillAddressSavePromptAddressVerificationName[];

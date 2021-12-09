@@ -1476,11 +1476,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-autofill-account-wallet-storage",
-    "owners": [ "treib", "jsaul@google.com", "butter-team@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "enable-autofill-credit-card-authentication",
     "owners": [ "jsaul@google.com", "siyua" ],
     "expiry_milestone": 105
