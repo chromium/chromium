@@ -135,6 +135,24 @@ TEST_F(CopyPreventionSettingsPolicyHandlerTest, TestValidPolicy) {
 }
 
 TEST_F(CopyPreventionSettingsPolicyHandlerTest,
+       TestValidPolicyNotAppliedIfNotFromCloud) {
+  policy::PolicyMap policy_map;
+  policy_map.Set(
+      kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+      policy::PolicyScope::POLICY_SCOPE_MACHINE,
+      policy::PolicySource::POLICY_SOURCE_PLATFORM,
+      base::JSONReader::Read(kValidPolicy, base::JSON_ALLOW_TRAILING_COMMAS),
+      nullptr);
+
+  auto handler = std::make_unique<CopyPreventionSettingsPolicyHandler>(
+      kPolicyName, enterprise::content::kCopyPreventionSettings, schema());
+
+  policy::PolicyErrorMap errors;
+  ASSERT_FALSE(handler->CheckPolicySettings(policy_map, &errors));
+  ASSERT_FALSE(errors.empty());
+}
+
+TEST_F(CopyPreventionSettingsPolicyHandlerTest,
        TestValidPolicyWithoutMinDataSizeDefaultsTo100) {
   policy::PolicyMap policy_map;
   policy_map.Set(kPolicyName, policy::PolicyLevel::POLICY_LEVEL_MANDATORY,

@@ -38,6 +38,13 @@ bool CopyPreventionSettingsPolicyHandler::CheckPolicySettings(
   if (!SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors))
     return false;
 
+  const policy::PolicyMap::Entry* policy = policies.Get(policy_name());
+  if (policy->source != policy::POLICY_SOURCE_CLOUD &&
+      policy->source != policy::POLICY_SOURCE_CLOUD_FROM_ASH) {
+    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    return false;
+  }
+
   const base::Value* enable = value->FindListKey(
       enterprise::content::kCopyPreventionSettingsEnableFieldName);
   const base::Value* disable = value->FindListKey(

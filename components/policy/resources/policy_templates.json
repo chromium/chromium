@@ -28988,6 +28988,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         'minimum_data_size': 100
       },
       'features': {
+        'cloud_only': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
