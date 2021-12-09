@@ -95,7 +95,9 @@ def ParseArgs():
 def main():
   args = ParseArgs()
   expectations.AssertCheckoutIsUpToDate()
-  results = queries.GetFlakyOrFailingTests(args.sample_period, args.project)
+  querier_instance = queries.BigQueryQuerier(args.sample_period, args.project)
+  results = querier_instance.GetFlakyOrFailingCiTests()
+  results.extend(querier_instance.GetFlakyOrFailingTryTests())
   aggregated_results = results_module.AggregateResults(results)
   result_output.GenerateHtmlOutputFile(aggregated_results)
   print('If there are many instances of failed tests, that may be indicative '
@@ -107,7 +109,7 @@ def main():
                                               args.group_by_tags,
                                               args.include_all_tags)
   else:
-    result_counts = queries.GetResultCounts(args.sample_period, args.project)
+    result_counts = querier_instance.GetResultCounts()
     expectations.IterateThroughResultsWithThresholds(
         aggregated_results, args.group_by_tags, result_counts,
         args.ignore_threshold, args.flaky_threshold, args.include_all_tags)

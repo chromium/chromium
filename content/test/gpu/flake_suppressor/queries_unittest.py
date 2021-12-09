@@ -7,11 +7,13 @@ import json
 import sys
 import unittest
 
+import six
+
 # This script is not Python 2-compatible, but some presubmit scripts end up
 # trying to parse this to find tests.
 # TODO(crbug.com/1198237): Remove this once all the GPU tests, and by
 # extension the presubmit scripts, are Python 3-compatible.
-if sys.version_info[0] == 3:
+if six.PY3:
   import unittest.mock as mock
 
 from flake_suppressor import queries
@@ -20,6 +22,8 @@ from flake_suppressor import unittest_utils as uu
 
 class GetResultCountsUnittest(unittest.TestCase):
   def setUp(self):
+    self._querier_instance = queries.BigQueryQuerier(1, 'project')
+    self._querier_instance._submitted_builds = set(['build-1234', 'build-2345'])
     self._subprocess_patcher = mock.patch(
         'flake_suppressor.queries.subprocess.run')
     self._subprocess_mock = self._subprocess_patcher.start()
@@ -27,54 +31,94 @@ class GetResultCountsUnittest(unittest.TestCase):
 
   def testBasic(self):
     """Tests that queried data is properly returned."""
-    query_result = [
-        {
+
+    def SideEffect(*_, **kwargs):
+      query = kwargs['input']
+      if 'submitted_builds' in query:
+        # Try results.
+        query_result = [{
+            'typ_tags': ['a1', 'a2', 'a3'],
+            'test_name': 'garbage.suite.garbage.alphanumeric',
+            'result_count': '200',
+        }, {
             'typ_tags': ['a', 'b', 'c'],
             'test_name': 'garbage.suite.garbage.alphabet',
-            'result_count': '100',
-        },
-        {
-            'typ_tags': ['1', '2', '3'],
-            'test_name': 'garbage.suite.garbage.numbers',
             'result_count': '50',
-        },
-    ]
-    fake_process = uu.FakeProcess(stdout=json.dumps(query_result))
-    self._subprocess_mock.return_value = fake_process
-    result_counts = queries.GetResultCounts(1, 'project')
+        }]
+      else:
+        # CI Results.
+        query_result = [
+            {
+                'typ_tags': ['a', 'b', 'c'],
+                'test_name': 'garbage.suite.garbage.alphabet',
+                'result_count': '100',
+            },
+            {
+                'typ_tags': ['1', '2', '3'],
+                'test_name': 'garbage.suite.garbage.numbers',
+                'result_count': '50',
+            },
+        ]
+      return uu.FakeProcess(stdout=json.dumps(query_result))
+
+    self._subprocess_mock.side_effect = SideEffect
+    result_counts = self._querier_instance.GetResultCounts()
     expected_result_counts = {
         ('a', 'b', 'c'): {
-            'alphabet': 100,
+            'alphabet': 150,
         },
         ('1', '2', '3'): {
             'numbers': 50,
         },
+        ('a1', 'a2', 'a3'): {
+            'alphanumeric': 200,
+        }
     }
     self.assertEqual(result_counts, expected_result_counts)
-    self._subprocess_mock.assert_called_once()
+    self.assertEqual(self._subprocess_mock.call_count, 2)
 
   def testIgnoredTags(self):
     """Tests that ignored tags are removed and their counts merged."""
-    query_result = [
-        {
+
+    def SideEffect(*_, **kwargs):
+      query = kwargs['input']
+      if 'submitted_builds' in query:
+        # Try results.
+        query_result = [
+            {
+                'typ_tags': ['linux', 'nvidia'],
+                'test_name': 'garbage.suite.garbage.linux',
+                'result_count': '25',
+            },
+            {
+                'typ_tags': ['linux', 'win-laptop'],
+                'test_name': 'garbage.suite.garbage.linux',
+                'result_count': '50',
+            },
+        ]
+      else:
+        # CI results.
+        query_result = [{
             'typ_tags': ['win', 'win-laptop'],
             'test_name': 'garbage.suite.garbage.windows',
             'result_count': '100',
-        },
-        {
+        }, {
             'typ_tags': ['win'],
             'test_name': 'garbage.suite.garbage.windows',
             'result_count': '50',
-        },
-        {
+        }, {
             'typ_tags': ['mac', 'exact'],
             'test_name': 'garbage.suite.garbage.mac',
             'result_count': '200',
-        },
-    ]
-    fake_process = uu.FakeProcess(stdout=json.dumps(query_result))
-    self._subprocess_mock.return_value = fake_process
-    result_counts = queries.GetResultCounts(1, 'project')
+        }, {
+            'typ_tags': ['linux'],
+            'test_name': 'garbage.suite.garbage.linux',
+            'result_count': '300',
+        }]
+      return uu.FakeProcess(stdout=json.dumps(query_result))
+
+    self._subprocess_mock.side_effect = SideEffect
+    result_counts = self._querier_instance.GetResultCounts()
     expected_result_counts = {
         tuple(['win']): {
             'windows': 150,
@@ -82,9 +126,15 @@ class GetResultCountsUnittest(unittest.TestCase):
         tuple(['mac']): {
             'mac': 200,
         },
+        tuple(['linux']): {
+            'linux': 350,
+        },
+        tuple(['linux', 'nvidia']): {
+            'linux': 25,
+        },
     }
     self.assertEqual(result_counts, expected_result_counts)
-    self._subprocess_mock.assert_called_once()
+    self.assertEqual(self._subprocess_mock.call_count, 2)
 
 
 if __name__ == '__main__':
