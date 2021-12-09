@@ -52,7 +52,7 @@
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
 #include "third_party/blink/renderer/core/loader/subresource_redirect_util.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -124,7 +124,7 @@ class ImageLoader::Task {
         update_behavior_(update_behavior),
         referrer_policy_(referrer_policy) {
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
-    probe::AsyncTaskScheduled(context, "Image", &async_task_id_);
+    async_task_context_.Schedule(context, "Image");
     world_ = context->GetCurrentWorld();
   }
 
@@ -132,7 +132,7 @@ class ImageLoader::Task {
     if (!loader_)
       return;
     ExecutionContext* context = loader_->GetElement()->GetExecutionContext();
-    probe::AsyncTask async_task(context, &async_task_id_);
+    probe::AsyncTask async_task(context, &async_task_context_);
     loader_->DoUpdateFromElement(world_, update_behavior_, referrer_policy_);
   }
 
@@ -149,7 +149,7 @@ class ImageLoader::Task {
   scoped_refptr<const DOMWrapperWorld> world_;
   network::mojom::ReferrerPolicy referrer_policy_;
 
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
   base::WeakPtrFactory<Task> weak_factory_{this};
 };
 
