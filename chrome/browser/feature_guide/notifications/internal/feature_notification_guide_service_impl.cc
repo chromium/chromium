@@ -73,10 +73,12 @@ void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures(
     if (base::Contains(scheduled_features_, feature))
       continue;
 
+#if defined(OS_ANDROID)
     if (!tracker_->WouldTriggerHelpUI(
             GetNotificationIphFeatureForFeature(feature))) {
       continue;
     }
+#endif
 
     ScheduleNotification(feature);
   }
@@ -113,11 +115,13 @@ void FeatureNotificationGuideServiceImpl::BeforeShowNotification(
   FeatureType feature = FeatureFromCustomData(notification_data->custom_data);
   DCHECK(feature != FeatureType::kInvalid);
 
+#if defined(OS_ANDROID)
   if (!tracker_->ShouldTriggerHelpUI(
           GetNotificationIphFeatureForFeature(feature))) {
     std::move(callback).Run(nullptr);
     return;
   }
+#endif
 
   std::move(callback).Run(std::move(notification_data));
 }

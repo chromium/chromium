@@ -86,6 +86,16 @@ extern const base::Feature kIPHDownloadSettingsFeature;
 extern const base::Feature kIPHDownloadInfoBarDownloadContinuingFeature;
 extern const base::Feature kIPHDownloadInfoBarDownloadsAreFasterFeature;
 extern const base::Feature kIPHEphemeralTabFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideSignInNotificationShownFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature;
+extern const base::Feature
+    kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature;
 extern const base::Feature kIPHFeedCardMenuFeature;
 extern const base::Feature kIPHHomePageButtonFeature;
 extern const base::Feature kIPHHomepageTileFeature;

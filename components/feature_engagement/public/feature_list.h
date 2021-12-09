@@ -100,6 +100,21 @@ DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadContinuingFeature,
 DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadsAreFasterFeature,
                        "IPH_DownloadInfoBarDownloadsAreFaster");
 DEFINE_VARIATION_PARAM(kIPHEphemeralTabFeature, "IPH_EphemeralTab");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature,
+    "IPH_FeatureNotificationGuideDefaultBrowserNotificationShown");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideSignInNotificationShownFeature,
+    "IPH_FeatureNotificationGuideSignInNotificationShown");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature,
+    "IPH_FeatureNotificationGuideIncognitoTabNotificationShown");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature,
+    "IPH_FeatureNotificationGuideNTPSuggestionCardNotificationShown");
+DEFINE_VARIATION_PARAM(
+    kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature,
+    "IPH_FeatureNotificationGuideVoiceSearchNotificationShown");
 DEFINE_VARIATION_PARAM(kIPHFeedCardMenuFeature, "IPH_FeedCardMenu");
 DEFINE_VARIATION_PARAM(kIPHHomepagePromoCardFeature, "IPH_HomepagePromoCard");
 DEFINE_VARIATION_PARAM(kIPHIdentityDiscFeature, "IPH_IdentityDisc");

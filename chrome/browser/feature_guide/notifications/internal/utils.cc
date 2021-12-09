@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/public/feature_list.h"
 
 namespace feature_guide {
@@ -71,14 +72,30 @@ FeatureType NotificationIdToFeature(const std::string& notification_id) {
   return FeatureType::kInvalid;
 }
 
+#if defined(OS_ANDROID)
 base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature) {
-  // TODO(shaktisahu): Implement.
   switch (feature) {
     case FeatureType::kIncognitoTab:
-      return feature_engagement::kIPHDemoMode;
+      return feature_engagement::
+          kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature;
+    case FeatureType::kNTPSuggestionCard:
+      return feature_engagement::
+          kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature;
+    case FeatureType::kVoiceSearch:
+      return feature_engagement::
+          kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature;
+    case FeatureType::kDefaultBrowser:
+      return feature_engagement::
+          kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature;
+    case FeatureType::kSignIn:
+      return feature_engagement::
+          kIPHFeatureNotificationGuideSignInNotificationShownFeature;
     default:
-      return feature_engagement::kIPHDemoMode;
+      NOTREACHED();
+      return feature_engagement::
+          kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature;
   }
 }
+#endif
 
 }  // namespace feature_guide

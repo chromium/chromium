@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/feature_guide/notifications/feature_type.h"
 
 namespace feature_guide {
@@ -27,8 +28,10 @@ std::string NotificationIdForFeature(FeatureType feature);
 // Returns the feature type from the notification ID.
 FeatureType NotificationIdToFeature(const std::string& notification_id);
 
+#if defined(OS_ANDROID)
 // Returns the notification IPH feature for the given feature.
 base::Feature GetNotificationIphFeatureForFeature(FeatureType& feature);
+#endif
 
 }  // namespace feature_guide
 
