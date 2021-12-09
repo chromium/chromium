@@ -5,24 +5,22 @@
 import * as animate from './animation.js';
 import {assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
-// eslint-disable-next-line no-unused-vars
 import {I18nString} from './i18n_string.js';
 import * as Comlink from './lib/comlink.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
-import {
-  Facing,
-} from './type.js';
+import {Facing} from './type.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Creates a canvas element for 2D drawing.
- * @param {{width: number, height: number}} params Width/Height of the canvas.
- * @return {{canvas: !HTMLCanvasElement, ctx: !CanvasRenderingContext2D}}
- *     Returns canvas element and the context for 2D drawing.
+ * @param params Width/Height of the canvas.
+ * @return Returns canvas element and the context for 2D drawing.
  */
-export function newDrawingCanvas({width, height}) {
+export function newDrawingCanvas(
+    {width, height}: {width: number, height: number}):
+    {canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D} {
   const canvas = dom.create('canvas', HTMLCanvasElement);
   canvas.width = width;
   canvas.height = height;
@@ -31,11 +29,7 @@ export function newDrawingCanvas({width, height}) {
   return {canvas, ctx};
 }
 
-/**
- * @param {!ImageBitmap} bitmap
- * @return {!Promise<!Blob>}
- */
-export function bitmapToJpegBlob(bitmap) {
+export function bitmapToJpegBlob(bitmap: ImageBitmap): Promise<Blob> {
   const {canvas, ctx} =
       newDrawingCanvas({width: bitmap.width, height: bitmap.height});
   ctx.drawImage(bitmap, 0, 0);
@@ -52,10 +46,10 @@ export function bitmapToJpegBlob(bitmap) {
 
 /**
  * Returns a shortcut string, such as Ctrl-Alt-A.
- * @param {!KeyboardEvent} event Keyboard event.
- * @return {string} Shortcut identifier.
+ * @param event Keyboard event.
+ * @return Shortcut identifier.
  */
-export function getShortcutIdentifier(event) {
+export function getShortcutIdentifier(event: KeyboardEvent): string {
   let identifier = (event.ctrlKey ? 'Ctrl-' : '') +
       (event.altKey ? 'Alt-' : '') + (event.shiftKey ? 'Shift-' : '') +
       (event.metaKey ? 'Meta-' : '');
@@ -90,17 +84,16 @@ export function getShortcutIdentifier(event) {
 /**
  * Opens help.
  */
-export function openHelp() {
+export function openHelp(): void {
   window.open(
       'https://support.google.com/chromebook/?p=camera_usage_on_chromebook');
 }
 
 /**
  * Sets up i18n messages on DOM subtree by i18n attributes.
- * @param {!Element|!DocumentFragment} rootElement Root of DOM subtree to be set
- *     up with.
+ * @param rootElement Root of DOM subtree to be set up with.
  */
-export function setupI18nElements(rootElement) {
+export function setupI18nElements(rootElement: Element|DocumentFragment): void {
   const getElements = (attr) =>
       dom.getAllFrom(rootElement, '[' + attr + ']', HTMLElement);
   const getMessage = (element, attr) =>
@@ -127,11 +120,8 @@ export function setupI18nElements(rootElement) {
 
 /**
  * Reads blob into Image.
- * @param {!Blob} blob
- * @return {!Promise<!HTMLImageElement>}
- * @throws {!Error}
  */
-export function blobToImage(blob) {
+export function blobToImage(blob: Blob): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -142,29 +132,30 @@ export function blobToImage(blob) {
 
 /**
  * Gets default facing according to device mode.
- * @return {!Facing}
  */
-export function getDefaultFacing() {
+export function getDefaultFacing(): Facing {
   return state.get(state.State.TABLET) ? Facing.ENVIRONMENT : Facing.USER;
 }
 
 /**
  * Toggle checked value of element.
- * @param {!HTMLInputElement} element
- * @param {boolean} checked
  */
-export function toggleChecked(element, checked) {
+export function toggleChecked(
+    element: HTMLInputElement, checked: boolean): void {
   element.checked = checked;
   element.dispatchEvent(new Event('change'));
 }
 
 /**
  * Binds on/off of specified state with different aria label on an element.
- * @param {{element: !Element, state: !state.State, onLabel: !I18nString,
- *     offLabel: !I18nString}} params
  */
 export function bindElementAriaLabelWithState(
-    {element, state: s, onLabel, offLabel}) {
+    {element, state: s, onLabel, offLabel}: {
+      element: Element,
+      state: state.State,
+      onLabel: I18nString,
+      offLabel: I18nString,
+    }): void {
   const update = (value) => {
     const label = value ? onLabel : offLabel;
     element.setAttribute('i18n-label', label);
@@ -176,9 +167,8 @@ export function bindElementAriaLabelWithState(
 
 /**
  * Sets inkdrop effect on button or label in setting menu.
- * @param {!HTMLElement} el
  */
-export function setInkdropEffect(el) {
+export function setInkdropEffect(el: HTMLElement): void {
   const tpl = instantiateTemplate('#inkdrop-template');
   el.appendChild(tpl);
   el.addEventListener('click', (e) => {
@@ -199,10 +189,8 @@ export function setInkdropEffect(el) {
 
 /**
  * Instantiates template with the target selector.
- * @param {string} selector
- * @return {!DocumentFragment}
  */
-export function instantiateTemplate(selector) {
+export function instantiateTemplate(selector: string): DocumentFragment {
   const tpl = dom.get(selector, HTMLTemplateElement);
   const doc = assertInstanceof(
       document.importNode(tpl.content, true), DocumentFragment);
@@ -213,10 +201,10 @@ export function instantiateTemplate(selector) {
 /**
  * Creates JS module by given |scriptUrl| under untrusted context with given
  * origin and returns its proxy.
- * @param {string} scriptUrl The URL of the script to load.
- * @return {!Promise<!Object>}
+ * @param scriptUrl The URL of the script to load.
  */
-export async function createUntrustedJSModule(scriptUrl) {
+export async function createUntrustedJSModule(scriptUrl: string):
+    Promise<unknown> {
   const untrustedPageReady = new WaitableEvent();
   const iFrame = dom.create('iframe', HTMLIFrameElement);
   iFrame.addEventListener('load', () => untrustedPageReady.signal());
@@ -235,20 +223,17 @@ export async function createUntrustedJSModule(scriptUrl) {
 
 /**
  * Sleeps for a specified time.
- * @param {number} ms Milliseconds to sleep.
- * @return {!Promise}
+ * @param ms Milliseconds to sleep.
  */
-export function sleep(ms) {
+export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
  * Gets value in px of a property in a StylePropertyMapReadOnly
- * @param {(!StylePropertyMapReadOnly|!StylePropertyMap)} style
- * @param {string} prop
- * @return {number}
  */
-export function getStyleValueInPx(style, prop) {
+export function getStyleValueInPx(
+    style: (StylePropertyMapReadOnly|StylePropertyMap), prop: string): number {
   return assertInstanceof(style.get(prop), CSSNumericValue).to('px').value;
 }
 
@@ -257,25 +242,15 @@ export function getStyleValueInPx(style, prop) {
  * before calling the first callback.
  */
 export class DelayInterval {
+  private intervalId: number|null = null;
+  private readonly delayTimeoutId: number;
   /**
-   * @param {function(): void} callback
-   * @param {number} delayMs Delay milliseconds at start.
-   * @param {number} intervalMs Interval in milliseconds.
-   * @public
+   * @param delayMs Delay milliseconds at start.
+   * @param intervalMs Interval in milliseconds.
    */
-  constructor(callback, delayMs, intervalMs) {
-    /**
-     * @type {?number}
-     * @private
-     */
-    this.intervalId_ = null;
-
-    /**
-     * @type {number}
-     * @private
-     */
-    this.delayTimeoutId_ = setTimeout(() => {
-      this.intervalId_ = setInterval(() => {
+  constructor(callback: () => void, delayMs: number, intervalMs: number) {
+    this.delayTimeoutId = setTimeout(() => {
+      this.intervalId = setInterval(() => {
         callback();
       }, intervalMs);
       callback();
@@ -285,21 +260,19 @@ export class DelayInterval {
   /**
    * Stop the interval.
    */
-  stop() {
-    if (this.intervalId_ === null) {
-      clearTimeout(this.delayTimeoutId_);
+  stop(): void {
+    if (this.intervalId === null) {
+      clearTimeout(this.delayTimeoutId);
     } else {
-      clearInterval(this.intervalId_);
+      clearInterval(this.intervalId);
     }
   }
 }
 
 /**
  * Share file with share API.
- * @param {!File} file
- * @return {!Promise}
  */
-export async function share(file) {
+export async function share(file: File): Promise<void> {
   const shareData = {files: [file]};
   try {
     if (!navigator.canShare(shareData)) {
@@ -311,4 +284,17 @@ export async function share(file) {
     // share target, share abort... with right treatment like toast
     // message.
   }
+}
+
+/**
+ * Check if a string value is a variant of an enum.
+ * @param value value to be checked
+ * @return the value if it's an enum variant, null otherwise
+ */
+export function checkEnumVariant<T extends string>(
+    enumType: {[key: string]: T}, value: string|null): T {
+  if (value === null || !Object.values<string>(enumType).includes(value)) {
+    return null;
+  }
+  return value as T;
 }

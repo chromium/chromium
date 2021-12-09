@@ -681,10 +681,7 @@ export class DeviceOperator {
   /**
    * Creates a new instance of DeviceOperator if it is not set. Returns the
    *     exist instance.
-   * TODO(b/172340451): Use force casting rather than template for the type
-   *     checking of Proxy after switching to TypeScript.
-   * @return {!Promise<?T>} The singleton instance.
-   * @template T
+   * @return {!Promise<!DeviceOperator>} The singleton instance.
    */
   static async getInstance() {
     await readyEvent.wait();
@@ -705,7 +702,7 @@ export class DeviceOperator {
         return target[property];
       },
     };
-    return /** @type {!T} */ (new Proxy(instance, deviceOperatorWrapper));
+    return new Proxy(instance, deviceOperatorWrapper);
   }
 
   /**

@@ -400,7 +400,7 @@ export class Modes {
    * @private
    */
   get allModeNames_() {
-    return Object.keys(this.allModes_);
+    return Object.values(Mode);
   }
 
   /**

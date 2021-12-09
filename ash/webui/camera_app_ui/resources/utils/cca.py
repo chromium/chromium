@@ -60,8 +60,8 @@ def build_preload_images_js(outdir):
 def gen_files_are_hard_links(gen_dir):
     cca_root = os.getcwd()
 
-    util_js = os.path.join(cca_root, 'js/util.js')
-    util_js_in_gen = os.path.join(gen_dir, 'js/util.js')
+    util_js = os.path.join(cca_root, 'js/util.ts')
+    util_js_in_gen = os.path.join(gen_dir, 'js/util.ts')
     return os.stat(util_js).st_ino == os.stat(util_js_in_gen).st_ino
 
 
