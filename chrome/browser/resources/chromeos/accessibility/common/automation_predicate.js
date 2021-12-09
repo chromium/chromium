@@ -549,6 +549,14 @@ AutomationPredicate = class {
       return true;
     }
 
+    // Ignore list markers that are followed by a static text.
+    // The bullet will be added before the static text (or static text's inline
+    // text box) in output.js.
+    if (node.role === Role.LIST_MARKER && node.nextSibling &&
+        node.nextSibling.role === Role.STATIC_TEXT) {
+      return true;
+    }
+
     // Don't ignore nodes with names or name-like attribute.
     if (node.name || node.value || node.description || node.url) {
       return false;

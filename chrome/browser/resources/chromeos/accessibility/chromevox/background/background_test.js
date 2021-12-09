@@ -150,6 +150,24 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     `;
   }
 
+  get nestedListDoc() {
+    return `
+      <div>
+        <ul>
+          <li>Lemons</li>
+          <li>Oranges</li>
+          <li>Berries
+            <ul>
+              <li>Strawberries</li>
+              <li>Raspberries</li>
+            </ul>
+          </li>
+          <li>Bananas</li>
+        </ul>
+      </div>
+    `;
+  }
+
   /**
    * Fires an onCustomSpokenFeedbackToggled event with enabled state of
    * |enabled|.
@@ -2257,6 +2275,58 @@ TEST_F('ChromeVoxBackgroundTest', 'LevelEndsForNestedLists', function() {
         .call(doCmd('nextObject'))
         // Nested level is not mentioned for level 1.
         .expectSpeech('• Bananas', 'List item', 'List end')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'NestedListNavigationSimple', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.nestedListDoc, function(root) {
+    mockFeedback.expectSpeech('• Lemons', 'List item', 'List', 'with 4 items')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• Oranges', 'List item')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• ', 'Berries', 'List item')
+        .expectBraille('• Berries lstitm')
+        .call(doCmd('nextObject'))
+        .expectSpeech('◦ Strawberries', 'List item', 'List', 'with 2 items')
+        .call(doCmd('nextObject'))
+        .expectSpeech('◦ Raspberries', 'List item', 'List end')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• Bananas', 'List item', 'List end')
+        .expectBraille('• Bananas lstitm lst end')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'NestedListNavigationMixed', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.nestedListDoc, function(root) {
+    mockFeedback.expectSpeech('• Lemons', 'List item', 'List', 'with 4 items')
+        .call(doCmd('nextObject'))
+        .expectSpeech('• Oranges', 'List item')
+        .call(doCmd('nextLine'))
+        .expectSpeech('• ', 'Berries', 'List item')
+        .call(doCmd('nextLine'))
+        .expectSpeech('◦ Strawberries', 'List item', 'List', 'with 2 items')
+        .call(doCmd('previousLine'))
+        .expectSpeech('• ', 'Berries')
+        .call(doCmd('nextWord'))
+        .expectSpeech('◦ Strawberries')
+        .call(doCmd('nextWord'))
+        .expectSpeech('◦ Raspberries')
+        .call(doCmd('previousObject'))
+        .call(doCmd('previousObject'))
+        .expectSpeech('• ', 'Berries')
+        .call(doCmd('previousCharacter'))
+        .call(doCmd('previousCharacter'))
+        .call(doCmd('previousCharacter'))
+        .expectSpeech('g')  // For Oranges
+        .call(doCmd('nextGroup'))
+        .expectSpeech('◦ Strawberries', '◦ Raspberries')
+        .clearPendingOutput()
+        .call(doCmd('previousGroup'))
+        .expectSpeech('• Oranges')
         .replay();
   });
 });

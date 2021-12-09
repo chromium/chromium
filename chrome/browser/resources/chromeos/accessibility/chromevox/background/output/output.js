@@ -776,6 +776,8 @@ Output = class {
               owner.formatPhoneticReading_(node, buff);
             } else if (token === 'listNestedLevel') {
               owner.formatListNestedLevel_(node, buff);
+            } else if (token === 'precedingBullet') {
+              owner.formatPrecedingBullet_(node, buff);
             } else if (tree.firstChild) {
               owner.formatCustomFunction_(
                   node, token, tree, buff, options, ruleStr);
@@ -1458,6 +1460,24 @@ Output = class {
       current = current.parent;
     }
     this.append_(buff, level.toString());
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @param {!Array<Spannable>} buff
+   */
+  formatPrecedingBullet_(node, buff) {
+    let current = node;
+    if (current.role === RoleType.INLINE_TEXT_BOX) {
+      current = current.parent;
+    }
+    if (!current || current.role !== RoleType.STATIC_TEXT) {
+      return;
+    }
+    current = current.previousSibling;
+    if (current && current.role === RoleType.LIST_MARKER) {
+      this.append_(buff, current.name || '');
+    }
   }
 
   /**
@@ -2699,7 +2719,7 @@ Output.RULES = {
     },
     imeCandidate:
         {speak: '$name $phoneticReading @describe_index($posInSet, $setSize)'},
-    inlineTextBox: {speak: `$name=`},
+    inlineTextBox: {speak: `$precedingBullet $name=`},
     inputTime: {enter: `$nameFromNode $role $state $restriction $description`},
     labelText: {
       speak: `$name $value $state $restriction $roleDescription $description`,
@@ -2771,7 +2791,7 @@ Output.RULES = {
       speak: `$name $node(activeDescendant) $value $state $restriction $role
           $if($selected, @aria_selected_true) $description`
     },
-    staticText: {speak: `$name= $description`},
+    staticText: {speak: `$precedingBullet $name= $description`},
     switch: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_switch_on($name),
