@@ -223,9 +223,15 @@ void SpeechRecognitionServiceTest::SetUpPrefs() {
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
           .Append(soda::kSodaTestBinaryRelativePath);
 #else
+  base::FilePath soda_test_binary_path =
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(soda::kSodaTestBinaryRelativePath);
+  DVLOG(0) << "SODA test path: " << soda_test_binary_path.value().c_str();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(base::PathExists(soda_test_binary_path));
+
   soda_binary_path = GetSodaTestBinaryPath();
   DVLOG(0) << "SODA binary path: " << soda_binary_path.value().c_str();
-  base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::PathExists(soda_binary_path));
 #endif
   g_browser_process->local_state()->SetFilePath(prefs::kSodaBinaryPath,
