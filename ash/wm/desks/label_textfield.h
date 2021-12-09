@@ -29,7 +29,12 @@ class ASH_EXPORT LabelTextfield : public views::Textfield,
   // The border radius on the text field.
   static constexpr size_t kLabelTextfieldBorderRadius = 4;
 
-  void SetTextAndElideIfNeeded(const std::u16string& text);
+  // The max number of characters (UTF-16) allowed for the textfield.
+  static constexpr size_t kMaxLength = 300;
+
+  // Use the potential max size of `this` to calculate elision, not its current
+  // size to avoid eliding names that don't need to be.
+  virtual void SetTextAndElideIfNeeded(const std::u16string& text);
 
   // If this view has focus, make the view's border visible and change
   // background to its active color. If it doesn't have focus, hide the view's

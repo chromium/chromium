@@ -17,6 +17,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/label_textfield.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -311,9 +312,9 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
   // To avoid potential security and memory issues, we don't allow desk names to
   // have an unbounded length. Therefore we trim if needed at kMaxLength UTF-16
   // boundary. Note that we don't care about code point boundaries in this case.
-  if (new_contents.size() > DeskNameView::kMaxLength) {
+  if (new_contents.size() > LabelTextfield::kMaxLength) {
     std::u16string trimmed_new_contents = new_contents;
-    trimmed_new_contents.resize(DeskNameView::kMaxLength);
+    trimmed_new_contents.resize(LabelTextfield::kMaxLength);
     desk_name_view_->SetText(trimmed_new_contents);
   }
 

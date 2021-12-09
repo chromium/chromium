@@ -1013,20 +1013,20 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  // If any desk name is being modified, let the DeskNameView handle the key
-  // events.
-  // Note that Tab presses should commit any pending desk name changes.
+  // If any name is being modified, let the name view handle the key events.
+  // Note that Tab presses should commit any pending name changes.
   const ui::KeyboardCode key_code = event->key_code();
   const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
   const bool should_commit_name_changes =
       is_key_press && key_code == ui::VKEY_TAB;
   for (auto& grid : grid_list_) {
-    if (grid->IsDeskNameBeingModified()) {
+    if (grid->IsDeskNameBeingModified() ||
+        grid->IsTemplateNameBeingModified()) {
       if (!should_commit_name_changes)
         return;
 
       // Commit and proceed.
-      grid->CommitDeskNameChanges();
+      grid->CommitNameChanges();
       break;
     }
   }

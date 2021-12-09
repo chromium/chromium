@@ -61,6 +61,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   // asynchronously based on the user's decision.
   void MaybeSaveActiveDeskAsTemplate();
 
+  // Saves or updates the `desk_template` to the model.
+  void SaveOrUpdateDeskTemplate(std::unique_ptr<DeskTemplate> desk_template);
+
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
   // messages.
@@ -75,9 +78,6 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
  private:
   friend class DesksTemplatesPresenterTestApi;
-
-  // Saves the `desk_template` to the model.
-  void SaveDeskTemplate(std::unique_ptr<DeskTemplate> desk_template);
 
   // Callback ran after querying the model for a list of entries. This function
   // also contains logic for updating the UI.

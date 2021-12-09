@@ -48,6 +48,10 @@ class DesksTemplatesGridView : public views::View {
   void UpdateGridUI(const std::vector<DeskTemplate*>& desk_templates,
                     const gfx::Rect& grid_bounds);
 
+  // Returns true if a template name is being modified using an item view's
+  // `DesksTemplatesNameView` in this grid.
+  bool IsTemplateNameBeingModified() const;
+
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;

@@ -37,6 +37,7 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -876,7 +877,7 @@ void OverviewGrid::UpdateDropTargetBackgroundVisibility(
 }
 
 void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
-  CommitDeskNameChanges();
+  CommitNameChanges();
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->OnSelectorItemDragStarted(item);
 }
@@ -1665,17 +1666,23 @@ bool OverviewGrid::IsDeskNameBeingModified() const {
   return desks_bar_view_ && desks_bar_view_->IsDeskNameBeingModified();
 }
 
-void OverviewGrid::CommitDeskNameChanges() {
+void OverviewGrid::CommitNameChanges() {
   // The desks bar widget may not be ready, since it is created asynchronously
   // later when the entering overview animations finish.
   if (desks_widget_)
     DeskNameView::CommitChanges(desks_widget_.get());
+
+  // The templates grid may not be shown.
+  if (desks_templates_grid_widget_)
+    DesksTemplatesNameView::CommitChanges(desks_templates_grid_widget_.get());
 }
 
 void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   if (!desks_templates_grid_widget_) {
     desks_templates_grid_widget_ =
         DesksTemplatesGridView::CreateDesksTemplatesGridWidget(root_window_);
+    desks_templates_grid_view_ = desks_templates_grid_widget_->SetContentsView(
+        std::make_unique<DesksTemplatesGridView>());
   }
 
   // Before showing the grid, we need to hide the overview items. However, we
@@ -1739,6 +1746,11 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
   return desks_templates_grid_widget_ &&
          desks_templates_grid_widget_->IsVisible();
+}
+
+bool OverviewGrid::IsTemplateNameBeingModified() const {
+  return desks_templates_grid_view_ &&
+         desks_templates_grid_view_->IsTemplateNameBeingModified();
 }
 
 void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {

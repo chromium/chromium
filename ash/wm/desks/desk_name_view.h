@@ -27,9 +27,6 @@ class ASH_EXPORT DeskNameView : public LabelTextfield {
   DeskNameView& operator=(const DeskNameView&) = delete;
   ~DeskNameView() override;
 
-  // The max number of characters (UTF-16) allowed for desks' names.
-  static constexpr size_t kMaxLength = 300;
-
   // Commits an on-going desk name change (if any) by bluring the focus away
   // from any view on |widget|, where |widget| should be the desks bar widget.
   static void CommitChanges(views::Widget* widget);

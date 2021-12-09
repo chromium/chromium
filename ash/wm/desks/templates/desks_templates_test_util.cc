@@ -66,6 +66,14 @@ DesksTemplatesIconViewTestApi::DesksTemplatesIconViewTestApi(
 
 DesksTemplatesIconViewTestApi::~DesksTemplatesIconViewTestApi() = default;
 
+DesksTemplatesNameViewTestApi::DesksTemplatesNameViewTestApi(
+    const DesksTemplatesNameView* desks_templates_name_view)
+    : desks_templates_name_view_(desks_templates_name_view) {
+  DCHECK(desks_templates_name_view_);
+}
+
+DesksTemplatesNameViewTestApi::~DesksTemplatesNameViewTestApi() = default;
+
 DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index) {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
