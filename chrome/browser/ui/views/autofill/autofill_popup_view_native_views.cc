@@ -1082,10 +1082,12 @@ void AutofillPopupFooterView::CreateContent() {
   }
 
   // GetCornerRadius adds extra height to the footer to account for rounded
-  // corners.
+  // corners. If the feature UseImprovedSuggestionUi is used, this is not
+  // necessary because there is an additional padding.
   layout_manager->set_minimum_cross_axis_size(
       views::MenuConfig::instance().touchable_menu_height +
-      AutofillPopupBaseView::GetCornerRadius());
+      (UseImprovedSuggestionUi() ? 0
+                                 : AutofillPopupBaseView::GetCornerRadius()));
 
   auto main_text_label = CreateMainTextView();
   main_text_label->SetEnabled(!suggestion.is_loading);
@@ -1465,6 +1467,36 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     }
   }
 
+  // Convenience pointers to the content area view and layout that are used to
+  // add top-level content. Note that those are replaced below if the feature
+  // kAutofillVisualImprovementsForSuggestionUi is enabled.
+  // TODO(crbug.com/1274134): Clean up once improvements are launched.
+  raw_ptr<views::View> content_view = this;
+  raw_ptr<views::BoxLayout> content_layout = layout_;
+
+  // If kAutofillVisualImprovementsForSuggestionUi is enabled, introduce an
+  // additional view with a vertical padding that wraps the full content of the
+  // bubble. This is similar to the padding_wrapper used in the scroll area, but
+  // it allows to add a padding below the footer.
+  if (UseImprovedSuggestionUi()) {
+    // Create the view and set the convenience pointers defined above.
+    std::unique_ptr<views::View> content_padding_wrapper =
+        std::make_unique<views::View>();
+
+    content_layout = content_padding_wrapper->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+
+    // This adds a padding area on the top and the bottom of the bubble content.
+    content_padding_wrapper->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(GetContentsVerticalPadding(), 0)));
+
+    content_view = AddChildView(std::move(content_padding_wrapper));
+
+    content_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kStart);
+  }
+
   if (!rows_.empty()) {
     // Create a container to wrap the "regular" (non-footer) rows.
     std::unique_ptr<views::View> body_container =
@@ -1485,26 +1517,31 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     scroll_view_->SetDrawOverflowIndicator(false);
     scroll_view_->ClipHeightTo(0, body_container_->GetPreferredSize().height());
 
-    // Use an additional container to apply padding outside the scroll view, so
-    // that the padding area is stationary. This ensures that the rounded
-    // corners appear properly; on Mac, the clipping path will not apply
-    // properly to a scrollable area. NOTE: GetContentsVerticalPadding is
-    // guaranteed to return a size which accommodates the rounded corners.
-    // Add the padding to the top unconditionally, but only add a padding to the
-    // bottom if there are no footer items to follow or if the feature to
-    // improve the UI is not enabled.
     // TODO(crbug.com/1274134): Clean up once improvements are launched.
-    views::View* padding_wrapper = new views::View();
-    padding_wrapper->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-        GetContentsVerticalPadding(), 0,
-        (!UseImprovedSuggestionUi() || footer_item_line_numbers.empty())
-            ? GetContentsVerticalPadding()
-            : 0,
-        0)));
-    padding_wrapper->SetLayoutManager(std::make_unique<views::FillLayout>());
-    padding_wrapper->AddChildView(scroll_view_.get());
-    AddChildView(padding_wrapper);
-    layout_->SetFlexForView(padding_wrapper, 1);
+    // Note, the padding wrapper is not needed if the content_padding_wrapper is
+    // used.
+    if (UseImprovedSuggestionUi()) {
+      content_view->AddChildView(scroll_view_.get());
+      content_layout->SetFlexForView(scroll_view_.get(), 1);
+    } else {
+      // Use an additional container to apply padding outside the scroll view,
+      // so that the padding area is stationary. This ensures that the rounded
+      // corners appear properly; on Mac, the clipping path will not apply
+      // properly to a scrollable area. NOTE: GetContentsVerticalPadding is
+      // guaranteed to return a size which accommodates the rounded corners.
+      // Add the padding to the top unconditionally, but only add a padding to
+      // the bottom if there are no footer items to follow.
+      views::View* padding_wrapper = new views::View();
+      padding_wrapper->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+          GetContentsVerticalPadding(), 0,
+          (footer_item_line_numbers.empty()) ? GetContentsVerticalPadding() : 0,
+          0)));
+
+      padding_wrapper->SetLayoutManager(std::make_unique<views::FillLayout>());
+      padding_wrapper->AddChildView(scroll_view_.get());
+      content_view->AddChildView(padding_wrapper);
+      content_layout->SetFlexForView(padding_wrapper, 1);
+    }
   }
 
   if (footer_item_line_numbers.empty()) {
@@ -1533,8 +1570,8 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     footer_container->AddChildView(rows_.back());
   }
 
-  footer_container_ = AddChildView(footer_container);
-  layout_->SetFlexForView(footer_container_, 0);
+  footer_container_ = content_view->AddChildView(footer_container);
+  content_layout->SetFlexForView(footer_container_, 0);
 }
 
 int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
