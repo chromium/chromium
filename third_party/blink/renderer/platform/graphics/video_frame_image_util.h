@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_VIDEO_FRAME_IMAGE_UTIL_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
