@@ -31,6 +31,8 @@ enum class BackupRefPtrEnabledProcesses {
   kBrowserOnly,
   // BRP enabled only in the browser and renderer processes.
   kBrowserAndRenderer,
+  // BRP enabled in all processes, except renderer.
+  kNonRenderer,
   // BRP enabled in all processes.
   kAllProcesses,
 };

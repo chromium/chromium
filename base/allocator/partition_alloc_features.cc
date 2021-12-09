@@ -42,6 +42,7 @@ constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
         {BackupRefPtrEnabledProcesses::kBrowserOnly, "browser-only"},
         {BackupRefPtrEnabledProcesses::kBrowserAndRenderer,
          "browser-and-renderer"},
+        {BackupRefPtrEnabledProcesses::kNonRenderer, "non-renderer"},
         {BackupRefPtrEnabledProcesses::kAllProcesses, "all-processes"}};
 
 const base::FeatureParam<BackupRefPtrEnabledProcesses>

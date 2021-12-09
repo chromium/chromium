@@ -618,19 +618,23 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   );
 
+  // BackupRefPtr_Effective and PCScan_Effective records whether or not
+  // BackupRefPtr and/or PCScan are enabled. The experiments aren't independent,
+  // so having a synthetic Finch will help look only at cases where one isn't
+  // affected by the other.
+
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Records whether or not BackupRefPtr and/or PCScan is enabled. The
-  // experiments aren't independent, so having a synthetic Finch will help look
-  // only at cases where one isn't affected by the other.
-  bool brp_enabled =
+  bool brp_finch_enabled = false;
+  ALLOW_UNUSED_LOCAL(brp_finch_enabled);
+  bool brp_truly_enabled = false;
+  ALLOW_UNUSED_LOCAL(brp_truly_enabled);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocBackupRefPtr) &&
-      (base::features::kBackupRefPtrModeParam.Get() ==
-       base::features::BackupRefPtrMode::kEnabled);
-#else
-      false;
-#endif
+  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocBackupRefPtr))
+    brp_finch_enabled = true;
+  if (brp_finch_enabled && base::features::kBackupRefPtrModeParam.Get() ==
+                               base::features::BackupRefPtrMode::kEnabled)
+    brp_truly_enabled = true;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   bool pcscan_enabled =
 #if defined(PA_ALLOW_PCSCAN)
       base::FeatureList::IsEnabled(
@@ -638,10 +642,69 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #else
       false;
 #endif
+
+  std::string brp_group_name;
+  if (pcscan_enabled) {
+    // If PCScan is enabled, just ignore the population.
+    brp_group_name = "Ignore";
+  } else if (brp_finch_enabled) {
+    switch (base::features::kBackupRefPtrModeParam.Get()) {
+      case base::features::BackupRefPtrMode::kEnabled:
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        brp_group_name = "EnabledPrevSlot";
+#else
+        brp_group_name = "EnabledBeforeAlloc";
+#endif
+        break;
+      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
+        brp_group_name = "DisabledBut2WaySplit";
+        break;
+      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
+        brp_group_name = "DisabledBut3WaySplit";
+        break;
+    }
+
+    std::string process_selector;
+    switch (base::features::kBackupRefPtrEnabledProcessesParam.Get()) {
+      case base::features::BackupRefPtrEnabledProcesses::kBrowserOnly:
+        process_selector = "BrowserOnly";
+        break;
+      case base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer:
+        process_selector = "BrowserAndRenderer";
+        break;
+      case base::features::BackupRefPtrEnabledProcesses::kNonRenderer:
+        process_selector = "NonRenderer";
+        break;
+      case base::features::BackupRefPtrEnabledProcesses::kAllProcesses:
+        process_selector = "AllProcesses";
+        break;
+    }
+
+    brp_group_name += ("_" + process_selector);
+  } else {
+    brp_group_name = "Disabled";
+  }
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "BackupRefPtrAndPCScan",
-      brp_enabled ? (pcscan_enabled ? "BothEnabled" : "BackupRefPtrEnabledOnly")
-                  : (pcscan_enabled ? "PCScanEnabledOnly" : "BothDisabled"));
+      "BackupRefPtr_Effective", brp_group_name);
+
+  std::string pcscan_group_name;
+#if defined(PA_ALLOW_PCSCAN)
+  if (brp_truly_enabled) {
+    // If BRP is enabled, just ignore the population. Check brp_truly_enabled,
+    // not brp_finch_enabled, because there are certain modes where BRP is
+    // actually disabled.
+    pcscan_group_name = "Ignore";
+  } else {
+    pcscan_group_name = (pcscan_enabled ? "Enabled" : "Disabled");
+  }
+#else
+  // On certain platforms, PCScan is not supported and permanently disabled.
+  // Don't lump it into "Disabled", so that belonging to "Enabled"/"Disabled" is
+  // fully controlled by Finch and thus have identical population sizes.
+  pcscan_group_name = "Unavailable";
+#endif  // defined(PA_ALLOW_PCSCAN)
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("PCScan_Effective",
+                                                            pcscan_group_name);
 
   // This synthetic Finch setting reflects the new USE_BACKUP_REF_PTR behavior,
   // which simply compiles in the BackupRefPtr support, but keeps it disabled at

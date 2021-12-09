@@ -533,11 +533,13 @@ void ConfigurePartitions(
     PA_DCHECK(!enable_brp);
     PA_DCHECK(!use_dedicated_aligned_partition);
     PA_DCHECK(!current_root->with_thread_cache);
-    auto* root_with_thread_cache =
-        thread_cache_on_non_quarantinable_partition
-            ? internal::NonQuarantinableAllocator::Instance().root()
-            : current_root;
-    root_with_thread_cache->EnableThreadCacheIfSupported();
+    if (thread_cache_on_non_quarantinable_partition) {
+      // The caller is responsible for turning thread cache there. Here, we're
+      // just making sure nobody else turned it on for themselves.
+      // TODO(bartekn): Turn on thread cache in one spot, for consistence.
+    } else {
+      current_root->EnableThreadCacheIfSupported();
+    }
     return;
   }
 
@@ -590,11 +592,10 @@ void ConfigurePartitions(
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
 
-  // Enable thread-cache on the non-quarantinable partition, if specified.
   if (thread_cache_on_non_quarantinable_partition) {
-    internal::NonQuarantinableAllocator::Instance()
-        .root()
-        ->EnableThreadCacheIfSupported();
+    // The caller is responsible for turning thread cache there. In this
+    // function, we're just making sure nobody else turned it on for themselves.
+    // TODO(bartekn): Turn on thread cache in one spot, for consistence.
   }
 }
 
@@ -603,6 +604,8 @@ void EnablePCScan(base::internal::PCScan::InitConfig config) {
   internal::PCScan::Initialize(config);
 
   internal::PCScan::RegisterScannableRoot(Allocator());
+  if (OriginalAllocator() != nullptr)
+    internal::PCScan::RegisterScannableRoot(OriginalAllocator());
   if (Allocator() != AlignedAllocator())
     internal::PCScan::RegisterScannableRoot(AlignedAllocator());
 
