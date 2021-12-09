@@ -56,6 +56,9 @@ import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -70,11 +73,13 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -130,6 +135,12 @@ public class AppMenuPropertiesDelegateUnitTest {
     public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
     public BookmarkBridge mBookmarkBridge;
+    @Mock
+    private IdentityManager mIdentityManagerMock;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock
+    private SyncService mSyncServiceMock;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -199,6 +210,15 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private void setShoppingListItemRowEnabled(boolean enabled) {
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
+        when(mIdentityServicesProviderMock.getIdentityManager(any(Profile.class)))
+                .thenReturn(mIdentityManagerMock);
+        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncServiceMock));
+        when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(enabled);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabledForTesting(
+                    enabled);
+        });
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, enabled);
     }
 

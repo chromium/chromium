@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin.services;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
@@ -11,10 +13,15 @@ import org.chromium.chrome.browser.profiles.Profile;
  * Bridge to UnifiedConsentService.
  */
 public class UnifiedConsentServiceBridge {
+    private static Boolean sUrlKeyedAnonymizedDataCollectionEnabledForTesting;
+
     private UnifiedConsentServiceBridge() {}
 
     /** Returns whether collection of URL-keyed anonymized data is enabled. */
     public static boolean isUrlKeyedAnonymizedDataCollectionEnabled(Profile profile) {
+        if (sUrlKeyedAnonymizedDataCollectionEnabledForTesting != null) {
+            return sUrlKeyedAnonymizedDataCollectionEnabledForTesting;
+        }
         return UnifiedConsentServiceBridgeJni.get().isUrlKeyedAnonymizedDataCollectionEnabled(
                 profile);
     }
@@ -38,6 +45,12 @@ public class UnifiedConsentServiceBridge {
      */
     public static void recordSyncSetupDataTypesHistogram(Profile profile) {
         UnifiedConsentServiceBridgeJni.get().recordSyncSetupDataTypesHistogram(profile);
+    }
+
+    /** Sets whether collection of URL-keyed anonymized data is enabled. */
+    public static void setUrlKeyedAnonymizedDataCollectionEnabledForTesting(
+            @Nullable Boolean enabled) {
+        sUrlKeyedAnonymizedDataCollectionEnabledForTesting = enabled;
     }
 
     @NativeMethods
