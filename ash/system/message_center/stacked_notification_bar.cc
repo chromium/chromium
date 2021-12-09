@@ -304,13 +304,17 @@ bool StackedNotificationBar::Update(
   UpdateStackedNotifications(stacked_notifications);
   UpdateVisibility();
 
-  int unpinned_count = total_notification_count_ - pinned_notification_count_;
+  const int unpinned_count =
+      total_notification_count_ - pinned_notification_count_;
 
   auto tooltip = l10n_util::GetStringFUTF16Int(
       IDS_ASH_MESSAGE_CENTER_STACKING_BAR_CLEAR_ALL_BUTTON_TOOLTIP,
       unpinned_count);
   clear_all_button_->SetTooltipText(tooltip);
   clear_all_button_->SetAccessibleName(tooltip);
+  clear_all_button_->SetState(unpinned_count == 0
+                                  ? views::Button::STATE_DISABLED
+                                  : views::Button::STATE_NORMAL);
 
   return true;
 }
