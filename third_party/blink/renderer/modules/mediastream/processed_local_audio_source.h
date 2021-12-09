@@ -79,7 +79,7 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // first track is connected).
   scoped_refptr<webrtc::AudioProcessorInterface> GetAudioProcessor() const;
 
-  bool HasAudioProcessing() const;
+  bool HasWebRtcAudioProcessing() const;
 
   // Instructs the Audio Processing Module (APM) to reduce its complexity when
   // |muted| is true. This mode is triggered when all audio tracks are disabled.
@@ -145,9 +145,9 @@ class MODULES_EXPORT ProcessedLocalAudioSource final
   // Callback that's called when the audio source has been initialized.
   ConstraintsOnceCallback started_callback_;
 
-  // Audio processor doing processing like FIFO, AGC, AEC and NS. Its output
-  // data is in a unit of 10 ms data chunk.
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor_;
+  // Audio processor doing software processing like FIFO, AGC, AEC and NS. Its
+  // output data is in a unit of up to 10 ms data chunk.
+  scoped_refptr<MediaStreamAudioProcessor> media_stream_audio_processor_;
 
   // The device created by the AudioDeviceFactory in EnsureSourceIsStarted().
   scoped_refptr<media::AudioCapturerSource> source_;

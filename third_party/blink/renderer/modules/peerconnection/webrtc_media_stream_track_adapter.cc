@@ -187,9 +187,10 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalAudioTrack(
           blink::MediaStreamAudioSource::From(component_->Source()))) {
     local_track_audio_sink_->SetLevel(media_stream_source->audio_level());
     // The sink only grabs stats from the audio processor. Stats are only
-    // available if audio processing is turned on. Therefore, only provide the
-    // sink a reference to the processor if audio processing is turned on.
-    if (media_stream_source->HasAudioProcessing()) {
+    // available if WebRtc audio processing is turned on. Therefore, only
+    // provide the sink a reference to the processor if audio processing is
+    // turned on.
+    if (media_stream_source->HasWebRtcAudioProcessing()) {
       local_track_audio_sink_->SetAudioProcessor(
           media_stream_source->GetAudioProcessor());
     }

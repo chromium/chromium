@@ -31,7 +31,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   bool multi_channel_capture_processing = true;
   bool stereo_mirroring = false;
 
-  // TODO(https://crbug.com/1215061): Deprecate this setting.
+  // TODO(https://crbug.com/1269723): Deprecate this setting.
   // This flag preserves the behavior of the to-be-deprecated flag / constraint
   // |AudioProcessingProperties::goog_experimental_echo_cancellation|: It has no
   // effect on what effects are enabled, but for legacy reasons, it forces APM

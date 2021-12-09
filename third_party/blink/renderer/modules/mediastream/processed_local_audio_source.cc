@@ -338,8 +338,8 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
   }
 
   // Determine the audio format required of the AudioCapturerSource. Then,
-  // pass that to the |audio_processor_| and set the output format of this
-  // ProcessedLocalAudioSource to the processor's output format.
+  // pass that to the |media_stream_audio_processor_| and set the output format
+  // of this ProcessedLocalAudioSource to the processor's output format.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 channel_layout, device().input.sample_rate(),
                                 device().input.sample_rate() / 100);
@@ -380,16 +380,13 @@ bool ProcessedLocalAudioSource::EnsureSourceIsStarted() {
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &ProcessedLocalAudioSource::DeliverProcessedAudio,
           CrossThreadUnretained(this)));
-  MediaStreamAudioProcessor::LogCallback log_callback =
-      ConvertToBaseRepeatingCallback(
-          CrossThreadBindRepeating(&WebRtcLogMessage));
-  audio_processor_ = new rtc::RefCountedObject<MediaStreamAudioProcessor>(
-      std::move(processing_callback), std::move(log_callback),
-      audio_processing_properties_, use_multichannel_processing,
-      rtc_audio_device);
+  media_stream_audio_processor_ =
+      new rtc::RefCountedObject<MediaStreamAudioProcessor>(
+          std::move(processing_callback), audio_processing_properties_,
+          use_multichannel_processing, rtc_audio_device);
   params.set_frames_per_buffer(GetBufferSize(device().input.sample_rate()));
-  audio_processor_->OnCaptureFormatChanged(params);
-  SetFormat(audio_processor_->OutputFormat());
+  media_stream_audio_processor_->OnCaptureFormatChanged(params);
+  SetFormat(media_stream_audio_processor_->OutputFormat());
 
   // Start the source.
   SendLogMessageWithSessionId(base::StringPrintf(
@@ -428,28 +425,29 @@ void ProcessedLocalAudioSource::EnsureSourceIsStopped() {
   source_to_stop->Stop();
 
   // Stop the audio processor to avoid feeding render data into the processor.
-  if (audio_processor_)
-    audio_processor_->Stop();
+  if (media_stream_audio_processor_)
+    media_stream_audio_processor_->Stop();
 
   DVLOG(1) << "Stopped WebRTC audio pipeline for consumption.";
 }
 
 scoped_refptr<webrtc::AudioProcessorInterface>
 ProcessedLocalAudioSource::GetAudioProcessor() const {
-  DCHECK(audio_processor_);
+  DCHECK(media_stream_audio_processor_);
   return static_cast<scoped_refptr<webrtc::AudioProcessorInterface>>(
-      audio_processor_);
+      media_stream_audio_processor_);
 }
 
-bool ProcessedLocalAudioSource::HasAudioProcessing() const {
-  return audio_processor_ && audio_processor_->has_audio_processing();
+bool ProcessedLocalAudioSource::HasWebRtcAudioProcessing() const {
+  return media_stream_audio_processor_ &&
+         media_stream_audio_processor_->has_webrtc_audio_processing();
 }
 
 void ProcessedLocalAudioSource::SetOutputWillBeMuted(bool muted) {
   if (base::FeatureList::IsEnabled(
           features::kMinimizeAudioProcessingForUnusedOutput) &&
-      HasAudioProcessing()) {
-    audio_processor_->SetOutputWillBeMuted(muted);
+      HasWebRtcAudioProcessing()) {
+    media_stream_audio_processor_->SetOutputWillBeMuted(muted);
   }
 }
 
@@ -472,7 +470,7 @@ void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
                                         bool key_pressed) {
   TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
                audio_capture_time);
-  if (audio_processor_) {
+  if (media_stream_audio_processor_) {
     // Figure out if the pre-processed data has any energy or not. This
     // information will be passed to the level calculator to force it to report
     // energy in case the post-processed data is zeroed by the audio processing.
@@ -484,9 +482,9 @@ void ProcessedLocalAudioSource::Capture(const media::AudioBus* audio_bus,
 
     // Passing audio to the audio processor is sufficient, the processor will
     // return it to DeliverProcessedAudio() via the registered callback.
-    audio_processor_->ProcessCapturedAudio(*audio_bus, audio_capture_time,
-                                           num_preferred_channels, volume,
-                                           key_pressed);
+    media_stream_audio_processor_->ProcessCapturedAudio(
+        *audio_bus, audio_capture_time, num_preferred_channels, volume,
+        key_pressed);
   } else {
     // The audio is already processed in the audio service, just send it
     // along.
@@ -550,7 +548,7 @@ int ProcessedLocalAudioSource::GetBufferSize(int sample_rate) const {
   return (2 * sample_rate / 100);
 #else
   // If audio processing is turned on, require 10ms buffers.
-  if (audio_processor_->has_audio_processing())
+  if (media_stream_audio_processor_->has_webrtc_audio_processing())
     return (sample_rate / 100);
 
   // If audio processing is off and the native hardware buffer size was
