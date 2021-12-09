@@ -13388,9 +13388,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantined"
       label="Memory used by objects quarantined by BRP, recorded when
              USE_BACKUP_REF_PTR build flag is enabled."/>
-  <suffix name="Malloc.BRPQuarantinedCount"
-      label="Number of slots quarantined by BRP, recorded when
-             USE_BACKUP_REF_PTR build flag is enabled."/>
   <suffix name="Malloc.ThreadCache"
       label="Memory used by all thread caches, recorded when PartitionAlloc
              is used as malloc()."/>
@@ -13455,6 +13452,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ProcessMemoryAllocatorTiny2" separator=".">
+  <suffix name="Malloc.BRPQuarantinedCount"
+      label="Number of slots quarantined by BRP, recorded when
+             USE_BACKUP_REF_PTR build flag is enabled."/>
   <suffix name="NumberOfAdSubframes" label=""/>
   <suffix name="NumberOfArrayBufferContents" label=""/>
   <suffix name="NumberOfAudioHandler" label=""/>
