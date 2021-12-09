@@ -1159,7 +1159,10 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
   // one where the hash bucket is actually downloaded.
   time_start_bucket_download_ = base::TimeTicks::Now();
 
-  VLOG(1) << "Request bucket #" << remainder;
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Request bucket #" << remainder;
+
   std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
       DMServerJobConfiguration>(
       device_management_service_,
@@ -1288,7 +1291,11 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
                              has_server_state_.value());
     local_state_->SetInteger(prefs::kAutoEnrollmentPowerLimit, power_limit_);
     local_state_->CommitPendingWrite();
-    VLOG(1) << "Received has_state=" << has_server_state_.value();
+
+    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+    // in the logs.
+    LOG(WARNING) << "Received has_state=" << has_server_state_.value();
+
     progress = true;
     // Report timing if hash dance finished successfully and if the caller is
     // still interested in the result.
