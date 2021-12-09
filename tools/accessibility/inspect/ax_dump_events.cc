@@ -37,9 +37,7 @@ void PrintHelp() {
       "ax_dump_evemts is a tool designed to dump platform accessible events "
       "of running applications.\n");
   printf("\nusage: ax_dump_events <options>\n");
-  printf("options:\n");
-  tools::PrintHelpForTreeSelectors();
-  tools::PrintHelpFooter();
+  tools::PrintHelpShared();
 }
 
 }  // namespace
@@ -54,6 +52,12 @@ int main(int argc, char** argv) {
   if (command_line->HasSwitch(kHelpSwitch)) {
     PrintHelp();
     return 0;
+  }
+
+  absl::optional<ui::AXInspectScenario> scenario =
+      tools::ScenarioFromCommandLine(*command_line);
+  if (!scenario) {
+    return 1;
   }
 
   absl::optional<AXTreeSelector> selector =
@@ -76,7 +80,8 @@ int main(int argc, char** argv) {
 #if defined(USE_OZONE) || defined(OS_MAC)
   pid = selector->widget;
 #endif
-  const auto server = std::make_unique<tools::AXEventServer>(pid, *selector);
+  const auto server =
+      std::make_unique<tools::AXEventServer>(pid, *selector, *scenario);
   base::RunLoop().Run();
   return 0;
 }

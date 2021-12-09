@@ -28,20 +28,12 @@ using ui::AXTreeSelector;
 namespace content {
 
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
-                           const base::FilePath& filters_path) {
+                           const ui::AXInspectScenario& scenario) {
   std::unique_ptr<AXTreeFormatter> formatter(
       AXInspectFactory::CreatePlatformFormatter());
 
-  // Get filters from optional filters file.
-  absl::optional<ui::AXInspectScenario> scenario =
-      GetInspectScenario(filters_path);
-  if (!scenario) {
-    LOG(ERROR) << "Failed to parse filter file";
-    return;
-  }
-
   // Use optional filters with the default filter set
-  formatter->SetPropertyFilters(scenario->property_filters,
+  formatter->SetPropertyFilters(scenario.property_filters,
                                 AXTreeFormatter::kFiltersDefaultSet);
 
   // Get accessibility tree as a nested dictionary.
@@ -53,24 +45,6 @@ AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
 
   // Write to console.
   printf("%s", formatter->FormatTree(dict).c_str());
-}
-
-absl::optional<ui::AXInspectScenario> AXTreeServer::GetInspectScenario(
-    const base::FilePath& filters_path) {
-  // Return with the default filter scenario if no file is provided
-  if (filters_path.empty()) {
-    return ui::AXInspectScenario::From("@", std::vector<std::string>());
-  }
-
-  absl::optional<ui::AXInspectScenario> scenario =
-      ui::AXInspectScenario::From("@", filters_path);
-  if (!scenario) {
-    LOG(ERROR) << "Failed to open filters file " << filters_path
-               << ". Note: path traversal components ('..') are not allowed "
-                  "for security reasons";
-    return absl::nullopt;
-  }
-  return scenario;
 }
 
 }  // namespace content

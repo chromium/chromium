@@ -5,6 +5,7 @@
 #include "tools/accessibility/inspect/ax_utils.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -16,6 +17,8 @@ char kFirefoxSwitch[] = "firefox";
 char kEdgeSwitch[] = "edge";
 char kPatternSwitch[] = "pattern";
 char kSafariSwitch[] = "safari";
+
+char kFiltersSwitch[] = "filters";
 
 #if defined(USE_OZONE) || defined(OS_MAC)
 char kIdSwitch[] = "pid";
@@ -45,7 +48,15 @@ bool StringToInt(std::string str, unsigned* result) {
 
 namespace tools {
 
-void PrintHelpForTreeSelectors() {
+void PrintHelpShared() {
+  printf("options:\n");
+  PrintHelpTreeSelectors();
+  PrintHelpFilters();
+
+  PrintHelpFooter();
+}
+
+void PrintHelpTreeSelectors() {
   printf("  --pattern\ttitle of an application\n");
 #if defined(WINDOWS)
   printf("  --window\tHWND of a window\n");
@@ -64,6 +75,13 @@ void PrintHelpForTreeSelectors() {
 #endif
   printf(
       "  --active-tab\tactive tab of browser, if application is a browser\n");
+}
+
+void PrintHelpFilters() {
+  printf(
+      "  --filters\tfile containing property filters used to filter out\n"
+      "  \t\taccessible tree, for example:\n"
+      "  \t\t--filters=/absolute/path/to/filters/file\n");
 }
 
 void PrintHelpFooter() {
@@ -96,13 +114,37 @@ absl::optional<AXTreeSelector> TreeSelectorFromCommandLine(
   if (!id_str.empty()) {
     unsigned hwnd_or_pid = 0;
     if (!StringToInt(id_str, &hwnd_or_pid)) {
-      LOG(ERROR) << "* Error: Could not convert window id string to integer.";
+      LOG(ERROR) << "Error: can't convert window id string to integer.";
       return absl::nullopt;
     }
     return AXTreeSelector(selectors, pattern_str,
                           CastToAcceleratedWidget(hwnd_or_pid));
   }
   return AXTreeSelector(selectors, pattern_str);
+}
+
+absl::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
+    const base::CommandLine& command_line) {
+  base::FilePath filters_path = command_line.GetSwitchValuePath(kFiltersSwitch);
+  if (filters_path.empty() && command_line.HasSwitch(kFiltersSwitch)) {
+    LOG(ERROR) << "Error: empty filter path given. Run with --help for help.";
+    return absl::nullopt;
+  }
+
+  // Return with the default filter scenario if no file is provided.
+  if (filters_path.empty()) {
+    return ui::AXInspectScenario::From("@", std::vector<std::string>());
+  }
+
+  absl::optional<ui::AXInspectScenario> scenario =
+      ui::AXInspectScenario::From("@", filters_path);
+  if (!scenario) {
+    LOG(ERROR) << "Error: failed to open filters file " << filters_path
+               << ". Note: path traversal components ('..') are not allowed "
+                  "for security reasons";
+    return absl::nullopt;
+  }
+  return scenario;
 }
 
 }  // namespace tools

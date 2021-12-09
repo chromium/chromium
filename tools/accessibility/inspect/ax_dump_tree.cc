@@ -7,15 +7,13 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "tools/accessibility/inspect/ax_tree_server.h"
 #include "tools/accessibility/inspect/ax_utils.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
-using ui::AXTreeSelector;
-
-char kFiltersSwitch[] = "filters";
 char kHelpSwitch[] = "help";
 
 bool AXDumpTreeLogMessageHandler(int severity,
@@ -32,13 +30,7 @@ void PrintHelp() {
       "ax_dump_tree is a tool designed to dump platform accessible trees "
       "of running applications.\n");
   printf("\nusage: ax_dump_tree <options>\n");
-  printf("options:\n");
-  tools::PrintHelpForTreeSelectors();
-  printf(
-      "  --filters\tfile containing property filters used to filter out\n"
-      "  \t\taccessible tree, for example:\n"
-      "  \t\t--filters=/absolute/path/to/filters/file\n");
-  tools::PrintHelpFooter();
+  tools::PrintHelpShared();
 }
 
 int main(int argc, char** argv) {
@@ -55,22 +47,20 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  base::FilePath filters_path =
-      command_line->GetSwitchValuePath(kFiltersSwitch);
-  if (filters_path.empty() && command_line->HasSwitch(kFiltersSwitch)) {
-    LOG(ERROR) << "Error: empty filter path given. Run with --help for help.";
-    return 0;
+  absl::optional<ui::AXInspectScenario> scenario =
+      tools::ScenarioFromCommandLine(*command_line);
+  if (!scenario) {
+    return 1;
   }
 
-  absl::optional<AXTreeSelector> selector =
+  absl::optional<ui::AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
-
-  if (selector && !selector->empty()) {
-    auto server =
-        absl::make_unique<content::AXTreeServer>(*selector, filters_path);
-    return 0;
+  if (!selector || selector->empty()) {
+    LOG(ERROR)
+        << "Error: no accessible tree to dump. Run with --help for help.";
+    return 1;
   }
 
-  LOG(ERROR) << "Error: no accessible tree to dump. Run with --help for help.";
-  return 1;
+  auto server = absl::make_unique<content::AXTreeServer>(*selector, *scenario);
+  return 0;
 }
