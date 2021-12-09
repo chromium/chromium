@@ -355,9 +355,17 @@ bool DefinitelyNewFormattingContext(const Node& node,
   return false;
 }
 
+inline bool WillCreateMulticolContainer(const ComputedStyle& style) {
+  // Note that we depend on this returning the truth, i.e. no false positives,
+  // and no false negatives (which is different from the rest of the legacy
+  // fallback detection machinery, where false positives are generally
+  // acceptable). This is an honest attempt to achieve that.
+  return style.SpecifiesColumns() && style.IsDisplayBlockContainer();
+}
+
 inline bool NeedsLegacyBlockFragmentation(const Element& element,
                                           const ComputedStyle& style) {
-  if (!style.InsideNGFragmentationContext())
+  if (!style.InsideFragmentationContextWithNondeterministicEngine())
     return false;
 
   // If we're inside an NG block fragmentation context, all fragmentable boxes
@@ -409,7 +417,7 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     // Disable NG for the entire subtree if we're establishing a multicol
     // container.
-    if (style.SpecifiesColumns()) {
+    if (WillCreateMulticolContainer(style)) {
       UseCounter::Count(document, WebFeature::kLegacyLayoutByMultiCol);
       return true;
     }
@@ -4736,7 +4744,7 @@ bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,
     // even if all the reasons for requiring it in the first place disappear
     // (e.g. if the only reason was a table, and that table is removed, we'll
     // still be using legacy layout).
-    if (new_style.InsideNGFragmentationContext()) {
+    if (new_style.InsideFragmentationContextWithNondeterministicEngine()) {
       if (ForceLegacyLayoutInFragmentationContext(new_style))
         needs_reattach = true;
     }
@@ -4811,7 +4819,8 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
     walker->SetShouldForceLegacyLayoutForChild(true);
     walker->SetNeedsReattachLayoutTree();
     needs_reattach = true;
-    if (parent && !parent->GetComputedStyle()->InsideNGFragmentationContext())
+    if (parent && !parent->GetComputedStyle()
+                       ->InsideFragmentationContextWithNondeterministicEngine())
       return needs_reattach;
   }
 
