@@ -189,6 +189,9 @@ Num of cookies 0
 Setting Cookie
 setCookie failed: Partitioned cookies disabled. Cannot set cookie partition key
 Num of cookies 0
+Setting Cookie
+setCookie failed: Partitioned cookies disabled. Cannot set cookie partition key
+Num of cookies 0
 
 Running test: deleteAllCookies
 

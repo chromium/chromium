@@ -928,6 +928,12 @@
     "args": ["--enable-features=PartitionedCookies"]
   },
   {
+    "prefix": "partitioned-cookies-first-party-sets",
+    "bases": ["http/tests/inspector-protocol/network/"],
+    "args": ["--enable-features=PartitionedCookies",
+             "--use-first-party-set=https://devtools.test,https://example.test"]
+  },
+  {
     "prefix": "prerender",
     "bases": [ "external/wpt/speculation-rules/prerender",
                "wpt_internal/prerender",
