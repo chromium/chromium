@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -113,6 +114,32 @@ SettingValue GetWinOSFirewall() {
 }
 #endif
 
+#if defined(OS_MAC)
+SettingValue GetMacOSFirewall() {
+  // There is no official Apple documentation on how to obtain the enabled
+  // status of the firewall (System Preferences> Security & Privacy> Firewall).
+  // Reading globalstate from com.apple.alf is the closest way to get such an
+  // API in Chrome without delegating to potentially unstable commands.
+
+  Boolean key_exists_with_valid_format = false;
+  CFIndex globalstate = CFPreferencesGetAppIntegerValue(
+      CFSTR("globalstate"), CFSTR("com.apple.alf"),
+      &key_exists_with_valid_format);
+
+  if (!key_exists_with_valid_format)
+    return SettingValue::UNKNOWN;
+
+  switch (globalstate) {
+    case 0:
+      return SettingValue::DISABLED;
+    case 1:
+      return SettingValue::ENABLED;
+    default:
+      return SettingValue::UNKNOWN;
+  }
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SettingValue GetChromeosFirewall() {
   // The firewall is always enabled and can only be disabled in dev mode on
@@ -152,6 +179,9 @@ std::unique_ptr<ContextInfoFetcher> ContextInfoFetcher::CreateInstance(
 }
 
 ContextInfo ContextInfoFetcher::FetchAsyncSignals(ContextInfo info) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
   // Add other async signals here
   info.system_dns_servers = GetDnsServers();
   info.os_firewall = GetOSFirewall();
@@ -242,6 +272,8 @@ SettingValue ContextInfoFetcher::GetOSFirewall() {
   return GetUfwStatus();
 #elif defined(OS_WIN)
   return GetWinOSFirewall();
+#elif defined(OS_MAC)
+  return GetMacOSFirewall();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return GetChromeosFirewall();
 #else
