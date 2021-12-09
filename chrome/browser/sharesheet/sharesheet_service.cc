@@ -446,7 +446,6 @@ void SharesheetService::RecordUserActionMetrics(
       case apps::mojom::AppType::kRemote:
       case apps::mojom::AppType::kBorealis:
       case apps::mojom::AppType::kStandaloneBrowserChromeApp:
-      case apps::mojom::AppType::kExtension:
       case apps::mojom::AppType::kUnknown:
         NOTREACHED();
     }

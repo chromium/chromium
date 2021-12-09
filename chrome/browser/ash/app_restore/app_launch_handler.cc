@@ -46,7 +46,6 @@ apps::AppTypeName GetHistogrameAppType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kStandaloneBrowserChromeApp:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kExtension:
       return apps::AppTypeName::kUnknown;
     case apps::mojom::AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
@@ -177,7 +176,6 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
     case apps::mojom::AppType::kStandaloneBrowserChromeApp:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
-    case apps::mojom::AppType::kExtension:
       NOTREACHED();
       break;
   }

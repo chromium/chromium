@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
-#include "chrome/common/chrome_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
@@ -45,7 +44,7 @@ PublisherHost::~PublisherHost() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void PublisherHost::SetArcIsRegistered() {
-  chrome_apps_->ObserveArc();
+  extension_apps_->ObserveArc();
 }
 
 void PublisherHost::FlushMojoCallsForTesting() {
@@ -53,13 +52,9 @@ void PublisherHost::FlushMojoCallsForTesting() {
     built_in_chrome_os_apps_->FlushMojoCallsForTesting();
   }
   crostini_apps_->FlushMojoCallsForTesting();
-  chrome_apps_->FlushMojoCallsForTesting();
-  if (extension_apps_) {
-    chrome_apps_->FlushMojoCallsForTesting();
-  }
-  if (plugin_vm_apps_) {
+  extension_apps_->FlushMojoCallsForTesting();
+  if (plugin_vm_apps_)
     plugin_vm_apps_->FlushMojoCallsForTesting();
-  }
   if (standalone_browser_apps_) {
     standalone_browser_apps_->FlushMojoCallsForTesting();
   }
@@ -78,10 +73,7 @@ void PublisherHost::ReInitializeCrostiniForTesting(AppServiceProxy* proxy) {
 
 void PublisherHost::Shutdown() {
   if (proxy_->AppService().is_connected()) {
-    chrome_apps_->Shutdown();
-    if (extension_apps_) {
-      extension_apps_->Shutdown();
-    }
+    extension_apps_->Shutdown();
     if (web_apps_) {
       web_apps_->Shutdown();
     }
@@ -107,15 +99,8 @@ void PublisherHost::Initialize() {
   crostini_apps_ = std::make_unique<CrostiniApps>(proxy_);
   crostini_apps_->Initialize();
 
-  chrome_apps_ =
-      std::make_unique<ExtensionAppsChromeOs>(proxy_, AppType::kChromeApp);
-  chrome_apps_->Initialize();
-
-  if (base::FeatureList::IsEnabled(features::kAppServiceExtension)) {
-    extension_apps_ =
-        std::make_unique<ExtensionAppsChromeOs>(proxy_, AppType::kExtension);
-    extension_apps_->Initialize();
-  }
+  extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(proxy_);
+  extension_apps_->Initialize();
 
   if (!g_omit_plugin_vm_apps_for_testing_) {
     plugin_vm_apps_ = std::make_unique<PluginVmApps>(proxy_);
@@ -135,8 +120,8 @@ void PublisherHost::Initialize() {
 #else
   web_apps_ = std::make_unique<web_app::WebApps>(proxy_);
 
-  chrome_apps_ = std::make_unique<ExtensionApps>(proxy_, AppType::kChromeApp);
-  chrome_apps_->Initialize();
+  extension_apps_ = std::make_unique<ExtensionApps>(proxy_);
+  extension_apps_->Initialize();
 #endif
 }
 

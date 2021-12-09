@@ -3674,8 +3674,6 @@ Unknown properties are collapsed to zero. -->
   <int value="10" label="Borealis app"/>
   <int value="11" label="System web app"/>
   <int value="12" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
-  <int value="13" label="Chrome app opened in Standalone browser"/>
-  <int value="14" label="Browser extension"/>
 </enum>
 
 <enum name="AppTypeToMenuEntry">
@@ -3706,7 +3704,6 @@ Unknown properties are collapsed to zero. -->
   <int value="13" label="System web app"/>
   <int value="14" label="Chrome browser (inc. web/Chrome apps in tabs)"/>
   <int value="15" label="Chrome app opened in Standalone browser"/>
-  <int value="16" label="Browser extension"/>
 </enum>
 
 <enum name="AppWillTerminateReceived">
