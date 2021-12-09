@@ -297,8 +297,10 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>,
       HeapVector<Member<StyleSheetAction>>* actions);
 
+  // If the |animating_element| is a pseudo element, then |element| is a
+  // reference to its originating DOM element.
   std::unique_ptr<protocol::Array<protocol::CSS::CSSKeyframesRule>>
-  AnimationsForNode(Element*);
+  AnimationsForNode(Element* element, Element* animating_element);
 
   void CollectPlatformFontsForLayoutObject(
       LayoutObject*,

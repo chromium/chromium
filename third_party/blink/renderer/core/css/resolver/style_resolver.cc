@@ -646,47 +646,58 @@ bool IsInMediaUAShadow(const Element& element) {
 
 }  // namespace
 
-void StyleResolver::MatchUARules(const Element& element,
-                                 ElementRuleCollector& collector) {
-  collector.SetMatchingUARules(true);
-
+template <typename Functor>
+void StyleResolver::ForEachUARulesForElement(const Element& element,
+                                             ElementRuleCollector* collector,
+                                             Functor& func) const {
   CSSDefaultStyleSheets& default_style_sheets =
       CSSDefaultStyleSheets::Instance();
   if (!print_media_type_) {
     if (LIKELY(element.IsHTMLElement() || element.IsVTTElement())) {
-      MatchRuleSet(collector, default_style_sheets.DefaultHtmlStyle());
+      func(default_style_sheets.DefaultHtmlStyle());
       if (UNLIKELY(IsInMediaUAShadow(element))) {
-        MatchRuleSet(collector,
-                     default_style_sheets.DefaultMediaControlsStyle());
+        func(default_style_sheets.DefaultMediaControlsStyle());
       }
     } else if (element.IsSVGElement()) {
-      MatchRuleSet(collector, default_style_sheets.DefaultSVGStyle());
+      func(default_style_sheets.DefaultSVGStyle());
     } else if (element.namespaceURI() == mathml_names::kNamespaceURI) {
-      MatchRuleSet(collector, default_style_sheets.DefaultMathMLStyle());
+      func(default_style_sheets.DefaultMathMLStyle());
     }
   } else {
-    MatchRuleSet(collector, default_style_sheets.DefaultPrintStyle());
+    func(default_style_sheets.DefaultPrintStyle());
   }
 
   // In quirks mode, we match rules from the quirks user agent sheet.
   if (GetDocument().InQuirksMode())
-    MatchRuleSet(collector, default_style_sheets.DefaultHtmlQuirksStyle());
+    func(default_style_sheets.DefaultHtmlQuirksStyle());
 
-  // If document uses view source styles (in view source mode or in xml viewer
-  // mode), then we match rules from the view source style sheet.
+  // If document uses view source styles (in view source mode or in xml
+  // viewer mode), then we match rules from the view source style sheet.
   if (GetDocument().IsViewSource())
-    MatchRuleSet(collector, default_style_sheets.DefaultViewSourceStyle());
+    func(default_style_sheets.DefaultViewSourceStyle());
 
   // If the system is in forced colors mode, match rules from the forced colors
   // style sheet.
   if (IsForcedColorsModeEnabled())
-    MatchRuleSet(collector, default_style_sheets.DefaultForcedColorStyle());
+    func(default_style_sheets.DefaultForcedColorStyle());
 
-  if (collector.IsCollectingForPseudoElement()) {
+  if (element.IsPseudoElement() ||
+      (collector && collector->IsCollectingForPseudoElement())) {
     if (RuleSet* default_pseudo_style =
-            default_style_sheets.DefaultPseudoElementStyleOrNull())
-      MatchRuleSet(collector, default_pseudo_style);
+            default_style_sheets.DefaultPseudoElementStyleOrNull()) {
+      func(default_style_sheets.DefaultPseudoElementStyleOrNull());
+    }
   }
+}
+
+void StyleResolver::MatchUARules(const Element& element,
+                                 ElementRuleCollector& collector) {
+  collector.SetMatchingUARules(true);
+
+  auto func = [this, &collector](RuleSet* rules) {
+    MatchRuleSet(collector, rules);
+  };
+  ForEachUARulesForElement(element, &collector, func);
 
   collector.FinishAddingUARules();
   collector.SetMatchingUARules(false);
@@ -1408,6 +1419,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
 StyleRuleKeyframes* StyleResolver::FindKeyframesRule(
     const Element* element,
+    const Element* animating_element,
     const AtomicString& animation_name) {
   HeapVector<Member<ScopedStyleResolver>, 8> resolvers;
   CollectScopedResolversForHostedShadowTrees(*element, resolvers);
@@ -1425,6 +1437,19 @@ StyleRuleKeyframes* StyleResolver::FindKeyframesRule(
           GetDocument().GetStyleEngine().KeyframeStylesForAnimation(
               animation_name))
     return keyframes_rule;
+
+  // Match UA keyframe rules after user and author rules.
+  StyleRuleKeyframes* matched_keyframes_rule = nullptr;
+  auto func = [&matched_keyframes_rule, &animation_name](RuleSet* rules) {
+    auto keyframes_rules = rules->KeyframesRules();
+    for (auto& keyframes_rule : keyframes_rules) {
+      if (keyframes_rule->GetName() == animation_name)
+        matched_keyframes_rule = keyframes_rule;
+    }
+  };
+  ForEachUARulesForElement(*animating_element, nullptr, func);
+  if (matched_keyframes_rule)
+    return matched_keyframes_rule;
 
   for (auto& resolver : resolvers)
     resolver->SetHasUnresolvedKeyframesRule();

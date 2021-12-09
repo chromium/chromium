@@ -115,6 +115,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   SelectorFilter& GetSelectorFilter() { return selector_filter_; }
 
   StyleRuleKeyframes* FindKeyframesRule(const Element*,
+                                        const Element* animating_element,
                                         const AtomicString& animation_name);
 
   // These methods will give back the set of rules that matched for a given
@@ -284,6 +285,11 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   Document& GetDocument() const { return *document_; }
 
   bool IsForcedColorsModeEnabled() const;
+
+  template <typename Functor>
+  void ForEachUARulesForElement(const Element& element,
+                                ElementRuleCollector* collector,
+                                Functor& func) const;
 
   MatchedPropertiesCache matched_properties_cache_;
   Member<Document> document_;

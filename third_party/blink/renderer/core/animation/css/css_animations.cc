@@ -202,6 +202,7 @@ bool NeedsBoundaryKeyframe(StringKeyframe* candidate,
 StringKeyframeEffectModel* CreateKeyframeEffectModel(
     StyleResolver* resolver,
     Element& element,
+    const Element& animating_element,
     const ComputedStyle* style,
     const ComputedStyle* parent_style,
     const AtomicString& name,
@@ -227,7 +228,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   //    existing animation matching name is canceled.
 
   const StyleRuleKeyframes* keyframes_rule =
-      resolver->FindKeyframesRule(&element, name);
+      resolver->FindKeyframesRule(&element, &animating_element, name);
   DCHECK(keyframes_rule);
 
   // 3. Let keyframes be an empty sequence of keyframe objects.
@@ -651,7 +652,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
       timing.timing_function = Timing().timing_function;
 
       StyleRuleKeyframes* keyframes_rule =
-          resolver->FindKeyframesRule(&element, name);
+          resolver->FindKeyframesRule(&element, &animating_element, name);
       if (!keyframes_rule)
         continue;  // Cancel the animation if there's no style rule for it.
 
@@ -758,9 +759,9 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
           update.UpdateAnimation(
               existing_animation_index, animation,
               *MakeGarbageCollected<InertEffect>(
-                  CreateKeyframeEffectModel(resolver, element, &style,
-                                            parent_style, name,
-                                            keyframe_timing_function.get(), i),
+                  CreateKeyframeEffectModel(
+                      resolver, element, animating_element, &style,
+                      parent_style, name, keyframe_timing_function.get(), i),
                   timing, is_paused, inherited_time, inherited_phase,
                   timeline_duration, animation->playbackRate()),
               specified_timing, keyframes_rule, timeline,
@@ -783,15 +784,16 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
             inherited_time = timeline->CurrentTime();
           }
         }
-        update.StartAnimation(name, name_index, i,
-                              *MakeGarbageCollected<InertEffect>(
-                                  CreateKeyframeEffectModel(
-                                      resolver, element, &style, parent_style,
-                                      name, keyframe_timing_function.get(), i),
-                                  timing, is_paused, inherited_time,
-                                  inherited_phase, timeline_duration, 1.0),
-                              specified_timing, keyframes_rule, timeline,
-                              animation_data->PlayStateList());
+        update.StartAnimation(
+            name, name_index, i,
+            *MakeGarbageCollected<InertEffect>(
+                CreateKeyframeEffectModel(resolver, element, animating_element,
+                                          &style, parent_style, name,
+                                          keyframe_timing_function.get(), i),
+                timing, is_paused, inherited_time, inherited_phase,
+                timeline_duration, 1.0),
+            specified_timing, keyframes_rule, timeline,
+            animation_data->PlayStateList());
       }
     }
   }
