@@ -3399,6 +3399,7 @@ enum WebFeature {
   kCrossOriginOpenerPolicySameOriginReportOnly = 4090,
   kImageLoadAtDismissalEvent = 4091,
   kPrivateNetworkAccessIgnoredPreflightError = 4092,
+  kAbortPaymentRespondWithTrue = 4093,
 
 
   // Add new features immediately above this line. Don't change assigned

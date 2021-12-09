@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -42,6 +43,11 @@ void AbortPaymentRespondWithObserver::OnResponseFulfilled(
     exception_state.ClearException();
     OnResponseRejected(blink::mojom::ServiceWorkerResponseError::kNoV8Instance);
     return;
+  }
+
+  if (response) {
+    UseCounter::Count(ExecutionContext::From(script_state),
+                      WebFeature::kAbortPaymentRespondWithTrue);
   }
 
   To<ServiceWorkerGlobalScope>(GetExecutionContext())

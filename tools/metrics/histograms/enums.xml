@@ -35817,6 +35817,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4090" label="CrossOriginOpenerPolicySameOriginReportOnly"/>
   <int value="4091" label="ImageLoadAtDismissalEvent"/>
   <int value="4092" label="PrivateNetworkAccessIgnoredPreflightError"/>
+  <int value="4093" label="AbortPaymentRespondWithTrue"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
