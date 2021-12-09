@@ -5465,7 +5465,8 @@ def CheckAssertAshOnlyCode(input_api, output_api):
 
     errors = []
     pattern = input_api.re.compile(r'assert\(is_chromeos_ash')
-    for f in input_api.AffectedFiles(file_filter=FileFilter):
+    for f in input_api.AffectedFiles(include_deletes=False,
+                                     file_filter=FileFilter):
         if (not pattern.search(input_api.ReadFile(f))):
             errors.append(
                 output_api.PresubmitError(
