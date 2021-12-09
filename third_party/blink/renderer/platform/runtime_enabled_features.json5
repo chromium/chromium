@@ -1282,6 +1282,7 @@
     {
       name: "LayoutNGBlockFragmentation",
       implied_by: ["LayoutNGFlexFragmentation", "LayoutNGGridFragmentation", "LayoutNGPrinting", "LayoutNGTableFragmentation"],
+      status: "test",
     },
     {
       name: "LayoutNGBlockInInline",

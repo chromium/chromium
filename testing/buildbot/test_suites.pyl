@@ -4337,7 +4337,7 @@
     'layout_ng_gtests': {
       'webkit_unit_tests_ng': {
         'args': [
-          '--disable-blink-features=LayoutNG'
+          '--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation'
         ],
         'test': 'blink_unittests',
       },

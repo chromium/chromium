@@ -3758,7 +3758,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--disable-blink-features=LayoutNG"
+          "--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"
         ],
         "merge": {
           "args": [],

@@ -5,7 +5,7 @@
   },
   {
     "name": "disable-layout-ng",
-    "args": ["--disable-blink-features=LayoutNG"]
+    "args": ["--disable-blink-features=LayoutNG,LayoutNGBlockFragmentation"]
   },
   {
     "name": "disable-site-isolation-trials",
