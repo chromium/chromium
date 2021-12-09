@@ -10,10 +10,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/services/bluetooth_config/in_process_instance.h"
 
-namespace ash {
+namespace chromeos {
 
 BluetoothPrefStateObserver::BluetoothPrefStateObserver() {
-  CHECK(features::IsBluetoothRevampEnabled());
+  CHECK(ash::features::IsBluetoothRevampEnabled());
 
   // Set CrosBluetoothConfig with device prefs only.
   SetPrefs(/*profile=*/nullptr);
@@ -48,4 +48,4 @@ void BluetoothPrefStateObserver::SetPrefs(Profile* profile) {
                                        g_browser_process->local_state());
 }
 
-}  // namespace ash
+}  // namespace chromeos

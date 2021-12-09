@@ -11,7 +11,7 @@
 #include "components/arc/session/arc_service_manager.h"
 #include "net/dns/public/dns_protocol.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -126,4 +126,4 @@ void ArcDnsResolutionRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

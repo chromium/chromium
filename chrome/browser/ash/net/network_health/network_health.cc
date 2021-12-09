@@ -10,22 +10,18 @@
 #include <utility>
 #include <vector>
 
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_health/network_health_constants.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_health {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/network_config/ is moved to ash/.
-namespace network_config = ::chromeos::network_config;
 
 constexpr mojom::NetworkState DeviceStateToNetworkState(
     network_config::mojom::DeviceStateType device_state) {
@@ -374,4 +370,4 @@ void NetworkHealth::AnalyzeSignalStrength() {
 }
 
 }  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos

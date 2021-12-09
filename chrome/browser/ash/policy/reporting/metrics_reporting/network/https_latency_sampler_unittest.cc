@@ -14,7 +14,7 @@ namespace reporting {
 
 namespace {
 
-using HttpsLatencyRoutine = ::ash::network_diagnostics::HttpsLatencyRoutine;
+using HttpsLatencyRoutine = chromeos::network_diagnostics::HttpsLatencyRoutine;
 
 std::unique_ptr<HttpsLatencyRoutine> HttpsLatencyRoutineGetterTestHelper(
     std::unique_ptr<HttpsLatencyRoutine> routine) {
@@ -23,17 +23,18 @@ std::unique_ptr<HttpsLatencyRoutine> HttpsLatencyRoutineGetterTestHelper(
 }  // namespace
 
 class FakeHttpsLatencyRoutine
-    : public ash::network_diagnostics::HttpsLatencyRoutine {
+    : public chromeos::network_diagnostics::HttpsLatencyRoutine {
  public:
   FakeHttpsLatencyRoutine() {
-    set_verdict(ash::network_diagnostics::mojom::RoutineVerdict::kNoProblem);
+    set_verdict(
+        chromeos::network_diagnostics::mojom::RoutineVerdict::kNoProblem);
   }
 
   FakeHttpsLatencyRoutine(
-      ash::network_diagnostics::mojom::RoutineVerdict verdict,
-      ash::network_diagnostics::mojom::HttpsLatencyProblem problem) {
-    using ::ash::network_diagnostics::mojom::HttpsLatencyProblem;
-    using ::ash::network_diagnostics::mojom::RoutineProblems;
+      chromeos::network_diagnostics::mojom::RoutineVerdict verdict,
+      chromeos::network_diagnostics::mojom::HttpsLatencyProblem problem) {
+    using chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+    using chromeos::network_diagnostics::mojom::RoutineProblems;
 
     set_verdict(verdict);
     std::vector<HttpsLatencyProblem> problems;
@@ -71,8 +72,9 @@ TEST(HttpsLatencySamplerTest, NoProblem) {
 
 TEST(HttpsLatencySamplerTest, FailedRequests) {
   using HttpsLatencyProblemMojom =
-      ::ash::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom = ::ash::network_diagnostics::mojom::RoutineVerdict;
+      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+  using RoutineVerdictMojom =
+      chromeos::network_diagnostics::mojom::RoutineVerdict;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 
@@ -100,8 +102,9 @@ TEST(HttpsLatencySamplerTest, FailedRequests) {
 
 TEST(HttpsLatencySamplerTest, OverlappingCalls) {
   using HttpsLatencyProblemMojom =
-      ::ash::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom = ::ash::network_diagnostics::mojom::RoutineVerdict;
+      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+  using RoutineVerdictMojom =
+      chromeos::network_diagnostics::mojom::RoutineVerdict;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 
@@ -133,8 +136,9 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
 
 TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
   using HttpsLatencyProblemMojom =
-      ::ash::network_diagnostics::mojom::HttpsLatencyProblem;
-  using RoutineVerdictMojom = ::ash::network_diagnostics::mojom::RoutineVerdict;
+      chromeos::network_diagnostics::mojom::HttpsLatencyProblem;
+  using RoutineVerdictMojom =
+      chromeos::network_diagnostics::mojom::RoutineVerdict;
 
   base::test::SingleThreadTaskEnvironment task_environment;
 

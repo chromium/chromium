@@ -12,7 +12,7 @@
 
 class Profile;
 
-namespace ash {
+namespace chromeos {
 
 // Class to update NetworkHandler when the PrefService state changes. The
 // implementation currently relies on g_browser_process since it holds the
@@ -38,6 +38,11 @@ class NetworkPrefStateObserver
       session_observation_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::NetworkPrefStateObserver;
+}
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_PREF_STATE_OBSERVER_H_

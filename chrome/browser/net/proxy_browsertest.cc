@@ -197,12 +197,12 @@ class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
   void SetUp() override {
     ASSERT_TRUE(http_server_.Start());
     pac_url_ = http_server_.GetURL("/" + GetPacFilename());
-    ash::DhcpWpadUrlClient::SetPacUrlForTesting(pac_url_);
+    chromeos::DhcpWpadUrlClient::SetPacUrlForTesting(pac_url_);
     InProcessBrowserTest::SetUp();
   }
 
   void TearDown() override {
-    ash::DhcpWpadUrlClient::ClearPacUrlForTesting();
+    chromeos::DhcpWpadUrlClient::ClearPacUrlForTesting();
     InProcessBrowserTest::TearDown();
   }
 

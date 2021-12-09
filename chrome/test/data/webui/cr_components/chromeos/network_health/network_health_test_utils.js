@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/ash/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
 
 /**
  * Removes any prefixed URL from a icon image path
@@ -17,8 +17,8 @@ export function getIconFromSrc(src) {
 
 /**
  * Creates and returns a basic RoutineResult structure
- * @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict
- * @return {!ash.networkDiagnostics.mojom.RoutineResult}
+ * @param {!chromeos.networkDiagnostics.mojom.RoutineVerdict} verdict
+ * @return {!chromeos.networkDiagnostics.mojom.RoutineResult}
  */
 export function createResult(verdict) {
   return {

@@ -39,7 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
+namespace chromeos {
 
 class NetworkPortalWebDialog;
 
@@ -253,4 +253,4 @@ INSTANTIATE_TEST_SUITE_P(CaptivePortalAuthenticationIgnoresProxy,
                          NetworkPortalDetectorImplBrowserTestIgnoreProxy,
                          testing::Bool());
 
-}  // namespace ash
+}  // namespace chromeos

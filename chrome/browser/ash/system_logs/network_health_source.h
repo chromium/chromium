@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,11 +30,11 @@ class NetworkHealthSource : public SystemLogsSource {
 
  private:
   void OnNetworkHealthReceived(
-      ash::network_health::mojom::NetworkHealthStatePtr network_health);
+      chromeos::network_health::mojom::NetworkHealthStatePtr network_health);
 
   void OnNetworkDiagnosticResultsReceived(
-      base::flat_map<ash::network_diagnostics::mojom::RoutineType,
-                     ash::network_diagnostics::mojom::RoutineResultPtr>
+      base::flat_map<chromeos::network_diagnostics::mojom::RoutineType,
+                     chromeos::network_diagnostics::mojom::RoutineResultPtr>
           results);
 
   void CheckIfDone();
@@ -45,9 +45,9 @@ class NetworkHealthSource : public SystemLogsSource {
   absl::optional<std::string> network_health_response_;
   absl::optional<std::string> network_diagnostics_response_;
 
-  mojo::Remote<ash::network_health::mojom::NetworkHealthService>
+  mojo::Remote<chromeos::network_health::mojom::NetworkHealthService>
       network_health_service_;
-  mojo::Remote<ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+  mojo::Remote<chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
       network_diagnostics_service_;
 
   base::WeakPtrFactory<NetworkHealthSource> weak_factory_{this};

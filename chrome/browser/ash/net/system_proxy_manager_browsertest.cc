@@ -66,10 +66,12 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
-namespace ash {
+using testing::_;
+using testing::Return;
+
+namespace chromeos {
 
 namespace {
-
 constexpr char kRealm[] = "My proxy";
 constexpr char kScheme[] = "dIgEsT";
 constexpr char kProxyAuthUrl[] = "http://example.com:3128";
@@ -160,7 +162,6 @@ void RunUntilIdle() {
   base::RunLoop loop;
   loop.RunUntilIdle();
 }
-
 }  // namespace
 
 class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
@@ -188,7 +189,7 @@ class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
     return SystemProxyManager::Get();
   }
 
-  RequestSystemProxyCredentialsView* dialog() {
+  ash::RequestSystemProxyCredentialsView* dialog() {
     return GetSystemProxyManager()->GetActiveAuthDialogForTest();
   }
 
@@ -781,4 +782,4 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 
-}  // namespace ash
+}  // namespace chromeos

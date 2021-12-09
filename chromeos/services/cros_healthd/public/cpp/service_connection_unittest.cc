@@ -25,24 +25,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace cros_healthd {
-namespace {
-
-using ::ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines;
-using ::ash::network_diagnostics::mojom::RoutineProblems;
-using ::ash::network_diagnostics::mojom::RoutineResult;
-using ::ash::network_diagnostics::mojom::RoutineResultPtr;
-using ::ash::network_diagnostics::mojom::RoutineType;
-using ::ash::network_diagnostics::mojom::RoutineVerdict;
-using ::ash::network_health::mojom::NetworkEventsObserver;
-using ::ash::network_health::mojom::NetworkHealthService;
-using ::ash::network_health::mojom::NetworkHealthState;
-using ::ash::network_health::mojom::NetworkHealthStatePtr;
-using ::ash::network_health::mojom::NetworkState;
-using ::ash::network_health::mojom::UInt32ValuePtr;
+using ::chromeos::network_health::mojom::NetworkEventsObserver;
+using ::chromeos::network_health::mojom::NetworkHealthService;
+using ::chromeos::network_health::mojom::NetworkState;
+using ::chromeos::network_health::mojom::UInt32ValuePtr;
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::StrictMock;
+using ::testing::WithArgs;
+
+namespace chromeos {
+using network_diagnostics::mojom::NetworkDiagnosticsRoutines;
+using network_diagnostics::mojom::RoutineProblems;
+using network_diagnostics::mojom::RoutineResult;
+using network_diagnostics::mojom::RoutineResultPtr;
+using network_diagnostics::mojom::RoutineVerdict;
+namespace cros_healthd {
+namespace {
 
 std::vector<mojom::DiagnosticRoutineEnum> MakeAvailableRoutines() {
   return std::vector<mojom::DiagnosticRoutineEnum>{
@@ -150,7 +149,8 @@ class MockCrosHealthdPowerObserver : public mojom::CrosHealthdPowerObserver {
   mojo::Receiver<mojom::CrosHealthdPowerObserver> receiver_;
 };
 
-class MockCrosHealthdNetworkObserver : public NetworkEventsObserver {
+class MockCrosHealthdNetworkObserver
+    : public chromeos::network_health::mojom::NetworkEventsObserver {
  public:
   MockCrosHealthdNetworkObserver() : receiver_{this} {}
   MockCrosHealthdNetworkObserver(const MockCrosHealthdNetworkObserver&) =
@@ -167,12 +167,14 @@ class MockCrosHealthdNetworkObserver : public NetworkEventsObserver {
               (const std::string&, UInt32ValuePtr),
               (override));
 
-  mojo::PendingRemote<NetworkEventsObserver> pending_remote() {
+  mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+  pending_remote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Receiver<NetworkEventsObserver> receiver_;
+  mojo::Receiver<chromeos::network_health::mojom::NetworkEventsObserver>
+      receiver_;
 };
 
 class MockCrosHealthdAudioObserver : public mojom::CrosHealthdAudioObserver {
@@ -252,7 +254,7 @@ class MockNetworkDiagnosticsRoutines : public NetworkDiagnosticsRoutines {
 
   MOCK_METHOD(void,
               GetResult,
-              (const RoutineType type,
+              (const network_diagnostics::mojom::RoutineType type,
                NetworkDiagnosticsRoutines::GetResultCallback),
               (override));
   MOCK_METHOD(void,
@@ -903,13 +905,16 @@ TEST_F(CrosHealthdServiceConnectionTest, AddNetworkObserver) {
   // Send out an event to make sure the observer is connected.
   base::RunLoop run_loop;
   std::string network_guid = "1234";
-  auto network_connection_state = NetworkState::kOnline;
+  auto network_connection_state =
+      chromeos::network_health::mojom::NetworkState::kOnline;
   EXPECT_CALL(observer, OnConnectionStateChanged(_, _))
-      .WillOnce(Invoke([&](const std::string& guid, NetworkState state) {
-        EXPECT_EQ(guid, network_guid);
-        EXPECT_EQ(state, network_connection_state);
-        run_loop.Quit();
-      }));
+      .WillOnce(
+          Invoke([&](const std::string& guid,
+                     chromeos::network_health::mojom::NetworkState state) {
+            EXPECT_EQ(guid, network_guid);
+            EXPECT_EQ(state, network_connection_state);
+            run_loop.Quit();
+          }));
   FakeCrosHealthdClient::Get()->EmitConnectionStateChangedEventForTesting(
       network_guid, network_connection_state);
 
@@ -925,7 +930,7 @@ TEST_F(CrosHealthdServiceConnectionTest, SetBindNetworkHealthService) {
           [&service] { return service.pending_remote(); }));
 
   base::RunLoop run_loop;
-  auto canned_response = NetworkHealthState::New();
+  auto canned_response = network_health::mojom::NetworkHealthState::New();
   EXPECT_CALL(service, GetHealthSnapshot(_))
       .WillOnce(
           Invoke([&](NetworkHealthService::GetHealthSnapshotCallback callback) {
@@ -933,10 +938,11 @@ TEST_F(CrosHealthdServiceConnectionTest, SetBindNetworkHealthService) {
           }));
 
   FakeCrosHealthdClient::Get()->RequestNetworkHealthForTesting(
-      base::BindLambdaForTesting([&](NetworkHealthStatePtr response) {
-        EXPECT_EQ(canned_response, response);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](network_health::mojom::NetworkHealthStatePtr response) {
+            EXPECT_EQ(canned_response, response);
+            run_loop.Quit();
+          }));
 
   run_loop.Run();
 }

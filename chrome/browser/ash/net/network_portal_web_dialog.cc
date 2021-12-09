@@ -14,8 +14,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-namespace ash {
-
 namespace {
 
 const float kNetworkPortalWebDialogScale = .8;
@@ -29,6 +27,8 @@ gfx::Size GetPortalDialogSize() {
 }
 
 }  // namespace
+
+namespace chromeos {
 
 NetworkPortalWebDialog::NetworkPortalWebDialog(
     base::WeakPtr<NetworkPortalNotificationController> controller)
@@ -87,4 +87,4 @@ bool NetworkPortalWebDialog::ShouldShowDialogTitle() const {
   return true;
 }
 
-}  // namespace ash
+}  // namespace chromeos

@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -258,4 +258,4 @@ TEST_F(DnsLatencyRoutineTest, TestLatencySignificantlyAboveThreshold) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

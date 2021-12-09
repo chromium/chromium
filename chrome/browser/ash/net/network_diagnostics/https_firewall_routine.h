@@ -20,7 +20,7 @@ class NetworkContext;
 }
 }  // namespace network
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Number of retry attempts.
@@ -93,6 +93,6 @@ class HttpsFirewallRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL_ROUTINE_H_

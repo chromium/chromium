@@ -10,8 +10,8 @@
 
 module chromeos.cros_healthd.mojom;
 
-import "ash/services/network_health/public/mojom/network_health.mojom";
 import "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom";
+import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
 // An enumeration of CPU architectures.
 //
@@ -703,7 +703,7 @@ struct DmiInfo {
 // or an error retrieving the information.
 union NetworkResult {
   // Valid NetworkHealthSnapshot.
-  ash.network_health.mojom.NetworkHealthState network_health;
+  chromeos.network_health.mojom.NetworkHealthState network_health;
   // The error that occurred attempting to retrieve the NetworkHealthSnapshot.
   ProbeError error;
 };

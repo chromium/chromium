@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -521,4 +521,4 @@ TEST_F(VideoConferencingRoutineTest, TestTcpAndUdpAndMediaFailure) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

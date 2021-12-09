@@ -444,7 +444,6 @@ include_rules = [
   "+ash/public",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",
-  "+ash/services",
 
   # The message center should only be accessed through
   # //chrome/browser/notifications.

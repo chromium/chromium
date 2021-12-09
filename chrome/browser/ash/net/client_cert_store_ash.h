@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/net/client_cert_filter.h"
 #include "net/ssl/client_cert_store_nss.h"
 
-namespace ash {
+namespace chromeos {
 
 class ClientCertStoreAsh : public net::ClientCertStore {
  public:
@@ -61,11 +61,6 @@ class ClientCertStoreAsh : public net::ClientCertStore {
   PasswordDelegateFactory password_delegate_factory_;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::ClientCertStoreAsh;
-}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_CLIENT_CERT_STORE_ASH_H_

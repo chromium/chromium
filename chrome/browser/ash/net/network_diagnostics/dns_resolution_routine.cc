@@ -19,7 +19,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 namespace {
 
@@ -133,4 +133,4 @@ void DnsResolutionRoutine::OnComplete(
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

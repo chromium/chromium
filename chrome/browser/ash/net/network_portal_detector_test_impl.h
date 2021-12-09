@@ -16,7 +16,7 @@
 #include "base/observer_list.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 
-namespace ash {
+namespace chromeos {
 
 class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
  public:
@@ -72,11 +72,12 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   std::vector<base::OnceClosure> start_detection_callbacks_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::NetworkPortalDetectorTestImpl;
-}
+// TODO(https://crbug.com/1164001): remove when //chrome/browser/chromeos/net
+// moved to ash
+namespace ash {
+using ::chromeos::NetworkPortalDetectorTestImpl;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_DETECTOR_TEST_IMPL_H_

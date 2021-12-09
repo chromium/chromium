@@ -7,13 +7,13 @@
 // NOTE: This mojom should be kept in sync with the copy in the Chromium OS
 // repo: src/platform2/diagnostics/mojo/network_diagnostics.mojom.
 
-module ash.network_diagnostics.mojom;
+module chromeos.network_diagnostics.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
 // Enumeration of the possible network diagnostic routines. See
 // NetworkDiagnosticsRoutines interface for more details.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.RoutineType"]
+[Stable, Extensible, RenamedFrom="ash.network_diagnostics.mojom.RoutineType"]
 enum RoutineType {
   kLanConnectivity,
   kSignalStrength,
@@ -33,7 +33,7 @@ enum RoutineType {
 };
 
 // Each routine can result in one of the possible verdicts.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.RoutineVerdict"]
+[Stable, Extensible, RenamedFrom="ash.network_diagnostics.mojom.RoutineVerdict"]
 enum RoutineVerdict {
   // Routine ran successfully and no connectivity problem found.
   kNoProblem,
@@ -44,19 +44,22 @@ enum RoutineVerdict {
 };
 
 // Problems related to the LanConnectivity routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.LanConnectivityProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.LanConnectivityProblem"]
 enum LanConnectivityProblem {
   kNoLanConnectivity,
 };
 
 // Problems related to the SignalStrength routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.SignalStrengthProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.SignalStrengthProblem"]
 enum SignalStrengthProblem {
   kWeakSignal,
 };
 
 // Problems related to the GatewayCanBePinged routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.GatewayCanBePingedProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.GatewayCanBePingedProblem"]
 enum GatewayCanBePingedProblem {
   // All gateways are unreachable, hence cannot be pinged.
   kUnreachableGateway,
@@ -71,7 +74,8 @@ enum GatewayCanBePingedProblem {
 };
 
 // Problems related to the HasSecureWiFiConnection routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.HasSecureWiFiConnectionProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.HasSecureWiFiConnectionProblem"]
 enum HasSecureWiFiConnectionProblem {
   kSecurityTypeNone,
   kSecurityTypeWep8021x,
@@ -80,7 +84,8 @@ enum HasSecureWiFiConnectionProblem {
 };
 
 // Problems related to the DnsResolverPresent routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.DnsResolverPresentProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.DnsResolverPresentProblem"]
 enum DnsResolverPresentProblem {
   kNoNameServersFound,
   kMalformedNameServers,
@@ -88,7 +93,8 @@ enum DnsResolverPresentProblem {
 };
 
 // Problems related to the DnsLatencyProblem routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.DnsLatencyProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.DnsLatencyProblem"]
 enum DnsLatencyProblem {
   // The routine was unable to resolve one or more hosts.
   kHostResolutionFailure,
@@ -99,14 +105,16 @@ enum DnsLatencyProblem {
 };
 
 // Problems related to the DnsResolution routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.DnsResolutionProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.DnsResolutionProblem"]
 enum DnsResolutionProblem {
   // The routine was unable to successfully resolve the test host
   kFailedToResolveHost,
 };
 
 // Problems related to the CaptivePortal routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.CaptivePortalProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.CaptivePortalProblem"]
 enum CaptivePortalProblem {
   // No active networks found.
   kNoActiveNetworks,
@@ -124,7 +132,8 @@ enum CaptivePortalProblem {
 };
 
 // Problems related to the HttpFirewall routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.HttpFirewallProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.HttpFirewallProblem"]
 enum HttpFirewallProblem {
   // DNS resolution failures above threshold.
   kDnsResolutionFailuresAboveThreshold,
@@ -135,7 +144,8 @@ enum HttpFirewallProblem {
 };
 
 // Problems related to the HttpsFirewall routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.HttpsFirewallProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.HttpsFirewallProblem"]
 enum HttpsFirewallProblem {
   // DNS resolution failure rate is high.
   kHighDnsResolutionFailureRate,
@@ -146,7 +156,8 @@ enum HttpsFirewallProblem {
 };
 
 // Problems related to the HttpsLatency routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.HttpsLatencyProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.HttpsLatencyProblem"]
 enum HttpsLatencyProblem {
   // One or more DNS resolutions resulted in a failure.
   kFailedDnsResolutions,
@@ -159,7 +170,8 @@ enum HttpsLatencyProblem {
 };
 
 // Problems related to the VideoConferencing routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.VideoConferencingProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.VideoConferencingProblem"]
 enum VideoConferencingProblem {
   // Failed requests to a STUN server via UDP.
   kUdpFailure,
@@ -170,7 +182,7 @@ enum VideoConferencingProblem {
 };
 
 // Problems related to the ArcHttp routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.ArcHttpProblem"]
+[Stable, Extensible, RenamedFrom="ash.network_diagnostics.mojom.ArcHttpProblem"]
 enum ArcHttpProblem {
   // Failed to get the ARC Service Manager.
   kFailedToGetArcServiceManager,
@@ -185,7 +197,8 @@ enum ArcHttpProblem {
 };
 
 // Problems related to the ArcDnsResolution routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.ArcDnsResolutionProblem"]
+[Stable, Extensible,
+ RenamedFrom="ash.network_diagnostics.mojom.ArcDnsResolutionProblem"]
 enum ArcDnsResolutionProblem {
   // Failed to get the ARC Service Manager.
   kFailedToGetArcServiceManager,
@@ -200,7 +213,7 @@ enum ArcDnsResolutionProblem {
 };
 
 // Problems related to the ArcPing routine.
-[Stable, Extensible, RenamedFrom="chromeos.network_diagnostics.mojom.ArcPingProblem"]
+[Stable, Extensible, RenamedFrom="ash.network_diagnostics.mojom.ArcPingProblem"]
 enum ArcPingProblem {
   // Failed to get the ARC Service Manager.
   kFailedToGetArcServiceManager,
@@ -222,7 +235,7 @@ enum ArcPingProblem {
 
 // Union of all possible routine problems. See each problem enum definition for
 // more details.
-[Stable, RenamedFrom="chromeos.network_diagnostics.mojom.RoutineProblems"]
+[Stable, RenamedFrom="ash.network_diagnostics.mojom.RoutineProblems"]
 union RoutineProblems {
   array<LanConnectivityProblem> lan_connectivity_problems;
   array<SignalStrengthProblem> signal_strength_problems;
@@ -242,19 +255,19 @@ union RoutineProblems {
 };
 
 // Result values specific to HttpsLatency routine.
-[Stable, RenamedFrom="chromeos.network_diagnostics.mojom.HttpsLatencyResultValue"]
+[Stable, RenamedFrom="ash.network_diagnostics.mojom.HttpsLatencyResultValue"]
 struct HttpsLatencyResultValue {
   mojo_base.mojom.TimeDelta latency;
 };
 
 // Union of routine specific result values if any.
-[Stable, RenamedFrom="chromeos.network_diagnostics.mojom.RoutineResultValue"]
+[Stable, RenamedFrom="ash.network_diagnostics.mojom.RoutineResultValue"]
 union RoutineResultValue {
   HttpsLatencyResultValue https_latency_result_value;
 };
 
 // A single routine's result.
-[Stable, RenamedFrom="chromeos.network_diagnostics.mojom.RoutineResult"]
+[Stable, RenamedFrom="ash.network_diagnostics.mojom.RoutineResult"]
 struct RoutineResult {
   // The result of the routine.
   RoutineVerdict verdict;
@@ -272,7 +285,7 @@ struct RoutineResult {
 // a few). The bound implementation is intended to live in the browser process.
 // Deprecated Methods: 1 - 11
 // Next Method ID: 29
-[Stable, RenamedFrom="chromeos.network_diagnostics.mojom.NetworkDiagnosticsRoutines"]
+[Stable, RenamedFrom="ash.network_diagnostics.mojom.NetworkDiagnosticsRoutines"]
 interface NetworkDiagnosticsRoutines {
   // Returns the most recent result for the specified routine type, if it has
   // been run.

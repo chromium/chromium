@@ -27,7 +27,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 NetworkDiagnostics::NetworkDiagnostics(
@@ -170,4 +170,4 @@ void NetworkDiagnostics::HandleResult(
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

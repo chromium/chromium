@@ -9,14 +9,12 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace network_health {
-
 namespace {
-
 constexpr std::array<uint8_t, 3> samples = {71, 74, 80};
+}  // namespace
 
-}
+namespace chromeos {
+namespace network_health {
 
 class SignalStrengthTrackerTest : public ::testing::Test {
  public:
@@ -76,4 +74,4 @@ TEST_F(SignalStrengthTrackerTest, SamplesSize) {
 }
 
 }  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos

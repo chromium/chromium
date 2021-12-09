@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/tls_prober.h"
 #include "net/base/host_port_pair.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Tests whether a firewall is blocking HTTP port 80.
@@ -88,6 +88,6 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTP_FIREWALL_ROUTINE_H_

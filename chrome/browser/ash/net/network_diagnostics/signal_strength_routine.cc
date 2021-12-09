@@ -14,13 +14,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after
-// chromeos/services/network_config/ is moved to ash/.
-namespace network_config = ::chromeos::network_config;
 
 using chromeos::network_config::mojom::CrosNetworkConfig;
 using chromeos::network_config::mojom::FilterType;
@@ -99,4 +95,4 @@ void SignalStrengthRoutine::OnNetworkStateListReceived(
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

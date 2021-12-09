@@ -18,7 +18,7 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Uses either a TCP or TLS socket to determine whether a socket connection to a
@@ -117,6 +117,6 @@ class TlsProber {
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_TLS_PROBER_H_

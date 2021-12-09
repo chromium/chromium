@@ -9,7 +9,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -98,4 +98,4 @@ TEST_F(NetworkDiagnosticsRoutineTest, NotRunRoutine) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

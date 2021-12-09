@@ -153,8 +153,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
@@ -253,6 +251,8 @@
 #include "chromeos/components/multidevice/debug_webui/url_constants.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
@@ -535,16 +535,16 @@ WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
       /* BindNetworkDiagnosticsServiceCallback */
       base::BindRepeating(
           [](mojo::PendingReceiver<
-              ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+              chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
                  receiver) {
-            ash::network_health::NetworkHealthService::GetInstance()
+            chromeos::network_health::NetworkHealthService::GetInstance()
                 ->BindDiagnosticsReceiver(std::move(receiver));
           }),
       /* BindNetworkHealthServiceCallback */
       base::BindRepeating(
           [](mojo::PendingReceiver<
-              ash::network_health::mojom::NetworkHealthService> receiver) {
-            ash::network_health::NetworkHealthService::GetInstance()
+              chromeos::network_health::mojom::NetworkHealthService> receiver) {
+            chromeos::network_health::NetworkHealthService::GetInstance()
                 ->BindHealthReceiver(std::move(receiver));
           }),
       /* SendFeedbackReportCallback */

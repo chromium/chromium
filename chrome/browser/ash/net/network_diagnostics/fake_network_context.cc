@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -151,4 +151,4 @@ void FakeNetworkContext::SetUdpReceiveDelay(base::TimeDelta receive_delay) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos

@@ -14,7 +14,7 @@ namespace views {
 class Widget;
 }
 
-namespace ash {
+namespace chromeos {
 
 // This is the modal Web dialog to display captive portal login page.
 // It is automatically closed when successful authorization is detected.
@@ -50,11 +50,6 @@ class NetworkPortalWebDialog : public ui::WebDialogDelegate {
   views::Widget* widget_;
 };
 
-}  // namespace ash
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::NetworkPortalWebDialog;
-}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_PORTAL_WEB_DIALOG_H_

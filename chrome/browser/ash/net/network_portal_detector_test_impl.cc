@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "chromeos/network/network_state.h"
 
-namespace ash {
+namespace chromeos {
 
 NetworkPortalDetectorTestImpl::NetworkPortalDetectorTestImpl()
     : strategy_id_(PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN) {
@@ -123,4 +123,4 @@ void NetworkPortalDetectorTestImpl::SetStrategy(
   strategy_id_ = id;
 }
 
-}  // namespace ash
+}  // namespace chromeos

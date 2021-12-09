@@ -10,8 +10,6 @@
 
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "ash/webui/network_ui/traffic_counters_resource_provider.h"
@@ -43,6 +41,8 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_context.h"
@@ -585,17 +585,17 @@ void NetworkUI::BindInterface(
 }
 
 void NetworkUI::BindInterface(
-    mojo::PendingReceiver<ash::network_health::mojom::NetworkHealthService>
+    mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
         receiver) {
-  ash::network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
+  network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
       std::move(receiver));
 }
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<
-        ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
-  ash::network_health::NetworkHealthService::GetInstance()
-      ->BindDiagnosticsReceiver(std::move(receiver));
+        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+  network_health::NetworkHealthService::GetInstance()->BindDiagnosticsReceiver(
+      std::move(receiver));
 }
 
 void NetworkUI::BindInterface(

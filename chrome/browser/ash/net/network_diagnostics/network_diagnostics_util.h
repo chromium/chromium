@@ -15,7 +15,7 @@
 
 class Profile;
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace util {
@@ -114,6 +114,6 @@ std::vector<GURL> GetDefaultMediaUrls();
 }  // namespace util
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_UTIL_H_

@@ -38,9 +38,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace rollback_network_config {
-
 namespace {
 
 static const char kDeviceUserHash[] = "";
@@ -149,7 +146,7 @@ static const char kPeapWiFiRecommendedUserPart[] = R"({
 })";
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
-  device_settings_cache::RegisterPrefs(local_state->registry());
+  ash::device_settings_cache::RegisterPrefs(local_state->registry());
   return local_state;
 }
 
@@ -175,8 +172,8 @@ managed_network_configuration_handler() {
       ->managed_network_configuration_handler();
 }
 
-ShillServiceClient* shill_service_client() {
-  return ShillServiceClient::Get();
+ash::ShillServiceClient* shill_service_client() {
+  return ash::ShillServiceClient::Get();
 }
 
 const chromeos::NetworkState* GetNetworkState(const std::string& guid) {
@@ -293,6 +290,9 @@ void RemoveNetwork(const std::string& guid) {
 
 }  // namespace
 
+namespace ash {
+namespace rollback_network_config {
+
 class RollbackNetworkConfigTest : public testing::Test {
  public:
   RollbackNetworkConfigTest() {
@@ -392,8 +392,9 @@ class RollbackNetworkConfigTest : public testing::Test {
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   NetworkHandlerTestHelper network_handler_test_helper_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
-  ScopedTestDeviceSettingsService scoped_device_settings_;
-  ScopedTestCrosSettings scoped_cros_settings_{RegisterPrefs(&local_state_)};
+  ash::ScopedTestDeviceSettingsService scoped_device_settings_;
+  ash::ScopedTestCrosSettings scoped_cros_settings_{
+      RegisterPrefs(&local_state_)};
   policy::DevicePolicyBuilder device_policy_;
 
   std::unique_ptr<RollbackNetworkConfig> rollback_network_config_;
@@ -496,7 +497,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyWpaPskWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, WepPskWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWepPskWiFi);
+  base::Value network = *base::JSONReader::Read(::kWepPskWiFi);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid = GetStringValue(network, onc::network_config::kGUID);
 
@@ -513,7 +514,7 @@ TEST_F(RollbackNetworkConfigTest, WepPskWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyWepPskWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWepPskWiFi);
+  base::Value network = *base::JSONReader::Read(::kWepPskWiFi);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid = GetStringValue(network, onc::network_config::kGUID);
 
@@ -661,7 +662,7 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapEthernetIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipKeepsDeviceNetworks) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network = *base::JSONReader::Read(::kOpenWiFi);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid = GetStringValue(network, onc::network_config::kGUID);
 
@@ -678,7 +679,7 @@ TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipKeepsDeviceNetworks) {
 }
 
 TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipDeletesPolicyNetworksWiFi) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network = *base::JSONReader::Read(::kOpenWiFi);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid = GetStringValue(network, onc::network_config::kGUID);
 

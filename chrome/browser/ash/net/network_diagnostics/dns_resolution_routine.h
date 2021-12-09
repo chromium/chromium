@@ -23,7 +23,7 @@ class NetworkContext;
 }
 }  // namespace network
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 // Tests whether a DNS resolution can be completed successfully.
@@ -74,6 +74,6 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
 };
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_ROUTINE_H_

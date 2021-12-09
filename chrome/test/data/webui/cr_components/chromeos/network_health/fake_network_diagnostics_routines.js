@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/ash/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
 
 import {assertNotReached} from '../../../chai_assert.js';
 
@@ -11,19 +11,19 @@ import {createResult} from './network_health_test_utils.js';
 
 /**
  * @typedef {{
- *            result: !ash.networkDiagnostics.mojom.RoutineResult,
+ *            result: !chromeos.networkDiagnostics.mojom.RoutineResult,
  *          }}
  */
 var RunRoutineResponse;
 
 /**
  * @implements
- *     {ash.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
+ *     {chromeos.networkDiagnostics.mojom.NetworkDiagnosticsRoutinesInterface}
  */
 export class FakeNetworkDiagnostics {
   constructor() {
-    /** @private {!ash.networkDiagnostics.mojom.RoutineVerdict} */
-    this.verdict_ = ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem;
+    /** @private {!chromeos.networkDiagnostics.mojom.RoutineVerdict} */
+    this.verdict_ = chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem;
 
     /** @private {?number} */
     this.problem_ = null;
@@ -36,11 +36,11 @@ export class FakeNetworkDiagnostics {
    * Sets the RoutineVerdict to be used by all routines in the
    * FakeNetworkDiagnostics service. Problems will be added automatically if the
    * verdict is kProblem.
-   * @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict
+   * @param {!chromeos.networkDiagnostics.mojom.RoutineVerdict} verdict
    */
   setFakeVerdict(verdict) {
     this.verdict_ = verdict;
-    if (verdict === ash.networkDiagnostics.mojom.RoutineVerdict.kProblem) {
+    if (verdict === chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem) {
       this.problem_ = 0;
     }
   }

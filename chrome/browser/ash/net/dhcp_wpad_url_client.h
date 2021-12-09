@@ -12,7 +12,7 @@
 #include "services/network/public/mojom/dhcp_wpad_url_client.mojom.h"
 #include "url/gurl.h"
 
-namespace ash {
+namespace chromeos {
 
 // A mojom::DhcpWpadUrlClient implementation that gets the PAC
 // script URL from the DefaultNetwork, which mirrors the state from Shill
@@ -45,6 +45,6 @@ class DhcpWpadUrlClient : public network::mojom::DhcpWpadUrlClient {
   static void ClearPacUrlForTesting();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_DHCP_WPAD_URL_CLIENT_H_

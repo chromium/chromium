@@ -15,11 +15,11 @@ static_library("connectivity_diagnostics") {
   ]
 
   deps = [
-    "//ash/services/network_health/public/mojom:mojom",
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
     "//ash/webui/resources:connectivity_diagnostics_resources",
     "//chromeos/components/web_applications",
+    "//chromeos/services/network_health/public/mojom:mojom",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",

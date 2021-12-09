@@ -121,23 +121,23 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // network observers.
   void EmitConnectionStateChangedEventForTesting(
       const std::string& network_guid,
-      ash::network_health::mojom::NetworkState state);
+      chromeos::network_health::mojom::NetworkState state);
 
   // Calls the network event OnSignalStrengthChangedEvent on all registered
   // network observers.
   void EmitSignalStrengthChangedEventForTesting(
       const std::string& network_guid,
-      ash::network_health::mojom::UInt32ValuePtr signal_strength);
+      chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
 
   // Requests the network health state using the NetworkHealthService remote.
   void RequestNetworkHealthForTesting(
-      ash::network_health::mojom::NetworkHealthService::
+      chromeos::network_health::mojom::NetworkHealthService::
           GetHealthSnapshotCallback callback);
 
   // Calls the LanConnectivity routine using the NetworkDiagnosticsRoutines
   // remote.
   void RunLanConnectivityRoutineForTesting(
-      ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
           RunLanConnectivityCallback);
 
   // Returns the last created routine by any Run*Routine method.

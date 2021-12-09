@@ -14,7 +14,7 @@
 
 typedef struct CERTCertificateStr CERTCertificate;
 
-namespace ash {
+namespace chromeos {
 
 // A client certificate filter that filters by applying a
 // NSSProfileFilterChromeOS.
@@ -52,6 +52,6 @@ class ClientCertFilter {
   base::WeakPtrFactory<ClientCertFilter> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_CLIENT_CERT_FILTER_H_

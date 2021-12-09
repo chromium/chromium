@@ -10,7 +10,7 @@
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 namespace network_diagnostics {
 
 namespace {
@@ -83,4 +83,4 @@ TEST(NetworkDiagnosticsUtilTest, TestDefaultMediaHostnamesAreValidUrls) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace chromeos
