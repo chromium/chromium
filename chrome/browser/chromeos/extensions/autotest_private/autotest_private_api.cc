@@ -339,6 +339,7 @@ api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
     case apps::mojom::AppType::kCrostini:
       return api::autotest_private::AppType::APP_TYPE_CROSTINI;
     case apps::mojom::AppType::kChromeApp:
+    case apps::mojom::AppType::kExtension:
       return api::autotest_private::AppType::APP_TYPE_EXTENSION;
     case apps::mojom::AppType::kPluginVm:
       return api::autotest_private::AppType::APP_TYPE_PLUGINVM;
@@ -360,7 +361,7 @@ api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
       // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
       // Lacros-hosted chrome-apps.
       break;
-  }
+    }
   NOTREACHED();
   return api::autotest_private::AppType::APP_TYPE_NONE;
 }

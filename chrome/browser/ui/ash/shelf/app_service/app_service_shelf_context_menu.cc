@@ -581,6 +581,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
       return false;
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kRemote:
+    case apps::mojom::AppType::kExtension:
       NOTREACHED() << "Type " << app_type_ << " should not appear in shelf.";
       return false;
   }

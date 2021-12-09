@@ -73,6 +73,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceExternalProtocol;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceLoadIconWithoutMojom;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAppServiceExtension;
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MAC)

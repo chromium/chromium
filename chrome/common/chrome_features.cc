@@ -76,6 +76,8 @@ const base::Feature kAppServiceExternalProtocol{
     "AppServiceExternalProtocol", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAppServiceLoadIconWithoutMojom{
     "AppServiceLoadIconWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kAppServiceExtension{"AppServiceExtension",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MAC)

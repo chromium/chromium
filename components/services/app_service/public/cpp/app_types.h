@@ -28,6 +28,7 @@ enum class AppType {
   kBorealis = 10,          // Borealis app, see go/borealis-app.
   kSystemWeb = 11,         // System web app.
   kStandaloneBrowserChromeApp = 12,  // Chrome app hosted in Lacros.
+  kExtension = 13,                   // Browser extension.
 };
 
 // Whether an app is ready to launch, i.e. installed.

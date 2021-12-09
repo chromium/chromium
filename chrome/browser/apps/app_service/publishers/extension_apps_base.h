@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -56,7 +57,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
                           public extensions::ExtensionPrefsObserver,
                           public extensions::ExtensionRegistryObserver {
  public:
-  explicit ExtensionAppsBase(AppServiceProxy* proxy);
+  ExtensionAppsBase(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsBase() override;
 
   ExtensionAppsBase(const ExtensionAppsBase&) = delete;
@@ -114,6 +115,15 @@ class ExtensionAppsBase : public apps::PublisherBase,
 
   apps_util::IncrementingIconKeyFactory& icon_key_factory() {
     return icon_key_factory_;
+  }
+
+  AppType app_type() { return app_type_; }
+
+  mojom::AppType mojom_app_type() {
+    DCHECK(app_type_ == AppType::kChromeApp ||
+           app_type_ == AppType::kExtension);
+    return app_type_ == AppType::kChromeApp ? mojom::AppType::kChromeApp
+                                            : mojom::AppType::kExtension;
   }
 
  private:
@@ -235,6 +245,10 @@ class ExtensionAppsBase : public apps::PublisherBase,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   const raw_ptr<Profile> profile_;
+
+  // The app type published by this publisher. Must be either kChromeApp or
+  // kExtension.
+  AppType app_type_;
 
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 

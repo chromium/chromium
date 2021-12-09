@@ -417,6 +417,11 @@ bool AppServiceInstanceRegistryHelper::IsOpenedInBrowser(
     if (app_type == apps::mojom::AppType::kUnknown)
       continue;
 
+    // Skip extensions because the browser controller is responsible for
+    // extension windows.
+    if (app_type == apps::mojom::AppType::kExtension)
+      return true;
+
     if (app_type != apps::mojom::AppType::kChromeApp &&
         app_type != apps::mojom::AppType::kSystemWeb &&
         app_type != apps::mojom::AppType::kWeb) {

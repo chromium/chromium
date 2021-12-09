@@ -152,6 +152,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::mojom::AppType::kExtension:
       NOTREACHED();
       break;
     case apps::mojom::AppType::kArc:
