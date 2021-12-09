@@ -34,6 +34,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_util.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
@@ -1452,6 +1453,35 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonBorderColor) {
   // active.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(active_color, get_border_color());
+}
+
+// Tests that if we save a template (and get dropped into the templates grid),
+// delete all the templates (and the templates grid gets hidden), the windows in
+// overview get activated and restored when selected.
+TEST_F(DesksTemplatesTest, WindowActivatableAfterSaveAndDeleteTemplate) {
+  // Create a test window.
+  auto test_window = CreateAppWindow();
+
+  // Open overview and save a template.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  std::vector<DeskTemplate*> entries = GetAllEntries();
+  ASSERT_EQ(1ul, entries.size());
+
+  // Delete the one and only template, which should hide the templates grid but
+  // remain in overview.
+  DeleteTemplate(entries[0]->uuid(), /*expected_current_item_count=*/1);
+  ASSERT_TRUE(InOverviewSession());
+
+  // Click on the `test_window` to activate it.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(test_window.get());
+  event_generator->ClickLeftButton();
+
+  // Verify that we exit the overview session.
+  EXPECT_FALSE(InOverviewSession());
+
+  // Check that the window is active.
+  EXPECT_EQ(test_window.get(), window_util::GetActiveWindow());
 }
 
 }  // namespace ash
