@@ -11,7 +11,8 @@ export class AsyncJobQueue {
    */
   constructor() {
     /**
-     * @private {!Promise}
+     * @type {!Promise<unknown>}
+     * @private
      */
     this.promise_ = Promise.resolve();
 
@@ -24,22 +25,25 @@ export class AsyncJobQueue {
 
   /**
    * Pushes the given job into queue.
-   * @param {function(): !Promise} job
-   * @return {!Promise} Resolved when the job is finished.
+   * @template T
+   * @param {function(): !Promise<T>} job
+   * @return {!Promise<T|null>} Resolved when the job is finished.
    */
   push(job) {
-    this.promise_ = this.promise_.then(() => {
+    /** @type {!Promise<T|null>} */
+    const promise = this.promise_.then(() => {
       if (this.clearing_) {
-        return;
+        return null;
       }
       return job();
     });
-    return this.promise_;
+    this.promise_ = promise;
+    return promise;
   }
 
   /**
    * Flushes the job queue.
-   * @return {!Promise} Resolved when all jobs in the queue are finished.
+   * @return {!Promise<void>} Resolved when all jobs in the queue are finished.
    */
   async flush() {
     await this.promise_;

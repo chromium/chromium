@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '../chrome_util.js';
 import {
   MimeType,
   VideoType,  // eslint-disable-line no-unused-vars
@@ -119,6 +120,7 @@ export class Filenamer {
         case MimeType.PDF:
           return 'pdf';
       }
+      assertNotReached(`Unknown type ${type}`);
     })();
     return DOCUMENT_PREFIX + timestampToDatetimeName(this.timestamp_) + '.' +
         ext;

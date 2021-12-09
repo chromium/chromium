@@ -12,7 +12,6 @@
       "w3c-image-capture"
     ],
     "strict": false,
-    "noImplicitReturns": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
