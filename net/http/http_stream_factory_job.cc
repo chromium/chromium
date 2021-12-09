@@ -852,26 +852,13 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   GURL url(request_info_.url);
   if (proxy_info_.is_quic()) {
     ssl_config = &proxy_ssl_config_;
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr(url::kHttpsScheme);
     const HostPortPair& proxy_endpoint =
         proxy_info_.proxy_server().host_port_pair();
-    // A proxy's certificate is expected to be valid for the proxy hostname.
-    replacements.SetHostStr(proxy_endpoint.host());
-    const std::string new_port = base::NumberToString(proxy_endpoint.port());
-    replacements.SetPortStr(new_port);
-    replacements.ClearUsername();
-    replacements.ClearPassword();
-    replacements.ClearPath();
-    replacements.ClearQuery();
-    replacements.ClearRef();
-    url = url.ReplaceComponents(replacements);
-    destination = url::SchemeHostPort(url);
+    destination = url::SchemeHostPort(url::kHttpsScheme, proxy_endpoint.host(),
+                                      proxy_endpoint.port());
+    url = destination.GetURL();
   } else {
     DCHECK(using_ssl_);
-    // The certificate of a QUIC alternative server is expected to be valid
-    // for the origin of the request (in addition to being valid for the
-    // server itself).
     destination = destination_;
     ssl_config = &server_ssl_config_;
   }
