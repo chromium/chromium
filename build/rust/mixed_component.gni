@@ -25,5 +25,5 @@ template("mixed_component") {
 }
 
 set_defaults("mixed_component") {
-  configs = default_compiler_configs
+  configs = default_component_configs
 }

@@ -584,13 +584,18 @@ template("component") {
 }
 
 # Component defaults
-set_defaults("component") {
-  if (is_component_build) {
-    configs = default_shared_library_configs
-    if (is_android) {
-      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-    }
-  } else {
-    configs = default_compiler_configs
+# Set a variable since we also want to make this available
+# to mixed_component.gni
+if (is_component_build) {
+  default_component_configs = default_shared_library_configs
+  if (is_android) {
+    default_component_configs -=
+        [ "//build/config/android:hide_all_but_jni_onload" ]
   }
+} else {
+  default_component_configs = default_compiler_configs
+}
+
+set_defaults("component") {
+  configs = default_component_configs
 }
