@@ -142,6 +142,10 @@ void PresentationServiceImpl::SetController(
 void PresentationServiceImpl::SetReceiver(
     mojo::PendingRemote<blink::mojom::PresentationReceiver>
         presentation_receiver_remote) {
+  // Mojo interfaces for Presentation API are disabled during pre-rendering.
+  DCHECK_NE(render_frame_host_->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+
   // Presentation receiver virtual web tests (which have the flag set) has no
   // ReceiverPresentationServiceDelegate implementation.
   // TODO(imcheng): Refactor content_browser_client to return a no-op
