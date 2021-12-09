@@ -2,24 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-import collections
 import json
 import logging
 import multiprocessing
 import os
-import select
 import subprocess
 import sys
+import tempfile
 import zipfile
 
 from six.moves import range  # pylint: disable=redefined-builtin
+from devil.utils import cmd_helper
+from devil.utils import parallelizer
+from py_utils import tempfile_ext
 from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.results import json_results
-from py_utils import tempfile_ext
 
 
 # These Test classes are used for running tests and are excluded in the test
@@ -43,12 +43,31 @@ _EXCLUDED_SUITES = {
 _MIN_CLASSES_PER_SHARD = 8
 
 
+# pylint: disable=bad-option-value,useless-object-inheritance
+class LocalMachineJunitTestShard(object):
+  """Class for Running junit shard processes."""
+
+  def __init__(self, cmd, output_stream):
+    self._cmd = cmd
+    self._output_stream = output_stream
+
+  def Run(self):
+    """Runs the cmd which should execute junit tests.
+
+    Returns:
+      returncode from the process execution.
+    """
+    return cmd_helper.Call(self._cmd,
+                           stdout=self._output_stream,
+                           stderr=self._output_stream)
+
+
 class LocalMachineJunitTestRun(test_run.TestRun):
-  #override
+  # override
   def TestPackage(self):
     return self._test_instance.suite
 
-  #override
+  # override
   def SetUp(self):
     pass
 
@@ -112,7 +131,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     return jvm_args
 
-  #override
+  # override
   def RunTests(self, results):
     wrapper_path = os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
                                 self._test_instance.suite)
@@ -149,13 +168,25 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       AddPropertiesJar(cmd_list, temp_dir, self._test_instance.resource_apk)
 
-      procs = [
-          subprocess.Popen(cmd,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT,
-                           universal_newlines=True) for cmd in cmd_list
-      ]
-      PrintProcessesStdout(procs)
+      test_shards = []
+      temp_files = []
+      # One process prints the info out immediately to stdout, the others
+      # write the test info to files which are read later.
+      for index, cmd in enumerate(cmd_list):
+        if index == 0:
+          test_shards.append(LocalMachineJunitTestShard(cmd, sys.stdout))
+        else:
+          temp_file = tempfile.TemporaryFile()
+          temp_files.append(temp_file)
+          test_shards.append(LocalMachineJunitTestShard(cmd, temp_file))
+
+      return_codes = parallelizer.Parallelizer(test_shards).Run().pGet(30 * 60)
+      for f in temp_files:
+        f.seek(0)
+        sys.stdout.write(f.read().decode('utf-8'))
+        f.close()
+      if None in return_codes:
+        sys.stdout.write('Junit shard timed out.')
 
       results_list = []
       try:
@@ -167,15 +198,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         # In the case of a failure in the JUnit or Robolectric test runner
         # the output json file may never be written.
         results_list = [
-          base_test_result.BaseTestResult(
-              'Test Runner Failure', base_test_result.ResultType.UNKNOWN)
+            base_test_result.BaseTestResult('Test Runner Failure',
+                                            base_test_result.ResultType.UNKNOWN)
         ]
 
       test_run_results = base_test_result.TestRunResults()
       test_run_results.AddResults(results_list)
       results.append(test_run_results)
 
-  #override
+  # override
   def TearDown(self):
     pass
 
@@ -232,38 +263,6 @@ def GroupTestsForShard(num_of_shards, test_classes):
     test_dict[count % num_of_shards].append(test_cls)
 
   return test_dict
-
-
-def PrintProcessesStdout(procs):
-  """Prints the stdout of all the processes.
-
-  Buffers the stdout of the processes and prints it when finished.
-
-  Args:
-    procs: A list of subprocesses.
-
-  Returns: N/A
-  """
-  streams = [p.stdout for p in procs]
-  outputs = collections.defaultdict(list)
-  first_fd = streams[0].fileno()
-
-  while streams:
-    rstreams, _, _ = select.select(streams, [], [])
-    for stream in rstreams:
-      line = stream.readline()
-      if line:
-        # Print out just one output so user can see work being done rather
-        # than waiting for it all at the end.
-        if stream.fileno() == first_fd:
-          sys.stdout.write(line)
-        else:
-          outputs[stream.fileno()].append(line)
-      else:
-        streams.remove(stream)  # End of stream.
-
-  for p in procs:
-    sys.stdout.write(''.join(outputs[p.stdout.fileno()]))
 
 
 def _GetTestClasses(file_path):
