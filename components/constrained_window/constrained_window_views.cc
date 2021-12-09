@@ -194,7 +194,11 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
   web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
-  CHECK(manager);
+  LOG_IF(FATAL, !manager) << "CreateWebModalDialogViews without a manager"
+                          << ", scheme="
+                          << web_contents->GetLastCommittedURL().scheme_piece()
+                          << ", host="
+                          << web_contents->GetLastCommittedURL().host_piece();
   return views::DialogDelegate::CreateDialogWidget(
       dialog, nullptr,
       manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
