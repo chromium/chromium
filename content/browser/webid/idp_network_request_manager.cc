@@ -234,9 +234,11 @@ void IdpNetworkRequestManager::FetchIdpWellKnown(
 
   idp_well_known_callback_ = std::move(callback);
 
-  const url::Origin& idp_origin = url::Origin::Create(provider_);
+  // TODO(yigu): Using .well-known in sub-directory (non-root) is common for multi-tenancy. However,
+  // this may be an invalid use of .well-known and we should enforce it to be under root.
+  // https://crbug.com/1277712.
   GURL target_url =
-      idp_origin.GetURL().Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
+      provider_.Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
 
   url_loader_ = CreateUncredentialedUrlLoader(target_url);
 
