@@ -70,6 +70,7 @@ class UpdateServiceProxy : public UpdateService {
   void RunPeriodicTasksOnSTA(base::OnceClosure callback);
   void UpdateAllOnSTA(StateChangeCallback state_update, Callback callback);
   void UpdateOnSTA(const std::string& app_id,
+                   PolicySameVersionUpdate policy_same_version_update,
                    StateChangeCallback state_update,
                    Callback callback);
 

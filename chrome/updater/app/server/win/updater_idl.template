@@ -91,7 +91,8 @@ interface IUpdater : IUnknown {
                       [in, string] const WCHAR* existence_checker_path,
                       [in] IUpdaterRegisterAppCallback* callback);
   HRESULT RunPeriodicTasks([in] IUpdaterCallback* callback);
-  HRESULT Update([ in, string ] const WCHAR* app_id,
+  HRESULT Update([in, string] const WCHAR* app_id,
+                 [in] BOOL same_version_update_allowed,
                  [in] IUpdaterObserver* observer);
   HRESULT UpdateAll([in] IUpdaterObserver * observer);
 };

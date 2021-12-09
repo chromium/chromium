@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/update_service.h"
 
 class GURL;
 
@@ -72,6 +73,9 @@ class IntegrationTestCommands
   virtual void TearDownTestService() const = 0;
 #endif  // OS_WIN
   virtual void StressUpdateService() const = 0;
+  virtual void CallServiceUpdate(const std::string& app_id,
+                                 UpdateService::PolicySameVersionUpdate
+                                     policy_same_version_update) const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;

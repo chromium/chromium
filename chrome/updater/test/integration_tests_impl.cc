@@ -478,5 +478,28 @@ void StressUpdateService(UpdaterScope scope) {
   loop.Run();
 }
 
+void CallServiceUpdate(UpdaterScope updater_scope,
+                       const std::string& app_id,
+                       bool same_version_update_allowed) {
+  UpdateService::PolicySameVersionUpdate policy_same_version_update =
+      same_version_update_allowed
+          ? UpdateService::PolicySameVersionUpdate::kAllowed
+          : UpdateService::PolicySameVersionUpdate::kNotAllowed;
+
+  scoped_refptr<UpdateService> service_proxy =
+      CreateUpdateServiceProxy(updater_scope);
+
+  base::RunLoop loop;
+  service_proxy->Update(
+      app_id, UpdateService::Priority::kForeground, policy_same_version_update,
+      base::BindLambdaForTesting([](const UpdateService::UpdateState&) {}),
+      base::BindLambdaForTesting([&](UpdateService::Result result) {
+        EXPECT_EQ(result, UpdateService::Result::kSuccess);
+        loop.Quit();
+      }));
+
+  loop.Run();
+}
+
 }  // namespace test
 }  // namespace updater

@@ -245,6 +245,12 @@ class IntegrationTest : public ::testing::Test {
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
 
+  void CallServiceUpdate(
+      const std::string& app_id,
+      UpdateService::PolicySameVersionUpdate policy_same_version_update) {
+    test_commands_->CallServiceUpdate(app_id, policy_same_version_update);
+  }
+
   scoped_refptr<IntegrationTestCommands> test_commands_;
 
  private:
@@ -578,6 +584,47 @@ TEST_F(IntegrationTest, UpdateServiceStress) {
   Install();
   ExpectInstalled();
   StressUpdateService();
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, SameVersionUpdate) {
+  ScopedServer test_server(test_commands_);
+  ExpectRegistrationEvent(&test_server, kUpdaterAppId);
+  Install();
+  ExpectInstalled();
+
+  const std::string app_id = "test-appid";
+  ExpectRegistrationEvent(&test_server, app_id);
+  RegisterApp(app_id);
+
+  const std::string response = base::StringPrintf(
+      ")]}'\n"
+      R"({"response":{)"
+      R"(  "protocol":"3.1",)"
+      R"(  "app":[)"
+      R"(    {)"
+      R"(      "appid":"%s",)"
+      R"(      "status":"ok",)"
+      R"(      "updatecheck":{)"
+      R"(        "status":"noupdate")"
+      R"(      })"
+      R"(    })"
+      R"(  ])"
+      R"(}})",
+      app_id.c_str());
+  test_server.ExpectOnce(
+      {base::BindRepeating(
+          RequestMatcherRegex,
+          R"(.*"updatecheck":{"sameversionupdate":true},"version":"0.1"}.*)")},
+      response);
+  CallServiceUpdate(app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
+
+  test_server.ExpectOnce(
+      {base::BindRepeating(RequestMatcherRegex,
+                           R"(.*"updatecheck":{},"version":"0.1"}.*)")},
+      response);
+  CallServiceUpdate(app_id,
+                    UpdateService::PolicySameVersionUpdate::kNotAllowed);
   Uninstall();
 }
 

@@ -189,7 +189,8 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         crx_component->disabled_reasons,
         MakeProtocolUpdateCheck(!crx_component->updates_enabled,
                                 crx_component->target_version_prefix,
-                                crx_component->rollback_allowed),
+                                crx_component->rollback_allowed,
+                                crx_component->same_version_update_allowed),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end()),
         absl::nullopt));

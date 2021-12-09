@@ -180,6 +180,10 @@ void ExpectUpdateSequence(UpdaterScope scope,
 
 void StressUpdateService(UpdaterScope scope);
 
+void CallServiceUpdate(UpdaterScope updater_scope,
+                       const std::string& app_id,
+                       bool same_version_update_allowed);
+
 }  // namespace test
 }  // namespace updater
 

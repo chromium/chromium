@@ -242,11 +242,13 @@ protocol_request::App MakeProtocolApp(
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,
     const std::string& target_version_prefix,
-    bool rollback_allowed) {
+    bool rollback_allowed,
+    bool same_version_update_allowed) {
   protocol_request::UpdateCheck update_check;
   update_check.is_update_disabled = is_update_disabled;
   update_check.target_version_prefix = target_version_prefix;
   update_check.rollback_allowed = rollback_allowed;
+  update_check.same_version_update_allowed = same_version_update_allowed;
   return update_check;
 }
 

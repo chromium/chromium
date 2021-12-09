@@ -278,7 +278,9 @@ class StateChangeCallbackFilter {
 // callbacks involves issuing outgoing COM RPC calls, which block, such COM
 // calls must be done through a task runner, bound to the closures provided
 // as parameters for the UpdateService::Update call.
-HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
+HRESULT UpdaterImpl::Update(const wchar_t* app_id,
+                            BOOL same_version_update_allowed,
+                            IUpdaterObserver* observer) {
   // This task runner is responsible for sequencing the callbacks posted
   // by the `UpdateService` and calling the outbound COM functions to
   // notify the client about state changes in the `UpdateService`.
@@ -294,10 +296,13 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
       base::BindOnce(
           [](scoped_refptr<UpdateService> update_service,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const std::string& app_id, IUpdaterObserverPtr observer) {
+             const std::string& app_id, bool same_version_update_allowed,
+             IUpdaterObserverPtr observer) {
             update_service->Update(
                 app_id, UpdateService::Priority::kForeground,
-                UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                same_version_update_allowed
+                    ? UpdateService::PolicySameVersionUpdate::kAllowed
+                    : UpdateService::PolicySameVersionUpdate::kNotAllowed,
                 base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
                                     base::Owned(new StateChangeCallbackFilter(
                                         task_runner, observer))),
@@ -319,7 +324,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
                     task_runner, observer));
           },
           com_server->update_service(), task_runner, base::WideToUTF8(app_id),
-          observer_local));
+          same_version_update_allowed, observer_local));
 
   // Always return S_OK from this function. Errors must be reported using the
   // observer interface.

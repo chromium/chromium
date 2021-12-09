@@ -285,6 +285,19 @@ inline std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os,
                          const UpdateService::UpdateState& update_state);
 
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const UpdateService::PolicySameVersionUpdate& policy_same_version_update) {
+  return os << [&policy_same_version_update] {
+    switch (policy_same_version_update) {
+      case UpdateService::PolicySameVersionUpdate::kNotAllowed:
+        return "not allowed";
+      case UpdateService::PolicySameVersionUpdate::kAllowed:
+        return "allowed";
+    }
+  }();
+}
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UPDATE_SERVICE_H_

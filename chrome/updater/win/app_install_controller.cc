@@ -486,7 +486,7 @@ void AppInstallControllerImpl::DoInstallApp() {
 
   update_service_->Update(
       app_id_, UpdateService::Priority::kForeground,
-      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      UpdateService::PolicySameVersionUpdate::kAllowed,
       base::BindRepeating(&AppInstallControllerImpl::StateChange, this),
       base::BindOnce(&AppInstallControllerImpl::InstallComplete, this));
 }

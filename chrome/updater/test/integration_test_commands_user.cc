@@ -16,6 +16,7 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/test_scope.h"
+#include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -175,6 +176,15 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void StressUpdateService() const override {
     updater::test::StressUpdateService(updater_scope_);
+  }
+
+  void CallServiceUpdate(const std::string& app_id,
+                         UpdateService::PolicySameVersionUpdate
+                             policy_same_version_update) const override {
+    updater::test::CallServiceUpdate(
+        updater_scope_, app_id,
+        policy_same_version_update ==
+            UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
  private:

@@ -960,6 +960,59 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
   }
 }
 
+TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
+  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+
+  IdToComponentPtrMap components;
+  components[kUpdateItemId] = MakeComponent();
+
+  auto& component = components[kUpdateItemId];
+  auto crx_component = component->crx_component();
+  EXPECT_FALSE(crx_component->same_version_update_allowed);
+  {
+    // Tests that `same_version_update_allowed` is not serialized when its
+    // value is false.
+    auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
+        config_->test_url_loader_factory());
+    EXPECT_TRUE(post_interceptor->ExpectRequest(
+        std::make_unique<PartialMatch>("updatecheck"),
+        test_file("updatecheck_reply_noupdate.json")));
+    update_checker_->CheckForUpdates(
+        update_context_->session_id, {kUpdateItemId}, components, {},
+        base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
+                       base::Unretained(this)));
+    RunThreads();
+    const auto& request = post_interceptor->GetRequestBody(0);
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const auto& app = root->FindPath("request.app")->GetList()[0];
+    EXPECT_STREQ(kUpdateItemId, app.FindStringPath("appid")->c_str());
+    EXPECT_TRUE(app.FindDictKey("updatecheck"));
+    EXPECT_FALSE(app.FindPath("updatecheck.sameversionupdate"));
+  }
+  {
+    // Tests that `same_version_update_allowed` is serialized when its
+    // value is true.
+    crx_component->same_version_update_allowed = true;
+    component->set_crx_component(*crx_component);
+    auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
+        config_->test_url_loader_factory());
+    EXPECT_TRUE(post_interceptor->ExpectRequest(
+        std::make_unique<PartialMatch>("updatecheck"),
+        test_file("updatecheck_reply_noupdate.json")));
+    update_checker_->CheckForUpdates(
+        update_context_->session_id, {kUpdateItemId}, components, {},
+        base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
+                       base::Unretained(this)));
+    RunThreads();
+    const auto& request = post_interceptor->GetRequestBody(0);
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const auto& app = root->FindPath("request.app")->GetList()[0];
+    EXPECT_STREQ(kUpdateItemId, app.FindStringPath("appid")->c_str());
+    EXPECT_EQ(app.FindBoolPath("updatecheck.sameversionupdate").value(), true);
+  }
+}
 TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),

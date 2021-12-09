@@ -407,7 +407,7 @@ void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
 void UpdateServiceProxy::Update(
     const std::string& app_id,
     UpdateService::Priority /*priority*/,
-    PolicySameVersionUpdate /*policy_same_version_update*/,
+    PolicySameVersionUpdate policy_same_version_update,
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
@@ -418,6 +418,7 @@ void UpdateServiceProxy::Update(
       FROM_HERE,
       base::BindOnce(
           &UpdateServiceProxy::UpdateOnSTA, this, app_id,
+          policy_same_version_update,
           base::BindPostTask(main_task_runner_, state_update),
           base::BindPostTask(main_task_runner_, std::move(callback))));
 }
@@ -570,9 +571,11 @@ void UpdateServiceProxy::UpdateAllOnSTA(StateChangeCallback state_update,
   }
 }
 
-void UpdateServiceProxy::UpdateOnSTA(const std::string& app_id,
-                                     StateChangeCallback state_update,
-                                     Callback callback) {
+void UpdateServiceProxy::UpdateOnSTA(
+    const std::string& app_id,
+    PolicySameVersionUpdate policy_same_version_update,
+    StateChangeCallback state_update,
+    Callback callback) {
   DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUpdater> updater;
@@ -585,7 +588,10 @@ void UpdateServiceProxy::UpdateOnSTA(const std::string& app_id,
 
   auto observer = Microsoft::WRL::Make<UpdaterObserver>(updater, state_update,
                                                         std::move(callback));
-  hr = updater->Update(base::UTF8ToWide(app_id).c_str(), observer.Get());
+  hr = updater->Update(base::UTF8ToWide(app_id).c_str(),
+                       policy_same_version_update ==
+                           UpdateService::PolicySameVersionUpdate::kAllowed,
+                       observer.Get());
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to call IUpdater::UpdateAll: " << std::hex << hr;
 

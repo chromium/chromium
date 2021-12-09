@@ -140,6 +140,8 @@ std::string ProtocolSerializerJSON::Serialize(
         update_check_node->SetKey("updatedisabled", Value(true));
       if (app.update_check->rollback_allowed)
         update_check_node->SetKey("rollback_allowed", Value(true));
+      if (app.update_check->same_version_update_allowed)
+        update_check_node->SetKey("sameversionupdate", Value(true));
       if (!app.update_check->target_version_prefix.empty()) {
         update_check_node->SetKey(
             "targetversionprefix",

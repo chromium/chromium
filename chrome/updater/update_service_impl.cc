@@ -147,6 +147,9 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     bool update_blocked,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     const std::vector<std::string>& ids) {
+  VLOG(1) << __func__
+          << ". Same version update: " << policy_same_version_update;
+
   std::vector<absl::optional<update_client::CrxComponent>> components;
   for (const auto& id : ids) {
     components.push_back(
@@ -336,7 +339,7 @@ void UpdateServiceImpl::Update(
       priority,
       base::BindOnce(&UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork,
                      this, state_update, std::move(callback), ids, priority,
-                     UpdateService::PolicySameVersionUpdate::kNotAllowed));
+                     policy_same_version_update));
 }
 
 bool UpdateServiceImpl::IsUpdateDisabledByPolicy(
