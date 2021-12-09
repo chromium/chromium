@@ -3364,4 +3364,48 @@ TEST(AXEventGeneratorTest, ParentChangedOnIgnoredNodeFiresOnChildren) {
   // HasEventAtNode(AXEventGenerator::Event::PARENT_CHANGED, 101),
 }
 
+TEST(AXEventGeneratorTest, InsertUnderIgnoredTest) {
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  {
+    AXNodeData data;
+    data.id = 1;
+    data.role = ax::mojom::Role::kRootWebArea;
+    data.child_ids = {3};
+    initial_state.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 3;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.AddState(ax::mojom::State::kIgnored);
+    initial_state.nodes.push_back(data);
+  }
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  AXTreeUpdate update;
+  update.node_id_to_clear = 3;
+  {
+    AXNodeData data;
+    data.id = 3;
+    data.role = ax::mojom::Role::kGenericContainer;
+    data.child_ids = {5};
+    data.AddState(ax::mojom::State::kIgnored);
+    update.nodes.push_back(data);
+  }
+  {
+    AXNodeData data;
+    data.id = 5;
+    data.role = ax::mojom::Role::kGenericContainer;
+    update.nodes.push_back(data);
+  }
+
+  EXPECT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(
+                  HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
+                  HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 5)));
+}
+
 }  // namespace ui

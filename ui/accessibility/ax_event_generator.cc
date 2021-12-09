@@ -305,6 +305,12 @@ void AXEventGenerator::OnNodeDataChanged(AXTree* tree,
   // and line layout. We don't expose those to platform APIs, though, so
   // suppress CHILDREN_CHANGED events on static text nodes.
   if (new_node_data.child_ids != old_node_data.child_ids && !node->IsText()) {
+    if (node->IsIgnored()) {
+      AXNode* unignored_parent = node->GetUnignoredParent();
+      if (unignored_parent)
+        AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
+      return;
+    }
     AddEvent(node, Event::CHILDREN_CHANGED);
   }
 }
