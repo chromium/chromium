@@ -141,6 +141,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // ash_unittests to reduce the duplication.
   virtual bool GetDriveFsMountPointPath(base::FilePath* path) const = 0;
 
+  // Returns the absolute path for the user's Android Play files.
+  virtual base::FilePath GetAndroidFilesPath() const = 0;
+
   // Creates and returns the view that will be used as the contents view of the
   // overlay widget, which is added as a child of the recorded surface to host
   // contents rendered in a web view that are meant to be part of the recording

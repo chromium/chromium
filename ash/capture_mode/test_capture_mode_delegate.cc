@@ -29,12 +29,13 @@ class TestRecordingOverlayView : public RecordingOverlayView {
 
 TestCaptureModeDelegate::TestCaptureModeDelegate() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  const bool created_downloads_dir =
+  bool created_dir =
       base::CreateNewTempDirectory(/*prefix=*/"", &fake_downloads_dir_);
-  DCHECK(created_downloads_dir);
-  const bool created_root_drive_dir =
-      fake_drive_fs_mount_path_.CreateUniqueTempDir();
-  DCHECK(created_root_drive_dir);
+  DCHECK(created_dir);
+  created_dir = fake_drive_fs_mount_path_.CreateUniqueTempDir();
+  DCHECK(created_dir);
+  created_dir = fake_android_files_path_.CreateUniqueTempDir();
+  DCHECK(created_dir);
 }
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
@@ -156,6 +157,10 @@ bool TestCaptureModeDelegate::GetDriveFsMountPointPath(
     base::FilePath* result) const {
   *result = fake_drive_fs_mount_path_.GetPath();
   return true;
+}
+
+base::FilePath TestCaptureModeDelegate::GetAndroidFilesPath() const {
+  return fake_android_files_path_.GetPath();
 }
 
 std::unique_ptr<RecordingOverlayView>

@@ -93,6 +93,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void OnSessionStateChanged(bool started) override;
   void OnServiceRemoteReset() override;
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
+  base::FilePath GetAndroidFilesPath() const override;
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
       const override;
 
@@ -105,6 +106,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool is_allowed_by_policy_ = true;
   bool should_save_after_dlp_check_ = true;
   base::ScopedTempDir fake_drive_fs_mount_path_;
+  base::ScopedTempDir fake_android_files_path_;
 };
 
 }  // namespace ash

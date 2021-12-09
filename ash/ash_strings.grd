@@ -4017,6 +4017,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_GOOGLE_DRIVE" desc="The label of the menu item button for selecting the root of Google Drive to store the captured images and videos.">
         Google Drive
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_ANDROID_FILES" desc="The label of the menu item button for selecting the root of the Android Play files path to store the captured images and videos.">
+        Play files
+      </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">

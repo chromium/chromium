@@ -710,6 +710,11 @@ bool CaptureModeController::IsRootDriveFsPath(
   return false;
 }
 
+bool CaptureModeController::IsAndroidFilesPath(
+    const base::FilePath& path) const {
+  return path == delegate_->GetAndroidFilesPath();
+}
+
 void CaptureModeController::OnRecordingEnded(
     recording::mojom::RecordingStatus status,
     const gfx::ImageSkia& thumbnail) {

@@ -198,6 +198,10 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   bool IsRootDriveFsPath(const base::FilePath& path) const;
 
+  // Returns true if the given `path` is the same as the Android Play files
+  // path, false otherwise.
+  bool IsAndroidFilesPath(const base::FilePath& path) const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;

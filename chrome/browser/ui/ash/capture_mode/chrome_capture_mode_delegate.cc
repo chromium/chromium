@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -214,6 +215,10 @@ bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
 
   *result = integration_service->GetMountPointPath();
   return true;
+}
+
+base::FilePath ChromeCaptureModeDelegate::GetAndroidFilesPath() const {
+  return file_manager::util::GetAndroidFilesPath();
 }
 
 std::unique_ptr<ash::RecordingOverlayView>

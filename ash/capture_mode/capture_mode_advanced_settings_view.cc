@@ -130,11 +130,17 @@ void CaptureModeAdvancedSettingsView::OnCaptureFolderMayHaveChanged() {
     return;
   }
 
-  const std::u16string folder_name =
-      controller->IsRootDriveFsPath(custom_path)
-          ? l10n_util::GetStringUTF16(
-                IDS_ASH_SCREEN_CAPTURE_SAVE_TO_GOOGLE_DRIVE)
-          : custom_path.BaseName().AsUTF16Unsafe();
+  std::u16string folder_name = custom_path.BaseName().AsUTF16Unsafe();
+  // We explicitly name the folders of Google Drive and Play files, since those
+  // folders internally may have user-unfriendly names.
+  if (controller->IsRootDriveFsPath(custom_path)) {
+    folder_name =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_GOOGLE_DRIVE);
+  } else if (controller->IsAndroidFilesPath(custom_path)) {
+    folder_name =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_ANDROID_FILES);
+  }
+
   save_to_menu_group_->AddOrUpdateExistingOption(folder_name, kCustomFolder);
 
   controller->CheckFolderAvailability(
