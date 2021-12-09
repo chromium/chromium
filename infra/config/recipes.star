@@ -160,9 +160,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_clang_coverage_tot",
-    experiments = {
-        "luci.recipes.use_python3": 20,
-    },
+    use_python3 = True,
 )
 
 build_recipe(
