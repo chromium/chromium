@@ -357,6 +357,11 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     const useAccountStore = !this.$.storePicker.hidden ?
         (this.$.storePicker.value === this.storeOptionAccountValue) :
         false;
+    if (!this.$.storePicker.hidden) {
+      chrome.metricsPrivate.recordBoolean(
+          'PasswordManager.AddCredentialFromSettings.AccountStoreUsed',
+          useAccountStore);
+    }
     PasswordManagerImpl.getInstance()
         .addPassword({
           url: this.$.websiteInput.value,

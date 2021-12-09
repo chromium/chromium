@@ -626,6 +626,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.AddCredentialFromSettings.AccountStoreUsed"
+    enum="Boolean" expires_after="M104">
+  <owner>lizapopova@google.com</owner>
+  <owner>mamir@google.com</owner>
+  <summary>
+    Tracks which store is used when the user adds a new credential from
+    Settings. True means account store, false means device store. Recorded only
+    for users who opted in for account storage and thus are given a choice. Only
+    applicable to Desktop platform.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction"
     enum="AddCredentialFromSettingsUserInteractions" expires_after="M104">
   <owner>vidhanj@google.com</owner>
