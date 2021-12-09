@@ -30,7 +30,7 @@ class FakeCookieStore : public net::CookieStore {
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,
-      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override;
   void DeleteCanonicalCookieAsync(const net::CanonicalCookie& cookie,
                                   DeleteCallback callback) override;

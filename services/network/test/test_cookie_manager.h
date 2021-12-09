@@ -31,7 +31,7 @@ class TestCookieManager : public network::mojom::CookieManager {
   void GetCookieList(
       const GURL& url,
       const net::CookieOptions& cookie_options,
-      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override {}
   void DeleteCanonicalCookie(const net::CanonicalCookie& cookie,
                              DeleteCanonicalCookieCallback callback) override {}

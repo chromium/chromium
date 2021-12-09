@@ -84,7 +84,7 @@ bool RemoveCookieTester::GetCookie(const std::string& host,
   net::CookieOptions cookie_options;
   cookie_manager_->GetCookieList(
       GURL("https://" + host + "/"), cookie_options,
-      net::CookiePartitionKeychain(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&RemoveCookieTester::GetCookieListCallback,
                      base::Unretained(this)));
   BlockUntilNotified();

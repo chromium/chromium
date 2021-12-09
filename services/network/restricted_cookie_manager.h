@@ -209,10 +209,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // Cookie partition key that the instance of RestrictedCookieManager will have
   // access to.
   absl::optional<net::CookiePartitionKey> cookie_partition_key_;
-  // CookiePartitionKeychain that is either empty if `cookie_partition_key_` is
-  // nullopt. If `cookie_partition_key_` is not null, the keychain contains its
-  // value.
-  net::CookiePartitionKeychain cookie_partition_keychain_;
+  // CookiePartitionKeyCollection that is either empty if
+  // `cookie_partition_key_` is nullopt. If `cookie_partition_key_` is not null,
+  // the key collection contains its value.
+  net::CookiePartitionKeyCollection cookie_partition_key_collection_;
 
   // Contains a mapping of url/site -> recent cookie updates for duplicate
   // update filtering.

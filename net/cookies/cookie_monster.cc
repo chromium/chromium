@@ -145,7 +145,8 @@ void MaybeRunCookieCallback(base::OnceCallback<void(T)> callback,
 //
 // This returns true if the |list| of key should include unpartitioned cookie in
 // GetCookie...().
-bool IncludeUnpartitionedCookies(const net::CookiePartitionKeychain& list) {
+bool IncludeUnpartitionedCookies(
+    const net::CookiePartitionKeyCollection& list) {
   if (list.IsEmpty() || list.ContainsAllKeys())
     return true;
 
@@ -429,7 +430,7 @@ void CookieMonster::SetCanonicalCookieAsync(
 void CookieMonster::GetCookieListWithOptionsAsync(
     const GURL& url,
     const CookieOptions& options,
-    const CookiePartitionKeychain& cookie_partition_keychain,
+    const CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   DoCookieCallbackForURL(
       base::BindOnce(
@@ -437,7 +438,7 @@ void CookieMonster::GetCookieListWithOptionsAsync(
           // the callback on |*this|, so the callback will not outlive
           // the object.
           &CookieMonster::GetCookieListWithOptions, base::Unretained(this), url,
-          options, cookie_partition_keychain, std::move(callback)),
+          options, cookie_partition_key_collection, std::move(callback)),
       url);
 }
 
@@ -624,7 +625,7 @@ void CookieMonster::AttachAccessSemanticsListForCookieList(
 void CookieMonster::GetCookieListWithOptions(
     const GURL& url,
     const CookieOptions& options,
-    const CookiePartitionKeychain& cookie_partition_keychain,
+    const CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -632,14 +633,14 @@ void CookieMonster::GetCookieListWithOptions(
   CookieAccessResultList excluded_cookies;
   if (HasCookieableScheme(url)) {
     std::vector<CanonicalCookie*> cookie_ptrs;
-    if (IncludeUnpartitionedCookies(cookie_partition_keychain)) {
+    if (IncludeUnpartitionedCookies(cookie_partition_key_collection)) {
       cookie_ptrs = FindCookiesForRegistryControlledHost(url);
     } else {
-      DCHECK(!cookie_partition_keychain.IsEmpty());
+      DCHECK(!cookie_partition_key_collection.IsEmpty());
     }
 
-    if (!cookie_partition_keychain.IsEmpty()) {
-      if (cookie_partition_keychain.ContainsAllKeys()) {
+    if (!cookie_partition_key_collection.IsEmpty()) {
+      if (cookie_partition_key_collection.ContainsAllKeys()) {
         for (const auto& it : partitioned_cookies_) {
           std::vector<CanonicalCookie*> partitioned_cookie_ptrs =
               FindPartitionedCookiesForRegistryControlledHost(it.first, url);
@@ -648,7 +649,7 @@ void CookieMonster::GetCookieListWithOptions(
         }
       } else {
         for (const CookiePartitionKey& key :
-             cookie_partition_keychain.PartitionKeys()) {
+             cookie_partition_key_collection.PartitionKeys()) {
           std::vector<CanonicalCookie*> partitioned_cookie_ptrs =
               FindPartitionedCookiesForRegistryControlledHost(key, url);
           cookie_ptrs.insert(cookie_ptrs.end(), partitioned_cookie_ptrs.begin(),

@@ -152,7 +152,7 @@ void GetCookieListFromManager(
     const GURL& url,
     network::mojom::CookieManager::GetCookieListCallback callback) {
   manager->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
-                         net::CookiePartitionKeychain::Todo(),
+                         net::CookiePartitionKeyCollection::Todo(),
                          std::move(callback));
 }
 

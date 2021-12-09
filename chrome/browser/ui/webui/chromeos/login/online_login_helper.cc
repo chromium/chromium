@@ -208,7 +208,7 @@ void OnlineLoginHelper::RequestCookiesAndCompleteAuthentication() {
       net::CookieOptions::MakeAllInclusive();
   cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(), cookie_options,
-      net::CookiePartitionKeychain::Todo(),
+      net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&OnlineLoginHelper::OnGetCookiesForCompleteAuthentication,
                      weak_factory_.GetWeakPtr()));
 }

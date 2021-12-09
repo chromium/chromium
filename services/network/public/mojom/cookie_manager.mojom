@@ -161,7 +161,7 @@ struct CookiePartitionKey {
   mojo_base.mojom.UnguessableToken? nonce;
 };
 
-struct CookiePartitionKeychain {
+struct CookiePartitionKeyCollection {
   bool contains_all_partitions = false;
   array<CookiePartitionKey> keys;
 };
@@ -359,7 +359,7 @@ interface CookieManager {
 
   // Get all cookies for the specified URL and cookie options.
   // Will also return any partitioned cookies whose partition key are in
-  // |cookie_partition_keychain|.
+  // |cookie_partition_key_collection|.
   // Returned cookie list is sorted first by path length (longest first)
   // and second by creation time. If the |return_excluded_cookies| option is set
   // in the options, |excluded_cookies| with be a list of cookies that were
@@ -367,7 +367,7 @@ interface CookieManager {
   // default, that option is not set and |excluded_cookies| is an empty list.
   GetCookieList(url.mojom.Url url,
                 CookieOptions cookie_options,
-                CookiePartitionKeychain cookie_partition_keychain)
+                CookiePartitionKeyCollection cookie_partition_key_collection)
       => (array<CookieWithAccessResult> cookies,
           array<CookieWithAccessResult> excluded_cookies);
 

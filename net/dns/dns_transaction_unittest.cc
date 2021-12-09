@@ -2410,7 +2410,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   request_context_->cookie_store()->GetCookieListWithOptionsAsync(
       GURL(GetURLFromTemplateWithoutParameters(
           config_.dns_over_https_servers[0].server_template)),
-      CookieOptions::MakeAllInclusive(), CookiePartitionKeychain(),
+      CookieOptions::MakeAllInclusive(), CookiePartitionKeyCollection(),
       base::BindOnce(&CookieCallback::GetCookieListCallback,
                      base::Unretained(&callback)));
   callback.WaitUntilDone();

@@ -352,8 +352,8 @@ void RestrictedCookieManager::ComputeCookiePartitionKey() {
   cookie_partition_key_ = net::CookieAccessDelegate::CreateCookiePartitionKey(
       cookie_store_->cookie_access_delegate(),
       isolation_info_.network_isolation_key());
-  cookie_partition_keychain_ =
-      net::CookiePartitionKeychain::FromOptional(cookie_partition_key_);
+  cookie_partition_key_collection_ =
+      net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
 }
 
 void RestrictedCookieManager::GetAllForUrl(
@@ -379,7 +379,7 @@ void RestrictedCookieManager::GetAllForUrl(
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, net_options, cookie_partition_keychain_,
+      url, net_options, cookie_partition_key_collection_,
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      top_frame_origin, net_options, std::move(options),

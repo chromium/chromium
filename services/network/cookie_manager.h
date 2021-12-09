@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void GetCookieList(
       const GURL& url,
       const net::CookieOptions& cookie_options,
-      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& source_url,

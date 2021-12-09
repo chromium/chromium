@@ -787,7 +787,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchCookie) {
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   base::RunLoop loop;
   storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      url, options, net::CookiePartitionKeychain(),
+      url, options, net::CookiePartitionKeyCollection(),
       base::BindOnce(GetCookieCallback, loop.QuitClosure()));
   loop.Run();
 }
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchCookieCrossDomain) {
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   base::RunLoop loop;
   storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      cross_domain_url, options, net::CookiePartitionKeychain(),
+      cross_domain_url, options, net::CookiePartitionKeyCollection(),
       base::BindOnce(GetCookieCallback, loop.QuitClosure()));
   loop.Run();
 }

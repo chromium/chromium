@@ -117,7 +117,7 @@ class GetCookieListCallback : public CookieTestCallback {
  public:
   const CookieList& GetCookieList(CookieMonster* cm, const GURL& gurl) {
     cm->GetCookieListWithOptionsAsync(
-        gurl, options_, CookiePartitionKeychain(),
+        gurl, options_, CookiePartitionKeyCollection(),
         base::BindOnce(&GetCookieListCallback::Run, base::Unretained(this)));
     WaitForCallback();
     return cookie_list_;

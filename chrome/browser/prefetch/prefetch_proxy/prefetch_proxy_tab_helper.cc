@@ -1472,7 +1472,7 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   options.set_return_excluded_cookies();
   default_storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      url, options, net::CookiePartitionKeychain::Todo(),
+      url, options, net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(&OnGotCookieList, url, std::move(result_callback)));
 }
 
@@ -1587,7 +1587,7 @@ void PrefetchProxyTabHelper::CopyIsolatedCookiesOnAfterSRPClick(
       ->GetCookieManager()
       ->GetCookieList(
           prefetch_container->GetUrl(), options,
-          net::CookiePartitionKeychain::Todo(),
+          net::CookiePartitionKeyCollection::Todo(),
           base::BindOnce(
               &PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick,
               weak_factory_.GetWeakPtr(), prefetch_container->GetUrl()));

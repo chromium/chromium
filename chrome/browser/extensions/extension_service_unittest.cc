@@ -5070,7 +5070,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
 
   cookie_store->GetCookieListWithOptionsAsync(
       ext_url, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeychain(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&ExtensionCookieCallback::GetAllCookiesCallback,
                      base::Unretained(&callback)));
   task_environment()->RunUntilIdle();
@@ -5137,7 +5137,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   // Check that the cookie is gone.
   cookie_store->GetCookieListWithOptionsAsync(
       ext_url, net::CookieOptions::MakeAllInclusive(),
-      net::CookiePartitionKeychain(),
+      net::CookiePartitionKeyCollection(),
       base::BindOnce(&ExtensionCookieCallback::GetAllCookiesCallback,
                      base::Unretained(&callback)));
   task_environment()->RunUntilIdle();
@@ -5250,7 +5250,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     std::vector<net::CanonicalCookie> cookies_result;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain(),
+        net::CookiePartitionKeyCollection(),
         base::BindOnce(&GetCookiesSaveData, &cookies_result,
                        run_loop.QuitClosure()));
     run_loop.Run();
@@ -5320,7 +5320,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     std::vector<net::CanonicalCookie> cookies_result;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain(),
+        net::CookiePartitionKeyCollection(),
         base::BindOnce(&GetCookiesSaveData, &cookies_result,
                        run_loop.QuitClosure()));
     run_loop.Run();
@@ -5340,7 +5340,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     std::vector<net::CanonicalCookie> cookies_result;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain(),
+        net::CookiePartitionKeyCollection(),
         base::BindOnce(&GetCookiesSaveData, &cookies_result,
                        run_loop.QuitClosure()));
     run_loop.Run();

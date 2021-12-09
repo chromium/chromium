@@ -92,7 +92,7 @@ void CookieManager::GetAllCookiesWithAccessSemantics(
 void CookieManager::GetCookieList(
     const GURL& url,
     const net::CookieOptions& cookie_options,
-    const net::CookiePartitionKeychain& cookie_partition_keychain,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
 #if !defined(OS_IOS)
   if (g_crash_on_get_cookie_list)
@@ -101,7 +101,7 @@ void CookieManager::GetCookieList(
 
   cookie_store_->GetCookieListWithOptionsAsync(
       url, cookie_options,
-      cookie_partition_keychain.FirstPartySetify(
+      cookie_partition_key_collection.FirstPartySetify(
           cookie_store_->cookie_access_delegate()),
       std::move(callback));
 }

@@ -598,7 +598,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
 
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
-        CookiePartitionKeychain::FromOptional(cookie_partition_key_),
+        CookiePartitionKeyCollection::FromOptional(cookie_partition_key_),
         base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                        weak_factory_.GetWeakPtr(), options));
   } else {

@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_COOKIES_COOKIE_PARTITION_KEY_UNITTEST_H_
-#define NET_COOKIES_COOKIE_PARTITION_KEY_UNITTEST_H_
-
 #include <string>
 
 #include "net/cookies/cookie_partition_key.h"
@@ -253,5 +250,3 @@ TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
 }
 
 }  // namespace net
-
-#endif  // NET_COOKIES_COOKIE_PARTITION_KEY_UNITTEST_H_

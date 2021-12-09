@@ -20,7 +20,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_partition_keychain.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 
 class GURL;
 
@@ -74,13 +74,14 @@ class NET_EXPORT CookieStore {
   // creation date.
   // To get all the cookies for a URL, use this method with an all-inclusive
   // |options|.
-  // If |cookie_partition_keychain| is not empty, then this function will return
-  // the partitioned cookies for that URL whose partition keys are in the
-  // keychain *in addition to* the unpartitioned cookies for that URL.
+  // If |cookie_partition_key_collection| is not empty, then this function will
+  // return the partitioned cookies for that URL whose partition keys are in the
+  // cookie_partition_key_collection *in addition to* the unpartitioned cookies
+  // for that URL.
   virtual void GetCookieListWithOptionsAsync(
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) = 0;
 
   // Returns all the cookies, for use in management UI, etc. This does not mark

@@ -76,7 +76,7 @@ void CookieManagerImpl::GetCookie(const GURL& url, GetCookieCallback callback) {
   browser_context_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
-                      net::CookiePartitionKeychain::Todo(),
+                      net::CookiePartitionKeyCollection::Todo(),
                       base::BindOnce(&GetCookieComplete, std::move(callback)));
 }
 
