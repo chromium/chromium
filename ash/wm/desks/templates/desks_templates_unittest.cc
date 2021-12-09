@@ -716,7 +716,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   // Click on the grid item to launch the template.
   {
     DeskSwitchAnimationWaiter waiter;
-    ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
+    ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
     WaitForDesksTemplatesUI();
     waiter.Wait();
   }
@@ -734,7 +734,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   OpenOverviewAndShowTemplatesGrid();
   {
     DeskSwitchAnimationWaiter waiter;
-    DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+    DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
         /*grid_item_index=*/0);
     ClickOnView(DesksTemplatesItemViewTestApi(item_view).launch_button());
     WaitForDesksTemplatesUI();
@@ -755,7 +755,7 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
   OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
-  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
@@ -820,7 +820,7 @@ TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
   OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
-  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
@@ -850,7 +850,7 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
   OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
-  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
@@ -887,7 +887,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
-  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
@@ -940,7 +940,7 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
   OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
-  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
@@ -971,7 +971,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   OpenOverviewAndShowTemplatesGrid();
 
   // Get the icon views.
-  DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+  DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
@@ -1074,8 +1074,8 @@ TEST_F(DesksTemplatesTest, OverviewTabbing) {
   AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
 
   OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesItemView* first_item = GetItemViewFromOverviewGrid(0);
-  DesksTemplatesItemView* second_item = GetItemViewFromOverviewGrid(1);
+  DesksTemplatesItemView* first_item = GetItemViewFromTemplatesGrid(0);
+  DesksTemplatesItemView* second_item = GetItemViewFromTemplatesGrid(1);
 
   // Testing that we first traverse the views of the first item.
   SendKey(ui::VKEY_TAB);
@@ -1210,8 +1210,8 @@ TEST_F(DesksTemplatesTest, HoverOnTemplateItemView) {
   AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
 
   OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesItemView* first_item = GetItemViewFromOverviewGrid(0);
-  DesksTemplatesItemView* second_item = GetItemViewFromOverviewGrid(1);
+  DesksTemplatesItemView* first_item = GetItemViewFromTemplatesGrid(0);
+  DesksTemplatesItemView* second_item = GetItemViewFromTemplatesGrid(1);
   auto* hover_container_view1 =
       DesksTemplatesItemViewTestApi(first_item).hover_container();
   auto* hover_container_view2 =
@@ -1299,7 +1299,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplateWithMinimizedOverviewWindow) {
   // Click on the grid item to launch the template. We should exit overview and
   // there should be no crash.
   DeskSwitchAnimationWaiter waiter;
-  ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
   // Launching a template fetches it from the desk model asynchronously. Make
   // sure the async call is done before waiting.
   WaitForDesksTemplatesUI();
@@ -1330,7 +1330,7 @@ TEST_F(DesksTemplatesTest, LaunchTemplateAfterClosingActiveDesk) {
   // Click on the grid item to launch the template. We should exit overview and
   // there should be no crash.
   DeskSwitchAnimationWaiter waiter;
-  ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
   // Launching a template fetches it from the desk model asynchronously. Make
   // sure the async call is done before waiting.
   WaitForDesksTemplatesUI();
@@ -1494,7 +1494,7 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   OpenOverviewAndShowTemplatesGrid();
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
   DesksTemplatesNameView* name_view =
-      GetItemViewFromOverviewGrid(0)->name_view();
+      GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Test that we can add characters to the name and press enter to save it.
   ClickOnView(name_view);
@@ -1503,7 +1503,7 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   SendKey(ui::VKEY_B);
   SendKey(ui::VKEY_RETURN);
   WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab", name_view->GetText());
 
   // Deleting characters and pressing enter saves the name.
@@ -1513,7 +1513,7 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   SendKey(ui::VKEY_BACK);
   SendKey(ui::VKEY_RETURN);
   WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 
   // The `name_view` defaults to select all, so typing a letter while all
@@ -1526,7 +1526,7 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   event_generator->ClickLeftButton();
   EXPECT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
   WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(u"a", name_view->GetText());
 
   // Test that clicking on the grid item (outside of the textfield) will save
@@ -1534,9 +1534,9 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   ClickOnView(name_view);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_B);
-  ClickOnView(GetItemViewFromOverviewGrid(0));
+  ClickOnView(GetItemViewFromTemplatesGrid(0));
   WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(u"ab", name_view->GetText());
 
   // Pressing TAB also saves the name.
@@ -1545,7 +1545,7 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   SendKey(ui::VKEY_C);
   SendKey(ui::VKEY_TAB);
   WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(u"abc", name_view->GetText());
 }
 
@@ -1560,7 +1560,7 @@ TEST_F(DesksTemplatesTest, TemplateNameChangeAborted) {
   OpenOverviewAndShowTemplatesGrid();
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
   DesksTemplatesNameView* name_view =
-      GetItemViewFromOverviewGrid(0)->name_view();
+      GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Pressing enter with no changes to the text.
   ClickOnView(name_view);
@@ -1600,7 +1600,7 @@ TEST_F(DesksTemplatesTest, TemplateNameEllipsis) {
 
   OpenOverviewAndShowTemplatesGrid();
   DesksTemplatesNameView* name_view =
-      GetItemViewFromOverviewGrid(0)->name_view();
+      GetItemViewFromTemplatesGrid(0)->name_view();
 
   // Verify that the template name field has an ellipsis.
   EXPECT_NE(base::UTF8ToUTF16(template_name), name_view->GetText());
@@ -1629,7 +1629,7 @@ TEST_F(DesksTemplatesTest, TemplateNameEllipsis) {
   SendKey(ui::VKEY_B);
   SendKey(ui::VKEY_RETURN);
   WaitForDesksTemplatesUI();
-  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab",
             DesksTemplatesNameViewTestApi(name_view).full_text());
 }

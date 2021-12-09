@@ -74,7 +74,7 @@ DesksTemplatesNameViewTestApi::DesksTemplatesNameViewTestApi(
 
 DesksTemplatesNameViewTestApi::~DesksTemplatesNameViewTestApi() = default;
 
-DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index) {
+DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
@@ -128,7 +128,7 @@ views::Button* GetSaveDeskAsTemplateButton() {
 }
 
 views::Button* GetTemplateItemButton(int index) {
-  auto* item = GetItemViewFromOverviewGrid(index);
+  auto* item = GetItemViewFromTemplatesGrid(index);
   return item ? static_cast<views::Button*>(item) : nullptr;
 }
 

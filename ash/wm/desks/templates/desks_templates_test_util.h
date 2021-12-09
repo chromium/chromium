@@ -144,8 +144,8 @@ class DesksTemplatesNameViewTestApi {
 };
 
 // Return the `grid_item_index`th `DesksTemplatesItemView` from the first
-// `OverviewGrid` in `GetOverviewGridList()`.
-DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index);
+// `OverviewGrid`'s `DesksTemplatesGridView` in `GetOverviewGridList()`.
+DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index);
 
 // These buttons are the ones on the primary root window.
 views::Button* GetZeroStateDesksTemplatesButton();
