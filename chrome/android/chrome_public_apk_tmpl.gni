@@ -311,6 +311,12 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ "//chrome/android:chrome_all_java" ]
     }
 
+    if (_is_bundle) {
+      # Required to support macro resources.
+      # See https://crbug.com/1278419
+      deps += [ ":${target_name}__all_dfm_resources" ]
+    }
+
     # Prefer to add this data_dep on the final target instead of java targets
     # like chrome_all_java so that all other targets can build in parallel with
     # lint.
@@ -420,7 +426,6 @@ template("monochrome_public_common_apk_or_module_tmpl") {
       if (_is_bundle_module) {
         # Sets ISOLATED_SPLITS_ENABLED in BuildConfig.java.
         isolated_splits_enabled = true
-        deps += [ ":${target_name}__all_dfm_resources" ]
       }
 
       if (_is_bundle_module && invoker.is_base_module) {

@@ -55,24 +55,26 @@ template("chrome_bundle") {
     _module_descs += [ chrome_module_desc ]
   }
 
-  if (invoker.is_monochrome_or_trichrome) {
-    # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
-    # access. For now, move all resources to the base module.
-    _base_target_name = get_label_info(invoker.base_module_target, "name")
-    android_resources("${_base_target_name}__all_dfm_resources") {
-      recursive_resource_deps = true
-      deps = []
+  # TODO(crbug.com/1126301): Isolated splits cause various bugs with resource
+  # access. For now, move all resources to the base module.
+  # TODO(crbug.com/1278419): Macro resource types only work when all resources
+  # are in the same split. For now, keep all resources in the base module even
+  # in Chrome Modern.
+  _base_target_name = get_label_info(invoker.base_module_target, "name")
+  android_resources("${_base_target_name}__all_dfm_resources") {
+    recursive_resource_deps = true
+    deps = []
 
-      # Java library deps are added to this target because the
-      # recursive_resource_deps arg allows pulling all the android_resources
-      # deps from them. The actual java library targets are not used.
-      foreach(_module_desc, _module_descs) {
-        if (defined(_module_desc.java_deps)) {
-          deps += _module_desc.java_deps
-        }
+    # Java library deps are added to this target because the
+    # recursive_resource_deps arg allows pulling all the android_resources
+    # deps from them. The actual java library targets are not used.
+    foreach(_module_desc, _module_descs) {
+      if (defined(_module_desc.java_deps)) {
+        deps += _module_desc.java_deps
       }
     }
   }
+
   foreach(_tmp_module_desc, _module_descs) {
     assert(_package_id > 2, "Too many modules, ran out of package IDs!")
 
