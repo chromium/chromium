@@ -130,15 +130,7 @@ class StorageChangeTracker {
     for (const [k, v] of Object.entries(changedValues)) {
       // `oldValue` isn't necessary for the current use case.
       const key = /** @type {string} */ (k);
-      try {
-        changedKeys[key] = {newValue: JSON.parse(/** @type {string} */ (v))};
-      } catch (error) {
-        console.warn(
-            `Failed to JSON parse localStorage value from key: "${key}" ` +
-                `returning the raw value.`,
-            error);
-        changedKeys[key] = {newValue: v};
-      }
+      changedKeys[key] = {newValue: v};
     }
 
     this.notifyLocally_(changedKeys, namespace);
@@ -154,9 +146,18 @@ class StorageChangeTracker {
     }
     /** @type {string} */
     const key = event.key;
-    const newValue = event.newValue;
+    const newValue = /** @type {string} */ (event.newValue);
     const changedKeys = {};
-    changedKeys[key] = {newValue};
+
+    try {
+      changedKeys[key] = {newValue: JSON.parse(newValue)};
+    } catch (error) {
+      console.warn(
+          `Failed to JSON parse localStorage value from key: "${key}" ` +
+              `returning the raw value.`,
+          error);
+      changedKeys[key] = {newValue};
+    }
     this.notifyLocally_(changedKeys, this.storageNamespace_);
   }
 
