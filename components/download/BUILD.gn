@@ -12,6 +12,7 @@ group("unit_tests") {
       "//components/download/database:unit_tests",
       "//components/download/internal/background_service:unit_tests",
       "//components/download/internal/common:unit_tests",
+      "//components/download/network:unit_tests",
       "//components/download/public/common:unit_tests",
       "//components/download/public/task:unit_tests",
     ]

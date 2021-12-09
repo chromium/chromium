@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/download/internal/background_service/driver_entry.h"
+#include "components/download/network/download_http_utils.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -23,7 +24,6 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
@@ -72,24 +72,6 @@ FailureType FailureTypeFromInterruptReason(DownloadInterruptReason reason) {
 // Logs interrupt reason when download fails.
 void LogDownloadInterruptReason(download::DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.Service.Driver.InterruptReason", reason);
-}
-
-absl::optional<net::HttpByteRange> ParseRangeHeader(
-    const net::HttpRequestHeaders& request_headers) {
-  std::vector<net::HttpByteRange> byte_ranges;
-  std::string range_header;
-  bool success =
-      request_headers.GetHeader(net::HttpRequestHeaders::kRange, &range_header);
-  if (!success)
-    return absl::nullopt;
-
-  success = net::HttpUtil::ParseRangeHeader(range_header, &byte_ranges);
-
-  // Multiple ranges are not supported.
-  if (!success || byte_ranges.empty() || byte_ranges.size() > 1)
-    return absl::nullopt;
-
-  return byte_ranges.front();
 }
 
 }  // namespace
@@ -217,9 +199,9 @@ void DownloadDriverImpl::Start(
             byte_range->last_byte_position());
       }
     } else {
-      // TODO(xingliu): Do input validation in ControllerImpl::StartDownload, so
-      // we don't need to return here.
+      // The request headers are validated in ControllerImpl::StartDownload.
       LOG(ERROR) << "Failed to parse Range request header.";
+      NOTREACHED();
       return;
     }
   }

@@ -26,6 +26,7 @@
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/scheduler/scheduler.h"
 #include "components/download/internal/background_service/stats.h"
+#include "components/download/network/download_http_utils.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/navigation_monitor.h"
@@ -191,6 +192,12 @@ void ControllerImpl::StartDownload(DownloadParams params) {
 
   // TODO(dtrainor): Validate all input parameters.
   DCHECK_LE(base::Time::Now(), params.scheduling_params.cancel_time);
+  if (!ValidateRequestHeaders(params.request_params.request_headers)) {
+    HandleStartDownloadResponse(params.client, params.guid,
+                                DownloadParams::StartResult::INTERNAL_ERROR,
+                                std::move(params.callback));
+    return;
+  }
 
   if (controller_state_ != State::READY) {
     HandleStartDownloadResponse(params.client, params.guid,
