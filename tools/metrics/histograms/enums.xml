@@ -68612,7 +68612,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Missing"/>
   <int value="2" label="Read error"/>
   <int value="3" label="Parse error"/>
-  <int value="4" label="No-op"/>
+  <int value="4" label="No-op (unused)"/>
 </enum>
 
 <enum name="PersistentProtoWriteStatus">
