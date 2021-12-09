@@ -91,7 +91,6 @@
 #include "net/base/mime_util.h"
 #include "net/base/network_change_notifier.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_ANDROID)
@@ -844,8 +843,7 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
     return;
   }
 
-  if (!blink::IsSupportedMimeType(download->GetMimeType()) &&
-      !IsOpenInBrowserPreferreredForFile(download->GetTargetFilePath())) {
+  if (!DownloadItemModel(download).ShouldPreferOpeningInBrowser()) {
     RecordDownloadOpenMethod(DOWNLOAD_OPEN_METHOD_DEFAULT_PLATFORM);
     OpenDownloadUsingPlatformHandler(download);
     return;
