@@ -1713,9 +1713,9 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
         SkAutoCanvasRestore auto_save(c, true);
         c->setMatrix(*op->hint);
         slug = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
-        DCHECK(slug);
       }
-      slug->draw(c);
+      if (slug)
+        slug->draw(c);
     } else {
       c->drawTextBlob(op->blob.get(), op->x, op->y, p);
     }
