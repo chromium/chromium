@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "services/audio/reference_output.h"
 
 namespace media {
@@ -20,7 +22,10 @@ class DeviceOutputListener;
 
 class AudioProcessor final : public ReferenceOutput::Listener {
  public:
-  explicit AudioProcessor(DeviceOutputListener* device_output_listener);
+  using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
+
+  AudioProcessor(DeviceOutputListener* device_output_listener,
+                 LogCallback log_callback);
   AudioProcessor(const AudioProcessor&) = delete;
   AudioProcessor& operator=(const AudioProcessor&) = delete;
   ~AudioProcessor() final;
@@ -42,6 +47,7 @@ class AudioProcessor final : public ReferenceOutput::Listener {
   bool active_ = false;
   std::string output_device_id_;
   raw_ptr<DeviceOutputListener> const device_output_listener_;
+  const LogCallback log_callback_;
   std::unique_ptr<UmaLogger> uma_logger_;
 };
 

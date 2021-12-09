@@ -224,8 +224,12 @@ InputController::InputController(EventHandler* handler,
   DCHECK(activity_monitor_);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (device_output_listener)
-    audio_processor_ = std::make_unique<AudioProcessor>(device_output_listener);
+  if (device_output_listener) {
+    // Unretained() is safe, because |handler_| outlives |audio_processor_|.
+    audio_processor_ = std::make_unique<AudioProcessor>(
+        device_output_listener,
+        base::BindRepeating(&EventHandler::OnLog, base::Unretained(handler_)));
+  }
 #endif
 
   if (!user_input_monitor_) {

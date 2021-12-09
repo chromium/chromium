@@ -36,8 +36,10 @@ class AudioProcessor::UmaLogger {
   base::TimeTicks start_;
 };
 
-AudioProcessor::AudioProcessor(DeviceOutputListener* device_output_listener)
-    : device_output_listener_(device_output_listener) {
+AudioProcessor::AudioProcessor(DeviceOutputListener* device_output_listener,
+                               LogCallback log_callback)
+    : device_output_listener_(device_output_listener),
+      log_callback_(std::move(log_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(device_output_listener_);
 }
@@ -74,6 +76,7 @@ void AudioProcessor::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   device_output_listener_->StopListening(this);
+  log_callback_.Run("AudioProcessor: stop listening");
   active_ = false;
   uma_logger_.reset();
 }
@@ -89,6 +92,8 @@ void AudioProcessor::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(active_);
   uma_logger_ = std::make_unique<UmaLogger>(output_device_id_);
+  log_callback_.Run(base::StrCat(
+      {"AudioProcessor: listening to output device: ", output_device_id_}));
   device_output_listener_->StartListening(this, output_device_id_);
 }
 
