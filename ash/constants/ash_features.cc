@@ -845,7 +845,7 @@ const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
 
 // Feature to continuously log PSI memory pressure data to UMA.
 const base::Feature kMemoryPressureMetricsDetail{
-    "MemoryPressureMetricsDetail", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MemoryPressureMetricsDetail", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls how frequently memory pressure is logged
 const base::FeatureParam<int> kMemoryPressureMetricsDetailLogPeriod{
