@@ -411,8 +411,8 @@ void SearchPermissionsService::InitializeSettingsIfNeeded() {
 
       // If the user's content setting is being overridden by the DSE setting,
       // we migrate the DSE setting to be stored in the user's content setting.
-      bool dse_setting = false;
-      dict->GetBoolean(kDSESettingKeyDeprecated, &dse_setting);
+      bool dse_setting =
+          dict->FindBoolPath(kDSESettingKeyDeprecated).value_or(false);
       if (dse_geolocation_setting == CONTENT_SETTING_ASK) {
         dse_geolocation_setting =
             dse_setting ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
