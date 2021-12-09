@@ -510,11 +510,14 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
           ? options->get_save_file_picker_options()->suggested_name
           : std::string();
 
-  auto suggested_name_path =
-      !suggested_name.empty()
-          ? net::GenerateFileName(GURL(), std::string(), std::string(),
-                                  suggested_name, std::string(), std::string())
-          : base::FilePath();
+  base::FilePath suggested_name_path;
+  if (!suggested_name.empty()) {
+    // `net::GenerateFileName` does not strip "%" characters.
+    base::ReplaceChars(suggested_name, "%", "_", &suggested_name);
+    suggested_name_path =
+        net::GenerateFileName(GURL(), std::string(), std::string(),
+                              suggested_name, std::string(), std::string());
+  }
 
   FileSystemChooser::Options file_system_chooser_options(
       GetSelectFileDialogType(options), GetAndMoveAcceptsTypesInfo(options),
