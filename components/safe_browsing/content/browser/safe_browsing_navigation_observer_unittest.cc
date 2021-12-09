@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -448,7 +449,13 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleUserGestures) {
   EXPECT_EQ(now, (*user_gesture_map())[content0]);
 }
 
-TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
+// TODO(crbug.com/1278500): Flaky on Linux TSAN
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestCleanUpStaleIPAddresses DISABLED_TestCleanUpStaleIPAddresses
+#else
+#define MAYBE_TestCleanUpStaleIPAddresses TestCleanUpStaleIPAddresses
+#endif
+TEST_F(SBNavigationObserverTest, MAYBE_TestCleanUpStaleIPAddresses) {
   // Sets up host_to_ip_map() such that it includes fresh, stale and invalid
   // user gestures.
   base::Time now = base::Time::Now();  // Fresh
@@ -479,7 +486,13 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
   EXPECT_EQ(now, (*host_to_ip_map())[host_0].front().timestamp);
 }
 
-TEST_F(SBNavigationObserverTest, TestRecordHostToIpMapping) {
+// TODO(crbug.com/1278500): Flaky on Linux TSAN
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestRecordHostToIpMapping DISABLED_TestRecordHostToIpMapping
+#else
+#define MAYBE_TestRecordHostToIpMapping TestRecordHostToIpMapping
+#endif
+TEST_F(SBNavigationObserverTest, MAYBE_TestRecordHostToIpMapping) {
   // Setup host_to_ip_map().
   base::Time now = base::Time::Now();  // Fresh
   base::Time one_hour_ago =
@@ -629,8 +642,16 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_EQ(GURL("http://A.com"), referrer_chain[11].referrer_url());
 }
 
+// TODO(crbug.com/1278500): Flaky on Linux TSAN
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents \
+  DISABLED_RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents
+#else
+#define MAYBE_RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents \
+  RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents
+#endif
 TEST_F(SBNavigationObserverTest,
-       RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents) {
+       MAYBE_RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents) {
   GURL url = GURL("http://A.com");
   base::Time half_hour_ago =
       base::Time::FromDoubleT(base::Time::Now().ToDoubleT() - 30.0 * 60.0);
@@ -687,7 +708,13 @@ TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
   EXPECT_EQ(GURL("http://A.com"), referrer_chain[11].referrer_url());
 }
 
-TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
+// TODO(crbug.com/1278500): Flaky on Linux TSAN
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ChainWorksThroughNewTab DISABLED_ChainWorksThroughNewTab
+#else
+#define MAYBE_ChainWorksThroughNewTab ChainWorksThroughNewTab
+#endif
+TEST_F(SBNavigationObserverTest, MAYBE_ChainWorksThroughNewTab) {
   base::Time now = base::Time::Now();
   base::Time one_hour_ago =
       base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
@@ -804,7 +831,15 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_TRUE(referrer_chain[0].is_retargeting());
 }
 
-TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
+// TODO(crbug.com/1278500): Flaky on Linux TSAN
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TestGetLatestPendingNavigationEvent \
+  DISABLED_TestGetLatestPendingNavigationEvent
+#else
+#define MAYBE_TestGetLatestPendingNavigationEvent \
+  TestGetLatestPendingNavigationEvent
+#endif
+TEST_F(SBNavigationObserverTest, MAYBE_TestGetLatestPendingNavigationEvent) {
   base::Time now = base::Time::Now();
   base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);
   base::Time two_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 120.0);
