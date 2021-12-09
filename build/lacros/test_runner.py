@@ -438,9 +438,22 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     ash_process_has_started = False
     total_tries = 3
     num_tries = 0
+
+    # Create a log file if the user wanted to have one.
+    log = None
+    if args.ash_logging_path:
+      log = open(args.ash_logging_path, 'a')
+
     while not ash_process_has_started and num_tries < total_tries:
       num_tries += 1
-      ash_process = subprocess.Popen(ash_cmd, env=ash_env)
+      if log is None:
+        ash_process = subprocess.Popen(ash_cmd, env=ash_env)
+      else:
+        ash_process = subprocess.Popen(ash_cmd,
+                                       env=ash_env,
+                                       stdout=log,
+                                       stderr=log)
+
       ash_process_has_started = _WaitForAshChromeToStart(
           tmp_xdg_dir_name, lacros_mojo_socket_file, enable_mojo_crosapi,
           ash_ready_file)
@@ -583,6 +596,12 @@ def Main():
       help='The same as --ash-chrome-path. But this will override '
       '--ash-chrome-path or --ash-chrome-version if any of these '
       'arguments exist.')
+  test_parser.add_argument(
+      '--ash-logging-path',
+      type=str,
+      help='File & path to ash-chrome logging output while running Lacros '
+      'browser tests. If not provided, no output will be generated.')
+
   args = arg_parser.parse_known_args()
   return args[0].func(args[0], args[1])
 
