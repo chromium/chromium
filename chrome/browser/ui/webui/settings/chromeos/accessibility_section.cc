@@ -337,10 +337,6 @@ bool IsSwitchAccessTextAllowed() {
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
 }
 
-bool IsSwitchAccessSetupGuideAllowed() {
-  return ::features::IsExperimentalAccessibilitySwitchAccessSetupGuideEnabled();
-}
-
 bool AreTabletNavigationButtonsAllowed() {
   return ash::features::IsHideShelfControlsInTabletModeEnabled() &&
          ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
@@ -762,9 +758,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
-
-  html_source->AddBoolean("showSwitchAccessSetupGuide",
-                          IsSwitchAccessSetupGuideAllowed());
 
   html_source->AddBoolean("showTabletModeShelfNavigationButtonsSettings",
                           AreTabletNavigationButtonsAllowed());

@@ -148,15 +148,6 @@ bool IsExperimentalAccessibilityDictationCommandsEnabled() {
       ::features::kExperimentalAccessibilityDictationCommands);
 }
 
-const base::Feature kExperimentalAccessibilitySwitchAccessSetupGuide{
-    "ExperimentalAccessibilitySwitchAccessSetupGuide",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsExperimentalAccessibilitySwitchAccessSetupGuideEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilitySwitchAccessSetupGuide);
-}
-
 const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 

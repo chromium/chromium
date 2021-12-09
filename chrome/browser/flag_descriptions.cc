@@ -4659,12 +4659,6 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
-const char kExperimentalAccessibilitySwitchAccessSetupGuideName[] =
-    "Enable setup guide for Switch Access.";
-const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[] =
-    "Enable a setup guide to walk through the steps of initially configuring "
-    "Switch Access.";
-
 const char kExperimentalAccessibilitySwitchAccessMultistepAutomationName[] =
     "Enable multistep automation for Switch Access.";
 const char

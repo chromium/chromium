@@ -4177,13 +4177,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-experimental-accessibility-switch-access-setup-guide",
-     flag_descriptions::kExperimentalAccessibilitySwitchAccessSetupGuideName,
-     flag_descriptions::
-         kExperimentalAccessibilitySwitchAccessSetupGuideDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kExperimentalAccessibilitySwitchAccessSetupGuide)},
     {"enable-experimental-accessibility-switch-access-multistep-automation",
      flag_descriptions::
          kExperimentalAccessibilitySwitchAccessMultistepAutomationName,

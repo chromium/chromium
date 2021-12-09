@@ -2686,9 +2686,6 @@ extern const char kExperimentalAccessibilityDictationCommandsDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
-extern const char kExperimentalAccessibilitySwitchAccessSetupGuideName[];
-extern const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[];
-
 extern const char
     kExperimentalAccessibilitySwitchAccessMultistepAutomationName[];
 extern const char
