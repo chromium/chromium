@@ -124,6 +124,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/ui_base_features.h"
 #include "url/origin.h"
@@ -4679,5 +4680,31 @@ IN_PROC_BROWSER_TEST_F(ProxyCORSWebRequestApiTest,
                    extension, profile(),
                    "preflightResponseStartedSuccessfullyCount"));
 }
+
+class ExtensionWebRequestApiFencedFrameTest
+    : public ExtensionWebRequestApiTest,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ protected:
+  ExtensionWebRequestApiFencedFrameTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames,
+        {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+  }
+  ~ExtensionWebRequestApiFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest, Load) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(
+      RunExtensionTest("webrequest", {.page_url = "test_fenced_frames.html"}))
+      << message_;
+}
+
+INSTANTIATE_TEST_SUITE_P(ExtensionWebRequestApiFencedFrameTest,
+                         ExtensionWebRequestApiFencedFrameTest,
+                         testing::Bool());
 
 }  // namespace extensions
