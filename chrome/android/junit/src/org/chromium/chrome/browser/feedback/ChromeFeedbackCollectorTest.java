@@ -246,7 +246,7 @@ public class ChromeFeedbackCollectorTest {
         // ChromeFeedbackCollector implementation.
         @Override
         protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                ChromeFeedbackCollector.InitParams initParams) {
+                Activity activity, ChromeFeedbackCollector.InitParams initParams) {
             return new ArrayList<>();
         }
 
@@ -303,7 +303,7 @@ public class ChromeFeedbackCollectorTest {
                         DESCRIPTION, null, null, (result) -> callback.onResult(result)) {
                     @Override
                     protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                            ChromeFeedbackCollector.InitParams initParams) {
+                            Activity activity, ChromeFeedbackCollector.InitParams initParams) {
                         return ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources();
                     }
                 };
@@ -332,7 +332,7 @@ public class ChromeFeedbackCollectorTest {
                 (result) -> callback.onResult(result)) {
             @Override
             protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                    ChromeFeedbackCollector.InitParams initParams) {
+                    Activity activity, ChromeFeedbackCollector.InitParams initParams) {
                 ArrayList<FeedbackSource> list = new ArrayList<>(
                         ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources());
                 list.add(new FeedbackContextFeedbackSource(FEEDBACK_CONTEXT));
@@ -404,7 +404,7 @@ public class ChromeFeedbackCollectorTest {
 
                     @Override
                     protected List<FeedbackSource> buildSynchronousFeedbackSources(
-                            ChromeFeedbackCollector.InitParams initParams) {
+                            Activity activity, ChromeFeedbackCollector.InitParams initParams) {
                         return ChromeFeedbackCollectorTest.buildSynchronousFeedbackSources();
                     }
                 };

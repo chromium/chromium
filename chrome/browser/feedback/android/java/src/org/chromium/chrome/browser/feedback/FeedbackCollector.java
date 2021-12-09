@@ -56,7 +56,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
     protected void init(
             Activity activity, @Nullable ScreenshotSource screenshotTask, T initParams) {
         // 1. Build all synchronous and asynchronous sources.
-        mSynchronousSources = buildSynchronousFeedbackSources(initParams);
+        mSynchronousSources = buildSynchronousFeedbackSources(activity, initParams);
         mAsynchronousSources = buildAsynchronousFeedbackSources(initParams);
 
         // Sanity check in case a source is added to the wrong list.
@@ -80,7 +80,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
 
     @VisibleForTesting
     @NonNull
-    protected abstract List<FeedbackSource> buildSynchronousFeedbackSources(T initParams);
+    protected abstract List<FeedbackSource> buildSynchronousFeedbackSources(
+            Activity activity, T initParams);
 
     @VisibleForTesting
     @NonNull

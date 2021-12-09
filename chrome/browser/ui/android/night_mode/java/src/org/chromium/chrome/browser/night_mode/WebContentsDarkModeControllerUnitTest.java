@@ -26,6 +26,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkModeEnabledState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -92,8 +93,37 @@ public class WebContentsDarkModeControllerUnitTest {
     public void tearDown() {
         GlobalNightModeStateProviderHolder.setInstanceForTesting(null);
         Profile.setLastUsedProfileForTesting(null);
+        ShadowColorUtils.sInNightMode = false;
 
         ShadowRecordHistogram.reset();
+    }
+
+    @Test
+    public void testFeatureEnabled() {
+        ShadowColorUtils.sInNightMode = true;
+        mIsGlobalSettingsEnabled = true;
+        Assert.assertTrue(
+                "Feature should be enabled, if both global settings and night mode enabled.",
+                WebContentsDarkModeController.isFeatureEnabled(mMockContext, mMockProfile));
+        assertEnabledState(GURL.emptyGURL(), AutoDarkModeEnabledState.ENABLED);
+    }
+
+    @Test
+    public void testFeatureEnabled_LightMode() {
+        ShadowColorUtils.sInNightMode = false;
+        mIsGlobalSettingsEnabled = true;
+        Assert.assertFalse("Feature should be disabled when not in night mode.",
+                WebContentsDarkModeController.isFeatureEnabled(mMockContext, mMockProfile));
+        assertEnabledState(GURL.emptyGURL(), AutoDarkModeEnabledState.DISABLED_LIGHT_MODE);
+    }
+
+    @Test
+    public void testFeatureEnabled_NoUserSettings() {
+        ShadowColorUtils.sInNightMode = true;
+        mIsGlobalSettingsEnabled = false;
+        Assert.assertFalse("Feature should be disabled when global settings disabled.",
+                WebContentsDarkModeController.isFeatureEnabled(mMockContext, mMockProfile));
+        assertEnabledState(GURL.emptyGURL(), AutoDarkModeEnabledState.DISABLED_GLOBAL_SETTINGS);
     }
 
     private void doTestSetAutoDarkGlobalSettingsEnabled(boolean enabled) {
@@ -104,31 +134,6 @@ public class WebContentsDarkModeControllerUnitTest {
                 AutoDarkSettingsChangeSource.THEME_SETTINGS, enabled, 1);
         assertAutoDarkModeChangeSourceRecorded(
                 AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL, enabled, 0);
-    }
-
-    @Test
-    public void testFeatureEnabled() {
-        ShadowColorUtils.sInNightMode = true;
-        mIsGlobalSettingsEnabled = true;
-        Assert.assertTrue(
-                "Feature should be enabled, if both global settings and night mode enabled.",
-                WebContentsDarkModeController.isFeatureEnabled(mMockContext, mMockProfile));
-    }
-
-    @Test
-    public void testFeatureEnabled_LightMode() {
-        ShadowColorUtils.sInNightMode = false;
-        mIsGlobalSettingsEnabled = true;
-        Assert.assertFalse("Feature should be disabled when not in night mode.",
-                WebContentsDarkModeController.isFeatureEnabled(mMockContext, mMockProfile));
-    }
-
-    @Test
-    public void testFeatureEnabled_NoUserSettings() {
-        ShadowColorUtils.sInNightMode = true;
-        mIsGlobalSettingsEnabled = false;
-        Assert.assertFalse("Feature should be disabled when global settings disabled.",
-                WebContentsDarkModeController.isFeatureEnabled(mMockContext, mMockProfile));
     }
 
     @Test
@@ -165,6 +170,22 @@ public class WebContentsDarkModeControllerUnitTest {
         doTestSetAutoDarkForUrl(false);
     }
 
+    @Test
+    public void testGetEnableStateForUrl_Enabled() {
+        ShadowColorUtils.sInNightMode = true;
+        mIsGlobalSettingsEnabled = true;
+        mIsAutoDarkEnabledForUrlContentSettingValue = ContentSettingValues.ALLOW;
+        assertEnabledState(mMockGurl, AutoDarkModeEnabledState.ENABLED);
+    }
+
+    @Test
+    public void testGetEnableStateForUrl_Disabled() {
+        ShadowColorUtils.sInNightMode = true;
+        mIsGlobalSettingsEnabled = true;
+        mIsAutoDarkEnabledForUrlContentSettingValue = ContentSettingValues.BLOCK;
+        assertEnabledState(mMockGurl, AutoDarkModeEnabledState.DISABLED_URL_SETTINGS);
+    }
+
     private void assertAutoDarkModeChangeSourceRecorded(
             @AutoDarkSettingsChangeSource int source, boolean enabled, int expectedCounts) {
         String histogramName = "Android.DarkTheme.AutoDarkMode.SettingsChangeSource."
@@ -173,5 +194,12 @@ public class WebContentsDarkModeControllerUnitTest {
         Assert.assertEquals("Histogram <" + histogramName + "> for sample <" + source
                         + "> is not recorded correctly.",
                 expectedCounts, actualCount);
+    }
+
+    private void assertEnabledState(GURL url, @AutoDarkModeEnabledState int expectedEnabledState) {
+        int actualEnabledState =
+                WebContentsDarkModeController.getEnabledState(mMockProfile, mMockContext, url);
+        Assert.assertEquals("AutoDarkModeEnabledState does not match.", expectedEnabledState,
+                actualEnabledState);
     }
 }

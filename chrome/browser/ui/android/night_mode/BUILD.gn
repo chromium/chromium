@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/night_mode/AutoDarkFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateController.java",
     "java/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolder.java",
     "java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java",
@@ -107,6 +108,7 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/night_mode/AutoDarkFeedbackSourceUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageControllerUnitTest.java",
   ]
