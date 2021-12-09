@@ -856,8 +856,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
           base::ListValue inline_text_nodes;
           for (const std::unique_ptr<dom_snapshot::InlineTextBox>&
                    inline_text_box : *layout_node->GetInlineTextNodes()) {
-            size_t index = inline_text_nodes.GetList().size();
-            inline_text_nodes.Set(index, inline_text_box->Serialize());
+            inline_text_nodes.Append(inline_text_box->Serialize());
           }
           node_dict->SetKey("inlineTextNodes", std::move(inline_text_nodes));
         }
