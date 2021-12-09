@@ -805,8 +805,16 @@ TEST_P(WaylandWindowTest, StartMaximized) {
 }
 
 TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
+  // Real insets used by default on HiDPI.
+  const auto kInsets = gfx::Insets{38, 44, 55, 44};
+  const auto kNormalBounds = window_->GetBounds();
+
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);
-  auto normal_bounds = window_->GetBounds();
+
+  // Set nonzero insets and ensure that they are only used when the window has
+  // normal state.
+  // See https://crbug.com/1274629
+  window_->SetDecorationInsets(&kInsets);
 
   ScopedWlArray states = InitializeWlArrayWithActivatedState();
   AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED, states.get());
@@ -828,8 +836,11 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
-                                               normal_bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(
+                  kInsets.left(), kInsets.top(),
+                  kNormalBounds.width() - (kInsets.left() + kInsets.right()),
+                  kNormalBounds.height() - (kInsets.top() + kInsets.bottom())));
 
   Sync();
 
@@ -850,8 +861,11 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
-                                               normal_bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(
+                  kInsets.left(), kInsets.top(),
+                  kNormalBounds.width() - (kInsets.left() + kInsets.right()),
+                  kNormalBounds.height() - (kInsets.top() + kInsets.bottom())));
 
   Sync();
 
@@ -882,8 +896,11 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, Eq(PlatformWindowState::kNormal)))
       .Times(1);
-  EXPECT_CALL(*xdg_surface_, SetWindowGeometry(0, 0, normal_bounds.width(),
-                                               normal_bounds.height()));
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(
+                  kInsets.left(), kInsets.top(),
+                  kNormalBounds.width() - (kInsets.left() + kInsets.right()),
+                  kNormalBounds.height() - (kInsets.top() + kInsets.bottom())));
 
   Sync();
 }

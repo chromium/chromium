@@ -359,7 +359,7 @@ void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
   // bounds.
   if (width_dip > 1 && height_dip > 1) {
     pending_bounds_dip_ = gfx::Rect(0, 0, width_dip, height_dip);
-    if (frame_insets_px()) {
+    if (is_normal && frame_insets_px()) {
       pending_bounds_dip_.Inset(
           -gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
       pending_bounds_dip_.set_origin({0, 0});
@@ -453,7 +453,7 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
   if (!shell_toplevel_)
     return;
 
-  if (frame_insets_px()) {
+  if (state_ == PlatformWindowState::kNormal && frame_insets_px()) {
     bounds_dip.Inset(
         gfx::ScaleToRoundedInsets(*frame_insets_px(), 1.f / window_scale()));
   }
