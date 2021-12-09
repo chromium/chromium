@@ -4402,6 +4402,10 @@ Here are some things you can try to get started.
       <message name="IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER" desc="The placeholder text for app list folder name.">
         Unnamed
       </message>
+      <message name="IDS_APP_LIST_NEW_INSTALL" desc="Tooltip text indicating an app is newly installed.">
+        <ph name="APP_NAME">$1<ex>App Name</ex></ph>
+New install
+      </message>
       <message name="IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE" desc="The spoken feedback text for when the search box autocompletes a result">
         <ph name="TEXT">$1<ex>typed text + autocomplete</ex></ph>, Autocomplete
       </message>

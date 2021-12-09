@@ -132,6 +132,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   friend class AppListBadgeController;
   friend class AppListItemList;
   friend class AppListItemListTest;
+  friend class AppListItemViewProductivityLauncherTest;
   friend class AppListModel;
 
   // These should only be called by AppListModel or in tests so that name

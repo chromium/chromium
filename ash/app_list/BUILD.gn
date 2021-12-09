@@ -266,6 +266,7 @@ source_set("unit_tests") {
     "views/app_list_bubble_apps_page_unittest.cc",
     "views/app_list_bubble_view_unittest.cc",
     "views/app_list_folder_view_unittest.cc",
+    "views/app_list_item_view_unittest.cc",
     "views/app_list_main_view_unittest.cc",
     "views/app_list_menu_model_adapter_unittest.cc",
     "views/app_list_view_unittest.cc",

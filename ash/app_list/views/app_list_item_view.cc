@@ -22,6 +22,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -87,6 +88,12 @@ constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
 // icon.
 constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
 
+// Size of the "new install" blue dot that appears to the left of the title.
+constexpr int kNewInstallDotSize = 8;
+
+// Distance between the "new install" blue dot and the title.
+constexpr int kNewInstallDotPadding = 4;
+
 // The class clips the provided folder icon image.
 class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
  public:
@@ -117,6 +124,38 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 
  private:
   const gfx::ImageSkia image_;
+};
+
+// Draws a dot with no shadow.
+class DotView : public views::View {
+ public:
+  DotView() {
+    // The dot is not clickable.
+    SetCanProcessEventsWithinSubtree(false);
+  }
+  DotView(const DotView&) = delete;
+  DotView& operator=(const DotView&) = delete;
+  ~DotView() override = default;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override {
+    DCHECK_EQ(width(), height());
+    const float radius = width() / 2.0f;
+    const float scale = canvas->UndoDeviceScaleFactor();
+    gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
+    center.Scale(scale);
+
+    cc::PaintFlags flags;
+    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorProminent));
+    flags.setAntiAlias(true);
+    canvas->DrawCircle(center, scale * radius, flags);
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    SchedulePaint();
+  }
 };
 
 }  // namespace
@@ -319,6 +358,9 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   }
 
   title_ = AddChildView(std::move(title));
+
+  new_install_dot_ = AddChildView(std::make_unique<DotView>());
+  new_install_dot_->SetVisible(item_weak_->is_new_install());
 
   SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
@@ -589,12 +631,7 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
   if (is_folder_ && display_name.empty()) {
     title_->SetText(folder_name_placeholder);
   } else {
-    std::u16string title_text;
-    // TODO(crbug.com/1272817): Use a view for the dot.
-    if (item() && item()->is_new_install())
-      title_text = u"• ";
-    title_text += display_name;
-    title_->SetText(title_text);
+    title_->SetText(display_name);
   }
 
   tooltip_text_ = display_name == full_name ? std::u16string() : full_name;
@@ -806,7 +843,16 @@ void AppListItemView::Layout() {
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
       app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
+  // Reserve space for the new install dot if it is visible. Otherwise it
+  // extends outside the app grid tile bounds and gets clipped.
+  if (new_install_dot_->GetVisible())
+    title_bounds.Inset(kNewInstallDotSize, 0, 0, 0);
   title_->SetBoundsRect(title_bounds);
+
+  new_install_dot_->SetBounds(
+      title_bounds.x() - kNewInstallDotSize - kNewInstallDotPadding,
+      title_bounds.y() + title_bounds.height() / 2 - kNewInstallDotSize / 2,
+      kNewInstallDotSize, kNewInstallDotSize);
 
   if (notification_indicator_)
     notification_indicator_->SetBoundsRect(icon_bounds);
@@ -962,6 +1008,10 @@ std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   title_->SetTooltipText(tooltip_text_);
   std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
+  if (item_weak_ && item_weak_->is_new_install()) {
+    // Tooltip becomes two lines: "App Name" + "New install".
+    tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
+  }
   return tooltip;
 }
 
@@ -1166,10 +1216,8 @@ void AppListItemView::ItemBadgeColorChanged() {
 }
 
 void AppListItemView::ItemIsNewInstallChanged() {
-  // TODO(crbug.com/1272817): Use a view for the dot. For now, just refresh the
-  // label to add or remove the bullet from the name.
-  SetItemName(base::UTF8ToUTF16(item_weak_->GetDisplayName()),
-              base::UTF8ToUTF16(item_weak_->name()));
+  DCHECK(item_weak_);
+  new_install_dot_->SetVisible(item_weak_->is_new_install());
 }
 
 void AppListItemView::ItemBeingDestroyed() {
