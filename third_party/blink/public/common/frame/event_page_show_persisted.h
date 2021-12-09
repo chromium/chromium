@@ -50,14 +50,10 @@ enum class EventPageShowPersisted {
   // RenderView was not live when the IPC was being sent.
   kYesInBrowserRenderViewNotLive = 11,
 
-  // We are sending another persisted=true state change before receiving the ACK
-  // for the previous one.
-  kYesInBrowserPendingAck = 12,
-
   // There is not kNoInBrowser as we don't have to compare the counts of
   // pageshow events without persisted between browser and renderer so far.
 
-  kMaxValue = kYesInBrowserPendingAck,
+  kMaxValue = kYesInBrowserRenderViewNotLive,
 };
 
 BLINK_COMMON_EXPORT void RecordUMAEventPageShowPersisted(

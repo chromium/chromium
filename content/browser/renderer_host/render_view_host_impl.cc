@@ -721,23 +721,6 @@ void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
 void RenderViewHostImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  // TODO(https://crbug.com/1234634): Remove this.
-  // If the renderer has exited while we were are still waiting for a ack,
-  // then log information about the exit.
-  if (page_lifecycle_state_manager_->outstanding_ack_timestamp_bug_1234634()
-          .has_value()) {
-    base::TimeDelta delta =
-        base::Time::Now() -
-        page_lifecycle_state_manager_->outstanding_ack_timestamp_bug_1234634()
-            .value();
-    UMA_HISTOGRAM_MEDIUM_TIMES("Event.PageShow.Persisted.Unacked.Time", delta);
-    // We don't record this as an enum because the enum is platform dependent.
-    // Since this is temporary debugging, 20 seems a safe upper limit for the
-    // number of elements.
-    UMA_HISTOGRAM_EXACT_LINEAR("Event.PageShow.Persisted.Unacked.Status",
-                               static_cast<int>(info.status), 20);
-  }
-
   renderer_view_created_ = false;
   GetWidget()->RendererExited();
   delegate_->RenderViewTerminated(this, info.status, info.exit_code);

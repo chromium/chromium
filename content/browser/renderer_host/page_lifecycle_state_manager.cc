@@ -205,25 +205,6 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
   if (test_delegate_)
     test_delegate_->OnUpdateSentToRenderer(*last_state_sent_to_renderer_);
 
-  // TODO(https://crbug.com/1234634): Remove this.
-  // We record the time that we sent it so that we can measure how long the ack
-  // has been outstanding later.
-  if (new_state->should_dispatch_pageshow_for_debugging) {
-    // We could send a second one of these before before
-    // receiving the first ack. This would require something more complicated to
-    // handle perfectly but it should be rare or even impossible, so instead we
-    // just record that it happened and clear the timestamp without setting a
-    // new one
-    if (outstanding_ack_count_bug_1234634_ > 0) {
-      outstanding_ack_timestamp_bug_1234634_.reset();
-      blink::RecordUMAEventPageShowPersisted(
-          blink::EventPageShowPersisted::kYesInBrowserPendingAck);
-    } else {
-      outstanding_ack_timestamp_bug_1234634_ = base::Time::Now();
-    }
-    outstanding_ack_count_bug_1234634_++;
-  }
-
   render_view_host_impl_->GetAssociatedPageBroadcast()->SetPageLifecycleState(
       std::move(state), std::move(page_restore_params),
       base::BindOnce(&PageLifecycleStateManager::OnPageLifecycleChangedAck,
@@ -258,12 +239,9 @@ void PageLifecycleStateManager::OnPageLifecycleChangedAck(
     base::OnceClosure done_cb) {
   blink::mojom::PageLifecycleStatePtr old_state =
       std::move(last_acknowledged_state_);
-  // TODO(https://crbug.com/1234634): Remove this.
   if (acknowledged_state->should_dispatch_pageshow_for_debugging) {
     blink::RecordUMAEventPageShowPersisted(
         blink::EventPageShowPersisted::kYesInBrowserAck);
-    outstanding_ack_count_bug_1234634_--;
-    outstanding_ack_timestamp_bug_1234634_.reset();
   }
 
   last_acknowledged_state_ = std::move(acknowledged_state);
