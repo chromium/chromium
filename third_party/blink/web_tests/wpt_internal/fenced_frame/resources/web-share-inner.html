@@ -7,20 +7,18 @@
 
 <body>
 <script>
-(() => {
-  const button = document.createElement('button');
-  button.appendChild(document.createTextNode('Click'));
-  button.addEventListener('click', async () => {
-    const navigator_share_key = KEYS['navigator.share'];
-    try {
-      await navigator.share({text: 'hello world'});
-      writeValueToServer(navigator_share_key, 'Web Share succeeded');
-    } catch(error) {
-      writeValueToServer(navigator_share_key, 'Web Share failed');
-    }
+window.onload = () => {
+  requestAnimationFrame(() => {
+    simulateGesture(async function() {
+      const navigator_share_key = KEYS['navigator.share'];
+      try {
+        await navigator.share({text: 'hello world'});
+        writeValueToServer(navigator_share_key, 'Web Share succeeded');
+      } catch(error) {
+        writeValueToServer(navigator_share_key, 'Web Share failed');
+      }
+    });
   });
-  document.body.appendChild(button);
-  test_driver.click(button);
-})();
+};
 </script>
 </body>
