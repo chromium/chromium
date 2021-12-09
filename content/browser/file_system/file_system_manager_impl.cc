@@ -825,8 +825,10 @@ void FileSystemManagerImpl::DidCreateSnapshot(
   std::move(callback).Run(info, platform_path, result, mojo::NullRemote());
 }
 
-void FileSystemManagerImpl::DidGetPlatformPath(GetPlatformPathCallback callback,
-                                               base::FilePath platform_path) {
+void FileSystemManagerImpl::DidGetPlatformPath(
+    scoped_refptr<storage::FileSystemContext> /*context*/,
+    GetPlatformPathCallback callback,
+    base::FilePath platform_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::move(callback).Run(platform_path);
 }
@@ -841,19 +843,22 @@ void FileSystemManagerImpl::GetPlatformPathOnFileThread(
     GetPlatformPathCallback callback) {
   DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
 
-  SyncGetPlatformPath(
-      context.get(), process_id, path, storage_key,
+  // Bind `context` to the callback to ensure it stays alive.
+  DoGetPlatformPath(
+      context, process_id, path, storage_key,
       base::BindOnce(
           [](base::WeakPtr<FileSystemManagerImpl> file_system_manager,
+             scoped_refptr<storage::FileSystemContext> context,
              GetPlatformPathCallback callback,
              const base::FilePath& platform_path) {
             GetIOThreadTaskRunner({})->PostTask(
                 FROM_HERE,
                 base::BindOnce(&FileSystemManagerImpl::DidGetPlatformPath,
                                std::move(file_system_manager),
-                               std::move(callback), platform_path));
+                               std::move(context), std::move(callback),
+                               platform_path));
           },
-          std::move(file_system_manager), std::move(callback)));
+          std::move(file_system_manager), context, std::move(callback)));
 }
 
 absl::optional<base::File::Error> FileSystemManagerImpl::ValidateFileSystemURL(

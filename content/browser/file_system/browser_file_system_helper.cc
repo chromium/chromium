@@ -84,13 +84,13 @@ void GrantReadAccessOnUIThread(int process_id,
   }
 }
 
-// Helper function that used by SyncGetPlatformPath() to get the platform
+// Helper function that used by GetPlatformPath() to get the platform
 // path, grant read access, and send return the path via a callback.
 void GetPlatformPathOnFileThread(
     scoped_refptr<storage::FileSystemContext> context,
     int process_id,
     const storage::FileSystemURL& url,
-    SyncGetPlatformPathCB callback,
+    DoGetPlatformPathCB callback,
     bool can_read_filesystem_file) {
   DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
 
@@ -156,14 +156,16 @@ bool FileSystemURLIsValid(storage::FileSystemContext* context,
   return context->GetFileSystemBackend(url.type()) != nullptr;
 }
 
-void SyncGetPlatformPath(storage::FileSystemContext* context,
-                         int process_id,
-                         const GURL& path,
-                         const blink::StorageKey& storage_key,
-                         SyncGetPlatformPathCB callback) {
+void DoGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
+                       int process_id,
+                       const GURL& path,
+                       const blink::StorageKey& storage_key,
+                       DoGetPlatformPathCB callback) {
   DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(callback);
+
   storage::FileSystemURL url(context->CrackURL(path, storage_key));
-  if (!FileSystemURLIsValid(context, url)) {
+  if (!FileSystemURLIsValid(context.get(), url)) {
     // Note: Posting a task here so this function always returns
     // before the callback is called no matter which path is taken.
     base::ThreadPool::PostTask(
@@ -177,8 +179,7 @@ void SyncGetPlatformPath(storage::FileSystemContext* context,
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&CheckCanReadFileSystemFileOnUIThread, process_id, url),
-      base::BindOnce(&GetPlatformPathOnFileThread,
-                     scoped_refptr<storage::FileSystemContext>(context),
+      base::BindOnce(&GetPlatformPathOnFileThread, std::move(context),
                      process_id, url, std::move(callback)));
 }
 

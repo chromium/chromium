@@ -92,7 +92,7 @@ void ReturnResultOnUIThreadAndClosePipe(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void OnSyncGetPlatformPathDone(
+void OnGetPlatformPathDone(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     media::MediaResourceGetter::GetPlatformPathCB callback,
     const base::FilePath& platform_path) {
@@ -116,10 +116,10 @@ void RequestPlatformPathFromFileSystemURL(
              ->RunsTasksInCurrentSequence());
   // TODO (https://crbug.com/1258029): determine how to pipe in the correct
   // third-party StorageKey and replace the in-line conversion below.
-  SyncGetPlatformPath(file_system_context.get(), render_process_id, url,
-                      blink::StorageKey(url::Origin::Create(url)),
-                      base::BindOnce(&OnSyncGetPlatformPathDone,
-                                     file_system_context, std::move(callback)));
+  DoGetPlatformPath(file_system_context, render_process_id, url,
+                    blink::StorageKey(url::Origin::Create(url)),
+                    base::BindOnce(&OnGetPlatformPathDone, file_system_context,
+                                   std::move(callback)));
 }
 
 }  // namespace

@@ -183,7 +183,8 @@ class CONTENT_EXPORT FileSystemManagerImpl
       const base::File::Info& info,
       const base::FilePath& platform_path,
       scoped_refptr<storage::ShareableFileReference> file_ref);
-  void DidGetPlatformPath(GetPlatformPathCallback callback,
+  void DidGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
+                          GetPlatformPathCallback callback,
                           base::FilePath platform_path);
 
   static void GetPlatformPathOnFileThread(
