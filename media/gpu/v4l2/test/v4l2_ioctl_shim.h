@@ -151,6 +151,11 @@ class V4L2IoctlShim {
   bool QBuf(const std::unique_ptr<V4L2Queue>& queue,
             const uint32_t index) const WARN_UNUSED_RESULT;
 
+  // Dequeues a filled (capturing) or decoded (output) buffer
+  // from the driver’s outgoing |queue|.
+  bool DQBuf(const std::unique_ptr<V4L2Queue>& queue,
+             uint32_t* index) const WARN_UNUSED_RESULT;
+
   // Starts streaming |queue| (via VIDIOC_STREAMON).
   bool StreamOn(const enum v4l2_buf_type type) const WARN_UNUSED_RESULT;
 

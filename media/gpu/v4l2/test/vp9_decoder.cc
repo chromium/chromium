@@ -396,6 +396,19 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(ERROR) << "MEDIA_REQUEST_IOC_QUEUE failed.";
 
+  uint32_t index;
+
+  if (!v4l2_ioctl_->DQBuf(CAPTURE_queue_, &index))
+    LOG(ERROR) << "VIDIOC_DQBUF failed for CAPTURE queue.";
+
+  if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
+    LOG(ERROR) << "VIDIOC_DQBUF failed for OUTPUT queue.";
+
+  // TODO(stevecho): With current VP9 API, VIDIOC_G_EXT_CTRLS ioctl call is
+  // needed when forward probabilities update is used. With new VP9 API landing
+  // in kernel 5.17, VIDIOC_G_EXT_CTRLS ioctl call is no longer needed, see:
+  // https://lwn.net/Articles/855419/
+
   // TODO(stevecho): call RefreshReferenceSlots() once decoded buffer is ready.
 
   return Vp9Decoder::kOk;

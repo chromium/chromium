@@ -20,6 +20,9 @@ namespace media {
 namespace v4l2_test {
 
 constexpr int kIoctlOk = 0;
+// |kMaxRetryCount = 2^24| takes around 20 seconds to exhaust all retries on
+// Trogdor when a decode stalls.
+constexpr int kMaxRetryCount = 1 << 24;
 
 // TODO(stevecho): this might need to be changed for other platforms.
 static const base::FilePath kDecodeDevice("/dev/video-dec0");
@@ -42,6 +45,7 @@ static const std::unordered_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_REQBUFS),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QBUF),
+        V4L2_REQUEST_CODE_AND_STRING(VIDIOC_DQBUF),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_STREAMON),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_S_EXT_CTRLS),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC),
@@ -79,9 +83,12 @@ std::ostream& operator<<(std::ostream& ostream,
 // Logs whether given ioctl request |request_code| succeeded
 // or failed given |ret|.
 void LogIoctlResult(int ret, int request_code) {
-  PLOG_IF(ERROR, ret != kIoctlOk)
+  PLOG_IF(ERROR, ret != kIoctlOk && errno != EAGAIN)
       << "Ioctl request failed for " << V4L2RequestCodeToString(request_code)
       << ".";
+  PLOG_IF(INFO, ret != kIoctlOk && errno == EAGAIN)
+      << "Ioctl request failed for " << V4L2RequestCodeToString(request_code)
+      << "with error code EAGAIN.";
   VLOG_IF(4, ret == kIoctlOk)
       << V4L2RequestCodeToString(request_code) << " succeeded.";
 }
@@ -212,7 +219,8 @@ bool V4L2IoctlShim::Ioctl(int request_code,
 template <>
 bool V4L2IoctlShim::Ioctl(int request_code, struct v4l2_buffer* buffer) const {
   DCHECK(request_code == static_cast<int>(VIDIOC_QUERYBUF) ||
-         request_code == static_cast<int>(VIDIOC_QBUF));
+         request_code == static_cast<int>(VIDIOC_QBUF) ||
+         request_code == static_cast<int>(VIDIOC_DQBUF));
   LOG_ASSERT(buffer != nullptr) << "|buffer| check failed.";
 
   const int ret = ioctl(decode_fd_.GetPlatformFile(), request_code, buffer);
@@ -380,6 +388,56 @@ bool V4L2IoctlShim::QBuf(const std::unique_ptr<V4L2Queue>& queue,
   }
 
   return Ioctl(VIDIOC_QBUF, &v4l2_buffer);
+}
+
+bool V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
+                          uint32_t* index) const {
+  LOG_ASSERT(queue->memory() == V4L2_MEMORY_MMAP)
+      << "Only V4L2_MEMORY_MMAP is currently supported.";
+
+  struct v4l2_buffer v4l2_buffer;
+  std::vector<v4l2_plane> planes(VIDEO_MAX_PLANES);
+
+  memset(&v4l2_buffer, 0, sizeof v4l2_buffer);
+  v4l2_buffer.type = queue->type();
+  v4l2_buffer.memory = queue->memory();
+  v4l2_buffer.m.planes = planes.data();
+  v4l2_buffer.length = queue->num_planes();
+
+  if (queue->type() == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
+    // If no buffers have been dequeued for more than |kMaxRetryCount| retries,
+    // we should exit the program. Something is wrong in the decoder or with
+    // how we are controlling it.
+    int num_tries = kMaxRetryCount;
+
+    while ((num_tries != 0) && !Ioctl(VIDIOC_DQBUF, &v4l2_buffer)) {
+      if (errno != EAGAIN)
+        return false;
+
+      num_tries--;
+    }
+
+    if (num_tries == 0) {
+      LOG(ERROR)
+          << "Decoder appeared to stall. VIDIOC_DQBUF ioctl call timed out.";
+      return false;
+    } else {
+      // Successfully dequeued a buffer. Reset the |num_tries| counter.
+      num_tries = kMaxRetryCount;
+    }
+
+    if (index)
+      *index = v4l2_buffer.index;
+
+    return true;
+  }
+
+  DCHECK_EQ(queue->type(), V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+  // Currently, only 1 OUTPUT buffer is used.
+  *index = 0;
+
+  return Ioctl(VIDIOC_DQBUF, &v4l2_buffer);
 }
 
 bool V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
