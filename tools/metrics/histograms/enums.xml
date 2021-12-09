@@ -42883,8 +42883,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147219425"
       label="GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL"/>
   <int value="-2147219198" label="GOOPDATEINSTALL_E_INSTALLER_FAILED"/>
+  <int value="-2147174250" label="MSPR_E_NO_DECRYPTOR_AVAILABLE"/>
   <int value="-2147172343" label="DRM_E_LICENSEEXPIRED"/>
-  <int value="-2147169006" label="DRM_E_TEE_INVALID_CONTEXT"/>
+  <int value="-2147172333" label="DRM_E_LICENSE_NOT_FOUND"/>
+  <int value="-2147171352" label="DRM_E_LOGICERR"/>
+  <int value="-2147169008" label="DRM_E_TEE_INVALID_KEY_DATA"/>
+  <int value="-2147169006" label="DRM_E_TEE_INVALID_HWDRM_STATE"/>
+  <int value="-2147168990"
+      label="DRM_E_TEE_OUTPUT_PROTECTION_REQUIREMENTS_NOT_MET"/>
+  <int value="-2147168256" label="DRM_E_NONCE_STORE_TOKEN_NOT_FOUND"/>
   <int value="-2147168255" label="ITF_E_FONTFILE_UTIL_TOO_MANY_FILES_PER_FACE"/>
   <int value="-2147168254" label="ITF_E_FONTFILE_UTIL_EMPTY_FILE_PATH"/>
   <int value="-2147167999" label="ITF_E_SCANNING_TIMEOUT"/>
@@ -42892,6 +42899,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147167997"
       label="ITF_E_EXTRACT_NO_FULL_NAME_OR_POSTSCRIPT_NAME"/>
   <int value="-2147167996" label="ITF_E_EXTRACT_NO_FAMILY_NAME"/>
+  <int value="-2147167231" label="DRM_E_XB_INVALID_OBJECT"/>
   <int value="-2147024894" label="ERROR_FILE_NOT_FOUND"/>
   <int value="-2147024893" label="ERROR_PATH_NOT_FOUND"/>
   <int value="-2147024891" label="E_ACCESSDENIED"/>
