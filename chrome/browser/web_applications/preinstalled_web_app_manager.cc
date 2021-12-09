@@ -22,7 +22,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -588,11 +588,11 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     }
   }
 
-  UMA_HISTOGRAM_COUNTS_100(kHistogramEnabledCount,
-                           parsed_configs.options_list.size());
-  UMA_HISTOGRAM_COUNTS_100(kHistogramDisabledCount, disabled_count);
-  UMA_HISTOGRAM_COUNTS_100(kHistogramConfigErrorCount,
-                           parsed_configs.errors.size());
+  base::UmaHistogramCounts100(kHistogramEnabledCount,
+                              parsed_configs.options_list.size());
+  base::UmaHistogramCounts100(kHistogramDisabledCount, disabled_count);
+  base::UmaHistogramCounts100(kHistogramConfigErrorCount,
+                              parsed_configs.errors.size());
 
   std::move(callback).Run(parsed_configs.options_list);
 }
@@ -639,7 +639,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
   for (const auto& url_and_result : install_results) {
     const ExternallyManagedAppManager::InstallResult& result =
         url_and_result.second;
-    UMA_HISTOGRAM_ENUMERATION(kHistogramInstallResult, result.code);
+    base::UmaHistogramEnumeration(kHistogramInstallResult, result.code);
     if (result.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
     }
@@ -685,15 +685,15 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       }
     }
   }
-  UMA_HISTOGRAM_COUNTS_100(kHistogramUninstallAndReplaceCount,
-                           uninstall_and_replace_count);
+  base::UmaHistogramCounts100(kHistogramUninstallAndReplaceCount,
+                              uninstall_and_replace_count);
 
-  UMA_HISTOGRAM_COUNTS_100(kHistogramAppToReplaceStillInstalledCount,
-                           app_to_replace_still_installed_count);
-  UMA_HISTOGRAM_COUNTS_100(kHistogramAppToReplaceStillSyncInstalledCount,
-                           app_to_replace_still_sync_installed_count);
-  UMA_HISTOGRAM_COUNTS_100(kHistogramAppToReplaceStillInstalledInShelfCount,
-                           app_to_replace_still_installed_in_shelf_count);
+  base::UmaHistogramCounts100(kHistogramAppToReplaceStillInstalledCount,
+                              app_to_replace_still_installed_count);
+  base::UmaHistogramCounts100(kHistogramAppToReplaceStillSyncInstalledCount,
+                              app_to_replace_still_sync_installed_count);
+  base::UmaHistogramCounts100(kHistogramAppToReplaceStillInstalledInShelfCount,
+                              app_to_replace_still_installed_in_shelf_count);
 
   SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
                   IsPreinstalledAppInstallFeatureEnabled(
