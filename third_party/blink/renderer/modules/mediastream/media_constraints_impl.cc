@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 
+#include "build/os_buildflags.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -376,7 +377,11 @@ static void ParseOldStyleNames(
         Deprecation::CountDeprecation(
             context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
       }
+#if BUILDFLAG(IS_FUCHSIA)
+      // Special dispensation for Fuchsia to run SDES in 2002
+      // TODO(crbug.com/804275): Delete when Fuchsia no longer depends on it.
       result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
+#endif
     } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
       // This constraint does not turn on RTP data channels, but we do not
       // want it to cause an error, so we parse it and ignore it.

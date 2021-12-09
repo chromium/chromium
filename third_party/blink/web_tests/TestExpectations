@@ -6936,5 +6936,9 @@ crbug.com/1276208 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-fillPath-alph
 crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Skip ]
 crbug.com/1276044 virtual/gpu-rasterization/images/color-profile-background-image-repeat.html [ Failure Pass ]
 
+# Tests for absence of SDES that will fail because Fuchsia is allowed to use SDES
+crbug.com/804275 [ Fuchsia ] fast/peerconnection/RTCPeerConnection-sdes-constraint.html [ Failure ]
+crbug.com/804275 [ Fuchsia ] external/wpt/webrtc/protocol/sdes-dont-dont-dont.html [ Failure ]
+
 # Sheriff 2021-12-03
 crbug.com/1198781 [ Linux ] virtual/scroll-unification-layout_ng_block_frag/fast/forms/fieldset/fieldset-custom-scrollbar.html [ Failure Pass ]
