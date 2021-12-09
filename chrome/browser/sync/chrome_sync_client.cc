@@ -85,7 +85,6 @@
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -120,6 +119,8 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/sync/trusted_vault_client_android.h"
+#else
+#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

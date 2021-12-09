@@ -9001,7 +9001,6 @@ source_set("sync_integration_test_support") {
     "//components/sync:test_support_model",
     "//components/sync:test_support_nigori",
     "//components/sync/test/fake_server",
-    "//components/sync/trusted_vault:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//net",

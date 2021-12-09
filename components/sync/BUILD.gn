@@ -12,8 +12,10 @@ group("sync") {
     "//components/sync/engine",
     "//components/sync/model",
     "//components/sync/nigori",
-    "//components/sync/trusted_vault",
   ]
+  if (!is_android) {
+    public_deps += [ "//components/sync/trusted_vault" ]
+  }
 }
 
 group("test_support") {
@@ -26,6 +28,9 @@ group("test_support") {
     "//components/sync/base:test_support",
     "//components/sync/driver:test_support",
   ]
+  if (!is_android) {
+    public_deps += [ "//components/sync/trusted_vault:test_support" ]
+  }
 }
 
 static_library("test_support_engine") {
@@ -199,15 +204,20 @@ source_set("unit_tests") {
     "nigori/nigori_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
-    "trusted_vault/download_keys_response_handler_unittest.cc",
-    "trusted_vault/proto_string_bytes_conversion_unittest.cc",
-    "trusted_vault/securebox_unittest.cc",
-    "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
-    "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",
-    "trusted_vault/trusted_vault_connection_impl_unittest.cc",
-    "trusted_vault/trusted_vault_crypto_unittest.cc",
-    "trusted_vault/trusted_vault_request_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [
+      "trusted_vault/download_keys_response_handler_unittest.cc",
+      "trusted_vault/proto_string_bytes_conversion_unittest.cc",
+      "trusted_vault/securebox_unittest.cc",
+      "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
+      "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",
+      "trusted_vault/trusted_vault_connection_impl_unittest.cc",
+      "trusted_vault/trusted_vault_crypto_unittest.cc",
+      "trusted_vault/trusted_vault_request_unittest.cc",
+    ]
+  }
 
   configs += [ "//build/config:precompiled_headers" ]
 
