@@ -137,10 +137,12 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       // RSU code page
       {"rsuCodePageTitleText", IDS_SHIMLESS_RMA_RSU_CODE_PAGE_TITLE},
       {"rsuCodeInstructionsText", IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS},
-      {"rsuChallengeLabelText", IDS_SHIMLESS_RMA_RSU_CHALLENGE_LABEL},
-      {"rsuHardwareIdText", IDS_SHIMLESS_RMA_RSU_HWID},
+      {"rsuChallengeDialogTitleText",
+       IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE},
       {"rsuCodeLabelText", IDS_SHIMLESS_RMA_RSU_CODE_LABEL},
       {"rsuCodePlaceHolderText", IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER},
+      {"rsuChallengeDialogDoneButtonLabel",
+       IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_DONE_BUTTON},
       // Manual WP disable complete
       {"wpDisableCompletePageTitleText",
        IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE},

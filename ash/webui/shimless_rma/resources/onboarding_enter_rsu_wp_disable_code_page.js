@@ -4,7 +4,8 @@
 
 import './shimless_rma_shared_css.js';
 import './base_page.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -52,10 +53,10 @@ export class OnboardingEnterRsuWpDisableCodePage extends
         value: 0,
       },
 
-      /** @protected {!Array<!Array<string>>} */
+      /** @protected {string} */
       rsuChallenge_: {
-        type: Array,
-        value: () => [],
+        type: String,
+        value: '',
       },
 
       /** @protected */
@@ -70,6 +71,18 @@ export class OnboardingEnterRsuWpDisableCodePage extends
         value: '',
       },
 
+      /** @protected */
+      rsuInstructionsText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected */
+      rsuChallengeLinkText_: {
+        type: String,
+        value: '',
+        computed: 'computeRsuChallengeLinkText_(rsuHwid_, rsuChallenge_)',
+      },
     };
   }
 
@@ -83,22 +96,13 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   ready() {
     super.ready();
     this.getRsuChallengeAndHwid_();
+    this.setRsuInstructionsText_();
   }
 
   /** @private */
   getRsuChallengeAndHwid_() {
     this.shimlessRmaService_.getRsuDisableWriteProtectChallenge().then(
-        (result) => {
-          this.rsuChallenge_ = [];
-          // Split raw challenge code every 4 characters.
-          /** @type !Array<string> */
-          const challenge = result.challenge.match(/.{1,4}/g) || [];
-          // Split array of 4 character blocks into multiple arrays of 4 blocks
-          // each.
-          for (let i = 0; i < challenge.length; i += 4) {
-            this.rsuChallenge_.push(challenge.slice(i, i + 4));
-          }
-        });
+        (result) => this.rsuChallenge_ = result.challenge);
     this.shimlessRmaService_.getRsuDisableWriteProtectHwid().then(
         (result) => {
           this.rsuHwid_ = result.hwid;
@@ -171,6 +175,32 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     } else {
       return Promise.reject(new Error('No RSU code set'));
     }
+  }
+
+  /** @private */
+  setRsuInstructionsText_() {
+    this.rsuInstructionsText_ =
+        this.i18nAdvanced('rsuCodeInstructionsText', {attrs: ['id']});
+    const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink');
+    linkElement.setAttribute('href', '#');
+    linkElement.addEventListener(
+        'click',
+        () => this.shadowRoot.querySelector('#rsuChallengeDialog').showModal());
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeRsuChallengeLinkText_() {
+    const unlockPageUrl =
+        'https://chromeos.google.com/partner/console/cr50reset?challenge=';
+    return unlockPageUrl + this.rsuChallenge_ + '&hwid=' + this.rsuHwid_;
+  }
+
+  /** @private */
+  closeDialog_() {
+    this.shadowRoot.querySelector('#rsuChallengeDialog').close();
   }
 }
 

@@ -70,27 +70,6 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     assertFalse(rsuCodeComponent.hidden);
   });
 
-  test('EnterRsuWpDisableCodePageDisplaysChallenge', async () => {
-    let expectedParts = ['rsu &nbsp;', 'chal&nbsp;', 'leng&nbsp;', 'e&nbsp;'];
-    await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
-    const rsuChallengeComponent =
-        component.shadowRoot.querySelector('#rsuChallenge');
-    assertEquals(7, rsuChallengeComponent.childElementCount);
-
-    // Confirm all the parts match the expected challenge.
-    let parts = component.shadowRoot.querySelector('#rsuChallengeParts')
-                    .querySelectorAll('span');
-    for (let i = 0; i < parts.length; i++) {
-      assertEquals(expectedParts[i], parts[i].innerHTML);
-    }
-  });
-
-  test('EnterRsuWpDisableCodePageDisplaysHwid', async () => {
-    await initializeEnterRsuWpDisableCodePage('', 'device hwid');
-    const rsuHwidComponent = component.shadowRoot.querySelector('#rsuHwid');
-    assertTrue(rsuHwidComponent.innerHTML.includes('device hwid'));
-  });
-
   test('EnterRsuWpDisableCodePageRendersQrCode', async () => {
     await initializeEnterRsuWpDisableCodePage('', '');
 
@@ -131,4 +110,11 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
         assertDeepEquals(savedCode, expectedCode);
         assertDeepEquals(savedResult, expectedResult);
       });
+
+  test('EnterRsuWpDisableCodePageOpenChallengeDialog', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
+    assertTrue(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
+  });
 }

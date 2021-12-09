@@ -2188,19 +2188,19 @@ Try tapping the mic to ask me anything.
         Perform RMA Server Unlock
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" translateable="false" desc="Instructions for the RSU challenge page.">
-        Get your unlock code by scanning the QR code or going to the RSU web site and entering the challenge key.
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_LABEL" translateable="false" desc="Label for the formatted RSU challenge key.">
-        Challenge:
-      </message>
-      <message name="IDS_SHIMLESS_RMA_RSU_HWID" translateable="false" desc="Label that shows to display the device hardware ID.">
-        HWID:  <ph name="HARDWARE_ID">$1<ex>SAMUSTEST_2082</ex></ph>
+        Use the QR code or <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this link<ph name="LINK_END">&lt;/a&gt;</ph> to retrieve an 8 character unlock code to perform RMA Server Unlock
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" desc="Label for the RSU code input box.">
         Enter the unlock code:
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER" translateable="false" desc="Placeholder text for empty RSU code input box.">
         Enter RSU Code
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_TITLE" translateable="false" desc="Title for the dialog that shows the RSU challenge code link.">
+        Go to this link for your RSU unlock code
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RSU_CHALLENGE_DIALOG_DONE_BUTTON" desc="Label for the button that closes the dialog.">
+        Done
       </message>
       <!-- Manual write protect disable complete page -->
       <message name="IDS_SHIMLESS_RMA_WP_DISABLE_COMPLETE_PAGE_TITLE" translateable="false" desc="Title for the manual write protect disable complete page. Displays next steps, either reassemble device or leave wp disabled until further notice.">

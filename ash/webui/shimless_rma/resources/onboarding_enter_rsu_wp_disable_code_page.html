@@ -1,20 +1,15 @@
 <style include="cr-shared-style shimless-rma-shared">
+  #dialogBody {
+    overflow-wrap: anywhere;
+  }
 </style>
 
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('rsuCodePageTitleText')]]</h1>
-    <div>[[i18n('rsuCodeInstructionsText')]]</div>
-    <div>[[i18n('rsuChallengeLabelText')]]</div>
-    <div id="rsuChallenge">
-      <template id="rsuChallengeParts" is="dom-repeat" items="[[rsuChallenge_]]" as="row">
-        <template id="rsuChallengePart" is="dom-repeat" items="[[row]]" as="segment">
-          <span>[[segment]]&nbsp;</span>
-        </template>
-        <br/>
-      </template>
+    <div>
+      <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
     </div>
-    <div id="rsuHwid">[[i18n('rsuHardwareIdText', rsuHwid_)]]</div>
     <cr-input
         on-change="onRsuCodeChanged_"
         label="[[i18n('rsuCodeLabelText')]]"
@@ -28,3 +23,13 @@
     </canvas>
   </div>
 </base-page>
+
+<cr-dialog id="rsuChallengeDialog" on-cancel="closeDialog_" ignore-popstate>
+  <div slot="title">[[i18n('rsuChallengeDialogTitleText')]]</div>
+  <div slot="body" id="dialogBody">[[rsuChallengeLinkText_]]</div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      [[i18n('rsuChallengeDialogDoneButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>
