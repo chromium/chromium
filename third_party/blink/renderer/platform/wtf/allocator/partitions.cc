@@ -109,8 +109,6 @@ bool Partitions::InitializeOnce() {
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   static base::NoDestructor<base::PartitionAllocator> buffer_allocator{};
-  static base::NoDestructor<base::ThreadUnsafePartitionAllocator>
-      layout_allocator{};
 
   base::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
@@ -122,15 +120,6 @@ bool Partitions::InitializeOnce() {
        (enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
                    : base::PartitionOptions::BackupRefPtr::kDisabled),
        base::PartitionOptions::UseConfigurablePool::kNo, lazy_commit});
-  // RefCount disallowed because layout code will be excluded from raw_ptr<T>
-  // rewrite due to performance.
-  layout_allocator->init({base::PartitionOptions::AlignedAlloc::kDisallowed,
-                          base::PartitionOptions::ThreadCache::kDisabled,
-                          base::PartitionOptions::Quarantine::kAllowed,
-                          base::PartitionOptions::Cookie::kAllowed,
-                          base::PartitionOptions::BackupRefPtr::kDisabled,
-                          base::PartitionOptions::UseConfigurablePool::kNo,
-                          lazy_commit});
 
   buffer_root_ = buffer_allocator->root();
 
