@@ -544,7 +544,8 @@ void LayoutInline::AddChildIgnoringContinuation(LayoutObject* new_child,
       LayoutBlockFlow* anonymous_box;
       if (!before_child) {
         anonymous_box = DynamicTo<LayoutBlockFlow>(LastChild());
-      } else if (before_child->IsInline()) {
+      } else if (before_child->IsInline() ||
+                 before_child->IsFloatingOrOutOfFlowPositioned()) {
         anonymous_box =
             DynamicTo<LayoutBlockFlow>(before_child->PreviousSibling());
       } else {
