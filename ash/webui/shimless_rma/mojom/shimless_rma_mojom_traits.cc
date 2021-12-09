@@ -189,6 +189,10 @@ MojomRmadErrorCode EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::ToMojom(
       return MojomRmadErrorCode::kCannotCancelRma;
     case ProtoRmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG:
       return MojomRmadErrorCode::kCannotGetLog;
+    case ProtoRmadErrorCode::RMAD_ERROR_DAEMON_INITIALIZATION_FAILED:
+      return MojomRmadErrorCode::kDaemonInitializationFailed;
+    case ProtoRmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED:
+      return MojomRmadErrorCode::kUpdateRoFirmwareFailed;
 
     case ProtoRmadErrorCode::RMAD_ERROR_NOT_SET:
     default:
@@ -324,6 +328,12 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
       return true;
     case MojomRmadErrorCode::kCannotGetLog:
       *out = ProtoRmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG;
+      return true;
+    case MojomRmadErrorCode::kDaemonInitializationFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_DAEMON_INITIALIZATION_FAILED;
+      return true;
+    case MojomRmadErrorCode::kUpdateRoFirmwareFailed:
+      *out = ProtoRmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED;
       return true;
 
     case MojomRmadErrorCode::kNotSet:

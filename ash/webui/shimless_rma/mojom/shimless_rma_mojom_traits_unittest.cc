@@ -184,7 +184,11 @@ TEST_F(ShimlessRmaMojoToProtoTest, ErrorsMatch) {
        {mojom::RmadErrorCode::kCannotCancelRma,
         rmad::RmadErrorCode::RMAD_ERROR_CANNOT_CANCEL_RMA},
        {mojom::RmadErrorCode::kCannotGetLog,
-        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG}});
+        rmad::RmadErrorCode::RMAD_ERROR_CANNOT_GET_LOG},
+       {mojom::RmadErrorCode::kDaemonInitializationFailed,
+        rmad::RmadErrorCode::RMAD_ERROR_DAEMON_INITIALIZATION_FAILED},
+       {mojom::RmadErrorCode::kUpdateRoFirmwareFailed,
+        rmad::RmadErrorCode::RMAD_ERROR_UPDATE_RO_FIRMWARE_FAILED}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

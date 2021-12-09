@@ -167,6 +167,12 @@ enum RmadErrorCode {
 
   // Logs could not be retrieved.
   kCannotGetLog = 38,
+
+  // RMA daemon initialization failed.
+  kDaemonInitializationFailed = 39,
+
+  // Update RO firmware failed.
+  kUpdateRoFirmwareFailed = 40,
 };
 
 // TODO(gavindodd): This is copied from
