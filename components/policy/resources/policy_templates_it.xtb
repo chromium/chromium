@@ -2982,7 +2982,8 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4531706050939927436">L'installazione di app Android può essere imposta dalla Console d'amministrazione Google tramite Google Play. Questa norma non viene utilizzata.</translation>
 <translation id="4534500438517478692">Nome della limitazione di Android:</translation>
 <translation id="4541530620466526913">Account del dispositivo</translation>
-<translation id="4543502256674577024">Impostazioni di aggiornamento del dispositivo</translation>
+<translation id="4543502256674577024">Impostazioni di aggiornamento dispositivo
+</translation>
 <translation id="454585952814397564">Viene usata la priorità normale per il processo audio</translation>
 <translation id="4548555985107150628">Questo criterio è obsoleto. Usa <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per controllare se si deve utilizzare il visualizzatore PDF integrato per aprire i file PDF.
 

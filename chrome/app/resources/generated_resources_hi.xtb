@@ -3998,7 +3998,7 @@
 <translation id="5166596762332123936">पुराना होने के कारण <ph name="PLUGIN_NAME" /> को रोक दिया गया था</translation>
 <translation id="516747639689914043">हाइपरटेक्स्ट ट्रांसपोर्ट प्रोटोकॉल (एचटीटीपी)</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
-<translation id="5171045022955879922">URL खोजें या टाइप करें</translation>
+<translation id="5171045022955879922">यूआरएल खोजें या टाइप करें</translation>
 <translation id="5171343362375269016">स्वैप की गई मेमोरी</translation>
 <translation id="5172855596271336236">मैनेज किया गया एक प्रिंटर है.</translation>
 <translation id="5173668317844998239">अपनी सुरक्षा कुंजी पर सेव किए गए फ़िंगरप्रिंट जोड़ें और मिटाएं</translation>
@@ -6055,7 +6055,7 @@
 <translation id="7393073300870882456">{COUNT,plural, =1{1 आइटम कॉपी किया गया}one{{COUNT} आइटम कॉपी किया गया}other{{COUNT} आइटम कॉपी किए गए}}</translation>
 <translation id="7395774987022469191">पूरी स्क्रीन</translation>
 <translation id="7396017167185131589">शेयर किए गए फ़ोल्डर यहां दिखेंगे</translation>
-<translation id="7396845648024431313">सिस्‍टम प्रारंभ होने पर <ph name="APP_NAME" /> लॉन्‍च होगा और   सभी अन्‍य <ph name="PRODUCT_NAME" /> विंडो बंद कर देने के बाद भी पृष्‍ठभूमि में चलता रहेगा.</translation>
+<translation id="7396845648024431313">सिस्‍टम स्टार्ट होने पर <ph name="APP_NAME" /> लॉन्‍च होगा और सभी अन्‍य <ph name="PRODUCT_NAME" /> विंडो बंद कर देने के बाद भी बैकग्राउंड में चलता रहेगा.</translation>
 <translation id="7397270852490618635">हल्के रंग वाली थीम बंद करें</translation>
 <translation id="7399045143794278225">पसंद के मुताबिक सिंक करें</translation>
 <translation id="7400418766976504921">URL</translation>

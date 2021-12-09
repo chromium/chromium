@@ -717,7 +717,7 @@
 <translation id="3338095232262050444">保護された通信</translation>
 <translation id="3355823806454867987">プロキシ設定の変更...</translation>
 <translation id="3360103848165129075">支払いハンドラのシート</translation>
-<translation id="3361596688432910856">Chrome には、<ph name="BEGIN_EMPHASIS" />次の情報は<ph name="END_EMPHASIS" />保存されません。
+<translation id="3361596688432910856">Chrome には、次の情報は<ph name="BEGIN_EMPHASIS" />保存されません。<ph name="END_EMPHASIS" />
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />閲覧履歴
           <ph name="LIST_ITEM" />Cookie とサイトデータ

@@ -1423,7 +1423,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2448810255793562605">Automatyczne skanowanie Switch Access</translation>
 <translation id="2450223707519584812">Nie będzie można dodawać użytkowników, ponieważ brakuje kluczy Google API. Więcej szczegółów znajdziesz na <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Brak aktywnych widoków</translation>
-<translation id="2451298179137331965">2x</translation>
+<translation id="2451298179137331965">2 x</translation>
 <translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
 <translation id="2453706416476934374">Aby otrzymywać dostosowane odpowiedzi, gdy <ph name="SUPERVISED_USER_NAME" /> zadaje pytania, zezwól Asystentowi na dostęp do zrzutu bieżącej zawartości ekranu użytkownika <ph name="SUPERVISED_USER_NAME" />. Mogą tam znajdować się też informacje o odtwarzanych piosenkach i filmach.</translation>
 <translation id="2453860139492968684">Zakończ</translation>
@@ -7640,7 +7640,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9019062154811256702">Odczytywanie i zmienianie ustawień autouzupełniania</translation>
 <translation id="9019894137004772119">Używaj lokalizacji. Zezwól na używanie lokalizacji Twojego urządzenia przez aplikacje i usługi, które mają dostęp do lokalizacji. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, by zwiększyć dokładność lokalizacji oraz usprawnić działanie związanych z nią usług.</translation>
 <translation id="9019956081903586892">Nie udało się pobrać słownika do sprawdzania pisowni</translation>
-<translation id="9020362265352758658">4x</translation>
+<translation id="9020362265352758658">4 x</translation>
 <translation id="9021662811137657072">Wykryto wirusa</translation>
 <translation id="902236149563113779">Strony zwykle śledzą pozycję kamery na potrzeby funkcji AR, na przykład w grach czy do wyświetlania trasy</translation>
 <translation id="9022847679183471841">Tego konta na tym komputerze używa już <ph name="AVATAR_NAME" />.</translation>
