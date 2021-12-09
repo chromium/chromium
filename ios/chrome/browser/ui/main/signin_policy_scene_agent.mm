@@ -257,9 +257,8 @@
     return NO;
   }
 
-  if (self.sceneState.presentingModalOverlay) {
-    // Return NO when the scene cannot present views because it is blocked by
-    // the modal overlay.
+  if (self.sceneState.appState.currentUIBlocker) {
+    // Return NO when the scene cannot present views because it is blocked.
     return NO;
   }
 
