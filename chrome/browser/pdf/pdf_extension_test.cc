@@ -515,6 +515,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
             content::GetFocusedWebContents(embedder_web_contents));
 }
 
+// TODO(crbug.com/1278357): Flaky on lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PdfExtensionLoadedInGuest DISABLED_PdfExtensionLoadedInGuest
+#else
+#define MAYBE_PdfExtensionLoadedInGuest PdfExtensionLoadedInGuest
+#endif
 // This test verifies that when a PDF is loaded, that (i) the embedder
 // WebContents' html consists of a single <embed> tag with appropriate
 // properties, and (ii) that the guest WebContents finishes loading and
@@ -522,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
 // TODO(wjmaclean): Are there any attributes we can/should test with respect to
 // the extension's loaded html?
 IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
-                       PdfExtensionLoadedInGuest) {
+                       MAYBE_PdfExtensionLoadedInGuest) {
   // Load test HTML, and verify the text area has focus.
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
