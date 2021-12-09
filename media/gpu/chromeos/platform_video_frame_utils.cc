@@ -30,6 +30,7 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -88,6 +89,20 @@ class GbmDeviceWrapper {
     gmb_handle.id = GetNextGpuMemoryBufferId();
     gmb_handle.native_pixmap_handle = std::move(native_pixmap_handle);
     return gmb_handle;
+  }
+
+  std::unique_ptr<ui::GbmBuffer> ImportGpuMemoryBuffer(
+      gfx::BufferFormat format,
+      const gfx::Size& size,
+      gfx::NativePixmapHandle handle) {
+    base::AutoLock lock(lock_);
+    if (!gbm_device_)
+      return nullptr;
+    const int fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
+    if (fourcc_format == DRM_FORMAT_INVALID)
+      return nullptr;
+    return gbm_device_->CreateBufferFromHandle(fourcc_format, size,
+                                               std::move(handle));
   }
 
  private:
@@ -361,6 +376,34 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
 
   DCHECK(native_pixmap->AreDmaBufFdsValid());
   return native_pixmap;
+}
+
+bool CanImportGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    const gfx::GpuMemoryBufferHandle& gmb_handle) {
+  if (gmb_handle.type != gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+    VLOGF(1) << "The handle type (" << gmb_handle.type << ") is unsupported";
+    return false;
+  }
+  const auto pixel_format = GfxBufferFormatToVideoPixelFormat(format);
+  if (!pixel_format) {
+    VLOGF(1) << "Unsupported buffer format: "
+             << gfx::BufferFormatToString(format);
+    return false;
+  }
+  if (!VerifyGpuMemoryBufferHandle(*pixel_format, size, gmb_handle)) {
+    VLOGF(1) << "Invalid GpuMemoryBufferHandle provided";
+    return false;
+  }
+  gfx::NativePixmapHandle native_pixmap_handle =
+      gfx::CloneHandleForIPC(gmb_handle.native_pixmap_handle);
+  if (native_pixmap_handle.planes.empty()) {
+    VLOGF(1) << "Could not duplicate the NativePixmapHandle";
+    return false;
+  }
+  return !!GbmDeviceWrapper::Get()->ImportGpuMemoryBuffer(
+      format, size, std::move(native_pixmap_handle));
 }
 
 }  // namespace media

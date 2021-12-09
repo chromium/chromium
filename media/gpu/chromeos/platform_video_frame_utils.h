@@ -84,6 +84,13 @@ MEDIA_GPU_EXPORT gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
 MEDIA_GPU_EXPORT scoped_refptr<gfx::NativePixmapDmaBuf>
 CreateNativePixmapDmaBuf(const VideoFrame* video_frame);
 
+// Returns true if |gmb_handle| can be imported into minigbm and false
+// otherwise.
+bool CanImportGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    const gfx::GpuMemoryBufferHandle& gmb_handle);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_CHROMEOS_PLATFORM_VIDEO_FRAME_UTILS_H_
