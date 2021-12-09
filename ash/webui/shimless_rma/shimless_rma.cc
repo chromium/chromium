@@ -225,6 +225,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"restockTitleText", IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE},
       {"restockInstructionsText", IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS},
       {"restockShutdownButtonText", IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON},
+      {"restockContinueButtonText", IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON},
       // Manual enable wp page
       {"manuallyEnableWpTitleText", IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_TITLE},
       {"manuallyEnableWpInstructionsText",

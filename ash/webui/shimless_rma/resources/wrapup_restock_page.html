@@ -9,12 +9,14 @@
   <div slot="header">
     <h1>[[i18n('restockTitleText')]]</h1>
     <div>[[i18n('restockInstructionsText')]]</div>
+    <cr-button id="continue" on-click="onNextButtonClick">
+      [[i18n('restockContinueButtonText')]]
+    </cr-button>
     <cr-button id="shutdown" on-click="onShutdownButtonClicked_">
       [[i18n('restockShutdownButtonText')]]
     </cr-button>
   </div>
   <div slot="body">
-    <!-- TODO(gavindodd): Replace with real image -->
-    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+    <iron-icon icon="shimless:repair-start"></iron-icon>
   </div>
 </base-page>

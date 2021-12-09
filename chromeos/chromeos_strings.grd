@@ -2372,13 +2372,16 @@ Try tapping the mic to ask me anything.
       </message>
       <!-- Restock mainboard page -->
       <message name="IDS_SHIMLESS_RMA_RESTOCK_PAGE_TITLE" translateable="false" desc="The title for the page notifying user device is in a good state for restocking the mainboard.">
-        Restock mainboard
+        [Shimless RMA]
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_INSTRUCTIONS" translateable="false" desc="Instructions for what to do in the restock state. As the device will return to this state when rebooted after restocking the user can shutdown or continue RMA">
-        Choose to shutdown and restock mainboard or continue to finalize this device.
+        Continue where you left off, or shut down to restock the board.
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" translateable="false" desc="Label for the button that triggers device shutdown on the restock page.">
         Shutdown
+      </message>
+      <message name="IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON" translateable="false" desc="Label for the continue button on the restock page.">
+        Continue
       </message>
       <!-- Manually enable wp page -->
       <message name="IDS_SHIMLESS_RMA_MANUALLY_ENABLE_WP_TITLE" translateable="false" desc="The title for the page to manually enable write-protect on the device, afer device provisioning completes.">
