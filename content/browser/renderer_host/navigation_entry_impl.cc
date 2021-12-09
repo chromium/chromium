@@ -77,10 +77,9 @@ void RecursivelyGenerateFrameEntries(
   DCHECK(!data.empty()) << "Shouldn't generate an empty PageState.";
 
   GURL state_url(state.url_string.value_or(std::u16string()));
-  scoped_refptr<FrameNavigationEntry> entry =
-      context->GetFrameNavigationEntryForItemSequenceNumber(
-          state.item_sequence_number,
-          state.target ? base::UTF16ToUTF8(*state.target) : "", state_url);
+  scoped_refptr<FrameNavigationEntry> entry = context->GetFrameNavigationEntry(
+      state.item_sequence_number,
+      state.target ? base::UTF16ToUTF8(*state.target) : "", state_url);
   DCHECK(!entry || entry->initiator_origin() == state.initiator_origin);
   if (!entry) {
     entry = base::MakeRefCounted<FrameNavigationEntry>(
@@ -272,9 +271,9 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
   } else {
     if (restore_context) {
       // If |restore_context| is given and already has a FrameNavigationEntry
-      // for the given item sequence number, share that FrameNavigationEntry
-      // rather than creating a duplicate.
-      new_entry = restore_context->GetFrameNavigationEntryForItemSequenceNumber(
+      // for the given item sequence number and URL, share that
+      // FrameNavigationEntry rather than creating a duplicate.
+      new_entry = restore_context->GetFrameNavigationEntry(
           frame_entry->item_sequence_number(), frame_entry->frame_unique_name(),
           frame_entry->url());
     }
