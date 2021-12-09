@@ -36,14 +36,7 @@ import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_brow
 import {PrivacyReviewStep} from './constants.js';
 import {StepIndicatorModel} from './step_indicator.js';
 
-type HeaderModel = {
-  title: string,
-  lightImage: string,
-  darkImage: string,
-};
-
 interface PrivacyReviewStepComponents {
-  headerModel?: HeaderModel;
   onForwardNavigation(): void;
   onBackNavigation?(): void;
   isAvailable(): boolean;
@@ -88,7 +81,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       privacyReviewStep_: {
         type: String,
         value: PrivacyReviewStep.WELCOME,
-        observer: 'onPrivacyReviewStepChanged_',
       },
 
       /**
@@ -115,8 +107,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
   private syncStatus_: SyncStatus;
-  private hideHeader_: boolean;
-  private headerModel_?: HeaderModel;
 
   constructor() {
     super();
@@ -175,11 +165,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       [
         PrivacyReviewStep.MSBB,
         {
-          headerModel: {
-            title: this.i18n('privacyReviewMsbbCardHeader'),
-            lightImage: './images/privacy_review/msbb_graphic.svg',
-            darkImage: './images/privacy_review/msbb_graphic_dark.svg',
-          },
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.CLEAR_ON_EXIT);
           },
@@ -189,11 +174,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       [
         PrivacyReviewStep.CLEAR_ON_EXIT,
         {
-          headerModel: {
-            title: this.i18n('privacyReviewClearOnExitCardHeader'),
-            lightImage: './images/privacy_review/clear_on_exit_graphic.svg',
-            darkImage: './images/privacy_review/clear_on_exit_graphic_dark.svg',
-          },
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.HISTORY_SYNC);
           },
@@ -207,11 +187,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       [
         PrivacyReviewStep.HISTORY_SYNC,
         {
-          headerModel: {
-            title: this.i18n('privacyReviewHistorySyncCardHeader'),
-            lightImage: './images/privacy_review/history_sync_graphic.svg',
-            darkImage: './images/privacy_review/history_sync_graphic_dark.svg',
-          },
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.SAFE_BROWSING);
           },
@@ -224,11 +199,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       [
         PrivacyReviewStep.SAFE_BROWSING,
         {
-          headerModel: {
-            title: this.i18n('privacyReviewSafeBrowsingCardHeader'),
-            lightImage: './images/privacy_review/safe_browsing_graphic.svg',
-            darkImage: './images/privacy_review/safe_browsing_graphic_dark.svg',
-          },
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.COOKIES);
           },
@@ -241,11 +211,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       [
         PrivacyReviewStep.COOKIES,
         {
-          headerModel: {
-            title: this.i18n('privacyReviewCookiesCardHeader'),
-            lightImage: './images/privacy_review/cookies_graphic.svg',
-            darkImage: './images/privacy_review/cookies_graphic_dark.svg',
-          },
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.COMPLETION);
             HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
@@ -359,12 +324,6 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       active: activeIndex,
       total: stepCount,
     };
-  }
-
-  private onPrivacyReviewStepChanged_() {
-    this.headerModel_ = this.privacyReviewStepToComponentsMap_
-                            .get(this.privacyReviewStep_)!.headerModel;
-    this.hideHeader_ = this.headerModel_ === undefined;
   }
 
   private isSyncOn_(): boolean {

@@ -1,4 +1,13 @@
 <style include="privacy-review-fragment-shared"></style>
+<div class="header">
+  <picture>
+    <source
+        srcset="./images/privacy_review/cookies_graphic_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_review/cookies_graphic.svg">
+  </picture>
+  <div class="header-label">$i18n{privacyReviewCookiesCardHeader}</div>
+</div>
 <settings-radio-group id="cookiesRadioGroup"
     pref="{{prefs.generated.cookie_primary_setting}}"
     selectable-elements="settings-collapse-radio-button">

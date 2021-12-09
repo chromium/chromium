@@ -1,19 +1,4 @@
 <style include="cr-shared-style settings-shared">
-  #header {
-    align-items: center;
-    column-gap: 16px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    padding: 24px 24px 16px 24px;
-  }
-
-  #headerLabel {
-    flex: 1;
-    font-size: 123%;  /* Should be 16px when 100% is 13px. */
-  }
-
   .footer {
     align-items: center;
     display: flex;
@@ -40,15 +25,6 @@
   }
 </style>
 <div class="privacy-review-card">
-  <div id="header" hidden="[[hideHeader_]]">
-    <picture>
-      <source
-          srcset="[[headerModel_.darkImage]]"
-          media="(prefers-color-scheme: dark)">
-      <img id="headerImage" alt="" src="[[headerModel_.lightImage]]">
-    </picture>
-    <div id="headerLabel">[[headerModel_.title]]</div>
-  </div>
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">

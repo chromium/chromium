@@ -1,4 +1,13 @@
 <style include="privacy-review-fragment-shared"></style>
+<div class="header">
+  <picture>
+    <source
+        srcset="./images/privacy_review/clear_on_exit_graphic_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_review/clear_on_exit_graphic.svg">
+  </picture>
+  <div class="header-label">$i18n{privacyReviewClearOnExitCardHeader}</div>
+</div>
 <div class="embedded-setting-wrapper">
   <settings-toggle-button id="clearOnExit"
       pref="{{prefs.generated.cookie_session_only}}"

@@ -1,4 +1,13 @@
 <style include="privacy-review-fragment-shared"></style>
+<div class="header">
+  <picture>
+    <source
+        srcset="./images/privacy_review/msbb_graphic_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_review/msbb_graphic.svg">
+  </picture>
+  <div class="header-label">$i18n{privacyReviewMsbbCardHeader}</div>
+</div>
 <div class="embedded-setting-wrapper">
   <settings-toggle-button id="urlCollectionToggle"
       pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
