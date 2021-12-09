@@ -172,13 +172,6 @@ SPECIAL_CASES = {
         # Absolute path here is resolved as relative to the source root.
         "License File": "/LICENSE.chromium_os",
     },
-    os.path.join('third_party', 'devtools-frontend'): {
-        # TODO(crbug.com/1151057): Remove this special case when issue is fixed.
-        "Name": "Devtools-Frontend",
-        "URL": "https://chromium.googlesource.com/devtools/devtools-frontend",
-        "License": "BSD",
-        "License File": "src/LICENSE",
-    },
     os.path.join('third_party', 'lss'): {
         "Name": "linux-syscall-support",
         "URL": "http://code.google.com/p/linux-syscall-support/",
