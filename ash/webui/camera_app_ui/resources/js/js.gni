@@ -15,7 +15,7 @@ compile_js_files = [
   "device/stream_constraints.js",
   "device/stream_manager.js",
   "dom.js",
-  "error.js",
+  "error.ts",
   "expert.js",
   "face.js",
   "flag.js",

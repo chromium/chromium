@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
 import {AppWindow} from './app_window.js';
 import {assertInstanceof} from './assert.js';
 import * as metrics from './metrics.js';
@@ -13,23 +12,20 @@ import {
 
 /**
  * Code location of stack frame.
- * @typedef {{
- *   fileName: string,
- *   funcName: string,
- *   lineNo: number,
- *   colNo : number,
- *  }}
  */
-export let StackFrame;
+export interface StackFrame {
+  fileName: string;
+  funcName: string;
+  lineNo: number;
+  colNo: number;
+}
 
 const PRODUCT_NAME = 'ChromeOS_CameraApp';
 
 /**
  * Converts v8 CallSite object to StackFrame.
- * @param {!CallSite} callsite
- * @return {!StackFrame}
  */
-function toStackFrame(callsite) {
+function toStackFrame(callsite: CallSite): StackFrame {
   // TODO(crbug.com/1072700): Handle native frame.
   let fileName = callsite.getFileName() || 'unknown';
   if (fileName.startsWith(window.location.origin)) {
@@ -46,10 +42,9 @@ function toStackFrame(callsite) {
 
 /**
  * Gets stack frames from error.
- * @param {!Error} error
- * @return {?Array<!StackFrame>} return null if failed to get frames from error.
+ * @return return null if failed to get frames from error.
  */
-export function getStackFrames(error) {
+export function getStackFrames(error: Error): StackFrame[]|null {
   const prevPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (error, stack) => {
     try {
@@ -60,31 +55,29 @@ export function getStackFrames(error) {
     }
   };
 
-  const /** (?Array<!StackFrame>|string) */ frames = error.stack;
+  // Using "as" since overriding prepareStackTrace changes what error.stack
+  // returns, but TypeScript will still consider frames a string even if we
+  // manually annotate the type.
+  const frames = error.stack as (StackFrame[] | string);
   Error.prepareStackTrace = prevPrepareStackTrace;
 
   if (typeof frames !== 'object') {
     return null;
   }
-  return /** @type {?Array<!StackFrame>} */ (frames);
+  return frames;
 }
 
 /**
  * Gets the description text for an error.
- * @param {!Error} error
- * @return {string}
  */
-function getErrorDescription(error) {
+function getErrorDescription(error: Error): string {
   return `${error.name}: ${error.message}`;
 }
 
 /**
  * Gets formatted string stack from error.
- * @param {!Error} error
- * @param {?Array<!StackFrame>} frames
- * @return {string}
  */
-function formatErrorStack(error, frames) {
+function formatErrorStack(error: Error, frames: StackFrame[]|null): string {
   const errorDesc = getErrorDescription(error);
   return errorDesc +
       (frames || [])
@@ -101,15 +94,12 @@ function formatErrorStack(error, frames) {
           .join('');
 }
 
-/**
- * @type {?AppWindow}
- */
-const appWindow = window['appWindow'];
+const appWindow: AppWindow|null = window['appWindow'];
 
 /**
  * Initializes error collecting functions.
  */
-export function initialize() {
+export function initialize(): void {
   window.addEventListener('unhandledrejection', (e) => {
     reportError(
         ErrorType.UNCAUGHT_PROMISE, ErrorLevel.ERROR,
@@ -120,18 +110,15 @@ export function initialize() {
 /**
  * All triggered error will be hashed and saved in this set to prevent the same
  * error being triggered multiple times.
- * @type {!Set<string>}
  */
-const triggeredErrorSet = new Set();
+const triggeredErrorSet = new Set<string>();
 
 /**
  * Reports error either through test error callback in test run or to error
  * metrics in non test run.
- * @param {!ErrorType} type
- * @param {!ErrorLevel} level
- * @param {!Error} error
  */
-export function reportError(type, level, error) {
+export function reportError(
+    type: ErrorType, level: ErrorLevel, error: Error): void {
   // Uncaught promise is already logged in console.
   if (type !== ErrorType.UNCAUGHT_PROMISE) {
     if (level === ErrorLevel.ERROR) {
@@ -145,8 +132,8 @@ export function reportError(type, level, error) {
   const frames = getStackFrames(error);
   const errorName = error.name;
   const errorDesc = getErrorDescription(error);
-  const frame = (frames !== null && frames.length > 0) ? frames[0] : {};
-  const {fileName = '', lineNo = 0, colNo = 0, funcName = ''} = frame;
+  const {fileName = '', lineNo = 0, colNo = 0, funcName = ''} =
+      (frames !== null && frames.length > 0) ? frames[0] : {};
 
   const hash = [errorName, fileName, String(lineNo), String(colNo)].join(',');
   if (triggeredErrorSet.has(hash)) {
@@ -180,7 +167,6 @@ export function reportError(type, level, error) {
     return;
   }
 
-  /** @type {!chrome.crashReportPrivate.ErrorInfo} */
   const params = {
     product: PRODUCT_NAME,
     url: self.location.href,
@@ -190,5 +176,9 @@ export function reportError(type, level, error) {
     columnNumber: colNo || 0,
   };
 
-  chrome.crashReportPrivate.reportError(params, () => {});
+  chrome.crashReportPrivate.reportError(
+      params,
+      () => {
+          // Do nothing after error reported.
+      });
 }
