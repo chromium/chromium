@@ -53,6 +53,10 @@ CC_BASE_EXPORT extern const base::Feature
 CC_BASE_EXPORT extern const base::Feature
     kDurationEstimatesInCompositorTimingHistory;
 
+// When enabled, DroppedFrameCounter will use an adjusted sliding window
+// interval specified by field trial params.
+CC_BASE_EXPORT extern const base::Feature kSlidingWindowForDroppedFrameCounter;
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

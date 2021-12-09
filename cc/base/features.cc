@@ -62,4 +62,7 @@ const base::Feature kDurationEstimatesInCompositorTimingHistory{
     "DurationEstimatesInCompositorTimingHistory",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSlidingWindowForDroppedFrameCounter{
+    "SlidingWindowForDroppedFrameCounter", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
