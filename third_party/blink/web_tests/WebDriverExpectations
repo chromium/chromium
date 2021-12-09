@@ -85,6 +85,16 @@ crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shado
 crbug.com/1167321 [ Linux ] external/wpt/webdriver/tests/find_element_from_shadow_root/find.py>>test_find_element[xpath-//a] [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_get_computed_label[<button%20aria-label=foo>bar</button>-button-foo] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_get_computed_label[<button%20aria-labelledby="one%20two"></button><div%20id=one>ok</div><div%20id=two>go</div>-button-ok%20go] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_get_computed_label[<button>ok</button>-button-ok] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_get_computed_label[<label%20for=b>foo<label><input%20id=b>-input-foo] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_get_computed_label[<label><input>%20foo</label>-input-foo] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_no_browsing_context [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_label/get.py>>test_no_user_prompt [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_role/get.py>>test_computed_roles[<img%20role=presentation>-img-presentation] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_role/get.py>>test_computed_roles[<li%20role=menuitem>foo-li-menu] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_computed_role/get.py>>test_no_user_prompt [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/printcmd.py>>test_page_ranges_document[ranges0-expected0] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/printcmd.py>>test_page_ranges_document[ranges1-expected1] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/print/printcmd.py>>test_page_ranges_document[ranges2-expected2] [ Failure ]
