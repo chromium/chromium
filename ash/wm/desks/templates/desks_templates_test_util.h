@@ -7,12 +7,10 @@
 
 #include <vector>
 
-#include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
-#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 
@@ -28,7 +26,7 @@ class RoundedImageView;
 class PillButton;
 class CloseButton;
 
-// Wrapper for `DesksTemplatesPresenter` that exposes internal state to test
+// Wrapper for DesksTemplatesPresenter that exposes internal state to test
 // functions.
 class DesksTemplatesPresenterTestApi {
  public:
@@ -45,7 +43,7 @@ class DesksTemplatesPresenterTestApi {
   DesksTemplatesPresenter* const presenter_;
 };
 
-// Wrapper for `DesksTemplatesGridView` that exposes internal state to test
+// Wrapper for DesksTemplatesGridView that exposes internal state to test
 // functions.
 class DesksTemplatesGridViewTestApi {
  public:
@@ -64,7 +62,7 @@ class DesksTemplatesGridViewTestApi {
   const DesksTemplatesGridView* grid_view_;
 };
 
-// Wrapper for `DesksTemplatesItemView` that exposes internal state to test
+// Wrapper for DesksTemplatesItemView that exposes internal state to test
 // functions.
 class DesksTemplatesItemViewTestApi {
  public:
@@ -83,7 +81,7 @@ class DesksTemplatesItemViewTestApi {
 
   const PillButton* launch_button() const { return item_view_->launch_button_; }
 
-  const base::GUID uuid() const { return item_view_->desk_template_->uuid(); }
+  const base::GUID uuid() const { return item_view_->uuid_; }
 
   const std::vector<DesksTemplatesIconView*>& icon_views() const {
     return item_view_->icon_container_view_->icon_views_;
@@ -97,7 +95,7 @@ class DesksTemplatesItemViewTestApi {
   const DesksTemplatesItemView* item_view_;
 };
 
-// Wrapper for `DesksTemplatesIconView` that exposes internal state to test
+// Wrapper for DesksTemplatesIconView that exposes internal state to test
 // functions.
 class DesksTemplatesIconViewTestApi {
  public:
@@ -124,27 +122,8 @@ class DesksTemplatesIconViewTestApi {
   const DesksTemplatesIconView* desks_templates_icon_view_;
 };
 
-// Wrapper for `DesksTemplatesNameView` that exposes internal state to test
-// functions.
-class DesksTemplatesNameViewTestApi {
- public:
-  explicit DesksTemplatesNameViewTestApi(
-      const DesksTemplatesNameView* desks_templates_name_view);
-  DesksTemplatesNameViewTestApi(const DesksTemplatesNameViewTestApi&) = delete;
-  DesksTemplatesNameViewTestApi& operator=(
-      const DesksTemplatesNameViewTestApi&) = delete;
-  ~DesksTemplatesNameViewTestApi();
-
-  const std::u16string full_text() const {
-    return desks_templates_name_view_->full_text_;
-  }
-
- private:
-  const DesksTemplatesNameView* desks_templates_name_view_;
-};
-
-// Return the `grid_item_index`th `DesksTemplatesItemView` from the first
-// `OverviewGrid` in `GetOverviewGridList()`.
+// Return the `grid_item_index`th DesksTemplatesItemView from the first
+// OverviewGrid in `GetOverviewGridList()`.
 DesksTemplatesItemView* GetItemViewFromOverviewGrid(int grid_item_index);
 
 // These buttons are the ones on the primary root window.

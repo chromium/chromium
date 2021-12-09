@@ -160,13 +160,19 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void DesksTemplatesPresenter::DeskModelLoaded() {}
+
+void DesksTemplatesPresenter::OnDeskModelDestroying() {
+  desk_model_observation_.Reset();
+}
+
 void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate() {
   DesksController::Get()->CaptureActiveDeskAsTemplate(
-      base::BindOnce(&DesksTemplatesPresenter::SaveOrUpdateDeskTemplate,
+      base::BindOnce(&DesksTemplatesPresenter::SaveDeskTemplate,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
+void DesksTemplatesPresenter::SaveDeskTemplate(
     std::unique_ptr<DeskTemplate> desk_template) {
   if (!desk_template)
     return;
@@ -175,17 +181,11 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // Save or update `desk_template_clone` as an entry in DeskModel.
+  // Save `desk_template_clone` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template_clone),
       base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DesksTemplatesPresenter::DeskModelLoaded() {}
-
-void DesksTemplatesPresenter::OnDeskModelDestroying() {
-  desk_model_observation_.Reset();
 }
 
 void DesksTemplatesPresenter::OnGetAllEntries(
@@ -244,19 +244,9 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 
 void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
-  if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
-    return;
-
+  // Update the button here in case it has been disabled.
   const auto& grid_list = overview_session_->grid_list();
   DCHECK(!grid_list.empty());
-
-  // If the templates grid is already shown, just update the entries.
-  if (grid_list[0]->IsShowingDesksTemplatesGrid()) {
-    GetAllEntries();
-    return;
-  }
-
-  // Update the button here in case it has been disabled.
   overview_session_->ShowDesksTemplatesGrids(
       grid_list[0]->desks_bar_view()->IsZeroState());
   for (auto& overview_grid : grid_list)
