@@ -4204,6 +4204,21 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
   EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
             model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
+
+  // Open the menu again to test the color sort option.
+  SimulateRightClickOrLongPressAt(empty_space);
+  EXPECT_TRUE(context_menu->IsMenuShowing());
+
+  reorder_option =
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(2);
+  ASSERT_TRUE(reorder_option->title() == u"Color");
+
+  const gfx::Point color_option =
+      reorder_option->GetBoundsInScreen().CenterPoint();
+
+  SimulateLeftClickOrTapAt(color_option);
+  EXPECT_EQ(AppListSortOrder::kColor, model_->requested_sort_order());
+  EXPECT_FALSE(context_menu->IsMenuShowing());
 }
 
 TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
@@ -4275,6 +4290,21 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuOnFolderItemSortAllApps) {
   SimulateLeftClickOrTapAt(reverse_option);
   EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
             model_->requested_sort_order());
+  EXPECT_FALSE(context_menu->IsMenuShowing());
+
+  // Open the menu again to test the color sort option.
+  SimulateRightClickOrLongPressAt(folder_item_point);
+  EXPECT_TRUE(context_menu->IsMenuShowing());
+
+  reorder_option =
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(2);
+  ASSERT_TRUE(reorder_option->title() == u"Color");
+
+  const gfx::Point color_option =
+      reorder_option->GetBoundsInScreen().CenterPoint();
+
+  SimulateLeftClickOrTapAt(color_option);
+  EXPECT_EQ(AppListSortOrder::kColor, model_->requested_sort_order());
   EXPECT_FALSE(context_menu->IsMenuShowing());
 }
 

@@ -1312,8 +1312,12 @@ void AppListSyncableService::SetAppListPreferredOrder(
   profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
                                    static_cast<int>(order));
 
-  if (order == ash::AppListSortOrder::kCustom)
+  // TODO(andrewxu): Return early for color sort because color info on sync
+  // items is not yet well implemented.
+  if (order == ash::AppListSortOrder::kCustom ||
+      order == ash::AppListSortOrder::kColor) {
     return;
+  }
 
   // Too few sync items. Return early.
   if (sync_items_.size() < 2)

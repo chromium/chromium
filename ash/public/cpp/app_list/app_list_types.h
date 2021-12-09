@@ -76,12 +76,12 @@ class ASH_PUBLIC_EXPORT IconColor {
 
   // The overloaded rational operators. NOTE: these operators assume that
   // operands are valid.
-  bool operator<(const IconColor&);
-  bool operator>(const IconColor&);
-  bool operator>=(const IconColor&);
-  bool operator<=(const IconColor&);
-  bool operator==(const IconColor&);
-  bool operator!=(const IconColor&);
+  bool operator<(const IconColor&) const;
+  bool operator>(const IconColor&) const;
+  bool operator>=(const IconColor&) const;
+  bool operator<=(const IconColor&) const;
+  bool operator==(const IconColor&) const;
+  bool operator!=(const IconColor&) const;
 
   // Returns true only when all data members are valid: `background_color_` is
   // non-empty and `hue_` is in the valid range.
@@ -145,7 +145,12 @@ enum class AppListSortOrder {
 
   // Items are sorted by the name reverse alphabetical order. Note that folders
   // are always placed in front of other types of items.
-  kNameReverseAlphabetical
+  kNameReverseAlphabetical,
+
+  // Items are sorted in order of color in rainbow order from red to purple.
+  // Items are first sorted by the color of the icon background, then sorted
+  // by the light vibrant color extracted from the icon.
+  kColor
 };
 
 // Lists the reasons that ash requests for item position update.

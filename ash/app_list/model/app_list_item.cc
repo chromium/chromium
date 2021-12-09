@@ -92,6 +92,10 @@ void AppListItem::SetNotificationBadgeColor(const SkColor color) {
   }
 }
 
+void AppListItem::SetIconColor(const IconColor color) {
+  metadata_->icon_color = color;
+}
+
 void AppListItem::AddObserver(AppListItemObserver* observer) {
   observers_.AddObserver(observer);
 }

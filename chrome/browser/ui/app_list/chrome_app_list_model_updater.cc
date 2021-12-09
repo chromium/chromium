@@ -423,6 +423,13 @@ void ChromeAppListModelUpdater::SetNotificationBadgeColor(const std::string& id,
     item->SetNotificationBadgeColor(color);
 }
 
+void ChromeAppListModelUpdater::SetIconColor(const std::string& id,
+                                             const ash::IconColor icon_color) {
+  ash::AppListItem* item = model_.FindItem(id);
+  if (item)
+    item->SetIconColor(icon_color);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods only used by ChromeSearchResult that talk to ash directly.
 

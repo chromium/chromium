@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
@@ -173,14 +174,14 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {
   metadata_->badge_color =
       ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id(),
                                                                        icon);
-
-  // TODO(https://crbug.com/1270898): update `metadata_->icon_color` when icon
-  // is set.
+  metadata_->icon_color =
+      app_list::reorder::GetSortableIconColorForApp(id(), icon);
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {
     updater->SetItemIcon(id(), metadata_->icon);
     updater->SetNotificationBadgeColor(id(), metadata_->badge_color);
+    updater->SetIconColor(id(), metadata_->icon_color);
   }
 }
 

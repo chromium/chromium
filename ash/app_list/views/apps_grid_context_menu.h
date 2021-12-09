@@ -33,7 +33,10 @@ class ASH_EXPORT AppsGridContextMenu : public ui::SimpleMenuModel::Delegate,
     kReorderByNameAlphabetical,
 
     // Command that will sort the name in reverse alphabetical order.
-    kReorderByNameReverseAlphabetical
+    kReorderByNameReverseAlphabetical,
+
+    // Command that will sort by icon color in rainbow order.
+    kReorderByColor
   };
 
   AppsGridContextMenu();

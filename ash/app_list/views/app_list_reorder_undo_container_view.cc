@@ -26,6 +26,7 @@ constexpr char16_t kToastTextFixedPart[] = u"Apps are now reordered ";
 constexpr char16_t kToastAlphabeticalOrderText[] = u"alphabetically";
 constexpr char16_t kToastReverseAlphabeticalOrderText[] =
     u"reverse-alphabetically";
+constexpr char16_t kToastColorOrderText[] = u"by color";
 
 // The text shown on the toast dismiss button.
 constexpr char16_t kToastDismissText[] = u"Redo";
@@ -84,6 +85,9 @@ std::u16string AppListReorderUndoContainerView::CalculateToastTextFromOrder(
     case AppListSortOrder::kNameReverseAlphabetical:
       toast_text_variable_part =
           base::StringPiece16(kToastReverseAlphabeticalOrderText);
+      break;
+    case AppListSortOrder::kColor:
+      toast_text_variable_part = base::StringPiece16(kToastColorOrderText);
       break;
     case AppListSortOrder::kCustom:
       NOTREACHED();

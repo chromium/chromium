@@ -35,6 +35,10 @@ void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
       AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
           AppListSortOrder::kNameReverseAlphabetical);
       break;
+    case AppsGridCommandId::kReorderByColor:
+      AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(
+          AppListSortOrder::kColor);
+      break;
     default:
       NOTREACHED();
   }
@@ -71,6 +75,7 @@ void AppsGridContextMenu::BuildMenuModel() {
 
   // As both of the submenu items are not planned to be launched, the option
   // strings are directly written as the parameters.
+  // TODO(https://crbug.com/1269386): Add i18n strings for each menu item.
   reorder_name_submenu_->AddItem(kReorderByNameAlphabetical, u"Alphabetical");
   reorder_name_submenu_->AddItem(kReorderByNameReverseAlphabetical,
                                  u"Reverse alphabetical");
@@ -83,6 +88,9 @@ void AppsGridContextMenu::BuildMenuModel() {
           IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
       reorder_name_submenu_.get(),
       ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon));
+  // TODO(crbug.com/1276230): Add vector icon to reorder by color option.
+  // TODO(https://crbug.com/1269386): Add i18n strings for color menu item.
+  context_menu_model_->AddItem(kReorderByColor, u"Color");
 }
 
 void AppsGridContextMenu::OnMenuClosed() {

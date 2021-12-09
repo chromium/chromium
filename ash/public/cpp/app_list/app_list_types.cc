@@ -60,9 +60,11 @@ IconColor& IconColor::operator=(const IconColor& rhs) = default;
 
 IconColor::~IconColor() = default;
 
-bool IconColor::operator<(const IconColor& rhs) {
-  DCHECK(IsValid());
-  DCHECK(rhs.IsValid());
+bool IconColor::operator<(const IconColor& rhs) const {
+  // TODO(crbug.com/1270898): Add DCHECKs for checking IsValid() and
+  // rhs.IsValid(). Investigate and fix the case where IconColors are invalid.
+  // In the meantime invalid IconColors can still be sorted against other
+  // IconColors and are ordered to come before other icons in this case.
 
   // Compare background colors first.
   if (background_color_ != rhs.background_color())
@@ -71,9 +73,9 @@ bool IconColor::operator<(const IconColor& rhs) {
   return hue_ < rhs.hue();
 }
 
-bool IconColor::operator>(const IconColor& rhs) {
-  DCHECK(IsValid());
-  DCHECK(rhs.IsValid());
+bool IconColor::operator>(const IconColor& rhs) const {
+  // TODO(crbug.com/1270898): Investigate and add back DCHECKS for IsValid() and
+  // rhs.IsValid().
 
   // Compare background colors first.
   if (background_color_ != rhs.background_color())
@@ -82,21 +84,21 @@ bool IconColor::operator>(const IconColor& rhs) {
   return hue_ > rhs.hue();
 }
 
-bool IconColor::operator>=(const IconColor& rhs) {
+bool IconColor::operator>=(const IconColor& rhs) const {
   return !(*this < rhs);
 }
 
-bool IconColor::operator<=(const IconColor& rhs) {
+bool IconColor::operator<=(const IconColor& rhs) const {
   return !(*this > rhs);
 }
 
-bool IconColor::operator==(const IconColor& rhs) {
+bool IconColor::operator==(const IconColor& rhs) const {
   return !(*this != rhs);
 }
 
-bool IconColor::operator!=(const IconColor& rhs) {
-  DCHECK(IsValid());
-  DCHECK(rhs.IsValid());
+bool IconColor::operator!=(const IconColor& rhs) const {
+  // TODO(crbug.com/1270898): Investigate and add back DCHECKS for IsValid() and
+  // rhs.IsValid().
 
   return *this < rhs || *this > rhs;
 }

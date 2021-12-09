@@ -421,6 +421,7 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::REORDER_SUBMENU:
     case CommandId::REORDER_BY_NAME_ALPHABETICAL:
     case CommandId::REORDER_BY_NAME_REVERSE_ALPHABETICAL:
+    case CommandId::REORDER_BY_COLOR:
     case CommandId::SHUTDOWN_GUEST_OS:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_FIRST:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_LAST:

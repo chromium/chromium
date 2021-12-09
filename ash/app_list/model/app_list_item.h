@@ -54,6 +54,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   void SetNotificationBadgeColor(const SkColor color);
 
+  void SetIconColor(const IconColor color);
+
   const std::string& GetDisplayName() const {
     return short_name_.empty() ? name() : short_name_;
   }

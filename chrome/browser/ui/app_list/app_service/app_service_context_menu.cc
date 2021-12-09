@@ -227,6 +227,10 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
                          ash::AppListSortOrder::kNameReverseAlphabetical);
       break;
 
+    case ash::REORDER_BY_COLOR:
+      RequestAppListSort(profile(), ash::AppListSortOrder::kColor);
+      break;
+
     default:
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
@@ -384,6 +388,9 @@ void AppServiceContextMenu::OnGetMenuModel(
         ash::REORDER_SUBMENU, u"Reorder by name", reorder_submenu_.get(),
         ui::ImageModel::FromVectorIcon(
             GetMenuItemVectorIcon(ash::REORDER_SUBMENU, /*string_id=*/-1)));
+    // TODO(crbug.com/1276230): Move reorder by color item to proper location
+    // and add a vector icon.
+    menu_model->AddItem(ash::REORDER_BY_COLOR, u"Color");
   }
 
   std::move(callback).Run(std::move(menu_model));

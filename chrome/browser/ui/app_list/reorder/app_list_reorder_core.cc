@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 
@@ -32,6 +33,8 @@ bool IsIncreasingOrder(ash::AppListSortOrder order) {
       return true;
     case ash::AppListSortOrder::kNameReverseAlphabetical:
       return false;
+    case ash::AppListSortOrder::kColor:
+      return true;
   }
 }
 
@@ -50,19 +53,16 @@ std::vector<int> SortAndGetLis(
               // TODO(https://crbug.com/1261673): remove this code block when
               // `SyncItemWrapper` comparison operators take item type into
               // consideration.
+              // TODO(crbug.com/1270898): Color sort should place folders at the
+              // end of the app list.
               if (wrapper1.is_folder != wrapper2.is_folder)
                 return wrapper1.is_folder;
 
               bool comp = false;
-              switch (order) {
-                case ash::AppListSortOrder::kNameAlphabetical:
-                  comp = wrapper1 < wrapper2;
-                  break;
-                case ash::AppListSortOrder::kNameReverseAlphabetical:
-                  comp = wrapper1 > wrapper2;
-                  break;
-                case ash::AppListSortOrder::kCustom:
-                  NOTREACHED();
+              if (IsIncreasingOrder(order)) {
+                comp = wrapper1 < wrapper2;
+              } else {
+                comp = wrapper1 > wrapper2;
               }
               return comp;
             });
@@ -453,7 +453,7 @@ bool CalculatePositionInNameOrder(
          order == ash::AppListSortOrder::kNameReverseAlphabetical);
 
   std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
-      reorder::GenerateStringWrappersFromAppListItems(local_items);
+      reorder::GenerateWrappersFromAppListItems<std::string>(local_items);
 
   if (local_item_wrappers.empty()) {
     *target_position = syncer::StringOrdinal::CreateInitialOrdinal();
@@ -478,7 +478,7 @@ bool CalculatePositionInNameOrder(
   if (global_items) {
     AdjustNeighborsInGlobalScope(
         order, reorder::SyncItemWrapper<std::string>(new_item),
-        reorder::GenerateStringWrappersFromSyncItems(*global_items),
+        reorder::GenerateWrappersFromSyncItems<std::string>(*global_items),
         &prev_neighbor, &next_neighbor);
   }
 
@@ -497,7 +497,12 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
       std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
-          reorder::GenerateStringWrappersFromSyncItems(sync_item_map);
+          reorder::GenerateWrappersFromSyncItems<std::string>(sync_item_map);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
+    case ash::AppListSortOrder::kColor: {
+      std::vector<reorder::SyncItemWrapper<ash::IconColor>> wrappers =
+          reorder::GenerateWrappersFromSyncItems<ash::IconColor>(sync_item_map);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
@@ -514,7 +519,14 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
       std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
-          reorder::GenerateStringWrappersFromAppListItems(app_list_items);
+          reorder::GenerateWrappersFromAppListItems<std::string>(
+              app_list_items);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
+    case ash::AppListSortOrder::kColor: {
+      std::vector<reorder::SyncItemWrapper<ash::IconColor>> wrappers =
+          reorder::GenerateWrappersFromAppListItems<ash::IconColor>(
+              app_list_items);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
@@ -535,6 +547,9 @@ bool CalculateNewItemPosition(
 
   switch (order) {
     case ash::AppListSortOrder::kCustom:
+      // TODO(crbug.com/1270898): Color sort should handle placing a new item
+      // similar to the way that is done for name sorting.
+    case ash::AppListSortOrder::kColor:
       // Insert `item` at the front when the sort order is kCustom.
       DCHECK(global_items);
       *target_position = CalculateFrontPosition(*global_items);
@@ -573,12 +588,13 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
                               AppListModelUpdater* model_updater) {
   switch (order) {
     case ash::AppListSortOrder::kCustom:
+    case ash::AppListSortOrder::kColor:
       NOTREACHED();
       return 0.f;
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical:
       std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
-          reorder::GenerateStringWrappersFromAppListItems(
+          reorder::GenerateWrappersFromAppListItems<std::string>(
               model_updater->GetItems());
       float entropy = 0.f;
       CalculateEntropyAndGetSortedSubsequence(
