@@ -5,7 +5,8 @@
 
 import threading
 
-class TestCollection(object):
+
+class TestCollection:
   """A threadsafe collection of tests.
 
   Args:

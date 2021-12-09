@@ -445,8 +445,8 @@ def _RunDiskUsage(devices, package_name):
       code_path = re.search(r'codePath=(.*)', package_output).group(1)
       lib_path = re.search(r'(?:legacyN|n)ativeLibrary(?:Dir|Path)=(.*)',
                            package_output).group(1)
-    except AttributeError:
-      raise Exception('Error parsing dumpsys output: ' + package_output)
+    except AttributeError as e:
+      raise Exception('Error parsing dumpsys output: ' + package_output) from e
 
     if code_path.startswith('/system'):
       logging.warning('Measurement of system image apks can be innacurate')
@@ -536,12 +536,12 @@ def _RunDiskUsage(devices, package_name):
     print('Total: %s KiB (%.1f MiB)' % (total, total / 1024.0))
 
 
-class _LogcatProcessor(object):
+class _LogcatProcessor:
   ParsedLine = collections.namedtuple(
       'ParsedLine',
       ['date', 'invokation_time', 'pid', 'tid', 'priority', 'tag', 'message'])
 
-  class NativeStackSymbolizer(object):
+  class NativeStackSymbolizer:
     """Buffers lines from native stacks and symbolizes them when done."""
     # E.g.: #06 pc 0x0000d519 /apex/com.android.runtime/lib/libart.so
     # E.g.: #01 pc 00180c8d  /data/data/.../lib/libbase.cr.so
@@ -914,7 +914,7 @@ def _RunProfile(device, package_name, host_build_directory, pprof_out_path,
         """ % {'s': pprof_out_path}))
 
 
-class _StackScriptContext(object):
+class _StackScriptContext:
   """Maintains temporary files needed by stack.py."""
 
   def __init__(self,
@@ -1036,7 +1036,7 @@ def _SaveDeviceCaches(devices, output_directory):
       logging.info('Wrote device cache: %s', cache_path)
 
 
-class _Command(object):
+class _Command:
   name = None
   description = None
   long_description = None

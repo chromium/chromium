@@ -158,7 +158,7 @@ def CallAndRecordIfStale(function,
     new_metadata.ToFile(f)
 
 
-class Changes(object):
+class Changes:
   """Provides and API for querying what changed between runs."""
 
   def __init__(self, old_metadata, new_metadata, force, missing_outputs,
@@ -294,7 +294,7 @@ class Changes(object):
     return 'I have no idea what changed (there is a bug).'
 
 
-class _Metadata(object):
+class _Metadata:
   """Data model for tracking change metadata.
 
   Args:

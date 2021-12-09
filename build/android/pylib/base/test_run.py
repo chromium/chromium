@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 
-class TestRun(object):
+class TestRun:
   """An execution of a particular test on a particular device.
 
   This is expected to handle all logic that is specific to the combination of

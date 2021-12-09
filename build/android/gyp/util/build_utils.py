@@ -190,7 +190,7 @@ class CalledProcessError(Exception):
   exits with a non-zero exit code."""
 
   def __init__(self, cwd, args, output):
-    super(CalledProcessError, self).__init__()
+    super().__init__()
     self.cwd = cwd
     self.args = args
     self.output = output

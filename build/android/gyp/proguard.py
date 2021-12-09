@@ -186,7 +186,7 @@ def _ParseOptions():
   return options
 
 
-class _SplitContext(object):
+class _SplitContext:
   def __init__(self, name, output_path, input_jars, work_dir, parent_name=None):
     self.name = name
     self.parent_name = parent_name
@@ -375,12 +375,12 @@ def _OptimizeWithR8(options,
                               print_stdout=print_stdout,
                               stderr_filter=stderr_filter,
                               fail_on_output=options.warnings_as_errors)
-    except build_utils.CalledProcessError:
+    except build_utils.CalledProcessError as e:
       # Python will print the original exception as well.
       raise Exception(
           'R8 failed. Please see '
           'https://chromium.googlesource.com/chromium/src/+/HEAD/build/'
-          'android/docs/java_optimization.md#Debugging-common-failures')
+          'android/docs/java_optimization.md#Debugging-common-failures') from e
 
     base_has_imported_lib = False
     if options.desugar_jdk_libs_json:

@@ -28,7 +28,8 @@ from py_trace_event import trace_event
 # Modules to exclude by default (to avoid problems like infinite loops)
 DEFAULT_EXCLUDE = [r'py_trace_event\..*']
 
-class _TraceArguments(object):
+
+class _TraceArguments:
   def __init__(self):
     """Wraps a dictionary to ensure safe evaluation of repr()."""
     self._arguments = {}

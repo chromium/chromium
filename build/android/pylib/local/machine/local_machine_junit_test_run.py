@@ -44,9 +44,6 @@ _MIN_CLASSES_PER_SHARD = 8
 
 
 class LocalMachineJunitTestRun(test_run.TestRun):
-  def __init__(self, env, test_instance):
-    super(LocalMachineJunitTestRun, self).__init__(env, test_instance)
-
   #override
   def TestPackage(self):
     return self._test_instance.suite

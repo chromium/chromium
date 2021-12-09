@@ -62,7 +62,7 @@ class PortForwarderAndroid(chrome_test_server_spawner.PortForwarder):
 class LocalTestServerSpawner(test_server.TestServer):
 
   def __init__(self, port, device, tool):
-    super(LocalTestServerSpawner, self).__init__()
+    super().__init__()
     self._device = device
     self._spawning_server = chrome_test_server_spawner.SpawningServer(
         port, PortForwarderAndroid(device, tool), MAX_TEST_SERVER_INSTANCES)

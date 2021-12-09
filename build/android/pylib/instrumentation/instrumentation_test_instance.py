@@ -72,15 +72,14 @@ _BUNDLE_DURATION_ID = 'duration_ms'
 
 class MissingSizeAnnotationError(test_exception.TestException):
   def __init__(self, class_name):
-    super(MissingSizeAnnotationError, self).__init__(class_name +
+    super().__init__(
+        class_name +
         ': Test method is missing required size annotation. Add one of: ' +
         ', '.join('@' + a for a in _VALID_ANNOTATIONS))
 
 
 class CommandLineParameterizationException(test_exception.TestException):
-
-  def __init__(self, msg):
-    super(CommandLineParameterizationException, self).__init__(msg)
+  pass
 
 
 class TestListPickleException(test_exception.TestException):
@@ -536,7 +535,7 @@ class MissingJUnit4RunnerException(test_exception.TestException):
   """Raised when JUnit4 runner is not provided or specified in apk manifest"""
 
   def __init__(self):
-    super(MissingJUnit4RunnerException, self).__init__(
+    super().__init__(
         'JUnit4 runner is not provided or specified in test apk manifest.')
 
 
@@ -608,7 +607,7 @@ def GetUniqueTestName(test, sep='#'):
 class InstrumentationTestInstance(test_instance.TestInstance):
 
   def __init__(self, args, data_deps_delegate, error_func):
-    super(InstrumentationTestInstance, self).__init__()
+    super().__init__()
 
     self._additional_apks = []
     self._apk_under_test = None

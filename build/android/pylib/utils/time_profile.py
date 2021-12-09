@@ -6,7 +6,7 @@ import logging
 import time
 
 
-class TimeProfile(object):
+class TimeProfile:
   """Class for simple profiling of action, with logging of cost."""
 
   def __init__(self, description='operation'):

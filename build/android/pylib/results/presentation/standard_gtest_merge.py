@@ -21,8 +21,8 @@ def merge_shard_results(summary_json, jsons_to_merge):
   try:
     with open(summary_json) as f:
       summary = json.load(f)
-  except (IOError, ValueError):
-    raise Exception('Summary json cannot be loaded.')
+  except (IOError, ValueError) as e:
+    raise Exception('Summary json cannot be loaded.') from e
 
   # Merge all JSON files together. Keep track of missing shards.
   merged = {

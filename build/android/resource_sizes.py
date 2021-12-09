@@ -92,7 +92,7 @@ _READELF_SIZES_METRICS = {
 }
 
 
-class _AccumulatingReporter(object):
+class _AccumulatingReporter:
   def __init__(self):
     self._combined_metrics = collections.defaultdict(int)
 
@@ -107,13 +107,12 @@ class _AccumulatingReporter(object):
 
 class _ChartJsonReporter(_AccumulatingReporter):
   def __init__(self, chartjson):
-    super(_ChartJsonReporter, self).__init__()
+    super().__init__()
     self._chartjson = chartjson
     self.trace_title_prefix = ''
 
   def __call__(self, graph_title, trace_title, value, units):
-    super(_ChartJsonReporter, self).__call__(graph_title, trace_title, value,
-                                             units)
+    super().__call__(graph_title, trace_title, value, units)
 
     perf_tests_results_helper.ReportPerfResult(
         self._chartjson, graph_title, self.trace_title_prefix + trace_title,
@@ -296,7 +295,7 @@ def _RunAaptDumpResources(apk_path):
   return output
 
 
-class _FileGroup(object):
+class _FileGroup:
   """Represents a category that apk files can fall into."""
 
   def __init__(self, name):

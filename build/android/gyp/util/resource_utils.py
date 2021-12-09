@@ -238,7 +238,7 @@ def IterResourceFilesInDirectories(directories,
         yield path, archive_path
 
 
-class ResourceInfoFile(object):
+class ResourceInfoFile:
   """Helper for building up .res.info files."""
 
   def __init__(self):
@@ -889,7 +889,7 @@ def ExtractDeps(dep_zips, deps_dir):
   return dep_subdirs
 
 
-class _ResourceBuildContext(object):
+class _ResourceBuildContext:
   """A temporary directory for packaging and compiling Android resources.
 
   Args:

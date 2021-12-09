@@ -38,7 +38,7 @@ LineCoverage = collections.namedtuple(
     ['lineno', 'source', 'covered_status', 'fractional_line_coverage'])
 
 
-class _EmmaHtmlParser(object):
+class _EmmaHtmlParser:
   """Encapsulates HTML file parsing operations.
 
   This class contains all operations related to parsing HTML files that were
@@ -214,7 +214,7 @@ class _EmmaHtmlParser(object):
       return root.findall(xpath_selector)
 
 
-class _EmmaCoverageStats(object):
+class _EmmaCoverageStats:
   """Computes code coverage stats for Java code using the coverage tool EMMA.
 
   This class provides an API that allows users to capture absolute code coverage

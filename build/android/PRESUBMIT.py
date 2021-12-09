@@ -55,7 +55,8 @@ def CommonChecks(input_api, output_api):
               J('..', '..', 'third_party', 'depot_tools'),
               J('..', '..', 'third_party', 'colorama', 'src'),
               J('..', '..', 'build'),
-          ]))
+          ],
+          version='2.6'))
   tests.extend(
       input_api.canned_checks.GetPylint(
           input_api,
@@ -67,7 +68,8 @@ def CommonChecks(input_api, output_api):
               r'.*create_unwind_table\.py',
               r'.*create_unwind_table_tests\.py',
           ],
-          extra_paths_list=[J('gyp'), J('gn')]))
+          extra_paths_list=[J('gyp'), J('gn')],
+          version='2.6'))
 
   tests.extend(
       input_api.canned_checks.GetPylint(

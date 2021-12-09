@@ -69,7 +69,7 @@ DOT_NOTATION_MAP = {
 
 
 @functools.total_ordering
-class Method(object):
+class Method:
   def __init__(self, name, class_name, param_types=None, return_type=None):
     self.name = name
     self.class_name = class_name
@@ -100,7 +100,7 @@ class Method(object):
     return hash((self.name, self.class_name))
 
 
-class Class(object):
+class Class:
   def __init__(self, name):
     self.name = name
     self._methods = []
@@ -165,7 +165,7 @@ class Class(object):
     return None
 
 
-class Profile(object):
+class Profile:
   def __init__(self):
     # {Method: set(char)}
     self._methods = collections.defaultdict(set)
@@ -188,7 +188,7 @@ class Profile(object):
         output_profile.write(line)
 
 
-class ProguardMapping(object):
+class ProguardMapping:
   def __init__(self):
     # {Method: set(Method)}
     self._method_mapping = collections.defaultdict(set)
@@ -224,7 +224,7 @@ class ProguardMapping(object):
 
 class MalformedLineException(Exception):
   def __init__(self, message, line_number):
-    super(MalformedLineException, self).__init__(message)
+    super().__init__(message)
     self.line_number = line_number
 
   def __str__(self):

@@ -79,7 +79,7 @@ _MERGE_PROFDATA_FILE_NAME = 'coverage_merged.' + _PROFRAW_FILE_EXTENSION
 
 # No-op context manager. If we used Python 3, we could change this to
 # contextlib.ExitStack()
-class _NullContextManager(object):
+class _NullContextManager:
   def __enter__(self):
     pass
   def __exit__(self, *args):
@@ -235,7 +235,7 @@ def _GetLLVMProfilePath(device_coverage_dir, suite, coverage_index):
                                   str(coverage_index), '%2m.profraw']))
 
 
-class _ApkDelegate(object):
+class _ApkDelegate:
   def __init__(self, test_instance, tool):
     self._activity = test_instance.activity
     self._apk_helper = test_instance.apk_helper
@@ -293,7 +293,6 @@ class _ApkDelegate(object):
       extras[gtest_test_instance.EXTRA_SHARD_NANO_TIMEOUT] = int(
           kwargs['timeout'] * _SECONDS_TO_NANOS)
 
-    # pylint: disable=redefined-variable-type
     command_line_file = _NullContextManager()
     if flags:
       if len(flags) > _MAX_INLINE_FLAGS_LENGTH:
@@ -311,7 +310,6 @@ class _ApkDelegate(object):
         extras[_EXTRA_TEST_LIST] = test_list_file.name
       else:
         extras[_EXTRA_TEST] = test[0]
-    # pylint: enable=redefined-variable-type
 
     # We need to use GetAppWritablePath here instead of GetExternalStoragePath
     # since we will not have yet applied legacy storage permission workarounds
@@ -368,7 +366,7 @@ class _ApkDelegate(object):
     device.ClearApplicationState(self._package, permissions=self._permissions)
 
 
-class _ExeDelegate(object):
+class _ExeDelegate:
 
   def __init__(self, tr, test_instance, tool):
     self._host_dist_dir = test_instance.exe_dist_dir
@@ -462,14 +460,13 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   def __init__(self, env, test_instance):
     assert isinstance(env, local_device_environment.LocalDeviceEnvironment)
     assert isinstance(test_instance, gtest_test_instance.GtestTestInstance)
-    super(LocalDeviceGtestRun, self).__init__(env, test_instance)
+    super().__init__(env, test_instance)
 
     if self._test_instance.apk_helper:
       self._installed_packages = [
           self._test_instance.apk_helper.GetPackageName()
       ]
 
-    # pylint: disable=redefined-variable-type
     if self._test_instance.apk:
       self._delegate = _ApkDelegate(self._test_instance, env.tool)
     elif self._test_instance.exe_dist_dir:
@@ -479,7 +476,6 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           self._test_instance.isolated_script_test_perf_output)
     else:
       self._test_perf_output_filenames = itertools.repeat(None)
-    # pylint: enable=redefined-variable-type
     self._crashes = set()
     self._servers = collections.defaultdict(list)
 

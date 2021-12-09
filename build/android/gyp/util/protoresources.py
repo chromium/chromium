@@ -211,7 +211,7 @@ def HardcodeSharedLibraryDynamicAttributes(zip_path,
   _ProcessZip(zip_path, process_func)
 
 
-class _ResourceStripper(object):
+class _ResourceStripper:
   def __init__(self, partial_path, keep_predicate):
     self.partial_path = partial_path
     self.keep_predicate = keep_predicate

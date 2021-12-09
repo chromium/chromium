@@ -35,7 +35,7 @@ class AddressSanitizerTool(base_tool.BaseTool):
   EXTRA_OPTIONS = 'strict_memcmp=0,use_sigaltstack=1'
 
   def __init__(self, device):
-    super(AddressSanitizerTool, self).__init__()
+    super().__init__()
     self._device = device
 
   @classmethod

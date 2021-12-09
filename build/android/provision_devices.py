@@ -46,7 +46,7 @@ _CHROME_PACKAGE_REGEX = re.compile('.*chrom.*')
 _TOMBSTONE_REGEX = re.compile('tombstone.*')
 
 
-class _DEFAULT_TIMEOUTS(object):
+class _DEFAULT_TIMEOUTS:
   # L can take a while to reboot after a wipe.
   LOLLIPOP = 600
   PRE_LOLLIPOP = 180
@@ -54,7 +54,7 @@ class _DEFAULT_TIMEOUTS(object):
   HELP_TEXT = '{}s on L, {}s on pre-L'.format(LOLLIPOP, PRE_LOLLIPOP)
 
 
-class _PHASES(object):
+class _PHASES:
   WIPE = 'wipe'
   PROPERTIES = 'properties'
   FINISH = 'finish'

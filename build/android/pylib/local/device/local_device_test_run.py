@@ -44,15 +44,15 @@ class TestsTerminated(Exception):
 
 class InvalidShardingSettings(Exception):
   def __init__(self, shard_index, total_shards):
-    super(InvalidShardingSettings, self).__init__(
-        'Invalid sharding settings. shard_index: %d total_shards: %d'
-            % (shard_index, total_shards))
+    super().__init__(
+        'Invalid sharding settings. shard_index: %d total_shards: %d' %
+        (shard_index, total_shards))
 
 
 class LocalDeviceTestRun(test_run.TestRun):
 
   def __init__(self, env, test_instance):
-    super(LocalDeviceTestRun, self).__init__(env, test_instance)
+    super().__init__(env, test_instance)
     self._tools = {}
     # This is intended to be filled by a child class.
     self._installed_packages = []

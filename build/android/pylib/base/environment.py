@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 
-class Environment(object):
+class Environment:
   """An environment in which tests can be run.
 
   This is expected to handle all logic that is applicable to an entire specific

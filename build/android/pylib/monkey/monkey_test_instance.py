@@ -14,7 +14,7 @@ _SINGLE_EVENT_TIMEOUT = 100 # Milliseconds
 class MonkeyTestInstance(test_instance.TestInstance):
 
   def __init__(self, args, _):
-    super(MonkeyTestInstance, self).__init__()
+    super().__init__()
 
     self._categories = args.categories
     self._event_count = args.event_count

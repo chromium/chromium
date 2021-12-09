@@ -11,14 +11,14 @@ import tempfile
 from devil.utils import reraiser_thread
 
 
-class Datatype(object):
+class Datatype:
   HTML = 'text/html'
   JSON = 'application/json'
   PNG = 'image/png'
   TEXT = 'text/plain'
 
 
-class OutputManager(object):
+class OutputManager:
 
   def __init__(self):
     """OutputManager Constructor.
@@ -88,7 +88,7 @@ class OutputManager(object):
     self.TearDown()
 
 
-class ArchivedFile(object):
+class ArchivedFile:
 
   def __init__(self, out_filename, out_subdir, datatype):
     self._out_filename = out_filename

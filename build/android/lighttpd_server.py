@@ -30,7 +30,7 @@ from pylib import constants
 from pylib import pexpect
 
 
-class LighttpdServer(object):
+class LighttpdServer:
   """Wraps lighttpd server, providing robust startup.
 
   Args:

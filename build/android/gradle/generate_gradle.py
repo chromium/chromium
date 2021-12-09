@@ -136,7 +136,7 @@ def _QueryForAllGnTargets(output_dir):
   return subprocess.check_output(cmd, encoding='UTF-8').splitlines()
 
 
-class _ProjectEntry(object):
+class _ProjectEntry:
   """Helper class for project entries."""
 
   _cached_entries = {}
@@ -261,7 +261,7 @@ class _ProjectEntry(object):
     return self._all_entries
 
 
-class _ProjectContextGenerator(object):
+class _ProjectContextGenerator:
   """Helper class to generate gradle build files"""
   def __init__(self, project_dir, build_vars, use_gradle_process_resources,
                jinja_processor, split_projects, channel):

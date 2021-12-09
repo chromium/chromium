@@ -27,7 +27,7 @@ def _DeviceAbiToArch(device_abi):
   raise RuntimeError('Unknown device ABI: %s' % device_abi)
 
 
-class Symbolizer(object):
+class Symbolizer:
   """A helper class to symbolize stack."""
 
   def __init__(self, apk_under_test=None):

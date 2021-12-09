@@ -87,7 +87,7 @@ def _query_for_build_config_targets(output_dir):
   return ret
 
 
-class _TargetEntry(object):
+class _TargetEntry:
   def __init__(self, gn_target):
     assert gn_target.startswith('//'), f'{gn_target} does not start with //'
     assert ':' in gn_target, f'Non-root {gn_target} required'

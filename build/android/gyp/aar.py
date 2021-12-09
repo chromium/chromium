@@ -203,8 +203,8 @@ def main():
     except IOError as e:
       if not aar_output_present:
         raise e
-      raise Exception('Could not update output file: %s\n%s\n' %
-                      (args.output, e))
+      raise Exception('Could not update output file: %s\n' % args.output) from e
+
 
 if __name__ == '__main__':
   sys.exit(main())

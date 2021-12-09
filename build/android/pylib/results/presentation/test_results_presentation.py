@@ -54,7 +54,7 @@ def pre_cell(data, html_class='center'):
   }
 
 
-class LinkTarget(object):
+class LinkTarget:
   # Opens the linked document in a new window or tab.
   NEW_TAB = '_blank'
   # Opens the linked document in the same frame as it was clicked.
@@ -268,7 +268,6 @@ def create_suite_table(results_dict):
 
 
 def feedback_url(result_details_link):
-  # pylint: disable=redefined-variable-type
   url_args = [
       ('labels', 'Pri-2,Type-Bug,Restrict-View-Google'),
       ('summary', 'Result Details Feedback:'),
@@ -277,7 +276,6 @@ def feedback_url(result_details_link):
   if result_details_link:
     url_args.append(('comment', 'Please check out: %s' % result_details_link))
   url_args = urlencode(url_args)
-  # pylint: enable=redefined-variable-type
   return 'https://bugs.chromium.org/p/chromium/issues/entry?%s' % url_args
 
 

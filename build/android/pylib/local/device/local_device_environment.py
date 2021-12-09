@@ -101,7 +101,7 @@ def place_nomedia_on_device(dev, device_root):
 class LocalDeviceEnvironment(environment.Environment):
 
   def __init__(self, args, output_manager, _error_func):
-    super(LocalDeviceEnvironment, self).__init__(output_manager)
+    super().__init__(output_manager)
     self._current_try = 0
     self._denylist = (device_denylist.Denylist(args.denylist_file)
                       if args.denylist_file else None)

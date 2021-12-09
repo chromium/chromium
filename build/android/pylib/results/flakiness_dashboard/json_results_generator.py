@@ -97,7 +97,7 @@ def TestTimingsTrie(individual_test_timings):
   return trie
 
 
-class TestResult(object):
+class TestResult:
   """A simple class that represents a single test result."""
 
   # Test modifier constants.
@@ -127,7 +127,7 @@ class TestResult(object):
     return self.failed or self.modifier == self.DISABLED
 
 
-class JSONResultsGeneratorBase(object):
+class JSONResultsGeneratorBase:
   """A JSON results generator for generic tests."""
 
   MAX_NUMBER_OF_BUILD_RESULTS_TO_LOG = 750
@@ -385,7 +385,6 @@ class JSONResultsGeneratorBase(object):
                          quote(self._builder_name), self.RESULTS_FILENAME,
                          quote(self._test_type), quote(self._master_name)))
 
-    # pylint: disable=redefined-variable-type
     try:
       # FIXME: We should talk to the network via a Host object.
       results_file = urlopen(results_file_url)
@@ -397,7 +396,6 @@ class JSONResultsGeneratorBase(object):
         error = http_error
     except URLError as url_error:
       error = url_error
-    # pylint: enable=redefined-variable-type
 
     if old_results:
       # Strip the prefix and suffix so we can get the actual JSON object.
@@ -625,7 +623,7 @@ class JSONResultsGeneratorBase(object):
     return len(results) == 1 and results[0][1] == result_type
 
 
-class _FileUploader(object):
+class _FileUploader:
 
   def __init__(self, url, timeout_seconds):
     self._url = url

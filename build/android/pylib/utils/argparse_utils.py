@@ -33,11 +33,11 @@ class CustomHelpAction(argparse.Action):
                default=argparse.SUPPRESS,
                custom_help_text=None,
                help=None):
-    super(CustomHelpAction, self).__init__(option_strings=option_strings,
-                                           dest=dest,
-                                           default=default,
-                                           nargs=0,
-                                           help=help)
+    super().__init__(option_strings=option_strings,
+                     dest=dest,
+                     default=default,
+                     nargs=0,
+                     help=help)
 
     if not custom_help_text:
       raise ValueError('custom_help_text is required')

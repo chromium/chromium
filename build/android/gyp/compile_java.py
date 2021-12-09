@@ -273,7 +273,7 @@ def _ProcessJavaFileForInfo(java_file):
   return java_file, package_name, class_names
 
 
-class _InfoFileContext(object):
+class _InfoFileContext:
   """Manages the creation of the class->source file .info file."""
 
   def __init__(self, chromium_code, excluded_globs):

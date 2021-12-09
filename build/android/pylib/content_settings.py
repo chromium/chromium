@@ -11,7 +11,7 @@ class ContentSettings(dict):
   """
 
   def __init__(self, table, device):
-    super(ContentSettings, self).__init__()
+    super().__init__()
     self._table = table
     self._device = device
 
