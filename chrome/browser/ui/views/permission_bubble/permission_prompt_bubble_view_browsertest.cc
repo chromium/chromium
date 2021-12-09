@@ -239,8 +239,15 @@ class PermissionPromptBubbleViewBrowserTest
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
+// TODO(https://crbug.com/1278398): fix the disabled test.
+#if defined(OS_MAC)
+#define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
+#else
+#define MAYBE_AlertAccessibleEvent AlertAccessibleEvent
+#endif
+
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
-                       AlertAccessibleEvent) {
+                       MAYBE_AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");
