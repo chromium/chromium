@@ -5,55 +5,44 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, RecentlyClosedTab, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField, TabsRemovedInfo, TabUpdateInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
-
+import {ProfileData, RecentlyClosedTab, Tab, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleTabsFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_DATA, SAMPLE_WINDOW_HEIGHT, sampleData, sampleToken} from './tab_search_test_data.js';
-import {initLoadTimeDataWithDefaults, initProfileDataWithDefaults} from './tab_search_test_helper.js';
+import {createProfileData, createTab, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleRecentlyClosedTabsFromSiteNames, generateSampleTabsFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_HEIGHT, sampleToken} from './tab_search_test_data.js';
+import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
-  /** @type {!TabSearchAppElement} */
-  let tabSearchApp;
-  /** @type {!TestTabSearchApiProxy} */
-  let testProxy;
+  let tabSearchApp: TabSearchAppElement;
+  let testProxy: TestTabSearchApiProxy;
 
-  /**
-   * @param {!NodeList<!Element>} rows
-   * @param {!Array<number>} ids
-   */
-  function verifyTabIds(rows, ids) {
+  function verifyTabIds(rows: NodeListOf<HTMLElement>, ids: number[]) {
     assertEquals(ids.length, rows.length);
     rows.forEach((row, index) => {
-      assertEquals(ids[index].toString(), row.getAttribute('id'));
+      assertEquals(ids[index]!.toString(), row.getAttribute('id'));
     });
   }
 
-  /**
-   * @return {!NodeList<!Element>}
-   */
-  function queryRows() {
-    return tabSearchApp.shadowRoot.querySelector('#tabsList')
-        .querySelectorAll('tab-search-item, tab-search-group-item');
+  function queryRows(): NodeListOf<HTMLElement> {
+    return tabSearchApp.$.tabsList.querySelectorAll(
+        'tab-search-item, tab-search-group-item');
   }
 
   /**
-   * @param {!Object} sampleData A mock data object containing relevant profile
-   *     data for the test.
-   * @param {Object=} loadTimeOverriddenData
+   * @param sampleData A mock data object containing relevant profile data for
+   *     the test.
    */
-  async function setupTest(sampleData, loadTimeOverriddenData) {
-    initProfileDataWithDefaults(/** @type {ProfileData} */ (sampleData));
+  async function setupTest(
+      sampleData: ProfileData,
+      loadTimeOverriddenData?: {[key: string]: number|string|boolean}) {
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
     testProxy = new TestTabSearchApiProxy();
-    testProxy.setProfileData(/** @type {ProfileData} */ (sampleData));
+    testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.setInstance(testProxy);
 
-    tabSearchApp = /** @type {!TabSearchAppElement} */
-        (document.createElement('tab-search-app'));
+    tabSearchApp = document.createElement('tab-search-app');
 
     document.body.innerHTML = '';
     document.body.appendChild(tabSearchApp);
@@ -61,7 +50,7 @@ suite('TabSearchAppTest', () => {
   }
 
   test('return all tabs', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
   });
 
@@ -76,10 +65,11 @@ suite('TabSearchAppTest', () => {
             tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabs(
-              'Sample Tab', sampleTabCount, sampleToken(0, 1)),
+              'Sample Tab', sampleTabCount, sampleToken(0n, 1n)),
+          tabGroups: [],
           recentlyClosedTabGroups: [{
             sessionId: sampleSessionId,
-            id: sampleToken(0, 1),
+            id: sampleToken(0n, 1n),
             color: 1,
             title: 'Reading List',
             tabCount: sampleTabCount,
@@ -92,8 +82,7 @@ suite('TabSearchAppTest', () => {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    tabSearchApp.shadowRoot.querySelector('#tabsList')
-        .ensureAllDomItemsAvailable();
+    tabSearchApp.$.tabsList.ensureAllDomItemsAvailable();
 
     // Assert the recently closed tab group is included in the recently closed
     // items section and that the recently closed tabs belonging to it are
@@ -102,29 +91,27 @@ suite('TabSearchAppTest', () => {
   });
 
   test('return all open and recently closed tabs', async () => {
-    await setupTest({
-      windows: SAMPLE_WINDOW_DATA,
+    await setupTest(createProfileData({
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
-    });
-    tabSearchApp.shadowRoot.querySelector('#tabsList')
-        .ensureAllDomItemsAvailable();
+    }));
+    tabSearchApp.$.tabsList.ensureAllDomItemsAvailable();
 
     assertEquals(8, queryRows().length);
   });
 
   test('Limit recently closed tabs to the default display count', async () => {
     await setupTest(
-        {
+        createProfileData({
           windows: [{
             active: true,
             height: SAMPLE_WINDOW_HEIGHT,
             tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
           }],
-          recentlyClosedTabs: generateSampleTabsFromSiteNames(
-              ['RecentlyClosedTab1', 'RecentlyClosedTab2'], false),
+          recentlyClosedTabs: generateSampleRecentlyClosedTabsFromSiteNames(
+              ['RecentlyClosedTab1', 'RecentlyClosedTab2']),
           recentlyClosedSectionExpanded: true
-        },
+        }),
         {
           recentlyClosedDefaultItemDisplayCount: 1,
         });
@@ -133,19 +120,18 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Default tab selection when data is present', async () => {
-    await setupTest(sampleData());
-    assertNotEquals(-1, tabSearchApp.getSelectedIndex(),
+    await setupTest(createProfileData());
+    assertNotEquals(
+        -1, tabSearchApp.getSelectedIndex(),
         'No default selection in the presence of data');
   });
 
   test('Search text changes tab items', async () => {
-    await setupTest({
-      windows: SAMPLE_WINDOW_DATA,
+    await setupTest(createProfileData({
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
-    });
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    }));
+    const searchField = tabSearchApp.$.searchField;
     searchField.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
@@ -161,17 +147,17 @@ suite('TabSearchAppTest', () => {
     const sampleSessionId = 101;
     const sampleTabCount = 5;
     await setupTest(
-        {
+        createProfileData({
           windows: [{
             active: true,
             height: SAMPLE_WINDOW_HEIGHT,
             tabs: generateSampleTabsFromSiteNames(['Open sample tab'], true),
           }],
           recentlyClosedTabs: generateSampleRecentlyClosedTabs(
-              'Sample Tab', sampleTabCount, sampleToken(0, 1)),
+              'Sample Tab', sampleTabCount, sampleToken(0n, 1n)),
           recentlyClosedTabGroups: [({
             sessionId: sampleSessionId,
-            id: sampleToken(0, 1),
+            id: sampleToken(0n, 1n),
             color: 1,
             title: 'Reading List',
             tabCount: sampleTabCount,
@@ -179,13 +165,12 @@ suite('TabSearchAppTest', () => {
             lastActiveElapsedText: ''
           })],
           recentlyClosedSectionExpanded: true,
-        },
+        }),
         {
           recentlyClosedDefaultItemDisplayCount: 5,
         });
 
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchField = tabSearchApp.$.searchField;
     searchField.setValue('sample');
     await flushTasks();
 
@@ -196,9 +181,8 @@ suite('TabSearchAppTest', () => {
   });
 
   test('No tab selected when there are no search matches', async () => {
-    await setupTest(sampleData());
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    await setupTest(createProfileData());
+    const searchField = tabSearchApp.$.searchField;
     searchField.setValue('Twitter');
     await flushTasks();
     assertEquals(0, queryRows().length);
@@ -206,25 +190,23 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Click on tab item triggers actions', async () => {
-    const tabData = {
-      index: 0,
-      tabId: 1,
+    const tabData = createTab({
       title: 'Google',
       url: {url: 'https://www.google.com'},
-    };
-    await setupTest({
-      windows: [{active: true, tabs: [tabData]}],
+      lastActiveTimeTicks: {internalValue: BigInt(4)},
     });
+    await setupTest(createProfileData({
+      windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs: [tabData]}],
+    }));
 
-    const tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item'));
+    const tabSearchItem =
+        tabSearchApp.$.tabsList.querySelector('tab-search-item')!;
     tabSearchItem.click();
     const [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(tabData.tabId, tabInfo.tabId);
 
-    const tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
-        tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
+    const tabSearchItemCloseButton =
+        tabSearchItem.shadowRoot!.querySelector('cr-icon-button')!;
     tabSearchItemCloseButton.click();
     const [tabId, withSearch, closedTabIndex] =
         await testProxy.whenCalled('closeTab');
@@ -234,32 +216,31 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Click on recently closed tab item triggers action', async () => {
-    const tabData = {
+    const tabData: RecentlyClosedTab = {
       tabId: 100,
       title: 'PayPal',
       url: {url: 'https://www.paypal.com'},
-      lastActiveTimeTicks: {internalValue: BigInt(11)},
       lastActiveElapsedText: '',
+      groupId: undefined,
+      lastActiveTime: {internalValue: BigInt(11)},
     };
 
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{
         active: true,
         height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [{
-          index: 0,
-          tabId: 1,
+        tabs: [createTab({
           title: 'Google',
           url: {url: 'https://www.google.com'},
-        }]
+          lastActiveTimeTicks: {internalValue: BigInt(4)},
+        })]
       }],
       recentlyClosedTabs: [tabData],
       recentlyClosedSectionExpanded: true
-    });
+    }));
 
-    let tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item[id="100"]'));
+    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+        'tab-search-item[id="100"]')!;
     tabSearchItem.click();
     const [tabId, withSearch, isTab, index] =
         await testProxy.whenCalled('openRecentlyClosedEntry');
@@ -272,7 +253,7 @@ suite('TabSearchAppTest', () => {
   test('Click on recently closed tab group item triggers action', async () => {
     const tabGroupData = {
       sessionId: 101,
-      id: sampleToken(0, 1),
+      id: sampleToken(0n, 1n),
       title: 'My Favorites',
       color: TabGroupColor.kBlue,
       tabCount: 1,
@@ -280,24 +261,22 @@ suite('TabSearchAppTest', () => {
       lastActiveElapsedText: '',
     };
 
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{
         active: true,
         height: SAMPLE_WINDOW_HEIGHT,
-        tabs: [{
-          index: 0,
-          tabId: 1,
+        tabs: [createTab({
           title: 'Google',
           url: {url: 'https://www.google.com'},
-        }]
+          lastActiveTimeTicks: {internalValue: BigInt(4)},
+        })]
       }],
       recentlyClosedTabGroups: [tabGroupData],
       recentlyClosedSectionExpanded: true
-    });
+    }));
 
-    let tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-group-item'));
+    let tabSearchItem =
+        tabSearchApp.$.tabsList.querySelector('tab-search-group-item')!;
     tabSearchItem.click();
     const [id, withSearch, isTab, index] =
         await testProxy.whenCalled('openRecentlyClosedEntry');
@@ -308,12 +287,11 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Keyboard navigation on an empty list', async () => {
-    await setupTest({
-      windows: [{active: true, tabs: []}],
-    });
+    await setupTest(createProfileData({
+      windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs: []}],
+    }));
 
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector("#searchField"));
+    const searchField = tabSearchApp.$.searchField;
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
     assertEquals(-1, tabSearchApp.getSelectedIndex());
@@ -329,13 +307,12 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
-    const testData = sampleData();
+    const testData = createProfileData();
     await setupTest(testData);
 
     const numTabs =
         testData.windows.reduce((total, w) => total + w.tabs.length, 0);
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector("#searchField"));
+    const searchField = tabSearchApp.$.searchField;
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
     assertEquals(numTabs - 1, tabSearchApp.getSelectedIndex());
@@ -363,10 +340,7 @@ suite('TabSearchAppTest', () => {
         const testData = generateSampleDataFromSiteNames(siteNames);
         await setupTest(testData);
 
-        const numTabs =
-            testData.windows.reduce((total, w) => total + w.tabs.length, 0);
-        const searchField = /** @type {!TabSearchSearchField} */
-            (tabSearchApp.shadowRoot.querySelector('#searchField'));
+        const searchField = tabSearchApp.$.searchField;
 
         keyDownOn(searchField, 0, ['shift'], 'Tab');
         await waitAfterNextRender(tabSearchApp);
@@ -378,10 +352,9 @@ suite('TabSearchAppTest', () => {
       });
 
   test('Key with modifiers should not affect selected item', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
 
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchField = tabSearchApp.$.searchField;
 
     for (const key of ['ArrowUp', 'ArrowDown', 'Home', 'End']) {
       keyDownOn(searchField, 0, ['shift'], key);
@@ -390,103 +363,83 @@ suite('TabSearchAppTest', () => {
   });
 
   test('refresh on tabs changed', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    testProxy.getCallbackRouterRemote().tabsChanged({
-      windows: [],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
-    });
+    testProxy.getCallbackRouterRemote().tabsChanged(
+        createProfileData({windows: []}));
     await flushTasks();
     verifyTabIds(queryRows(), []);
     assertEquals(-1, tabSearchApp.getSelectedIndex());
   });
 
   test('On tabs changed, tab item selection preserved or updated', async () => {
-    const testData = sampleData();
+    const testData = createProfileData();
     await setupTest(testData);
 
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchField = tabSearchApp.$.searchField;
     keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
-    testProxy.getCallbackRouterRemote().tabsChanged({
-      windows: [testData.windows[0]],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
-    });
+    testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+      windows: [testData.windows[0]!],
+    }));
     await flushTasks();
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
-    testProxy.getCallbackRouterRemote().tabsChanged({
-      windows: [{active: true, tabs: [testData.windows[0].tabs[0]]}],
-      recentlyClosedTabs: [],
-      tabGroups: [],
-      recentlyClosedTabGroups: [],
-    });
+    testProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+      windows: [{
+        active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: [testData.windows[0]!.tabs[0]!]
+      }],
+    }));
     await flushTasks();
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
 
   test('refresh on tab updated', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    let tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item[id="1"]'));
+    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<TabSearchItem>(
+        'tab-search-item[id="1"]')!;
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('https://www.google.com', tabSearchItem.data.tab.url.url);
-    const updatedTab = /** @type {!Tab} */ ({
-      alertStates: [],
-      index: 0,
-      tabId: 1,
-      title: 'Example',
-      url: {url: 'https://example.com'},
+    const updatedTab: Tab = createTab({
       lastActiveTimeTicks: {internalValue: BigInt(5)},
-      lastActiveElapsedText: '',
     });
-    const tabUpdateInfo = /** @type {!TabUpdateInfo} */ ({
+    const tabUpdateInfo = {
       inActiveWindow: true,
       tab: updatedTab,
-    });
+    };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
     await flushTasks();
     // tabIds are not changed after tab updated.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item[id="1"]'));
+    tabSearchItem =
+        tabSearchApp.$.tabsList.querySelector('tab-search-item[id="1"]')!;
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
     assertEquals(updatedTab.url.url, tabSearchItem.data.tab.url.url);
-    assertEquals('example.com', tabSearchItem.data.hostname);
+    assertEquals('www.example.com', tabSearchItem.data.hostname);
   });
 
   test('tab update for tab not in profile data adds tab to list', async () => {
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{
         active: true,
         height: SAMPLE_WINDOW_HEIGHT,
         tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
       }],
-    });
+    }));
     verifyTabIds(queryRows(), [1]);
 
-    const updatedTab = /** @type {!Tab} */ ({
-      alertStates: [],
-      index: 1,
+    const updatedTab: Tab = createTab({
       tabId: 2,
-      title: 'Example',
-      url: {url: 'https://example.com'},
       lastActiveTimeTicks: {internalValue: BigInt(5)},
-      lastActiveElapsedText: '',
     });
-    const tabUpdateInfo = /** @type {!TabUpdateInfo} */ ({
+    const tabUpdateInfo = {
       inActiveWindow: true,
       tab: updatedTab,
-    });
+    };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
     await flushTasks();
     verifyTabIds(queryRows(), [2, 1]);
@@ -496,55 +449,53 @@ suite('TabSearchAppTest', () => {
     // Simulates a scenario where there is no tab restore service available for
     // the current profile and thus, on removing a tab, there are no associated
     // recently closed tabs created, such as in a OTR case.
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
 
-    testProxy.getCallbackRouterRemote().tabsRemoved(
-        /** @type {!TabsRemovedInfo} */ ({
-          tabIds: [1, 2],
-          recentlyClosedTabs: [],
-        }));
+    testProxy.getCallbackRouterRemote().tabsRemoved({
+      tabIds: [1, 2],
+      recentlyClosedTabs: [],
+    });
     await flushTasks();
     verifyTabIds(queryRows(), [5, 6, 3, 4]);
 
     // Assert that on removing all items, we display the no-results div.
     testProxy.getCallbackRouterRemote().tabsRemoved(
-        /** @type {!TabsRemovedInfo} */ (
-            {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []}));
+        {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []});
     await flushTasks();
-    assertNotEquals(null, tabSearchApp.shadowRoot.querySelector('#no-results'));
+    assertNotEquals(
+        null, tabSearchApp.shadowRoot!.querySelector('#no-results'));
   });
 
   test('Closed tab appears in recently closed section', async () => {
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{
         active: true,
         height: SAMPLE_WINDOW_HEIGHT,
         tabs:
             generateSampleTabsFromSiteNames(['SampleTab', 'SampleTab2'], true),
       }],
-      recentlyClosedTabs: [],
       recentlyClosedSectionExpanded: true,
-    });
+    }));
     verifyTabIds(queryRows(), [1, 2]);
 
-    testProxy.getCallbackRouterRemote().tabsRemoved(
-        /** @type {!TabsRemovedInfo} */ ({
-          tabIds: [1],
-          recentlyClosedTabs: [/** @type {RecentlyClosedTab} */ ({
-            tabId: 3,
-            title: `SampleTab`,
-            url: {url: 'https://www.sampletab.com'},
-            lastActiveTime: {internalValue: BigInt(3)},
-            lastActiveElapsedText: '',
-          })],
-        }));
+    testProxy.getCallbackRouterRemote().tabsRemoved({
+      tabIds: [1],
+      recentlyClosedTabs: [{
+        tabId: 3,
+        title: `SampleTab`,
+        url: {url: 'https://www.sampletab.com'},
+        lastActiveTime: {internalValue: BigInt(3)},
+        lastActiveElapsedText: '',
+        groupId: undefined,
+      }],
+    });
     await flushTasks();
     verifyTabIds(queryRows(), [2, 3]);
   });
 
   test('Verify visibilitychange triggers data fetch', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     assertEquals(1, testProxy.getCallCount('getProfileData'));
 
     // When hidden visibilitychange should not trigger the data callback.
@@ -563,11 +514,10 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Verify hiding document resets selection and search text', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     assertEquals(1, testProxy.getCallCount('getProfileData'));
 
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchField = tabSearchApp.$.searchField;
     searchField.setValue('Apple');
     await flushTasks();
     verifyTabIds(queryRows(), [6, 4]);
@@ -595,14 +545,13 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Verify tab switch is logged correctly', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     // Make sure that tab data has been recieved.
-    verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
 
     // Click the first element with tabId 1.
-    let tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item[id="1"]'));
+    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+        'tab-search-item[id="1"]')!;
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
@@ -615,9 +564,8 @@ suite('TabSearchAppTest', () => {
 
     testProxy.reset();
     // Click the first element with tabId 6.
-    tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item[id="6"]'));
+    tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+        'tab-search-item[id="6"]')!;
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
@@ -630,17 +578,15 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchField = tabSearchApp.$.searchField;
     searchField.setValue('bing');
     await flushTasks();
-    verifyTabIds(queryRows(), [ 2 ]);
+    verifyTabIds(queryRows(), [2]);
 
     testProxy.reset();
     // Click the only remaining element with tabId 2.
-    tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelector('tab-search-item[id="2"]'));
+    tabSearchItem = tabSearchApp.$.tabsList.querySelector<HTMLElement>(
+        'tab-search-item[id="2"]')!;
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for a tab list fitlered by
@@ -654,11 +600,11 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Verify showUI() is called correctly', async () => {
-    await setupTest(sampleData());
+    await setupTest(createProfileData());
     await waitAfterNextRender(tabSearchApp);
 
     // Make sure that tab data has been received.
-    verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
 
     // Ensure that showUI() has been called after the initial data has been
     // rendered.
@@ -666,12 +612,11 @@ suite('TabSearchAppTest', () => {
 
     // Force a change to filtered tab data that would result in a
     // re-render.
-    const searchField = /** @type {!TabSearchSearchField} */
-        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchField = tabSearchApp.$.searchField;
     searchField.setValue('bing');
     await flushTasks();
     await waitAfterNextRender(tabSearchApp);
-    verifyTabIds(queryRows(), [ 2 ]);
+    verifyTabIds(queryRows(), [2]);
 
     // |showUI()| should still have only been called once.
     assertEquals(1, testProxy.getCallCount('showUI'));
@@ -679,80 +624,73 @@ suite('TabSearchAppTest', () => {
 
   test('Sort by most recent active tabs', async () => {
     const tabs = [
-      {
+      createTab({
         index: 0,
         tabId: 1,
         title: 'Google',
         url: {url: 'https://www.google.com'},
         lastActiveTimeTicks: {internalValue: BigInt(2)},
-        lastActiveElapsedText: '',
-      },
-      {
+      }),
+      createTab({
         index: 1,
         tabId: 2,
         title: 'Bing',
         url: {url: 'https://www.bing.com'},
         lastActiveTimeTicks: {internalValue: BigInt(4)},
-        lastActiveElapsedText: '',
         active: true,
-      },
-      {
+      }),
+      createTab({
         index: 2,
         tabId: 3,
         title: 'Yahoo',
         url: {url: 'https://www.yahoo.com'},
         lastActiveTimeTicks: {internalValue: BigInt(3)},
-        lastActiveElapsedText: '',
-      }
+      }),
     ];
 
     // Move active tab to the bottom of the list.
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
-    });
+    }));
     verifyTabIds(queryRows(), [3, 1, 2]);
 
     await setupTest(
-        {
+        createProfileData({
           windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
-        },
-        {'moveActiveTabToBottom': false});
+        }),
+        {moveActiveTabToBottom: false});
     verifyTabIds(queryRows(), [2, 3, 1]);
   });
 
   test('Tab associated with TabGroup data', async () => {
-    const token = sampleToken(1, 1);
+    const token = sampleToken(1n, 1n);
     const tabs = [
-      {
-        index: 0,
-        tabId: 1,
+      createTab({
         groupId: token,
         title: 'Google',
         url: {url: 'https://www.google.com'},
         lastActiveTimeTicks: {internalValue: BigInt(2)},
-        lastActiveElapsedText: '',
-      },
+      }),
     ];
-    const tabGroup = /** @type {!TabGroup} */ ({
+    const tabGroup = {
       id: token,
       color: TabGroupColor.kBlue,
       title: 'Search Engines',
-    });
+    };
 
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
       tabGroups: [tabGroup],
-    });
+    }));
 
-    let tabSearchItem = /** @type {!HTMLElement} */ (
-        tabSearchApp.shadowRoot.querySelector('#tabsList')
-            .querySelector('tab-search-item[id="1"]'));
+    let tabSearchItem = tabSearchApp.$.tabsList.querySelector<TabSearchItem>(
+        'tab-search-item[id="1"]')!;
     assertEquals('Google', tabSearchItem.data.tab.title);
-    assertEquals('Search Engines', tabSearchItem.data.tabGroup.title);
+    assertEquals('Search Engines', tabSearchItem.data.tabGroup!.title);
   });
 
   test('Recently closed section collapse and expand', async () => {
-    await setupTest({
+    await setupTest(createProfileData({
       windows: [{
         active: true,
         height: SAMPLE_WINDOW_HEIGHT,
@@ -760,27 +698,26 @@ suite('TabSearchAppTest', () => {
       }],
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
-    });
+    }));
     assertEquals(3, queryRows().length);
 
-    const recentlyClosedTitleItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .querySelectorAll('.list-section-title')[1]);
-    assertNotEquals(null, recentlyClosedTitleItem);
+    const recentlyClosedTitleItem =
+        tabSearchApp.$.tabsList.querySelectorAll('.list-section-title')[1];
+    assertTrue(!!recentlyClosedTitleItem);
 
-    const recentlyClosedTitleExpandButton = /** @type {!HTMLElement} */
-        (recentlyClosedTitleItem.querySelector('cr-expand-button'));
-    assertNotEquals(null, recentlyClosedTitleExpandButton);
+    const recentlyClosedTitleExpandButton =
+        recentlyClosedTitleItem!.querySelector('cr-expand-button');
+    assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Collapse the `Recently Closed` section and assert item count.
-    recentlyClosedTitleExpandButton.click();
+    recentlyClosedTitleExpandButton!.click();
     const [expanded] =
         await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
     assertFalse(expanded);
     assertEquals(1, queryRows().length);
 
     // Expand the `Recently Closed` section and assert item count.
-    recentlyClosedTitleExpandButton.click();
+    recentlyClosedTitleExpandButton!.click();
     assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     assertEquals(3, queryRows().length);
   });

@@ -4,68 +4,52 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {Tab, TabAlertState, TabData, TabGroup, TabGroupColor, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {RecentlyClosedTab, Tab, TabAlertState, TabData, TabGroup, TabGroupColor, TabItemType, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
-import {sampleToken} from './tab_search_test_data.js';
+import {createTab, sampleToken} from './tab_search_test_data.js';
 
 suite('TabSearchItemTest', () => {
-  /** @type {!TabSearchItem} */
-  let tabSearchItem;
+  let tabSearchItem: TabSearchItem;
 
-  /** @param {!TabData} data */
-  async function setupTest(data) {
-    tabSearchItem = /** @type {!TabSearchItem} */ (
-        document.createElement('tab-search-item'));
+  async function setupTest(data: TabData) {
+    tabSearchItem = document.createElement('tab-search-item');
     tabSearchItem.data = data;
     document.body.innerHTML = '';
     document.body.appendChild(tabSearchItem);
     await flushTasks();
   }
 
-  /**
-   * @param {string} text
-   * @param {?Array<{start:number, length:number}>} fieldHighlightRanges
-   * @param {!Array<string>} expected
-   */
   async function assertTabSearchItemHighlights(
-      text, fieldHighlightRanges, expected) {
+      text: string,
+      fieldHighlightRanges: Array<{start: number, length: number}>|null,
+      expected: string[]) {
     const data = new TabData(
-        {
+        createTab({
           active: true,
-          index: 0,
           isDefaultFavicon: true,
-          lastActiveTimeTicks: {internalValue: BigInt(0)},
-          pinned: false,
           showIcon: true,
-          tabId: 0,
-          url: {url: 'https://example.com'},
           title: text,
-        },
+        }),
         TabItemType.OPEN_TAB, text);
-    data.highlightRanges = {
-      'tab.title': fieldHighlightRanges,
-      hostname: fieldHighlightRanges,
-    };
+    if (fieldHighlightRanges !== null) {
+      data.highlightRanges = {
+        'tab.title': fieldHighlightRanges,
+        hostname: fieldHighlightRanges,
+      };
+    }
     await setupTest(data);
 
-    assertHighlight(
-        /** @type {!HTMLElement} */ (tabSearchItem.$['primaryText']), expected);
-    assertHighlight(
-        /** @type {!HTMLElement} */ (tabSearchItem.$['secondaryText']),
-        expected);
+    assertHighlight(tabSearchItem.$['primaryText'], expected);
+    assertHighlight(tabSearchItem.$['secondaryText'], expected);
   }
 
-  /**
-   * @param {!HTMLElement} node
-   * @param {!Array<string>} expected
-   */
-  function assertHighlight(node, expected) {
+  function assertHighlight(node: HTMLElement, expected: string[]) {
     assertDeepEquals(
         expected,
-        [].slice.call(node.querySelectorAll('.search-highlight-hit'))
+        Array.from(node.querySelectorAll('.search-highlight-hit'))
             .map(e => e ? e.textContent : ''));
   }
 
@@ -85,22 +69,15 @@ suite('TabSearchItemTest', () => {
 
   test('CloseButtonPresence', async () => {
     await setupTest(new TabData(
-        {
+        createTab({
           active: true,
-          alertStates: [],
-          index: 0,
           isDefaultFavicon: true,
-          lastActiveTimeTicks: {internalValue: BigInt(0)},
-          pinned: false,
           showIcon: true,
-          tabId: 0,
-          url: {url: 'https://example.com'},
-          title: 'Example.com site',
-        },
+        }),
         TabItemType.OPEN_TAB, 'example'));
 
-    let tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
-        tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
+    let tabSearchItemCloseButton =
+        tabSearchItem.shadowRoot!.querySelector('cr-icon-button');
     assertNotEquals(null, tabSearchItemCloseButton);
 
     await setupTest(new TabData(
@@ -108,101 +85,84 @@ suite('TabSearchItemTest', () => {
           tabId: 0,
           title: 'Example.com site',
           url: {url: 'https://example.com'},
-          lastActiveTimeTicks: {internalValue: BigInt(0)},
-        },
+          groupId: undefined,
+          lastActiveTime: {internalValue: BigInt(0)},
+          lastActiveElapsedText: '',
+        } as RecentlyClosedTab,
         TabItemType.RECENTLY_CLOSED_TAB, 'example'));
 
-    tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
-        tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
+    tabSearchItemCloseButton =
+        tabSearchItem.shadowRoot!.querySelector('cr-icon-button');
     assertEquals(null, tabSearchItemCloseButton);
   });
 
   test('GroupDetailsPresence', async () => {
-    const token = sampleToken(1, 1);
-    const tab = /** @type {!Tab} */ ({
+    const token = sampleToken(1n, 1n);
+    const tab: Tab = createTab({
       active: true,
-      alertStates: [],
-      index: 0,
       isDefaultFavicon: true,
-      lastActiveTimeTicks: {internalValue: BigInt(0)},
-      pinned: false,
       showIcon: true,
-      tabId: 0,
       groupId: token,
-      url: {url: 'https://example.com'},
-      title: 'Example.com site',
     });
 
-    const tabGroup = /** @type {!TabGroup} */ ({
+    const tabGroup: TabGroup = {
       id: token,
       color: TabGroupColor.kBlue,
       title: 'Examples',
-    });
+    };
 
     const tabData = new TabData(tab, TabItemType.OPEN_TAB, 'example');
     tabData.tabGroup = tabGroup;
     await setupTest(tabData);
 
-    const groupDotElement = tabSearchItem.shadowRoot.querySelector('#groupDot');
+    const groupDotElement =
+        tabSearchItem.shadowRoot!.querySelector('#groupDot')!;
     assertNotEquals(null, groupDotElement);
-    const groupDotComputedStyle = getComputedStyle(groupDotElement);
+    const groupDotComputedStyle = getComputedStyle(groupDotElement!);
     assertEquals(
         groupDotComputedStyle.getPropertyValue('--tab-group-color-blue'),
         groupDotComputedStyle.getPropertyValue('--group-dot-color'));
 
     assertNotEquals(
-        null, tabSearchItem.shadowRoot.querySelector('#groupTitle'));
+        null, tabSearchItem.shadowRoot!.querySelector('#groupTitle'));
   });
 
   test('MediaAlertIndicatorPresence', async () => {
-    const token = sampleToken(1, 1);
-    const tab = /** @type {!Tab} */ ({
+    const token = sampleToken(1n, 1n);
+    const tab: Tab = createTab({
       active: true,
       alertStates: [TabAlertState.kMediaRecording, TabAlertState.kAudioPlaying],
-      index: 0,
       isDefaultFavicon: true,
-      lastActiveTimeTicks: {internalValue: BigInt(0)},
-      pinned: false,
       showIcon: true,
-      tabId: 0,
       groupId: token,
-      url: {url: 'https://example.com'},
-      title: 'Example.com site',
     });
 
     await setupTest(new TabData(tab, TabItemType.OPEN_TAB, 'example'));
 
     const recordingMediaAlert =
-        tabSearchItem.shadowRoot.querySelector('#mediaAlert');
+        tabSearchItem.shadowRoot!.querySelector<HTMLElement>('#mediaAlert');
     assertNotEquals(null, recordingMediaAlert);
-    assertEquals('media-recording', recordingMediaAlert.getAttribute('class'));
+    assertEquals('media-recording', recordingMediaAlert!.getAttribute('class'));
   });
 
   test('MediaAlertIndicatorPresenceWithUnsupportedAlert', async () => {
     /* Since we currently don't consider DesktopCapturing, the AudioPlaying
      * should be displayed */
-    const token = sampleToken(1, 1);
-    const tab = /** @type {!Tab} */ ({
+    const token = sampleToken(1n, 1n);
+    const tab: Tab = createTab({
       active: true,
       alertStates:
           [TabAlertState.kDesktopCapturing, TabAlertState.kAudioPlaying],
-      index: 0,
       isDefaultFavicon: true,
-      lastActiveTimeTicks: {internalValue: BigInt(0)},
-      pinned: false,
       showIcon: true,
-      tabId: 0,
       groupId: token,
-      url: {url: 'https://example.com'},
-      title: 'Example.com site',
     });
 
     await setupTest(new TabData(tab, TabItemType.OPEN_TAB, 'example'));
 
     const audioMediaAlert =
-        tabSearchItem.shadowRoot.querySelector('#mediaAlert');
+        tabSearchItem.shadowRoot!.querySelector<HTMLElement>('#mediaAlert');
     assertNotEquals(null, audioMediaAlert);
-    assertEquals('audio-playing', audioMediaAlert.getAttribute('class'));
+    assertEquals('audio-playing', audioMediaAlert!.getAttribute('class'));
   });
-
 });

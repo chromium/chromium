@@ -4,8 +4,10 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fuzzySearch, FuzzySearchOptions, Tab, TabData, TabGroup, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {fuzzySearch, FuzzySearchOptions, TabData, TabGroup, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+
+import {createTab} from './tab_search_test_data.js';
 
 /**
  * Assert search results return in specific order.
@@ -34,27 +36,6 @@ function assertResults(expectedRecords: Array<any>, actualRecords: TabData[]) {
     assertEquals(expected.hostname, actual.hostname);
     assertDeepEquals(expected.highlightRanges, actual.highlightRanges);
   });
-}
-
-function createTab(overrides: Partial<Tab>): Tab {
-  return Object.assign(
-      {
-        active: false,
-        alertStates: [],
-        faviconUrl: undefined,
-        groupId: undefined,
-        index: 0,
-        isDefaultFavicon: false,
-        lastActiveElapsedText: '',
-        lastActiveTimeTicks: {internalValue: BigInt(5)},
-        pinned: false,
-        showIcon: false,
-        tabId: 1,
-        title: 'Google',
-        url: {url: 'https://www.google.com'},
-
-      },
-      overrides);
 }
 
 suite('FuzzySearchTest', () => {

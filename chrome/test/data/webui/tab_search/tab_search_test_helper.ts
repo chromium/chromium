@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {ProfileData} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertGE, assertLE} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * Override the specified function and parameters for the given class to avoid
  * scroll animations that delay the scrollTop property updates.
- * @param {!Object} klass
  */
 export function disableAnimationBehavior(klass: any, functionName: string) {
   const originalFunction = klass.prototype[functionName];
@@ -57,26 +55,10 @@ export function assertTabItemAndNeighborsInViewBounds(
 }
 
 /**
- * Initialize a mock ProfileData object with defaults that would be set
- * by the Mojo IPC logic.
- */
-export function initProfileDataWithDefaults(profileData: ProfileData) {
-  ['tabGroups', 'recentlyClosedTabs', 'recentlyClosedTabGroups'].forEach(
-      (arrayProp) => {
-        if (!profileData.hasOwnProperty(arrayProp)) {
-          (profileData as {[key: string]: any})[arrayProp] = [];
-        }
-      });
-  if (!profileData.hasOwnProperty('recentlyClosedSectionExpanded')) {
-    profileData.recentlyClosedSectionExpanded = false;
-  }
-}
-
-/**
  * Initialize the loadTimeData with the provided data and defaults.
  */
 export function initLoadTimeDataWithDefaults(
-    loadTimeOverriddenData: {[key: string]: string} = {}) {
+    loadTimeOverriddenData: {[key: string]: number|string|boolean} = {}) {
   loadTimeData.overrideValues(Object.assign(
       {
         shortcutText: '',

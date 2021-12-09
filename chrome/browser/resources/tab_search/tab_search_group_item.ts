@@ -67,4 +67,10 @@ export class TabSearchGroupItem extends TabSearchGroupItemBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'tab-search-group-item': TabSearchGroupItem;
+  }
+}
+
 customElements.define(TabSearchGroupItem.is, TabSearchGroupItem);

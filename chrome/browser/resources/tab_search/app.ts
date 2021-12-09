@@ -653,4 +653,10 @@ export class TabSearchAppElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'tab-search-app': TabSearchAppElement;
+  }
+}
+
 customElements.define(TabSearchAppElement.is, TabSearchAppElement);

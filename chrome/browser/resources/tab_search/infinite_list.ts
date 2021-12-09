@@ -600,4 +600,10 @@ export class InfiniteList extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'infinite-list': InfiniteList;
+  }
+}
+
 customElements.define(InfiniteList.is, InfiniteList);

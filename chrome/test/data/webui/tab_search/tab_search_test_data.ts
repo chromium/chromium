@@ -7,107 +7,76 @@ import {ProfileData, RecentlyClosedTab, Tab, Window} from 'chrome://tab-search.t
 
 export const SAMPLE_WINDOW_HEIGHT: number = 448;
 
+export function createTab(overrides: Partial<Tab>): Tab {
+  return Object.assign(
+      {
+        active: false,
+        alertStates: [],
+        faviconUrl: undefined,
+        groupId: undefined,
+        index: 0,
+        isDefaultFavicon: false,
+        lastActiveElapsedText: '',
+        lastActiveTimeTicks: {internalValue: BigInt(0)},
+        pinned: false,
+        showIcon: false,
+        tabId: 1,
+        title: 'Example',
+        url: {url: 'https://www.example.com'},
+      },
+      overrides);
+}
+
 export const SAMPLE_WINDOW_DATA: Window[] = [
   {
     active: true,
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
-      {
-        alertStates: [],
-        index: 0,
-        tabId: 1,
+      createTab({
         title: 'Google',
         url: {url: 'https://www.google.com'},
         lastActiveTimeTicks: {internalValue: BigInt(5)},
-        lastActiveElapsedText: '',
-        active: false,
-        faviconUrl: undefined,
-        groupId: undefined,
-        isDefaultFavicon: false,
-        pinned: false,
-        showIcon: false,
-      },
-      {
-        alertStates: [],
+      }),
+      createTab({
         index: 1,
         tabId: 5,
         title: 'Amazon',
         url: {url: 'https://www.amazon.com'},
         lastActiveTimeTicks: {internalValue: BigInt(4)},
-        lastActiveElapsedText: '',
-        active: false,
-        faviconUrl: undefined,
-        groupId: undefined,
-        isDefaultFavicon: false,
-        pinned: false,
-        showIcon: false,
-      },
-      {
-        alertStates: [],
+      }),
+      createTab({
         index: 2,
         tabId: 6,
         title: 'Apple',
         url: {url: 'https://www.apple.com'},
         lastActiveTimeTicks: {internalValue: BigInt(3)},
-        lastActiveElapsedText: '',
-        active: false,
-        faviconUrl: undefined,
-        groupId: undefined,
-        isDefaultFavicon: false,
-        pinned: false,
-        showIcon: false,
-      },
+      }),
     ],
   },
   {
     active: false,
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
-      {
-        alertStates: [],
+      createTab({
         index: 0,
         tabId: 2,
         title: 'Bing',
         url: {url: 'https://www.bing.com/'},
         lastActiveTimeTicks: {internalValue: BigInt(2)},
-        lastActiveElapsedText: '',
-        active: false,
-        faviconUrl: undefined,
-        groupId: undefined,
-        isDefaultFavicon: false,
-        pinned: false,
-        showIcon: false,
-      },
-      {
-        alertStates: [],
+      }),
+      createTab({
         index: 1,
         tabId: 3,
         title: 'Yahoo',
         url: {url: 'https://www.yahoo.com'},
         lastActiveTimeTicks: {internalValue: BigInt(1)},
-        lastActiveElapsedText: '',
-        active: false,
-        faviconUrl: undefined,
-        groupId: undefined,
-        isDefaultFavicon: false,
-        pinned: false,
-        showIcon: false,
-      },
-      {
-        alertStates: [],
+      }),
+      createTab({
         index: 2,
         tabId: 4,
         title: 'Apple',
         url: {url: 'https://www.apple.com/'},
-        lastActiveTimeTicks: {internalValue: BigInt(0)},
-        lastActiveElapsedText: '',
-        active: false,
-        faviconUrl: undefined,
-        groupId: undefined,
-        isDefaultFavicon: false,
-        pinned: false,
-        showIcon: false,
-      },
+      }),
     ],
   }
 ];
@@ -131,15 +100,19 @@ export const SAMPLE_RECENTLY_CLOSED_DATA: RecentlyClosedTab[] = [
   },
 ];
 
-export function sampleData(): ProfileData {
-  return {
-    windows: SAMPLE_WINDOW_DATA,
-    recentlyClosedTabs: [],
-    tabGroups: [],
-    recentlyClosedTabGroups: [],
-    recentlyClosedSectionExpanded: false,
-  };
+export function createProfileData(overrides?: Partial<ProfileData>):
+    ProfileData {
+  return Object.assign(
+      {
+        windows: SAMPLE_WINDOW_DATA,
+        tabGroups: [],
+        recentlyClosedTabGroups: [],
+        recentlyClosedTabs: [],
+        recentlyClosedSectionExpanded: false,
+      },
+      overrides || {});
 }
+
 
 export function sampleSiteNames(count: number): string[] {
   return Array.from({length: count}, (_, i) => (i + 1).toString());
@@ -152,24 +125,28 @@ export function sampleSiteNames(count: number): string[] {
 export function generateSampleTabsFromSiteNames(
     siteNames: string[], hasIndex: boolean = true): Tab[] {
   return siteNames.map((siteName, i) => {
-    const tab: Tab = {
-      alertStates: [],
+    return createTab({
       tabId: i + 1,
       title: siteName,
       url: {url: 'https://www.' + siteName.toLowerCase() + '.com'},
       lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
-      lastActiveElapsedText: '',
-
-      active: false,
-      faviconUrl: undefined,
-      groupId: undefined,
       index: hasIndex ? i : 0,
-      isDefaultFavicon: false,
-      pinned: false,
-      showIcon: false,
-    };
+    });
+  });
+}
 
-    return tab;
+export function generateSampleRecentlyClosedTabsFromSiteNames(
+    siteNames: string[]): RecentlyClosedTab[] {
+  return siteNames.map((siteName, i) => {
+    return {
+      tabId: i + 1,
+      groupId: undefined,
+      title: siteName,
+      url: {url: 'https://www.' + siteName.toLowerCase() + '.com'},
+      lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
+      lastActiveTime: {internalValue: BigInt(siteNames.length - i)},
+      lastActiveElapsedText: '',
+    };
   });
 }
 

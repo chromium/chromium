@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {InfiniteList, TabData, TabSearchItem, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {InfiniteList, TabData, TabItemType, TabSearchItem, TitleItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
@@ -20,7 +20,6 @@ const SAMPLE_SECTION_CLASS = 'section-title';
 class TestApp extends PolymerElement {
   static get properties() {
     return {
-      /** @private {number} */
       maxHeight_: {
         type: Number,
         value: SAMPLE_AVAIL_HEIGHT,
@@ -30,7 +29,7 @@ class TestApp extends PolymerElement {
 
   static get template() {
     return html`
-    <infinite-list id="list" max-height="[[maxHeight_]]">
+    <infinite-list max-height="[[maxHeight_]]">
       <template data-type="TitleItem">
         <div class="section-title">[[item.title]]</div>
       </template>
@@ -47,52 +46,33 @@ class TestApp extends PolymerElement {
 customElements.define('test-app', TestApp);
 
 suite('InfiniteListTest', () => {
-  /** @type {!InfiniteList} */
-  let infiniteList;
+  let infiniteList: InfiniteList;
 
   disableAnimationBehavior(InfiniteList, 'scrollTo');
   disableAnimationBehavior(TabSearchItem, 'scrollIntoView');
 
-  /**
-   * @param {!Array<!TabData>} sampleData
-   */
-  async function setupTest(sampleData) {
+  async function setupTest(sampleData: Array<TabData|TitleItem>) {
     const testApp = document.createElement('test-app');
     document.body.innerHTML = '';
     document.body.appendChild(testApp);
 
-    infiniteList = /** @type {!InfiniteList} */ (
-        testApp.shadowRoot.querySelector('#list'));
+    infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;
     infiniteList.items = sampleData;
     await flushTasks();
   }
 
-  /**
-   * @return {!NodeList<!HTMLElement>}
-   */
-  function queryRows() {
-    return /** @type {!NodeList<!HTMLElement>} */ (
-        infiniteList.querySelectorAll('tab-search-item'));
+  function queryRows(): NodeListOf<HTMLElement> {
+    return infiniteList.querySelectorAll('tab-search-item');
   }
 
-  /**
-   * @param {string} className
-   * @return {!NodeList<!HTMLElement>}
-   */
-  function queryClassElements(className) {
-    return /** @type {!NodeList<!HTMLElement>} */ (
-        infiniteList.querySelectorAll('.' + className));
+  function queryClassElements(className: string): NodeListOf<HTMLElement> {
+    return infiniteList.querySelectorAll('.' + className);
   }
 
-  /**
-   * @param {!Array<string>} siteNames
-   * @return {!Array<!TabData>}
-   */
-  function sampleTabItems(siteNames) {
+  function sampleTabItems(siteNames: string[]): TabData[] {
     return generateSampleTabsFromSiteNames(siteNames).map(tab => {
-      const tabData = {hostname: new URL(tab.url.url).hostname, tab};
-      Object.setPrototypeOf(tabData, TabData.prototype);
-      return tabData;
+      return new TabData(
+          tab, TabItemType.OPEN_TAB, new URL(tab.url.url).hostname);
     });
   }
 
@@ -184,9 +164,8 @@ suite('InfiniteListTest', () => {
     const tabItems = sampleTabItems(sampleSiteNames(10));
     await setupTest(tabItems);
 
-    const tabsDiv = /** @type {!HTMLElement} */ (infiniteList);
     // Assert that the tabs are in a overflowing state.
-    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+    assertGT(infiniteList.scrollHeight, infiniteList.clientHeight);
 
     infiniteList.selected = 0;
     for (let i = 0; i < tabItems.length; i++) {
@@ -196,7 +175,7 @@ suite('InfiniteListTest', () => {
       const selectedIndex = ((i + 1) % tabItems.length);
       assertEquals(selectedIndex, infiniteList.selected);
       assertTabItemAndNeighborsInViewBounds(
-          tabsDiv, queryRows(), selectedIndex);
+          infiniteList, queryRows(), selectedIndex);
     }
   });
 
@@ -204,9 +183,8 @@ suite('InfiniteListTest', () => {
     const tabItems = sampleTabItems(sampleSiteNames(10));
     await setupTest(tabItems);
 
-    const tabsDiv = /** @type {!HTMLElement} */ (infiniteList);
     // Assert that the tabs are in a overflowing state.
-    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+    assertGT(infiniteList.scrollHeight, infiniteList.clientHeight);
 
     infiniteList.selected = 0;
     for (let i = tabItems.length; i > 0; i--) {
@@ -215,7 +193,8 @@ suite('InfiniteListTest', () => {
 
       const selectIndex = (i - 1 + tabItems.length) % tabItems.length;
       assertEquals(selectIndex, infiniteList.selected);
-      assertTabItemAndNeighborsInViewBounds(tabsDiv, queryRows(), selectIndex);
+      assertTabItemAndNeighborsInViewBounds(
+          infiniteList, queryRows(), selectIndex);
     }
   });
 
