@@ -30,6 +30,9 @@ class PrefService;
 namespace ash {
 namespace device_activity {
 
+// Forward declaration from fresnel_service.proto.
+class DeviceMetadata;
+
 // Create a delegate which can be used to create fakes in unit tests.
 // Fake via. delegate is required for creating deterministic unit tests.
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) PsmDelegate {
@@ -104,6 +107,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
 
   // Return Fresnel server network request endpoints determined by the |state_|.
   GURL GetFresnelURL() const;
+
+  // Collect device metadata dimensions sent by PSM import.
+  void InitializeDeviceMetadata(DeviceMetadata* device_metadata);
 
   // Called when device network comes online as well as by |report_timer_|.
   void TransitionOutOfIdle();

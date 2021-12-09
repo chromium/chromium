@@ -1,5 +1,6 @@
 include_rules = [
   "+chromeos/dbus/session_manager",
+  "+components/version_info",
   "+crypto",
   "+google_apis",
   "+third_party/private_membership",

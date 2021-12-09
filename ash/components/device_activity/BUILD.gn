@@ -18,6 +18,7 @@ component("device_activity") {
     "//chromeos/dbus/session_manager",
     "//chromeos/network",
     "//components/prefs:prefs",
+    "//components/version_info",
     "//crypto:crypto",
     "//google_apis",
     "//services/network/public/cpp",

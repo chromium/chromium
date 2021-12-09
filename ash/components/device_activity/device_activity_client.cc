@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/version_info.h"
 #include "crypto/hmac.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -292,12 +293,18 @@ GURL DeviceActivityClient::GetFresnelURL() const {
       replacements.SetPathStr(kFresnelHealthCheckEndpoint);
       break;
     case State::kIdle:  // Fallthrough to |kUnknown| case.
+      FALLTHROUGH;
     case State::kUnknown:
       NOTREACHED();
       break;
   }
 
   return base_url.ReplaceComponents(replacements);
+}
+
+void DeviceActivityClient::InitializeDeviceMetadata(
+    DeviceMetadata* device_metadata) {
+  device_metadata->set_chromeos_version(version_info::GetMajorVersionNumber());
 }
 
 // TODO(https://crbug.com/1262189): Add callback to report actives only after
@@ -604,10 +611,10 @@ void DeviceActivityClient::TransitionToCheckIn() {
   import_request.set_plaintext_identifier(current_psm_id_str);
   import_request.set_use_case(kDailyPsmUseCase);
 
-  // Initialize empty device metadata.
   // Important: Each new dimension added to metadata will need to be approved by
   // privacy.
-  import_request.mutable_device_metadata();
+  DeviceMetadata* device_metadata = import_request.mutable_device_metadata();
+  InitializeDeviceMetadata(device_metadata);
 
   std::string request_body;
   import_request.SerializeToString(&request_body);
