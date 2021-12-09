@@ -347,6 +347,8 @@ class CaptureModeSessionTestApi {
            session_->folder_selection_dialog_controller_->dialog_window();
   }
 
+  bool IsAllUisVisible() const { return session_->is_all_uis_visible_; }
+
  private:
   const CaptureModeSession* const session_;
 };
@@ -394,6 +396,12 @@ class CaptureModeTest : public AshTestBase {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
     return CaptureModeSessionTestApi(session).IsFolderSelectionDialogShown();
+  }
+
+  bool IsAllCaptureSessionUisVisible() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).IsAllUisVisible();
   }
 
   CaptureModeToggleButton* GetImageToggleButton() const {
@@ -5477,6 +5485,7 @@ TEST_F(CaptureModeAdvancedSettingsTest, SelectFolderFromDialog) {
 
   ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
   EXPECT_TRUE(IsFolderSelectionDialogShown());
+  EXPECT_FALSE(IsAllCaptureSessionUisVisible());
 
   auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
   auto* dialog_window = dialog_factory->GetDialogWindow();
@@ -5492,6 +5501,7 @@ TEST_F(CaptureModeAdvancedSettingsTest, SelectFolderFromDialog) {
   dialog_factory->AcceptPath(custom_folder);
   WaitForSettingsMenuToBeRefreshed();
   EXPECT_FALSE(IsFolderSelectionDialogShown());
+  EXPECT_TRUE(IsAllCaptureSessionUisVisible());
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
   EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
   EXPECT_EQ(u"test",

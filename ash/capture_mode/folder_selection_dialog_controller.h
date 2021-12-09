@@ -30,9 +30,12 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
     // Called to inform the delegate that the user selected the given |path|.
     virtual void OnFolderSelected(const base::FilePath& path) = 0;
 
+    // Called to inform the delegate that the dialog window has been added.
+    virtual void OnSelectionWindowAdded() = 0;
+
     // Called to inform the delegate that the dialog window has been closed.
     // This will be called for both when the user selects and accepts a folder
-    // or cancel or close the dialog without making a selection.
+    // or cancels or closes the dialog without making a selection.
     virtual void OnSelectionWindowClosed() = 0;
 
    protected:

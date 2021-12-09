@@ -22,6 +22,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -655,20 +656,7 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
 void CaptureModeSession::OnWaitingForDlpConfirmationStarted() {
   is_waiting_for_dlp_confirmation_ = true;
 
-  cursor_setter_.reset();
-
-  for (auto* widget : GetAvailableWidgets()) {
-    // The order here matters. We need to disable the animation before we hide
-    // to avoid any hide animation here, or until the widgets are shown (also
-    // without animation) when OnWaitingForDlpConfirmationEnded() is called.
-    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
-                                           true);
-    widget->Hide();
-  }
-
-  // Refresh painting the layer, since we don't paint anything while a DLP
-  // dialog might be shown.
-  layer()->SchedulePaint(layer()->bounds());
+  HideAllUis();
 }
 
 void CaptureModeSession::OnWaitingForDlpConfirmationEnded(bool will_proceed) {
@@ -685,20 +673,7 @@ void CaptureModeSession::OnWaitingForDlpConfirmationEnded(bool will_proceed) {
   // continue the capture operation, it doesn't always mean the session is
   // ending immediately, since we may proceed to the 3-second countdown, for
   // which the capture mode UIs need to be returned back to normal.
-
-  cursor_setter_ = std::make_unique<CursorSetter>();
-
-  for (auto* widget : GetAvailableWidgets()) {
-    // The order here matters. See OnWaitingForDlpConfirmationStarted() above.
-    // At this point the animation is still disabled, so we show the window now
-    // before we re-enable the animations. This is to avoid having those widgets
-    // show up in the captured images or videos.
-    widget->Show();
-    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
-                                           false);
-  }
-
-  layer()->SchedulePaint(layer()->bounds());
+  ShowAllUis();
 }
 
 void CaptureModeSession::SetSettingsMenuShown(bool shown) {
@@ -807,7 +782,6 @@ void CaptureModeSession::StartCountDown(
 
 void CaptureModeSession::OpenFolderSelectionDialog() {
   DCHECK(!folder_selection_dialog_controller_);
-  cursor_setter_.reset();
   folder_selection_dialog_controller_ =
       std::make_unique<FolderSelectionDialogController>(/*delegate=*/this,
                                                         current_root_);
@@ -843,8 +817,7 @@ void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
-  // We don't paint anything while a DLP system-modal dialog might be shown.
-  if (is_waiting_for_dlp_confirmation_)
+  if (!is_all_uis_visible_)
     return;
 
   ui::PaintRecorder recorder(context, layer()->size());
@@ -1016,18 +989,30 @@ void CaptureModeSession::OnFolderSelected(const base::FilePath& path) {
   }
 }
 
+void CaptureModeSession::OnSelectionWindowAdded() {
+  // Hide all the capture session UIs so that they don't show on top of the
+  // selection dialog window and block it.
+  HideAllUis();
+}
+
 void CaptureModeSession::OnSelectionWindowClosed() {
   DCHECK(folder_selection_dialog_controller_);
+
+  ShowAllUis();
+
   const bool did_user_select_a_folder =
       folder_selection_dialog_controller_->did_user_select_a_folder();
   folder_selection_dialog_controller_.reset();
-  cursor_setter_ = std::make_unique<CursorSetter>();
 
   // If the selection window is closed by user selecting a folder, no need to
   // update the capture folder settings menu here, since it's covered by
   // `SetCustomCaptureFolder` via `OnFolderSelected`.
   if (!did_user_select_a_folder)
     OnCaptureFolderMayHaveChanged();
+
+  // Explicitly hide any virtual keyboard that may have remained open from
+  // interacting with the dialog selection window.
+  keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 }
 
 void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
@@ -1123,6 +1108,42 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   if (dimensions_label_widget_)
     result.push_back(dimensions_label_widget_.get());
   return result;
+}
+
+void CaptureModeSession::HideAllUis() {
+  is_all_uis_visible_ = false;
+  cursor_setter_.reset();
+
+  for (auto* widget : GetAvailableWidgets()) {
+    // The order here matters. We need to disable the animation before we hide
+    // to avoid any hide animation here, or until the widgets are shown (also
+    // without animation) when ShowAllUis() is called.
+    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                           true);
+    widget->Hide();
+  }
+
+  // Refresh painting the layer, since we don't paint anything while a DLP
+  // dialog might be shown.
+  layer()->SchedulePaint(layer()->bounds());
+}
+
+void CaptureModeSession::ShowAllUis() {
+  is_all_uis_visible_ = true;
+  cursor_setter_ = std::make_unique<CursorSetter>();
+
+  for (auto* widget : GetAvailableWidgets()) {
+    // The order here matters. See HideAllUis() above.
+    // At this point the animation is still disabled, so we show the window now
+    // before we re-enable the animations. This is to avoid having those widgets
+    // show up in the captured images or videos in case this is used right
+    // before ending the session to perform the capture.
+    widget->Show();
+    widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                           false);
+  }
+
+  layer()->SchedulePaint(layer()->bounds());
 }
 
 void CaptureModeSession::RefreshBarWidgetBounds() {

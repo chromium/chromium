@@ -173,6 +173,7 @@ class ASH_EXPORT CaptureModeSession
 
   // FolderSelectionDialogController::Delegate:
   void OnFolderSelected(const base::FilePath& path) override;
+  void OnSelectionWindowAdded() override;
   void OnSelectionWindowClosed() override;
 
   // Updates the current cursor depending on current |location_in_screen| and
@@ -206,6 +207,11 @@ class ASH_EXPORT CaptureModeSession
   // Returns a list of all the currently available widgets that are owned by
   // this session.
   std::vector<views::Widget*> GetAvailableWidgets();
+
+  // All UI elements, cursors, widgets and paintings on the session's layer can
+  // be either shown or hidden with the below functions.
+  void HideAllUis();
+  void ShowAllUis();
 
   // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
   // the `current_root_`, potentially moving the bar to a new display if
@@ -382,6 +388,10 @@ class ASH_EXPORT CaptureModeSession
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
+
+  // True if all UIs (cursors, widgets, and paintings on the layer) of the
+  // capture mode session is visible.
+  bool is_all_uis_visible_ = true;
 
   // Whether this session was started from a projector workflow.
   const bool is_in_projector_mode_ = false;
