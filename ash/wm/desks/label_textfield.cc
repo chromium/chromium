@@ -44,6 +44,7 @@ LabelTextfield::~LabelTextfield() = default;
 
 // static
 constexpr size_t LabelTextfield::kLabelTextfieldBorderRadius;
+constexpr size_t LabelTextfield::kMaxLength;
 
 void LabelTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
   // Use the potential max size of this to calculate elision, not its current

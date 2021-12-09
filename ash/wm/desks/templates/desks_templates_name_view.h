@@ -20,6 +20,17 @@ class DesksTemplatesNameView : public LabelTextfield {
   DesksTemplatesNameView(const DesksTemplatesNameView&) = delete;
   DesksTemplatesNameView& operator=(const DesksTemplatesNameView&) = delete;
   ~DesksTemplatesNameView() override;
+
+  // Commits an on-going template name change (if any) by bluring the focus away
+  // from any view on `widget`, where `widget` should be the desks templates
+  // grid widget.
+  static void CommitChanges(views::Widget* widget);
+
+  // LabelTextfield:
+  void SetTextAndElideIfNeeded(const std::u16string& text) override;
+
+ private:
+  friend class DesksTemplatesNameViewTestApi;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesNameView, LabelTextfield)

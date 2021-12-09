@@ -168,6 +168,17 @@ void DesksTemplatesGridView::UpdateGridUI(
     Layout();
 }
 
+bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
+  if (!GetWidget()->IsActive())
+    return false;
+
+  for (auto* grid_item : grid_items_) {
+    if (grid_item->IsTemplateNameBeingModified())
+      return true;
+  }
+  return false;
+}
+
 void DesksTemplatesGridView::AddedToWidget() {
   // Adding a pre-target handler to ensure that events are not accidentally
   // captured by the child views. Also, an `EventHandler`

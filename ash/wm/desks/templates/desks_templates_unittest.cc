@@ -1484,4 +1484,154 @@ TEST_F(DesksTemplatesTest, WindowActivatableAfterSaveAndDeleteTemplate) {
   EXPECT_EQ(test_window.get(), window_util::GetActiveWindow());
 }
 
+// Tests that we are able to edit the template name.
+TEST_F(DesksTemplatesTest, EditTemplateName) {
+  auto test_window = CreateAppWindow();
+
+  const std::string template_name = "desk name";
+  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromOverviewGrid(0)->name_view();
+
+  // Test that we can add characters to the name and press enter to save it.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_A);
+  SendKey(ui::VKEY_B);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab", name_view->GetText());
+
+  // Deleting characters and pressing enter saves the name.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_BACK);
+  SendKey(ui::VKEY_BACK);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+
+  // The `name_view` defaults to select all, so typing a letter while all
+  // selected replaces the text. Also, clicking anywhere outside of the text
+  // field will try to save it.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_A);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  event_generator->ClickLeftButton();
+  EXPECT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+  WaitForDesksTemplatesUI();
+  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  EXPECT_EQ(u"a", name_view->GetText());
+
+  // Test that clicking on the grid item (outside of the textfield) will save
+  // it.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_B);
+  ClickOnView(GetItemViewFromOverviewGrid(0));
+  WaitForDesksTemplatesUI();
+  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  EXPECT_EQ(u"ab", name_view->GetText());
+
+  // Pressing TAB also saves the name.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_C);
+  SendKey(ui::VKEY_TAB);
+  WaitForDesksTemplatesUI();
+  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  EXPECT_EQ(u"abc", name_view->GetText());
+}
+
+// Tests for checking that certain conditions will revert the template name to
+// its original name, even if the text in the textfield has been updated.
+TEST_F(DesksTemplatesTest, TemplateNameChangeAborted) {
+  auto test_window = CreateAppWindow();
+
+  const std::string template_name = "desk name";
+  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromOverviewGrid(0)->name_view();
+
+  // Pressing enter with no changes to the text.
+  ClickOnView(name_view);
+  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(name_view->HasFocus());
+  EXPECT_TRUE(name_view->HasSelection());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_FALSE(name_view->HasFocus());
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+
+  // Pressing the escape key will revert the changes made to the name in the
+  // textfield.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_A);
+  SendKey(ui::VKEY_B);
+  SendKey(ui::VKEY_C);
+  SendKey(ui::VKEY_ESCAPE);
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+
+  // Empty text fields will also revert back to the original name.
+  SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  SendKey(ui::VKEY_BACK);
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+}
+
+// When template names exceed the width of the textfield, we elide the text
+// (truncate the string add "..." to the end) for display purposese. The full
+// template name is still stored as the `full_text()`. This test checks to
+// ensure that the elided text is displayed when the textfield is not focused,
+// but the full text is populated into the textfield when it is focused.
+TEST_F(DesksTemplatesTest, TemplateNameEllipsis) {
+  auto test_window = CreateAppWindow();
+
+  const std::string template_name = "desk template name that is very long";
+  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromOverviewGrid(0)->name_view();
+
+  // Verify that the template name field has an ellipsis.
+  EXPECT_NE(base::UTF8ToUTF16(template_name), name_view->GetText());
+  EXPECT_NE(std::string::npos, name_view->GetText().find(u"\x2026"));
+
+  // Verify that the full text stored by the textfield is the `template_name`.
+  EXPECT_EQ(base::UTF8ToUTF16(template_name),
+            DesksTemplatesNameViewTestApi(name_view).full_text());
+
+  // Test that when we click on and focus the template name, that the ellipsized
+  // text is replaced with the full template name. Also tests that it's hidden
+  // again when we lose focus.
+  ClickOnView(name_view);
+  EXPECT_TRUE(name_view->HasFocus());
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_FALSE(name_view->HasFocus());
+  EXPECT_NE(base::UTF8ToUTF16(template_name), name_view->GetText());
+  EXPECT_NE(std::string::npos, name_view->GetText().find(u"\x2026"));
+
+  // Test that adding onto a long `template_name` will still update and
+  // ellipsize correctly.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_A);
+  SendKey(ui::VKEY_B);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+  name_view = GetItemViewFromOverviewGrid(0)->name_view();
+  EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab",
+            DesksTemplatesNameViewTestApi(name_view).full_text());
+}
+
 }  // namespace ash

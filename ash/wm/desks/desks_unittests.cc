@@ -2214,21 +2214,21 @@ TEST_F(DesksEditableNamesTest, MaxLength) {
   SendKey(ui::VKEY_BACK);
 
   // Simulate user is typing text beyond the max length.
-  std::u16string expected_desk_name(DeskNameView::kMaxLength, L'a');
-  for (size_t i = 0; i < DeskNameView::kMaxLength + 10; ++i)
+  std::u16string expected_desk_name(LabelTextfield::kMaxLength, L'a');
+  for (size_t i = 0; i < LabelTextfield::kMaxLength + 10; ++i)
     SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_RETURN);
 
   // Desk name has been trimmed.
   auto* desk_1 = controller()->desks()[0].get();
-  EXPECT_EQ(DeskNameView::kMaxLength, desk_1->name().size());
+  EXPECT_EQ(LabelTextfield::kMaxLength, desk_1->name().size());
   EXPECT_EQ(expected_desk_name, desk_1->name());
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 
   // Test that pasting a large amount of text is trimmed at the max length.
-  std::u16string clipboard_text(DeskNameView::kMaxLength + 10, L'b');
-  expected_desk_name = std::u16string(DeskNameView::kMaxLength, L'b');
-  EXPECT_GT(clipboard_text.size(), DeskNameView::kMaxLength);
+  std::u16string clipboard_text(LabelTextfield::kMaxLength + 10, L'b');
+  expected_desk_name = std::u16string(LabelTextfield::kMaxLength, L'b');
+  EXPECT_GT(clipboard_text.size(), LabelTextfield::kMaxLength);
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(clipboard_text);
 
@@ -2240,7 +2240,7 @@ TEST_F(DesksEditableNamesTest, MaxLength) {
   // Paste text.
   SendKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_RETURN);
-  EXPECT_EQ(DeskNameView::kMaxLength, desk_1->name().size());
+  EXPECT_EQ(LabelTextfield::kMaxLength, desk_1->name().size());
   EXPECT_EQ(expected_desk_name, desk_1->name());
 }
 
@@ -5045,7 +5045,7 @@ TEST_F(DesksTest, ZeroStateDeskButtonText) {
   // Set a super long desk name.
   ClickOnView(desks_bar_view->zero_state_default_desk_button(),
               event_generator);
-  for (size_t i = 0; i < DeskNameView::kMaxLength + 5; i++)
+  for (size_t i = 0; i < LabelTextfield::kMaxLength + 5; i++)
     SendKey(ui::VKEY_A);
   SendKey(ui::VKEY_RETURN);
   ExitOverview();
@@ -5055,7 +5055,7 @@ TEST_F(DesksTest, ZeroStateDeskButtonText) {
   auto* zero_state_default_desk_button =
       desks_bar_view->zero_state_default_desk_button();
   std::u16string desk_button_text = zero_state_default_desk_button->GetText();
-  std::u16string expected_desk_name(DeskNameView::kMaxLength, L'a');
+  std::u16string expected_desk_name(LabelTextfield::kMaxLength, L'a');
   // Zero state desk button should show the elided name as the DeskNameView.
   EXPECT_EQ(expected_desk_name,
             DesksController::Get()->desks()[0].get()->name());
@@ -5223,7 +5223,7 @@ TEST_F(DesksTest, ReorderDesksByKeyboard) {
   NewDesk();
   NewDesk();
 
-  overview_grid->CommitDeskNameChanges();
+  overview_grid->CommitNameChanges();
 
   // Cache the mini view and corresponding desks.
   std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();

@@ -32,6 +32,7 @@ class Widget;
 namespace ash {
 
 class DesksBarView;
+class DesksTemplatesGridView;
 class OverviewGridEventHandler;
 class OverviewItem;
 class PresentationTimeRecorder;
@@ -320,8 +321,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // grid.
   bool IsDeskNameBeingModified() const;
 
-  // Commits any on-going desk name changes if any.
-  void CommitDeskNameChanges();
+  // Commits any on-going name changes if any.
+  void CommitNameChanges();
 
   // Shows the grid of the desks templates. Creates the widget if needed. If
   // `was_zero_state` is true then we will expand the desks bar.
@@ -333,6 +334,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // True if the grid of desks templates is shown.
   bool IsShowingDesksTemplatesGrid() const;
+
+  // Returns true if any template name is being modified in its item view on
+  // this grid.
+  bool IsTemplateNameBeingModified() const;
 
   // Updates the visibility of the `no_windows_widget_`. If `no_items` is true,
   // the widget will be shown. If `no_items` is false or the desk templates grid
@@ -568,6 +573,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // The widget that contains the view for all the existing templates.
   views::UniqueWidgetPtr desks_templates_grid_widget_;
+
+  // The contents view of the above `desks_templates_grid_widget_` if created.
+  DesksTemplatesGridView* desks_templates_grid_view_ = nullptr;
 
   // A widget that contains a button which creates a new desk template when
   // pressed.
