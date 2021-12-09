@@ -1391,6 +1391,8 @@ if (!is_ios) {
   }
 
   script_test("webgpu_blink_web_tests") {
+    run_under_python2 = true
+
     # This target differs from :blink_web_tests in that it uses the same
     # test harness and a few additional flags but, more importantly, only runs
     # the web_tests/wpt_internal/webgpu tests, so it doesn't have a data
