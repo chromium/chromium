@@ -1259,6 +1259,38 @@ public class BookmarkTest {
     }
 
     @Test
+    @SmallTest
+    @Features.EnableFeatures(
+            {ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, ChromeFeatureList.READ_LATER + "<Study"})
+    @CommandLineFlags.
+    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:use_cct/false"})
+    public void
+    testReadingListOpenInRegularTab() throws Exception {
+        addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
+        BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        CriteriaHelper.pollUiThread(() -> mBookmarkModel.getReadingListItem(mTestUrlA) != null);
+
+        // Open the "Reading list" folder.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+        onView(withText("Reading list")).perform(click());
+        RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        Assert.assertEquals("The 2nd view should be reading list.", BookmarkType.READING_LIST,
+                getIdByPosition(1).getType());
+        TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
+
+        ChromeTabbedActivity activity = waitForTabbedActivity();
+        CriteriaHelper.pollUiThread(() -> {
+            Tab activityTab = activity.getActivityTab();
+            Criteria.checkThat(activityTab, Matchers.notNullValue());
+            Criteria.checkThat(activityTab.getUrl(), Matchers.notNullValue());
+            Criteria.checkThat(activityTab.getUrl(), Matchers.is(mTestUrlA));
+        });
+    }
+
+    @Test
     @MediumTest
     public void testMoveUpMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);

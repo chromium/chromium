@@ -487,7 +487,8 @@ public class BookmarkUtils {
 
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
-            openReadingListInCustomTab(context, bookmarkItem.getUrl().getSpec(), isIncognito);
+            openReadingListItem(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName,
+                    isIncognito);
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         } else {
             openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName);
@@ -559,6 +560,15 @@ public class BookmarkUtils {
         }
 
         IntentHandler.startActivityForTrustedIntent(intent);
+    }
+
+    private static void openReadingListItem(
+            Context context, String url, ComponentName componentName, boolean isOffTheRecord) {
+        if (ReadingListFeatures.shouldUseCustomTab()) {
+            openReadingListInCustomTab(context, url, isOffTheRecord);
+        } else {
+            openUrl(context, url, componentName);
+        }
     }
 
     private static void openReadingListInCustomTab(

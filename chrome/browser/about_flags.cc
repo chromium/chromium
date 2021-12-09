@@ -2526,6 +2526,9 @@ const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
 const FeatureEntry::FeatureParam kReadLaterSemiIntegrated[] = {
     {"use_root_bookmark_as_default", "true"},
     {"allow_bookmark_type_swapping", "true"}};
+const FeatureEntry::FeatureParam kReadLaterNoCustomTab[] = {
+    {"use_root_bookmark_as_default", "true"},
+    {"use_cct", "false"}};
 
 const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
@@ -2533,7 +2536,9 @@ const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(with app menu item)", kReadLaterInAppMenu,
      base::size(kReadLaterInAppMenu), nullptr},
     {"(bookmarks semi-integration)", kReadLaterSemiIntegrated,
-     base::size(kReadLaterSemiIntegrated), nullptr}};
+     base::size(kReadLaterSemiIntegrated), nullptr},
+    {"(no custom tab)", kReadLaterNoCustomTab,
+     base::size(kReadLaterNoCustomTab), nullptr}};
 
 const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
     {"bookmark_visuals_enabled", "true"}};
