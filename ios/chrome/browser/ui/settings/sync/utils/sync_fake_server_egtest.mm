@@ -104,7 +104,8 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
 // client.
-- (void)testSyncDownloadBookmark {
+// Flaky test. See crbug.com/1275849.
+- (void)DISABLED_testSyncDownloadBookmark {
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo" expectedCount:0];
   const GURL URL = web::test::HttpServer::MakeUrl("http://www.hoo.com");
   [ChromeEarlGrey addFakeSyncServerBookmarkWithURL:URL title:"hoo"];
