@@ -1574,8 +1574,9 @@ chromium-metrics-reviews@google.com.
   <summary>Records whenever a Blimp tab toggles visibility.</summary>
 </histogram>
 
-<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2022-04-17">
+<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records a duration of a Bluetooth adapter
     being lost. This helps us better understand the Bluetooth controller drop
@@ -1584,7 +1585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.NumOfMonitors" units="count"
-    expires_after="2022-04-24">
+    expires_after="2022-12-31">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1595,7 +1596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.FilterPatternsPerMinute"
-    units="count" expires_after="2021-12-31">
+    units="count" expires_after="2022-12-31">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1611,7 +1612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.{Operation}.Result"
-    enum="BlueZResultOfAdvertisementMonitor" expires_after="2021-12-31">
+    enum="BlueZResultOfAdvertisementMonitor" expires_after="2022-12-31">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1630,8 +1631,9 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2022-04-10">
+<histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2022-12-31">
   <owner>sonnysasaka@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records a duration of a Bluetooth adapter
     being lost caused by hardware disconnection. This helps us better understand
@@ -1640,8 +1642,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.NumberOfExistingAdvertisements" units="advertisements"
-    expires_after="2022-04-24">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the number of existing advertisements
     when registering for a new advertisement. This helps us better understand
@@ -1651,7 +1654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.PerProfile.ConnectionResult"
-    enum="BlueZResultOfPerProfileConnection" expires_after="2021-12-31">
+    enum="BlueZResultOfPerProfileConnection" expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="BlueZPerProfileResult" -->
 
   <owner>mmandlik@google.com</owner>
@@ -1664,7 +1667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.PerProfile.ProbingResult"
-    enum="BlueZResultOfPerProfileProbing" expires_after="2021-12-31">
+    enum="BlueZResultOfPerProfileProbing" expires_after="2022-12-31">
 <!-- Name completed by histogram_suffixes name="BlueZPerProfileResult" -->
 
   <owner>mmandlik@google.com</owner>
@@ -1677,8 +1680,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ReasonOfDisconnection" enum="BlueZReasonOfDisconnection"
-    expires_after="2022-04-24">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the reason of Bluetooth disconnection
     between the local device and the remote Bluetooth device. This helps us
@@ -1687,8 +1691,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ResultOfAdvertisementRegistration"
-    enum="BlueZResultOfAdvertisementRegistration" expires_after="2021-12-31">
+    enum="BlueZResultOfAdvertisementRegistration" expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of advertisement
     registration. This helps us better understand the persentage of successful
@@ -1697,8 +1702,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ResultOfConnection" enum="BlueZResultOfConnection"
-    expires_after="2022-04-03">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of connection requests
     to remote devices. This helps us better understand the persentage of
@@ -1707,8 +1713,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.ResultOfPairing" enum="BlueZResultOfPairing"
-    expires_after="2022-04-03">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the outcomes of pairing with remote
     devices. This helps us better understand the persentage of successful
@@ -1717,8 +1724,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfAdvertisement" units="seconds"
-    expires_after="2021-12-31">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the duration when the local device is
     performing Bluetooth advertisment and discoverable as a Bluetooth Low Energy
@@ -1728,8 +1736,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscoverable" units="seconds"
-    expires_after="2022-04-24">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the duration when the local device is
     discoverable by other devices as a Bluetooth classic device. This helps us
@@ -1739,8 +1748,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscovering" units="seconds"
-    expires_after="2022-04-17">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the duration for the local device to
     perform device discovery. This helps us better understand the amount of
@@ -1750,8 +1760,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfPairing" units="seconds"
-    expires_after="2022-04-03">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the duration taken to finish a
     successful pairing between the local device and a remote Bluetooth device.
@@ -1760,8 +1771,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfSetupConnection" units="seconds"
-    expires_after="2022-04-10">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the duration taken to finish a
     successful connection between the local device and a remote Bluetooth
@@ -1771,8 +1783,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TypeOfDiscovery" enum="BlueZTypeOfDiscovery"
-    expires_after="2022-04-24">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the types of device discovery
     performed by the local device. This helps us better understand the most
@@ -1781,8 +1794,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TypeOfFoundDevice" enum="BlueZTypeOfFoundDevice"
-    expires_after="2021-12-31">
+    expires_after="2022-12-31">
   <owner>mcchou@chromium.org</owner>
+  <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
     This is specific to Chrome OS. Records the types of discovered devices in
     terms of Bluetooth classic, Bluetooth low energy and Dual-mode supports.
