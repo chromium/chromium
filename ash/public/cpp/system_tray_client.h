@@ -43,6 +43,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows settings related to multiple displays.
   virtual void ShowDisplaySettings() = 0;
 
+  // Shows settings related to storage.
+  virtual void ShowStorageSettings() = 0;
+
   // Shows settings related to power.
   virtual void ShowPowerSettings() = 0;
 

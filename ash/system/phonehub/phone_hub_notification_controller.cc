@@ -25,10 +25,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -42,12 +44,15 @@
 namespace ash {
 
 using phone_hub_metrics::NotificationInteraction;
+using phonehub::proto::CameraRollItemMetadata;
 
 namespace {
 const char kNotifierId[] = "chrome://phonehub";
 const char kNotifierIdSeparator[] = "-";
 const char kPhoneHubInstantTetherNotificationId[] =
     "chrome://phonehub-instant-tether";
+const char kPhoneHubCameraRollNotificationId[] =
+    "chrome://phonehub-camera-roll";
 const char kNotificationCustomViewType[] = "phonehub";
 const char kNotificationCustomCallViewType[] = "phonehub-call";
 const int kReplyButtonIndex = 0;
@@ -390,6 +395,8 @@ PhoneHubNotificationController::~PhoneHubNotificationController() {
     feature_status_provider_->RemoveObserver(this);
   if (tether_controller_)
     tether_controller_->RemoveObserver(this);
+  if (camera_roll_manager_)
+    camera_roll_manager_->RemoveObserver(this);
 }
 
 void PhoneHubNotificationController::SetManager(
@@ -419,6 +426,19 @@ void PhoneHubNotificationController::SetManager(
     tether_controller_->AddObserver(this);
   } else {
     tether_controller_ = nullptr;
+  }
+
+  if (camera_roll_manager_)
+    camera_roll_manager_->RemoveObserver(this);
+  if (phone_hub_manager) {
+    camera_roll_manager_ = phone_hub_manager->GetCameraRollManager();
+    if (camera_roll_manager_) {
+      camera_roll_manager_->AddObserver(this);
+    } else {
+      camera_roll_manager_ = nullptr;
+    }
+  } else {
+    camera_roll_manager_ = nullptr;
   }
 
   if (phone_hub_manager)
@@ -527,6 +547,150 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
           message_center::SystemNotificationWarningLevel::NORMAL);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
+}
+
+void PhoneHubNotificationController::OnCameraRollDownloadError(
+    DownloadErrorType error_type,
+    const CameraRollItemMetadata& metadata) {
+  std::unique_ptr<message_center::Notification> notification;
+  switch (error_type) {
+    case DownloadErrorType::kGenericError:
+      notification = CreateCameraRollGenericNotification(metadata);
+      break;
+    case DownloadErrorType::kInsufficientStorage:
+      notification = CreateCameraRollStorageNotification(metadata);
+      break;
+    case DownloadErrorType::kNetworkConnection:
+      notification = CreateCameraRollNetworkNotification(metadata);
+      break;
+  }
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
+}
+
+std::unique_ptr<message_center::Notification>
+PhoneHubNotificationController::CreateCameraRollGenericNotification(
+    const CameraRollItemMetadata& metadata) {
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              [](phonehub::CameraRollManager* manager,
+                 const CameraRollItemMetadata& metadata,
+                 absl::optional<int> button_index) {
+                // When button is clicked, close notification and retry the
+                // download
+                if (button_index.has_value()) {
+                  message_center::MessageCenter::Get()->RemoveNotification(
+                      kPhoneHubCameraRollNotificationId, /*by_user=*/true);
+                  manager->DownloadItem(metadata);
+                }
+              },
+              camera_roll_manager_, metadata));
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::PHONE_HUB,
+      kPhoneHubCameraRollNotificationId);
+  message_center::RichNotificationData optional_fields;
+  message_center::ButtonInfo button;
+  button.title = l10n_util::GetStringUTF16(
+      IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_GENERIC_ACTION);
+  optional_fields.buttons.push_back(button);
+  return CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kPhoneHubCameraRollNotificationId,
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_GENERIC_BODY,
+          base::UTF8ToUTF16(metadata.file_name())),
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME),
+      /*origin_url=*/GURL(), notifier_id, optional_fields, std::move(delegate),
+      kPhoneHubCameraRollMenuDownloadIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+}
+
+std::unique_ptr<message_center::Notification>
+PhoneHubNotificationController::CreateCameraRollStorageNotification(
+    const CameraRollItemMetadata& metadata) {
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](absl::optional<int> button_index) {
+            // When button is clicked, close notification and open Storage
+            // Management Settings page if we can open WebUI settings.
+            if (button_index.has_value()) {
+              message_center::MessageCenter::Get()->RemoveNotification(
+                  kPhoneHubCameraRollNotificationId, /*by_user=*/true);
+              if (TrayPopupUtils::CanOpenWebUISettings()) {
+                Shell::Get()
+                    ->system_tray_model()
+                    ->client()
+                    ->ShowStorageSettings();
+              } else {
+                PA_LOG(WARNING)
+                    << "Cannot open Storage Management Settings since it's not "
+                       "possible to open WebUI settings";
+              }
+            }
+          }));
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::PHONE_HUB,
+      kPhoneHubCameraRollNotificationId);
+  message_center::RichNotificationData optional_fields;
+  message_center::ButtonInfo button;
+  button.title = l10n_util::GetStringUTF16(
+      IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_STORAGE_ACTION);
+  optional_fields.buttons.push_back(button);
+  return CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kPhoneHubCameraRollNotificationId,
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_STORAGE_BODY,
+          base::UTF8ToUTF16(metadata.file_name())),
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME),
+      /*origin_url=*/GURL(), notifier_id, optional_fields, std::move(delegate),
+      kPhoneHubCameraRollMenuDownloadIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+}
+
+std::unique_ptr<message_center::Notification>
+PhoneHubNotificationController::CreateCameraRollNetworkNotification(
+    const CameraRollItemMetadata& metadata) {
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](absl::optional<int> button_index) {
+            // When button is clicked, close notification and open Network
+            // Settings page if we can open WebUI settings.
+            if (button_index.has_value()) {
+              message_center::MessageCenter::Get()->RemoveNotification(
+                  kPhoneHubCameraRollNotificationId, /*by_user=*/true);
+              if (TrayPopupUtils::CanOpenWebUISettings()) {
+                Shell::Get()->system_tray_model()->client()->ShowSettings(
+                    display::kInvalidDisplayId);
+              } else {
+                PA_LOG(WARNING)
+                    << "Cannot open Settings since it's not possible to open "
+                       "WebUI settings";
+              }
+            }
+          }));
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::PHONE_HUB,
+      kPhoneHubCameraRollNotificationId);
+  message_center::RichNotificationData optional_fields;
+  message_center::ButtonInfo button;
+  button.title = l10n_util::GetStringUTF16(
+      IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_NETWORK_ACTION);
+  optional_fields.buttons.push_back(button);
+  return CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kPhoneHubCameraRollNotificationId,
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_NETWORK_BODY,
+          base::UTF8ToUTF16(metadata.file_name())),
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME),
+      /*origin_url=*/GURL(), notifier_id, optional_fields, std::move(delegate),
+      kPhoneHubCameraRollMenuDownloadIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
 }
 
 void PhoneHubNotificationController::OpenSettings() {

@@ -84,7 +84,9 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA}, {});
+        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
+         chromeos::features::kPhoneHubCameraRoll},
+        {});
     AshTestBase::SetUp();
 
     feature_status_provider_ =

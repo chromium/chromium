@@ -1616,6 +1616,27 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_MENU_DOWNLOAD_LABEL" desc="Label for the option to download a camera roll item from the phone hub bubble.">
         Download
       </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE" desc="Title of the error notification when Phone Hub is unable to download a Camera Roll item.">
+        Can’t download file
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_GENERIC_BODY" desc="Body of the error notification when Phone Hub is unable to download a Camera Roll item for an unknown reason.">
+        Something went wrong while downloading <ph name="FILENAME">$1<ex>photo.jpg</ex></ph>
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_STORAGE_BODY" desc="Body of the error notification when Phone Hub is unable to download a Camera Roll item due to lack of storage space.">
+        Not enough space for <ph name="FILENAME">$1<ex>photo.jpg</ex></ph>. Free up space.
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_NETWORK_BODY" desc="Body of the error notification when Phone Hub is unable to download a Camera Roll item due to issues with network connection.">
+        Check your network connection to download <ph name="FILENAME">$1<ex>photo.jpg</ex></ph>
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_GENERIC_ACTION" desc="Text on the call to action button for generic error notification.">
+        TRY AGAIN
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_STORAGE_ACTION" desc="Text on the call to action button for storage error notification.">
+        MANAGE STORAGE
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_NETWORK_ACTION" desc="Text on the call to action button for network error notification.">
+        GO TO SETTINGS
+      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_ACCESSIBLE_NAME" desc="Accessible name for notification received in Phone Hub from paired phone, containing app_name, notification_title, message, phone_name.">
         <ph name="APP_NAME">$1<ex>Chat</ex></ph>, <ph name="NOTIFICATION_TITLE">$2<ex>+1-111-111-1111</ex></ph>: <ph name="MESSAGE">$3<ex>Hello</ex></ph>, <ph name="PHONE_NAME">$4<ex>Pixel</ex></ph>
       </message>

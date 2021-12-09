@@ -77,8 +77,9 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
     const proto::FetchCameraRollItemDataResponse& response) {
   if (response.file_availability() !=
       proto::FetchCameraRollItemDataResponse::AVAILABLE) {
-    // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded.
+    NotifyCameraRollDownloadError(
+        CameraRollManager::Observer::DownloadErrorType::kGenericError,
+        response.metadata());
     return;
   }
 
@@ -93,19 +94,33 @@ void CameraRollManagerImpl::OnPayloadFilesCreated(
     CameraRollDownloadManager::CreatePayloadFilesResult result,
     absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
         payload_files) {
-  if (result != CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess) {
-    // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded and log the result code.
-    return;
+  switch (result) {
+    case CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess:
+      connection_manager_->RegisterPayloadFile(
+          response.payload_id(), std::move(payload_files.value()),
+          base::BindRepeating(&CameraRollManagerImpl::OnFileTransferUpdate,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              response.metadata()),
+          base::BindOnce(&CameraRollManagerImpl::OnPayloadFileRegistered,
+                         weak_ptr_factory_.GetWeakPtr(), response.metadata(),
+                         response.payload_id()));
+      break;
+    case CameraRollDownloadManager::CreatePayloadFilesResult::
+        kInsufficientDiskSpace:
+      PA_LOG(WARNING) << "CreatePayloadFilesResult: "
+                      << static_cast<int>(result);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kInsufficientStorage,
+          response.metadata());
+      break;
+    default:
+      PA_LOG(WARNING) << "CreatePayloadFilesResult: "
+                      << static_cast<int>(result);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kGenericError,
+          response.metadata());
+      break;
   }
-
-  connection_manager_->RegisterPayloadFile(
-      response.payload_id(), std::move(payload_files.value()),
-      base::BindRepeating(&CameraRollManagerImpl::OnFileTransferUpdate,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&CameraRollManagerImpl::OnPayloadFileRegistered,
-                     weak_ptr_factory_.GetWeakPtr(), response.metadata(),
-                     response.payload_id()));
 }
 
 void CameraRollManagerImpl::OnPayloadFileRegistered(
@@ -114,8 +129,9 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
     bool success) {
   if (!success) {
     camera_roll_download_manager_->DeleteFile(payload_id);
-    // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded.
+    NotifyCameraRollDownloadError(
+        CameraRollManager::Observer::DownloadErrorType::kGenericError,
+        metadata);
     return;
   }
 
@@ -126,7 +142,16 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
 }
 
 void CameraRollManagerImpl::OnFileTransferUpdate(
+    const proto::CameraRollItemMetadata& metadata,
     chromeos::secure_channel::mojom::FileTransferUpdatePtr update) {
+  if (update->status ==
+          chromeos::secure_channel::mojom::FileTransferStatus::kFailure ||
+      update->status ==
+          chromeos::secure_channel::mojom::FileTransferStatus::kCanceled) {
+    NotifyCameraRollDownloadError(
+        CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
+        metadata);
+  }
   camera_roll_download_manager_->UpdateDownloadProgress(std::move(update));
 }
 

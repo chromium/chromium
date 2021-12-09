@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 #include "ash/ash_export.h"
+#include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/notification_manager.h"
 #include "ash/components/phonehub/tether_controller.h"
@@ -29,12 +30,18 @@ class Notification;
 class NotificationInteractionHandler;
 class PhoneHubManager;
 class PhoneModel;
+
+namespace proto {
+class CameraRollItemMetadata;
+}  // namespace proto
+
 }  // namespace phonehub
 
 // This controller creates and manages a message_center::Notification for each
 // PhoneHub corresponding notification.
 class ASH_EXPORT PhoneHubNotificationController
-    : public phonehub::FeatureStatusProvider::Observer,
+    : public phonehub::CameraRollManager::Observer,
+      public phonehub::FeatureStatusProvider::Observer,
       public phonehub::NotificationManager::Observer,
       public phonehub::TetherController::Observer {
  public:
@@ -75,6 +82,22 @@ class ASH_EXPORT PhoneHubNotificationController
   // phonehub::TetherController::Observer:
   void OnAttemptConnectionScanFailed() override;
   void OnTetherStatusChanged() override {}
+
+  // phonehub::CameraRollManager::Observer:
+  void OnCameraRollDownloadError(
+      DownloadErrorType error_type,
+      const phonehub::proto::CameraRollItemMetadata& metadata) override;
+
+  // Helper functions for creating Camera Roll notifications
+  std::unique_ptr<message_center::Notification>
+  CreateCameraRollGenericNotification(
+      const phonehub::proto::CameraRollItemMetadata& metadata);
+  std::unique_ptr<message_center::Notification>
+  CreateCameraRollStorageNotification(
+      const phonehub::proto::CameraRollItemMetadata& metadata);
+  std::unique_ptr<message_center::Notification>
+  CreateCameraRollNetworkNotification(
+      const phonehub::proto::CameraRollItemMetadata& metadata);
 
   // Callbacks for user interactions.
   void OpenSettings();
@@ -121,6 +144,7 @@ class ASH_EXPORT PhoneHubNotificationController
   phonehub::NotificationManager* manager_ = nullptr;
   phonehub::FeatureStatusProvider* feature_status_provider_ = nullptr;
   phonehub::TetherController* tether_controller_ = nullptr;
+  phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
   phonehub::PhoneModel* phone_model_ = nullptr;
   std::unordered_map<int64_t, std::unique_ptr<NotificationDelegate>>
       notification_map_;

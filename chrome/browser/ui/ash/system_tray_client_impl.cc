@@ -331,6 +331,11 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
       chromeos::settings::mojom::kDisplaySubpagePath);
 }
 
+void SystemTrayClientImpl::ShowStorageSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kStorageSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowPowerSettings() {
   base::RecordAction(base::UserMetricsAction("Tray_ShowPowerOptions"));
   ShowSettingsSubPageForActiveUser(

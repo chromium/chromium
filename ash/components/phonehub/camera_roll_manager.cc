@@ -43,7 +43,19 @@ void CameraRollManager::NotifyCameraRollViewUiStateUpdated() {
   }
 }
 
+void CameraRollManager::NotifyCameraRollDownloadError(
+    CameraRollManager::Observer::DownloadErrorType error_type,
+    const proto::CameraRollItemMetadata& metadata) {
+  for (auto& observer : observer_list_) {
+    observer.OnCameraRollDownloadError(error_type, metadata);
+  }
+}
+
 void CameraRollManager::Observer::OnCameraRollViewUiStateUpdated() {}
+
+void CameraRollManager::Observer::OnCameraRollDownloadError(
+    DownloadErrorType error_type,
+    const proto::CameraRollItemMetadata& metadata) {}
 
 }  // namespace phonehub
 }  // namespace ash

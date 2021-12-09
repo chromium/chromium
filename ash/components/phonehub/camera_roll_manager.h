@@ -25,6 +25,16 @@ class CameraRollManager {
     // the access state of camera roll feature is updated or current camera roll
     // items has changed.
     virtual void OnCameraRollViewUiStateUpdated();
+
+    // Notifies observers that there was an error in the download process.
+    enum class DownloadErrorType {
+      kGenericError,
+      kInsufficientStorage,
+      kNetworkConnection,
+    };
+    virtual void OnCameraRollDownloadError(
+        DownloadErrorType error_type,
+        const proto::CameraRollItemMetadata& metadata);
   };
 
   enum class CameraRollUiState {
@@ -79,6 +89,9 @@ class CameraRollManager {
   void ClearCurrentItems();
   virtual void ComputeAndUpdateUiState() = 0;
   void NotifyCameraRollViewUiStateUpdated();
+  void NotifyCameraRollDownloadError(
+      Observer::DownloadErrorType error_type,
+      const proto::CameraRollItemMetadata& metadata);
 
  private:
   std::vector<CameraRollItem> current_items_;

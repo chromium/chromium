@@ -86,6 +86,7 @@ class CameraRollManagerImpl
                                int64_t payload_id,
                                bool success);
   void OnFileTransferUpdate(
+      const proto::CameraRollItemMetadata& metadata,
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
 
   bool IsCameraRollSettingEnabled();
