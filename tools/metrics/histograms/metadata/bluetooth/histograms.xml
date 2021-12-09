@@ -188,7 +188,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps"
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps.{FastPairPairingProtocol}"
     enum="FastPairEngagementFlowEvent" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
@@ -196,9 +197,14 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records each step in the Fast Pair flow. Emitted when the discovery UI is
     shown, the discovery UI is dismissed, pairing progress begins, pairing
-    fails, pairing suceeded, the error UI is dismissed, and/or when the setting
+    fails, pairing succeeded, the error UI is dismissed, and/or when the setting
     button on the error UI is pressed.
   </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"

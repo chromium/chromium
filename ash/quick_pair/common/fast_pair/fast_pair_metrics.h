@@ -10,6 +10,8 @@
 namespace ash {
 namespace quick_pair {
 
+struct Device;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
@@ -25,7 +27,8 @@ enum COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairEngagementFlowEvent {
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordFastPairEngagementFlow(FastPairEngagementFlowEvent event);
+void AttemptRecordingFastPairEngagementFlow(const Device& device,
+                                            FastPairEngagementFlowEvent event);
 
 }  // namespace quick_pair
 }  // namespace ash
