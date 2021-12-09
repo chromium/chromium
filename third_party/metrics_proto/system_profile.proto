@@ -614,11 +614,6 @@ message SystemProfileProto {
     // GMS Core updates.
     optional int32 crash_count_due_to_gms_core_update = 30;
 
-    // The number of times the program began, but did not complete, the shutdown
-    // process.  (For example, this may occur when Windows is shutting down, and
-    // it only gives the process a few seconds to clean up.)
-    optional int32 incomplete_shutdown_count = 17;
-
     // Whether the metrics being reported are from a previous run picked up via
     // the left-over memory mapped files.
     optional bool from_previous_run = 29;
