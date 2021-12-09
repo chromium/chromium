@@ -770,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
 }
 
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_CancelWarn DISABLED_CancelWarn
+#define MAYBE_ShouldProceedWarn DISABLED_ShouldProceedWarn
 #else
 #define MAYBE_ShouldProceedWarn ShouldProceedWarn
 #endif
