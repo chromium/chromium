@@ -35,11 +35,15 @@
     // before the object is destroyed or the download is cancelled. Thus it
     // must be called now.
     //
-    // Call it with a temporary path, and schedule a block to delete
-    // the file later (to avoid keeping the file around).
-    NSURL* url = [NSURL
-        fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:
-                                                    self.suggestedFilename]];
+    // Call it with a temporary path, and schedule a block to delete the file
+    // later (to avoid keeping the file around). Use a random non-empty name
+    // for the file as `self.suggestedFilename` can be `nil` which would result
+    // in the deletion of the directory `NSTemporaryDirectory()` preventing the
+    // creation of any temporary file afterwards.
+    NSString* filename = [[NSUUID UUID] UUIDString];
+    NSURL* url =
+        [NSURL fileURLWithPath:[NSTemporaryDirectory()
+                                   stringByAppendingPathComponent:filename]];
 
     _startDownloadBlock(url);
     _startDownloadBlock = nil;
