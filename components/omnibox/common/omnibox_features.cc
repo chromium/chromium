@@ -100,7 +100,7 @@ const base::Feature kOmniboxMaxURLMatches{"OmniboxMaxURLMatches",
 // would be shown. E.g., show up to 10 suggestions if doing so would display no
 // URLs; else show up to 8 suggestions if doing so would include 1 or more URLs.
 const base::Feature kDynamicMaxAutocomplete{"OmniboxDynamicMaxAutocomplete",
-                                            enabled_by_default_desktop_only};
+                                            enabled_by_default_desktop_android};
 
 // If enabled, when the user clears the whole omnibox text (i.e. via Backspace),
 // Chrome will request remote ZeroSuggest suggestions for the OTHER page

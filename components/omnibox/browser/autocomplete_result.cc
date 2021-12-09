@@ -112,11 +112,17 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 
 // static
 size_t AutocompleteResult::GetDynamicMaxMatches() {
+#if defined(OS_ANDROID)
+  constexpr const int kDynamicMaxMatchesLimit = 15;
+#else  // !defined(OS_ANDROID)
+  constexpr const int kDynamicMaxMatchesLimit = 10;
+#endif
   if (!base::FeatureList::IsEnabled(omnibox::kDynamicMaxAutocomplete))
     return AutocompleteResult::GetMaxMatches();
   return base::GetFieldTrialParamByFeatureAsInt(
       omnibox::kDynamicMaxAutocomplete,
-      OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam, 10);
+      OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam,
+      kDynamicMaxMatchesLimit);
 }
 
 AutocompleteResult::AutocompleteResult() {
