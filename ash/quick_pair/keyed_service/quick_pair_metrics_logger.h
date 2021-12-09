@@ -8,8 +8,10 @@
 #include "ash/quick_pair/pairing/pairer_broker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/ui_broker.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 
 namespace ash {
 namespace quick_pair {
@@ -50,6 +52,12 @@ class QuickPairMetricsLogger : public PairerBroker::Observer,
   // ScannerBroker::Observer
   void OnDeviceFound(scoped_refptr<Device> device) override;
   void OnDeviceLost(scoped_refptr<Device> device) override;
+
+  // Map of devices to the time at which a pairing was initiated. This is used
+  // to calculate the time between the user electing to pair the device and
+  // the pairing entering a terminal state (success or failure).
+  base::flat_map<scoped_refptr<Device>, base::TimeTicks>
+      device_pairing_start_timestamps_;
 
   std::unique_ptr<FastPairFeatureUsageMetricsLogger>
       feature_usage_metrics_logger_;

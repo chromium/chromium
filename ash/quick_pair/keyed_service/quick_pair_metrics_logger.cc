@@ -27,12 +27,20 @@ void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
   AttemptRecordingFastPairEngagementFlow(
       *device, FastPairEngagementFlowEvent::kPairingSucceeded);
   feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
+  base::TimeDelta total_pair_time =
+      base::TimeTicks::Now() - device_pairing_start_timestamps_[device];
+  AttemptRecordingTotalUxPairTime(*device, total_pair_time);
 }
 
 void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
                                            PairFailure failure) {
   AttemptRecordingFastPairEngagementFlow(
       *device, FastPairEngagementFlowEvent::kPairingFailed);
+  base::TimeDelta total_pair_time =
+      base::TimeTicks::Now() - device_pairing_start_timestamps_[device];
+  device_pairing_start_timestamps_.erase(device);
+  AttemptRecordingTotalUxPairTime(*device, total_pair_time);
+
   feature_usage_metrics_logger_->RecordUsage(/*success=*/false);
 }
 
@@ -42,6 +50,7 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
     case DiscoveryAction::kPairToDevice:
       AttemptRecordingFastPairEngagementFlow(
           *device, FastPairEngagementFlowEvent::kDiscoveryUiConnectPressed);
+      device_pairing_start_timestamps_[device] = base::TimeTicks::Now();
       break;
     case DiscoveryAction::kDismissedByUser:
     case DiscoveryAction::kDismissed:

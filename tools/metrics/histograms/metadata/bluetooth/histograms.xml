@@ -207,6 +207,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.TotalUxPairTime.{FastPairPairingProtocol}"
+    units="ms" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the time necessary to reach a terminal Fast Pair pair state, either
+    success or failure, after pairing begins to a device, from the user's
+    perspective. Time is calculated as the difference between when the user
+    selects to pair a device via Fast Pair, and when it reaches a pair failure
+    or pair succeeded state. The metric is emitted after a final pairing state
+    has been reached.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"
     expires_after="2022-07-21">
   <owner>khorimoto@chromium.org</owner>

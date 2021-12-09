@@ -34,6 +34,10 @@ constexpr char kFastPairEngagementFlowMetricInitial[] =
 constexpr char kFastPairEngagementFlowMetricSubsequent[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps."
     "SubsequentPairingProtocol";
+constexpr char kFastPairPairTimeMetricInitial[] =
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol";
+constexpr char kFastPairPairTimeMetricSubsequent[] =
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol";
 
 }  // namespace
 
@@ -643,6 +647,26 @@ TEST_F(QuickPairMetricsLoggerTest, LogErrorUiSettingsPressed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kErrorUiSettingsPressed),
             1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairTime_Initial) {
+  SimulateDiscoveryUiConnectPressed(Protocol::kFastPairInitial);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricInitial, 0);
+
+  SimulatePairingSucceeded(Protocol::kFastPairInitial);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricInitial, 1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairTime_Subsequent) {
+  SimulateDiscoveryUiConnectPressed(Protocol::kFastPairSubsequent);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricSubsequent, 0);
+
+  SimulatePairingSucceeded(Protocol::kFastPairSubsequent);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester().ExpectTotalCount(kFastPairPairTimeMetricSubsequent, 1);
 }
 
 }  // namespace quick_pair

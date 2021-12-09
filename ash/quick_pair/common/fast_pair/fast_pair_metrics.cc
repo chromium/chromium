@@ -8,8 +8,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
-#include "base/strings/strcat.h"
-
 namespace {
 
 const char kEngagementFlowInitialMetric[] =
@@ -17,6 +15,10 @@ const char kEngagementFlowInitialMetric[] =
 const char kEngagementFlowSubsequentMetric[] =
     "Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps."
     "SubsequentPairingProtocol";
+const char kTotalUxPairTimeInitialMetric[] =
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.InitialPairingProtocol";
+const char kTotalUxPairTimeSubsequentMetric[] =
+    "Bluetooth.ChromeOS.FastPair.TotalUxPairTime.SubsequentPairingProtocol";
 
 }  // namespace
 
@@ -35,6 +37,21 @@ void AttemptRecordingFastPairEngagementFlow(const Device& device,
     case Protocol::kFastPairSubsequent:
       base::UmaHistogramSparse(kEngagementFlowSubsequentMetric,
                                static_cast<int>(event));
+      break;
+  }
+}
+
+void AttemptRecordingTotalUxPairTime(const Device& device,
+                                     base::TimeDelta total_pair_time) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramTimes(kTotalUxPairTimeInitialMetric, total_pair_time);
+      break;
+    case Protocol::kFastPairRetroactive:
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramTimes(kTotalUxPairTimeSubsequentMetric,
+                              total_pair_time);
       break;
   }
 }
