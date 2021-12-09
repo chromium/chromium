@@ -8735,7 +8735,7 @@
                         "mode": "0",
                         "reference_window_delay": "5",
                         "reference_window_length": "5",
-                        "use_predicted_step": "false",
+                        "use_predicted_step": "true",
                         "window_length": "5"
                     },
                     "enable_features": [
