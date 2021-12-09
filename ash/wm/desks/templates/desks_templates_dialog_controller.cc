@@ -4,9 +4,15 @@
 
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "base/bind.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -198,6 +204,22 @@ void DesksTemplatesDialogController::ShowDeleteDialog(
 
 void DesksTemplatesDialogController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(dialog_widget_, widget);
+  for (auto& overview_grid :
+       Shell::Get()->overview_controller()->overview_session()->grid_list()) {
+    views::Widget* templates_grid_widget =
+        overview_grid->desks_templates_grid_widget();
+    if (templates_grid_widget) {
+      auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
+          templates_grid_widget->GetContentsView());
+      for (DesksTemplatesItemView* template_item :
+           templates_grid_view->grid_items()) {
+        // Update the button visibility when a dialog is closed.
+        template_item->UpdateHoverButtonsVisibility(
+            aura::Env::GetInstance()->last_mouse_location(),
+            /*is_touch=*/false);
+      }
+    }
+  }
   dialog_widget_observation_.Reset();
   dialog_widget_ = nullptr;
 }
