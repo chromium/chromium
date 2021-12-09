@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -21,7 +23,15 @@
 #error "This file requires ARC support."
 #endif
 
+using chrome_test_util::SettingsDoneButton;
+using chrome_test_util::SettingsMenuBackButton;
+
 namespace {
+// Matcher for view
+id<GREYMatcher> PasswordsInOtherAppsViewMatcher() {
+  return grey_accessibilityID(kPasswordsInOtherAppsViewAccessibilityIdentifier);
+}
+
 // Matcher for title.
 id<GREYMatcher> PasswordsInOtherAppsTitleMatcher() {
   return grey_accessibilityID(
@@ -182,36 +192,111 @@ void OpensPasswordsInOtherApps() {
 // Tests Passwords In Other Apps first shows instructions when auto-fill is on,
 // then shows the caption label after auto-fill is turned off.
 - (void)testTurnOffPasswordsInOtherApps {
-  // TODO(crbug.com/1271616): implement this test case.
+  [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:YES];
+  OpensPasswordsInOtherApps();
+
+  [self checkThatCommonElementsAreVisible];
+  [self checkThatTurnOffInstructionsAreVisible];
+  [self checkThatTurnOnInstructionsAreNotVisible];
+
+  [PasswordsInOtherAppsAppInterface setAutoFillStatus:NO];
+
+  [self checkThatTurnOffInstructionsAreNotVisible];
+  [self checkThatTurnOnInstructionsAreVisible];
 }
 
 // Tests Passwords In Other Apps shows instructions when auto-fill is off with
 // short instruction.
 - (void)testShowPasswordsInOtherAppsWithShortInstruction {
-  // TODO(crbug.com/1271616): implement this test case.
+  // Rewrites passwordInAppsViewController.useShortInstruction property.
+  EarlGreyScopedBlockSwizzler shortInstruction(
+      @"PasswordsInOtherAppsViewController", @"useShortInstruction", ^{
+        return YES;
+      });
+
+  [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
+  OpensPasswordsInOtherApps();
+  // Check both turn off instructions and default turn on instructions aren't
+  // visible.
+  [self checkThatCommonElementsAreVisible];
+  [self checkThatTurnOnInstructionsAreNotVisible];
+  [self checkThatTurnOffInstructionsAreNotVisible];
+
+  // Check backup instructions are visible.
+  NSArray<NSString*>* steps = @[
+    l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
+    l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
+  ];
+  for (NSString* step in steps) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(step)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+  [[EarlGrey selectElementWithMatcher:OpenSettingsButton()]
+      assertWithMatcher:grey_interactable()];
 }
 
 // Tests Passwords In Other Apps shows instructions when auto-fill state is
 // unknown.
 - (void)testOpenPasswordsInOtherAppsWithAutoFillUnknown {
-  // TODO(crbug.com/1271616): implement this test case.
+  OpensPasswordsInOtherApps();
+
+  [self checkThatCommonElementsAreVisible];
+  [self checkThatTurnOnInstructionsAreVisible];
+  [self checkThatTurnOffInstructionsAreNotVisible];
+  [[EarlGrey
+      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Simulate status retrieved.
+  [PasswordsInOtherAppsAppInterface startFakeManagerWithAutoFillStatus:NO];
+  [[EarlGrey
+      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests Passwords In Other Apps dismisses itself when top right "done" button
 // is tapped.
 - (void)testTapPasswordsInOtherAppsDoneButtonToDismiss {
-  // TODO(crbug.com/1271616): implement this test case.
+  OpensPasswordsInOtherApps();
+  [self checkThatCommonElementsAreVisible];
+  // Taps done button and check settings dismissed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests Passwords In Other Apps dismisses itself when the user swipes down.
 - (void)testSwipeDownPasswordsInOtherAppsToDismiss {
-  // TODO(crbug.com/1271616): implement this test case.
+  OpensPasswordsInOtherApps();
+  [self checkThatCommonElementsAreVisible];
+  // Swipes down and check settings dismissed.
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests Passwords In Other Apps doesn't show the image on iPhone landscape
-// mode.
+// mode, while showing it for iPad.
 - (void)testImageVisibilityForLandscapeMode {
-  // TODO(crbug.com/1271616): implement this test case.
+  OpensPasswordsInOtherApps();
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
+      assertWithMatcher:grey_minimumVisiblePercent(0.2)];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
+        assertWithMatcher:grey_notVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
+        assertWithMatcher:grey_minimumVisiblePercent(0.2)];
+  }
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [[EarlGrey selectElementWithMatcher:PasswordsInOtherAppsImageMatcher()]
+      assertWithMatcher:grey_minimumVisiblePercent(0.2)];
 }
 
 @end
