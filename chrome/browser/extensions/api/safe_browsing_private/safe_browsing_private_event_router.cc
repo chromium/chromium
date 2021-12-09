@@ -68,6 +68,8 @@ const char kChromeBrowserCloudManagementClientDescription[] =
 #endif
 const char kProfilePolicyClientDescription[] = "a profile-level user";
 
+const char16_t kMaskedUsername[] = u"*****";
+
 void AddAnalysisConnectorVerdictToEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     base::Value* event) {
@@ -126,6 +128,18 @@ std::string DangerTypeToThreatType(download::DownloadDangerType danger_type) {
       // a verdict yet.
       return "UNKNOWN";
   }
+}
+
+// Do a best-effort masking of `username`. If it's an email address (such as
+// foo@example.com), everything before @ should be masked. Otherwise, the entire
+// username should be masked.
+std::u16string MaskUsername(const std::u16string& username) {
+  size_t pos = username.find(u"@");
+  if (pos == std::string::npos) {
+    return std::u16string(kMaskedUsername);
+  }
+
+  return std::u16string(kMaskedUsername) + username.substr(pos);
 }
 
 }  // namespace
@@ -782,7 +796,7 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
   if (is_federated)
     event.SetStringKey(kKeyFederatedOrigin, federated_origin.Serialize());
   event.SetStringKey(kKeyProfileUserName, GetProfileUserName());
-  event.SetStringKey(kKeyLoginUserName, username);
+  event.SetStringKey(kKeyLoginUserName, MaskUsername(username));
 
   ReportRealtimeEvent(kKeyLoginEvent, std::move(settings.value()),
                       std::move(event));
