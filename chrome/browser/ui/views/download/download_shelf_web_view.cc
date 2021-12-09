@@ -60,11 +60,11 @@ void DownloadShelfWebView::OnThemeChanged() {
 
 void DownloadShelfWebView::DoShowDownload(
     DownloadUIModel::DownloadUIModelPtr download) {
-  const base::TimeTicks show_download_start_time_ticks = base::TimeTicks::Now();
+  const base::Time show_download_start_time = base::Time::Now();
   DownloadShelfUI* download_shelf_ui = GetDownloadShelfUI();
   if (download_shelf_ui) {
     download_shelf_ui->DoShowDownload(std::move(download),
-                                      show_download_start_time_ticks);
+                                      show_download_start_time);
   }
 }
 

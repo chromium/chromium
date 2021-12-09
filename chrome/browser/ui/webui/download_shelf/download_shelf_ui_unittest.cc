@@ -123,7 +123,7 @@ TEST_F(DownloadShelfUITest, DownloadLifecycle) {
   DownloadUIModel* download_model_ptr = download_model.get();
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
   download_shelf_ui()->DoShowDownload(std::move(download_model),
-                                      base::TimeTicks::Now());
+                                      base::Time::Now());
   ASSERT_EQ(1u, download_shelf_ui()->GetDownloads().size());
 
   // Assert handler OnDownloadUpdated called on item progress and update
@@ -157,7 +157,7 @@ TEST_F(DownloadShelfUITest, DownloadProgress) {
       DownloadItemModel::Wrap(download_item.get());
   EXPECT_CALL(*handler_, DoShowDownload(_)).Times(1);
   download_shelf_ui()->DoShowDownload(std::move(download_model),
-                                      base::TimeTicks::Now());
+                                      base::Time::Now());
   ASSERT_EQ(1u, download_shelf_ui()->GetDownloads().size());
   ASSERT_TRUE(mock_timer_->IsRunning());
 
