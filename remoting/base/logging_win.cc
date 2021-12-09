@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/logging.h"
+#include "remoting/base/logging_internal.h"
 
 #include <guiddef.h>
 
 #include "base/logging.h"
 #include "base/logging_win.h"
+#include "remoting/base/logging.h"
 
 namespace remoting {
 

@@ -34,9 +34,6 @@ constexpr GUID kRemotingHostLogProviderGuid = {
 // Initializes host logging.
 void InitHostLogging();
 
-// Common initialization for all platforms, called by InitHostLogging().
-void InitHostLoggingCommon();
-
 }  // namespace remoting
 
 #endif  // REMOTING_BASE_LOGGING_H_

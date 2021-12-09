@@ -176,7 +176,10 @@ source_set("breakpad") {
 source_set("logging") {
   public = [ "logging.h" ]
 
-  sources = [ "logging.cc" ]
+  sources = [
+    "logging.cc",
+    "logging_internal.h",
+  ]
 
   if (is_linux || is_chromeos) {
     sources += [ "logging_linux.cc" ]
