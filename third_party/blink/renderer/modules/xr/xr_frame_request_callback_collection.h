@@ -18,7 +18,7 @@ class XRFrame;
 class XRSession;
 
 namespace probe {
-class AsyncTaskId;
+class AsyncTaskContext;
 }
 
 class XRFrameRequestCallbackCollection final
@@ -53,7 +53,7 @@ class XRFrameRequestCallbackCollection final
   using CallbackFrameRequestMap =
       HeapHashMap<CallbackId, Member<V8XRFrameRequestCallback>>;
   using CallbackAsyncTaskMap =
-      HashMap<CallbackId, std::unique_ptr<probe::AsyncTaskId>>;
+      HashMap<CallbackId, std::unique_ptr<probe::AsyncTaskContext>>;
 
   CallbackFrameRequestMap callback_frame_requests_;
   CallbackAsyncTaskMap callback_async_tasks_;
