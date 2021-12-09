@@ -11118,11 +11118,11 @@ void RenderFrameHostImpl::SendBeforeUnload(
         FROM_HERE,
         base::BindOnce(
             [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
-               base::TimeTicks start_time) {
-              std::move(callback).Run(/*proceed=*/true, start_time,
-                                      base::TimeTicks::Now());
+               base::TimeTicks start_time, base::TimeTicks end_time) {
+              std::move(callback).Run(/*proceed=*/true, start_time, end_time);
             },
-            std::move(before_unload_closure), send_before_unload_start_time_));
+            std::move(before_unload_closure), send_before_unload_start_time_,
+            base::TimeTicks::Now()));
     return;
   }
   // Experiment to run beforeunload handlers at a higher priority in the
