@@ -150,8 +150,15 @@ FileResult::FileResult(const std::string& schema,
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
   switch (display_type) {
     case DisplayType::kChip:
-    case DisplayType::kContinue:
       SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
+      break;
+    case DisplayType::kContinue:
+      // For Continue Section, if dark/light mode is disabled, we should use
+      // dark background as default.
+      if (!ash::features::IsDarkLightModeEnabled())
+        SetChipIcon(ash::GetIconForPath(filepath, /*dark_background=*/true));
+      else
+        SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
       break;
     case DisplayType::kList:
       SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background)));

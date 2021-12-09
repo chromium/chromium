@@ -52,10 +52,6 @@ constexpr int kTaskMinWidth = 204;
 constexpr int kTaskMaxWidth = 264;
 
 gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
-  // The icon with circular background should only be styled when dark light
-  // mode is enabled. Otherwise, use the default chip icon.
-  if (!features::IsDarkLightModeEnabled())
-    return icon;
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kCircleRadius,
       ColorProvider::Get()->GetControlsLayerColor(
