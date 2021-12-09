@@ -338,7 +338,8 @@
     "contexts": ["webui_untrusted"],
     "matches": [
       "chrome-untrusted://help-app/*",
-      "chrome-untrusted://media-app/*"
+      "chrome-untrusted://media-app/*",
+      "chrome-untrusted://projector/*"
     ]
   }],
   "metricsPrivate.getIsCrashReportingEnabled": {
