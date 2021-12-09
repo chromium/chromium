@@ -71,7 +71,9 @@ constexpr int kMainRightViewVerticalSpacing = 4;
 // action buttons.
 constexpr gfx::Insets kMainRightViewChildPadding(0, 14, 0, 0);
 
-constexpr gfx::Insets kActionButtonsRowPadding(0, 22, 0, 4);
+constexpr gfx::Insets kImageContainerPadding(12, 0, 0, 0);
+
+constexpr gfx::Insets kActionButtonsRowPadding(16, 22, 0, 4);
 constexpr int kActionsRowHorizontalSpacing = 8;
 
 constexpr int kContentRowHorizontalSpacing = 16;
@@ -326,7 +328,8 @@ AshNotificationView::AshNotificationView(
                   // consider making changes to this code when the bug is fixed.
                   .SetMaximumWidth(GetExpandedMessageViewWidth()))
           .AddChild(CreateInlineSettingsBuilder())
-          .AddChild(CreateImageContainerBuilder());
+          .AddChild(CreateImageContainerBuilder().SetBorder(
+              views::CreateEmptyBorder(kImageContainerPadding)));
 
   ConfigureLabelStyle(message_view_in_expanded_state_, kMessageLabelSize,
                       false);
@@ -812,6 +815,12 @@ AshNotificationView::GenerateNotificationLabelButton(
 
 gfx::Size AshNotificationView::GetIconViewSize() const {
   return gfx::Size(kIconViewSize, kIconViewSize);
+}
+
+int AshNotificationView::GetLargeImageViewMaxWidth() const {
+  return message_center::kNotificationWidth - kNotificationViewPadding.width() -
+         kAppIconViewSize - kMainRightViewPadding.width() -
+         kMainRightViewChildPadding.width();
 }
 
 void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {

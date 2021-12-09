@@ -269,6 +269,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Returns the size of `icon_view_`.
   virtual gfx::Size GetIconViewSize() const = 0;
 
+  // Returns the max width of the large image inside `image_container_view_`.
+  virtual int GetLargeImageViewMaxWidth() const = 0;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameExtension);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewBaseTest, AppNameSystemNotification);

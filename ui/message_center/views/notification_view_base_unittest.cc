@@ -82,6 +82,7 @@ class TestNotificationView : public NotificationViewBase {
   // NotificationViewBase:
   void CreateOrUpdateTitleView(const Notification& notification) override {}
   gfx::Size GetIconViewSize() const override { return gfx::Size(); }
+  int GetLargeImageViewMaxWidth() const override { return 0; }
   void CreateOrUpdateSmallIconView(const Notification& notification) override {}
   void CreateOrUpdateInlineSettingsViews(
       const Notification& notification) override {

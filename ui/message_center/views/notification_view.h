@@ -48,6 +48,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
       const std::u16string& label) override;
   void UpdateViewForExpandedState(bool expanded) override;
   gfx::Size GetIconViewSize() const override;
+  int GetLargeImageViewMaxWidth() const override;
   void OnThemeChanged() override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void ToggleInlineSettings(const ui::Event& event) override;

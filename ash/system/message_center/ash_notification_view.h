@@ -90,6 +90,7 @@ class ASH_EXPORT AshNotificationView
       views::Button::PressedCallback callback,
       const std::u16string& label) override;
   gfx::Size GetIconViewSize() const override;
+  int GetLargeImageViewMaxWidth() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
   void ActionButtonPressed(size_t index, const ui::Event& event) override;
 

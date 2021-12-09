@@ -56,6 +56,8 @@ constexpr int kMessageViewWidth =
     kLeftContentPadding.right() - kContentRowPadding.left() -
     kContentRowPadding.right();
 
+constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
+
 // Max number of lines for title_view_.
 constexpr int kMaxLinesForTitleView = 1;
 
@@ -289,7 +291,10 @@ NotificationView::NotificationView(
 
   AddChildView(std::move(header_row));
   AddChildView(std::move(content_row));
-  AddChildView(CreateImageContainerBuilder().Build());
+  AddChildView(
+      CreateImageContainerBuilder()
+          .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding))
+          .Build());
   AddChildView(CreateInlineSettingsBuilder().Build());
   AddChildView(CreateActionsRow());
 
@@ -482,6 +487,11 @@ void NotificationView::UpdateViewForExpandedState(bool expanded) {
 
 gfx::Size NotificationView::GetIconViewSize() const {
   return kIconViewSize;
+}
+
+int NotificationView::GetLargeImageViewMaxWidth() const {
+  return kNotificationWidth - kLargeImageContainerPadding.width() -
+         GetInsets().width();
 }
 
 void NotificationView::OnThemeChanged() {

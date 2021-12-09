@@ -70,7 +70,6 @@ namespace {
 constexpr int kActionsRowHorizontalSpacing = 8;
 constexpr gfx::Insets kStatusTextPadding(4, 0, 0, 0);
 constexpr gfx::Insets kActionsRowPadding(8);
-constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
 constexpr int kLargeImageMaxHeight = 218;
 
 constexpr int kCompactTitleMessageViewSpacing = 12;
@@ -496,8 +495,7 @@ NotificationViewBase::CreateImageContainerBuilder() {
   DCHECK(!image_container_view_);
   return views::Builder<views::View>()
       .CopyAddressTo(&image_container_view_)
-      .SetUseDefaultFillLayout(true)
-      .SetBorder(views::CreateEmptyBorder(kLargeImageContainerPadding));
+      .SetUseDefaultFillLayout(true);
 }
 
 std::unique_ptr<views::View> NotificationViewBase::CreateActionsRow(
@@ -737,10 +735,8 @@ void NotificationViewBase::CreateOrUpdateImageView(
   }
 
   if (image_container_view_->children().empty()) {
-    int max_width = kNotificationWidth - kLargeImageContainerPadding.width() -
-                    GetInsets().width();
     image_container_view_->AddChildView(std::make_unique<LargeImageView>(
-        gfx::Size(max_width, kLargeImageMaxHeight)));
+        gfx::Size(GetLargeImageViewMaxWidth(), kLargeImageMaxHeight)));
     image_container_view_->SetVisible(true);
   }
 
