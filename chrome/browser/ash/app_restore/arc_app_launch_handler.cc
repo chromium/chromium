@@ -762,6 +762,7 @@ void ArcAppLaunchHandler::StartCpuUsageCount() {
 }
 
 void ArcAppLaunchHandler::StopCpuUsageCount() {
+  probe_service_.reset();
   cpu_tick_count_timer_.Stop();
 }
 
