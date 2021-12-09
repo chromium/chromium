@@ -2,47 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feature_guide/notifications/internal/android/feature_notification_guide_bridge.h"
+#include "chrome/browser/feature_guide/notifications/android/feature_notification_guide_bridge.h"
 
 #include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/FeatureNotificationGuideBridge_jni.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/feature_guide/notifications/feature_type.h"
-#include "chrome/browser/feature_guide/notifications/internal/jni_headers/FeatureNotificationGuideBridge_jni.h"
 
 namespace feature_guide {
-namespace {
-const char kFeatureNotificationGuideBridgeKey[] =
-    "feature_notification_guide_bridge";
-}  // namespace
-
-// static
-FeatureNotificationGuideBridge*
-FeatureNotificationGuideBridge::GetFeatureNotificationGuideBridge(
-    FeatureNotificationGuideService* feature_notification_guide_service) {
-  if (!feature_notification_guide_service->GetUserData(
-          kFeatureNotificationGuideBridgeKey)) {
-    feature_notification_guide_service->SetUserData(
-        kFeatureNotificationGuideBridgeKey,
-        std::make_unique<FeatureNotificationGuideBridge>(
-            feature_notification_guide_service));
-  }
-
-  return static_cast<FeatureNotificationGuideBridge*>(
-      feature_notification_guide_service->GetUserData(
-          kFeatureNotificationGuideBridgeKey));
-}
 
 ScopedJavaLocalRef<jobject> FeatureNotificationGuideBridge::GetJavaObj() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
-FeatureNotificationGuideBridge::FeatureNotificationGuideBridge(
-    FeatureNotificationGuideService* feature_notification_guide_service)
-    : feature_notification_guide_service_(feature_notification_guide_service) {
-  DCHECK(feature_notification_guide_service);
+FeatureNotificationGuideBridge::FeatureNotificationGuideBridge() {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_FeatureNotificationGuideBridge_create(
                            env, reinterpret_cast<int64_t>(this))

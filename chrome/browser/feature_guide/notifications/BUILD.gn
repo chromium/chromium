@@ -10,6 +10,8 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "config.cc",
+    "config.h",
     "feature_notification_guide_service.cc",
     "feature_notification_guide_service.h",
     "feature_type.h",
@@ -39,19 +41,6 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     srcjar_deps = [ ":jni_enums" ]
-  }
-
-  android_library_factory("factory_java") {
-    # These deps will be inherited by the resulting android_library target.
-    deps = [
-      ":java",
-      "//base:base_java",
-      "//chrome/browser/profiles/android:java",
-    ]
-
-    # This internal file will be replaced by a generated file so the resulting
-    # android_library target does not actually depend on this internal file.
-    sources = [ "internal/android/java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideServiceFactory.java" ]
   }
 }
 

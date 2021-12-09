@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_INTERNAL_FEATURE_NOTIFICATION_GUIDE_SERVICE_IMPL_H_
 #define CHROME_BROWSER_FEATURE_GUIDE_NOTIFICATIONS_INTERNAL_FEATURE_NOTIFICATION_GUIDE_SERVICE_IMPL_H_
 
+#include <deque>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "chrome/browser/feature_guide/notifications/config.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/feature_guide/notifications/feature_type.h"
 
@@ -23,7 +28,12 @@ namespace feature_guide {
 class FeatureNotificationGuideServiceImpl
     : public FeatureNotificationGuideService {
  public:
-  FeatureNotificationGuideServiceImpl();
+  FeatureNotificationGuideServiceImpl(
+      std::unique_ptr<FeatureNotificationGuideService::Delegate> delegate,
+      const Config& config,
+      notifications::NotificationScheduleService* notification_scheduler,
+      feature_engagement::Tracker* tracker,
+      base::Clock* clock);
   ~FeatureNotificationGuideServiceImpl() override;
 
   void OnSchedulerInitialized(const std::set<std::string>& guids) override;
@@ -32,7 +42,21 @@ class FeatureNotificationGuideServiceImpl
       NotificationDataCallback callback) override;
   void OnClick(FeatureType feature) override;
 
+  Delegate* GetDelegate() { return delegate_.get(); }
+
  private:
+  void StartCheckingForEligibleFeatures(bool init_success);
+  void ScheduleNotification(FeatureType feature);
+
+  std::unique_ptr<FeatureNotificationGuideService::Delegate> delegate_;
+  raw_ptr<notifications::NotificationScheduleService> notification_scheduler_;
+  raw_ptr<feature_engagement::Tracker> tracker_;
+  base::Clock* clock_;
+  Config config_;
+
+  std::set<FeatureType> scheduled_features_;
+  absl::optional<base::Time> last_notification_schedule_time_;
+
   base::WeakPtrFactory<FeatureNotificationGuideServiceImpl> weak_ptr_factory_{
       this};
 };

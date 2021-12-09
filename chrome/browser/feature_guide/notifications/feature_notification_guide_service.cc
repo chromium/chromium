@@ -17,4 +17,16 @@ FeatureNotificationGuideService::FeatureNotificationGuideService() = default;
 
 FeatureNotificationGuideService::~FeatureNotificationGuideService() = default;
 
+FeatureNotificationGuideService::Delegate::~Delegate() = default;
+
+void FeatureNotificationGuideService::Delegate::SetService(
+    FeatureNotificationGuideService* service) {
+  service_ = service;
+}
+
+FeatureNotificationGuideService*
+FeatureNotificationGuideService::Delegate::GetService() {
+  return service_;
+}
+
 }  // namespace feature_guide

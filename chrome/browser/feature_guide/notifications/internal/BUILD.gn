@@ -13,6 +13,8 @@ source_set("internal") {
     "feature_notification_guide_notification_client.h",
     "feature_notification_guide_service_impl.cc",
     "feature_notification_guide_service_impl.h",
+    "utils.cc",
+    "utils.h",
   ]
 
   deps = [
@@ -21,48 +23,6 @@ source_set("internal") {
     "//components/feature_engagement/public",
     "//skia",
   ]
-
-  if (is_android) {
-    sources += [
-      "android/feature_notification_guide_bridge.cc",
-      "android/feature_notification_guide_bridge.h",
-    ]
-
-    deps += [ ":jni_headers" ]
-  }
-}
-
-if (is_android) {
-  android_library("internal_java") {
-    visibility = [
-      ":*",
-      "//chrome/android:chrome_all_java",
-    ]
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge.java",
-      "android/java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideServiceFactory.java",
-    ]
-
-    deps = [
-      "//base:base_java",
-      "//chrome/browser/feature_guide/notifications:java",
-      "//chrome/browser/profiles/android:java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  }
-
-  generate_jni("jni_headers") {
-    visibility = [
-      ":*",
-      "//chrome/browser",
-    ]
-
-    sources = [
-      "android/java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge.java",
-      "android/java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideServiceFactory.java",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -74,6 +34,10 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/feature_guide/notifications:public",
+    "//chrome/browser/notifications/scheduler/test:test_support",
+    "//components/feature_engagement/test:test_support",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -5,6 +5,7 @@
 #include "chrome/browser/feature_guide/notifications/internal/feature_notification_guide_notification_client.h"
 
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
+#include "chrome/browser/feature_guide/notifications/internal/utils.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 using ThrottleConfigCallback =
@@ -39,8 +40,8 @@ void FeatureNotificationGuideNotificationClient::OnSchedulerInitialized(
 void FeatureNotificationGuideNotificationClient::OnUserAction(
     const notifications::UserActionData& action_data) {
   if (action_data.action_type == notifications::UserActionType::kClick) {
-    FeatureType feature = FeatureType::kInvalid;
-    // TODO(shaktisahu): Parse feature from action_data.
+    FeatureType feature = FeatureFromCustomData(action_data.custom_data);
+    DCHECK(feature != FeatureType::kInvalid);
     GetNotificationService()->OnClick(feature);
   }
 }

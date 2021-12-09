@@ -13,7 +13,6 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("feature_guide")
 public final class FeatureNotificationGuideBridge implements FeatureNotificationGuideService {
     private long mNativeFeatureNotificationGuideBridge;
-    private Delegate mDelegate;
 
     @CalledByNative
     private static FeatureNotificationGuideBridge create(long nativePtr) {
@@ -29,24 +28,16 @@ public final class FeatureNotificationGuideBridge implements FeatureNotification
         mNativeFeatureNotificationGuideBridge = nativePtr;
     }
 
-    @Override
-    public void setDelegate(Delegate delegate) {
-        assert mDelegate == null;
-        mDelegate = delegate;
+    @CalledByNative
+    private String getNotificationTitle(@FeatureType int featureType) {
+        return null;
     }
 
     @CalledByNative
-    private String getNotificationTitle(int featureType) {
-        return mDelegate.getNotificationTitle(featureType);
+    private String getNotificationMessage(@FeatureType int featureType) {
+        return null;
     }
 
     @CalledByNative
-    private String getNotificationMessage(int featureType) {
-        return mDelegate.getNotificationMessage(featureType);
-    }
-
-    @CalledByNative
-    private void onNotificationClick(int featureType) {
-        mDelegate.onNotificationClick(featureType);
-    }
+    private void onNotificationClick(@FeatureType int featureType) {}
 }

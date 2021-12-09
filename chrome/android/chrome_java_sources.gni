@@ -591,6 +591,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/explore_sites/StableScrollLayoutManager.java",
   "java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandler.java",
+  "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideBridge.java",
+  "java/src/org/chromium/chrome/browser/feature_guide/notifications/FeatureNotificationGuideServiceFactory.java",
   "java/src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollector.java",
   "java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java",
   "java/src/org/chromium/chrome/browser/feedback/ConnectivityFeedbackSource.java",

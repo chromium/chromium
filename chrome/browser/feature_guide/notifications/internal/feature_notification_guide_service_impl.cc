@@ -4,11 +4,30 @@
 
 #include "chrome/browser/feature_guide/notifications/internal/feature_notification_guide_service_impl.h"
 
+#include <string>
+
+#include "base/callback.h"
+#include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/clock.h"
+#include "build/build_config.h"
+#include "chrome/browser/feature_guide/notifications/config.h"
+#include "chrome/browser/feature_guide/notifications/feature_type.h"
 #include "chrome/browser/feature_guide/notifications/internal/feature_notification_guide_notification_client.h"
+#include "chrome/browser/feature_guide/notifications/internal/utils.h"
+#include "chrome/browser/notifications/scheduler/public/client_overview.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
+#include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
+#include "chrome/browser/notifications/scheduler/public/schedule_params.h"
+#include "components/feature_engagement/public/tracker.h"
 
 namespace feature_guide {
+namespace {
+
+const base::TimeDelta kDeliverEndTimeDelta = base::Minutes(5);
+
+}  // namespace
 
 std::unique_ptr<notifications::NotificationSchedulerClient>
 CreateFeatureNotificationGuideNotificationClient(ServiceGetter service_getter) {
@@ -16,19 +35,95 @@ CreateFeatureNotificationGuideNotificationClient(ServiceGetter service_getter) {
       service_getter);
 }
 
-FeatureNotificationGuideServiceImpl::FeatureNotificationGuideServiceImpl() =
-    default;
+FeatureNotificationGuideServiceImpl::FeatureNotificationGuideServiceImpl(
+    std::unique_ptr<FeatureNotificationGuideService::Delegate> delegate,
+    const Config& config,
+    notifications::NotificationScheduleService* notification_scheduler,
+    feature_engagement::Tracker* tracker,
+    base::Clock* clock)
+    : delegate_(std::move(delegate)),
+      notification_scheduler_(notification_scheduler),
+      tracker_(tracker),
+      clock_(clock),
+      config_(config) {
+  DCHECK(notification_scheduler_);
+  delegate_->SetService(this);
+}
 
 FeatureNotificationGuideServiceImpl::~FeatureNotificationGuideServiceImpl() =
     default;
 
 void FeatureNotificationGuideServiceImpl::OnSchedulerInitialized(
-    const std::set<std::string>& guids) {}
+    const std::set<std::string>& guids) {
+  for (const std::string& guid : guids) {
+    scheduled_features_.emplace(NotificationIdToFeature(guid));
+  }
+
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FeatureNotificationGuideServiceImpl::StartCheckingForEligibleFeatures(
+    bool init_success) {
+  if (!init_success)
+    return;
+
+  for (auto feature : config_.enabled_features) {
+    if (base::Contains(scheduled_features_, feature))
+      continue;
+
+    if (!tracker_->WouldTriggerHelpUI(
+            GetNotificationIphFeatureForFeature(feature))) {
+      continue;
+    }
+
+    ScheduleNotification(feature);
+  }
+}
+
+void FeatureNotificationGuideServiceImpl::ScheduleNotification(
+    FeatureType feature) {
+  notifications::NotificationData data;
+  data.title = delegate_->GetNotificationTitle(feature);
+  data.message = delegate_->GetNotificationMessage(feature);
+
+  FeatureToCustomData(feature, &data.custom_data);
+
+  notifications::ScheduleParams schedule_params;
+  schedule_params.priority =
+      notifications::ScheduleParams::Priority::kNoThrottle;
+
+  // Show after a week.
+  schedule_params.deliver_time_start =
+      last_notification_schedule_time_.value_or(clock_->Now()) +
+      config_.notification_deliver_time_delta;
+  schedule_params.deliver_time_end =
+      schedule_params.deliver_time_start.value() + kDeliverEndTimeDelta;
+  last_notification_schedule_time_ = schedule_params.deliver_time_start.value();
+  auto params = std::make_unique<notifications::NotificationParams>(
+      notifications::SchedulerClientType::kFeatureGuide, std::move(data),
+      std::move(schedule_params));
+  notification_scheduler_->Schedule(std::move(params));
+}
 
 void FeatureNotificationGuideServiceImpl::BeforeShowNotification(
     std::unique_ptr<notifications::NotificationData> notification_data,
-    NotificationDataCallback callback) {}
+    NotificationDataCallback callback) {
+  FeatureType feature = FeatureFromCustomData(notification_data->custom_data);
+  DCHECK(feature != FeatureType::kInvalid);
 
-void FeatureNotificationGuideServiceImpl::OnClick(FeatureType feature) {}
+  if (!tracker_->ShouldTriggerHelpUI(
+          GetNotificationIphFeatureForFeature(feature))) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::move(callback).Run(std::move(notification_data));
+}
+
+void FeatureNotificationGuideServiceImpl::OnClick(FeatureType feature) {
+  delegate_->OnNotificationClick(feature);
+}
 
 }  // namespace feature_guide

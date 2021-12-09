@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/feature_guide/notifications/feature_type.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace notifications {
@@ -32,6 +33,30 @@ extern const base::Feature kFeatureNotificationGuide;
 class FeatureNotificationGuideService : public KeyedService,
                                         public base::SupportsUserData {
  public:
+  // A delegate to help with chrome layer dependencies, such as providing
+  // notification texts, and handling notification interactions.
+  class Delegate {
+   public:
+    // Returns the notification title text associated with the |feature|.
+    virtual std::u16string GetNotificationTitle(FeatureType feature) = 0;
+
+    // Called to get the notification body text associated with the |feature|.
+    virtual std::u16string GetNotificationMessage(FeatureType feature) = 0;
+
+    // Called when the notification associated with the given |feature| is
+    // clicked.
+    virtual void OnNotificationClick(FeatureType feature) = 0;
+
+    // Getter/Setter method for the service.
+    FeatureNotificationGuideService* GetService();
+    void SetService(FeatureNotificationGuideService* service);
+
+    virtual ~Delegate();
+
+   private:
+    FeatureNotificationGuideService* service_{nullptr};
+  };
+
   using NotificationDataCallback = base::OnceCallback<void(
       std::unique_ptr<notifications::NotificationData>)>;
 
@@ -58,6 +83,8 @@ class FeatureNotificationGuideService : public KeyedService,
 
 using ServiceGetter =
     base::RepeatingCallback<FeatureNotificationGuideService*()>;
+
+// Factory method to create the service.
 std::unique_ptr<notifications::NotificationSchedulerClient>
 CreateFeatureNotificationGuideNotificationClient(ServiceGetter service_getter);
 
