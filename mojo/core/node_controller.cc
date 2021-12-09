@@ -907,6 +907,11 @@ void NodeController::OnAddBrokerClient(const ports::NodeName& from_node,
     return;
   }
 
+  if (!GetConfiguration().is_broker_process) {
+    DLOG(ERROR) << "Ignoring AddBrokerClient on non-broker node.";
+    return;
+  }
+
   if (GetPeerChannel(client_name)) {
     DLOG(ERROR) << "Ignoring AddBrokerClient for known client.";
     DropPeer(from_node, nullptr);
