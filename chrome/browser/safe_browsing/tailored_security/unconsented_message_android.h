@@ -17,12 +17,14 @@ class WebContents;
 namespace safe_browsing {
 
 // This class encapsulates the process of showing a message to a user prompting
-// them to enable Enhacned Safe Browsing when the Tailored Security preference
+// them to enable Enhanced Safe Browsing when the Tailored Security preference
 // changes.
 class TailoredSecurityUnconsentedModalAndroid {
  public:
-  explicit TailoredSecurityUnconsentedModalAndroid(
-      content::WebContents* web_contents);
+  // Creates and shows a message for |web_contents| and calls |dismiss_callback|
+  // once the message is complete.
+  TailoredSecurityUnconsentedModalAndroid(content::WebContents* web_contents,
+                                          base::OnceClosure dismiss_callback);
   ~TailoredSecurityUnconsentedModalAndroid();
 
  private:
@@ -30,6 +32,7 @@ class TailoredSecurityUnconsentedModalAndroid {
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   void HandleSettingsClicked();
 
+  base::OnceClosure dismiss_callback_;
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<messages::MessageWrapper> message_;
   gfx::ImageSkia icon_;

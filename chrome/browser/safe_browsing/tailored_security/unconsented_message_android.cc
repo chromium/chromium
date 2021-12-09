@@ -70,8 +70,10 @@ void CircleImageSource::Draw(gfx::Canvas* canvas) {
 }  // namespace
 
 TailoredSecurityUnconsentedModalAndroid::
-    TailoredSecurityUnconsentedModalAndroid(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    TailoredSecurityUnconsentedModalAndroid(content::WebContents* web_contents,
+                                            base::OnceClosure dismiss_callback_)
+    : dismiss_callback_(std::move(dismiss_callback_)),
+      web_contents_(web_contents) {
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::TAILORED_SECURITY_ENABLED,
       base::BindOnce(
@@ -135,6 +137,8 @@ TailoredSecurityUnconsentedModalAndroid::
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), messages::DismissReason::UNKNOWN);
+    if (dismiss_callback_)
+      std::move(dismiss_callback_).Run();
   }
 }
 
@@ -155,15 +159,21 @@ void TailoredSecurityUnconsentedModalAndroid::HandleMessageDismissed(
       "SafeBrowsing.TailoredSecurityUnconsentedMessageDismissReason",
       dismiss_reason, messages::DismissReason::COUNT);
   message_.reset();
+  // `dismiss_callback_` may delete `this`.
+  if (dismiss_callback_)
+    std::move(dismiss_callback_).Run();
 }
 
 void TailoredSecurityUnconsentedModalAndroid::HandleSettingsClicked() {
+  LogMessageOutcome(TailoredSecurityOutcome::kSettings);
+  ShowSafeBrowsingSettings(web_contents_);
   if (message_) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         message_.get(), messages::DismissReason::SECONDARY_ACTION);
+    // `dismiss_callback_` may delete `this`.
+    if (dismiss_callback_)
+      std::move(dismiss_callback_).Run();
   }
-  LogMessageOutcome(TailoredSecurityOutcome::kSettings);
-  ShowSafeBrowsingSettings(web_contents_);
 }
 
 }  // namespace safe_browsing

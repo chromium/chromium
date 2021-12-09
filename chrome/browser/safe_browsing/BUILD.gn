@@ -130,6 +130,8 @@ static_library("safe_browsing") {
       "tailored_security/tailored_security_outcome.h",
       "tailored_security/tailored_security_service_factory.cc",
       "tailored_security/tailored_security_service_factory.h",
+      "tailored_security/tailored_security_url_observer.cc",
+      "tailored_security/tailored_security_url_observer.h",
       "telemetry/telemetry_service.cc",
       "telemetry/telemetry_service.h",
       "test_safe_browsing_blocking_page_quiet.cc",

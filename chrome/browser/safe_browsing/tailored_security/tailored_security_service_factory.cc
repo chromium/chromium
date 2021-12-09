@@ -30,7 +30,9 @@ TailoredSecurityServiceFactory* TailoredSecurityServiceFactory::GetInstance() {
 TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "SafeBrowsingTailoredSecurityService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 KeyedService* TailoredSecurityServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

@@ -75,7 +75,7 @@ class TailoredSecurityService : public KeyedService {
   };
 
   using QueryTailoredSecurityBitCallback =
-      base::OnceCallback<void(bool is_enabled)>;
+      base::OnceCallback<void(bool is_enabled, base::Time previous_update)>;
 
   using CompletionCallback = base::OnceCallback<void(Request*, bool success)>;
 
@@ -86,6 +86,13 @@ class TailoredSecurityService : public KeyedService {
 
   void AddObserver(TailoredSecurityServiceObserver* observer);
   void RemoveObserver(TailoredSecurityServiceObserver* observer);
+
+  // Called to increment/decrement |active_query_request_|. When
+  // |active_query_request_| goes from zero to nonzero, we begin querying the
+  // tailored security setting. When it goes from nonzero to zero, we stop
+  // querying the tailored security setting. Virtual for tests.
+  virtual void AddQueryRequest();
+  virtual void RemoveQueryRequest();
 
   // Queries whether TailoredSecurity is enabled on the server.
   void QueryTailoredSecurityBit();
@@ -124,7 +131,12 @@ class TailoredSecurityService : public KeyedService {
       QueryTailoredSecurityBitCallback callback,
       Request* request,
       bool success);
-  void OnTailoredSecurityBitRetrieved(bool is_enabled);
+
+  // Called with whether the tailored security setting `is_enabled` and the
+  // timestamp of the most recent update (excluding the current update in
+  // progress).
+  void OnTailoredSecurityBitRetrieved(bool is_enabled,
+                                      base::Time previous_update);
 
  private:
   // Stores pointer to IdentityManager instance. It must outlive the
@@ -143,8 +155,15 @@ class TailoredSecurityService : public KeyedService {
   base::ObserverList<TailoredSecurityServiceObserver, true>::Unchecked
       observer_list_;
 
+  // The number of active query requests. When this goes from non-zero to zero,
+  // we stop `timer_`. When it goes from zero to non-zero, we start it.
+  size_t active_query_request_ = 0;
+
   // Timer to periodically check tailored security bit.
   base::RepeatingTimer timer_;
+
+  bool is_tailored_security_enabled_ = false;
+  base::Time last_updated_;
 
   bool is_shut_down_ = false;
 

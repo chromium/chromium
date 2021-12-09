@@ -58,11 +58,13 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
 
   std::string GetExpectedTailoredSecurityServiceValue();
 
-  void SetTailoredSecurityServiceCallback(bool is_enabled);
+  void SetTailoredSecurityServiceCallback(bool is_enabled,
+                                          base::Time previous_update);
 
-  void GetTailoredSecurityServiceCallback(bool is_enabled);
+  void GetTailoredSecurityServiceCallback(bool is_enabled,
+                                          base::Time previous_update);
 
-  void MultipleRequestsCallback(bool is_enabled);
+  void MultipleRequestsCallback(bool is_enabled, base::Time previous_update);
 
   void SetExpectedURL(const GURL& expected_url) {
     expected_url_ = expected_url;
@@ -174,16 +176,20 @@ base::Value TestingTailoredSecurityService::ReadResponse(Request* request) {
 }
 
 void TestingTailoredSecurityService::SetTailoredSecurityServiceCallback(
-    bool is_enabled) {
+    bool is_enabled,
+    base::Time previous_update) {
   EXPECT_EQ(expected_tailored_security_service_value_, is_enabled);
 }
 
 void TestingTailoredSecurityService::GetTailoredSecurityServiceCallback(
-    bool is_enabled) {
+    bool is_enabled,
+    base::Time previous_update) {
   EXPECT_EQ(expected_tailored_security_service_value_, is_enabled);
 }
 
-void TestingTailoredSecurityService::MultipleRequestsCallback(bool is_enabled) {
+void TestingTailoredSecurityService::MultipleRequestsCallback(
+    bool is_enabled,
+    base::Time previous_update) {
   EXPECT_EQ(expected_tailored_security_service_value_, is_enabled);
 }
 

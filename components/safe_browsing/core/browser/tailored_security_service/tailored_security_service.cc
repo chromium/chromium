@@ -51,8 +51,8 @@ const size_t kMaxRetries = 1;
 // Returns a primary Google account that can be used for getting a token.
 CoreAccountId GetAccountForRequest(
     const signin::IdentityManager* identity_manager) {
-  CoreAccountInfo result;
-  identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CoreAccountInfo result =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   return result.IsEmpty() ? CoreAccountId() : result.account_id;
 }
 
@@ -231,15 +231,13 @@ TailoredSecurityService::TailoredSecurityService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {
-  // Register a repeating timer to get the tailored security bit every 5
-  // minutes.
-  timer_.Start(FROM_HERE,
-               base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes),
-               this, &TailoredSecurityService::QueryTailoredSecurityBit);
-}
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
-TailoredSecurityService::~TailoredSecurityService() = default;
+TailoredSecurityService::~TailoredSecurityService() {
+  for (auto& observer : observer_list_) {
+    observer.OnTailoredSecurityServiceDestroyed();
+  }
+}
 
 void TailoredSecurityService::AddObserver(
     TailoredSecurityServiceObserver* observer) {
@@ -264,6 +262,29 @@ TailoredSecurityService::CreateRequest(
 size_t
 TailoredSecurityService::GetNumberOfPendingTailoredSecurityServiceRequests() {
   return pending_tailored_security_requests_.size();
+}
+
+void TailoredSecurityService::AddQueryRequest() {
+  DCHECK(!is_shut_down_);
+  active_query_request_++;
+  if (active_query_request_ == 1) {
+    // Query now and register a repeating timer to get the tailored security bit
+    // every `kRepeatingCheckTailoredSecurityBitDelayInMinutes` minutes.
+    QueryTailoredSecurityBit();
+    timer_.Start(
+        FROM_HERE,
+        base::Minutes(kRepeatingCheckTailoredSecurityBitDelayInMinutes), this,
+        &TailoredSecurityService::QueryTailoredSecurityBit);
+  }
+}
+
+void TailoredSecurityService::RemoveQueryRequest() {
+  DCHECK(!is_shut_down_);
+  DCHECK(active_query_request_ >= 0);
+  active_query_request_--;
+  if (active_query_request_ == 0) {
+    timer_.Stop();
+  }
 }
 
 void TailoredSecurityService::QueryTailoredSecurityBit() {
@@ -320,9 +341,15 @@ void TailoredSecurityService::StartRequest(
   }
 }
 
-void TailoredSecurityService::OnTailoredSecurityBitRetrieved(bool is_enabled) {
-  for (auto& observer : observer_list_) {
-    observer.OnTailoredSecurityBitChanged(is_enabled);
+void TailoredSecurityService::OnTailoredSecurityBitRetrieved(
+    bool is_enabled,
+    base::Time previous_update) {
+  if (is_tailored_security_enabled_ != is_enabled) {
+    is_tailored_security_enabled_ = is_enabled;
+    last_updated_ = base::Time::Now();
+    for (auto& observer : observer_list_) {
+      observer.OnTailoredSecurityBitChanged(is_enabled, previous_update);
+    }
   }
 }
 
@@ -336,17 +363,17 @@ void TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback(
       std::move(pending_tailored_security_requests_[request]);
   pending_tailored_security_requests_.erase(request);
 
-  base::Value response_value;
-  bool tailored_security_service_enabled = false;
+  bool is_enabled = is_tailored_security_enabled_;
+  base::Time previous_update = last_updated_;
   if (success) {
-    response_value = ReadResponse(request);
-    tailored_security_service_enabled =
-        response_value.is_none()
-            ? false
-            : response_value.FindBoolKey("history_recording_enabled")
-                  .value_or(false);
+    base::Value response_value = ReadResponse(request);
+    is_enabled = response_value.is_none()
+                     ? false
+                     : response_value.FindBoolKey("history_recording_enabled")
+                           .value_or(false);
   }
-  std::move(callback).Run(tailored_security_service_enabled);
+
+  std::move(callback).Run(is_enabled, previous_update);
 }
 
 void TailoredSecurityService::SetTailoredSecurityBitForTesting(
