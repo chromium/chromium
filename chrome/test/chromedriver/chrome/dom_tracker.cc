@@ -40,8 +40,7 @@ Status DomTracker::OnConnected(DevToolsClient* client) {
     return status;
   }
 
-  const base::Value* root;
-  if (result->Get("root", &root)) {
+  if (const base::Value* root = result->FindKey("root")) {
     ProcessNode(*root);
   } else {
     status =
@@ -55,8 +54,8 @@ Status DomTracker::OnEvent(DevToolsClient* client,
                            const std::string& method,
                            const base::DictionaryValue& params) {
   if (method == "DOM.setChildNodes") {
-    const base::Value* nodes;
-    if (!params.Get("nodes", &nodes))
+    const base::Value* nodes = params.FindKey("nodes");
+    if (nodes == nullptr)
       return Status(kUnknownError, "DOM.setChildNodes missing 'nodes'");
 
     if (!ProcessNodeList(*nodes)) {
@@ -66,8 +65,8 @@ Status DomTracker::OnEvent(DevToolsClient* client,
                     "DOM.setChildNodes has invalid 'nodes': " + json);
     }
   } else if (method == "DOM.childNodeInserted") {
-    const base::Value* node;
-    if (!params.Get("node", &node))
+    const base::Value* node = params.FindKey("node");
+    if (node == nullptr)
       return Status(kUnknownError, "DOM.childNodeInserted missing 'node'");
 
     if (!ProcessNode(*node)) {
@@ -105,8 +104,7 @@ bool DomTracker::ProcessNode(const base::Value& node) {
   if (dict->GetString("frameId", &frame_id))
     node_to_frame_map_.insert(std::make_pair(node_id, frame_id));
 
-  const base::Value* children;
-  if (dict->Get("children", &children))
+  if (const base::Value* children = dict->FindKey("children"))
     return ProcessNodeList(*children);
   return true;
 }

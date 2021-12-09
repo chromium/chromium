@@ -317,11 +317,11 @@ Status ParseProxy(bool w3c_compliant,
         {"ftpProxy", "ftp"}, {"httpProxy", "http"}, {"sslProxy", "https"},
         {"socksProxy", "socks"}};
     const std::string kSocksProxy = "socksProxy";
-    const base::Value* option_value = NULL;
+    const base::Value* option_value = nullptr;
     std::string proxy_servers;
     for (size_t i = 0; i < base::size(proxy_servers_options); ++i) {
-      if (!proxy_dict->Get(proxy_servers_options[i][0], &option_value) ||
-          option_value->is_none()) {
+      option_value = proxy_dict->FindPath(proxy_servers_options[i][0]);
+      if (option_value == nullptr || option_value->is_none()) {
         continue;
       }
       if (!option_value->is_string()) {
@@ -352,7 +352,8 @@ Status ParseProxy(bool w3c_compliant,
     }
 
     std::string proxy_bypass_list;
-    if (proxy_dict->Get("noProxy", &option_value) && !option_value->is_none()) {
+    option_value = proxy_dict->FindPath("noProxy");
+    if (option_value != nullptr && !option_value->is_none()) {
       // W3C requires noProxy to be a list of strings, while legacy protocol
       // requires noProxy to be a string of comma-separated items.
       // In practice, library implementations are not always consistent,

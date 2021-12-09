@@ -858,8 +858,8 @@ Status ExecuteSwitchToFrame(Session* session,
                             const base::DictionaryValue& params,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout) {
-  const base::Value* id;
-  if (!params.Get("id", &id))
+  const base::Value* id = params.FindKey("id");
+  if (id == nullptr)
     return Status(kInvalidArgument, "missing 'id'");
 
   if (id->is_none()) {
@@ -2640,7 +2640,8 @@ Status ExecuteSetWindowRect(Session* session,
   double x = 0;
   double y = 0;
 
-  bool has_x = params.Get("x", &temp) && !temp->is_none();
+  temp = params.FindKey("x");
+  bool has_x = temp && !temp->is_none();
   if (has_x) {
     if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'x' must be a number");
@@ -2649,7 +2650,8 @@ Status ExecuteSetWindowRect(Session* session,
       return Status(kInvalidArgument, "'x' out of range");
   }
 
-  bool has_y = params.Get("y", &temp) && !temp->is_none();
+  temp = params.FindKey("y");
+  bool has_y = temp && !temp->is_none();
   if (has_y) {
     if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'y' must be a number");
@@ -2658,7 +2660,8 @@ Status ExecuteSetWindowRect(Session* session,
       return Status(kInvalidArgument, "'y' out of range");
   }
 
-  bool has_width = params.Get("width", &temp) && !temp->is_none();
+  temp = params.FindKey("width");
+  bool has_width = temp && !temp->is_none();
   if (has_width) {
     if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'width' must be a number");
@@ -2667,7 +2670,8 @@ Status ExecuteSetWindowRect(Session* session,
       return Status(kInvalidArgument, "'width' out of range");
   }
 
-  bool has_height = params.Get("height", &temp) && !temp->is_none();
+  temp = params.FindKey("height");
+  bool has_height = temp && !temp->is_none();
   if (has_height) {
     if (!temp->is_double() && !temp->is_int())
       return Status(kInvalidArgument, "'height' must be a number");

@@ -155,8 +155,8 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     if (current_arg.GetString("type", &arg_type) && arg_type == "undefined") {
       temp_text = "undefined";
     } else if (!current_arg.GetString("description", &temp_text)) {
-      const base::Value* value = nullptr;
-      if (!current_arg.Get("value", &value)) {
+      const base::Value* value = current_arg.FindKey("value");
+      if (value == nullptr) {
         return Status(kUnknownError, "missing or invalid arg value");
       }
       if (!base::JSONWriter::Write(*value, &temp_text)) {

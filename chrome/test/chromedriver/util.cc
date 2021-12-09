@@ -491,8 +491,8 @@ bool GetOptionalValueDeprecated(const base::DictionaryValue* dict,
                                 bool (base::Value::*getter)(T*) const) {
   if (has_value != nullptr)
     *has_value = false;
-  const base::Value* value;
-  if (!dict->Get(path, &value))
+  const base::Value* value = dict->FindPath(path);
+  if (value == nullptr)
     return true;
   if ((value->*getter)(out_value)) {
     if (has_value != nullptr)

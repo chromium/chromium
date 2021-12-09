@@ -154,8 +154,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
                     "missing frameId in Page.frameDetached event");
     attached_frames_.erase(frame_id);
   } else if (method == "Page.frameNavigated") {
-    const base::Value* unused_value;
-    if (!params.Get("frame.parentId", &unused_value))
+    if (!params.FindPath("frame.parentId"))
       frame_to_context_map_.clear();
   } else if (method == "Target.attachedToTarget") {
     std::string type, target_id, session_id;

@@ -452,8 +452,8 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
 // Currently, we only check "browserName", "platformName", and webauthn
 // capabilities but more can be added as necessary.
 bool MatchCapabilities(const base::DictionaryValue* capabilities) {
-  const base::Value* name;
-  if (capabilities->Get("browserName", &name) && !name->is_none()) {
+  const base::Value* name = capabilities->FindKey("browserName");
+  if (name && !name->is_none()) {
     if (!(name->is_string() && name->GetString() == kBrowserCapabilityName))
       return false;
   }
@@ -465,9 +465,9 @@ bool MatchCapabilities(const base::DictionaryValue* capabilities) {
   bool is_android = has_chrome_options &&
                     chrome_options->FindStringKey("androidPackage") != nullptr;
 
-  const base::Value* platform_name_value;
-  if (capabilities->Get("platformName", &platform_name_value) &&
-      !platform_name_value->is_none()) {
+  const base::Value* platform_name_value =
+      capabilities->FindPath("platformName");
+  if (platform_name_value && !platform_name_value->is_none()) {
     if (platform_name_value->is_string()) {
       std::string requested_platform_name = platform_name_value->GetString();
       std::string requested_first_token =

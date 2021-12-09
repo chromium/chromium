@@ -531,7 +531,8 @@ Status ExecuteSendKeysToElement(Session* session,
   base::ListValue key_list_local;
   const base::Value* text = nullptr;
   if (session->w3c_compliant) {
-    if (!params.Get("text", &text) || !text->is_string())
+    text = params.FindKey("text");
+    if (text == nullptr || !text->is_string())
       return Status(kInvalidArgument, "'text' must be a string");
     key_list_local.Set(0, std::make_unique<base::Value>(text->Clone()));
     key_list = &key_list_local;

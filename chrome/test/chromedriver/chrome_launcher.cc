@@ -895,8 +895,7 @@ Status GetExtensionBackgroundPage(const base::DictionaryValue* manifest,
   std::string bg_page_name;
   bool persistent =
       manifest->FindBoolPath("background.persistent").value_or(true);
-  const base::Value* unused_value;
-  if (manifest->Get("background.scripts", &unused_value))
+  if (manifest->FindPath("background.scripts"))
     bg_page_name = "_generated_background_page.html";
   manifest->GetString("background.page", &bg_page_name);
   if (bg_page_name.empty() || !persistent)
