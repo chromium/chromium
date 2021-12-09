@@ -40,6 +40,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/accessibility_feature_disable_dialog.h"
+#include "ash/system/accessibility/dictation_bubble_controller.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_bubble_controller.h"
@@ -60,6 +61,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/window.h"
@@ -776,6 +778,7 @@ void AccessibilityControllerImpl::Shutdown() {
 
   // Clean up any child windows and widgets that might be animating out.
   dictation_nudge_controller_.reset();
+  dictation_bubble_controller_.reset();
 
   for (auto& observer : observers_)
     observer.OnAccessibilityControllerShutdown();
@@ -2097,8 +2100,16 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       UpdateAccessibilityHighlightingFromPrefs();
       break;
     case FeatureType::kDictation:
-      if (!enabled)
+      if (enabled &&
+          ::features::IsExperimentalAccessibilityDictationCommandsEnabled()) {
+        // The Dictation bubble is hidden behind a flag; only create the
+        // controller if the flag is enabled.
+        dictation_bubble_controller_ =
+            std::make_unique<DictationBubbleController>();
+      } else {
         dictation_nudge_controller_.reset();
+        dictation_bubble_controller_.reset();
+      }
       break;
     case FeatureType::kFloatingMenu:
       if (enabled && always_show_floating_menu_when_enabled_)
