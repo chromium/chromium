@@ -38,7 +38,7 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
   DCHECK(main_thread_runner_);
   // Register as a listener for the playout reference signal. Used for echo
   // cancellation and gain control.
-  if (audio_processor_.has_webrtc_audio_processing() && playout_data_source_) {
+  if (audio_processor_.RequiresPlayoutReference() && playout_data_source_) {
     playout_data_source_->AddPlayoutSink(this);
   }
   DETACH_FROM_THREAD(capture_thread_checker_);
@@ -84,7 +84,7 @@ void MediaStreamAudioProcessor::Stop() {
 
   aec_dump_agent_impl_.reset();
   audio_processor_.OnStopDump();
-  if (audio_processor_.has_webrtc_audio_processing() && playout_data_source_) {
+  if (audio_processor_.RequiresPlayoutReference() && playout_data_source_) {
     playout_data_source_->RemovePlayoutSink(this);
     playout_data_source_ = nullptr;
   }

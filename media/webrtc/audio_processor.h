@@ -110,6 +110,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
     return !!webrtc_audio_processing_;
   }
 
+  // Returns true if the audio processing effects require seeing the playout
+  // audio in order to function properly.
+  bool RequiresPlayoutReference() const;
+
   // Instructs the Audio Processing Module (APM) to reduce its complexity when
   // |muted| is true. This mode is triggered when all audio tracks are disabled.
   // The default APM complexity mode is restored by |muted| set to false.

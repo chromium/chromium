@@ -294,6 +294,15 @@ const media::AudioParameters& AudioProcessor::OutputFormat() const {
   return output_format_;
 }
 
+bool AudioProcessor::RequiresPlayoutReference() const {
+  const bool effects_require_playout_reference =
+      settings_.echo_cancellation || settings_.automatic_gain_control;
+  if (effects_require_playout_reference) {
+    DCHECK(!!webrtc_audio_processing_);
+  }
+  return effects_require_playout_reference;
+}
+
 void AudioProcessor::SetOutputWillBeMuted(bool muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   SendLogMessage(
