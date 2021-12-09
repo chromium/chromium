@@ -24,11 +24,14 @@ PlatformSensor::PlatformSensor(mojom::SensorType type,
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       reading_buffer_(reading_buffer),
       type_(type),
-      provider_(provider) {}
+      provider_(provider) {
+  VLOG(1) << "Platform sensor created. Type " << type_ << ".";
+}
 
 PlatformSensor::~PlatformSensor() {
   if (provider_)
     provider_->RemoveSensor(GetType(), this);
+  VLOG(1) << "Platform sensor released. Type " << type_ << ".";
 }
 
 mojom::SensorType PlatformSensor::GetType() const {
