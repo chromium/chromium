@@ -6790,7 +6790,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Experiment_20211021",
+                    "name": "Experiment_V2_20211129",
+                    "params": {
+                        "RetailCouponsWithCodeParam": "true"
+                    },
                     "enable_features": [
                         "RetailCoupons"
                     ]
