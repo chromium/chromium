@@ -108,6 +108,54 @@ TEST_F(LayoutInlineTest, SimpleContinuation) {
   EXPECT_FALSE(split_inline_part2->Continuation());
 }
 
+TEST_F(LayoutInlineTest, BlockInInlineRemove) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  ScopedLayoutNGBlockInInlineForTest ng_block_in_inline(true);
+  SetBodyInnerHTML(R"HTML(
+    <div>
+      <span id="span">before
+        <div id="block"></div>
+      after</span>
+    </div>
+  )HTML");
+
+  // Check `#block` is in an anonymous block.
+  const auto* span = GetLayoutObjectByElementId("span");
+  Element* block_element = GetElementById("block");
+  const auto* block = block_element->GetLayoutObject();
+  EXPECT_FALSE(block->IsInline());
+  EXPECT_TRUE(block->Parent()->IsBlockInInline());
+  EXPECT_EQ(block->Parent()->Parent(), span);
+
+  // Remove `#block`. All children are now inline.
+  // Check if the |IsBlockInInline| anonymous block was removed.
+  Node* after_block = block_element->nextSibling();
+  block_element->remove();
+  UpdateAllLifecyclePhasesForTest();
+  for (const auto* child = span->SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    EXPECT_TRUE(child->IsInline());
+    EXPECT_FALSE(child->IsBlockInInline());
+  }
+
+  // Re-insert `#block`.
+  after_block->parentNode()->insertBefore(block_element, after_block);
+  UpdateAllLifecyclePhasesForTest();
+  block = block_element->GetLayoutObject();
+  EXPECT_FALSE(block->IsInline());
+  EXPECT_TRUE(block->Parent()->IsBlockInInline());
+  EXPECT_EQ(block->Parent()->Parent(), span);
+
+  // Insert another block before the "after" text node.
+  // This should be in the existing anonymous block, next to the `#block`.
+  Document& document = GetDocument();
+  Element* block2_element = document.CreateElementForBinding("div");
+  after_block->parentNode()->insertBefore(block2_element, after_block);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(block2_element->GetLayoutObject(), block->NextSibling());
+}
+
 TEST_F(LayoutInlineTest, RegionHitTest) {
   SetBodyInnerHTML(R"HTML(
     <div><span id='lotsOfBoxes'>
