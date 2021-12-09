@@ -288,7 +288,6 @@
       'Libfuzzer Upload Windows ASan': 'libfuzzer_windows_asan_release_bot',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
-      'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
@@ -449,7 +448,7 @@
       # These all use the 'trybot' mixins to ensure that dcheck is on.
       'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols',
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
-      'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols',
+      'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot',
       'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting',
       'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
@@ -515,7 +514,7 @@
       'Leak Detection Linux': 'release_bot',
       'Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Linux Builder (dbg)(32)': 'gpu_tests_debug_bot_x86_reclient',
-      'Linux Builder': 'gpu_tests_release_bot',
+      'Linux Builder': 'gpu_tests_release_bot_reclient',
       'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
       'Network Service Linux': 'release_bot',
       'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast',
@@ -2426,6 +2425,10 @@
 
     'gpu_tests_release_trybot_minimal_symbols': [
       'gpu_tests', 'release_trybot_minimal_symbols',
+    ],
+
+    'gpu_tests_release_trybot_minimal_symbols_reclient': [
+      'gpu_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting': [
