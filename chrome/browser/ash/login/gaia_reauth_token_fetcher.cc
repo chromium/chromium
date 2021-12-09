@@ -7,9 +7,12 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "google_apis/google_api_keys.h"
@@ -29,6 +32,8 @@ namespace {
 const char kGetReauthTokenUrl[] =
     "https://staging-chromeoslogin-pa.sandbox.googleapis.com/v1/rart";
 const char kApiKeyParameter[] = "key";
+
+constexpr base::TimeDelta kWaitTimeout = base::Seconds(5);
 
 GURL GetFetchReauthTokenUrl() {
   GURL url =
@@ -93,11 +98,13 @@ void GaiaReauthTokenFetcher::Fetch() {
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->SetAllowHttpErrorResults(true);
+  simple_url_loader_->SetTimeoutDuration(kWaitTimeout);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       g_browser_process->system_network_context_manager()
           ->GetURLLoaderFactory(),
       base::BindOnce(&GaiaReauthTokenFetcher::OnSimpleLoaderComplete,
                      weak_ptr_factory_.GetWeakPtr()));
+  fetch_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
@@ -117,6 +124,8 @@ void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
           message_value->FindStringKey("encodedReauthRequestToken");
       if (token != nullptr) {
         VLOG(1) << "Successfully fetched reauth request token.";
+        base::UmaHistogramTimes("Login.ReauthToken.FetchDuration.Success",
+                                fetch_timer_->Elapsed());
         std::move(callback_).Run(*token);
         return;
       } else {
@@ -129,6 +138,8 @@ void GaiaReauthTokenFetcher::OnSimpleLoaderComplete(
   } else {
     LOG(WARNING) << "Failed to fetch reauth request token.";
   }
+  base::UmaHistogramTimes("Login.ReauthToken.FetchDuration.Failure",
+                          fetch_timer_->Elapsed());
   std::move(callback_).Run(/*token=*/std::string());
 }
 

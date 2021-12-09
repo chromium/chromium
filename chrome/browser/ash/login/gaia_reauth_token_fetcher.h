@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
 namespace ash {
@@ -33,13 +34,16 @@ class GaiaReauthTokenFetcher {
   void Fetch();
 
  private:
-  // Handles responses from the SimpleURLLoader
+  // Handles responses from the SimpleURLLoader.
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
   // Called at the end of Fetch().
   FetchCompleteCallback callback_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+  // Used for metrics:
+  std::unique_ptr<base::ElapsedTimer> fetch_timer_;
 
   base::WeakPtrFactory<GaiaReauthTokenFetcher> weak_ptr_factory_{this};
 };
