@@ -110,9 +110,37 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
     @LargeTest
     @Feature({"RenderTest"})
     public void testContextMenuViewWithLink() throws IOException {
+        doTestContextMenuViewWithLink("context_menu_with_link", /*hideHeaderImage=*/false);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithLink_HideHeaderImage() throws IOException {
+        doTestContextMenuViewWithLink("context_menu_with_link_popup", /*hideHeaderImage=*/true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithImageLink() throws IOException {
+        doTestContextMenuViewWithImageLink(
+                "context_menu_with_image_link", /*hideHeaderImage=*/false);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testContextMenuViewWithImageLink_HideHeaderImage() throws IOException {
+        doTestContextMenuViewWithImageLink(
+                "context_menu_with_image_link_popup", /*hideHeaderImage=*/true);
+    }
+
+    private void doTestContextMenuViewWithLink(String id, boolean hideHeaderImage)
+            throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mListItems.add(
-                    new ListItem(ListItemType.HEADER, getHeaderModel("", "www.google.com", false)));
+            mListItems.add(new ListItem(ListItemType.HEADER,
+                    getHeaderModel("", "www.google.com", false, hideHeaderImage)));
             mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             mListItems.add((
                     new ListItem(ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open in new tab"))));
@@ -123,16 +151,14 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
             mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     getShareItemModel("Share link"))));
         });
-        mRenderTestRule.render(mFrame, "context_menu_with_link");
+        mRenderTestRule.render(mFrame, id);
     }
 
-    @Test
-    @LargeTest
-    @Feature({"RenderTest"})
-    public void testContextMenuViewWithImageLink() throws IOException {
+    private void doTestContextMenuViewWithImageLink(String id, boolean hideHeaderImage)
+            throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mListItems.add(new ListItem(
-                    ListItemType.HEADER, getHeaderModel("Capybara", "www.google.com", true)));
+            mListItems.add(new ListItem(ListItemType.HEADER,
+                    getHeaderModel("Capybara", "www.google.com", true, hideHeaderImage)));
             mListItems.add(new ListItem(ListItemType.DIVIDER, new PropertyModel()));
             mListItems.add((
                     new ListItem(ListItemType.CONTEXT_MENU_ITEM, getItemModel("Open in new tab"))));
@@ -150,12 +176,13 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
             mListItems.add((new ListItem(ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     getShareItemModel("Share image"))));
         });
-        mRenderTestRule.render(mFrame, "context_menu_with_image_link");
+        mRenderTestRule.render(mFrame, id);
     }
 
-    private PropertyModel getHeaderModel(String title, CharSequence url, boolean hasImage) {
+    private PropertyModel getHeaderModel(
+            String title, CharSequence url, boolean hasImageThumbnail, boolean hideHeaderImage) {
         Bitmap image;
-        if (hasImage) {
+        if (hasImageThumbnail) {
             image = BitmapFactory.decodeFile(
                     UrlUtils.getIsolatedTestFilePath("chrome/test/data/android/capybara.jpg"));
         } else {
@@ -172,7 +199,8 @@ public class ContextMenuRenderTest extends DummyUiActivityTestCase {
                 .with(ContextMenuHeaderProperties.URL, url)
                 .with(ContextMenuHeaderProperties.URL_MAX_LINES, 1)
                 .with(ContextMenuHeaderProperties.IMAGE, image)
-                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImage)
+                .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, !hasImageThumbnail)
+                .with(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, hideHeaderImage)
                 .build();
     }
 

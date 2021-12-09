@@ -60,6 +60,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowContextMenuDialog.class)
+@Features.DisableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
 public class ContextMenuCoordinatorTest {
     /**
      * Shadow class used to capture the inputs for {@link

@@ -46,6 +46,7 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
     private View mTitleAndUrl;
     private ImageView mImage;
     private View mCircleBg;
+    private View mImageContainer;
     private View mPerformanceInfo;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
@@ -66,6 +67,7 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
             mTitleAndUrl = mHeaderView.findViewById(R.id.title_and_url);
             mImage = mHeaderView.findViewById(R.id.menu_header_image);
             mCircleBg = mHeaderView.findViewById(R.id.circle_background);
+            mImageContainer = mHeaderView.findViewById(R.id.menu_header_image_container);
             mPerformanceInfo = mHeaderView.findViewById(R.id.menu_header_performance_info);
             mModel = new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                              .with(ContextMenuHeaderProperties.TITLE, "")
@@ -188,6 +190,11 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
                 () -> mModel.set(ContextMenuHeaderProperties.IMAGE, bitmap));
         assertThat("Incorrect thumbnail bitmap.",
                 ((BitmapDrawable) mImage.getDrawable()).getBitmap(), equalTo(bitmap));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, true));
+        assertThat("Image container should be hidden.", mImageContainer.getVisibility(),
+                equalTo(View.GONE));
     }
 
     @Test

@@ -25,7 +25,10 @@ class ContextMenuHeaderProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey URL_PERFORMANCE_CLASS = new WritableIntPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey HIDE_HEADER_IMAGE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {TITLE, TITLE_MAX_LINES, URL,
             TITLE_AND_URL_CLICK_LISTENER, URL_MAX_LINES, IMAGE, CIRCLE_BG_VISIBLE,
-            URL_PERFORMANCE_CLASS};
+            URL_PERFORMANCE_CLASS, HIDE_HEADER_IMAGE};
 }

@@ -68,6 +68,11 @@ class ContextMenuHeaderViewBinder {
                     .setVisibility(performanceClass == PerformanceClass.PERFORMANCE_FAST
                                     ? View.VISIBLE
                                     : View.GONE);
+        } else if (propertyKey == ContextMenuHeaderProperties.HIDE_HEADER_IMAGE) {
+            final boolean hideHeaderImage =
+                    model.get(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE);
+            view.findViewById(R.id.menu_header_image_container)
+                    .setVisibility(hideHeaderImage ? View.GONE : View.VISIBLE);
         }
     }
 }

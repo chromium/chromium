@@ -16,6 +16,7 @@
     android:paddingEnd="@dimen/context_menu_list_lateral_padding">
 
     <FrameLayout
+        android:id="@+id/menu_header_image_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp">

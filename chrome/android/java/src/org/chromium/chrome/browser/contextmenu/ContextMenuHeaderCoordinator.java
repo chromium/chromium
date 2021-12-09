@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,6 +30,8 @@ class ContextMenuHeaderCoordinator {
     }
 
     private PropertyModel buildModel(String title, CharSequence url) {
+        boolean hideHeaderImage =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE);
         return new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS)
                 .with(ContextMenuHeaderProperties.TITLE, title)
                 .with(ContextMenuHeaderProperties.TITLE_MAX_LINES, TextUtils.isEmpty(url) ? 2 : 1)
@@ -38,6 +41,7 @@ class ContextMenuHeaderCoordinator {
                         PerformanceClass.PERFORMANCE_UNKNOWN)
                 .with(ContextMenuHeaderProperties.IMAGE, null)
                 .with(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE, false)
+                .with(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE, hideHeaderImage)
                 .build();
     }
 

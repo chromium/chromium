@@ -48,19 +48,23 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         mModel = model;
         mModel.set(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, this);
 
-        if (params.isImage()) {
-            final Resources res = mContext.getResources();
-            final int imageMaxSize =
-                    res.getDimensionPixelSize(R.dimen.context_menu_header_image_max_size);
-            nativeDelegate.retrieveImageForContextMenu(
-                    imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
-        } else if (!params.isImage() && !params.isVideo()) {
-            LargeIconBridge iconBridge = new LargeIconBridge(profile);
-            iconBridge.getLargeIconForUrl(mPlainUrl,
-                    context.getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size),
-                    this::onFaviconAvailable);
-        } else if (params.isVideo()) {
-            setVideoIcon();
+        // Skip setting up the image header if context menu is in pop up style.
+        if (!model.get(ContextMenuHeaderProperties.HIDE_HEADER_IMAGE)) {
+            if (params.isImage()) {
+                final Resources res = mContext.getResources();
+                final int imageMaxSize =
+                        res.getDimensionPixelSize(R.dimen.context_menu_header_image_max_size);
+                nativeDelegate.retrieveImageForContextMenu(
+                        imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
+            } else if (!params.isImage() && !params.isVideo()) {
+                LargeIconBridge iconBridge = new LargeIconBridge(profile);
+                iconBridge.getLargeIconForUrl(mPlainUrl,
+                        context.getResources().getDimensionPixelSize(
+                                R.dimen.default_favicon_min_size),
+                        this::onFaviconAvailable);
+            } else if (params.isVideo()) {
+                setVideoIcon();
+            }
         }
         if (PerformanceHintsObserver.isContextMenuPerformanceInfoEnabled() && params.isAnchor()) {
             mModel.set(ContextMenuHeaderProperties.URL_PERFORMANCE_CLASS, performanceClass);
