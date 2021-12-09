@@ -81948,6 +81948,19 @@
        {}
       ]
      ],
+     "layer-stylesheet-sharing-important.html": [
+      "7b3ff4abc6b5f8e4b5b457921ca73e9dda5fc622",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/layer-stylesheet-sharing-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "layer-stylesheet-sharing.html": [
       "c172baaf8185b5ddcfb1f7231186d4008227c29f",
       [
@@ -235275,6 +235288,14 @@
       []
      ],
      "parsing": {
+      "color-computed-expected.txt": [
+       "a9c6646d7d9739fa774e22e74f13984dc598280e",
+       []
+      ],
+      "color-valid-expected.txt": [
+       "36e511b3edc2a053f51abfe75da15d6095644022",
+       []
+      ],
       "system-color-valid-expected.txt": [
        "5194a9465974f66b1965d80e3ad4307797608c1e",
        []
@@ -269058,6 +269079,10 @@
       "5afa41612120ff0feec19b01102e8cd8128c2652",
       []
      ],
+     "channels.md": [
+      "9296247fca4fd3bee7115be3526e2c90d87fb95a",
+      []
+     ],
      "crashtest.md": [
       "0166bdeb752ccccb6fdeb6860fe9286936b7bf01",
       []
@@ -269161,7 +269186,7 @@
       []
      ],
      "testharness.md": [
-      "499b6436525ba5166690d81644de8a2236fd464d",
+      "57cbd33ea0b35c39af321bafca75a56d8728797a",
       []
      ],
      "tools.md": [
@@ -292115,6 +292140,24 @@
       ]
      }
     },
+    "channels": {
+     "child_message.html": [
+      "6baf47b193919b097c44719c3acb2f9084dbe357",
+      []
+     ],
+     "child_script.html": [
+      "1c10379bdeafbc7e6874f623523a1eaea008b576",
+      []
+     ],
+     "serialize-data.js": [
+      "5c423ee16092dad26df141f2c954fa63bd59dc07",
+      []
+     ],
+     "serialize_child.html": [
+      "6ad3accfee5f63f27141cdac3e06ee982925f228",
+      []
+     ]
+    },
     "expected-fail": {
      "failing-test-expected.txt": [
       "d9c0c0b10d116c8c809211fc83e778dd98436e9c",
@@ -293991,7 +294034,7 @@
     ]
    },
    "lint.ignore": [
-    "1bc3eecebf6584e963c7a57d29e96810197f927f",
+    "061150a8404d8709534653287042395384e48f78",
     []
    ],
    "loading": {
@@ -300549,6 +300592,10 @@
      "edeaa45bb620788242711725cfd8189b681835ae",
      []
     ],
+    "channel.sub.js": [
+     "7385a65f6e4abb5cd559c9df524f886d86419a0f",
+     []
+    ],
     "check-layout-th.js": [
      "a507a8dfd7f197cbf3ff3072e7f7291847cd6aa2",
      []
@@ -300716,7 +300763,7 @@
      []
     ],
     "testharness.js": [
-     "9995d7aea651472975d0ec5c930587cd84cbc3d6",
+     "5edf75bcb6a004ce29eb4b178a868ce597b861c6",
      []
     ],
     "testharness.js.headers": [
@@ -309010,7 +309057,7 @@
    },
    "webdriver": {
     "META.yml": [
-     "a41161df8662d958b8741ab94bc00cddfdaa8229",
+     "8475a173abd14ea94ef2cc70c4c07804a450af9b",
      []
     ],
     "README.md": [
@@ -309914,7 +309961,7 @@
      []
     ],
     "META.yml": [
-     "eed4ac834313773528e5665d80505cb4b951a1c9",
+     "69fcad76f106a9261b311a3ba043e5e302ff7d1f",
      []
     ],
     "OWNERS": [
@@ -310160,10 +310207,6 @@
      ],
      "rtp-payloadtypes-expected.txt": [
       "c8cd341e51f0274ff19000a16c3ac8c693c79e49",
-      []
-     ],
-     "sdes-dont-dont-dont-expected.txt": [
-      "efdc199bdf252230d68403272860b9c84f7e1680",
       []
      ],
      "vp8-fmtp-expected.txt": [
@@ -310702,6 +310745,10 @@
      ],
      "invalid_wsh.py": [
       "4bfc3ce4e7752747c7e37bfacf6c21048a915b35",
+      []
+     ],
+     "msg_channel_wsh.py": [
+      "7a66646f2bcbc2860f6f3aff1bf74ba93cb1db9e",
       []
      ],
      "origin_wsh.py": [
@@ -348806,21 +348853,21 @@
      ],
      "parsing": {
       "color-computed.html": [
-       "973b454aaddd25dadbe5a7309c9d9bb131c1abbf",
+       "d78e92b81e106f52026aeeedbc2b104e987e5639",
        [
         null,
         {}
        ]
       ],
       "color-invalid.html": [
-       "676ffb315a98c1ba686bf237e2fdc82e1b0ba691",
+       "a8336fe81b55e0cce779ee44dabe80a48d9e809e",
        [
         null,
         {}
        ]
       ],
       "color-valid.html": [
-       "48e97561f40c370acd88bf41220b5482eedf245e",
+       "bfe2726adf2cf9e3d1ebe07e22aa74aeda9e06df",
        [
         null,
         {}
@@ -453550,6 +453597,29 @@
       ]
      ]
     },
+    "channels": {
+     "test_call.html": [
+      "49beaea4ff995694d4ef789967fc216795dcdfd7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "test_postMessage.html": [
+      "473c8630a695ff4b438f7920a2ea1a2905d82d16",
+      [
+       null,
+       {}
+      ]
+     ],
+     "test_serialize.html": [
+      "88a9ce5221dcf90ad7c064b6e135ba5e1b37da4f",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "expected-fail": {
      "failing-test.html": [
       "249099c06f6c08e92bd1bc6752f57a436ebf9ae0",
@@ -529543,7 +529613,7 @@
    },
    "webtransport": {
     "close.https.any.js": [
-     "6e51834e27373d5ccf3541e8ef1e5fd0ff97b543",
+     "02800339c00592c75427d3d25533031c5cdc53ec",
      [
       "webtransport/close.https.any.html",
       {
@@ -552458,6 +552528,17 @@
        ]
       ]
      },
+     "bidi": {
+      "log_entry_added": {
+       "event_buffer.py": [
+        "8d0bbac3a4b60d58f9dc8d667b95eb280fc2fa4c",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     },
      "close_window": {
       "close.py": [
        "7b382fa9bbcb297081027391e9ac052840be48f7",
@@ -552914,7 +552995,7 @@
      },
      "get_computed_label": {
       "get.py": [
-       "3904c6ce41f6f65ba0813f59ba75911193fe067f",
+       "f27f3d7093aa7a12c46bd95b9b4be79f42921597",
        [
         null,
         {}
@@ -552923,7 +553004,7 @@
      },
      "get_computed_role": {
       "get.py": [
-       "10fd628f156b0fa6433cb78a9b9ed7300ac73753",
+       "2a7053d640bb35c0a0c8fc3ca622e46b9342863d",
        [
         null,
         {}

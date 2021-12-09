@@ -13,6 +13,9 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
 crbug.com/626703 external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/resource-timing/entries-for-network-errors.sub.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-flexbox/percentage-heights-019.html [ Failure ]

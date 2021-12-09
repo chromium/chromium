@@ -83,9 +83,9 @@ promise_test(async t => {
   const wt = new WebTransport(webtransport_url('server-close.py'));
 
   const close_info = await wt.closed;
-  assert_not_own_property(close_info, 'closeCode');
-  assert_not_own_property(close_info, 'reason');
-}, 'server initiated closure');
+  assert_equals(close_info.closeCode, 0, 'code');
+  assert_equals(close_info.reason, '', 'reason');
+}, 'server initiated closure without code and reason');
 
 promise_test(async t => {
   const code = 32;
