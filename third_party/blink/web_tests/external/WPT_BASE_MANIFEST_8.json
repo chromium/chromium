@@ -361,6 +361,13 @@
         {}
        ]
       ],
+      "inline-multicol-inside-container-crash.html": [
+       "d8ec414e596fb9c83c881206f31311ad1b56a19a",
+       [
+        null,
+        {}
+       ]
+      ],
       "pseudo-container-crash.html": [
        "f998c3a4464ca3eb3ce07687cf24d9dcdc9a16af",
        [
@@ -89351,6 +89358,19 @@
         [
          [
           "/css/css-contain/container-queries/fieldset-legend-change-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-inside-container.html": [
+       "0c00734a4ae82e0cdf0e6d230a7e2eabae35932b",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
           "=="
          ]
         ],
@@ -269299,6 +269319,16 @@
      "6fd5b12664da091fd9ee773b821ad72ee704ee8f",
      []
     ],
+    "abort": {
+     "event.any-expected.txt": [
+      "4d7cd785dcd39836212986a8dad09d878597431f",
+      []
+     ],
+     "event.any.worker-expected.txt": [
+      "4d7cd785dcd39836212986a8dad09d878597431f",
+      []
+     ]
+    },
     "collections": {
      "HTMLCollection-as-prototype-expected.txt": [
       "f36f3bf1426c59572dc577805db9d9a3503ffd29",
@@ -306919,7 +306949,7 @@
       []
      ],
      "urlpatterntestdata.json": [
-      "f097edba08da1d2e68a70e26e459890a0956dd45",
+      "93ef6d199e063886c5646393b349ac5b9a90509d",
       []
      ],
      "urlpatterntests.js": [
@@ -376146,7 +376176,7 @@
       ]
      ],
      "event.any.js": [
-      "cb85250b3be1efc64bc48f10aad932642796858b",
+      "21c901c9fe9bcde84898754de33d62acb164a8b1",
       [
        "dom/abort/event.any.html",
        {}
