@@ -665,23 +665,26 @@ void AppListItemView::OnContextMenuModelReceived(
   // Anchor the menu to the same rect that is used for selection highlight.
   AdaptBoundsForSelectionHighlight(&anchor_rect);
 
-  AppLaunchedMetricParams metric_params = {
-      AppListLaunchedFrom::kLaunchedFromGrid};
-  view_delegate_->GetAppLaunchedMetricParams(&metric_params);
-
   // Assign the correct app type to `item_menu_model_adapter_` according to the
   // parent view of the app list item view.
   AppListMenuModelAdapter::AppListViewAppType app_type;
+  AppLaunchedMetricParams metric_params;
   switch (context_) {
     case Context::kAppsGridView:
       app_type = features::IsProductivityLauncherEnabled()
                      ? AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID
                      : AppListMenuModelAdapter::FULLSCREEN_APP_GRID;
+      metric_params.launched_from = AppListLaunchedFrom::kLaunchedFromGrid;
+      metric_params.launch_type = AppListLaunchType::kApp;
       break;
     case Context::kRecentAppsView:
       app_type = AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_RECENT_APP;
+      metric_params.launched_from =
+          AppListLaunchedFrom::kLaunchedFromRecentApps;
+      metric_params.launch_type = AppListLaunchType::kAppSearchResult;
       break;
   }
+  view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
   item_menu_model_adapter_ = std::make_unique<AppListMenuModelAdapter>(
       item_weak_->GetMetadata()->id, std::move(menu_model), GetWidget(),

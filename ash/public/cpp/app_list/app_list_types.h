@@ -221,14 +221,13 @@ enum class AppListLaunchedFrom {
   kMaxValue = kLaunchedFromContinueTask,
 };
 
-// The UI representation of the search result. Currently all search results
-// that are not apps (OminboxResult, LauncherSearcResult, etc.) are grouped
-// into kSearchResult. Meanwhile SearchResultTileItemView (shown in zero state)
-// and suggested chips are considered kAppSearchResult.
-enum class AppListLaunchType {
-  kSearchResult = 0,
-  kAppSearchResult,
-};
+// The UI representation of the app that's being launched. Currently all search
+// results that are not apps (OminboxResult, LauncherSearcResult, etc.) are
+// grouped into kSearchResult. Meanwhile app search results, apps that appear in
+// the recent apps section, and suggested chips (if productivity launcher is
+// disabled) are considered kAppSearchResult. kApp is used for apps launched
+// from the apps grid.
+enum class AppListLaunchType { kSearchResult, kAppSearchResult, kApp };
 
 // Type of the search result, which is set in Chrome. These values are persisted
 // to logs. Entries should not be renumbered and numeric values should never be
@@ -261,6 +260,9 @@ enum class AppListSearchResultType {
   // Add new values here.
   kMaxValue = kDriveSearch,
 };
+
+ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(
+    AppListSearchResultType result_type);
 
 // The different categories a search result can be part of. Every search result
 // to be displayed in the search box should be associated with one category. It

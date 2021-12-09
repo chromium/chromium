@@ -12,6 +12,34 @@ const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
 // Generated using crx_file::id_util::GenerateId("LinuxAppsFolder")
 const char kCrostiniFolderId[] = "ddolnhmblagmcagkedkbfejapapdimlk";
 
+bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
+  switch (result_type) {
+    case AppListSearchResultType::kInstalledApp:
+    case AppListSearchResultType::kInternalApp:
+    case AppListSearchResultType::kPlayStoreApp:
+    case AppListSearchResultType::kPlayStoreReinstallApp:
+    case AppListSearchResultType::kArcAppShortcut:
+    case AppListSearchResultType::kInstantApp:
+      return true;
+    case AppListSearchResultType::kUnknown:
+    case AppListSearchResultType::kOmnibox:
+    case AppListSearchResultType::kLauncher:
+    case AppListSearchResultType::kAnswerCard:
+    case AppListSearchResultType::kZeroStateFile:
+    case AppListSearchResultType::kZeroStateDrive:
+    case AppListSearchResultType::kFileChip:
+    case AppListSearchResultType::kDriveChip:
+    case AppListSearchResultType::kAssistantChip:
+    case AppListSearchResultType::kOsSettings:
+    case AppListSearchResultType::kInternalPrivacyInfo:
+    case AppListSearchResultType::kAssistantText:
+    case AppListSearchResultType::kHelpApp:
+    case AppListSearchResultType::kFileSearch:
+    case AppListSearchResultType::kDriveSearch:
+      return false;
+  }
+}
+
 // IconColor -------------------------------------------------------------------
 
 // static

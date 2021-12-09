@@ -61,6 +61,31 @@ constexpr char kAppListZeroStateSearchResultRemovalHistogram[] =
 // disabled in clamshell mode) and the Shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
 
+// UMA histograms that log app launches within the app list, and the shelf.
+// Split depending on whether tablet mode is active or not.
+constexpr char kAppLaunchInTablet[] = "Apps.AppList.AppLaunched.TabletMode";
+constexpr char kAppLaunchInClamshell[] =
+    "Apps.AppList.AppLaunched.ClamshellMode";
+
+// UMA histograms that log launcher workflow actions (launching an app, search
+// result, or a continue section task) in the app list UI. Split depending on
+// whether tablet mode is active or not. Note that unlike `kAppListAppLaunched`
+// histograms, these do not include actions from shelf, but do include non-app
+// launch actions.
+constexpr char kLauncherUserActionInTablet[] =
+    "Apps.AppList.UserAction.TabletMode";
+constexpr char kLauncherUserActionInClamshell[] =
+    "Apps.AppList.UserAction.ClamshellMode";
+
+// UMA histograms that log time elapsed from launcher getting shown at the time
+// of an user taking a launcher workflow action (launching an app, search
+// result, or a continue section task) in the app list UI. Split depending on
+// whether tablet mode is active or not.
+constexpr char kTimeToLauncherUserActionInTablet[] =
+    "Apps.AppList.TimeToUserAction.TabletMode";
+constexpr char kTimeToLauncherUserActionInClamshell[] =
+    "Apps.AppList.TimeToUserAction.ClamshellMode";
+
 // The UMA histograms that log app launches within the AppList, AppListBubble
 // and Shelf. The app launches are divided by histogram for each of the the
 // different AppList states.
@@ -94,6 +119,21 @@ enum class ApplistSearchResultOpenedSource {
   kFullscreenTablet = 2,
   kMaxApplistSearchResultOpenedSource = 3,
 };
+
+AppLaunchedMetricParams::AppLaunchedMetricParams() = default;
+
+AppLaunchedMetricParams::AppLaunchedMetricParams(
+    const AppLaunchedMetricParams&) = default;
+
+AppLaunchedMetricParams& AppLaunchedMetricParams::operator=(
+    const AppLaunchedMetricParams&) = default;
+
+AppLaunchedMetricParams::AppLaunchedMetricParams(
+    AppListLaunchedFrom launched_from,
+    AppListLaunchType launch_type)
+    : launched_from(launched_from), launch_type(launch_type) {}
+
+AppLaunchedMetricParams::~AppLaunchedMetricParams() = default;
 
 void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
                                                 bool is_tablet_mode) {
@@ -224,6 +264,13 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               bool app_list_shown) {
   UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunched, launched_from);
 
+  if (is_tablet_mode) {
+    base::UmaHistogramEnumeration(kAppLaunchInTablet, launched_from);
+
+  } else {
+    base::UmaHistogramEnumeration(kAppLaunchInClamshell, launched_from);
+  }
+
   if (features::IsProductivityLauncherEnabled() && !is_tablet_mode) {
     if (!app_list_shown) {
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
@@ -281,6 +328,29 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                                   launched_from);
       }
       break;
+  }
+}
+
+ASH_EXPORT void RecordLauncherWorkflowMetrics(
+    AppListUserAction action,
+    bool is_tablet_mode,
+    absl::optional<base::TimeTicks> launcher_show_time) {
+  if (is_tablet_mode) {
+    base::UmaHistogramEnumeration(kLauncherUserActionInTablet, action);
+
+    if (launcher_show_time) {
+      base::UmaHistogramMediumTimes(
+          kTimeToLauncherUserActionInTablet,
+          base::TimeTicks::Now() - *launcher_show_time);
+    }
+  } else {
+    base::UmaHistogramEnumeration(kLauncherUserActionInClamshell, action);
+
+    if (launcher_show_time) {
+      base::UmaHistogramMediumTimes(
+          kTimeToLauncherUserActionInClamshell,
+          base::TimeTicks::Now() - *launcher_show_time);
+    }
   }
 }
 

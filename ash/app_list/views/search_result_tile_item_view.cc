@@ -353,9 +353,9 @@ void SearchResultTileItemView::OnGetContextMenuModel(
   gfx::Rect anchor_rect = gfx::ToEnclosingRect(GetSelectionRingBounds());
   views::View::ConvertRectToScreen(this, &anchor_rect);
 
-  AppLaunchedMetricParams metric_params = {
+  AppLaunchedMetricParams metric_params(
       AppListLaunchedFrom::kLaunchedFromSearchBox,
-      AppListLaunchType::kAppSearchResult};
+      AppListLaunchType::kAppSearchResult);
   view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
   context_menu_ = std::make_unique<AppListMenuModelAdapter>(

@@ -47884,6 +47884,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>
 
+<enum name="LauncherUserAction">
+  <summary>
+    List of actions that represent a launcher workflow that the user can perform
+    within the launcher UI, either in tablet or clamshell mode.
+  </summary>
+  <int value="0" label="App launched from apps grid"/>
+  <int value="1" label="App launched from recent apps"/>
+  <int value="2" label="Search result opened"/>
+  <int value="3" label="App search result opened"/>
+  <int value="4" label="Continue section task opened"/>
+  <int value="5" label="Suggestion chip opened"/>
+</enum>
+
 <enum name="LaunchFromHomeScreen">
   <int value="0" label="Launched as standalone web app"/>
   <int value="1" label="Launched as a tab"/>

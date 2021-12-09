@@ -502,6 +502,9 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   // change before the metric is recorded.
   absl::optional<bool> recorded_app_list_visibility_;
 
+  // The last time the app list was shown.
+  absl::optional<base::TimeTicks> last_show_timestamp_;
+
   // ScopedClosureRunner which while in scope keeps background blur in home
   // screen (in particular, apps container suggestion chips background)
   // disabled. Set while home screen transitions are in progress.

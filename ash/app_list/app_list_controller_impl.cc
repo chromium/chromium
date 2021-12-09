@@ -1186,6 +1186,38 @@ void AppListControllerImpl::OpenSearchResult(
     }
   }
 
+  const bool is_tablet_mode = IsTabletMode();
+  switch (launched_from) {
+    case AppListLaunchedFrom::kLaunchedFromSearchBox:
+      switch (launch_type) {
+        case AppListLaunchType::kSearchResult:
+          RecordLauncherWorkflowMetrics(AppListUserAction::kOpenSearchResult,
+                                        is_tablet_mode, last_show_timestamp_);
+          break;
+        case AppListLaunchType::kAppSearchResult:
+          RecordLauncherWorkflowMetrics(AppListUserAction::kOpenAppSearchResult,
+                                        is_tablet_mode, last_show_timestamp_);
+          break;
+        case AppListLaunchType::kApp:
+          NOTREACHED();
+          break;
+      }
+      break;
+    case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+      RecordLauncherWorkflowMetrics(AppListUserAction::kOpenSuggestionChip,
+                                    is_tablet_mode, last_show_timestamp_);
+      break;
+    case AppListLaunchedFrom::kLaunchedFromContinueTask:
+      RecordLauncherWorkflowMetrics(AppListUserAction::kOpenContinueSectionTask,
+                                    is_tablet_mode, last_show_timestamp_);
+      break;
+    case AppListLaunchedFrom::kLaunchedFromGrid:
+    case AppListLaunchedFrom::kLaunchedFromRecentApps:
+    case AppListLaunchedFrom::kLaunchedFromShelf:
+      NOTREACHED();
+      break;
+  }
+
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListSearchResultOpenDisplayType",
                             result->display_type(),
                             SearchResultDisplayType::kLast);
@@ -1282,6 +1314,24 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
                                          int event_flags,
                                          AppListLaunchedFrom launched_from) {
   RecordAppLaunched(launched_from);
+
+  const bool is_tablet_mode = IsTabletMode();
+  switch (launched_from) {
+    case AppListLaunchedFrom::kLaunchedFromGrid:
+      RecordLauncherWorkflowMetrics(AppListUserAction::kAppLaunchFromAppsGrid,
+                                    is_tablet_mode, last_show_timestamp_);
+      break;
+    case AppListLaunchedFrom::kLaunchedFromRecentApps:
+      RecordLauncherWorkflowMetrics(AppListUserAction::kAppLaunchFromRecentApps,
+                                    is_tablet_mode, last_show_timestamp_);
+      break;
+    case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+    case AppListLaunchedFrom::kLaunchedFromContinueTask:
+    case AppListLaunchedFrom::kLaunchedFromSearchBox:
+    case AppListLaunchedFrom::kLaunchedFromShelf:
+      NOTREACHED();
+      break;
+  }
 
   if (client_)
     client_->ActivateItem(profile_id_, id, event_flags);
@@ -1495,6 +1545,7 @@ void AppListControllerImpl::GetAppLaunchedMetricParams(
   metric_params->app_list_view_state = GetAppListViewState();
   metric_params->is_tablet_mode = IsTabletMode();
   metric_params->app_list_shown = last_visible_;
+  metric_params->launcher_show_timestamp = last_show_timestamp_;
 }
 
 gfx::Rect AppListControllerImpl::SnapBoundsToDisplayEdge(
@@ -1598,6 +1649,9 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
   }
 
   last_visible_display_id_ = display_id;
+
+  if (visible)
+    last_show_timestamp_ = base::TimeTicks::Now();
 
   AppListView* const app_list_view = fullscreen_presenter_->GetView();
   if (app_list_view) {

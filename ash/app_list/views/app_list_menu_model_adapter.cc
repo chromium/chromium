@@ -206,19 +206,41 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
   if (!IsCommandIdAnAppLaunch(command_id))
     return;
 
-  // Note that |search_launch_type| only matters when |launched_from| is
-  // kLaunchedFromSearchBox. Early out if it is not launched as an app search
-  // result.
-  if (metric_params_.launched_from ==
-          AppListLaunchedFrom::kLaunchedFromSearchBox &&
-      metric_params_.search_launch_type !=
-          AppListLaunchType::kAppSearchResult) {
-    return;
-  }
+  switch (metric_params_.launch_type) {
+    case AppListLaunchType::kSearchResult:
+      break;
+    case AppListLaunchType::kAppSearchResult:
+    case AppListLaunchType::kApp:
+      RecordAppListAppLaunched(
+          metric_params_.launched_from, metric_params_.app_list_view_state,
+          metric_params_.is_tablet_mode, metric_params_.app_list_shown);
 
-  RecordAppListAppLaunched(
-      metric_params_.launched_from, metric_params_.app_list_view_state,
-      metric_params_.is_tablet_mode, metric_params_.app_list_shown);
+      switch (metric_params_.launched_from) {
+        case AppListLaunchedFrom::kLaunchedFromGrid:
+          RecordLauncherWorkflowMetrics(
+              AppListUserAction::kAppLaunchFromAppsGrid,
+              metric_params_.is_tablet_mode,
+              metric_params_.launcher_show_timestamp);
+          break;
+        case AppListLaunchedFrom::kLaunchedFromRecentApps:
+          RecordLauncherWorkflowMetrics(
+              AppListUserAction::kAppLaunchFromRecentApps,
+              metric_params_.is_tablet_mode,
+              metric_params_.launcher_show_timestamp);
+          break;
+        case AppListLaunchedFrom::kLaunchedFromSearchBox:
+          RecordLauncherWorkflowMetrics(AppListUserAction::kOpenAppSearchResult,
+                                        metric_params_.is_tablet_mode,
+                                        metric_params_.launcher_show_timestamp);
+          break;
+        case AppListLaunchedFrom::kLaunchedFromSuggestionChip:
+        case AppListLaunchedFrom::kLaunchedFromContinueTask:
+        case AppListLaunchedFrom::kLaunchedFromShelf:
+          NOTREACHED();
+          break;
+      }
+      break;
+  }
 }
 
 }  // namespace ash

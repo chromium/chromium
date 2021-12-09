@@ -58,14 +58,6 @@ std::string ItemIdFromAppId(const std::string& app_id) {
   return app_id;
 }
 
-// Returns true if `type` is an application result.
-bool IsAppType(AppListSearchResultType type) {
-  return type == AppListSearchResultType::kInstalledApp ||
-         type == AppListSearchResultType::kPlayStoreApp ||
-         type == AppListSearchResultType::kInstantApp ||
-         type == AppListSearchResultType::kInternalApp;
-}
-
 // Returns a list of recent apps by filtering suggestion chip data.
 // TODO(crbug.com/1216662): Replace with a real implementation after the ML team
 // gives us a way to query directly for recent apps.
@@ -73,7 +65,7 @@ std::vector<std::string> GetRecentAppIdsFromSuggestionChips(
     SearchModel* search_model) {
   SearchModel::SearchResults* results = search_model->results();
   auto is_app_suggestion = [](const SearchResult& r) -> bool {
-    return IsAppType(r.result_type()) &&
+    return IsAppListSearchResultAnApp(r.result_type()) &&
            r.display_type() == SearchResultDisplayType::kList;
   };
   std::vector<SearchResult*> app_suggestion_results =

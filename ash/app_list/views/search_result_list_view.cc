@@ -383,10 +383,14 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
       GetSearchResultsForLogging(search_result_views_),
       view->index_in_container());
 
+  AppListLaunchType launch_type =
+      IsAppListSearchResultAnApp(result->result_type())
+          ? AppListLaunchType::kAppSearchResult
+          : AppListLaunchType::kSearchResult;
   view_delegate_->OpenSearchResult(
       result->id(), result->result_type(), event_flags,
-      AppListLaunchedFrom::kLaunchedFromSearchBox,
-      AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
+      AppListLaunchedFrom::kLaunchedFromSearchBox, launch_type,
+      -1 /* suggestion_index */,
       !by_button_press && view->is_default_result() /* launch_as_default */);
 }
 
