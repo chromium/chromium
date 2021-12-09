@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -62,44 +63,123 @@ scoped_refptr<base::SequencedTaskRunner> GetPrintingTaskRunner() {
   return task_runner;
 }
 
-}  // namespace
-
 // Local storage of document and associated data needed to submit to job to
-// the operating system's printing API.
-struct PrintBackendServiceImpl::DocumentContainer {
-  DocumentContainer(
-      scoped_refptr<PrintedDocument> document,
-      mojom::PrintTargetType target_type,
-      mojom::PrintBackendService::StartPrintingCallback start_printing_callback)
-      : document(document),
-        target_type(target_type),
-        start_printing_callback(std::move(start_printing_callback)),
-        task_runner(GetPrintingTaskRunner()) {
-    // Container is created on main thread, but system calls show be on
-    // `task_runner`.
-    DETACH_FROM_SEQUENCE(system_sequence_checker);
-  }
+// the operating system's printing API.  All access to the document occurs on
+// a worker task runner.
+class DocumentContainer {
+ public:
+  DocumentContainer(PrintingContext::Delegate* context_delegate,
+                    scoped_refptr<PrintedDocument> document,
+                    mojom::PrintTargetType target_type)
+      : context_delegate_(context_delegate),
+        document_(document),
+        target_type_(target_type) {}
 
   ~DocumentContainer() = default;
 
-  scoped_refptr<PrintedDocument> document;
+  // Helper function that runs on a task runner.
+  mojom::ResultCode StartPrintingReadyDocument();
+
+ private:
+  PrintingContext::Delegate* context_delegate_;
+  scoped_refptr<PrintedDocument> document_;
 
   // `context` is not initialized until the document is ready for printing.
-  std::unique_ptr<PrintingContext> context;
+  std::unique_ptr<PrintingContext> context_;
 
-  // Parameters required for the delayed call to `UpdatePrinterSettings()`.
-  mojom::PrintTargetType target_type;
+  // Parameter required for the delayed call to `UpdatePrinterSettings()`.
+  mojom::PrintTargetType target_type_;
 
-  // `start_printing_callback` is held until the document is ready for
+  // Ensure all interactions for this document are issued from the same runner.
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+mojom::ResultCode DocumentContainer::StartPrintingReadyDocument() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Start printing for document " << document_->cookie();
+
+  // Create a printing context that will work with this document for the
+  // duration of the print job.
+  context_ =
+      PrintingContext::Create(context_delegate_, /*skip_system_calls=*/false);
+
+  // With out-of-process printing the printer settings no longer get updated
+  // from `PrintingContext::UpdatePrintSettings()`, so we need to apply that
+  // now to our new context.
+  // TODO(crbug.com/1245679)  Replumb `mojom::PrintTargetType` into
+  // `PrintingContext::UpdatePrinterSettings()`.
+  PrintingContext::PrinterSettings printer_settings {
+#if defined(OS_MAC)
+    .external_preview =
+        target_type_ == mojom::PrintTargetType::kExternalPreview,
+#endif
+    .show_system_dialog = target_type_ == mojom::PrintTargetType::kSystemDialog,
+#if defined(OS_WIN)
+    .page_count = 0,
+#endif
+  };
+  context_->ApplyPrintSettings(document_->settings());
+  mojom::ResultCode result = context_->UpdatePrinterSettings(printer_settings);
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure updating printer settings for document "
+                << document_->cookie() << ", error: " << result;
+    return result;
+  }
+
+  result = context_->NewDocument(document_->name());
+  if (result != mojom::ResultCode::kSuccess) {
+    DLOG(ERROR) << "Failure initializing new document " << document_->cookie()
+                << ", error: " << result;
+    return result;
+  }
+
+  return mojom::ResultCode::kSuccess;
+}
+
+}  // namespace
+
+// Helper for managing `DocumentContainer` objects.  All access to this occurs
+// on the main thread.
+class PrintBackendServiceImpl::DocumentHelper {
+ public:
+  DocumentHelper(
+      int document_cookie,
+      base::SequenceBound<DocumentContainer> document_container,
+      mojom::PrintBackendService::StartPrintingCallback start_printing_callback)
+      : document_cookie_(document_cookie),
+        document_container_(std::move(document_container)),
+        start_printing_callback_(std::move(start_printing_callback)) {}
+
+  ~DocumentHelper() = default;
+
+  int document_cookie() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return document_cookie_;
+  }
+
+  base::SequenceBound<DocumentContainer>& document_container() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return document_container_;
+  }
+
+  mojom::PrintBackendService::StartPrintingCallback
+  TakeStartPrintingCallback() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return std::move(start_printing_callback_);
+  }
+
+ private:
+  const int document_cookie_;
+
+  base::SequenceBound<DocumentContainer> document_container_;
+
+  // `start_printing_callback_` is held until the document is ready for
   // printing.
-  mojom::PrintBackendService::StartPrintingCallback start_printing_callback;
+  mojom::PrintBackendService::StartPrintingCallback start_printing_callback_;
 
-  // Printing interactions with the system APIs will be made on this runner.
-  scoped_refptr<base::SequencedTaskRunner> task_runner;
-
-  // Ensure all system interactions for this document to be issued from this
-  // runner.
-  SEQUENCE_CHECKER(system_sequence_checker);
+  // Ensure all interactions for this document are issued from the same runner.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Sandboxed service helper.
@@ -390,85 +470,39 @@ void PrintBackendServiceImpl::StartPrinting(
   auto document = base::MakeRefCounted<PrintedDocument>(
       std::make_unique<PrintSettings>(settings), document_name,
       document_cookie);
-  documents_.push_back(
-      std::make_unique<PrintBackendServiceImpl::DocumentContainer>(
-          document, target_type, std::move(callback)));
+  base::SequenceBound<DocumentContainer> document_container(
+      GetPrintingTaskRunner(), &context_delegate_, document, target_type);
+  documents_.push_back(std::make_unique<DocumentHelper>(
+      document_cookie, std::move(document_container), std::move(callback)));
+  DocumentHelper& document_helper = *documents_.back();
 
-  // Safe to use `base::Unretained(this)` because `this` outlives the callback.
-  // The entire service process goes away when `this` lifetime expires.
-  DocumentContainer& document_container = *documents_.back();
-  document_container.task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&PrintBackendServiceImpl::StartPrintingReadyDocument,
-                     base::Unretained(this), std::ref(document_container)),
-      base::BindOnce(&PrintBackendServiceImpl::OnDidStartPrintingReadyDocument,
-                     base::Unretained(this), std::ref(document_container)));
-}
-
-mojom::ResultCode PrintBackendServiceImpl::StartPrintingReadyDocument(
-    PrintBackendServiceImpl::DocumentContainer& document_container) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(document_container.system_sequence_checker);
-
-  scoped_refptr<PrintedDocument> document = document_container.document;
-  DVLOG(1) << "Start printing for document " << document->cookie();
-
-  // Create a printing context that will work with this document for the
-  // duration of the print job.
-  auto context =
-      PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
-
-  // With out-of-process printing the printer settings no longer get updated
-  // from `PrintingContext::UpdatePrintSettings()`, so we need to apply that
-  // now to our new context.
-  // TODO(crbug.com/1245679)  Replumb `mojom::PrintTargetType` into
-  // `PrintingContext::UpdatePrinterSettings()`.
-  PrintingContext::PrinterSettings printer_settings {
-#if defined(OS_MAC)
-    .external_preview = document_container.target_type ==
-                        mojom::PrintTargetType::kExternalPreview,
-#endif
-    .show_system_dialog =
-        document_container.target_type == mojom::PrintTargetType::kSystemDialog,
-#if defined(OS_WIN)
-    .page_count = 0,
-#endif
-  };
-  context->ApplyPrintSettings(document->settings());
-  mojom::ResultCode result = context->UpdatePrinterSettings(printer_settings);
-  if (result != mojom::ResultCode::kSuccess) {
-    DLOG(ERROR) << "Failure updating printer settings for document "
-                << document->cookie() << ", error: " << result;
-    return result;
-  }
-
-  result = context->NewDocument(document->name());
-  if (result != mojom::ResultCode::kSuccess) {
-    DLOG(ERROR) << "Failure initializing new document " << document->cookie()
-                << ", error: " << result;
-    return result;
-  }
-
-  document_container.context = std::move(context);
-  return mojom::ResultCode::kSuccess;
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper.document_container()
+      .AsyncCall(&DocumentContainer::StartPrintingReadyDocument)
+      .Then(base::BindOnce(
+          &PrintBackendServiceImpl::OnDidStartPrintingReadyDocument,
+          base::Unretained(this), std::ref(document_helper)));
 }
 
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
-    PrintBackendServiceImpl::DocumentContainer& document_container,
+    DocumentHelper& document_helper,
     mojom::ResultCode result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(callback_sequence_checker_);
-  std::move(document_container.start_printing_callback).Run(result);
+  document_helper.TakeStartPrintingCallback().Run(result);
   if (result == mojom::ResultCode::kSuccess)
     return;
 
   // Remove this document due to the failure to do setup.
-  int cookie = document_container.document->cookie();
-  auto item = std::find_if(
-      documents_.begin(), documents_.end(),
-      [cookie](const std::unique_ptr<DocumentContainer>& document_container) {
-        return document_container->document->cookie() == cookie;
-      });
+  int cookie = document_helper.document_cookie();
+  auto item =
+      std::find_if(documents_.begin(), documents_.end(),
+                   [cookie](const std::unique_ptr<DocumentHelper>& helper) {
+                     return helper->document_cookie() == cookie;
+                   });
   DCHECK(item != documents_.end())
-      << "To be deleted DocumentContainer not found";
+      << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);
 
   // TODO(crbug.com/809738)  This releases a connection; try to start the

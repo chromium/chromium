@@ -84,7 +84,7 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
  private:
   friend class PrintBackendServiceTestImpl;
 
-  struct DocumentContainer;
+  class DocumentHelper;
 
   class PrintingContextDelegate : public PrintingContext::Delegate {
    public:
@@ -129,14 +129,9 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
       const PrintSettings& settings,
       mojom::PrintBackendService::StartPrintingCallback callback) override;
 
-  // Helper function that runs on a task runner.
-  mojom::ResultCode StartPrintingReadyDocument(
-      PrintBackendServiceImpl::DocumentContainer& document_container);
-
   // Callback from helper function.
-  void OnDidStartPrintingReadyDocument(
-      PrintBackendServiceImpl::DocumentContainer& document_container,
-      mojom::ResultCode result);
+  void OnDidStartPrintingReadyDocument(DocumentHelper& document_helper,
+                                       mojom::ResultCode result);
 
   // Crash key is kept at class level so that we can obtain printer driver
   // information for a prior call should the process be terminated by the
@@ -152,8 +147,9 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   // Sequence of documents to be printed, in the order received.  Documents
   // could be removed from the list in any order, depending upon the speed
-  // with which concurrent printing jobs are able to complete.
-  std::vector<std::unique_ptr<DocumentContainer>> documents_;
+  // with which concurrent printing jobs are able to complete.  The
+  // `DocumentHelper` objects are used and accessed only on the main thread.
+  std::vector<std::unique_ptr<DocumentHelper>> documents_;
 
   mojo::Receiver<mojom::PrintBackendService> receiver_;
 };
