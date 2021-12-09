@@ -13,7 +13,7 @@ export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://r
 export {SettingsAboutPageElement} from './about_page/about_page.js';
 export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus} from './about_page/about_page_browser_proxy.js';
 // <if expr="_google_chrome and is_macosx">
-export {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
+export {PromoteUpdaterStatus} from './about_page/about_page_browser_proxy.js';
 // </if>
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
 export {SettingsAppearancePageElement} from './appearance_page/appearance_page.js';
