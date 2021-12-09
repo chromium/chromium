@@ -5,11 +5,11 @@
 module media.stable.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
-import "ui/gfx/mojom/native_handle_types.mojom";
 
 // Maps to |media.mojom.VideoCodec|.
 [Stable, Extensible]
@@ -381,14 +381,6 @@ enum VideoPixelFormat {
 // Based on |media.mojom.EosVideoFrameData|.
 [Stable]
 struct EosVideoFrameData {
-};
-
-// Based on |gfx.mojom.NativePixmapHandle|.
-// Next min field ID: 2
-[Stable]
-struct NativePixmapHandle {
-  array<gfx.mojom.NativePixmapPlane> planes@0;
-  uint64 modifier@1;
 };
 
 // Based on |gfx.mojom.GpuMemoryBufferHandle| but does not depend on

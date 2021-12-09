@@ -544,44 +544,6 @@ bool StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
 }
 
 // static
-std::vector<gfx::NativePixmapPlane>& StructTraits<
-    media::stable::mojom::NativePixmapHandleDataView,
-    gfx::NativePixmapHandle>::planes(gfx::NativePixmapHandle& pixmap_handle) {
-  static_assert(
-      std::is_same<
-          decltype(::gfx::NativePixmapHandle::planes),
-          decltype(media::stable::mojom::NativePixmapHandle::planes)>::value,
-      "Unexpected type for gfx::NativePixmapHandle::planes. If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
-
-  return pixmap_handle.planes;
-}
-
-// static
-uint64_t
-StructTraits<media::stable::mojom::NativePixmapHandleDataView,
-             gfx::NativePixmapHandle>::modifier(const gfx::NativePixmapHandle&
-                                                    pixmap_handle) {
-  static_assert(
-      std::is_same<
-          decltype(::gfx::NativePixmapHandle::modifier),
-          decltype(media::stable::mojom::NativePixmapHandle::modifier)>::value,
-      "Unexpected type for gfx::NativePixmapHandle::modifier. If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
-
-  return pixmap_handle.modifier;
-}
-
-// static
-bool StructTraits<media::stable::mojom::NativePixmapHandleDataView,
-                  gfx::NativePixmapHandle>::
-    Read(media::stable::mojom::NativePixmapHandleDataView data,
-         gfx::NativePixmapHandle* out) {
-  out->modifier = data.modifier();
-  return data.ReadPlanes(&out->planes);
-}
-
-// static
 media::VideoCodecProfile
 StructTraits<media::stable::mojom::SupportedVideoDecoderConfigDataView,
              media::SupportedVideoDecoderConfig>::

@@ -585,18 +585,6 @@ struct StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
 };
 
 template <>
-struct StructTraits<media::stable::mojom::NativePixmapHandleDataView,
-                    gfx::NativePixmapHandle> {
-  static std::vector<gfx::NativePixmapPlane>& planes(
-      gfx::NativePixmapHandle& pixmap_handle);
-
-  static uint64_t modifier(const gfx::NativePixmapHandle& pixmap_handle);
-
-  static bool Read(media::stable::mojom::NativePixmapHandleDataView data,
-                   gfx::NativePixmapHandle* out);
-};
-
-template <>
 struct StructTraits<media::stable::mojom::SupportedVideoDecoderConfigDataView,
                     media::SupportedVideoDecoderConfig> {
   static media::VideoCodecProfile profile_min(
