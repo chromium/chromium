@@ -19,8 +19,6 @@ extern const char kSystemNamespace[];
 extern const char kInjectNamespace[];
 extern const char kMediaNamespace[];
 
-extern const char kKeySenderId[];
-extern const char kKeyNamespace[];
 extern const char kKeyData[];
 extern const char kKeyType[];
 extern const char kKeyRequestId[];

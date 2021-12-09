@@ -82,6 +82,7 @@ source_set("cast_runner_core") {
     "//components/cast/common:constants",
     "//components/cast/message_port",
     "//components/cast/named_message_port_connector:named_message_port_connector",
+    "//components/cast_streaming/public",
     "//fuchsia/base",
     "//fuchsia/base:modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.diagnostics",

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/cast",
+  "+components/cast_streaming/public",
   "+content/public/test",
   "+fuchsia/fidl/chromium/cast/cpp/fidl.h",
   "+net",

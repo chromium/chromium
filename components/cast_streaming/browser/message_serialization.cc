@@ -4,10 +4,12 @@
 
 #include "components/cast_streaming/browser/message_serialization.h"
 
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/values.h"
+#include "base/base64.h"
+#include "chromecast/bindings/shared/proto_serializer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/bindings/cast_channel.pb.h"
+
+using CastChannelMessage = cast::bindings::CastChannelMessage;
 
 namespace cast_streaming {
 
@@ -17,8 +19,6 @@ const char kSystemNamespace[] = "urn:x-cast:com.google.cast.system";
 const char kInjectNamespace[] = "urn:x-cast:com.google.cast.inject";
 const char kMediaNamespace[] = "urn:x-cast:com.google.cast.media";
 
-const char kKeySenderId[] = "senderId";
-const char kKeyNamespace[] = "namespace";
 const char kKeyData[] = "data";
 const char kKeyType[] = "type";
 const char kKeyRequestId[] = "requestId";
@@ -55,29 +55,20 @@ bool DeserializeCastMessage(base::StringPiece buffer,
                             std::string* sender_id,
                             std::string* message_namespace,
                             std::string* message) {
-  absl::optional<base::Value> converted_value = base::JSONReader::Read(buffer);
-  if (!converted_value)
+  absl::optional<CastChannelMessage> proto =
+      chromecast::bindings::ProtoSerializer<CastChannelMessage>::Deserialize(
+          buffer);
+  if (!proto) {
     return false;
+  }
 
-  if (!converted_value->is_dict())
+  if (proto->payload_case() != CastChannelMessage::PayloadCase::kPayloadUtf8) {
     return false;
+  }
 
-  const std::string* sender_id_value =
-      converted_value->FindStringPath(kKeySenderId);
-  if (!sender_id_value)
-    return false;
-  *sender_id = *sender_id_value;
-
-  const std::string* message_namespace_value =
-      converted_value->FindStringPath(kKeyNamespace);
-  if (!message_namespace_value)
-    return false;
-  *message_namespace = *message_namespace_value;
-
-  const std::string* message_value = converted_value->FindStringPath(kKeyData);
-  if (!message_value)
-    return false;
-  *message = *message_value;
+  *sender_id = proto->sender_id();
+  *message_namespace = proto->ns();
+  *message = proto->payload_utf8();
 
   return true;
 }
@@ -85,14 +76,13 @@ bool DeserializeCastMessage(base::StringPiece buffer,
 std::string SerializeCastMessage(const std::string& sender_id,
                                  const std::string& message_namespace,
                                  const std::string& message) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(kKeyNamespace, message_namespace);
-  value.SetStringKey(kKeySenderId, sender_id);
-  value.SetStringKey(kKeyData, message);
+  CastChannelMessage proto;
+  proto.set_sender_id(sender_id);
+  proto.set_ns(message_namespace);
+  proto.set_payload_utf8(message);
 
-  std::string json_message;
-  CHECK(base::JSONWriter::Write(value, &json_message));
-  return json_message;
+  return chromecast::bindings::ProtoSerializer<CastChannelMessage>::Serialize(
+      proto);
 }
 
 }  // namespace cast_streaming
