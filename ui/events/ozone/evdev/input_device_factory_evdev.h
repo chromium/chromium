@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
@@ -69,6 +70,13 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   // Handle gamepad force feedback effects.
   void PlayVibrationEffect(int id, uint8_t amplitude, uint16_t duration_millis);
   void StopVibration(int id);
+
+  // Handle haptic touchpad effects.
+  void PlayHapticTouchpadEffect(HapticTouchpadEffect effect,
+                                HapticTouchpadEffectStrength strength);
+  void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength);
 
   // Bits from InputController that have to be answered on IO.
   void UpdateInputDeviceSettings(const InputDeviceSettingsEvdev& settings);

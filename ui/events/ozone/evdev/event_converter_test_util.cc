@@ -80,9 +80,10 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
     event_factory_evdev_->DispatchMouseDevicesUpdated(devices, has_mouse,
                                                       has_pointing_stick);
   }
-  void DispatchTouchpadDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
-    event_factory_evdev_->DispatchTouchpadDevicesUpdated(devices);
+  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
+                                      bool has_haptic_touchpad) override {
+    event_factory_evdev_->DispatchTouchpadDevicesUpdated(devices,
+                                                         has_haptic_touchpad);
   }
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices) override {

@@ -144,4 +144,23 @@ void InputDeviceFactoryEvdevProxy::StopVibration(int id) {
                                         input_device_factory_, id));
 }
 
+void InputDeviceFactoryEvdevProxy::PlayHapticTouchpadEffect(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InputDeviceFactoryEvdev::PlayHapticTouchpadEffect,
+                     input_device_factory_, effect, strength));
+}
+
+void InputDeviceFactoryEvdevProxy::SetHapticTouchpadEffectForNextButtonRelease(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InputDeviceFactoryEvdev::SetHapticTouchpadEffectForNextButtonRelease,
+          input_device_factory_, effect, strength));
+}
+
 }  // namespace ui

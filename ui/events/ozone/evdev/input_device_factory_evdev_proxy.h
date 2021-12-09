@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/ozone/public/input_controller.h"
 
 namespace ui {
@@ -51,6 +52,11 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
       mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver);
   void PlayVibrationEffect(int id, uint8_t amplitude, uint16_t duration_millis);
   void StopVibration(int id);
+  void PlayHapticTouchpadEffect(HapticTouchpadEffect effect,
+                                HapticTouchpadEffectStrength strength);
+  void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

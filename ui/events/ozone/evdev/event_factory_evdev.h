@@ -83,7 +83,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
                                    bool has_mouse,
                                    bool has_pointing_stick);
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices);
+  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
+                                      bool has_haptic_touchpad);
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices);
   void DispatchDeviceListsComplete();
