@@ -98,10 +98,13 @@ def place_nomedia_on_device(dev, device_root):
   dev.WriteFile('%s/.nomedia' % device_root, 'https://crbug.com/796640')
 
 
+# TODO(1262303): After Telemetry is supported by python3 we can re-add
+# super without arguments in this script.
+# pylint: disable=super-with-arguments
 class LocalDeviceEnvironment(environment.Environment):
 
   def __init__(self, args, output_manager, _error_func):
-    super().__init__(output_manager)
+    super(LocalDeviceEnvironment, self).__init__(output_manager)
     self._current_try = 0
     self._denylist = (device_denylist.Denylist(args.denylist_file)
                       if args.denylist_file else None)
