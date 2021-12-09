@@ -426,6 +426,15 @@ bool ScrollableShelfView::NeedUpdateToTargetBounds() const {
 
 gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
     const ShelfID& id) const {
+  const int item_index_in_model = shelf_view_->model()->ItemIndexByID(id);
+
+  // Return a dummy value if the item specified by `id` does not exist in the
+  // shelf model.
+  // TODO(https://crbug.com/1270498): it is a quick fixing. We should
+  // investigate the root cause.
+  if (item_index_in_model < 0)
+    return gfx::Rect();
+
   // Calculates the available space for child views based on the target bounds.
   // To ease coding, we use the variables before mirroring in computation.
   const gfx::Insets target_edge_padding_RTL_mirrored =
@@ -441,8 +450,8 @@ gfx::Rect ScrollableShelfView::GetTargetScreenBoundsOfItemIcon(
   const gfx::Insets current_edge_padding_before_RTL_mirror =
       ShouldAdaptToRTL() ? GetMirroredInsets(current_edge_padding_RTL_mirrored)
                          : current_edge_padding_RTL_mirrored;
-  gfx::Rect icon_bounds = shelf_view_->view_model()->ideal_bounds(
-      shelf_view_->model()->ItemIndexByID(id));
+  gfx::Rect icon_bounds =
+      shelf_view_->view_model()->ideal_bounds(item_index_in_model);
   icon_bounds.Offset(target_edge_padding_before_RTL_mirror.left() -
                          current_edge_padding_before_RTL_mirror.left(),
                      0);
