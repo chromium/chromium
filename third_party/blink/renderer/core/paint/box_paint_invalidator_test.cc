@@ -55,13 +55,8 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
     target.setAttribute(
         html_names::kStyleAttr,
         target.getAttribute(html_names::kStyleAttr) + "; width: 200px");
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      GetDocument().View()->UpdateLifecycleToLayoutClean(
-          DocumentUpdateReason::kTest);
-    } else {
-      GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-          DocumentUpdateReason::kTest);
-    }
+    GetDocument().View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kTest);
 
     EXPECT_EQ(PaintInvalidationReason::kGeometry,
               ComputePaintInvalidationReason(box, paint_offset));

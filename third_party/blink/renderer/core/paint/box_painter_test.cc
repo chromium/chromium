@@ -83,47 +83,30 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithScrollBackgroundAttachment) {
   // As a reminder, "background-attachment: scroll" does not move when the
   // container's scroll offset changes.
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // The scroll hit test should be after the non-scrolling (attachment:
-    // scroll) container background so that it does not prevent squashing the
-    // non-scrolling container background into the root layer.
-    EXPECT_THAT(ContentDisplayItems(),
-                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(container.Id(), kBackgroundType),
-                            IsSameId(child.Id(), kBackgroundType)));
-    HitTestData scroll_hit_test;
-    scroll_hit_test.scroll_translation =
-        container.FirstFragment().PaintProperties()->ScrollTranslation();
-    scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(1, 2,
-                         PaintChunk::Id(container.Layer()->Id(),
-                                        DisplayItem::kLayerChunk),
-                         container.FirstFragment().LocalBorderBoxProperties()),
-            IsPaintChunk(
-                2, 2,
-                PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
-                container.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
-            IsPaintChunk(2, 3)));
-  } else {
-    // Because the frame composited scrolls, no scroll hit test is needed.
-    const auto* non_scrolling_layer = To<LayoutBlock>(container)
-                                          .Layer()
-                                          ->GetCompositedLayerMapping()
-                                          ->MainGraphicsLayer();
-    EXPECT_THAT(non_scrolling_layer->GetPaintController().GetDisplayItemList(),
-                ElementsAre(IsSameId(container.Id(), kBackgroundType)));
-    const auto* scrolling_layer = To<LayoutBlock>(container)
-                                      .Layer()
-                                      ->GetCompositedLayerMapping()
-                                      ->ScrollingContentsLayer();
-    EXPECT_THAT(scrolling_layer->GetPaintController().GetDisplayItemList(),
-                ElementsAre(IsSameId(child.Id(), kBackgroundType)));
-  }
+  // The scroll hit test should be after the non-scrolling (attachment:
+  // scroll) container background so that it does not prevent squashing the
+  // non-scrolling container background into the root layer.
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(container.Id(), kBackgroundType),
+                          IsSameId(child.Id(), kBackgroundType)));
+  HitTestData scroll_hit_test;
+  scroll_hit_test.scroll_translation =
+      container.FirstFragment().PaintProperties()->ScrollTranslation();
+  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(
+              1, 2,
+              PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
+              container.FirstFragment().LocalBorderBoxProperties()),
+          IsPaintChunk(
+              2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
+              container.FirstFragment().LocalBorderBoxProperties(),
+              &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
+          IsPaintChunk(2, 3)));
 }
 
 TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
@@ -154,51 +137,34 @@ TEST_P(BoxPainterTest, ScrollHitTestOrderWithLocalBackgroundAttachment) {
   // As a reminder, "background-attachment: local" moves when the container's
   // scroll offset changes.
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // The scroll hit test should be before the scrolling (attachment: local)
-    // container background so that it does not prevent squashing the scrolling
-    // background into the scrolling contents.
-    EXPECT_THAT(
-        ContentDisplayItems(),
-        ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                    IsSameId(container_scrolling_client->Id(), kBackgroundType),
-                    IsSameId(child.Id(), kBackgroundType)));
-    HitTestData scroll_hit_test;
-    scroll_hit_test.scroll_translation =
-        container.FirstFragment().PaintProperties()->ScrollTranslation();
-    scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(1, 1,
-                         PaintChunk::Id(container.Layer()->Id(),
-                                        DisplayItem::kLayerChunk),
-                         container.FirstFragment().LocalBorderBoxProperties()),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
-                container.FirstFragment().LocalBorderBoxProperties(),
-                &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
-            IsPaintChunk(
-                1, 3,
-                PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
-                container.FirstFragment().ContentsProperties())));
-  } else {
-    // Because the frame composited scrolls, no scroll hit test is needed.
-    const auto* non_scrolling_layer =
-        container.Layer()->GetCompositedLayerMapping()->MainGraphicsLayer();
-    EXPECT_TRUE(non_scrolling_layer->GetPaintController()
-                    .GetDisplayItemList()
-                    .IsEmpty());
-    const auto* scrolling_layer = container.Layer()
-                                      ->GetCompositedLayerMapping()
-                                      ->ScrollingContentsLayer();
-    EXPECT_THAT(
-        scrolling_layer->GetPaintController().GetDisplayItemList(),
-        ElementsAre(IsSameId(container_scrolling_client->Id(), kBackgroundType),
-                    IsSameId(child.Id(), kBackgroundType)));
-  }
+  // The scroll hit test should be before the scrolling (attachment: local)
+  // container background so that it does not prevent squashing the scrolling
+  // background into the scrolling contents.
+  EXPECT_THAT(
+      ContentDisplayItems(),
+      ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                  IsSameId(container_scrolling_client->Id(), kBackgroundType),
+                  IsSameId(child.Id(), kBackgroundType)));
+  HitTestData scroll_hit_test;
+  scroll_hit_test.scroll_translation =
+      container.FirstFragment().PaintProperties()->ScrollTranslation();
+  scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 200, 200);
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
+              container.FirstFragment().LocalBorderBoxProperties()),
+          IsPaintChunk(
+              1, 1, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
+              container.FirstFragment().LocalBorderBoxProperties(),
+              &scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
+          IsPaintChunk(
+              1, 3,
+              PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
+              container.FirstFragment().ContentsProperties())));
 }
 
 TEST_P(BoxPainterTest, ScrollHitTestProperties) {

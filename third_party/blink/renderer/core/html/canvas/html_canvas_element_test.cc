@@ -43,30 +43,18 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   EXPECT_EQ(CompositingReason::kNone, layer->DirectCompositingReasons());
 
   EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_FALSE(layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_FALSE(layer->SelfNeedsRepaint());
   canvas->CreateLayer();
   EXPECT_TRUE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(layer->SelfNeedsRepaint());
-  } else {
-    EXPECT_TRUE(layer->NeedsCompositingInputsUpdate());
-  }
+  EXPECT_TRUE(layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
   ASSERT_EQ(layer,
             To<LayoutBoxModelObject>(canvas->GetLayoutObject())->Layer());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(layer->GetLayoutObject()
-                    .FirstFragment()
-                    .PaintProperties()
-                    ->PaintOffsetTranslation()
-                    ->HasDirectCompositingReasons());
-  } else {
-    EXPECT_EQ(CompositingReason::kCanvas, layer->DirectCompositingReasons());
-  }
+  EXPECT_TRUE(layer->GetLayoutObject()
+                  .FirstFragment()
+                  .PaintProperties()
+                  ->PaintOffsetTranslation()
+                  ->HasDirectCompositingReasons());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {

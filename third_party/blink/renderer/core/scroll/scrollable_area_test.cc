@@ -111,37 +111,6 @@ TEST_P(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_P(ScrollableAreaTest, ScrollbarLayerInvalidation) {
-  // In CompositeAfterPaint, the functionality is not testable with just
-  // ScrollableArea. TODO(wangxianzhu): We can test this after we refactor
-  // ScrollbarDisplayItem.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  ScopedMockOverlayScrollbars mock_overlay_scrollbars;
-
-  MockScrollableArea* scrollable_area =
-      MockScrollableArea::Create(ScrollOffset(0, 100));
-  scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-  layer->SetIsDrawable(true);
-  layer->SetBounds(gfx::Size(111, 222));
-
-  EXPECT_CALL(*scrollable_area, LayerForHorizontalScrollbar())
-      .WillRepeatedly(Return(layer.get()));
-
-  auto* scrollbar = MakeGarbageCollected<Scrollbar>(
-      scrollable_area, kHorizontalScrollbar, nullptr, nullptr);
-  EXPECT_TRUE(layer->update_rect().IsEmpty());
-  scrollbar->SetNeedsPaintInvalidation(kNoPart);
-  EXPECT_FALSE(layer->update_rect().IsEmpty());
-
-  // Forced GC in order to finalize objects depending on the mock object.
-  ThreadState::Current()->CollectAllGarbageForTesting();
-}
-
 TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
@@ -182,97 +151,6 @@ TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   EXPECT_TRUE(scrollable_area->HorizontalScrollbarNeedsPaintInvalidation());
   EXPECT_FALSE(scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
   scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
-
-  // Forced GC in order to finalize objects depending on the mock object.
-  ThreadState::Current()->CollectAllGarbageForTesting();
-}
-
-TEST_P(ScrollableAreaTest, InvalidatesCompositedScrollbarsIfPartsNeedRepaint) {
-  // In CompositeAfterPaint, the functionality is not testable with just
-  // ScrollableArea. TODO(wangxianzhu): We can test this after we refactor
-  // ScrollbarDisplayItem.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  ScrollbarThemeWithMockInvalidation theme;
-  MockScrollableArea* scrollable_area =
-      MockScrollableArea::Create(ScrollOffset(100, 100));
-  Scrollbar* horizontal_scrollbar = Scrollbar::CreateForTesting(
-      scrollable_area, kHorizontalScrollbar, &theme);
-  horizontal_scrollbar->ClearTrackNeedsRepaint();
-  horizontal_scrollbar->ClearThumbNeedsRepaint();
-  Scrollbar* vertical_scrollbar =
-      Scrollbar::CreateForTesting(scrollable_area, kVerticalScrollbar, &theme);
-  vertical_scrollbar->ClearTrackNeedsRepaint();
-  vertical_scrollbar->ClearThumbNeedsRepaint();
-  EXPECT_CALL(*scrollable_area, HorizontalScrollbar())
-      .WillRepeatedly(Return(horizontal_scrollbar));
-  EXPECT_CALL(*scrollable_area, VerticalScrollbar())
-      .WillRepeatedly(Return(vertical_scrollbar));
-
-  // Composited scrollbars only need repainting when parts become invalid
-  // (e.g. if the track changes appearance when the thumb reaches the end).
-  scoped_refptr<cc::Layer> layer_for_horizontal_scrollbar = cc::Layer::Create();
-  layer_for_horizontal_scrollbar->SetIsDrawable(true);
-  layer_for_horizontal_scrollbar->SetBounds(gfx::Size(10, 10));
-  scoped_refptr<cc::Layer> layer_for_vertical_scrollbar = cc::Layer::Create();
-  layer_for_vertical_scrollbar->SetIsDrawable(true);
-  layer_for_vertical_scrollbar->SetBounds(gfx::Size(10, 10));
-  EXPECT_CALL(*scrollable_area, LayerForHorizontalScrollbar())
-      .WillRepeatedly(Return(layer_for_horizontal_scrollbar.get()));
-  EXPECT_CALL(*scrollable_area, LayerForVerticalScrollbar())
-      .WillRepeatedly(Return(layer_for_vertical_scrollbar.get()));
-  ASSERT_TRUE(scrollable_area->HasLayerForHorizontalScrollbar());
-  ASSERT_TRUE(scrollable_area->HasLayerForVerticalScrollbar());
-  EXPECT_CALL(theme, ShouldRepaintAllPartsOnInvalidation())
-      .WillRepeatedly(Return(false));
-
-  EXPECT_TRUE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_TRUE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-
-  // First, we'll scroll horizontally, and the theme will require repainting
-  // the back button (i.e. the track).
-  EXPECT_CALL(theme, PartsToInvalidateOnThumbPositionChange(_, _, _))
-      .WillOnce(Return(kBackButtonStartPart));
-  scrollable_area->SetScrollOffset(ScrollOffset(50, 0),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FALSE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_TRUE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-  EXPECT_TRUE(horizontal_scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  layer_for_horizontal_scrollbar->ResetUpdateRectForTesting();
-  horizontal_scrollbar->ClearTrackNeedsRepaint();
-
-  // Next, we'll scroll vertically, but invalidate the thumb.
-  EXPECT_CALL(theme, PartsToInvalidateOnThumbPositionChange(_, _, _))
-      .WillOnce(Return(kThumbPart));
-  scrollable_area->SetScrollOffset(ScrollOffset(50, 50),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_TRUE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
-  EXPECT_TRUE(vertical_scrollbar->ThumbNeedsRepaint());
-  layer_for_vertical_scrollbar->ResetUpdateRectForTesting();
-  vertical_scrollbar->ClearThumbNeedsRepaint();
-
-  // Next we'll scroll in both, but the thumb position moving requires no
-  // invalidations. Nonetheless the GraphicsLayer should be invalidated,
-  // because we still need to update the underlying layer (though no
-  // rasterization will be required).
-  EXPECT_CALL(theme, PartsToInvalidateOnThumbPositionChange(_, _, _))
-      .Times(2)
-      .WillRepeatedly(Return(kNoPart));
-  scrollable_area->SetScrollOffset(ScrollOffset(70, 70),
-                                   mojom::blink::ScrollType::kProgrammatic);
-  EXPECT_FALSE(layer_for_horizontal_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(layer_for_vertical_scrollbar->update_rect().IsEmpty());
-  EXPECT_FALSE(horizontal_scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(horizontal_scrollbar->ThumbNeedsRepaint());
-  EXPECT_FALSE(vertical_scrollbar->TrackNeedsRepaint());
-  EXPECT_FALSE(vertical_scrollbar->ThumbNeedsRepaint());
 
   // Forced GC in order to finalize objects depending on the mock object.
   ThreadState::Current()->CollectAllGarbageForTesting();

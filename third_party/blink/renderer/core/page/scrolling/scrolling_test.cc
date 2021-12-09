@@ -822,16 +822,10 @@ TEST_P(ScrollingTest, touchActionOnScrollingElement) {
           TouchAction::kPanY);
   EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 150));
 
-  const auto* container_layer =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? MainFrameScrollingContentsLayer()
-          : LayerByDOMElementId("scrollable");
+  const auto* container_layer = MainFrameScrollingContentsLayer();
   region = container_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanY);
-  EXPECT_EQ(region.bounds(),
-            RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-                ? gfx::Rect(8, 8, 100, 100)
-                : gfx::Rect(0, 0, 100, 100));
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
 }
 
 TEST_P(ScrollingTest, IframeWindowTouchHandler) {
@@ -1427,10 +1421,7 @@ TEST_P(ScrollingTest, ElementRegionCaptureData) {
       std::make_unique<RegionCaptureCropId>(content_id));
   ForceFullCompositingUpdate();
 
-  const cc::Layer* container_layer =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? MainFrameScrollingContentsLayer()
-          : LayerByDOMElementId("scrollable");
+  const cc::Layer* container_layer = MainFrameScrollingContentsLayer();
   const cc::Layer* contents_layer =
       ScrollingContentsLayerByDOMElementId("scrollable");
   ASSERT_TRUE(container_layer);
@@ -1573,12 +1564,10 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
       scroll_node, cc::ScrollbarOrientation::HORIZONTAL);
   ASSERT_TRUE(horizontal_scrollbar_layer);
   // TODO(crbug.com/1029620): CAP needs more accurate contents_opaque.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(!frame_view->LayoutViewport()
-                   ->HorizontalScrollbar()
-                   ->IsOverlayScrollbar(),
-              horizontal_scrollbar_layer->contents_opaque());
-  }
+  //   EXPECT_EQ(!frame_view->LayoutViewport()
+  //                  ->HorizontalScrollbar()
+  //                  ->IsOverlayScrollbar(),
+  //             horizontal_scrollbar_layer->contents_opaque());
 
   EXPECT_FALSE(ScrollbarLayerForScrollNode(scroll_node,
                                            cc::ScrollbarOrientation::VERTICAL));

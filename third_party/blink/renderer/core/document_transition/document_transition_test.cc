@@ -51,16 +51,7 @@ class DocumentTransitionTest : public testing::Test,
   }
 
   bool ElementIsComposited(const char* id) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return !CcLayersByDOMElementId(RootCcLayer(), id).IsEmpty();
-
-    auto* element = GetDocument().getElementById(id);
-    if (!element)
-      return false;
-
-    auto* box = element->GetLayoutBox();
-    return box && box->HasSelfPaintingLayer() &&
-           box->Layer()->GetCompositingState() == kPaintsIntoOwnBacking;
+    return !CcLayersByDOMElementId(RootCcLayer(), id).IsEmpty();
   }
 
   // Testing the compositor interaction is not in scope for these unittests. So,
