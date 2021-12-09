@@ -452,6 +452,8 @@ base::FilePath Database::DbPath() const {
     return base::FilePath();
 
   const char* path = sqlite3_db_filename(db_, "main");
+  if (!path)
+    return base::FilePath();
   const base::StringPiece db_path(path);
 #if defined(OS_WIN)
   return base::FilePath(base::UTF8ToWide(db_path));
