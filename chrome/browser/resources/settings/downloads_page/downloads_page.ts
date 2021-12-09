@@ -14,7 +14,6 @@ import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';

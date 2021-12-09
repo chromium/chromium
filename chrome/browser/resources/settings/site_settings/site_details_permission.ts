@@ -11,15 +11,12 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
+import '../i18n_setup.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
-import {routes} from '../route.js';
 
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';

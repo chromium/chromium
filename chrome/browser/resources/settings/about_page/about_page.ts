@@ -29,7 +29,11 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+
+// <if expr="_google_chrome and is_macosx">
+import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
+// </if>
 
 const SettingsAboutPageElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));

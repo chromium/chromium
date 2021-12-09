@@ -17,7 +17,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
+import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 
 export interface SettingsSliderElement {
   $: {

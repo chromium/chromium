@@ -21,7 +21,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, Router} from '../router.js';
+import {Router} from '../router.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {CategoryListItem} from './site_settings_list.js';

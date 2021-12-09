@@ -19,12 +19,10 @@ import '../search_settings.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBasicPageElement} from '../basic_page/basic_page.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';

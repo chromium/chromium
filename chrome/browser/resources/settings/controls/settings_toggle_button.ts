@@ -13,7 +13,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
 import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import {afterNextRender, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos">
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 // </if>

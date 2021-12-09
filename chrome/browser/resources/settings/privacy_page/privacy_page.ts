@@ -33,11 +33,11 @@ import {BaseMixin} from '../base_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
-import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
+import {ChooserType, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';

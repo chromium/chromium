@@ -32,11 +32,18 @@ import {flush, html, PolymerElement} from '//resources/polymer/v3_0/polymer/poly
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+
+// <if expr="chromeos">
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
+// </if>
+
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
+
+// <if expr="chromeos">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
+// </if>
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.

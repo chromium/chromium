@@ -12,7 +12,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
-import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxy, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
+import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 

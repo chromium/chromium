@@ -15,7 +15,7 @@ import './live_caption_section.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
+import {FontsBrowserProxyImpl, FontsData} from '../appearance_page/fonts_browser_proxy.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';

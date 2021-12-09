@@ -12,7 +12,6 @@ import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js'
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {loadTimeData} from '../i18n_setup.js';
 
 import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './fonts_browser_proxy.js';
 

@@ -18,7 +18,6 @@ import '../icons.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from '//resources/js/assert.m.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

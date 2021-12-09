@@ -11,6 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../i18n_setup.js';
 import '../route.js';
 import '../prefs/prefs.js';
 import './password_check_edit_dialog.js';
@@ -32,7 +33,10 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="chromeos or lacros">
 import {loadTimeData} from '../i18n_setup.js';
+// </if>
+
 import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
@@ -44,7 +48,7 @@ import {BlockingRequestManager} from './blocking_request_manager.js';
 
 import {PasswordCheckListItemElement} from './password_check_list_item.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
-import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy, SavedPasswordListChangedListener} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, SavedPasswordListChangedListener} from './password_manager_proxy.js';
 
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;

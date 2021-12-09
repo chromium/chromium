@@ -26,7 +26,7 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';

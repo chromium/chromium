@@ -13,7 +13,7 @@
  */
 
 import {assert} from '//resources/js/assert.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrSettingsPrefs} from './prefs_types.js';
 

@@ -38,15 +38,15 @@ import './edit_dictionary_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
-import {Route, Router} from '../router.js';
+import {Router} from '../router.js';
 
-import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
+import {LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 interface RepeaterEvent extends Event {

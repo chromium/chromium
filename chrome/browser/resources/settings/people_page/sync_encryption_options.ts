@@ -11,13 +11,13 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos">
 import {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 // </if>
+
+import {assert} from '//resources/js/assert.m.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 

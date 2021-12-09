@@ -13,7 +13,7 @@ import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome:
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

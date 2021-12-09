@@ -10,7 +10,7 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
-// <if expr="is_macosx">
+// <if expr="_google_chrome and is_macosx">
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 // </if>
@@ -325,7 +325,7 @@ suite('AboutPageTest_OfficialBuilds', function() {
     return browserProxy.whenCalled('openFeedbackDialog');
   });
 
-  // <if expr="is_macosx">
+  // <if expr="_google_chrome and is_macosx">
   type Scenarios = 'CANT_PROMOTE'|'CAN_PROMOTE'|'IN_BETWEEN'|'PROMOTED';
 
   /**

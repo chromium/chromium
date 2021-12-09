@@ -43,7 +43,7 @@ import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router
 // <if expr="chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
-import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 type FocusConfig = Map<string, (string|(() => void))>;

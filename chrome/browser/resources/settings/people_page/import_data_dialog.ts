@@ -15,6 +15,7 @@ import '../controls/settings_checkbox.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.js';
 import '../settings_vars_css.js';
+import '../i18n_setup.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -22,7 +23,6 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './import_data_browser_proxy.js';

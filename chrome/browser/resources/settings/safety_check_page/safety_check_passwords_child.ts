@@ -12,7 +12,7 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy} from '../autofill_page/password_manager_proxy.js';
+import {PasswordCheckReferrer, PasswordManagerImpl} from '../autofill_page/password_manager_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';

@@ -14,8 +14,6 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {SiteException, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 

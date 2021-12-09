@@ -22,13 +22,10 @@ import '../privacy_page/collapse_radio_button.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 
 /**
  * All possible actions in the menu.

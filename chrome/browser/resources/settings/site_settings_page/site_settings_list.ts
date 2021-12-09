@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import '../icons.js';
 import '../settings_shared_css.js';
+import '../i18n_setup.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
@@ -14,7 +15,6 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
-import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 import {ContentSetting, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';

@@ -19,6 +19,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.js';
 import '../site_favicon.js';
+import '../i18n_setup.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
@@ -30,8 +31,6 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {loadTimeData} from '../i18n_setup.js';
 
 import {Ctap2Status, Enrollment, EnrollmentResponse, SampleResponse, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl,} from './security_keys_browser_proxy.js';
 import {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';

@@ -9,8 +9,6 @@ import '../settings_shared_css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';
 import {PrefControlMixin} from './pref_control_mixin.js';
 

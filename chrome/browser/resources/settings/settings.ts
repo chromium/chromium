@@ -11,7 +11,10 @@ export {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_too
 export {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {SettingsAboutPageElement} from './about_page/about_page.js';
-export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus} from './about_page/about_page_browser_proxy.js';
+export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus} from './about_page/about_page_browser_proxy.js';
+// <if expr="_google_chrome and is_macosx">
+export {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
+// </if>
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
 export {SettingsAppearancePageElement} from './appearance_page/appearance_page.js';
 export {HomeUrlInputElement} from './appearance_page/home_url_input.js';

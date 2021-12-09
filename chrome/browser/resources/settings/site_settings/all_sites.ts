@@ -34,7 +34,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, ContentSettingsTypes, SortMethod} from './constants.js';
+import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
