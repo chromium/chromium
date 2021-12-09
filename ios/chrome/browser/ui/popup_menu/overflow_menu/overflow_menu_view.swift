@@ -6,7 +6,7 @@ import SwiftUI
 
 struct OverflowMenuView: View {
   enum Dimensions {
-    static let destinationListHeight: CGFloat = 129
+    static let destinationListHeight: CGFloat = 123
   }
 
   @EnvironmentObject var model: OverflowMenuModel

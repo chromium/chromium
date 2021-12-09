@@ -6,11 +6,6 @@ import SwiftUI
 
 /// A view that displays a list of actions in the overflow menu.
 struct OverflowMenuActionList: View {
-  enum Offsets {
-    // List inset is 20, UX requires 16, hence offset by -4 left and right.
-    static let horizontalOffset: CGFloat = -4
-  }
-
   /// The list of action groups for this view.
   var actionGroups: [OverflowMenuActionGroup]
 
@@ -21,6 +16,7 @@ struct OverflowMenuActionList: View {
       }
     }
     .listStyle(InsetGroupedListStyle())
-    .padding([.leading, .trailing], Offsets.horizontalOffset)
+    // Allow sections to have very small headers controlling section spacing.
+    .environment(\.defaultMinListHeaderHeight, 0)
   }
 }
