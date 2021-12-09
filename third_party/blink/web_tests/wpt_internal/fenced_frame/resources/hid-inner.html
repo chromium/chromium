@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame content to test HID services</title>
+
+<body>
+<button id="button">Button</button>
+<script>
+window.addEventListener("load", (async () => {
+  // Wait requestAnimationFrame to ensure that the page is updated, and
+  // test_driver.click() works.
+  await new Promise(resolve => { requestAnimationFrame(resolve); });
+
+  const button = document.getElementById("button");
+  button.addEventListener('click', async () => {
+    const hid_get_device_key = KEYS['hid.getDevice'];
+    try {
+      await navigator.hid.getDevices();
+      writeValueToServer(hid_get_device_key,
+                        'HID getDevice succeeded');
+    } catch(e) {
+      if (e.name == 'SecurityError' &&
+          e.message.includes(
+            'Access to the feature "hid" is disallowed by permissions policy.')) {
+        writeValueToServer(hid_get_device_key,
+                          'HID getDevice failed');
+      } else {
+        writeValueToServer(hid_get_device_key,
+                          `HID getDevice failed with unknown error - ${e.name}: ${e.message}`);
+      }
+    }
+  });
+  test_driver.click(button);
+}))
+</script>
+</body>

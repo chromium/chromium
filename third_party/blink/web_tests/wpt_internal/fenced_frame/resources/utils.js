@@ -95,6 +95,8 @@ const KEYS = {
 
   "embed_coep_require_corp"                     : "00000000-0000-0000-0000-000000000031",
   "embed_no_coep"                               : "00000000-0000-0000-0000-000000000032",
+
+  "hid.getDevice"                               : "00000000-0000-0000-0000-000000000033",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

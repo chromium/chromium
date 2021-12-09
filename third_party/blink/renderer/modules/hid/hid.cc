@@ -31,6 +31,24 @@ const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"hid\" is disallowed by permissions policy.";
 
+// Carries out basic checks for the web-exposed APIs, to make sure the minimum
+// requirements for them to be served are met. Returns true if any conditions
+// fail to be met, generating an appropriate exception as well. Otherwise,
+// returns false to indicate the call should be allowed.
+bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
+                               ExceptionState& exception_state) {
+  if (!window) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      kContextGone);
+  } else if (!window->IsFeatureEnabled(
+                 mojom::blink::PermissionsPolicyFeature::kHid,
+                 ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+  }
+
+  return exception_state.HadException();
+}
+
 void RejectWithTypeError(const String& message,
                          ScriptPromiseResolver* resolver) {
   ScriptState::Scope scope(resolver->GetScriptState());
@@ -178,16 +196,8 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
 
 ScriptPromise HID::getDevices(ScriptState* script_state,
                               ExceptionState& exception_state) {
-  auto* context = GetExecutionContext();
-  if (!context) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return ScriptPromise();
-  }
-
-  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
-                                 ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+                                exception_state)) {
     return ScriptPromise();
   }
 
@@ -203,16 +213,8 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
 ScriptPromise HID::requestDevice(ScriptState* script_state,
                                  const HIDDeviceRequestOptions* options,
                                  ExceptionState& exception_state) {
-  if (!GetExecutionContext()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      kContextGone);
-    return ScriptPromise();
-  }
-
-  if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kHid,
-          ReportOptions::kReportOnFailure)) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+  if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
+                                exception_state)) {
     return ScriptPromise();
   }
 

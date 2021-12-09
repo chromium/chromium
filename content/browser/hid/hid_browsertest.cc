@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -180,6 +181,68 @@ IN_PROC_BROWSER_TEST_F(HidTest, DeviceWithAllProtectedReportsIsExcluded) {
                let devices = await navigator.hid.getDevices();
                return devices instanceof Array && devices.length == 0;
              })())"));
+}
+
+class HidFencedFramesBrowserTest : public HidTest {
+ public:
+  HidFencedFramesBrowserTest() = default;
+  HidFencedFramesBrowserTest(const HidFencedFramesBrowserTest&) = delete;
+  HidFencedFramesBrowserTest& operator=(const HidFencedFramesBrowserTest&) =
+      delete;
+  ~HidFencedFramesBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    HidTest::SetUpOnMainThread();
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  WebContents* GetWebContents() { return shell()->web_contents(); }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(HidFencedFramesBrowserTest, BlockFromFencedFrame) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/simple_page.html")));
+
+  // Three devices are added but only two will have permission granted.
+  for (int i = 0; i < 3; i++) {
+    auto device = CreateTestDeviceWithInputAndOutputReports();
+    device->guid = base::StringPrintf("test-guid-%02d", i);
+    hid_manager()->AddDevice(std::move(device));
+  }
+
+  EXPECT_CALL(delegate(), HasDevicePermission)
+      .WillOnce(Return(true))
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+
+  EXPECT_EQ(
+      2,
+      EvalJs(shell(),
+             R"(navigator.hid.getDevices().then(devices => devices.length))"));
+
+  // Loads a fenced frame
+  const GURL kFencedFrameUrl =
+      embedded_test_server()->GetURL("/fenced_frames/empty.html");
+  content::RenderFrameHost* render_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+  ASSERT_NE(nullptr, render_frame_host);
+
+  // Tries to request a device from the fenced frame, which must cause an error.
+  constexpr char kFencedFrameError[] =
+      "Access to the feature \"hid\" is disallowed by permissions policy.";
+  auto result = content::EvalJs(
+      render_frame_host,
+      R"(navigator.hid.getDevices().then(devices => devices.length))");
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kFencedFrameError));
 }
 
 }  // namespace content

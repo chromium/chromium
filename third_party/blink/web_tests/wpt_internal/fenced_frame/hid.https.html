@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>Test of Web Bluetooth API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+
+<script>
+promise_test(async t => {
+  const hid_get_device_key = KEYS['hid.getDevice'];
+
+  attachFencedFrame('resources/hid-inner.html');
+  const result = await nextValueFromServer(hid_get_device_key);
+
+  assert_equals(
+      result, 'HID getDevice failed',
+      'HID getDevice must fail in a fenced frame.');
+}, 'HID getDevice must fail in a fenced frame');
+</script>
+
+</body>

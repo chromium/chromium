@@ -115,6 +115,14 @@ void HidService::Create(
   if (!GetContentClient()->browser()->GetHidDelegate())
     return;
 
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    // The renderer is supposed to disallow the use of hid services when inside
+    // a fenced frame. Anything getting past the renderer checks must be marked
+    // as a bad request.
+    mojo::ReportBadMessage("WebHID is not allowed in a fenced frame tree.");
+    return;
+  }
+
   // HidService owns itself. It will self-destruct when a mojo interface error
   // occurs, the render frame host is deleted, or the render frame host
   // navigates to a new document.
