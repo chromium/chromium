@@ -8,36 +8,6 @@ package chrome_browser_media.proto;
 // Chrome requires this.
 option optimize_for = LITE_RUNTIME;
 
-// A device able to receive casting
-message ReceiverDevice {
-  // 128 bit UUID that uniquely identifies the receiver
-  string id = 1;
-  // "friendly name" from Cast V2 spec, the name displayed to users
-  string display_name = 2;
-  // Model name of the receiver device
-  string model_name = 3;
-  // Receiver device icon url
-  string device_icon_url = 4;
-  // A unique id used for sender/receiver reporting. Either empty or a 16-byte
-  // hex string
-  string metrics_id = 5;
-  // Capabilities of the receiver
-  DeviceCapabilities device_capabilities = 6;
-  enum DeviceStatus {
-    IDLE = 0;
-    BUSY_JOIN = 1;
-  }
-  // Status of the receiver device
-  DeviceStatus status = 7;
-  // The cast protocol version supported by the receiver.
-  // Begins at 2, counts up by 1 for each subsequent version.
-  int32 cast_protocol_version = 8;
-  // Network information for the receiver
-  NetworkInfo network_info = 9;
-  // 256-bit Subject public key identifier from SSL cert
-  string subject_public_key = 10;
-}
-
 // This list of capabilities should be kept in sync with the bit-mask found in
 // CastMediaSink.capabilities
 // chromium/src/components/media_router/common/mojom/media_router.mojom
