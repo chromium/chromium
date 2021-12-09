@@ -13,9 +13,12 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <h1>[[i18n('shimlessSplashTitle')]]</h1>
     <div class="busy-icon">
       <paper-spinner-lite id="busyIcon" active></paper-spinner-lite>
+    </div>
+    <br> <!-- div is not enough to make a new line after the spinner. -->
+    <div class="splash-title">
+      <h1>[[i18n('shimlessSplashTitle')]]</h1>
     </div>
     <div class="loading-message">
       <div>[[i18n('shimlessSplashRemembering')]]</div>
