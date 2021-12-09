@@ -309,6 +309,11 @@ void StabilityMetricsHelper::LogRendererLaunchFailed(
                    : prefs::kStabilityRendererFailedLaunchCount;
   RecordStabilityEvent(metric);
   IncrementPrefValue(pref);
+  // TODO(crbug/1278145): Remove the scheduled write if it doesn't help resolve
+  // the discrepancy.
+  // Schedule a Local State write to help diagnose a discrepancy with
+  // Stability.Counts.
+  local_state_->CommitPendingWrite();
 }
 
 void StabilityMetricsHelper::IncrementPrefValue(const char* path) {
