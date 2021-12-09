@@ -90,11 +90,6 @@ extern NSString* const
 // should add their UI elements to it, before the VC is loaded.
 @property(nonatomic, strong, readonly) UIView* specificContentView;
 
-// If NO (default) the scroll view is centered. If YES, the scroll view is no
-// longer centered and UI element in |specificContentView| can be constrained to
-// be to just above the buttons. Must be set before the VC is loaded.
-@property(nonatomic) BOOL pinSpecificContentAboveButton;
-
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONFIRMATION_ALERT_VIEW_CONTROLLER_H_
