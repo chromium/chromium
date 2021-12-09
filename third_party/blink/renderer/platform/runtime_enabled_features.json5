@@ -819,6 +819,10 @@
       status: "test",
     },
     {
+      name: "CSSVideoDynamicRangeMediaQueries",
+      status: "experimental"
+    },
+    {
       name: "CustomElementDefaultStyle",
       status: "experimental",
     },
