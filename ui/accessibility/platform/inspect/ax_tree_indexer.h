@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_INDEXER_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_INDEXER_H_
 
+#include <map>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"

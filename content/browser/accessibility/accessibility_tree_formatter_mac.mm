@@ -19,6 +19,7 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
+#include "ui/accessibility/platform/inspect/ax_transform_mac.h"
 
 // This file uses the deprecated NSObject accessibility interface.
 // TODO(crbug.com/948844): Migrate to the new NSAccessibility interface.
@@ -34,6 +35,9 @@ using std::string;
 using ui::AXPositionOf;
 using ui::AXPropertyFilter;
 using ui::AXPropertyNode;
+using ui::AXNSObjectToBaseValue;
+using ui::AXNilToBaseValue;
+using ui::AXNSPointToBaseValue;
 using ui::AXTreeIndexerMac;
 using ui::AXAttributeNamesOf;
 using ui::AXAttributeValueOf;
@@ -48,10 +52,7 @@ namespace content {
 namespace {
 
 const char kLocalPositionDictAttr[] = "LocalPosition";
-const char kRangeLocDictAttr[] = "loc";
-const char kRangeLenDictAttr[] = "len";
 
-const char kNULLValue[] = "_const_NULL";
 const char kFailedToParseError[] = "_const_ERROR:FAILED_TO_PARSE";
 const char kNotApplicable[] = "_const_n/a";
 
@@ -261,7 +262,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
   NSPoint node_position = AXPositionOf(node);
   NSSize node_size = AXSizeOf(node);
 
-  return PopulatePoint(NSMakePoint(
+  return AXNSPointToBaseValue(NSMakePoint(
       static_cast<int>(node_position.x - root_left),
       static_cast<int>(-node_position.y - node_size.height - root_top)));
 }
@@ -269,28 +270,9 @@ base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
 base::Value AccessibilityTreeFormatterMac::PopulateObject(
     id value,
     const AXTreeIndexerMac* indexer) const {
-  if (value == nil) {
-    return base::Value(kNULLValue);
-  }
-
   // NSArray
   if ([value isKindOfClass:[NSArray class]]) {
     return PopulateArray((NSArray*)value, indexer);
-  }
-
-  // NSNumber
-  if ([value isKindOfClass:[NSNumber class]]) {
-    return base::Value([value intValue]);
-  }
-
-  // NSRange, NSSize
-  if ([value isKindOfClass:[NSValue class]]) {
-    if (0 == strcmp([value objCType], @encode(NSRange))) {
-      return PopulateRange([value rangeValue]);
-    }
-    if (0 == strcmp([value objCType], @encode(NSSize))) {
-      return PopulateSize([value sizeValue]);
-    }
   }
 
   // AXTextMarker
@@ -300,99 +282,17 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
   }
 
   // AXTextMarkerRange
-  if (content::IsAXTextMarkerRange(value)) {
+  if (content::IsAXTextMarkerRange(value))
     return PopulateTextMarkerRange(value, indexer);
-  }
 
-  // AXValue
-  if (CFGetTypeID(value) == AXValueGetTypeID()) {
-    AXValueType type = AXValueGetType(static_cast<AXValueRef>(value));
-    switch (type) {
-      case kAXValueCGPointType: {
-        NSPoint point;
-        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &point)) {
-          return PopulatePoint(point);
-        }
-      } break;
-      case kAXValueCGSizeType: {
-        NSSize size;
-        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &size)) {
-          return PopulateSize(size);
-        }
-      } break;
-      case kAXValueCGRectType: {
-        NSRect rect;
-        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &rect)) {
-          return PopulateRect(rect);
-        }
-      } break;
-      case kAXValueCFRangeType: {
-        NSRange range;
-        if (AXValueGetValue(static_cast<AXValueRef>(value), type, &range)) {
-          return PopulateRange(range);
-        }
-      } break;
-      default:
-        break;
-    }
-  }
-
-  // Accessible object
-  if (ui::IsNSAccessibilityElement(value) || ui::IsAXUIElement(value)) {
-    return base::Value(NodeToLineIndex(value, indexer));
-  }
-
-  // Scalar value.
-  return base::Value(
-      SysNSStringToUTF16([NSString stringWithFormat:@"%@", value]));
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulatePoint(
-    NSPoint point_value) const {
-  base::Value point(base::Value::Type::DICTIONARY);
-  point.SetIntPath("x", static_cast<int>(point_value.x));
-  point.SetIntPath("y", static_cast<int>(point_value.y));
-  return point;
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateSize(
-    NSSize size_value) const {
-  base::Value size(base::Value::Type::DICTIONARY);
-  size.SetIntPath(AXMakeOrderedKey("w", 0), static_cast<int>(size_value.width));
-  size.SetIntPath(AXMakeOrderedKey("h", 1),
-                  static_cast<int>(size_value.height));
-  return size;
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateRect(
-    NSRect rect_value) const {
-  base::Value rect(base::Value::Type::DICTIONARY);
-  rect.SetIntPath(AXMakeOrderedKey("x", 0),
-                  static_cast<int>(rect_value.origin.x));
-  rect.SetIntPath(AXMakeOrderedKey("y", 1),
-                  static_cast<int>(rect_value.origin.y));
-  rect.SetIntPath(AXMakeOrderedKey("w", 2),
-                  static_cast<int>(rect_value.size.width));
-  rect.SetIntPath(AXMakeOrderedKey("h", 3),
-                  static_cast<int>(rect_value.size.height));
-  return rect;
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateRange(
-    NSRange node_range) const {
-  base::Value range(base::Value::Type::DICTIONARY);
-  range.SetIntPath(AXMakeOrderedKey(kRangeLocDictAttr, 0),
-                   static_cast<int>(node_range.location));
-  range.SetIntPath(AXMakeOrderedKey(kRangeLenDictAttr, 1),
-                   static_cast<int>(node_range.length));
-  return range;
+  return AXNSObjectToBaseValue(value, indexer);
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
     const BrowserAccessibility::AXPosition& position,
     const AXTreeIndexerMac* indexer) const {
   if (position->IsNullPosition())
-    return base::Value(kNULLValue);
+    return AXNilToBaseValue();
 
   auto* manager = BrowserAccessibilityManager::FromID(position->tree_id());
   DCHECK(manager) << "A non-null position should have an associated AX tree.";
@@ -414,8 +314,8 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
   }
 
   base::Value set(base::Value::Type::DICTIONARY);
-  set.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("anchor", 0)),
-                    NodeToLineIndex(cocoa_anchor, indexer));
+  set.SetPath(AXMakeSetKey(AXMakeOrderedKey("anchor", 0)),
+              AXElementToBaseValue(cocoa_anchor, indexer));
   set.SetIntPath(AXMakeSetKey(AXMakeOrderedKey("offset", 1)),
                  position->text_offset());
   set.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("affinity", 2)),
@@ -429,7 +329,7 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextMarkerRange(
   BrowserAccessibility::AXRange ax_range =
       content::AXTextMarkerRangeToAXRange(marker_range);
   if (ax_range.IsNull())
-    return base::Value(kNULLValue);
+    return AXNilToBaseValue();
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetPath("anchor",
@@ -446,12 +346,6 @@ base::Value AccessibilityTreeFormatterMac::PopulateArray(
   for (NSUInteger i = 0; i < [node_array count]; i++)
     list.Append(PopulateObject([node_array objectAtIndex:i], indexer));
   return list;
-}
-
-std::string AccessibilityTreeFormatterMac::NodeToLineIndex(
-    id node,
-    const AXTreeIndexerMac* indexer) const {
-  return AXMakeConst(indexer->IndexBy(node));
 }
 
 std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(

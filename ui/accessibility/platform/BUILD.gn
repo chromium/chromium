@@ -155,6 +155,8 @@ source_set("platform") {
         "ax_private_webkit_constants_mac.mm",
         "inspect/ax_inspect_utils_mac.h",
         "inspect/ax_inspect_utils_mac.mm",
+        "inspect/ax_transform_mac.h",
+        "inspect/ax_transform_mac.mm",
         "inspect/ax_tree_indexer_mac.h",
       ]
 
