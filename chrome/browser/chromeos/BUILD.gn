@@ -150,6 +150,7 @@ source_set("chromeos") {
     "//ash/webui/resources:scanning_app_resources_grit",
     "//ash/webui/resources:shimless_rma_resources_grit",
     "//ash/webui/resources:shortcut_customization_app_resources_grit",
+    "//ash/webui/resources:system_extensions_internals_resources_grit",
     "//ash/webui/scanning",
     "//ash/webui/scanning/mojom",
     "//ash/webui/shimless_rma",

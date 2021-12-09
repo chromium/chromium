@@ -1,0 +1,55 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "System Extensions Internals is ash-chrome only")
+
+static_library("system_extensions_internals_ui") {
+  sources = [
+    "system_extensions_internals_ui.cc",
+    "system_extensions_internals_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/webui/resources:system_extensions_internals_resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+js_type_check("closure_compile") {
+  deps = [ ":system_extensions_internals" ]
+  closure_flags = default_closure_args + mojom_js_args
+}
+
+js_library("system_extensions_internals") {
+  sources = [ "resources/index.js" ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "test/system_extensions_internals_ui_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+grd_prefix = "ash_system_extensions_internals"
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = [
+    "index.html",
+    "index.js",
+  ]
+
+  grd_prefix = grd_prefix
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
