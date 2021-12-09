@@ -9,7 +9,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
-#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
@@ -53,8 +52,7 @@ void OutputPresenter::Image::BeginWriteSkia() {
   DCHECK(end_semaphores_.empty());
 
   std::vector<GrBackendSemaphore> begin_semaphores;
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
   // Buffer queue is internal to GPU proc and handles texture initialization,
   // so allow uncleared access.

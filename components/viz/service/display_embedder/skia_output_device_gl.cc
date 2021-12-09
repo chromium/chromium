@@ -233,8 +233,7 @@ bool SkiaOutputDeviceGL::Reshape(const gfx::Size& size,
     base::debug::Alias(nullptr);
     return false;
   }
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
   GrGLFramebufferInfo framebuffer_info;
   framebuffer_info.fFBOID = 0;

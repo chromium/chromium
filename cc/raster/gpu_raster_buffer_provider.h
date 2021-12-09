@@ -172,6 +172,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   // Accessed with the worker context lock acquired.
   std::mt19937 random_generator_;
   std::bernoulli_distribution bernoulli_distribution_;
+  const bool is_using_raw_draw_;
 };
 
 }  // namespace cc
