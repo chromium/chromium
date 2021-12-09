@@ -782,6 +782,8 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
   power_bookmarks::PowerBookmarkQueryFields query;
   query.word_phrase_query = std::make_unique<std::u16string>(
       base::android::ConvertJavaStringToUTF16(env, j_query));
+  if (query.word_phrase_query->empty())
+    query.word_phrase_query.reset();
 
   if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
     if (!j_tags.is_null()) {
