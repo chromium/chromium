@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "promo_passwords_in_other_apps@2x.png",
+      "filename" : "promo-passwords_in_other_apps-light@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -12,12 +12,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "promo_passwords_in_other_apps_dark@2x.png",
+      "filename" : "promo-passwords_in_other_apps-dark@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "promo_passwords_in_other_apps@3x.png",
+      "filename" : "promo-passwords_in_other_apps-light@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -28,7 +28,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "promo_passwords_in_other_apps_dark@3x.png",
+      "filename" : "promo-passwords_in_other_apps-dark@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -27,6 +27,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -985,6 +986,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // field trial infrastruction isn't in extensions. Save the necessary values to
 // NSUserDefaults here.
 - (void)saveFieldTrialValuesForExtensions {
+  using password_manager::features::kIOSEnablePasswordManagerBrandingUpdate;
+
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
   NSNumber* passwordCreationValue = [NSNumber
@@ -997,6 +1000,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                                    kCredentialProviderExtensionPromo)];
   NSNumber* credentialProviderExtensionPromoVersion =
       [NSNumber numberWithInt:kCredentialProviderExtensionPromoFeatureVersion];
+
+  NSNumber* passwordManagerBrandingUpdateValue =
+      @(base::FeatureList::IsEnabled(kIOSEnablePasswordManagerBrandingUpdate));
+  NSNumber* passwordManagerBrandingUpdateVersion =
+      [NSNumber numberWithInt:kPasswordManagerBrandingUpdateFeatureVersion];
 
   // Add other field trial values here if they are needed by extensions.
   // The general format is
@@ -1014,6 +1022,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::SysUTF8ToNSString(kCredentialProviderExtensionPromo.name) : @{
       kFieldTrialValueKey : credentialProviderExtensionPromoValue,
       kFieldTrialVersionKey : credentialProviderExtensionPromoVersion,
+    },
+    base::SysUTF8ToNSString(kIOSEnablePasswordManagerBrandingUpdate.name) : @{
+      kFieldTrialValueKey : passwordManagerBrandingUpdateValue,
+      kFieldTrialVersionKey : passwordManagerBrandingUpdateVersion,
     }
   };
   [sharedDefaults setObject:fieldTrialValues

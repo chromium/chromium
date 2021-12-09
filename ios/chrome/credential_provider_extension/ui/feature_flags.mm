@@ -40,3 +40,15 @@ BOOL IsCredentialProviderExtensionPromoEnabled() {
   }
   return [featureData[kFieldTrialValueKey] boolValue];
 }
+
+BOOL IsPasswordManagerBrandingUpdateEnable() {
+  NSDictionary* allFeatures = [app_group::GetGroupUserDefaults()
+      objectForKey:app_group::kChromeExtensionFieldTrialPreference];
+  NSDictionary* featureData =
+      allFeatures[@"IOSEnablePasswordManagerBrandingUpdate"];
+  if (!featureData || kPasswordManagerBrandingUpdateFeatureVersion !=
+                          [featureData[kFieldTrialVersionKey] intValue]) {
+    return NO;
+  }
+  return [featureData[kFieldTrialValueKey] boolValue];
+}
