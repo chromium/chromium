@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/public/features.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -119,7 +120,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
           chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
     configs.emplace_back(GetConfigForAdaptiveToolbar());
   }
-  if (base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid)) {
+  if (chrome::android::IsJavaDrivenFeatureEnabled(
+          chrome::android::kStartSurfaceAndroid)) {
     configs.emplace_back(GetConfigForChromeStartAndroid());
   }
   if (base::FeatureList::IsEnabled(
