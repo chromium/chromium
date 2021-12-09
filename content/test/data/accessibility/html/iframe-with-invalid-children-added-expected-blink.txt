@@ -12,4 +12,3 @@ rootWebArea name='done'
 ++++++++labelText ignored
 ++++++++++staticText ignored name='label'
 ++++++++++textField ignored
-++++++++++++genericContainer ignored

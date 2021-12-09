@@ -270,7 +270,6 @@ RootWebArea
   none
     none
       *none
-      *none
 {
     childIds : <object>
     domNode : div
@@ -295,9 +294,7 @@ RootWebArea
 RootWebArea
   none
     none
-      none
-        *none
-        *none
+      *none
 {
     childIds : <object>
     domNode : span
@@ -605,7 +602,6 @@ RootWebArea
 RootWebArea
   none
     none
-      *none
       *none
 {
     childIds : <object>

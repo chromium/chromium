@@ -1,11 +1,5 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer ignored invisible
-++++++++genericContainer ignored invisible
-++++++++++button ignored invisible
-++++++++++++staticText ignored invisible name='expect invisible subtree'
-++++++++genericContainer invisible
-++++++++++button ignored invisible
-++++++++++++staticText ignored name='expect invisible subtree'
+++++++genericContainer invisible
 ++++++group name='Done'

@@ -10,6 +10,4 @@ rootWebArea
 ++++++++++++staticText name='Endnote 2'
 ++++++++++++++inlineTextBox name='Endnote 2'
 ++++++++button ignored invisible
-++++++++++staticText ignored name='1'
 ++++++++button ignored invisible
-++++++++++staticText ignored name='2'

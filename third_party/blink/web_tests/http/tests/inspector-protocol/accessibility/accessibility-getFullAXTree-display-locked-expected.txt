@@ -19,9 +19,7 @@ RootWebArea
       StaticText "nested"
     StaticText "text"
   generic
-
   generic
-
   generic
     StaticText "normal text"
       InlineTextBox

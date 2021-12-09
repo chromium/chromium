@@ -5,7 +5,6 @@ rootWebArea
 ++++++++staticText name='Cats '
 ++++++++++inlineTextBox name='Cats '
 ++++++++genericContainer ignored invisible
-++++++++++checkBox ignored invisible
 ++++++++genericContainer
 ++++++++++staticText name='done'
 ++++++++++++inlineTextBox name='done'
