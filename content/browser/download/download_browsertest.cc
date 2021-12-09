@@ -5276,4 +5276,76 @@ IN_PROC_BROWSER_TEST_P(DownloadRangeTest, ArbitraryDownloadRangeTest) {
   }
 }
 
+class DownloadRangeResumptionTest : public DownloadContentTest {
+ public:
+  DownloadRangeResumptionTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        download::features::kDownloadRange);
+  }
+
+  ~DownloadRangeResumptionTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test to download resumption from a partially downloaded file with range
+// request with |DownloadUrlParameters::set_range_request_offset|.
+IN_PROC_BROWSER_TEST_F(DownloadRangeResumptionTest,
+                       ArbitraryDownloadRangeResumptionTest) {
+  // Make range download interrupted at certain position.
+  SetupErrorInjectionDownloads();
+  GURL url = TestDownloadHttpResponse::GetNextURLForDownload();
+  GURL server_url = embedded_test_server()->GetURL(url.host(), url.path());
+  TestDownloadHttpResponse::Parameters parameters =
+      TestDownloadHttpResponse::Parameters::WithSingleInterruption(
+          inject_error_callback());
+  EXPECT_EQ(51200, parameters.injected_errors.front());
+
+  // Make sure when auto resume from failure point, the server can response
+  // correctly.
+  parameters.SetResponseForRangeRequest(
+      51200, 100000,
+      "HTTP/1.1 206 Partial Content\r\n"
+      "Content-Range: bytes 51200-100000/48801\r\n"
+      "\r\n");
+  TestDownloadHttpResponse::StartServing(parameters, server_url);
+
+  // Perform a range download.
+  auto download_parameters = std::make_unique<download::DownloadUrlParameters>(
+      server_url, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  download_parameters->set_use_if_range(false);
+  download_parameters->set_range_request_offset(10, 100000);
+
+  DownloadManager* download_manager = DownloadManagerForShell(shell());
+  std::unique_ptr<DownloadTestObserverInterrupted> observer =
+      std::make_unique<DownloadTestObserverInterrupted>(
+          download_manager, 1,
+          DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+
+  download_manager->DownloadUrl(std::move(download_parameters));
+  observer->WaitForFinished();
+
+  // Now clear the error and resume it.
+  parameters.ClearInjectedErrors();
+  TestDownloadHttpResponse::StartServing(parameters, server_url);
+
+  std::vector<download::DownloadItem*> downloads;
+  DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
+  EXPECT_EQ(1u, downloads.size());
+  download::DownloadItem* download = downloads[0];
+  EXPECT_EQ(download::DownloadItem::INTERRUPTED, download->GetState());
+  download->Resume(false);
+  WaitForCompletion(download);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string partial_file;
+    ASSERT_TRUE(
+        base::ReadFileToString(download->GetTargetFilePath(), &partial_file));
+    EXPECT_EQ(partial_file, TestDownloadHttpResponse::GetPatternBytes(
+                                parameters.pattern_generator_seed, 10, 99991));
+  }
+}
+
 }  // namespace content

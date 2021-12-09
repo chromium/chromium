@@ -287,7 +287,11 @@ void TestDownloadHttpResponse::ParseRequestHeader() {
   request_range_ = ranges[0];
   if (parameters_.support_partial_response)
     range_.set_first_byte_position(request_range_.first_byte_position());
-  range_.ComputeBounds(parameters_.size);
+
+  if (request_range_.HasLastBytePosition())
+    range_.set_last_byte_position(request_range_.last_byte_position());
+  else
+    range_.ComputeBounds(parameters_.size);
 
   response_sent_offset_ = range_.first_byte_position();
 }
