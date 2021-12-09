@@ -47,7 +47,6 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -318,14 +317,12 @@ gfx::Rect TabGroupEditorBubbleView::GetAnchorRect() const {
 }
 
 void TabGroupEditorBubbleView::AddedToWidget() {
-  for (auto menu_item : menu_items_) {
-    const bool enabled = menu_item->GetEnabled();
-    const SkColor text_color = menu_item->GetCurrentTextColor();
-    const SkColor icon_color =
-        enabled ? color_utils::DeriveDefaultIconColor(text_color) : text_color;
-    menu_item->SetImageModel(
-        enabled ? views::Button::STATE_NORMAL : views::Button::STATE_DISABLED,
-        ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowIcon, icon_color));
+  if (!move_menu_item_->GetEnabled()) {
+    const SkColor disabled_color = move_menu_item_->GetCurrentTextColor();
+    move_menu_item_->SetImageModel(
+        views::Button::STATE_DISABLED,
+        ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowIcon,
+                                       disabled_color));
   }
 }
 
@@ -418,23 +415,22 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
                           base::Unretained(this)),
       &kNewTabInGroupIcon));
-  menu_items_.push_back(new_tab_menu_item);
 
-  menu_items_.push_back(AddChildView(CreateMenuItem(
+  AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_UNGROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
                           base::Unretained(this), header_view),
-      &kUngroupIcon)));
+      &kUngroupIcon));
 
-  menu_items_.push_back(AddChildView(CreateMenuItem(
+  AddChildView(CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP,
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
-      &kCloseGroupIcon)));
+      &kCloseGroupIcon));
 
-  auto* move_menu_item = AddChildView(
+  move_menu_item_ = AddChildView(
       CreateMenuItem(TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW,
                      l10n_util::GetStringUTF16(
                          IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW),
@@ -442,10 +438,9 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                          &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
                          base::Unretained(this)),
                      &kMoveGroupToNewWindowIcon));
-  move_menu_item->SetEnabled(
+  move_menu_item_->SetEnabled(
       tab_strip_model->count() !=
       tab_strip_model->group_model()->GetTabGroup(group_)->tab_count());
-  menu_items_.push_back(move_menu_item);
 
   // Setting up the layout.
 
