@@ -955,6 +955,10 @@ HttpHandler::HttpHandler(
           WrapToCommand("SetSinkToUse",
                         base::BindRepeating(&ExecuteSetSinkToUse))),
       VendorPrefixedCommandMapping(
+          kPost, "session/:sessionId/%s/cast/start_desktop_mirroring",
+          WrapToCommand("StartDesktopMirroring",
+                        base::BindRepeating(&ExecuteStartDesktopMirroring))),
+      VendorPrefixedCommandMapping(
           kPost, "session/:sessionId/%s/cast/start_tab_mirroring",
           WrapToCommand("StartTabMirroring",
                         base::BindRepeating(&ExecuteStartTabMirroring))),

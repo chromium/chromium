@@ -2743,6 +2743,14 @@ Status ExecuteSetSinkToUse(Session* session,
   return web_view->SendCommand("Cast.setSinkToUse", params);
 }
 
+Status ExecuteStartDesktopMirroring(Session* session,
+                                    WebView* web_view,
+                                    const base::DictionaryValue& params,
+                                    std::unique_ptr<base::Value>* value,
+                                    Timeout* timeout) {
+  return web_view->SendCommand("Cast.startDesktopMirroring", params);
+}
+
 Status ExecuteStartTabMirroring(Session* session,
                                 WebView* web_view,
                                 const base::DictionaryValue& params,

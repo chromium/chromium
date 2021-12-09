@@ -417,6 +417,14 @@ Status ExecuteSetSinkToUse(Session* session,
                            std::unique_ptr<base::Value>* value,
                            Timeout* timeout);
 
+// Starts mirroring the desktop to the sink specified by the "sinkName" value in
+// |params|.
+Status ExecuteStartDesktopMirroring(Session* session,
+                                    WebView* web_view,
+                                    const base::DictionaryValue& params,
+                                    std::unique_ptr<base::Value>* value,
+                                    Timeout* timeout);
+
 // Starts mirroring the tab to the sink specified by the "sinkName" value in
 // |params|.
 Status ExecuteStartTabMirroring(Session* session,
