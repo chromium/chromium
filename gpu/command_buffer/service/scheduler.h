@@ -23,12 +23,10 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/gpu_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-namespace trace_event {
-class ConvertableToTraceFormat;
-}
 }
 
 namespace gpu {
@@ -132,8 +130,7 @@ class GPU_EXPORT Scheduler {
              std::tie(other.priority, other.order_num);
     }
 
-    std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue()
-        const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
     SequenceId sequence_id;
     SchedulingPriority priority = SchedulingPriority::kLow;

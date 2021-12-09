@@ -21,6 +21,7 @@
 #include "base/trace_event/traced_value.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_preferences.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace gpu {
 
@@ -52,14 +53,12 @@ Scheduler::SchedulingState::SchedulingState(const SchedulingState& other) =
     default;
 Scheduler::SchedulingState::~SchedulingState() = default;
 
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-Scheduler::SchedulingState::AsValue() const {
-  std::unique_ptr<base::trace_event::TracedValue> state(
-      new base::trace_event::TracedValue());
-  state->SetInteger("sequence_id", sequence_id.GetUnsafeValue());
-  state->SetString("priority", SchedulingPriorityToString(priority));
-  state->SetInteger("order_num", order_num);
-  return std::move(state);
+void Scheduler::SchedulingState::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("sequence_id", sequence_id.GetUnsafeValue());
+  dict.Add("priority", SchedulingPriorityToString(priority));
+  dict.Add("order_num", order_num);
 }
 
 Scheduler::Sequence::Task::Task(base::OnceClosure closure,
@@ -658,7 +657,7 @@ void Scheduler::RunNextTask() {
 
   TRACE_EVENT_WITH_FLOW1("gpu,toplevel.flow", "Scheduler::RunNextTask",
                          GetTaskFlowId(state.sequence_id.value(), order_num),
-                         TRACE_EVENT_FLAG_FLOW_IN, "state", state.AsValue());
+                         TRACE_EVENT_FLAG_FLOW_IN, "state", state);
 
   // Begin/FinishProcessingOrderNumber must be called with the lock released
   // because they can renter the scheduler in Enable/DisableSequence.
