@@ -70,6 +70,8 @@ class CSSPreloadScanner {
     kAfterRule,
     kRuleValue,
     kAfterRuleValue,
+    kMaybeLayerValue,
+    kAfterMaybeLayerValue,
     kDoneParsingImportRules,
   };
 
@@ -85,10 +87,16 @@ class CSSPreloadScanner {
   void EmitRule(const SegmentedString&);
 
   bool HasFinishedRuleValue() const;
+  bool CanPreloadImportRule() const;
 
   State state_ = kInitial;
   StringBuilder rule_;
   StringBuilder rule_value_;
+  // maybe_layer_value_ stores the layer declaration, if any; otherwise, it may
+  // store part of the media condition. This is currently fine since we can't
+  // handle media conditions yet (crbug.com/1277771).
+  StringBuilder maybe_layer_value_;
+  bool has_trailing_contents_ = false;
 
   network::mojom::ReferrerPolicy referrer_policy_ =
       network::mojom::ReferrerPolicy::kDefault;

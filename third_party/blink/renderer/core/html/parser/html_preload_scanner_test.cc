@@ -1586,4 +1586,169 @@ TEST_F(HTMLPreloadScannerTest, JavascriptBaseUrl) {
     Test(test_case);
 }
 
+TEST_F(HTMLPreloadScannerTest, OtherRulesBeforeImport) {
+  ScopedCSSCascadeLayersForTest enabled(true);
+
+  PreloadScannerTestCase test_cases[] = {
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @charset "utf-8";
+         @import url("https://example2.test/lib.css");
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @layer foo, bar;
+         @import url("https://example2.test/lib.css");
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @charset "utf-8";
+         @layer foo, bar;
+         @import url("https://example2.test/lib.css");
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+  };
+
+  for (const auto& test : test_cases)
+    Test(test);
+}
+
+TEST_F(HTMLPreloadScannerTest, LayeredImportFeatureDisabled) {
+  ScopedCSSCascadeLayersForTest disabled(false);
+
+  PreloadScannerTestCase test_cases[] = {
+      {"https://example.test",
+       R"HTML(
+       {"https://example.test",
+        R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer;
+        </style>
+        )HTML",
+       nullptr},
+      {"https://example.test",
+       R"HTML(
+       {"https://example.test",
+        R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer(foo);
+        </style>
+        )HTML",
+       nullptr},
+  };
+
+  for (const auto& test : test_cases)
+    Test(test);
+}
+
+TEST_F(HTMLPreloadScannerTest, PreloadLayeredImport) {
+  ScopedCSSCascadeLayersForTest enabled(true);
+
+  PreloadScannerTestCase test_cases[] = {
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @import url("https://example2.test/lib.css") layer
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer;
+        </style>
+        )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer(foo)
+        </style>
+        )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer(foo);
+        </style>
+        )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @layer foo, bar;
+         @import url("https://example2.test/lib.css") layer
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @layer foo, bar;
+         @import url("https://example2.test/lib.css") layer;
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @layer foo, bar;
+         @import url("https://example2.test/lib.css") layer(foo)
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+       <style>
+         @layer foo, bar;
+         @import url("https://example2.test/lib.css") layer(foo);
+       </style>
+       )HTML",
+       "https://example2.test/lib.css", "https://example.test/",
+       ResourceType::kCSSStyleSheet, 0},
+      {"https://example.test",
+       R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer foo;
+        </style>
+        )HTML",
+       nullptr},
+      {"https://example.test",
+       R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer(foo) bar;
+        </style>
+        )HTML",
+       nullptr},
+      {"https://example.test",
+       R"HTML(
+        <style>
+          @import url("https://example2.test/lib.css") layer();
+        </style>
+        )HTML",
+       nullptr},
+  };
+
+  for (const auto& test : test_cases)
+    Test(test);
+}
+
 }  // namespace blink
