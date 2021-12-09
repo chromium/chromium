@@ -739,7 +739,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // finish the request. Eventually the page will get deleted due to network
   // request timeout.
   image_response.Send(net::HTTP_OK, "image/png");
-  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
   delete_observer.WaitUntilDeleted();
 
   // 3) Go back to the first page. We should not restore the page from the
