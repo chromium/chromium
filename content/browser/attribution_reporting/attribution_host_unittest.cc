@@ -55,13 +55,14 @@ using ConversionMeasurementOperation =
 
 using testing::_;
 using testing::AllOf;
-using testing::ElementsAre;
-using testing::IsEmpty;
+using testing::InSequence;
 using testing::IsNull;
+using testing::Mock;
 using testing::Pointee;
 using testing::Property;
 using testing::Return;
-using testing::SizeIs;
+
+using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 const char kConversionUrl[] = "https://b.com";
 const char kConversionUrlWithFragment[] = "https://b.com/#fragment";
@@ -84,7 +85,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
 
     conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
-        web_contents(), std::make_unique<TestManagerProvider>(&test_manager_));
+        web_contents(), std::make_unique<TestManagerProvider>(&mock_manager_));
     AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
 
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
@@ -111,11 +112,16 @@ class AttributionHostTest : public RenderViewHostTestHarness {
   }
 
  protected:
-  TestAttributionManager test_manager_;
+  MockAttributionManager mock_manager_;
   std::unique_ptr<AttributionHost> conversion_host_;
 };
 
 TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
+  EXPECT_CALL(mock_manager_,
+              HandleTrigger(Property(
+                  &StorableTrigger::conversion_destination,
+                  net::SchemefulSite(GURL("https://www.example.com")))));
+
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -138,15 +144,15 @@ TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-
-  EXPECT_THAT(test_manager_.handled_triggers(),
-              ElementsAre(Property(
-                  &StorableTrigger::conversion_destination,
-                  net::SchemefulSite(GURL("https://www.example.com")))));
 }
 
 TEST_F(AttributionHostTest,
        ConversionInSubframe_ConversionDestinationMatchesMainFrame) {
+  EXPECT_CALL(mock_manager_,
+              HandleTrigger(Property(
+                  &StorableTrigger::conversion_destination,
+                  net::SchemefulSite(GURL("https://www.example.com")))));
+
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -171,14 +177,11 @@ TEST_F(AttributionHostTest,
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-
-  EXPECT_THAT(test_manager_.handled_triggers(),
-              ElementsAre(Property(
-                  &StorableTrigger::conversion_destination,
-                  net::SchemefulSite(GURL("https://www.example.com")))));
 }
 
 TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+
   contents()->NavigateAndCommit(GURL("http://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -202,7 +205,6 @@ TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
       bad_message_observer.WaitForBadMessage());
-  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ConversionInSubframe_ChecksCorrectOrigins) {
@@ -221,6 +223,8 @@ TEST_F(AttributionHostTest, ConversionInSubframe_ChecksCorrectOrigins) {
   ScopedContentBrowserClientSetting setting(&browser_client);
 
   for (bool conversion_allowed : {false, true}) {
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(conversion_allowed);
+
     contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
     // Create a subframe and use it as a target for the conversion registration
@@ -237,13 +241,13 @@ TEST_F(AttributionHostTest, ConversionInSubframe_ChecksCorrectOrigins) {
         url::Origin::Create(GURL("https://report.example"));
     conversion_host_mojom()->RegisterConversion(std::move(conversion));
 
-    EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(conversion_allowed));
-
-    test_manager_.Reset();
+    Mock::VerifyAndClear(&mock_manager_);
   }
 }
 
 TEST_F(AttributionHostTest, ConversionOnInsecurePage_BadMessage) {
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+
   // Create a page with an insecure origin.
   contents()->NavigateAndCommit(GURL("http://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -260,10 +264,11 @@ TEST_F(AttributionHostTest, ConversionOnInsecurePage_BadMessage) {
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
       bad_message_observer.WaitForBadMessage());
-  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
@@ -279,10 +284,11 @@ TEST_F(AttributionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
       "blink.mojom.ConversionHost can only be used in secure contexts with a "
       "secure conversion registration origin.",
       bad_message_observer.WaitForBadMessage());
-  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
+  EXPECT_CALL(mock_manager_, HandleTrigger);
+
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -300,10 +306,11 @@ TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
+  EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
+
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
@@ -322,11 +329,11 @@ TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
-
-  EXPECT_THAT(test_manager_.handled_triggers(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   MockAttributionReportingContentBrowserClient browser_client;
   // This is called twice because the real AttributionHost is still active for
   // the test.
@@ -346,11 +353,16 @@ TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   navigation->SetInitiatorFrame(main_rfh());
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, Conversion_AssociatedWithConversionSite) {
+  // Verify that we use the domain of the page where the conversion occurred
+  // instead of the origin.
+  EXPECT_CALL(mock_manager_,
+              HandleTrigger(Property(
+                  &StorableTrigger::conversion_destination,
+                  net::SchemefulSite(GURL("https://conversion.com")))));
+
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://sub.conversion.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -359,13 +371,6 @@ TEST_F(AttributionHostTest, Conversion_AssociatedWithConversionSite) {
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
-
-  // Verify that we use the domain of the page where the conversion occurred
-  // instead of the origin.
-  EXPECT_THAT(test_manager_.handled_triggers(),
-              ElementsAre(Property(
-                  &StorableTrigger::conversion_destination,
-                  net::SchemefulSite(GURL("https://conversion.com")))));
 }
 
 TEST_F(AttributionHostTest, PerPageConversionMetrics) {
@@ -384,16 +389,16 @@ TEST_F(AttributionHostTest, PerPageConversionMetrics) {
       url::Origin::Create(GURL("https://secure.com"));
 
   for (size_t i = 0u; i < 8u; i++) {
+    EXPECT_CALL(mock_manager_, HandleTrigger);
     conversion_host_mojom()->RegisterConversion(conversion->Clone());
-    EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(1));
-    test_manager_.Reset();
+    Mock::VerifyAndClear(&mock_manager_);
   }
 
+  EXPECT_CALL(mock_manager_, HandleTrigger);
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://anothersecure.com"));
   conversion_host_mojom()->RegisterConversion(conversion->Clone());
-  EXPECT_THAT(test_manager_.handled_triggers(), SizeIs(1));
-  test_manager_.Reset();
+  Mock::VerifyAndClear(&mock_manager_);
 
   // Same document navs should not reset the counter.
   contents()->NavigateAndCommit(GURL("https://www.example.com#hash"));
@@ -453,23 +458,23 @@ TEST_F(AttributionHostTest, PerPageImpressionMetrics) {
   blink::Impression impression = CreateValidImpression();
 
   for (size_t i = 0u; i < 8u; i++) {
+    EXPECT_CALL(mock_manager_, HandleSource);
     conversion_host_mojom()->RegisterImpression(impression);
 
     // Run loop to allow the bad message code to run if a bad message was
     // triggered.
     base::RunLoop().RunUntilIdle();
-    EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
-    test_manager_.Reset();
+    Mock::VerifyAndClear(&mock_manager_);
   }
 
+  EXPECT_CALL(mock_manager_, HandleSource);
   impression.reporting_origin =
       url::Origin::Create(GURL("https://anothersecure.com"));
   conversion_host_mojom()->RegisterImpression(impression);
   // Run loop to allow the bad message code to run if a bad message was
   // triggered.
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
-  test_manager_.Reset();
+  Mock::VerifyAndClear(&mock_manager_);
 
   // Same document navs should not reset the counter.
   contents()->NavigateAndCommit(GURL("https://www.example.com#hash"));
@@ -529,22 +534,22 @@ TEST_F(AttributionHostTest, NavigationWithImpression_PerPageImpressionMetrics) {
 }
 
 TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   NavigationSimulatorImpl::NavigateAndCommitFromDocument(GURL(kConversionUrl),
                                                          main_rfh());
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
+  EXPECT_CALL(mock_manager_, HandleSource);
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
   navigation->SetInitiatorFrame(main_rfh());
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
@@ -562,6 +567,8 @@ TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
 }
 
 TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -575,13 +582,13 @@ TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
   navigation->SetInitiatorFrame(main_rfh());
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // Test that if we cannot access the initiator frame of the navigation, we
 // ignore the associated impression.
 TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   base::HistogramTester histograms;
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
@@ -593,13 +600,13 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
-
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionNavigationHasDeadInitiator", true, 2);
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -608,11 +615,11 @@ TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
   navigation->set_impression(CreateValidImpression());
   navigation->Fail(net::ERR_FAILED);
   navigation->CommitErrorPage();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -620,12 +627,12 @@ TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
   navigation->SetInitiatorFrame(main_rfh());
   navigation->set_impression(CreateValidImpression());
   navigation->AbortCommit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest,
        CommittedOriginDiffersFromConversionDesintation_Ignored) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -633,8 +640,6 @@ TEST_F(AttributionHostTest,
   navigation->SetInitiatorFrame(main_rfh());
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 TEST_F(AttributionHostTest,
@@ -674,6 +679,9 @@ TEST_F(AttributionHostTest,
   };
 
   for (const auto& test_case : kTestCases) {
+    EXPECT_CALL(mock_manager_, HandleSource)
+        .Times(test_case.impression_expected);
+
     contents()->NavigateAndCommit(GURL(test_case.impression_origin));
     auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
         GURL(test_case.conversion_origin), main_rfh());
@@ -687,16 +695,17 @@ TEST_F(AttributionHostTest,
     navigation->SetInitiatorFrame(main_rfh());
     navigation->Commit();
 
-    EXPECT_THAT(test_manager_.handled_sources(),
-                SizeIs(test_case.impression_expected))
-        << "For test case: " << test_case.impression_origin << " | "
-        << test_case.conversion_origin << " | " << test_case.reporting_origin;
-    test_manager_.Reset();
+    Mock::VerifyAndClear(&mock_manager_);
   }
 }
 
 TEST_F(AttributionHostTest,
        ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin) {
+  EXPECT_CALL(mock_manager_,
+              HandleSource(Property(
+                  &StorableSource::impression_origin,
+                  url::Origin::Create(GURL("https://www.example.com")))));
+
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   // Create a subframe and use it as a target for the impression registration
@@ -719,14 +728,14 @@ TEST_F(AttributionHostTest,
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-
-  EXPECT_THAT(test_manager_.handled_sources(),
-              ElementsAre(Property(
-                  &StorableSource::impression_origin,
-                  url::Origin::Create(GURL("https://www.example.com")))));
 }
 
 TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
+  EXPECT_CALL(mock_manager_,
+              HandleSource(AllOf(Property(&StorableSource::source_type,
+                                          StorableSource::SourceType::kEvent),
+                                 Property(&StorableSource::priority, 10))));
+
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -742,10 +751,6 @@ TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
-  EXPECT_THAT(test_manager_.handled_sources(),
-              ElementsAre(AllOf(Property(&StorableSource::source_type,
-                                         StorableSource::SourceType::kEvent),
-                                Property(&StorableSource::priority, 10))));
 }
 
 TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
@@ -813,6 +818,17 @@ TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
 // navigation begins but before it's committed. Currently only used on Android
 // but should work cross-platform.
 TEST_F(AttributionHostTest, AndroidConversion_DuringNavigation) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleSource);
+  }
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -826,22 +842,31 @@ TEST_F(AttributionHostTest, AndroidConversion_DuringNavigation) {
       GURL(kConversionUrl), contents());
   navigation->Start();
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
+  checkpoint.Call(1);
 
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
+  checkpoint.Call(2);
 
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 // In pre-loaded CCT navigations, the attribution can arrive after the
 // navigation completes. Currently only used on Android but should work
 // cross-platform.
 TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  }
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -855,21 +880,21 @@ TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation) {
       GURL(kConversionUrl), contents());
   navigation->Commit();
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
+  checkpoint.Call(1);
 
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
+  checkpoint.Call(2);
 
   // Make sure we don't allow repeated attributions for the same navigation.
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
+  EXPECT_CALL(mock_manager_, HandleSource);
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -885,14 +910,14 @@ TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
 
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 // In pre-loaded CCT navigations, the attribution can arrive after the
 // navigation completes, but the destination must match the attribution.
 TEST_F(AttributionHostTest,
        AndroidConversion_AfterNavigation_WrongDestination) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -909,20 +934,18 @@ TEST_F(AttributionHostTest,
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
-
   // Navigating to the correct URL after navigation to the wrong one still
   // shouldn't allow the attribution.
   auto good_navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
   good_navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // Ensure we don't re-use pending Impressions after an aborted commit. Currently
 // only used on Android but should work cross-platform.
 TEST_F(AttributionHostTest, AndroidConversion_NavigationAborted) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -941,19 +964,17 @@ TEST_F(AttributionHostTest, AndroidConversion_NavigationAborted) {
 
   navigation_abort->AbortCommit();
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
-
   auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
 
   navigation_commit->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // Ensure we don't re-use pending Impressions after an Error page commit.
 // Currently only used on Android but should work cross-platform.
 TEST_F(AttributionHostTest, AndroidConversion_NavigationError) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -973,19 +994,17 @@ TEST_F(AttributionHostTest, AndroidConversion_NavigationError) {
   navigation_error->Fail(net::ERR_UNEXPECTED);
   navigation_error->CommitErrorPage();
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
-
   auto navigation_commit = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
 
   navigation_commit->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // We don't allow attributions before a navigation begins. Currently only used
 // on Android but should work cross-platform.
 TEST_F(AttributionHostTest, AndroidConversion_BeforeNavigation) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -1002,12 +1021,12 @@ TEST_F(AttributionHostTest, AndroidConversion_BeforeNavigation) {
       url::Origin::Create(GURL(origin)), CreateValidImpression());
 
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 
 // We ignore same-document navigations.
 TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
+  EXPECT_CALL(mock_manager_, HandleSource);
+
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -1025,12 +1044,12 @@ TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
 
   conversion_host()->ReportAttributionForCurrentNavigation(
       url::Origin::Create(GURL(origin)), CreateValidImpression());
-
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 #if defined(OS_ANDROID)
 TEST_F(AttributionHostTest, AndroidConversion) {
+  EXPECT_CALL(mock_manager_, HandleSource);
+
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
   auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
@@ -1039,19 +1058,17 @@ TEST_F(AttributionHostTest, AndroidConversion) {
       url::Origin::Create(GURL("android-app:com.any.app")));
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), SizeIs(1));
 }
 
 TEST_F(AttributionHostTest, AndroidConversion_BadScheme) {
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+
   auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
   navigation->set_initiator_origin(
       url::Origin::Create(GURL("https://com.any.app")));
   navigation->set_impression(CreateValidImpression());
   navigation->Commit();
-
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
 }
 #endif
 

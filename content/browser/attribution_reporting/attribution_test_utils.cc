@@ -113,95 +113,47 @@ AttributionManager* TestManagerProvider::GetManager(
   return manager_;
 }
 
-TestAttributionManager::TestAttributionManager() = default;
+MockAttributionManager::MockAttributionManager() = default;
 
-TestAttributionManager::~TestAttributionManager() = default;
+MockAttributionManager::~MockAttributionManager() = default;
 
-void TestAttributionManager::AddObserver(Observer* observer) {
+void MockAttributionManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void TestAttributionManager::RemoveObserver(Observer* observer) {
+void MockAttributionManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TestAttributionManager::HandleSource(StorableSource source) {
-  handled_sources_.push_back(std::move(source));
-}
-
-void TestAttributionManager::HandleTrigger(StorableTrigger trigger) {
-  handled_triggers_.push_back(std::move(trigger));
-}
-
-void TestAttributionManager::GetActiveSourcesForWebUI(
-    base::OnceCallback<void(std::vector<StorableSource>)> callback) {
-  std::move(callback).Run(sources_);
-}
-
-void TestAttributionManager::GetPendingReportsForWebUI(
-    base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
-  std::move(callback).Run(reports_);
-}
-
-void TestAttributionManager::SendReportsForWebUI(base::OnceClosure done) {
-  reports_.clear();
-  std::move(done).Run();
-}
-
-const AttributionPolicy& TestAttributionManager::GetAttributionPolicy() const {
+const AttributionPolicy& MockAttributionManager::GetAttributionPolicy() const {
   return policy_;
 }
 
-void TestAttributionManager::ClearData(
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::RepeatingCallback<bool(const url::Origin&)> filter,
-    base::OnceClosure done) {
-  sources_.clear();
-  reports_.clear();
-  std::move(done).Run();
-}
-
-void TestAttributionManager::SetActiveSourcesForWebUI(
-    std::vector<StorableSource> sources) {
-  sources_ = std::move(sources);
-}
-
-void TestAttributionManager::SetReportsForWebUI(
-    std::vector<AttributionReport> reports) {
-  reports_ = std::move(reports);
-}
-
-void TestAttributionManager::NotifySourcesChanged() {
+void MockAttributionManager::NotifySourcesChanged() {
   for (Observer& observer : observers_)
     observer.OnSourcesChanged();
 }
 
-void TestAttributionManager::NotifyReportsChanged() {
+void MockAttributionManager::NotifyReportsChanged() {
   for (Observer& observer : observers_)
     observer.OnReportsChanged();
 }
 
-void TestAttributionManager::NotifySourceDeactivated(
+void MockAttributionManager::NotifySourceDeactivated(
     const DeactivatedSource& source) {
   for (Observer& observer : observers_)
     observer.OnSourceDeactivated(source);
 }
 
-void TestAttributionManager::NotifyReportSent(const SentReport& info) {
+void MockAttributionManager::NotifyReportSent(const SentReport& info) {
   for (Observer& observer : observers_)
     observer.OnReportSent(info);
 }
 
-void TestAttributionManager::NotifyReportDropped(
+void MockAttributionManager::NotifyReportDropped(
     const AttributionStorage::CreateReportResult& result) {
   for (Observer& observer : observers_)
     observer.OnReportDropped(result);
-}
-
-void TestAttributionManager::Reset() {
-  handled_sources_.clear();
-  handled_triggers_.clear();
 }
 
 // Builds an impression with default values. This is done as a builder because

@@ -157,32 +157,40 @@ class TestManagerProvider : public AttributionManager::Provider {
   raw_ptr<AttributionManager> manager_ = nullptr;
 };
 
-// Test AttributionManager which can be injected into tests to monitor calls to
-// a AttributionManager instance.
-class TestAttributionManager : public AttributionManager {
+class MockAttributionManager : public AttributionManager {
  public:
-  TestAttributionManager();
-  ~TestAttributionManager() override;
+  MockAttributionManager();
+  ~MockAttributionManager() override;
 
   // AttributionManager:
+  MOCK_METHOD(void, HandleSource, (StorableSource source), (override));
+
+  MOCK_METHOD(void, HandleTrigger, (StorableTrigger trigger), (override));
+
+  MOCK_METHOD(void,
+              GetActiveSourcesForWebUI,
+              (base::OnceCallback<void(std::vector<StorableSource>)> callback),
+              (override));
+
+  MOCK_METHOD(
+      void,
+      GetPendingReportsForWebUI,
+      (base::OnceCallback<void(std::vector<AttributionReport>)> callback),
+      (override));
+
+  MOCK_METHOD(void, SendReportsForWebUI, (base::OnceClosure done), (override));
+
+  MOCK_METHOD(void,
+              ClearData,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               base::RepeatingCallback<bool(const url::Origin&)> filter,
+               base::OnceClosure done),
+              (override));
+
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void HandleSource(StorableSource source) override;
-  void HandleTrigger(StorableTrigger trigger) override;
-  void GetActiveSourcesForWebUI(
-      base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
-  void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<AttributionReport>)> callback)
-      override;
-  void SendReportsForWebUI(base::OnceClosure done) override;
   const AttributionPolicy& GetAttributionPolicy() const override;
-  void ClearData(base::Time delete_begin,
-                 base::Time delete_end,
-                 base::RepeatingCallback<bool(const url::Origin&)> filter,
-                 base::OnceClosure done) override;
-
-  void SetActiveSourcesForWebUI(std::vector<StorableSource> sources);
-  void SetReportsForWebUI(std::vector<AttributionReport> reports);
 
   void NotifySourcesChanged();
   void NotifyReportsChanged();
@@ -192,28 +200,8 @@ class TestAttributionManager : public AttributionManager {
   void NotifyReportDropped(
       const AttributionStorage::CreateReportResult& result);
 
-  // Resets all counters on this.
-  void Reset();
-
-  const std::vector<StorableSource>& handled_sources() const
-      WARN_UNUSED_RESULT {
-    return handled_sources_;
-  }
-
-  const std::vector<StorableTrigger>& handled_triggers() const
-      WARN_UNUSED_RESULT {
-    return handled_triggers_;
-  }
-
  private:
   AttributionPolicy policy_;
-
-  std::vector<StorableSource> handled_sources_;
-  std::vector<StorableTrigger> handled_triggers_;
-
-  std::vector<StorableSource> sources_;
-  std::vector<AttributionReport> reports_;
-
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 

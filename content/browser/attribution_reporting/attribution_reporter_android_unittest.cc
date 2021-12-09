@@ -23,8 +23,6 @@ namespace {
 
 using testing::_;
 using testing::AllOf;
-using testing::ElementsAre;
-using testing::IsEmpty;
 using testing::IsNull;
 using testing::Pointee;
 using testing::Property;
@@ -45,7 +43,7 @@ class AttributionReporterTest : public ::testing::Test {
   }
 
  protected:
-  TestAttributionManager test_manager_;
+  MockAttributionManager mock_manager_;
 
  private:
   url::ScopedSchemeRegistryForTests scoped_registry_;
@@ -53,30 +51,31 @@ class AttributionReporterTest : public ::testing::Test {
 
 TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
   base::Time time = base::Time::Now() - base::Hours(1);
-  attribution_reporter_android::ReportAppImpression(
-      test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
-      kReportToUrl, 56789, time);
 
-  EXPECT_THAT(
-      test_manager_.handled_sources(),
-      ElementsAre(AllOf(Property(&StorableSource::impression_origin,
-                                 OriginFromAndroidPackageName(kPackageName)),
-                        Property(&StorableSource::source_type,
-                                 StorableSource::SourceType::kEvent),
-                        Property(&StorableSource::impression_time, time))));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(AllOf(Property(&StorableSource::impression_origin,
+                                  OriginFromAndroidPackageName(kPackageName)),
+                         Property(&StorableSource::source_type,
+                                  StorableSource::SourceType::kEvent),
+                         Property(&StorableSource::impression_time, time))));
+
+  attribution_reporter_android::ReportAppImpression(
+      mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
+      kReportToUrl, 56789, time);
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
-  attribution_reporter_android::ReportAppImpression(
-      test_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,
-      base::Time::Now());
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(AllOf(Property(&StorableSource::impression_origin,
+                                  OriginFromAndroidPackageName(kPackageName)),
+                         Property(&StorableSource::source_type,
+                                  StorableSource::SourceType::kEvent))));
 
-  EXPECT_THAT(
-      test_manager_.handled_sources(),
-      ElementsAre(AllOf(Property(&StorableSource::impression_origin,
-                                 OriginFromAndroidPackageName(kPackageName)),
-                        Property(&StorableSource::source_type,
-                                 StorableSource::SourceType::kEvent))));
+  attribution_reporter_android::ReportAppImpression(
+      mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,
+      base::Time::Now());
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
@@ -89,19 +88,19 @@ TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  attribution_reporter_android::ReportAppImpression(
-      test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
-      kReportToUrl, 56789, base::Time::Now());
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
+  attribution_reporter_android::ReportAppImpression(
+      mock_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
+      kReportToUrl, 56789, base::Time::Now());
 }
 
 TEST_F(AttributionReporterTest, InvalidImpression) {
-  attribution_reporter_android::ReportAppImpression(
-      test_manager_, nullptr, kPackageName, kEventId, kInvalidUrl, kReportToUrl,
-      56789, base::Time::Now());
+  EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
-  EXPECT_THAT(test_manager_.handled_sources(), IsEmpty());
+  attribution_reporter_android::ReportAppImpression(
+      mock_manager_, nullptr, kPackageName, kEventId, kInvalidUrl, kReportToUrl,
+      56789, base::Time::Now());
 }
 
 }  // namespace
