@@ -164,6 +164,7 @@ void KSAdminApp::PrintUsage(const std::string& error_message) {
       "                       -e, -a, -K, -H, -g.\n"
       "Action parameters:\n"
       "  --brand-key,-b      Set the brand code key. Use with -P and -B.\n"
+      "                      Value must be empty or KSBrandID.\n"
       "  --brand-path,-B     Set the brand code path. Use with -P and -b.\n"
       "  --productid,-P id   ProductID.\n"
       "  --system-store,-S   Use the system-wide ticket store.\n"
@@ -183,11 +184,19 @@ void KSAdminApp::PrintUsage(const std::string& error_message) {
 void KSAdminApp::Register() {
   RegistrationRequest registration;
   registration.app_id = SwitchValue(kCommandProductId);
-  registration.brand_code = "";  // TODO(crbug.com/1250524): Implement.
   registration.ap = SwitchValue(kCommandTag);
   registration.version = base::Version(SwitchValue(kCommandVersion));
   registration.existence_checker_path =
       base::FilePath(SwitchValue(kCommandXCPath));
+
+  const std::string brand_key = SwitchValue(kCommandBrandKey);
+  if (brand_key.empty() ||
+      brand_key == base::SysNSStringToUTF8(kCRUTicketBrandKey)) {
+    registration.brand_path = base::FilePath(SwitchValue(kCommandBrandPath));
+  } else {
+    PrintUsage("Unsupported brand key.");
+    return;
+  }
 
   if (registration.app_id.empty() || !registration.version.IsValid()) {
     PrintUsage("Registration information invalid.");
