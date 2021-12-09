@@ -34,6 +34,15 @@ async def before_each_test(websocket):
     resp = await read_JSON_message(websocket)
     assert resp['method'] == 'browsingContext.contextCreated'
 
+    # TODO: check why the initial event order is different form the navigation.
+    # Read initial event `browsingContext.domContentLoaded`
+    resp = await read_JSON_message(websocket)
+    assert resp['method'] == 'browsingContext.domContentLoaded'
+
+    # Read initial event `browsingContext.load`
+    resp = await read_JSON_message(websocket)
+    assert resp['method'] == 'browsingContext.load'
+
 
 # Compares 2 objects recursively ignoring values of specific attributes.
 def recursiveCompare(expected, actual, ignore_attributes):
@@ -84,10 +93,18 @@ async def goto_url(websocket, context_id, url):
         "method": "browsingContext.navigate",
         "params": {
             "url": url,
-            "context": context_id}}
+            "context": context_id,
+            "wait": "interactive"}}
     await send_JSON_command(websocket, command)
 
-    # Assert "browsingContext.navigate" command done.
+    # Wait for the page events.
+    resp = await read_JSON_message(websocket)
+    assert resp['method'] == 'browsingContext.load'
+    resp = await read_JSON_message(websocket)
+    assert resp['method'] == 'browsingContext.domContentLoaded'
+
+    # Wait the "browsingContext.navigate" command is done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9998
+
     return context_id

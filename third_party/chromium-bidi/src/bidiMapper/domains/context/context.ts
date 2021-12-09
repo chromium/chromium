@@ -63,6 +63,39 @@ export class Context {
     await this._cdpClient.Runtime.enable();
     await this._cdpClient.Page.enable();
     await this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+    this._initializeEventListeners();
+  }
+
+  private _initializeEventListeners() {
+    this._initializePageLifecycleEventListener();
+  }
+
+  private _initializePageLifecycleEventListener() {
+    this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
+
+    this._cdpClient.Page.on('lifecycleEvent', async (params) => {
+      switch (params.name) {
+        case 'DOMContentLoaded':
+          await this._bidiServer.sendMessage({
+            method: 'browsingContext.domContentLoaded',
+            params: {
+              context: this._contextId,
+              navigation: params.loaderId,
+            },
+          });
+          break;
+
+        case 'load':
+          await this._bidiServer.sendMessage({
+            method: 'browsingContext.load',
+            params: {
+              context: this._contextId,
+              navigation: params.loaderId,
+            },
+          });
+          break;
+      }
+    });
   }
 
   // TODO sadym: `dummyContextObject` needed for the running context.
@@ -107,43 +140,52 @@ export class Context {
     url: string,
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
-    // TODO sadym: implement.
-    if (wait !== 'none' && wait !== 'interactive') {
-      throw new Error(`Not implenented wait '${wait}'`);
-    }
-
+    // TODO: handle loading errors.
     const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
 
-    // Wait: none.
-    if (wait === 'none')
-      return {
-        navigation: cdpNavigateResult.loaderId,
-        url: url,
+    // Wait for `wait` condition.
+    switch (wait) {
+      case 'none':
+        break;
+
+      case 'interactive':
+        await this._waitPageLifeCycleEvent(
+          'DOMContentLoaded',
+          cdpNavigateResult.loaderId!
+        );
+        break;
+
+      case 'complete':
+        await this._waitPageLifeCycleEvent('load', cdpNavigateResult.loaderId!);
+        break;
+
+      default:
+        throw new Error(`Not implemented wait '${wait}'`);
+    }
+
+    return {
+      navigation: cdpNavigateResult.loaderId,
+      url: url,
+    };
+  }
+
+  private async _waitPageLifeCycleEvent(eventName: string, loaderId: string) {
+    return new Promise<Protocol.Page.LifecycleEventEvent>((resolve) => {
+      const handleLifecycleEvent = async (
+        params: Protocol.Page.LifecycleEventEvent
+      ) => {
+        if (params.name !== eventName || params.loaderId !== loaderId) {
+          return;
+        }
+        this._cdpClient.Page.removeListener(
+          'lifecycleEvent',
+          handleLifecycleEvent
+        );
+        resolve(params);
       };
 
-    //Wait: interactive.
-    const domContentEventFiredPromise =
-      new Promise<BrowsingContext.BrowsingContextNavigateResult>((resolve) => {
-        const handleDomContentEventFired = async (
-          params: Protocol.Page.DomContentEventFiredEvent
-        ) => {
-          this._cdpClient.Page.removeListener(
-            'domContentEventFired',
-            handleDomContentEventFired
-          );
-          resolve({
-            navigation: cdpNavigateResult.loaderId,
-            url: url,
-          });
-        };
-
-        this._cdpClient.Page.on(
-          'domContentEventFired',
-          handleDomContentEventFired
-        );
-      });
-
-    return domContentEventFiredPromise;
+      this._cdpClient.Page.on('lifecycleEvent', handleLifecycleEvent);
+    });
   }
 
   /**

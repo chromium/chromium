@@ -296,6 +296,7 @@ export namespace BrowsingContext {
     | BrowsingContextNavigateResult
     | BrowsingContextCreateResult;
   export type EventType =
+    | BrowsingContextLoadEvent
     | BrowsingContextDomContentLoadedEvent
     | BrowsingContextCreatedEvent
     | BrowsingContextDestroyedEvent;
@@ -337,8 +338,7 @@ export namespace BrowsingContext {
     wait?: ReadinessState;
   };
 
-  export type ReadinessState = 'none';
-  // TODO sadym: implement 'interactive' and 'complete' states.
+  export type ReadinessState = 'none' | 'interactive' | 'complete';
   export type BrowsingContextNavigateResult = {
     navigation?: Navigation;
     url: string;
@@ -360,6 +360,11 @@ export namespace BrowsingContext {
   };
 
   // events
+  export type BrowsingContextLoadEvent = {
+    method: 'browsingContext.load';
+    params: NavigationInfo;
+  };
+
   export type BrowsingContextDomContentLoadedEvent = {
     method: 'browsingContext.domContentLoaded';
     params: NavigationInfo;
@@ -368,7 +373,8 @@ export namespace BrowsingContext {
   export type NavigationInfo = {
     context: BrowsingContext;
     navigation: Navigation | null;
-    url: string;
+    // TODO: implement or remove from specification.
+    // url: string;
   };
 
   export type BrowsingContextCreatedEvent = {
