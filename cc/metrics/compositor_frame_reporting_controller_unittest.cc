@@ -1848,12 +1848,12 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.DidPresentCompositorFrame(1u, details);
   // Starts a new frame and submit it prior to commit
 
-  reporting_controller_.WillCommit();
-  reporting_controller_.DidCommit();
+  SimulateCommit(nullptr);
 
   const auto previous_id = current_id_;
 
   SimulateBeginMainFrame();
+  DCHECK_NE(previous_id, current_id_);
   reporting_controller_.OnFinishImplFrame(current_id_);
 
   // Starts a new frame and submit it prior to its commit, but the older frame
@@ -1862,13 +1862,11 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.DidActivate();
 
   reporting_controller_.DidSubmitCompositorFrame(
-      1u, current_id_, previous_id, {}, /*has_missing_content=*/false);
+      2u, current_id_, previous_id, {}, /*has_missing_content=*/false);
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
-  reporting_controller_.DidPresentCompositorFrame(1u, details);
+  reporting_controller_.DidPresentCompositorFrame(2u, details);
 
-  reporting_controller_.WillCommit();
-  reporting_controller_.DidCommit();
-
+  SimulateCommit(nullptr);
   SimulatePresentCompositorFrame();
 
   // There are two frames with partial updates

@@ -64,6 +64,7 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   while (pending_frames_.size() > kPendingFramesMaxSize) {
     const auto& first = pending_frames_.front();
     frame_states_.erase(first.frame_id);
+    frame_infos_.erase(first.frame_id);
     pending_frames_.pop_front();
   }
 }
@@ -98,6 +99,7 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   if (frame_state.should_ignore()) {
     // The associated frame in pending_frames_ was already removed in Reset().
     frame_states_.erase(args.frame_id);
+    frame_infos_.erase(args.frame_id);
     return;
   }
 

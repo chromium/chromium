@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "build/build_config.h"
+
 namespace cc {
 
 namespace {
@@ -20,6 +22,21 @@ bool IsMainSmooth(FrameInfo::SmoothThread thread) {
          thread == FrameInfo::SmoothThread::kSmoothBoth;
 }
 
+bool ValidateFinalStateIsForMainThread(FrameInfo::FrameFinalState state) {
+  switch (state) {
+    case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
+    case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
+      // Frames that contain main-thread update cannot have a 'partial update'
+      // state.
+      return false;
+
+    case FrameInfo::FrameFinalState::kPresentedAll:
+    case FrameInfo::FrameFinalState::kNoUpdateDesired:
+    case FrameInfo::FrameFinalState::kDropped:
+      return true;
+  }
+}
+
 }  // namespace
 
 bool FrameInfo::IsDroppedAffectingSmoothness() const {
@@ -28,42 +45,67 @@ bool FrameInfo::IsDroppedAffectingSmoothness() const {
   if (smooth_thread == SmoothThread::kSmoothNone)
     return false;
 
-  switch (final_state) {
-    case FrameFinalState::kDropped:
-      return true;
-
-    case FrameFinalState::kPresentedAll:
-    case FrameFinalState::kPresentedPartialNewMain:
-      // If the frame includes new main-thread update, even if it's for an
-      // earlier begin-frame, then do not count it as a dropped frame affecting
-      // smoothness.
-      return false;
-
-    case FrameFinalState::kPresentedPartialOldMain:
-      // Partial-update frames without new updates from the main-thread affect
-      // smoothness if the main-thread is expected to be smooth.
-      return smooth_thread == SmoothThread::kSmoothBoth ||
-             smooth_thread == SmoothThread::kSmoothMain;
-
-    case FrameFinalState::kNoUpdateDesired:
-      return false;
+  if (IsMainSmooth(smooth_thread) && WasMainUpdateDropped()) {
+    return true;
   }
+
+  if (IsCompositorSmooth(smooth_thread) && WasCompositorUpdateDropped()) {
+    return true;
+  }
+
+  return false;
 }
 
-void FrameInfo::MergeWith(const FrameInfo& info) {
+void FrameInfo::MergeWith(const FrameInfo& other) {
+#if defined(OS_ANDROID)
+  // TODO(1278168): on android-webview, multiple frames can be submitted against
+  // the same BeginFrameArgs. This can trip the DCHECK()s in this function.
+  if (was_merged)
+    return;
+#endif
+  DCHECK(!was_merged);
+  DCHECK(!other.was_merged);
+  DCHECK(Validate());
+  DCHECK(other.Validate());
+
+  if (main_thread_response == MainThreadResponse::kIncluded) {
+    // |this| includes the main-thread updates. Therefore:
+    //   - |other| must not also include main-thread updates.
+    //   - |this| must have a valid final-state.
+    DCHECK_EQ(MainThreadResponse::kMissing, other.main_thread_response);
+    DCHECK(ValidateFinalStateIsForMainThread(final_state));
+
+    main_update_was_dropped = final_state == FrameFinalState::kDropped;
+    compositor_update_was_dropped =
+        other.final_state == FrameFinalState::kDropped;
+  } else {
+    // |this| does not include main-thread updates. Therefore:
+    //   - |other| must include main-thread updates.
+    //   - |other| must have a valid final-state.
+    DCHECK_EQ(MainThreadResponse::kIncluded, other.main_thread_response);
+    DCHECK(ValidateFinalStateIsForMainThread(other.final_state));
+
+    main_update_was_dropped = other.final_state == FrameFinalState::kDropped;
+    compositor_update_was_dropped = final_state == FrameFinalState::kDropped;
+  }
+
+  was_merged = true;
+  main_thread_response = MainThreadResponse::kIncluded;
+
   // The |scroll_thread| information cannot change once the frame starts. So
   // it should not need to be updated during merge.
-  DCHECK_EQ(scroll_thread, info.scroll_thread);
+  DCHECK_EQ(scroll_thread, other.scroll_thread);
 
-  if (info.has_missing_content)
+  if (other.has_missing_content)
     has_missing_content = true;
-  if (info.final_state == FrameFinalState::kDropped)
+
+  if (other.final_state == FrameFinalState::kDropped)
     final_state = FrameFinalState::kDropped;
 
   const bool is_compositor_smooth = IsCompositorSmooth(smooth_thread) ||
-                                    IsCompositorSmooth(info.smooth_thread);
+                                    IsCompositorSmooth(other.smooth_thread);
   const bool is_main_smooth =
-      IsMainSmooth(smooth_thread) || IsMainSmooth(info.smooth_thread);
+      IsMainSmooth(smooth_thread) || IsMainSmooth(other.smooth_thread);
   if (is_compositor_smooth && is_main_smooth) {
     smooth_thread = SmoothThread::kSmoothBoth;
   } else if (is_compositor_smooth) {
@@ -74,7 +116,51 @@ void FrameInfo::MergeWith(const FrameInfo& info) {
     smooth_thread = SmoothThread::kSmoothNone;
   }
 
-  total_latency = std::max(total_latency, info.total_latency);
+  total_latency = std::max(total_latency, other.total_latency);
+
+  // Validate the state after the merge.
+  DCHECK(Validate());
+}
+
+bool FrameInfo::Validate() const {
+  // If |scroll_thread| is set, then the |smooth_thread| must include that
+  // thread.
+  if (scroll_thread == SmoothEffectDrivingThread::kCompositor) {
+    DCHECK(IsCompositorSmooth(smooth_thread));
+  } else if (scroll_thread == SmoothEffectDrivingThread::kMain) {
+    DCHECK(IsMainSmooth(smooth_thread));
+  }
+
+  return true;
+}
+
+bool FrameInfo::WasCompositorUpdateDropped() const {
+  if (was_merged)
+    return compositor_update_was_dropped;
+  return final_state == FrameFinalState::kDropped;
+}
+
+bool FrameInfo::WasMainUpdateDropped() const {
+  if (was_merged)
+    return main_update_was_dropped;
+
+  switch (final_state) {
+    case FrameFinalState::kDropped:
+    case FrameFinalState::kPresentedPartialOldMain:
+      return true;
+
+    case FrameFinalState::kPresentedPartialNewMain:
+      // Although this frame dropped the main-thread updates for this particular
+      // frame, it did include new main-thread update. So do not treat this as a
+      // dropped frame.
+      return false;
+
+    case FrameFinalState::kNoUpdateDesired:
+    case FrameFinalState::kPresentedAll:
+      return false;
+  }
+
+  return false;
 }
 
 }  // namespace cc

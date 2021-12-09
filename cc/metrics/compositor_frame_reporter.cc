@@ -1422,7 +1422,29 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   FrameInfo info;
   info.final_state = final_state;
   info.smooth_thread = smooth_thread_;
+  info.scroll_thread = scrolling_thread_;
   info.has_missing_content = has_missing_content_;
+
+  if (frame_skip_reason_.has_value() &&
+      frame_skip_reason() == FrameSkippedReason::kNoDamage) {
+    // If the frame was explicitly skipped because of 'no damage', then that
+    // means this frame contains the response ('no damage') from the
+    // main-thread.
+    info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
+  } else if (partial_update_dependents_.size() > 0) {
+    // Only a frame containing a response from the main-thread can have
+    // dependent reporters.
+    info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
+  } else if (begin_main_frame_start_.is_null() ||
+             (frame_skip_reason_.has_value() &&
+              frame_skip_reason() == FrameSkippedReason::kWaitingOnMain)) {
+    // If 'begin main frame' never started, or if it started, but it
+    // had to be skipped because it was waiting on the main-thread,
+    // then the main-thread update is missing from this reporter.
+    info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
+  } else {
+    info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
+  }
 
   if (!stage_history_.empty()) {
     const auto& stage = stage_history_.back();
@@ -1432,8 +1454,6 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
       info.total_latency = frame_termination_time_ - args_.frame_time;
     }
   }
-
-  info.scroll_thread = scrolling_thread_;
 
   return info;
 }

@@ -45,6 +45,12 @@ struct CC_EXPORT FrameInfo {
   };
   SmoothThread smooth_thread = SmoothThread::kSmoothNone;
 
+  enum class MainThreadResponse {
+    kIncluded,
+    kMissing,
+  };
+  MainThreadResponse main_thread_response = MainThreadResponse::kIncluded;
+
   enum class SmoothEffectDrivingThread { kMain, kCompositor, kUnknown };
   SmoothEffectDrivingThread scroll_thread = SmoothEffectDrivingThread::kUnknown;
 
@@ -57,6 +63,16 @@ struct CC_EXPORT FrameInfo {
 
   bool IsDroppedAffectingSmoothness() const;
   void MergeWith(const FrameInfo& info);
+
+  bool Validate() const;
+
+  bool WasCompositorUpdateDropped() const;
+  bool WasMainUpdateDropped() const;
+
+ private:
+  bool was_merged = false;
+  bool compositor_update_was_dropped = false;
+  bool main_update_was_dropped = false;
 };
 
 }  // namespace cc

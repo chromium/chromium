@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/animation/animation_host.h"
 #include "cc/test/fake_content_layer_client.h"
+#include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
 
@@ -21,9 +22,9 @@ namespace cc {
 namespace {
 
 FrameInfo CreateStubFrameInfo(bool is_dropped) {
-  return {is_dropped ? FrameInfo::FrameFinalState::kDropped
-                     : FrameInfo::FrameFinalState::kPresentedAll,
-          FrameInfo::SmoothThread::kSmoothBoth};
+  return CreateFakeFrameInfo(is_dropped
+                                 ? FrameInfo::FrameFinalState::kDropped
+                                 : FrameInfo::FrameFinalState::kPresentedAll);
 }
 
 class DroppedFrameCounterTestBase : public LayerTreeTest {
@@ -310,8 +311,17 @@ class DroppedFrameCounterTest : public testing::Test {
     viz::BeginFrameArgs args_ = SimulateBeginFrameArgs();
     dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
     dropped_frame_counter_.OnBeginFrame(args_, /*is_scroll_active=*/false);
-    dropped_frame_counter_.OnEndFrame(args_, CreateStubFrameInfo(main_dropped));
-    dropped_frame_counter_.OnEndFrame(args_, CreateStubFrameInfo(impl_dropped));
+
+    // End the 'main thread' arm of the fork.
+    auto main_info = CreateStubFrameInfo(main_dropped);
+    main_info.main_thread_response = FrameInfo::MainThreadResponse::kIncluded;
+    dropped_frame_counter_.OnEndFrame(args_, main_info);
+
+    // End the 'compositor thread' arm of the fork.
+    auto impl_info = CreateStubFrameInfo(impl_dropped);
+    impl_info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
+    dropped_frame_counter_.OnEndFrame(args_, impl_info);
+
     sequence_number_++;
     frame_time_ += interval_;
   }

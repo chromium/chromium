@@ -39,6 +39,7 @@
 #include "cc/paint/image_animation_count.h"
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/fake_content_layer_client.h"
+#include "cc/test/fake_frame_info.h"
 #include "cc/test/fake_layer_tree_host_client.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/fake_painted_scrollbar_layer.h"
@@ -116,6 +117,12 @@ bool LayerSubtreeHasCopyRequest(Layer* layer) {
   int index = layer->effect_tree_index();
   auto* node = host->property_trees()->effect_tree.Node(index);
   return node->subtree_has_copy_request;
+}
+
+FrameInfo CreateFakeImplDroppedFrameInfo() {
+  auto info = CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped);
+  info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
+  return info;
 }
 
 using LayerTreeHostTest = LayerTreeTest;
@@ -9950,8 +9957,7 @@ class LayerTreeHostUkmSmoothnessMetric : public LayerTreeTest {
 
     // Mark every frame as a dropped frame affecting smoothness.
     host_impl->dropped_frame_counter()->OnEndFrame(
-        last_args_, {FrameInfo::FrameFinalState::kDropped,
-                     FrameInfo::SmoothThread::kSmoothBoth});
+        last_args_, CreateFakeImplDroppedFrameInfo());
     host_impl->SetNeedsRedraw();
     --frames_counter_;
   }
@@ -10003,10 +10009,11 @@ class LayerTreeHostUkmSmoothnessMemoryOwnership : public LayerTreeTest {
       return;
     }
 
-    // Mark every frame as a dropped frame affecting smoothness.
+    // Mark every frame as a dropped frame affecting smoothness. This happens
+    // entirely on the compositor thread, so mark it as not including
+    // main-thread update.
     host_impl->dropped_frame_counter()->OnEndFrame(
-        last_args_, {FrameInfo::FrameFinalState::kDropped,
-                     FrameInfo::SmoothThread::kSmoothBoth});
+        last_args_, CreateFakeImplDroppedFrameInfo());
     host_impl->SetNeedsRedraw();
     --frames_counter_;
   }
