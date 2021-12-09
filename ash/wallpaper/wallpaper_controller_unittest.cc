@@ -1253,7 +1253,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaper) {
   WallpaperInfo expected_wallpaper_info(params);
   EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
   // Verify that wallpaper & collection metrics are logged.
-  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Image", kAssetId.value(),
+  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Image", kUnitId.value(),
                                        1);
   histogram_tester().ExpectBucketCount(
       "Ash.Wallpaper.Collection",
