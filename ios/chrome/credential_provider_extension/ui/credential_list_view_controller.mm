@@ -12,6 +12,7 @@
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_list_global_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
@@ -86,9 +87,17 @@ UIColor* BackgroundColor() {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.title =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_TITLE",
-                        @"AutoFill Chrome Password");
+
+  if (IsPasswordManagerBrandingUpdateEnable()) {
+    self.title = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_BRANDED_TITLE",
+        @"Google Password Manager");
+  } else {
+    self.title =
+        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_TITLE",
+                          @"AutoFill Chrome Password");
+  }
+
   self.view.backgroundColor = BackgroundColor();
   if (IsPasswordCreationEnabled()) {
     self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
@@ -142,6 +151,9 @@ UIColor* BackgroundColor() {
       forHeaderFooterViewReuseIdentifier:kHeaderIdentifier];
   [self.tableView registerClass:[CredentialListHeaderView class]
       forHeaderFooterViewReuseIdentifier:CredentialListHeaderView.reuseID];
+  [self.tableView registerClass:[CredentialListGlobalHeaderView class]
+      forHeaderFooterViewReuseIdentifier:CredentialListGlobalHeaderView
+                                             .reuseID];
 }
 
 #pragma mark - CredentialListConsumer
@@ -231,6 +243,10 @@ UIColor* BackgroundColor() {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
+  if ([self isGlobalHeaderSection:section]) {
+    return [self.tableView dequeueReusableHeaderFooterViewWithIdentifier:
+                               CredentialListGlobalHeaderView.reuseID];
+  }
   if (IsPasswordCreationEnabled()) {
     CredentialListHeaderView* view = [self.tableView
         dequeueReusableHeaderFooterViewWithIdentifier:CredentialListHeaderView
@@ -251,6 +267,9 @@ UIColor* BackgroundColor() {
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
+  if ([self isGlobalHeaderSection:section]) {
+    return UITableViewAutomaticDimension;
+  }
   if (IsPasswordCreationEnabled() &&
       [self isSuggestedPasswordSection:section]) {
     return 0;
@@ -369,6 +388,12 @@ UIColor* BackgroundColor() {
   } else {
     return NO;
   }
+}
+
+// Returns YES if given section is for global header.
+- (BOOL)isGlobalHeaderSection:(int)section {
+  return section == 0 && IsPasswordManagerBrandingUpdateEnable() &&
+         ![self isEmptyTable];
 }
 
 // Returns the credential at the passed index.
