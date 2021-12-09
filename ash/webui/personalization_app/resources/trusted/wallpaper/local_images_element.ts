@@ -13,20 +13,22 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './styles.js';
-import '/common/icons.js';
-import '/common/styles.js';
+import '../../common/icons.js';
+import '../../common/styles.js';
 
-import {getLoadingPlaceholderAnimationDelay} from '/common/utils.js';
-import {isSelectionEvent} from '/common/utils.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getLoadingPlaceholderAnimationDelay} from '../../common/utils.js';
+import {isSelectionEvent} from '../../common/utils.js';
+import {CurrentWallpaper, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {isFilePath} from '../utils.js';
 
 import {fetchLocalData, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
-/** @polymer */
 export class LocalImages extends WithPersonalizationStore {
   static get is() {
     return 'local-images';
@@ -45,58 +47,26 @@ export class LocalImages extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
-      /**
-       * @type {!Array<!mojoBase.mojom.FilePath>}
-       * @private
-       */
       images_: {
         type: Array,
         observer: 'onImagesChanged_',
       },
 
-      /**
-       * Mapping of stringified local image id to data url.
-       * @type {!Object<string, string>}
-       * @private
-       */
-      imageData_: {
-        type: Object,
-      },
+      /** Mapping of local image path to data url. */
+      imageData_: Object,
 
-      /**
-       * Mapping of stringified local image id to boolean.
-       * @type {!Object<string, boolean>}
-       * @private
-       */
-      imageDataLoading_: {
-        type: Object,
-      },
+      /** Mapping of local image path to boolean. */
+      imageDataLoading_: Object,
 
-      /**
-       * @type {?CurrentWallpaper}
-       * @private
-       */
-      currentSelected_: {
-        type: Object,
-      },
+      currentSelected_: Object,
 
-      /**
-       * The pending selected image.
-       * @type {?DisplayableImage}
-       * @private
-       */
-      pendingSelected_: {
-        type: Object,
-      },
+      /** The pending selected image. */
+      pendingSelected_: Object,
 
-      /**
-       * @type {!Array<!mojoBase.mojom.FilePath>}
-       * @private
-       */
       imagesToDisplay_: {
         type: Array,
         value: [],
-      }
+      },
     };
   }
 
@@ -104,21 +74,32 @@ export class LocalImages extends WithPersonalizationStore {
     return ['onImageLoaded_(imageData_, imageDataLoading_)'];
   }
 
-  /** @override */
+  public hidden: boolean;
+
+  private wallpaperProvider_: WallpaperProviderInterface;
+  private images_: FilePath[]|null;
+  private imageData_: Record<FilePath['path'], string>;
+  private imageDataLoading_: Record<FilePath['path'], boolean>;
+  private currentSelected_: CurrentWallpaper|null;
+  private pendingSelected_: FilePath|WallpaperImage|null;
+  private imagesToDisplay_: FilePath[];
+
   constructor() {
     super();
-    /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.watch('images_', state => state.local.images);
-    this.watch('imageData_', state => state.local.data);
-    this.watch('imageDataLoading_', state => state.loading.local.data);
-    this.watch('currentSelected_', state => state.currentSelected);
-    this.watch('pendingSelected_', state => state.pendingSelected);
+    this.watch<LocalImages['images_']>('images_', state => state.local.images);
+    this.watch<LocalImages['imageData_']>(
+        'imageData_', state => state.local.data);
+    this.watch<LocalImages['imageDataLoading_']>(
+        'imageDataLoading_', state => state.loading.local.data);
+    this.watch<LocalImages['currentSelected_']>(
+        'currentSelected_', state => state.currentSelected);
+    this.watch<LocalImages['pendingSelected_']>(
+        'pendingSelected_', state => state.pendingSelected);
     this.updateFromStore();
     fetchLocalData(this.wallpaperProvider_, this.getStore());
     window.addEventListener('focus', () => {
@@ -130,25 +111,19 @@ export class LocalImages extends WithPersonalizationStore {
    * When iron-list items change while parent element is hidden, iron-list will
    * render incorrectly. Force another layout to happen by calling iron-resize
    * when this element is visible again.
-   * @param {boolean} hidden
-   * @private
    */
-  onHiddenChanged_(hidden) {
+  private onHiddenChanged_(hidden: boolean) {
     if (!hidden) {
       document.title = this.i18n('myImagesLabel');
-      this.shadowRoot.getElementById('main').focus();
+      this.shadowRoot?.getElementById('main')?.focus();
       afterNextRender(this, () => {
-        this.shadowRoot.querySelector('iron-list').fire('iron-resize');
+        this.shadowRoot?.querySelector('iron-list')?.fire('iron-resize');
       });
     }
   }
 
-  /**
-   * Sets |imagesToDisplay| when a new set of local images loads.
-   * @param {Array<!mojoBase.mojom.FilePath>} images
-   * @private
-   */
-  onImagesChanged_(images) {
+  /** Sets |imagesToDisplay| when a new set of local images loads. */
+  private onImagesChanged_(images: LocalImages['images_']) {
     this.imagesToDisplay_ = (images || []).filter(image => {
       const key = image.path;
       if (this.imageDataLoading_[key] === false) {
@@ -161,11 +136,10 @@ export class LocalImages extends WithPersonalizationStore {
   /**
    * Called each time a new image thumbnail is loaded. Removes images
    * from the list of displayed images if it has failed to load.
-   * @param {Object<string, string>} imageData
-   * @param {Object<string, boolean>} imageDataLoading
-   * @private
    */
-  onImageLoaded_(imageData, imageDataLoading) {
+  private onImageLoaded_(
+      imageData: LocalImages['imageData_'],
+      imageDataLoading: LocalImages['imageDataLoading_']) {
     if (!imageData || !imageDataLoading) {
       return;
     }
@@ -181,45 +155,32 @@ export class LocalImages extends WithPersonalizationStore {
     }
   }
 
-  /**
-   * @param {!mojoBase.mojom.FilePath} image
-   * @param {?CurrentWallpaper}
-   *     currentSelected
-   * @param {?DisplayableImage} pendingSelected
-   * @return {string}
-   * @private
-   */
-  getAriaSelected_(image, currentSelected, pendingSelected) {
+  private getAriaSelected_(
+      image: FilePath|null, currentSelected: LocalImages['currentSelected_'],
+      pendingSelected: LocalImages['pendingSelected_']): 'true'|'false' {
     if (!image || (!currentSelected && !pendingSelected)) {
       return 'false';
     }
-    return (!!pendingSelected && image.path === pendingSelected.path ||
+    return (isFilePath(pendingSelected) &&
+                image.path === pendingSelected.path ||
             !!currentSelected && image.path.endsWith(currentSelected.key) &&
                 !pendingSelected)
-        .toString();
+               .toString() as 'true' |
+        'false';
   }
 
-  /**
-   * @param {!mojoBase.mojom.FilePath} image
-   * @return {string}
-   * @private
-   */
-  getAriaLabel_(image) {
-    if (!image || !image.path) {
+  private getAriaLabel_(image: FilePath|null): string {
+    if (!isFilePath(image)) {
       return '';
     }
     const path = image.path;
     return path.substring(path.lastIndexOf('/') + 1);
   }
 
-  /**
-   * @param {mojoBase.mojom.FilePath} image
-   * @param {Object<string, boolean>} imageDataLoading
-   * @return {boolean}
-   * @private
-   */
-  isImageLoading_(image, imageDataLoading) {
-    if (!image || !imageDataLoading) {
+  private isImageLoading_(
+      image: FilePath|null,
+      imageDataLoading: LocalImages['imageDataLoading_']): boolean {
+    if (!isFilePath(image) || !imageDataLoading) {
       return true;
     }
     const key = image.path;
@@ -229,71 +190,43 @@ export class LocalImages extends WithPersonalizationStore {
         imageDataLoading[key] === true;
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getLoadingPlaceholderAnimationDelay_(index) {
+  private getLoadingPlaceholderAnimationDelay_(index: number): string {
     return getLoadingPlaceholderAnimationDelay(index);
   }
 
-  /**
-   * @param {mojoBase.mojom.FilePath} image
-   * @param {Object<string, string>} imageData
-   * @param {Object<string, boolean>} imageDataLoading
-   * @return {boolean}
-   * @private
-   */
-  isImageReady_(image, imageData, imageDataLoading) {
-    if (!image || !imageData || !imageDataLoading) {
+  private isImageReady_(
+      image: FilePath|null, imageData: LocalImages['imageData_'],
+      imageDataLoading: LocalImages['imageDataLoading_']): boolean {
+    if (!isFilePath(image) || !imageData || !imageDataLoading) {
       return false;
     }
     const key = image.path;
     return !!imageData[key] && imageDataLoading[key] === false;
   }
 
-  /**
-   * @param {mojoBase.mojom.FilePath} image
-   * @param {Object<string, string>} imageData
-   * @return {string}
-   * @private
-   */
-  getImageData_(image, imageData) {
+  private getImageData_(image: FilePath, imageData: LocalImages['imageData_']):
+      string {
     return imageData[image.path];
   }
 
-  /**
-   * @param {!mojoBase.mojom.FilePath} image
-   * @return {string}
-   * @private
-   */
-  getImageKey_(image) {
+  private getImageKey_(image: FilePath): FilePath['path'] {
     return image.path;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onImageSelected_(event) {
+  private onImageSelected_(event: Event) {
     if (!isSelectionEvent(event)) {
       return;
     }
-    const path = event.currentTarget.dataset.id;
-    const image = this.images_.find(image => path === image.path);
-    assert(!!image, 'Image with that path not found');
-    selectWallpaper(
-        /** @type {!mojoBase.mojom.FilePath} */ (image),
-        this.wallpaperProvider_, this.getStore());
+    const path = (event.currentTarget as HTMLElement).dataset['id'];
+    const image = this.images_!.find(image => path === image.path);
+    if (!image) {
+      assertNotReached('Image with that path not found');
+      return;
+    }
+    selectWallpaper(image, this.wallpaperProvider_, this.getStore());
   }
 
-  /**
-   * @param {number} i
-   * @return {number}
-   * @private
-   */
-  getAriaIndex_(i) {
+  private getAriaIndex_(i: number): number {
     return i + 1;
   }
 }

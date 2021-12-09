@@ -62,10 +62,14 @@ export function promisifyOnload(
   return promise;
 }
 
+
+type WallpaperSelectionEvent =
+    MouseEvent&{type: 'click'}|KeyboardEvent&{key: 'Enter'};
 /**
  * Returns true if this event is a user action to select an item.
  */
-export function isSelectionEvent(event: Event): boolean {
+export function isSelectionEvent(event: Event):
+    event is WallpaperSelectionEvent {
   return (event instanceof MouseEvent && event.type === 'click') ||
       (event instanceof KeyboardEvent && event.key === 'Enter');
 }
