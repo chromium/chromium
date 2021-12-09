@@ -25,6 +25,8 @@ source_set("download") {
     "pass_kit_coordinator.mm",
     "radial_progress_view.h",
     "radial_progress_view.mm",
+    "vcard_coordinator.h",
+    "vcard_coordinator.mm",
   ]
   deps = [
     "resources:background_compact",
@@ -82,6 +84,7 @@ source_set("unit_tests") {
     "download_manager_view_controller_unittest.mm",
     "mobileconfig_coordinator_unittest.mm",
     "pass_kit_coordinator_unittest.mm",
+    "vcard_coordinator_unittest.mm",
   ]
   deps = [
     ":download",

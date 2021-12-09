@@ -29,6 +29,9 @@ source_set("download") {
     "pass_kit_tab_helper.h",
     "pass_kit_tab_helper.mm",
     "pass_kit_tab_helper_delegate.h",
+    "vcard_tab_helper.h",
+    "vcard_tab_helper.mm",
+    "vcard_tab_helper_delegate.h",
   ]
 
   public_deps = [ ":mime_types" ]
@@ -82,12 +85,15 @@ source_set("unit_tests") {
     "download_manager_tab_helper_unittest.mm",
     "google_drive_app_util_unittest.mm",
     "pass_kit_tab_helper_unittest.mm",
+    "vcard_tab_helper_unittest.mm",
   ]
   deps = [
     ":test_support",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",
+    "//ios/chrome/browser/ui/download:features",
+    "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web/public",
     "//ios/web/public/download",

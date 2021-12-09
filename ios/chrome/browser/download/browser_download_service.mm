@@ -12,6 +12,7 @@
 #include "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/download/vcard_tab_helper.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
@@ -136,7 +137,7 @@ void BrowserDownloadService::OnDownloadCreated(
     }
   } else if (task->GetMimeType() == kVcardMimeType &&
              base::FeatureList::IsEnabled(kDownloadVcard)) {
-    // TODO(crbug.com/1244002): Implement a VcardTabHelper.
+    VcardTabHelper::FromWebState(web_state)->Download(std::move(task));
   } else {
     DownloadManagerTabHelper* tab_helper =
         DownloadManagerTabHelper::FromWebState(web_state);

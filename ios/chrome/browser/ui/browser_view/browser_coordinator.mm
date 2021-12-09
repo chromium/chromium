@@ -56,8 +56,10 @@
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
+#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/mobileconfig_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
+#import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -161,6 +163,9 @@
 
 // Presents a SFSafariViewController in order to download .mobileconfig file.
 @property(nonatomic, strong) MobileConfigCoordinator* mobileConfigCoordinator;
+
+// Opens downloaded Vcard.
+@property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
 
 // Weak reference for the next coordinator to be displayed over the toolbar.
 @property(nonatomic, weak) ChromeCoordinator* nextToolbarCoordinator;
@@ -430,6 +435,13 @@
                          browser:self.browser];
   [self.mobileConfigCoordinator start];
 
+  if (base::FeatureList::IsEnabled(kDownloadVcard)) {
+    self.vcardCoordinator =
+        [[VcardCoordinator alloc] initWithBaseViewController:self.viewController
+                                                     browser:self.browser];
+    [self.vcardCoordinator start];
+  }
+
   self.passKitCoordinator =
       [[PassKitCoordinator alloc] initWithBaseViewController:self.viewController
                                                      browser:self.browser];
@@ -494,6 +506,9 @@
 
   [self.mobileConfigCoordinator stop];
   self.mobileConfigCoordinator = nil;
+
+  [self.vcardCoordinator stop];
+  self.vcardCoordinator = nil;
 
   [self.pageInfoCoordinator stop];
   self.pageInfoCoordinator = nil;
