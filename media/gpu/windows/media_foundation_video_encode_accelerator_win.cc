@@ -134,6 +134,24 @@ GUID VideoCodecToMFSubtype(VideoCodec codec) {
   }
 }
 
+MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
+    IMFActivate* encoder) {
+  using DriverVendor = MediaFoundationVideoEncodeAccelerator::DriverVendor;
+  base::win::ScopedCoMem<WCHAR> vendor_id;
+  UINT32 id_length;
+  encoder->GetAllocatedString(MFT_ENUM_HARDWARE_VENDOR_ID_Attribute, &vendor_id,
+                              &id_length);
+  if (id_length != 8)  // Normal vendor ids have length 8.
+    return DriverVendor::kOther;
+  if (!_wcsnicmp(vendor_id.get(), L"VEN_10DE", id_length))
+    return DriverVendor::kNvidia;
+  if (!_wcsnicmp(vendor_id.get(), L"VEN_1002", id_length))
+    return DriverVendor::kAMD;
+  if (!_wcsnicmp(vendor_id.get(), L"VEN_8086 ", id_length))
+    return DriverVendor::kIntel;
+  return DriverVendor::kOther;
+}
+
 }  // namespace
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
@@ -614,27 +632,23 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       hr = pp_activate[i]->ActivateObject(IID_PPV_ARGS(&encoder_));
       if (encoder_.Get() != nullptr) {
         DCHECK(SUCCEEDED(hr));
+        auto vendor = GetDriverVendor(pp_activate[i]);
 
         // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
         // baseline profile H.264 encoding, and go to the next instance
         // according to merit value.
-        if (codec_ == VideoCodec::kH264 && is_constrained_h264) {
-          // Get the vendor id.
-          base::win::ScopedCoMem<WCHAR> vendor_id;
-          UINT32 id_length;
-          pp_activate[i]->GetAllocatedString(
-              MFT_ENUM_HARDWARE_VENDOR_ID_Attribute, &vendor_id, &id_length);
-          if (!_wcsnicmp(vendor_id, L"VEN_10DE", id_length)) {
-            DLOG(WARNING)
-                << "Skipped NVIDIA GPU due to https://crbug.com/1088650";
-            pp_activate[i]->ShutdownObject();
-            encoder_.Reset();
-            hr = E_FAIL;
-            continue;
-          }
+        if (vendor == DriverVendor::kNvidia && codec_ == VideoCodec::kH264 &&
+            is_constrained_h264) {
+          DLOG(WARNING)
+              << "Skipped NVIDIA GPU due to https://crbug.com/1088650";
+          pp_activate[i]->ShutdownObject();
+          encoder_.Reset();
+          hr = E_FAIL;
+          continue;
         }
 
         activate_ = pp_activate[i];
+        vendor_ = vendor;
         pp_activate[i] = nullptr;
 
         // Print the friendly name.
@@ -798,8 +812,19 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);
   }
 
-  if (S_OK ==
-      codec_api_->IsModifiable(&CODECAPI_AVEncVideoTemporalLayerCount)) {
+  // Intel drivers want the layer count to be set explicitly, even if it's one.
+  const bool set_svc_layer_count =
+      (num_temporal_layers_ > 1) || (vendor_ == DriverVendor::kIntel);
+  if (set_svc_layer_count) {
+    // Nvidia drivers return E_NOTIMPL here, but SVC encoding works
+    // anyway.
+    if (vendor_ != DriverVendor::kNvidia &&
+        codec_api_->IsModifiable(&CODECAPI_AVEncVideoTemporalLayerCount) !=
+            S_OK) {
+      DLOG(ERROR) << "Temporal layer count is not modifiable";
+      return false;
+    }
+
     var.ulVal = num_temporal_layers_;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
     if (!compatible_with_win7_) {

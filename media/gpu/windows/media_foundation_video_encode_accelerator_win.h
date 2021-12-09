@@ -62,6 +62,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // correctly loaded.
   static bool PreSandboxInitialization();
 
+  enum class DriverVendor { kOther, kNvidia, kIntel, kAMD };
+
  protected:
   ~MediaFoundationVideoEncodeAccelerator() override;
 
@@ -167,6 +169,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Codec type used for encoding.
   VideoCodec codec_ = VideoCodec::kUnknown;
+
+  // Vendor of the active video encoder.
+  DriverVendor vendor_ = DriverVendor::kOther;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.
