@@ -120,6 +120,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // horizontal to grid layout.
 @property(nonatomic, strong)
     UICollectionViewTransitionLayout* gridHorizontalTransitionLayout;
+// YES while |self.gridHorizontalTransitionLayout| is finishing (or cancelling)
+// the transition. Is used to avoid cancelling again during enabling/disabling
+// of the thumbstrip.
+@property(nonatomic, assign) BOOL transitionLayoutIsFinishing;
 
 // Tap gesture recognizer to dismiss the thumb strip.
 @property(nonatomic, strong)
@@ -953,6 +957,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       weakSelf.thumbStripDismissRecognizer.enabled = YES;
       weakSelf.thumbStripSwipeUpDismissRecognizer.enabled = YES;
     }
+    weakSelf.transitionLayoutIsFinishing = NO;
+    weakSelf.gridHorizontalTransitionLayout = nil;
     if (completion) {
       completion(completed, finished);
     }
@@ -971,6 +977,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  self.transitionLayoutIsFinishing = YES;
   if (success) {
     [self.collectionView finishInteractiveTransition];
   } else {
@@ -1342,13 +1349,21 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)thumbStripEnabledWithPanHandler:
     (ViewRevealingVerticalPanHandler*)panHandler {
+  // Make sure the collection view isn't in the middle of a transition.
+  if (self.gridHorizontalTransitionLayout) {
+    if (!self.transitionLayoutIsFinishing) {
+      [self didTransitionToLayoutSuccessfully:NO];
+    }
+    __weak GridViewController* weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf thumbStripEnabledWithPanHandler:panHandler];
+    });
+    return;
+  }
+
   DCHECK(!self.thumbStripEnabled);
 
   UICollectionView* collectionView = self.collectionView;
-
-  // Make sure the collection view isn't in the middle of a transition.
-  DCHECK(![collectionView.collectionViewLayout
-      isKindOfClass:[UICollectionViewTransitionLayout class]]);
 
   // Install tap gesture recognizer in collection to handle user taps on the
   // thumb strip background, assuming it hasn't already been installed.
@@ -1390,14 +1405,22 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)thumbStripDisabled {
+  // Make sure the collection view isn't in the middle of a transition.
+  if (self.gridHorizontalTransitionLayout) {
+    if (!self.transitionLayoutIsFinishing) {
+      [self didTransitionToLayoutSuccessfully:NO];
+    }
+    __weak GridViewController* weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf thumbStripDisabled];
+    });
+    return;
+  }
+
   DCHECK(self.thumbStripEnabled);
 
   UICollectionView* collectionView = self.collectionView;
   FlowLayout* gridLayout = self.gridLayout;
-
-  // Make sure the collection view isn't in the middle of a transition.
-  DCHECK(![collectionView.collectionViewLayout
-      isKindOfClass:[UICollectionViewTransitionLayout class]]);
 
   [collectionView.backgroundView
       removeGestureRecognizer:self.thumbStripDismissRecognizer];
