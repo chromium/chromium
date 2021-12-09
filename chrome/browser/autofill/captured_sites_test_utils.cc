@@ -487,6 +487,178 @@ bool IFrameWaiter::FrameHasOrigin(const GURL& origin,
   return (url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL());
 }
 
+// WebPageReplayServerWrapper -------------------------------------------------
+WebPageReplayServerWrapper::WebPageReplayServerWrapper(int host_http_port,
+                                                       int host_https_port)
+    : host_http_port_(host_http_port), host_https_port_(host_https_port) {}
+
+WebPageReplayServerWrapper::~WebPageReplayServerWrapper() = default;
+
+bool WebPageReplayServerWrapper::Start(
+    const base::FilePath& capture_file_path) {
+  std::vector<std::string> args;
+  base::FilePath src_dir;
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
+    ADD_FAILURE() << "Failed to extract the Chromium source directory!";
+    return false;
+  }
+
+  args.push_back(base::StringPrintf("--http_port=%d", host_http_port_));
+  args.push_back(base::StringPrintf("--https_port=%d", host_https_port_));
+  args.push_back("--serve_response_in_chronological_sequence");
+  // Start WPR in quiet mode, removing the extra verbose ServeHTTP interactions
+  // that are for the the overwhelming majority unhelpful, but for extra
+  // debugging of a test case, this might make sense to comment out.
+  args.push_back("--quiet_mode");
+  args.push_back(base::StringPrintf(
+      "--inject_scripts=%s,%s",
+      FilePathToUTF8(src_dir.AppendASCII("third_party")
+                         .AppendASCII("catapult")
+                         .AppendASCII("web_page_replay_go")
+                         .AppendASCII("deterministic.js")
+                         .value())
+          .c_str(),
+      FilePathToUTF8(src_dir.AppendASCII("chrome")
+                         .AppendASCII("test")
+                         .AppendASCII("data")
+                         .AppendASCII("web_page_replay_go_helper_scripts")
+                         .AppendASCII("automation_helper.js")
+                         .value())
+          .c_str()));
+
+  // Specify the capture file.
+  args.push_back(base::StringPrintf(
+      "%s", FilePathToUTF8(capture_file_path.value()).c_str()));
+  if (!RunWebPageReplayCmd("replay", args, &web_page_replay_server_))
+    return false;
+
+  // Sleep 5 seconds to wait for the web page replay server to start.
+  // TODO(crbug.com/847910): create a process std stream reader class to use the
+  // process output to determine when the server is ready
+  base::RunLoop wpr_launch_waiter;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
+  wpr_launch_waiter.Run();
+
+  if (!web_page_replay_server_.IsValid()) {
+    ADD_FAILURE() << "Failed to start the WPR replay server!";
+    return false;
+  }
+
+  return true;
+}
+
+bool WebPageReplayServerWrapper::Stop() {
+  if (web_page_replay_server_.IsValid()) {
+    if (!web_page_replay_server_.Terminate(0, true)) {
+      ADD_FAILURE() << "Failed to terminate the WPR replay server!";
+      return false;
+    }
+  }
+
+  // The test server hasn't started, no op.
+  return true;
+}
+
+bool WebPageReplayServerWrapper::RunWebPageReplayCmdAndWaitForExit(
+    const std::string& cmd,
+    const std::vector<std::string>& args,
+    const base::TimeDelta& timeout) {
+  base::Process process;
+  int exit_code;
+
+  if (RunWebPageReplayCmd(cmd, args, &process) && process.IsValid() &&
+      process.WaitForExitWithTimeout(timeout, &exit_code) && exit_code == 0) {
+    return true;
+  }
+
+  ADD_FAILURE() << "Failed to run WPR command: '" << cmd << "'!";
+  return false;
+}
+
+bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
+    const std::string& cmd,
+    const std::vector<std::string>& args,
+    base::Process* process) {
+  // Allow the function to block. Otherwise the subsequent call to
+  // base::PathExists will fail. base::PathExists must be called from
+  // a scope that allows blocking.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::LaunchOptions options = base::LaunchOptionsForTest();
+  base::FilePath exe_dir;
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &exe_dir)) {
+    ADD_FAILURE() << "Failed to extract the Chromium source directory!";
+    return false;
+  }
+
+  base::FilePath web_page_replay_binary_dir = exe_dir.AppendASCII("third_party")
+                                                  .AppendASCII("catapult")
+                                                  .AppendASCII("telemetry")
+                                                  .AppendASCII("telemetry")
+                                                  .AppendASCII("bin");
+  options.current_directory = web_page_replay_binary_dir;
+
+#if defined(OS_WIN)
+  base::FilePath wpr_executable_binary =
+      base::FilePath(FILE_PATH_LITERAL("win"))
+          .AppendASCII("AMD64")
+          .AppendASCII("wpr.exe");
+#elif defined(OS_MAC)
+  base::FilePath wpr_executable_binary =
+      base::FilePath(FILE_PATH_LITERAL("mac"))
+          .AppendASCII("x86_64")
+          .AppendASCII("wpr");
+#elif defined(OS_POSIX)
+  base::FilePath wpr_executable_binary =
+      base::FilePath(FILE_PATH_LITERAL("linux"))
+          .AppendASCII("x86_64")
+          .AppendASCII("wpr");
+#else
+#error Plaform is not supported.
+#endif
+  base::CommandLine full_command(
+      web_page_replay_binary_dir.Append(wpr_executable_binary));
+  full_command.AppendArg(cmd);
+
+  // Ask web page replay to use the custom certificate and key files used to
+  // make the web page captures.
+  // The capture files used in these browser tests are also used on iOS to
+  // test autofill.
+  // The custom cert and key files are different from those of the official
+  // WPR releases. The custom files are made to work on iOS.
+  base::FilePath src_dir;
+  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
+    ADD_FAILURE() << "Failed to extract the Chromium source directory!";
+    return false;
+  }
+
+  base::FilePath web_page_replay_support_file_dir =
+      src_dir.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("autofill")
+          .AppendASCII("web_page_replay_support_files");
+  full_command.AppendArg(base::StringPrintf(
+      "--https_cert_file=%s",
+      FilePathToUTF8(
+          web_page_replay_support_file_dir.AppendASCII("wpr_cert.pem").value())
+          .c_str()));
+  full_command.AppendArg(base::StringPrintf(
+      "--https_key_file=%s",
+      FilePathToUTF8(
+          web_page_replay_support_file_dir.AppendASCII("wpr_key.pem").value())
+          .c_str()));
+
+  for (const auto& arg : args)
+    full_command.AppendArg(arg);
+
+  LOG(INFO) << full_command.GetArgumentsString();
+
+  *process = base::LaunchProcess(full_command, options);
+  return true;
+}
+
 // TestRecipeReplayer ---------------------------------------------------------
 TestRecipeReplayer::TestRecipeReplayer(
     Browser* browser,
@@ -499,7 +671,7 @@ bool TestRecipeReplayer::ReplayTest(
     const base::FilePath& capture_file_path,
     const base::FilePath& recipe_file_path,
     const absl::optional<base::FilePath>& command_file_path) {
-  if (!StartWebPageReplayServer(capture_file_path))
+  if (!web_page_replay_server_wrapper()->Start(capture_file_path))
     return false;
   if (OverrideAutofillClock(capture_file_path))
     VLOG(1) << "AutofillClock was set to:" << autofill::AutofillClock::Now();
@@ -573,6 +745,8 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
 
 void TestRecipeReplayer::Setup() {
   CleanupSiteData();
+  web_page_replay_server_wrapper_ =
+      std::make_unique<WebPageReplayServerWrapper>();
 
   // Bypass permission dialogs.
   permissions::PermissionRequestManager::FromWebContents(GetWebContents())
@@ -584,7 +758,7 @@ void TestRecipeReplayer::Cleanup() {
   // If there are still cookies at the time the browser test shuts down,
   // Chrome's SQL lite persistent cookie store will crash.
   CleanupSiteData();
-  EXPECT_TRUE(StopWebPageReplayServer())
+  EXPECT_TRUE(web_page_replay_server_wrapper()->Stop())
       << "Cannot stop the local Web Page Replay server.";
 }
 
@@ -595,6 +769,11 @@ TestRecipeReplayer::feature_action_executor() {
 
 Browser* TestRecipeReplayer::browser() {
   return browser_;
+}
+
+WebPageReplayServerWrapper*
+TestRecipeReplayer::web_page_replay_server_wrapper() {
+  return web_page_replay_server_wrapper_.get();
 }
 
 content::WebContents* TestRecipeReplayer::GetWebContents() {
@@ -688,171 +867,6 @@ void TestRecipeReplayer::CleanupSiteData() {
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       &completion_observer);
   completion_observer.BlockUntilCompletion();
-}
-
-bool TestRecipeReplayer::StartWebPageReplayServer(
-    const base::FilePath& capture_file_path) {
-  std::vector<std::string> args;
-  base::FilePath src_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
-    ADD_FAILURE() << "Failed to extract the Chromium source directory!";
-    return false;
-  }
-
-  args.push_back(base::StringPrintf("--http_port=%d", kHostHttpPort));
-  args.push_back(base::StringPrintf("--https_port=%d", kHostHttpsPort));
-  args.push_back("--serve_response_in_chronological_sequence");
-  // Start WPR in quiet mode, removing the extra verbose ServeHTTP interactions
-  // that are for the the overwhelming majority unhelpful, but for extra
-  // debugging of a test case, this might make sense to comment out.
-  args.push_back("--quiet_mode");
-  args.push_back(base::StringPrintf(
-      "--inject_scripts=%s,%s",
-      FilePathToUTF8(src_dir.AppendASCII("third_party")
-                         .AppendASCII("catapult")
-                         .AppendASCII("web_page_replay_go")
-                         .AppendASCII("deterministic.js")
-                         .value())
-          .c_str(),
-      FilePathToUTF8(src_dir.AppendASCII("chrome")
-                         .AppendASCII("test")
-                         .AppendASCII("data")
-                         .AppendASCII("web_page_replay_go_helper_scripts")
-                         .AppendASCII("automation_helper.js")
-                         .value())
-          .c_str()));
-
-  // Specify the capture file.
-  args.push_back(base::StringPrintf(
-      "%s", FilePathToUTF8(capture_file_path.value()).c_str()));
-  if (!RunWebPageReplayCmd("replay", args, &web_page_replay_server_))
-    return false;
-
-  // Sleep 5 seconds to wait for the web page replay server to start.
-  // TODO(crbug.com/847910): create a process std stream reader class to use the
-  // process output to determine when the server is ready
-  base::RunLoop wpr_launch_waiter;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
-  wpr_launch_waiter.Run();
-
-  if (!web_page_replay_server_.IsValid()) {
-    ADD_FAILURE() << "Failed to start the WPR replay server!";
-    return false;
-  }
-
-  return true;
-}
-
-bool TestRecipeReplayer::StopWebPageReplayServer() {
-  if (web_page_replay_server_.IsValid()) {
-    if (!web_page_replay_server_.Terminate(0, true)) {
-      ADD_FAILURE() << "Failed to terminate the WPR replay server!";
-      return false;
-    }
-  }
-
-  // The test server hasn't started, no op.
-  return true;
-}
-
-bool TestRecipeReplayer::RunWebPageReplayCmdAndWaitForExit(
-    const std::string& cmd,
-    const std::vector<std::string>& args,
-    const base::TimeDelta& timeout) {
-  base::Process process;
-  int exit_code;
-
-  if (RunWebPageReplayCmd(cmd, args, &process) && process.IsValid() &&
-      process.WaitForExitWithTimeout(timeout, &exit_code) && exit_code == 0) {
-    return true;
-  }
-
-  ADD_FAILURE() << "Failed to run WPR command: '" << cmd << "'!";
-  return false;
-}
-
-bool TestRecipeReplayer::RunWebPageReplayCmd(
-    const std::string& cmd,
-    const std::vector<std::string>& args,
-    base::Process* process) {
-  // Allow the function to block. Otherwise the subsequent call to
-  // base::PathExists will fail. base::PathExists must be called from
-  // a scope that allows blocking.
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  base::LaunchOptions options = base::LaunchOptionsForTest();
-  base::FilePath exe_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &exe_dir)) {
-    ADD_FAILURE() << "Failed to extract the Chromium source directory!";
-    return false;
-  }
-
-  base::FilePath web_page_replay_binary_dir = exe_dir.AppendASCII("third_party")
-                                                  .AppendASCII("catapult")
-                                                  .AppendASCII("telemetry")
-                                                  .AppendASCII("telemetry")
-                                                  .AppendASCII("bin");
-  options.current_directory = web_page_replay_binary_dir;
-
-#if defined(OS_WIN)
-  base::FilePath wpr_executable_binary =
-      base::FilePath(FILE_PATH_LITERAL("win"))
-          .AppendASCII("AMD64")
-          .AppendASCII("wpr.exe");
-#elif defined(OS_MAC)
-  base::FilePath wpr_executable_binary =
-      base::FilePath(FILE_PATH_LITERAL("mac"))
-          .AppendASCII("x86_64")
-          .AppendASCII("wpr");
-#elif defined(OS_POSIX)
-  base::FilePath wpr_executable_binary =
-      base::FilePath(FILE_PATH_LITERAL("linux"))
-          .AppendASCII("x86_64")
-          .AppendASCII("wpr");
-#else
-#error Plaform is not supported.
-#endif
-  base::CommandLine full_command(
-      web_page_replay_binary_dir.Append(wpr_executable_binary));
-  full_command.AppendArg(cmd);
-
-  // Ask web page replay to use the custom certificate and key files used to
-  // make the web page captures.
-  // The capture files used in these browser tests are also used on iOS to
-  // test autofill.
-  // The custom cert and key files are different from those of the offical
-  // WPR releases. The custom files are made to work on iOS.
-  base::FilePath src_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir)) {
-    ADD_FAILURE() << "Failed to extract the Chromium source directory!";
-    return false;
-  }
-
-  base::FilePath web_page_replay_support_file_dir =
-      src_dir.AppendASCII("components")
-          .AppendASCII("test")
-          .AppendASCII("data")
-          .AppendASCII("autofill")
-          .AppendASCII("web_page_replay_support_files");
-  full_command.AppendArg(base::StringPrintf(
-      "--https_cert_file=%s",
-      FilePathToUTF8(
-          web_page_replay_support_file_dir.AppendASCII("wpr_cert.pem").value())
-          .c_str()));
-  full_command.AppendArg(base::StringPrintf(
-      "--https_key_file=%s",
-      FilePathToUTF8(
-          web_page_replay_support_file_dir.AppendASCII("wpr_key.pem").value())
-          .c_str()));
-
-  for (const auto& arg : args)
-    full_command.AppendArg(arg);
-
-  LOG(INFO) << full_command.GetArgumentsString();
-
-  *process = base::LaunchProcess(full_command, options);
-  return true;
 }
 
 absl::optional<std::string> FindPopulateString(
