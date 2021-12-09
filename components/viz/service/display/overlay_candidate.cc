@@ -37,6 +37,7 @@ namespace viz {
 // There is a bug in |base::optional| which causes the 'value_or' function to
 // capture parameters (even constexpr parameters) as a reference.
 constexpr uint32_t OverlayCandidate::kInvalidDamageIndex;
+constexpr OverlayCandidate::TrackingId OverlayCandidate::kDefaultTrackingId;
 
 namespace {
 
@@ -365,10 +366,19 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromDrawQuadResource(
   AssignDamage(quad, surface_damage_rect_list, candidate);
   candidate->resource_id = resource_id;
 
+  struct TrackingIdData {
+    gfx::Rect rect;
+    FrameSinkId frame_sink_id;
+  };
+
+  TrackingIdData track_data{quad->rect, FrameSinkId()};
   if (resource_id != kInvalidResourceId) {
     candidate->mailbox = resource_provider->GetMailbox(resource_id);
+    track_data.frame_sink_id =
+        resource_provider->GetSurfaceId(resource_id).frame_sink_id();
   }
 
+  candidate->tracking_id = base::Hash(&track_data, sizeof(track_data));
   return CandidateStatus::kSuccess;
 }
 
@@ -432,6 +442,8 @@ OverlayCandidate::CandidateStatus OverlayCandidate::FromVideoHoleQuad(
       !quad->shared_quad_state->mask_filter_info.IsEmpty();
 
   AssignDamage(quad, surface_damage_rect_list, candidate);
+  candidate->tracking_id = base::FastHash(quad->overlay_plane_id.AsBytes());
+
   return CandidateStatus::kSuccess;
 }
 

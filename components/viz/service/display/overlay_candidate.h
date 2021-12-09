@@ -57,6 +57,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
     kFailNearFilter,
     kFailPriority,
   };
+  using TrackingId = uint32_t;
+  static constexpr TrackingId kDefaultTrackingId{0};
+
   // Returns true and fills in |candidate| if |draw_quad| is of a known quad
   // type and contains an overlayable resource. |primary_rect| can be empty in
   // the case of a null primary plane.
@@ -197,6 +200,13 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // Specifies the rounded corners of overlay candidate.
   gfx::RRectF rounded_corners;
+
+  // A (ideally) unique key used to temporally identify a specific overlay
+  // candidate. This key can have collisions more that would be expected by the
+  // birthday paradox of 32 bits. If two or more candidates come from the same
+  // surface and have the same |DrawQuad::rect| they will have the same
+  // |tracking_id|.
+  TrackingId tracking_id = kDefaultTrackingId;
 
  private:
   static CandidateStatus FromDrawQuadResource(

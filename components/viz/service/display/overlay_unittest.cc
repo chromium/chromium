@@ -383,12 +383,13 @@ ResourceId CreateResource(DisplayResourceProvider* parent_resource_provider,
                           ContextProvider* child_context_provider,
                           const gfx::Size& size,
                           bool is_overlay_candidate,
-                          ResourceFormat resource_format) {
+                          ResourceFormat resource_format,
+                          SurfaceId test_surface_id = SurfaceId()) {
   ResourceId resource_id = CreateResourceInLayerTree(
       child_resource_provider, size, is_overlay_candidate, resource_format);
 
   int child_id =
-      parent_resource_provider->CreateChild(base::DoNothing(), SurfaceId());
+      parent_resource_provider->CreateChild(base::DoNothing(), test_surface_id);
 
   // Transfer resource to the parent.
   std::vector<ResourceId> resource_ids_to_transfer;
@@ -438,16 +439,18 @@ TextureDrawQuad* CreateCandidateQuadAt(
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type,
     ResourceFormat resource_format,
-    const gfx::Size& resource_size_in_pixels) {
+    const gfx::Size& resource_size_in_pixels,
+    SurfaceId test_surface_id = SurfaceId()) {
   bool needs_blending = false;
   bool premultiplied_alpha = false;
   bool flipped = false;
   bool nearest_neighbor = false;
   float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool is_overlay_candidate = true;
-  ResourceId resource_id = CreateResource(
-      parent_resource_provider, child_resource_provider, child_context_provider,
-      resource_size_in_pixels, is_overlay_candidate, resource_format);
+  ResourceId resource_id =
+      CreateResource(parent_resource_provider, child_resource_provider,
+                     child_context_provider, resource_size_in_pixels,
+                     is_overlay_candidate, resource_format, test_surface_id);
 
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
@@ -468,11 +471,12 @@ TextureDrawQuad* CreateCandidateQuadAt(
     AggregatedRenderPass* render_pass,
     const gfx::Rect& rect,
     gfx::ProtectedVideoType protected_video_type,
-    ResourceFormat resource_format) {
+    ResourceFormat resource_format,
+    SurfaceId test_surface_id = SurfaceId()) {
   return CreateCandidateQuadAt(
       parent_resource_provider, child_resource_provider, child_context_provider,
       shared_quad_state, render_pass, rect, protected_video_type,
-      resource_format, rect.size());
+      resource_format, rect.size(), test_surface_id);
 }
 
 TextureDrawQuad* CreateCandidateQuadAt(
@@ -481,11 +485,12 @@ TextureDrawQuad* CreateCandidateQuadAt(
     ContextProvider* child_context_provider,
     const SharedQuadState* shared_quad_state,
     AggregatedRenderPass* render_pass,
-    const gfx::Rect& rect) {
-  return CreateCandidateQuadAt(parent_resource_provider,
-                               child_resource_provider, child_context_provider,
-                               shared_quad_state, render_pass, rect,
-                               gfx::ProtectedVideoType::kClear, RGBA_8888);
+    const gfx::Rect& rect,
+    SurfaceId test_surface_id = SurfaceId()) {
+  return CreateCandidateQuadAt(
+      parent_resource_provider, child_resource_provider, child_context_provider,
+      shared_quad_state, render_pass, rect, gfx::ProtectedVideoType::kClear,
+      RGBA_8888, test_surface_id);
 }
 
 // For Cast we use VideoHoleDrawQuad, and that's what overlay_processor_
@@ -997,6 +1002,110 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
   EXPECT_EQ(1U, candidate_list.size());
   // Check that the right resource id (bigger quad) got extracted.
   EXPECT_EQ(resource_big, candidate_list.front().resource_id);
+}
+
+// It is possible (but unlikely) that the candidate tracking ids are not unique.
+// This might result in some mis-prioritization but should not result in any
+// significant error. Here we test that if we have two candidates with same
+// tracking id the first candidate in the root is selected for overlay.
+TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
+  if (!features::IsOverlayPrioritizationEnabled())
+    return;
+
+  auto pass = CreateRenderPass();
+  const auto kCandidateRect = gfx::Rect(0, 0, 16, 16);
+  TextureDrawQuad* quad_a = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kCandidateRect);
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRect));
+  ResourceId resource_a = quad_a->resource_id();
+
+  TextureDrawQuad* quad_b = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kCandidateRect);
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRect));
+
+  // Add something behind it.
+  CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                             pass->shared_quad_state_list.back(), pass.get());
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(pass->output_rect);
+
+  // Code to make sure the 'unique' tracking ids are actually identical.
+  OverlayCandidate candidate_a;
+  skia::Matrix44 ident;
+  auto ret_a = OverlayCandidate::FromDrawQuad(
+      resource_provider_.get(), &surface_damage_rect_list, ident, quad_a,
+      gfx::RectF(pass->output_rect), &candidate_a);
+  OverlayCandidate candidate_b;
+  auto ret_b = OverlayCandidate::FromDrawQuad(
+      resource_provider_.get(), &surface_damage_rect_list, ident, quad_b,
+      gfx::RectF(pass->output_rect), &candidate_b);
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_a);
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_b);
+
+  // This line confirms that these two quads have the same tracking id.
+  EXPECT_EQ(candidate_a.tracking_id, candidate_b.tracking_id);
+
+  pass_list.push_back(std::move(pass));
+  overlay_processor_->SetFrameSequenceNumber(1);
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+  ASSERT_EQ(1U, candidate_list.size());
+
+  // Check that one quad is gone.
+  EXPECT_EQ(2U, main_pass->quad_list.size());
+  // Check that we have only one overlay.
+  EXPECT_EQ(1U, candidate_list.size());
+  // Check that the right resource id (the first one) got extracted.
+  EXPECT_EQ(resource_a, candidate_list.front().resource_id);
+}
+
+// Tests to make sure that quads from different surfaces have different
+// candidate tracking ids.
+TEST_F(SingleOverlayOnTopTest, CandidateTrackIdUniqueSurface) {
+  if (!features::IsOverlayPrioritizationEnabled())
+    return;
+
+  auto pass = CreateRenderPass();
+  const auto kCandidateRect = gfx::Rect(0, 0, 16, 16);
+  TextureDrawQuad* quad_a = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kCandidateRect, SurfaceId(FrameSinkId(1, 1), LocalSurfaceId()));
+  TextureDrawQuad* quad_b = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kCandidateRect, SurfaceId(FrameSinkId(2, 2), LocalSurfaceId()));
+  // Code to make sure the 'unique' tracking ids are actually different.
+  OverlayCandidate candidate_a;
+  skia::Matrix44 ident;
+  SurfaceDamageRectList surface_damage_rect_list;
+  auto ret_a = OverlayCandidate::FromDrawQuad(
+      resource_provider_.get(), &surface_damage_rect_list, ident, quad_a,
+      gfx::RectF(pass->output_rect), &candidate_a);
+  OverlayCandidate candidate_b;
+  auto ret_b = OverlayCandidate::FromDrawQuad(
+      resource_provider_.get(), &surface_damage_rect_list, ident, quad_b,
+      gfx::RectF(pass->output_rect), &candidate_b);
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_a);
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kSuccess, ret_b);
+
+  // This line confirms that these two quads have different tracking ids.
+  EXPECT_NE(candidate_a.tracking_id, candidate_b.tracking_id);
 }
 
 // This test makes sure that the prioritization choices remain stable over a
@@ -2295,7 +2404,7 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
   // frame counter based.
   if (features::IsOverlayPrioritizationEnabled()) {
     kFramesSkippedBeforeNotPromoting =
-        overlay_processor_->TrackerConfigAccessor().max_frames_inactive;
+        overlay_processor_->TrackerConfigAccessor().max_num_frames_avg;
   }
 
   ResourceId previous_resource_id;
@@ -2377,20 +2486,32 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
   int64_t frame_counter = 0;
   // This is a helper function to simulate framerates.
 
+  // Damage rate here should be 1.0f
   auto wait_1_frame = [&]() { frame_counter++; };
 
+  // Damage rate here should be 0.25 which should be less than
+  // |damage_rate_threshold| for this test to work
   auto wait_4_frames = [&]() { frame_counter += 4; };
 
   // This test uses many iterations to test prioritization threshold features
   // due to frame averaging over samples.
-  constexpr size_t kDamageFrameTestStart =
-      OverlayCandidateTemporalTracker::kNumRecords;
-  constexpr size_t kDamageFrameTestEnd =
-      kDamageFrameTestStart + OverlayCandidateTemporalTracker::kNumRecords;
-  constexpr size_t kSlowFrameTestStart =
-      kDamageFrameTestEnd + OverlayCandidateTemporalTracker::kNumRecords;
-  constexpr size_t kSlowFrameTestEnd =
-      kSlowFrameTestStart + OverlayCandidateTemporalTracker::kNumRecords;
+  OverlayCandidateTemporalTracker::Config config;
+
+  // Computes the number of frames to clear out the existing temporal value
+  // using exponential smoothing. The computation looks like
+  // clear_threashold=1.0*(exp_rate)^num_frames_to_clear. In our case
+  // clear_threashold=1/num_frames_to_clear and
+  // exp_rate=(num_frames_to_clear-1)/num_frames_to_clear. We take the log to
+  // find num_frames_to_clear
+  const int kNumFramesClear =
+      static_cast<int>(std::ceil(std::log(1.0f / config.max_num_frames_avg) /
+                                 std::log((config.max_num_frames_avg - 1.0f) /
+                                          config.max_num_frames_avg)));
+
+  size_t kDamageFrameTestStart = kNumFramesClear;
+  size_t kDamageFrameTestEnd = kDamageFrameTestStart + kNumFramesClear;
+  size_t kSlowFrameTestStart = kDamageFrameTestEnd + kNumFramesClear;
+  size_t kSlowFrameTestEnd = kSlowFrameTestStart + kNumFramesClear;
 
   // This quad is used to occlude the damage of the overlay candidate to the
   // point that the damage is no longer considered significant.
@@ -3063,7 +3184,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
   // Test the default configuration.
   OverlayCandidateTemporalTracker::Config config;
-  float kDamageEpsilon = config.damage_rate_hysteresis_range;
+  float kDamageEpsilon = 1.0f / config.max_num_frames_avg;
   float kBelowLowDamage = config.damage_rate_threshold - kDamageEpsilon;
   float kAboveHighDamage = config.damage_rate_threshold + kDamageEpsilon;
   float kFullDamage = 1.0f;
@@ -3071,17 +3192,28 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   auto wait_1_frame = [&]() { frame_counter++; };
 
   auto wait_inactive_frames = [&]() {
-    frame_counter += config.max_frames_inactive + 1;
+    frame_counter += config.max_num_frames_avg + 1;
   };
+
+  // Computes the number of frames to clear out the existing temporal value
+  // using exponential smoothing. The computation looks like
+  // clear_threashold=1.0*(exp_rate)^num_frames_to_clear. In our case
+  // clear_threashold=1/num_frames_to_clear and
+  // exp_rate=(num_frames_to_clear-1)/num_frames_to_clear. We take the log to
+  // find num_frames_to_clear
+  const int kNumFramesClear =
+      static_cast<int>(std::ceil(std::log(1.0f / config.max_num_frames_avg) /
+                                 std::log((config.max_num_frames_avg - 1.0f) /
+                                          config.max_num_frames_avg)));
 
   OverlayCandidateTemporalTracker tracker;
   int fake_display_area = 256 * 256;
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
     SCOPED_TRACE(j);
-
+    tracker.Reset();
     // First setup a 60fps high damage candidate.
-    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
                         id_generator.GenerateNextId(), config);
@@ -3091,7 +3223,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     auto opaque_power_gain_60_full =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_FLOAT_EQ(tracker.MeanFrameRatioRate(config), 1.0f);
+    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 1.0f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_60_full, 0);
 
     // Test our hysteresis categorization of power by ensuring a single frame
@@ -3106,7 +3238,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
 
     // A single frame drop even at 60fps should not change our power
     // categorization.
-    ASSERT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
+    EXPECT_EQ(opaque_power_gain_60_full, opaque_power_gain_60_stutter);
 
     wait_inactive_frames();
     EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
@@ -3120,7 +3252,21 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     EXPECT_GT(opaque_power_gain_60_inactive, 0);
 
     // Now simulate a overlay candidate with 30fps full damage.
-    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    for (int i = 0; i < kNumFramesClear; i++) {
+      wait_1_frame();
+      wait_1_frame();
+      tracker.AddRecord(frame_counter, kFullDamage,
+                        id_generator.GenerateNextId(), config);
+    }
+
+    // Insert single stutter frame here to avoid hysteresis boundary.
+    wait_1_frame();
+    wait_1_frame();
+    wait_1_frame();
+    tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
+                      config);
+
+    for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       wait_1_frame();
       tracker.AddRecord(frame_counter, kFullDamage,
@@ -3130,7 +3276,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     auto opaque_power_gain_30_full =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_FLOAT_EQ(tracker.MeanFrameRatioRate(config), 0.5f);
+    EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 0.5f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_30_full, 0);
     EXPECT_GT(opaque_power_gain_60_full, opaque_power_gain_30_full);
 
@@ -3146,7 +3292,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     auto opaque_power_gain_30_stutter =
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
 
-    EXPECT_TRUE(opaque_power_gain_30_stutter == opaque_power_gain_30_full);
+    EXPECT_EQ(opaque_power_gain_30_stutter, opaque_power_gain_30_full);
 
     wait_inactive_frames();
     EXPECT_FALSE(tracker.IsActivelyChanging(frame_counter, config));
@@ -3159,8 +3305,9 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_30_inactive, 0);
 
+    tracker.Reset();
     // Test low and high damage thresholds.
-    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kAboveHighDamage,
                         id_generator.GenerateNextId(), config);
@@ -3172,7 +3319,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     EXPECT_GT(opaque_power_gain_high_damage, 0);
     EXPECT_GE(opaque_power_gain_60_full, opaque_power_gain_high_damage);
 
-    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
       tracker.AddRecord(frame_counter, kBelowLowDamage,
                         id_generator.GenerateNextId(), config);
@@ -3182,21 +3329,19 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
         tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
     EXPECT_LT(opaque_power_gain_low_damage, 0);
 
-    // Test our mean damage ratio computations for our tacker.
+    // Test our mean damage ratio computations for our tracker.
+    int avg_range_tracker = config.max_num_frames_avg - 1;
     float expected_mean = 0.0f;
-    for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+    tracker.Reset();
+    for (int i = 0; i < avg_range_tracker; i++) {
       wait_1_frame();
-      // Please note that this first iter frame damage will not get included in
-      // the mean as the mean is computed between timing intervals. This means 6
-      // timing intervals only gives 5 values.
-      float dynamic_damage_ratio = static_cast<float>(i);
+      float dynamic_damage_ratio = static_cast<float>(i) / avg_range_tracker;
       expected_mean += dynamic_damage_ratio;
       tracker.AddRecord(frame_counter, dynamic_damage_ratio,
                         id_generator.GenerateNextId(), config);
     }
 
-    expected_mean =
-        expected_mean / (OverlayCandidateTemporalTracker::kNumRecords - 1);
+    expected_mean = expected_mean / avg_range_tracker;
 
     EXPECT_FLOAT_EQ(expected_mean, tracker.MeanFrameRatioRate(config));
   }
@@ -3214,9 +3359,10 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // not resource ids (example here is low latency ink surface). Here we test
   // this small feature by keeping the resource id constant but passing in true
   // to the force update param.
+  tracker.Reset();
   static const float kDamageRatio = 0.7f;
   static const ResourceId kFakeConstantResourceId(13);
-  for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+  for (int i = 0; i < config.max_num_frames_avg; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, kDamageRatio, kFakeConstantResourceId,
                       config, true);
@@ -3224,7 +3370,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   EXPECT_FLOAT_EQ(kDamageRatio, tracker.MeanFrameRatioRate(config));
 
   // Now test the false case for the force update param.
-  for (int i = 0; i < OverlayCandidateTemporalTracker::kNumRecords; i++) {
+  for (int i = 0; i < config.max_num_frames_avg; i++) {
     wait_1_frame();
     tracker.AddRecord(frame_counter, 0.9f, kFakeConstantResourceId, config,
                       false);
