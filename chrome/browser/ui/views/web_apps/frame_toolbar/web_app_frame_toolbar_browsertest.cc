@@ -496,10 +496,10 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   gfx::Rect GetWindowControlOverlayBoundingClientRect() {
     const std::string kRectValueList =
         "var rect = "
-        "[navigator.windowControlsOverlay.getBoundingClientRect().x, "
-        "navigator.windowControlsOverlay.getBoundingClientRect().y, "
-        "navigator.windowControlsOverlay.getBoundingClientRect().width, "
-        "navigator.windowControlsOverlay.getBoundingClientRect().height];";
+        "[navigator.windowControlsOverlay.getTitlebarAreaRect().x, "
+        "navigator.windowControlsOverlay.getTitlebarAreaRect().y, "
+        "navigator.windowControlsOverlay.getTitlebarAreaRect().width, "
+        "navigator.windowControlsOverlay.getTitlebarAreaRect().height];";
     return helper()->GetXYWidthHeightRect(
         helper()->browser_view()->GetActiveWebContents(), kRectValueList,
         "rect");

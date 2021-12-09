@@ -60,7 +60,7 @@ bool WindowControlsOverlay::visible() const {
       ->IsWindowControlsOverlayVisible();
 }
 
-DOMRect* WindowControlsOverlay::getBoundingClientRect() const {
+DOMRect* WindowControlsOverlay::getTitlebarAreaRect() const {
   if (!GetSupplementable()->DomWindow())
     return DOMRect::Create(0, 0, 0, 0);
 

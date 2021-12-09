@@ -4699,21 +4699,19 @@ class WebContentsImplBrowserTestWindowControlsOverlay
     EXPECT_EQ(
         expected_rect.x(),
         EvalJs(web_contents,
-               "navigator.windowControlsOverlay.getBoundingClientRect().x"));
+               "navigator.windowControlsOverlay.getTitlebarAreaRect().x"));
     EXPECT_EQ(
         expected_rect.y(),
         EvalJs(web_contents,
-               "navigator.windowControlsOverlay.getBoundingClientRect().y"));
+               "navigator.windowControlsOverlay.getTitlebarAreaRect().y"));
     EXPECT_EQ(
         expected_rect.width(),
-        EvalJs(
-            web_contents,
-            "navigator.windowControlsOverlay.getBoundingClientRect().width"));
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getTitlebarAreaRect().width"));
     EXPECT_EQ(
         expected_rect.height(),
-        EvalJs(
-            web_contents,
-            "navigator.windowControlsOverlay.getBoundingClientRect().height"));
+        EvalJs(web_contents,
+               "navigator.windowControlsOverlay.getTitlebarAreaRect().height"));
 
     // When the overlay is not visible, the environment variables should be
     // undefined, and the the fallback value should be used.
