@@ -1595,6 +1595,29 @@ using PDFExtensionKeyEventTest = PDFExtensionTest;
 
 namespace {
 
+class ScrollEventWaiter {
+ public:
+  explicit ScrollEventWaiter(content::WebContents* guest_contents)
+      : message_queue_(guest_contents) {
+    content::ExecuteScriptAsync(
+        guest_contents,
+        R"(viewer.shadowRoot.querySelector('#scroller').onscroll = () => {
+          window.domAutomationController.send('dispatchedScrollEvent');
+        })");
+  }
+
+  void Reset() { message_queue_.ClearQueue(); }
+
+  void Wait() {
+    std::string message;
+    ASSERT_TRUE(message_queue_.WaitForMessage(&message));
+    EXPECT_EQ("\"dispatchedScrollEvent\"", message);
+  }
+
+ private:
+  content::DOMMessageQueue message_queue_;
+};
+
 int GetViewportHeight(content::WebContents* guest_contents) {
   int viewport_height = 0;
   EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
@@ -1609,18 +1632,6 @@ int GetViewportScrollPositionY(content::WebContents* guest_contents) {
   EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
       guest_contents,
       "window.domAutomationController.send(viewer.viewport.position.y);",
-      &position_y));
-  return position_y;
-}
-
-int GetViewportScrollPositionYAfterScrollEvent(
-    content::WebContents* guest_contents) {
-  int position_y = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      guest_contents,
-      "viewer.shadowRoot.querySelector('#scroller').onscroll = () => {"
-      "  window.domAutomationController.send(viewer.viewport.position.y);"
-      "};",
       &position_y));
   return position_y;
 }
@@ -1641,19 +1652,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithSpaceShortcut) {
   EXPECT_EQ(0, GetViewportScrollPositionY(guest_contents));
 
   // Press space key to scroll down.
+  ScrollEventWaiter scroll_waiter(guest_contents);
   content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
                             ui::DomCode::SPACE, ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/false, /*alt=*/false,
                             /*command=*/false);
-  EXPECT_EQ(viewport_height,
-            GetViewportScrollPositionYAfterScrollEvent(guest_contents));
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
 
   // Press shift + space key to scroll back up to top.
+  scroll_waiter.Reset();
   content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
                             ui::DomCode::SPACE, ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/true, /*alt=*/false,
                             /*command=*/false);
-  EXPECT_EQ(0, GetViewportScrollPositionYAfterScrollEvent(guest_contents));
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(0, GetViewportScrollPositionY(guest_contents));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFExtensionKeyEventTest, testing::Values(true));
