@@ -694,11 +694,15 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
       return DeprecationInfo::WithDetails(
           "WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader",
           kM101,
-          "Relaxing the same-origin policy by setting \"document.domain\" is "
-          "deprecated, and will be disabled by default in M101. "
-          "To continue use this feature, please opt-out of origin-keyed agent "
-          "clusters by sending a `Origin-Agent-Cluster: ?0` header along "
-          "with the HTTP response for the document.");
+          String::Format(
+              "Relaxing the same-origin policy by setting \"document.domain\" "
+              "is deprecated, and will be disabled by default in %s. To "
+              "continue using this feature, please opt-out of origin-keyed "
+              "agent clusters by sending an `Origin-Agent-Cluster: ?0` header "
+              "along with the HTTP response for the document. See "
+              "https://developer.chrome.com/blog/immutable-document-domain for "
+              "more details.",
+              MilestoneString(kM101).Ascii().c_str()));
 
     // Features that aren't deprecated don't have a deprecation message.
     default:
