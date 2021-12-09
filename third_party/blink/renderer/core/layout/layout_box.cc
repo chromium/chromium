@@ -915,7 +915,7 @@ void LayoutBox::UpdateFromStyle() {
 
 void LayoutBox::LayoutSubtreeRoot() {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutNGEnabled() && !IsLayoutNGMixin() &&
+  if (RuntimeEnabledFeatures::LayoutNGEnabled() && !IsLayoutNGObject() &&
       GetCachedLayoutResult()) {
     // If this object is laid out by the legacy engine, while its containing
     // block is laid out by NG, it means that we normally (when laying out
@@ -3745,7 +3745,7 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
   // Optimization: NGTableConstraintSpaceData can be large, and it is shared
   // between all the rows in a table. Make constraint space table data for
   // reused row fragment be identical to the one used by other row fragments.
-  if (IsTableRow() && IsLayoutNGMixin()) {
+  if (IsTableRow() && IsLayoutNGObject()) {
     const_cast<NGConstraintSpace&>(
         cached_layout_result->GetConstraintSpaceForCaching())
         .ReplaceTableRowData(*new_space.TableData(), new_space.TableRowIndex());
@@ -6977,7 +6977,7 @@ bool LayoutBox::ShrinkToAvoidFloats() const {
   // with positioning of floats or sizing of auto-width new formatting context
   // block level objects adjacent to them.
   if (const auto* containing_block = ContainingBlock()) {
-    if (containing_block->IsLayoutNGMixin())
+    if (containing_block->IsLayoutNGObject())
       return false;
   }
 

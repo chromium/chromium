@@ -97,7 +97,7 @@ class NGOffsetMappingTest : public NGLayoutTest {
   void SetupHtml(const char* id, String html) {
     SetBodyInnerHTML(html);
     layout_block_flow_ = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
-    DCHECK(layout_block_flow_->IsLayoutNGMixin());
+    DCHECK(layout_block_flow_->IsLayoutNGObject());
     layout_object_ = layout_block_flow_->FirstChild();
   }
 
@@ -1533,7 +1533,7 @@ TEST_P(NGOffsetMappingGetterTest, Get) {
 
   // For the purpose of this test, ensure this is laid out by each layout
   // engine.
-  DCHECK_EQ(layout_block_flow->IsLayoutNGMixin(),
+  DCHECK_EQ(layout_block_flow->IsLayoutNGObject(),
             RuntimeEnabledFeatures::LayoutNGEnabled());
 
   const NGOffsetMapping* mapping =

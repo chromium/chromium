@@ -848,10 +848,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGGrid);
   }
-  bool IsLayoutNGMixin() const {
-    NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGMixin);
-  }
   bool IsLayoutNGListItem() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGListItem);

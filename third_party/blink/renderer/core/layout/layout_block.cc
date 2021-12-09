@@ -705,7 +705,7 @@ void LayoutBlock::UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
        ChangeInAvailableLogicalHeightAffectsChild(this, child)) ||
       (child.IsListMarker() && IsListItem() &&
        To<LayoutBlockFlow>(this)->ContainsFloats())) {
-    if (child.IsLayoutNGMixin())
+    if (child.IsLayoutNGObject())
       child.SetSelfNeedsLayoutForAvailableSpace(true);
     else
       child.SetChildNeedsLayout(kMarkOnlyThis);
@@ -997,7 +997,7 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
   LayoutObject* parent = positioned_object->Parent();
   bool layout_changed = false;
   if ((parent->IsLayoutNGFlexibleBox() &&
-       !positioned_object->IsLayoutNGMixin() &&
+       !positioned_object->IsLayoutNGObject() &&
        LayoutFlexibleBox::SetStaticPositionForChildInFlexNGContainer(
            *positioned_object, To<LayoutBlock>(parent))) ||
       (parent->IsFlexibleBox() &&
@@ -1675,7 +1675,7 @@ MinMaxSizes LayoutBlock::PreferredLogicalWidths() const {
     sizes.max_size = LayoutUnit(sizes.max_size.Ceil());
   }
 
-  if (IsLayoutNGMixin() && IsTable()) {
+  if (IsLayoutNGObject() && IsTable()) {
     sizes.Encompass(IntrinsicLogicalWidths().min_size);
   }
 

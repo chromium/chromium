@@ -191,7 +191,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
     DCHECK_EQ(line_box_fragment.Type(),
               NGPhysicalFragment::NGFragmentType::kFragmentLineBox);
     DCHECK(NeedsPaint(line_box_fragment));
-    DCHECK(layout_block_flow.IsLayoutNGMixin());
+    DCHECK(layout_block_flow.IsLayoutNGObject());
   }
 
   const NGPhysicalLineBoxFragment& PhysicalFragment() const {

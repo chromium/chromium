@@ -12,7 +12,7 @@ namespace {
 
 bool UsesNGLayout(const Element& element) {
   return !element.ShouldForceLegacyLayout() &&
-         element.GetLayoutObject()->IsLayoutNGMixin();
+         element.GetLayoutObject()->IsLayoutNGObject();
 }
 
 }  // anonymous namespace

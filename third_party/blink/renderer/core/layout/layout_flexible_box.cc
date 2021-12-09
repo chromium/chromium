@@ -956,7 +956,7 @@ void LayoutFlexibleBox::ClearCachedMainSizeForChild(const LayoutBox& child) {
 
 bool LayoutFlexibleBox::CanAvoidLayoutForNGChild(const LayoutBox& child) const {
   NOT_DESTROYED();
-  if (!child.IsLayoutNGMixin())
+  if (!child.IsLayoutNGObject())
     return false;
 
   // If the last layout was done with a different override size, or different

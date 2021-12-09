@@ -893,7 +893,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // block constraints.
   if (can_use_cached_intrinsic_inline_sizes &&
       !box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints()) {
-    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
+    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGObject()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(type);
     bool depends_on_block_constraints =
@@ -917,7 +917,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       initial_block_size == box_->IntrinsicLogicalWidthsInitialBlockSize() &&
       !UseParentPercentageResolutionBlockSizeForChildren()) {
     DCHECK(box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
-    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
+    MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGObject()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(type);
     return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
@@ -1076,7 +1076,7 @@ bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {
   DCHECK(RuntimeEnabledFeatures::LayoutNGEnabled());
   if (box.ForceLegacyLayout())
     return false;
-  return box.IsLayoutNGMixin() || box.IsLayoutReplaced();
+  return box.IsLayoutNGObject() || box.IsLayoutReplaced();
 }
 
 bool NGBlockNode::CanUseNewLayout() const {
@@ -1723,7 +1723,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
 
     // Using |LayoutObject::LayoutIfNeeded| save us a little bit of overhead,
     // compared to |LayoutObject::ForceLayout|.
-    DCHECK(!box_->IsLayoutNGMixin());
+    DCHECK(!box_->IsLayoutNGObject());
     bool needed_layout = box_->NeedsLayout();
     if (box_->NeedsLayout() && !needs_force_relayout)
       box_->LayoutIfNeeded();

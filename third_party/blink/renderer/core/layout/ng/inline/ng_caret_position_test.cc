@@ -41,7 +41,7 @@ class NGCaretPositionTest : public NGLayoutTest {
     DCHECK(container_);
     context_ = To<LayoutBlockFlow>(container_->GetLayoutObject());
     DCHECK(context_);
-    DCHECK(context_->IsLayoutNGMixin());
+    DCHECK(context_->IsLayoutNGObject());
   }
 
   NGCaretPosition ComputeNGCaretPosition(unsigned offset,

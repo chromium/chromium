@@ -56,7 +56,7 @@ void LayoutNGTableCaption::InsertedIntoTree() {
   LayoutBlockFlow::InsertedIntoTree();
 
   LayoutNGTableInterface* table_interface = TableInterface();
-  if (!table_interface->ToLayoutObject()->IsLayoutNGMixin())
+  if (!table_interface->ToLayoutObject()->IsLayoutNGObject())
     To<LayoutTable>(table_interface->ToMutableLayoutObject())->AddCaption(this);
 }
 
@@ -65,7 +65,7 @@ void LayoutNGTableCaption::WillBeRemovedFromTree() {
   LayoutBlockFlow::WillBeRemovedFromTree();
 
   LayoutNGTableInterface* table_interface = TableInterface();
-  if (!table_interface->ToLayoutObject()->IsLayoutNGMixin()) {
+  if (!table_interface->ToLayoutObject()->IsLayoutNGObject()) {
     To<LayoutTable>(table_interface->ToMutableLayoutObject())
         ->RemoveCaption(this);
   }

@@ -524,7 +524,7 @@ inline FloatingObjectInterval FloatingObjects::IntervalForFloatingObject(
 }
 
 void FloatingObjects::AddPlacedObject(FloatingObject& floating_object) {
-  DCHECK(!layout_object_->IsLayoutNGMixin());
+  DCHECK(!layout_object_->IsLayoutNGObject());
   DCHECK(!floating_object.IsInPlacedTree());
 
   floating_object.SetIsPlaced(true);
@@ -538,7 +538,7 @@ void FloatingObjects::AddPlacedObject(FloatingObject& floating_object) {
 }
 
 void FloatingObjects::RemovePlacedObject(FloatingObject& floating_object) {
-  DCHECK(!layout_object_->IsLayoutNGMixin());
+  DCHECK(!layout_object_->IsLayoutNGObject());
   DCHECK(floating_object.IsPlaced());
   DCHECK(floating_object.IsInPlacedTree());
 

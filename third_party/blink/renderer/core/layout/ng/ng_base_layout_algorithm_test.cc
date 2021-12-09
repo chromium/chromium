@@ -80,7 +80,7 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
 scoped_refptr<const NGPhysicalBoxFragment>
 NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
-  CHECK(layout_object && layout_object->IsLayoutNGMixin());
+  CHECK(layout_object && layout_object->IsLayoutNGObject());
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
       To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);

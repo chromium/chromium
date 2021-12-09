@@ -1674,7 +1674,7 @@ void LayoutGrid::ApplyStretchAlignmentToChildIfNeeded(LayoutBox& child) {
     if (desired_logical_height != child.LogicalHeight() ||
         child.MaybeHasPercentHeightDescendant()) {
       // Never mess around with the logical-height of any NG children.
-      if (!child.IsLayoutNGMixin())
+      if (!child.IsLayoutNGObject())
         child.SetLogicalHeight(LayoutUnit());
       child.SetSelfNeedsLayoutForAvailableSpace(true);
     }

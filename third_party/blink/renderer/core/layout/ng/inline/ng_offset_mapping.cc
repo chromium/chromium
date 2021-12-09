@@ -69,7 +69,7 @@ LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
     return nullptr;
   LayoutBlockFlow* block_flow =
       NGOffsetMapping::GetInlineFormattingContextOf(position);
-  if (!block_flow || !block_flow->IsLayoutNGMixin())
+  if (!block_flow || !block_flow->IsLayoutNGObject())
     return nullptr;
   return block_flow;
 }

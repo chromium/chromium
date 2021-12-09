@@ -225,7 +225,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   // block has a vertical scrollbar and its content is smaller than the
   // scrollbar width.
   LayoutUnit percentage_resolution_inline_size =
-      containing_block.IsLayoutNGMixin()
+      containing_block.IsLayoutNGObject()
           ? percentage_resolution_inline_size_
           : std::max(LayoutUnit(), containing_block.ContentWidth());
 

@@ -480,7 +480,7 @@ bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
   const LayoutBlock* container = layout_object_->ContainingBlock();
   if (!container)
     return false;
-  return container->IsLayoutNGMixin();
+  return container->IsLayoutNGObject();
 }
 
 const NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData()

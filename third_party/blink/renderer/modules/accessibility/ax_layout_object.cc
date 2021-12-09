@@ -407,7 +407,7 @@ AXObjectInclusion AXLayoutObject::DefaultObjectInclusion(
 }
 
 static bool HasLineBox(const LayoutBlockFlow& block_flow) {
-  if (!block_flow.IsLayoutNGMixin())
+  if (!block_flow.IsLayoutNGObject())
     return block_flow.FirstLineBox();
 
   // TODO(layout-dev): We should call this function after layout completion.

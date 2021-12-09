@@ -482,7 +482,7 @@ void TruncateOrPadText(String* text, unsigned length) {
 NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
     : NGLayoutInputNode(block, kInline) {
   DCHECK(block);
-  DCHECK(block->IsLayoutNGMixin());
+  DCHECK(block->IsLayoutNGObject());
   if (!block->HasNGInlineNodeData())
     block->ResetNGInlineNodeData();
 }
@@ -1002,10 +1002,10 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // bidi levels. Otherwise |data| already has the text from the pre-layout
   // phase, check they match.
   if (data->text_content.IsNull()) {
-    DCHECK(!layout_block_flow->IsLayoutNGMixin());
+    DCHECK(!layout_block_flow->IsLayoutNGObject());
     data->text_content = builder.ToString();
   } else {
-    DCHECK(layout_block_flow->IsLayoutNGMixin());
+    DCHECK(layout_block_flow->IsLayoutNGObject());
   }
 
   // TODO(xiaochengh): This doesn't compute offset mapping correctly when
@@ -1029,7 +1029,7 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
   }
 
   // If |layout_block_flow| is LayoutNG, compute from |NGInlineNode|.
-  if (layout_block_flow->IsLayoutNGMixin()) {
+  if (layout_block_flow->IsLayoutNGObject()) {
     NGInlineNode node(layout_block_flow);
     CHECK(node.IsPrepareLayoutFinished());
     return node.ComputeOffsetMappingIfNeeded();

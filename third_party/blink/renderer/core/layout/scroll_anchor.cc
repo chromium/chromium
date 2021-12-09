@@ -471,7 +471,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   if (!layout_block)
     return kSkip;
 
-  if (!layout_block->IsLayoutNGMixin()) {
+  if (!layout_block->IsLayoutNGObject()) {
     if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
             layout_block->PositionedObjects()) {
       for (LayoutBox* descendant : *positioned_descendants) {
