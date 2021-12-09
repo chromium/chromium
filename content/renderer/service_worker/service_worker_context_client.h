@@ -168,31 +168,18 @@ class ServiceWorkerContextClient : public blink::WebServiceWorkerContextClient {
   void RequestTermination(RequestTerminationCallback callback) override;
   scoped_refptr<blink::WebServiceWorkerFetchContext>
   CreateWorkerFetchContextOnInitiatorThread() override;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // The following are for use by NavigationPreloadRequest.
-  //
-  // Called to resolve the FetchEvent.preloadResponse promise.
   void OnNavigationPreloadResponse(
       int fetch_event_id,
       std::unique_ptr<blink::WebURLResponse> response,
-      mojo::ScopedDataPipeConsumerHandle data_pipe);
-
-  // Called when the navigation preload request completed. Either
-  // OnNavigationPreloadComplete() or OnNavigationPreloadError() must be
-  // called to release the preload related resources.
+      mojo::ScopedDataPipeConsumerHandle data_pipe) override;
   void OnNavigationPreloadComplete(int fetch_event_id,
                                    base::TimeTicks completion_time,
                                    int64_t encoded_data_length,
                                    int64_t encoded_body_length,
-                                   int64_t decoded_body_length);
-
-  // Called when an error occurred while receiving the response of the
-  // navigation preload request.
+                                   int64_t decoded_body_length) override;
   void OnNavigationPreloadError(
       int fetch_event_id,
-      std::unique_ptr<blink::WebServiceWorkerError> error);
-  /////////////////////////////////////////////////////////////////////////////
+      std::unique_ptr<blink::WebServiceWorkerError> error) override;
 
  private:
   struct WorkerContextData;

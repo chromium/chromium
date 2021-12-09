@@ -50,6 +50,8 @@ namespace blink {
 
 class WebServiceWorkerContextProxy;
 class WebString;
+class WebURLResponse;
+struct WebServiceWorkerError;
 
 // WebServiceWorkerContextClient is a "client" of a service worker execution
 // context. This interface is implemented by the embedder and allows the
@@ -168,6 +170,27 @@ class WebServiceWorkerContextClient {
   // worker. This is called on the initiator thread.
   virtual scoped_refptr<blink::WebServiceWorkerFetchContext>
   CreateWorkerFetchContextOnInitiatorThread() = 0;
+
+  // Called to resolve the FetchEvent.preloadResponse promise.
+  virtual void OnNavigationPreloadResponse(
+      int fetch_event_id,
+      std::unique_ptr<WebURLResponse> response,
+      mojo::ScopedDataPipeConsumerHandle data_pipe) = 0;
+
+  // Called when the navigation preload request completed. Either
+  // OnNavigationPreloadComplete() or OnNavigationPreloadError() must be
+  // called to release the preload related resources.
+  virtual void OnNavigationPreloadComplete(int fetch_event_id,
+                                           base::TimeTicks completion_time,
+                                           int64_t encoded_data_length,
+                                           int64_t encoded_body_length,
+                                           int64_t decoded_body_length) = 0;
+
+  // Called when an error occurred while receiving the response of the
+  // navigation preload request.
+  virtual void OnNavigationPreloadError(
+      int fetch_event_id,
+      std::unique_ptr<WebServiceWorkerError> error) = 0;
 };
 
 }  // namespace blink

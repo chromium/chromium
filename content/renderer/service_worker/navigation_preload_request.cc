@@ -6,17 +6,17 @@
 
 #include <utility>
 
-#include "content/renderer/service_worker/service_worker_context_client.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 
 namespace content {
 
 NavigationPreloadRequest::NavigationPreloadRequest(
-    ServiceWorkerContextClient* owner,
+    blink::WebServiceWorkerContextClient* owner,
     int fetch_event_id,
     const blink::WebURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>

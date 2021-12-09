@@ -18,20 +18,22 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 
+namespace blink {
+class WebServiceWorkerContextClient;
+}  // namespace blink
+
 namespace content {
 
-class ServiceWorkerContextClient;
-
 // The URLLoaderClient for receiving a navigation preload response. It reports
-// the response back to ServiceWorkerContextClient.
+// the response back to blink::WebServiceWorkerContextClient.
 //
 // This class lives on the service worker thread and is owned by
-// ServiceWorkerContextClient.
+// blink::WebServiceWorkerContextClient.
 class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
  public:
   // |owner| must outlive |this|.
   NavigationPreloadRequest(
-      ServiceWorkerContextClient* owner,
+      blink::WebServiceWorkerContextClient* owner,
       int fetch_event_id,
       const blink::WebURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>
@@ -59,7 +61,7 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
   void ReportErrorToOwner(const blink::WebString& message,
                           blink::WebServiceWorkerError::Mode error_mode);
 
-  ServiceWorkerContextClient* owner_ = nullptr;
+  blink::WebServiceWorkerContextClient* owner_ = nullptr;
 
   const int fetch_event_id_ = -1;
   const blink::WebURL url_;
