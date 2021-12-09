@@ -916,19 +916,8 @@ TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
 
 #if defined(USE_AURA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(USE_OZONE)
-// TODO(crbug.com/916272): investigate fixing and enabling on Chrome OS.
-// TODO(crbug.com/1200034): investigate fixing and enabling on Ozone/Wayland.
-#define MAYBE_TouchSelectionQuickMenuIsNotActivated \
-  DISABLED_TouchSelectionQuickMenuIsNotActivated
-#else
-#define MAYBE_TouchSelectionQuickMenuIsNotActivated \
-  TouchSelectionQuickMenuIsNotActivated
-#endif
-
 // Test that touch selection quick menu is not activated when opened.
-TEST_F(DesktopWidgetTestInteractive,
-       MAYBE_TouchSelectionQuickMenuIsNotActivated) {
+TEST_F(DesktopWidgetTestInteractive, TouchSelectionQuickMenuIsNotActivated) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
   widget->SetBounds(gfx::Rect(0, 0, 200, 200));
 
@@ -938,16 +927,16 @@ TEST_F(DesktopWidgetTestInteractive,
   textfield_ptr->SetText(u"some text");
   widget->GetRootView()->AddChildView(std::move(textfield));
 
-  widget->Show();
+  ShowSync(widget.get());
   textfield_ptr->RequestFocus();
   textfield_ptr->SelectAll(true);
   TextfieldTestApi textfield_test_api(textfield_ptr);
 
-  RunPendingMessages();
-
   ui::test::EventGenerator generator(GetRootWindow(widget.get()));
   generator.GestureTapAt(textfield_ptr->GetBoundsInScreen().origin() +
                          gfx::Vector2d(10, 10));
+  // The touch selection controller must be created in response to tapping.
+  ASSERT_TRUE(textfield_test_api.touch_selection_controller());
   static_cast<TouchSelectionControllerImpl*>(
       textfield_test_api.touch_selection_controller())
       ->ShowQuickMenuImmediatelyForTesting();
