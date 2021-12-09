@@ -431,8 +431,7 @@ void BaseRenderingContext2D::setStrokeStyle(
   switch (style->GetContentType()) {
     case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
         ContentType::kCSSColorValue:
-      if (GetCanvasRenderingContextHost() &&
-          !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
               GetTopExecutionContext()))
         return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
@@ -494,8 +493,7 @@ void BaseRenderingContext2D::setFillStyle(
   switch (style->GetContentType()) {
     case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
         ContentType::kCSSColorValue:
-      if (GetCanvasRenderingContextHost() &&
-          !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
               GetTopExecutionContext()))
         return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
@@ -753,8 +751,7 @@ void BaseRenderingContext2D::setFilter(
 
   switch (input->GetContentType()) {
     case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
-      if (GetCanvasRenderingContextHost() &&
-          RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+      if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
               GetTopExecutionContext())) {
         UseCounter::Count(GetTopExecutionContext(),
                           WebFeature::kCanvasRenderingContext2DCanvasFilter);
@@ -2011,8 +2008,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // TODO(crbug.com/1090180): New Canvas2D API utilizes willReadFrequently
   // attribute that let the users indicate if a canvas will be read frequently
   // through getImageData, thus uses CPU rendering from the start in such cases.
-  if (GetCanvasRenderingContextHost() &&
-      !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
+  if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
           GetTopExecutionContext())) {
     // GetImagedata is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break
