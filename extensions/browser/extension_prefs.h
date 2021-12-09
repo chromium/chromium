@@ -353,6 +353,20 @@ class ExtensionPrefs : public KeyedService {
                             base::StringPiece pref_key,
                             const base::DictionaryValue** out_value) const;
 
+  // Interprets the list pref, |pref_key| in |extension_id|'s preferences, as a
+  // URLPatternSet. The |valid_schemes| specify how to parse the URLPatterns.
+  bool ReadPrefAsURLPatternSet(const std::string& extension_id,
+                               base::StringPiece pref_key,
+                               URLPatternSet* result,
+                               int valid_schemes) const;
+
+  // Converts |set| to a list of strings and sets the |pref_key| pref belonging
+  // to |extension_id|. If |set| is empty, the preference for |pref_key| is
+  // cleared.
+  void SetExtensionPrefURLPatternSet(const std::string& extension_id,
+                                     base::StringPiece pref_key,
+                                     const URLPatternSet& set);
+
   bool HasPrefForExtension(const std::string& extension_id) const;
 
   // Did the extension ask to escalate its permission during an upgrade?
@@ -792,24 +806,10 @@ class ExtensionPrefs : public KeyedService {
       const base::DictionaryValue* extension,
       bool include_component_extensions) const;
 
-  // Interprets the list pref, |pref_key| in |extension_id|'s preferences, as a
-  // URLPatternSet. The |valid_schemes| specify how to parse the URLPatterns.
-  bool ReadPrefAsURLPatternSet(const std::string& extension_id,
-                               base::StringPiece pref_key,
-                               URLPatternSet* result,
-                               int valid_schemes) const;
-
   // Deprecated kPrefBlocklistAcknowledged kPrefBlocklist. Use
   // kPrefBlocklistState instead.
   // TODO(crbug.com/1193695): Remove kPrefBlocklistAcknowledged kPrefBlocklist
   // once all clients are updated.
-
-  // Converts |set| to a list of strings and sets the |pref_key| pref belonging
-  // to |extension_id|. If |set| is empty, the preference for |pref_key| is
-  // cleared.
-  void SetExtensionPrefURLPatternSet(const std::string& extension_id,
-                                     base::StringPiece pref_key,
-                                     const URLPatternSet& set);
 
   // Read the boolean preference entry and return true if the preference exists
   // and the preference's value is true; false otherwise.

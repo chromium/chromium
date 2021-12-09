@@ -18,11 +18,12 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/extension_types_utils.h"
-#include "extensions/browser/api/scripting/constants.h"
+#include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/load_and_localize_file.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/browser/user_script_manager.h"
@@ -331,6 +332,7 @@ bool CanAccessTarget(const PermissionsData& permissions,
 }
 
 std::unique_ptr<UserScript> ParseUserScript(
+    content::BrowserContext* browser_context,
     const Extension& extension,
     const api::scripting::RegisteredContentScript& content_script,
     int definition_index,
@@ -363,6 +365,8 @@ std::unique_ptr<UserScript> ParseUserScript(
     return nullptr;
   }
 
+  result->set_incognito_enabled(
+      util::IsIncognitoEnabled(extension.id(), browser_context));
   return result;
 }
 
@@ -827,8 +831,9 @@ ScriptingRegisterContentScriptsFunction::Run() {
     }
 
     // Parse/Create user script.
-    std::unique_ptr<UserScript> user_script = ParseUserScript(
-        *extension(), scripts[i], i, valid_schemes, &parse_error);
+    std::unique_ptr<UserScript> user_script =
+        ParseUserScript(browser_context(), *extension(), scripts[i], i,
+                        valid_schemes, &parse_error);
     if (!user_script)
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
 
@@ -1084,8 +1089,9 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
       updated_script.run_at = update_delta.run_at;
 
     // Parse/Create user script.
-    std::unique_ptr<UserScript> user_script = ParseUserScript(
-        *extension(), updated_script, i, valid_schemes, &parse_error);
+    std::unique_ptr<UserScript> user_script =
+        ParseUserScript(browser_context(), *extension(), updated_script, i,
+                        valid_schemes, &parse_error);
     if (!user_script)
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
 

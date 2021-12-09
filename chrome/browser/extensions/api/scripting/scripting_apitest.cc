@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -10,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -102,6 +104,44 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScripts) {
   ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts")) << message_;
 }
 
+// Test that if an extension with persistent scripts is quickly unloaded while
+// these scripts are being fetched, requests that wait on that extension's
+// script load will be unblocked. Regression for crbug.com/1250575
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RapidLoadUnload) {
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("scripting/register_one_script"));
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  DisableExtension(extension->id());
+
+  // Load another extension with a content script that is injected into all
+  // sites. This extension is necessary because while the register_one_script
+  // extension is loading its scripts, requests which match ANY extension's
+  // scripts are throttled. When an extension unloads before its script load is
+  // finished and there are no more loads in progress, we want to verify that
+  // ALL throttled requests are resumed, not just the ones matching the unloaded
+  // extension's scripts.
+  ASSERT_TRUE(LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts/css_injection")));
+
+  // First, trigger an OnLoaded event for `extension`, then quickly trigger an
+  // OnUnloaded event by calling Enable/DisableExtension. Since `extension`
+  // contains persistent dynamic scripts, it must fetch them from the StateStore
+  // which yields control of the thread so TriggerOnUnloaded is called
+  // immediately, which unloads the extension before the Statestore fetch can
+  // finish.
+  extension_service()->EnableExtension(extension->id());
+  extension_service()->DisableExtension(extension->id(),
+                                        disable_reason::DISABLE_USER_ACTION);
+
+  // Verify that the navigation to google.com, which matches a script in the
+  // css_injection extension, will complete.
+  OpenURLInCurrentTab(
+      embedded_test_server()->GetURL("google.com", "/simple.html"));
+}
+
 // Base test fixture for tests spanning multiple sessions where a custom arg is
 // set before the test is run.
 class PersistentScriptingAPITest : public ScriptingAPITest {
@@ -123,14 +163,14 @@ class PersistentScriptingAPITest : public ScriptingAPITest {
   // the test is run which avoids a race condition where the extension is loaded
   // (as part of startup) and finishes its tests before the ResultCatcher is
   // created.
-  extensions::ResultCatcher result_catcher_;
+  ResultCatcher result_catcher_;
 };
 
 // Tests that registered content scripts which persist across sessions behave as
 // expected. The test is run across three sessions.
 IN_PROC_BROWSER_TEST_F(PersistentScriptingAPITest,
                        PRE_PRE_PersistentDynamicContentScripts) {
-  const extensions::Extension* extension = LoadExtension(
+  const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("scripting/persistent_dynamic_scripts"));
   ASSERT_TRUE(extension);
   EXPECT_TRUE(result_catcher_.GetNextResult()) << result_catcher_.message();

@@ -100,7 +100,8 @@ class UserScriptListener : public content::NotificationObserver,
 
   // Helper to collect the extension's user script URL patterns in a list and
   // return it.
-  void CollectURLPatterns(const Extension* extension,
+  void CollectURLPatterns(content::BrowserContext* context,
+                          const Extension* extension,
                           URLPatterns* patterns);
 
   // content::NotificationObserver

@@ -30,18 +30,24 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/api/scripting/constants.h"
+#include "extensions/browser/api/scripting/scripting_constants.h"
+#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/url_pattern_set.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -326,6 +332,27 @@ api::content_scripts::ContentScript CreateContentScriptObject(
   return content_script;
 }
 
+// Gets an extension's manifest scripts' metadata; i.e., gets a list of
+// UserScript objects that contains script info, but not the contents of the
+// scripts.
+std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  bool incognito_enabled =
+      util::IsIncognitoEnabled(extension.id(), browser_context);
+  const UserScriptList& script_list =
+      ContentScriptsInfo::GetContentScripts(&extension);
+  auto script_vector = std::make_unique<UserScriptList>();
+  script_vector->reserve(script_list.size());
+  for (const auto& script : script_list) {
+    std::unique_ptr<UserScript> script_copy =
+        UserScript::CopyMetadataFrom(*script);
+    script_copy->set_incognito_enabled(incognito_enabled);
+    script_vector->push_back(std::move(script_copy));
+  }
+  return script_vector;
+}
+
 }  // namespace
 
 ExtensionUserScriptLoader::ExtensionUserScriptLoader(
@@ -365,8 +392,7 @@ ExtensionUserScriptLoader::ExtensionUserScriptLoader(
   }
 }
 
-ExtensionUserScriptLoader::~ExtensionUserScriptLoader() {
-}
+ExtensionUserScriptLoader::~ExtensionUserScriptLoader() {}
 
 void ExtensionUserScriptLoader::AddPendingDynamicScriptIDs(
     std::set<std::string> script_ids) {
@@ -381,18 +407,26 @@ void ExtensionUserScriptLoader::RemovePendingDynamicScriptIDs(
     pending_dynamic_script_ids_.erase(id);
 }
 
-void ExtensionUserScriptLoader::AddScriptsForExtensionLoad(
-    std::unique_ptr<UserScriptList> manifest_scripts,
+bool ExtensionUserScriptLoader::AddScriptsForExtensionLoad(
+    const Extension& extension,
     UserScriptLoader::ScriptsLoadedCallback callback) {
-  AddScripts(std::move(manifest_scripts), std::move(callback));
+  std::unique_ptr<UserScriptList> manifest_scripts =
+      GetManifestScriptsMetadata(browser_context(), extension);
+  bool has_dynamic_scripts = HasInitialDynamicScripts(extension);
 
-  // Manifest scripts and persistent dynamic scripts are not loaded as part of
-  // the same list to ensure `callback` will be not orphaned while persistent
-  // scripts are being fetched, which prevents `callback` from never being
-  // called if the extension is unloaded early.
-  helper_.GetDynamicScripts(base::BindOnce(
-      &ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore,
-      weak_factory_.GetWeakPtr()));
+  if (manifest_scripts->empty() && !has_dynamic_scripts)
+    return false;
+
+  if (has_dynamic_scripts) {
+    helper_.GetDynamicScripts(base::BindOnce(
+        &ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore,
+        weak_factory_.GetWeakPtr(), std::move(manifest_scripts),
+        std::move(callback)));
+  } else {
+    AddScripts(std::move(manifest_scripts), std::move(callback));
+  }
+
+  return true;
 }
 
 void ExtensionUserScriptLoader::AddDynamicScripts(
@@ -497,6 +531,7 @@ ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
     : browser_context_(browser_context),
       extension_id_(extension_id),
       state_store_(state_store) {}
+
 ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
     ~DynamicScriptsStorageHelper() = default;
 
@@ -521,6 +556,7 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     return;
 
   auto scripts_value = std::make_unique<base::Value>(base::Value::Type::LIST);
+  URLPatternSet persistent_patterns;
   for (const std::unique_ptr<UserScript>& script : scripts) {
     if (!base::Contains(persistent_dynamic_script_ids, script->id()))
       continue;
@@ -530,8 +566,11 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     value.SetStringPath(scripting::kId, script->id());
 
     scripts_value->Append(std::move(value));
+    persistent_patterns.AddPatterns(script->url_patterns());
   }
 
+  scripting::SetPersistentScriptURLPatterns(browser_context_, extension_id_,
+                                            std::move(persistent_patterns));
   state_store_->SetExtensionValue(extension_id_,
                                   scripting::kRegisteredScriptsStorageKey,
                                   std::move(scripts_value));
@@ -583,9 +622,10 @@ void ExtensionUserScriptLoader::OnExtensionSystemReady() {
 }
 
 void ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore(
+    std::unique_ptr<UserScriptList> scripts,
+    UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptList initial_dynamic_scripts) {
   auto dynamic_scripts_metadata = std::make_unique<UserScriptList>();
-  auto scripts = std::make_unique<UserScriptList>();
   for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
     dynamic_scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
     pending_dynamic_script_ids_.insert(script->id());
@@ -595,15 +635,16 @@ void ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore(
                   std::make_move_iterator(initial_dynamic_scripts.begin()),
                   std::make_move_iterator(initial_dynamic_scripts.end()));
 
-  AddScripts(
-      std::move(scripts),
-      base::BindOnce(&ExtensionUserScriptLoader::OnInitialDynamicScriptsLoaded,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(dynamic_scripts_metadata)));
+  AddScripts(std::move(scripts),
+             base::BindOnce(
+                 &ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded,
+                 weak_factory_.GetWeakPtr(),
+                 std::move(dynamic_scripts_metadata), std::move(callback)));
 }
 
-void ExtensionUserScriptLoader::OnInitialDynamicScriptsLoaded(
+void ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded(
     std::unique_ptr<UserScriptList> initial_dynamic_scripts,
+    UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptLoader* loader,
     const absl::optional<std::string>& error) {
   for (const std::unique_ptr<UserScript>& script : *initial_dynamic_scripts)
@@ -617,6 +658,8 @@ void ExtensionUserScriptLoader::OnInitialDynamicScriptsLoaded(
         std::make_move_iterator(initial_dynamic_scripts->begin()),
         std::make_move_iterator(initial_dynamic_scripts->end()));
   }
+
+  std::move(callback).Run(loader, error);
 }
 
 void ExtensionUserScriptLoader::OnDynamicScriptsAdded(
@@ -674,6 +717,20 @@ void ExtensionUserScriptLoader::OnDynamicScriptsRemoved(
   }
 
   std::move(callback).Run(error);
+}
+
+bool ExtensionUserScriptLoader::HasInitialDynamicScripts(
+    const Extension& extension) const {
+  bool has_scripting_permission =
+      extension.permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kScripting);
+  if (!has_scripting_permission)
+    return false;
+
+  URLPatternSet initial_dynamic_patterns =
+      scripting::GetPersistentScriptURLPatterns(browser_context(),
+                                                extension.id());
+  return !initial_dynamic_patterns.is_empty();
 }
 
 }  // namespace extensions

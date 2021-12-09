@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_SCRIPTING_CONSTANTS_H_
-#define EXTENSIONS_BROWSER_API_SCRIPTING_CONSTANTS_H_
+#ifndef EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_CONSTANTS_H_
+#define EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_CONSTANTS_H_
 
 namespace extensions {
 namespace scripting {
@@ -25,7 +25,12 @@ constexpr char kRegisteredScriptsStorageKey[] = "dynamic_scripts";
 // The key for storing a dynamic content script's id.
 constexpr char kId[] = "id";
 
+// Key corresponding to the set of URL patterns from the extension's persistent
+// dynamic content scripts.
+constexpr const char kPrefPersistentScriptURLPatterns[] =
+    "persistent_script_url_patterns";
+
 }  // namespace scripting
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_SCRIPTING_CONSTANTS_H_
+#endif  // EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_CONSTANTS_H_

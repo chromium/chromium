@@ -65,11 +65,12 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // to load its scripts.
   void RemovePendingDynamicScriptIDs(const std::set<std::string>& script_ids);
 
-  // Adds `manifest_scripts` and calls GetDynamicScripts for initial dynamic
-  // scripts, to the set of scripts managed by this loader. Once
-  // `manifest_scripts` are loaded, calls `callback`.
-  void AddScriptsForExtensionLoad(
-      std::unique_ptr<UserScriptList> manifest_scripts,
+  // Adds manifest scripts from `extension` and calls GetDynamicScripts for
+  // initial dynamic scripts, to the set of scripts managed by this loader. Once
+  // `manifest_scripts` are loaded, calls `callback`. Returns whether any
+  // scripts will be added for the initial load.
+  bool AddScriptsForExtensionLoad(
+      const Extension& extension,
       UserScriptLoader::ScriptsLoadedCallback callback);
 
   // Adds `scripts` to the set of scripts managed by this loader and once these
@@ -164,12 +165,15 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // Called when the extension's initial set of persistent dynamic scripts have
   // been fetched right after the extension has been loaded.
   void OnInitialDynamicScriptsReadFromStateStore(
+      std::unique_ptr<UserScriptList> scripts,
+      UserScriptLoader::ScriptsLoadedCallback callback,
       UserScriptList initial_dynamic_scripts);
 
   // Called when the extension's initial set of dynamic scripts have been
   // loaded.
-  void OnInitialDynamicScriptsLoaded(
+  void OnInitialExtensionScriptsLoaded(
       std::unique_ptr<UserScriptList> initial_dynamic_scripts,
+      ScriptsLoadedCallback callback,
       UserScriptLoader* loader,
       const absl::optional<std::string>& error);
 
@@ -190,6 +194,11 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
                                DynamicScriptsModifiedCallback callback,
                                UserScriptLoader* loader,
                                const absl::optional<std::string>& error);
+
+  // Checks if the extension has initial dynamic scripts by checking if the
+  // extension has the scripting permission, and if URLPatterns from dynamic
+  // scripts are registered in prefs.
+  bool HasInitialDynamicScripts(const Extension& extension) const;
 
   // The IDs of dynamically registered scripts (e.g. registered by the
   // extension's API calls) that have not been loaded yet. IDs are removed from
