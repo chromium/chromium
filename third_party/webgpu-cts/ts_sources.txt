@@ -125,6 +125,7 @@ src/webgpu/api/operation/buffers/map_detach.spec.ts
 src/webgpu/api/operation/buffers/map_oom.spec.ts
 src/webgpu/api/operation/buffers/threading.spec.ts
 src/webgpu/api/operation/command_buffer/basic.spec.ts
+src/webgpu/api/operation/command_buffer/clearBuffer.spec.ts
 src/webgpu/api/operation/command_buffer/copyBufferToBuffer.spec.ts
 src/webgpu/api/operation/command_buffer/copyTextureToTexture.spec.ts
 src/webgpu/api/operation/command_buffer/image_copy.spec.ts
@@ -198,6 +199,7 @@ src/webgpu/api/validation/encoding/beginRenderPass.spec.ts
 src/webgpu/api/validation/encoding/encoder_state.spec.ts
 src/webgpu/api/validation/encoding/render_bundle.spec.ts
 src/webgpu/api/validation/encoding/cmds/buffer_texture_copies.spec.ts
+src/webgpu/api/validation/encoding/cmds/clearBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/compute_pass.spec.ts
 src/webgpu/api/validation/encoding/cmds/copyBufferToBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/copyTextureToTexture.spec.ts

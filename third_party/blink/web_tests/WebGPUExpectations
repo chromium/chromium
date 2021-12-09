@@ -475,6 +475,9 @@ crbug.com/dawn/1213 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,op
 ### Windows (D3D12) specific
 ###
 
+crbug.com/dawn/1231 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";dynamicOffset=true;* [ Skip ]
+crbug.com/dawn/1231 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";dynamicOffset=true;* [ Skip ]
+
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
 crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
 
