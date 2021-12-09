@@ -5,7 +5,7 @@
 import {
   assert,
   assertInstanceof,
-} from './chrome_util.js';
+} from './assert.js';
 import {cssStyle} from './css.js';
 import * as dom from './dom.js';
 import {getStyleValueInPx} from './util.js';

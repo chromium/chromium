@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../chrome_util.js';
+import {assert, assertNotReached} from '../assert.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
 import {

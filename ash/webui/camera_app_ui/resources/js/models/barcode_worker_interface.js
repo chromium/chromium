@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '../chrome_util.js';
+import {assertNotReached} from '../assert.js';
 
 /**
  * The interface for a barcode worker. All methods are marked as async since

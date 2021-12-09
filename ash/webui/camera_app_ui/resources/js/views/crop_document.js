@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../chrome_util.js';
+import {assert, assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';

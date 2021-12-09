@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof, assertString} from '../../chrome_util.js';
+import {assert, assertInstanceof, assertString} from '../../assert.js';
 import * as dom from '../../dom.js';
 import {
   Point,

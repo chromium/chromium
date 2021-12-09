@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../chrome_util.js';
+import {assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
 
 import {clearAsyncInterval, setAsyncInterval} from './async_interval.js';

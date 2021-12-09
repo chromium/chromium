@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof, assertNotReached} from './chrome_util.js';
+import {assertInstanceof, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 
 // eslint-disable-next-line no-unused-vars

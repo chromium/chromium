@@ -6,7 +6,7 @@ import {
   AppWindow,  // eslint-disable-line no-unused-vars
   getDefaultWindowSize,
 } from './app_window.js';
-import {assert, assertInstanceof} from './chrome_util.js';
+import {assert, assertInstanceof} from './assert.js';
 import {
   PhotoConstraintsPreferrer,
   VideoConstraintsPreferrer,

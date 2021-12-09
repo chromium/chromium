@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {
   assert,
   assertInstanceof,
   assertNotReached,
-} from '../../../chrome_util.js';
+} from '../../../assert.js';
+import {AsyncJobQueue} from '../../../async_job_queue.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {

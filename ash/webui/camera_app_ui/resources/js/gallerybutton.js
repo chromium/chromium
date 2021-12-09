@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from './chrome_util.js';
+import {assert, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as filesystem from './models/file_system.js';

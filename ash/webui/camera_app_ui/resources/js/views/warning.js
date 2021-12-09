@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertString} from '../chrome_util.js';
+import {assert, assertString} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';

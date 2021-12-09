@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line no-unused-vars
 import {AppWindow} from './app_window.js';
-import {assertInstanceof} from './chrome_util.js';
+import {assertInstanceof} from './assert.js';
 import * as metrics from './metrics.js';
 import {
   ErrorLevel,

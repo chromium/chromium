@@ -6,7 +6,7 @@ import * as animate from '../animation.js';
 import {
   assert,
   assertInstanceof,
-} from '../chrome_util.js';
+} from '../assert.js';
 import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars

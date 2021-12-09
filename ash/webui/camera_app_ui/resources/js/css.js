@@ -5,7 +5,7 @@
 import {
   assert,
   assertInstanceof,
-} from './chrome_util.js';
+} from './assert.js';
 
 /**
  * CSS rules.

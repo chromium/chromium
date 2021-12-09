@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from './chrome_util.js';
+import {assert} from './assert.js';
 
 /**
  * A one-shot timer that is more powerful than setTimeout().

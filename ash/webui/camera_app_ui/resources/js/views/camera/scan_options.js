@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from '../../assert.js';
 import * as barcodeChip from '../../barcode_chip.js';
-import {assert, assertInstanceof} from '../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';

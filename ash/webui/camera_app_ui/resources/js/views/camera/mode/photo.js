@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '../../../chrome_util.js';
+import {assertNotReached} from '../../../assert.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {I18nString} from '../../../i18n_string.js';

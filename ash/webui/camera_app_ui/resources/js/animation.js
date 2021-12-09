@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertInstanceof} from './assert.js';
 import {AsyncJobQueue} from './async_job_queue.js';
-import {assertInstanceof} from './chrome_util.js';
 
 /**
  * @type {!Map<!HTMLElement, !AsyncJobQueue>}

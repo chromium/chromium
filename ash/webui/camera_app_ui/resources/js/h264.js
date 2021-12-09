@@ -8,7 +8,7 @@
  * media/video/h264_level_limits.cc.
  */
 
-import {assert, assertNotReached, assertString} from './chrome_util.js';
+import {assert, assertNotReached, assertString} from './assert.js';
 import {Resolution} from './type.js';  // eslint-disable-line no-unused-vars
 
 /**

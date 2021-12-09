@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../chrome_util.js';
+import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {ViewName} from '../type.js';  // eslint-disable-line no-unused-vars
 import {WaitableEvent} from '../waitable_event.js';

@@ -5,9 +5,9 @@
 compile_js_files = [
   "animation.js",
   "app_window.js",
+  "assert.ts",
   "async_job_queue.js",
   "barcode_chip.js",
-  "chrome_util.js",
   "css.js",
   "device/camera3_device_info.js",
   "device/constraints_preferrer.js",

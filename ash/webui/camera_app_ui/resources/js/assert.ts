@@ -2,21 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(pihsun): The jsdoc for assert and assertNotReached is in a state that
-// is recognizable by TypeScript but not by ESLint, disable ESLint checks for
-// now before we migrate this file fully to TypeScript.
-/* eslint-disable valid-jsdoc */
-
 /**
  * Verify |condition| is truthy and return |condition| if so.
- * @template T
- * @param {T} condition A condition to check for truthiness.  Note that this
+ * @param condition A condition to check for truthiness.  Note that this
  *     may be used to test whether a value is defined or not, and we don't want
  *     to force a cast to Boolean.
- * @param {string=} optMessage A message to show on failure.
- * @return {asserts condition} A non-null |condition|.
+ * @param optMessage A message to show on failure.
+ * @return A non-null |condition|.
  */
-export function assert(condition, optMessage) {
+export function assert(
+    condition: boolean, optMessage?: string): asserts condition {
   if (!condition) {
     let message = 'Assertion failed';
     if (optMessage) {
@@ -45,74 +40,65 @@ export function assert(condition, optMessage) {
  * This code should only be hit in the case of serious programmer error or
  * unexpected input.
  *
- * @param {string=} optMessage A message to show when this is hit.
- * @return {never}
+ * @param optMessage A message to show when this is hit.
  */
-export function assertNotReached(optMessage) {
-  assert(false, optMessage || 'Unreachable code hit');
+export function assertNotReached(optMessage = 'Unreachable code hit'): never {
+  assert(false, optMessage);
 }
 
-// Disables eslint check for closure compiler constructor type.
-/* eslint-disable valid-jsdoc */
-
 /**
- * @param {*} value The value to check.
- * @param {function(new: T, ...?)} type A user-defined constructor.
- * @param {string=} optMessage A message to show when this is hit.
- * @return {T}
- * @template T
+ * @param value The value to check.
+ * @param ctor A user-defined constructor.
+ * @param optMessage A message to show when this is hit.
  */
-export function assertInstanceof(value, type, optMessage) {
+export function assertInstanceof<T>(
+    value: unknown, ctor: new (...args: unknown[]) => T,
+    optMessage?: string): T {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
-  if (!(value instanceof type)) {
+  if (!(value instanceof ctor)) {
     assertNotReached(
         optMessage ||
-        'Value ' + value + ' is not a[n] ' + (type.name || typeof type));
+        'Value ' + value + ' is not a[n] ' + (ctor.name || typeof ctor));
   }
   return value;
 }
 
-/* eslint-enable valid-jsdoc */
-
 /**
- * @param {*} value The value to check.
- * @param {string=} optMessage A message to show when this is hit.
- * @return {string}
+ * @param value The value to check.
+ * @param optMessage A message to show when this is hit.
  */
-export function assertString(value, optMessage) {
+export function assertString(value: unknown, optMessage?: string): string {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (typeof value !== 'string') {
     assertNotReached(optMessage || 'Value ' + value + ' is not a string');
   }
-  return /** @type {string} */ (value);
+  return value;
 }
 
 /**
- * @param {*} value The value to check.
- * @param {string=} optMessage A message to show when this is hit.
- * @return {number}
+ * @param value The value to check.
+ * @param optMessage A message to show when this is hit.
  */
-export function assertNumber(value, optMessage) {
+export function assertNumber(value: unknown, optMessage?: string): number {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (typeof value !== 'number') {
     assertNotReached(optMessage || 'Value ' + value + ' is not a number');
   }
-  return /** @type {number} */ (value);
+  return value;
 }
 
 /**
- * @param {*} value The value to check.
- * @param {string=} optMessage A message to show when this is hit.
- * @return {boolean}
+ * @param value The value to check.
+ * @param optMessage A message to show when this is hit.
  */
-export function assertBoolean(value, optMessage) {
+export function assertBoolean(value: unknown, optMessage?: string): boolean {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (typeof value !== 'boolean') {
     assertNotReached(optMessage || 'Value ' + value + ' is not a boolean');
   }
-  return /** @type {boolean} */ (value);
+  return value;
 }

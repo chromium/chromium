@@ -6,7 +6,7 @@ import {
   assert,
   assertInstanceof,
   assertNotReached,
-} from '../../../chrome_util.js';
+} from '../../../assert.js';
 import {
   CaptureCandidate,           // eslint-disable-line no-unused-vars
   ConstraintsPreferrer,       // eslint-disable-line no-unused-vars

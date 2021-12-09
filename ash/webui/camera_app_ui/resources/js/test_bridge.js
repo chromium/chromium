@@ -13,7 +13,7 @@
  */
 
 import {AppWindow} from './app_window.js';
-import {assert} from './chrome_util.js';
+import {assert} from './assert.js';
 import * as Comlink from './lib/comlink.js';
 
 /**

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertNotReached} from '../../assert.js';
 import {AsyncJobQueue} from '../../async_job_queue.js';
-import {assert, assertNotReached} from '../../chrome_util.js';
 import * as Comlink from '../../lib/comlink.js';
 import runFFmpeg from '../../lib/ffmpeg.js';
 import {WaitableEvent} from '../../waitable_event.js';

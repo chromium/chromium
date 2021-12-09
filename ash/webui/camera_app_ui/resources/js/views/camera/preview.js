@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../../chrome_util.js';
+import {assert, assertInstanceof} from '../../assert.js';
 import {
   StreamConstraints,  // eslint-disable-line no-unused-vars
   toMediaStreamConstraints,
