@@ -762,9 +762,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.FrameDamageAreaInDip.{ProcessType}" units="dip"
-    expires_after="M98">
+    expires_after="2022-06-30">
   <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
   <summary>
     Damaged area of a LayerTree's CompositorFrame in device-independent pixels.
     Recorded every time a new frame is produced.
@@ -776,9 +776,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.FrameDamageDiagonalInDip.{ProcessType}" units="dip"
-    expires_after="M98">
+    expires_after="2022-06-30">
   <owner>eseckler@chromium.org</owner>
-  <owner>skyostil@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
   <summary>
     Diagonal length of the damaged area of a LayerTree's CompositorFrame in
     device-independent pixels. Recorded every time a new frame is produced.
