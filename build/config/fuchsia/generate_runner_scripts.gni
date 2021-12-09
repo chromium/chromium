@@ -151,6 +151,17 @@ template("fuchsia_run_script_with_packages") {
       ]
     }
   }
+
+  # Create a wrapper script rather than using a group() in order to ensure
+  # "ninja $target_name" always works.
+  if (defined(invoker.executable_wrapper)) {
+    generate_wrapper(invoker.executable_wrapper) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      executable = _generated_script_path
+      wrapper_script = "$root_build_dir/${invoker.executable_wrapper}"
+      deps = [ ":${invoker._run_target}" ]
+    }
+  }
 }
 
 # Generates a script which deploys a package to the TUF repo of a Fuchsia
@@ -203,6 +214,7 @@ template("fuchsia_test_runner") {
       executable_args = []
     }
     output_name_format = "run_%package%"
+    executable_wrapper = invoker.target_name
 
     # Populate the arguments used by the test runner, defined at build-time.
     executable_args += [
@@ -250,14 +262,6 @@ template("fuchsia_test_runner") {
                                ])
     testonly = invoker.testonly
     include_fuchsia_build_dir = true
-  }
-
-  group(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    deps = [
-      ":${_install_target}",
-      ":${_run_target}",
-    ]
   }
 }
 

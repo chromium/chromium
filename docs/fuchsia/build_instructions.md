@@ -268,13 +268,11 @@ that make working with both Fuchsia and Chromium checkouts easier.
 
 * `default_fuchsia_build_dir_for_installation`. Point this to an output
   directory in Fuchsia. For instance. `/path/to/src/fuchsia/out/qemu-x64`. This
-  will automatically add the `--fuchsia-out-dir` flag to most `run_*` and
-  `deploy_*` scripts.
+  will automatically add the `--fuchsia-out-dir` flag to wrapper scripts.
 * `default_fuchsia_device_node_name`. Set this to a Fuchsia device node name.
-  This will automatically add the `--node-name` flag to most `run_*` and
-  `deploy_*` scripts.
-* Finally, use the `-d` flag to `run_*` scripts to execute them on an already
-  running device or emulator, rather than starting an ephemeral emulator
-  instance. This speeds up subsequent runs since the runner script does not need
-  to wait for the emulator instance to boot and only differential changes are
-  pushed to the device.
+  This will automatically add the `--node-name` flag to most wrapper scripts.
+* Finally, use the `-d` flag when running the <test_target_name> wrappers to
+  execute them on an already running device or emulator, rather than starting an
+  ephemeral emulator instance. This speeds up subsequent runs since the runner
+  script does not need to wait for the emulator instance to boot and only
+  differential changes are pushed to the device.
