@@ -352,7 +352,7 @@ void WebAppIntegrationTestDriver::SetUp() {
 
 void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   os_hooks_suppress_.reset();
-  shortcut_override = OverrideShortcutsForTesting();
+  shortcut_override_ = OverrideShortcutsForTesting();
 
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.
@@ -388,6 +388,20 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
     }
     content::RunAllTasksUntilIdle();
   }
+// TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
+// papering over it here.
+#if defined(OS_WIN)
+  if (shortcut_override_->desktop.IsValid())
+    ASSERT_TRUE(shortcut_override_->desktop.Delete());
+  if (shortcut_override_->application_menu.IsValid())
+    ASSERT_TRUE(shortcut_override_->application_menu.Delete());
+#elif defined(OS_MAC)
+  if (shortcut_override_->chrome_apps_folder.IsValid())
+    ASSERT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
+#elif defined(OS_LINUX)
+  if (shortcut_override_->desktop.IsValid())
+    ASSERT_TRUE(shortcut_override_->desktop.Delete());
+#endif
 }
 
 void WebAppIntegrationTestDriver::CloseCustomToolbar() {
@@ -1431,12 +1445,12 @@ bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
 
   std::wstring shortcut_filename = converter.from_bytes(name + ".lnk");
   std::vector<base::FilePath> shortcut_paths{
-      shortcut_override->desktop.GetPath().Append(shortcut_filename),
-      shortcut_override->application_menu.GetPath().Append(shortcut_filename)};
+      shortcut_override_->desktop.GetPath().Append(shortcut_filename),
+      shortcut_override_->application_menu.GetPath().Append(shortcut_filename)};
   base::FilePath desktop_shortcut_path =
-      shortcut_override->desktop.GetPath().Append(shortcut_filename);
+      shortcut_override_->desktop.GetPath().Append(shortcut_filename);
   base::FilePath app_menu_shortcut_path =
-      shortcut_override->application_menu.GetPath().Append(shortcut_filename);
+      shortcut_override_->application_menu.GetPath().Append(shortcut_filename);
   shortcut_exists =
       (base::PathExists(desktop_shortcut_path) &&
        GetShortcutProfile(desktop_shortcut_path) == profile->GetBaseName() &&
@@ -1445,7 +1459,8 @@ bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
 #elif defined(OS_MAC)
   std::string shortcut_filename = name + ".app";
   base::FilePath app_shortcut_path =
-      shortcut_override->chrome_apps_folder.GetPath().Append(shortcut_filename);
+      shortcut_override_->chrome_apps_folder.GetPath().Append(
+          shortcut_filename);
   AppShimRegistry* registry = AppShimRegistry::Get();
   std::set<base::FilePath> app_installed_profiles =
       registry->GetInstalledProfilesForApp(id);
@@ -1456,7 +1471,7 @@ bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
   std::string shortcut_filename =
       "chrome-" + id + "-" + profile->GetBaseName().value() + ".desktop";
   base::FilePath desktop_shortcut_path =
-      shortcut_override->desktop.GetPath().Append(shortcut_filename);
+      shortcut_override_->desktop.GetPath().Append(shortcut_filename);
   shortcut_exists = base::PathExists(desktop_shortcut_path);
 #endif
 

@@ -290,7 +290,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       observation_{this};
-  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override;
+  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration
