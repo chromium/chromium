@@ -114,11 +114,11 @@ class BASE_EXPORT TimerBase {
 
   // Sets the task runner on which the delayed task should be scheduled when
   // this Timer is running. This method can only be called while this Timer
-  // isn't running. This is an alternative (old) approach to mock time in tests.
-  // The modern and preferred approach is to use
-  // TaskEnvironment::TimeSource::MOCK_TIME. To avoid racy usage of Timer,
-  // |task_runner| must run tasks on the same sequence which this Timer is bound
-  // to (started from). TODO(gab): Migrate all callers to
+  // isn't running. If this is used to mock time in tests, the modern and
+  // preferred approach is to use TaskEnvironment::TimeSource::MOCK_TIME. To
+  // avoid racy usage of Timer, |task_runner| must run tasks on the same
+  // sequence which this Timer is bound to (started from). TODO(gab): Migrate
+  // callers using this as a test seam to
   // TaskEnvironment::TimeSource::MOCK_TIME.
   virtual void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
 
