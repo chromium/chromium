@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {GooglePhotos} from 'chrome://personalization/trusted/wallpaper/google_photos_element.js';
+import {GooglePhotosCollection} from 'chrome://personalization/trusted/wallpaper/google_photos_collection_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -11,19 +11,20 @@ import {waitAfterNextRender} from '../../test_util.js';
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
-export function GooglePhotosTest() {
+export function GooglePhotosCollectionTest() {
   /** @type {?HTMLElement} */
-  let googlePhotosElement = null;
+  let googlePhotosCollectionElement = null;
 
   /** @type {?TestPersonalizationStore} */
   let personalizationStore = null;
 
   /**
-   * Returns the match for |selector| in |googlePhotosElement|'s shadow DOM.
+   * Returns the match for |selector| in |googlePhotosCollectionElement|'s
+   * shadow DOM.
    * @return {?Element|undefined}
    */
   function querySelector(selector) {
-    return googlePhotosElement?.shadowRoot?.querySelector(selector);
+    return googlePhotosCollectionElement?.shadowRoot?.querySelector(selector);
   }
 
   setup(() => {
@@ -42,8 +43,8 @@ export function GooglePhotosTest() {
   });
 
   teardown(async () => {
-    await teardownElement(googlePhotosElement);
-    googlePhotosElement = null;
+    await teardownElement(googlePhotosCollectionElement);
+    googlePhotosCollectionElement = null;
   });
 
   test('displays only photos content', async () => {
@@ -53,8 +54,9 @@ export function GooglePhotosTest() {
     personalizationStore.data.loading.googlePhotos.albums = false;
     personalizationStore.data.loading.googlePhotos.photos = false;
 
-    googlePhotosElement = initElement(GooglePhotos.is, {hidden: false});
-    await waitAfterNextRender(googlePhotosElement);
+    googlePhotosCollectionElement =
+        initElement(GooglePhotosCollection.is, {hidden: false});
+    await waitAfterNextRender(googlePhotosCollectionElement);
 
     // Zero state should be absent.
     assertEquals(querySelector('#zeroState'), null);
@@ -78,8 +80,9 @@ export function GooglePhotosTest() {
     personalizationStore.data.loading.googlePhotos.albums = false;
     personalizationStore.data.loading.googlePhotos.photos = false;
 
-    googlePhotosElement = initElement(GooglePhotos.is, {hidden: false});
-    await waitAfterNextRender(googlePhotosElement);
+    googlePhotosCollectionElement =
+        initElement(GooglePhotosCollection.is, {hidden: false});
+    await waitAfterNextRender(googlePhotosCollectionElement);
 
     // Zero state should be absent.
     assertEquals(querySelector('#zeroState'), null);
@@ -139,8 +142,9 @@ export function GooglePhotosTest() {
     personalizationStore.data.loading.googlePhotos.albums = false;
     personalizationStore.data.loading.googlePhotos.photos = false;
 
-    googlePhotosElement = initElement(GooglePhotos.is, {hidden: false});
-    await waitAfterNextRender(googlePhotosElement);
+    googlePhotosCollectionElement =
+        initElement(GooglePhotosCollection.is, {hidden: false});
+    await waitAfterNextRender(googlePhotosCollectionElement);
 
     // Photos tab should be absent.
     assertEquals(querySelector('#photosTab'), null);
@@ -158,13 +162,5 @@ export function GooglePhotosTest() {
     const zeroState = querySelector('#zeroState');
     assertTrue(!!zeroState);
     assertFalse(zeroState.hidden);
-
-    const message =
-        googlePhotosElement.i18nAdvanced('googlePhotosZeroStateMessage', {
-          substitutions: [
-            '<a target="_blank" href="https://photos.google.com">photos.google.com</a>'
-          ]
-        });
-    assertEquals(querySelector('#zeroStateText').innerHTML, message);
   });
 }

@@ -32,7 +32,7 @@
   }
   wallpaper-collections,
   wallpaper-images,
-  google-photos,
+  google-photos-collection,
   local-images {
     grid-area: imagegrid;
   }
@@ -80,8 +80,9 @@
       <wallpaper-images collection-id="[[queryParams_.id]]"
         hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
       <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
-        <google-photos hidden="[[!shouldShowGooglePhotosCollection_(path_)]]">
-        </google-photos>
+        <google-photos-collection
+          hidden="[[!shouldShowGooglePhotosCollection_(path_)]]">
+        </google-photos-collection>
       </template>
       <local-images hidden="[[!shouldShowLocalCollection_(path_)]]">
       </local-images>

@@ -33,17 +33,9 @@
     width: 100%;
   }
 
-  #albumsContent iron-list,
   #photosContent iron-list {
     height: 100%;
     width: 100%;
-  }
-
-  .album {
-    align-items: center;
-    background: rgba(0, 0, 0, 0.12);
-    display: flex;
-    justify-content: center;
   }
 
   .row {
@@ -66,29 +58,8 @@
   }
 
   #zeroState {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
     height: 100%;
-    justify-content: center;
     width: 100%;
-  }
-
-  #zeroStateImage {
-    margin-bottom: 16px;
-    width: 180px;
-  }
-
-  #zeroStateText {
-    color: var(--cros-text-color-secondary);
-    font: var(--cros-body-1-font);
-    max-width: 236px;
-    text-align: center;
-  }
-
-  a {
-    color: var(--cros-link-color);
-    text-decoration: none;
   }
 </style>
 <main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
@@ -124,25 +95,10 @@
     </div>
   </template>
   <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
-    <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
-      <iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
-        <template>
-            <wallpaper-grid-item>
-              <template is="dom-if" if="[[album]]">
-                <div class="album" tabindex$="[[tabIndex]]"
-                  on-click="onAlbumSelected_" on-keypress="onAlbumSelected_">
-                  [[album.name]]
-                </div>
-              </template>
-            </wallpaper-grid-item>
-        </template>
-      </iron-list>
-    </div>
+    <google-photos-albums id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
+    </google-photos-albums>
   </template>
   <template is="dom-if" if="[[isPhotosEmpty_(photos_)]]">
-    <div id="zeroState">
-      <img id="zeroStateImage" src="//personalization/common/no_images.svg" aria-hidden="true">
-      <div id="zeroStateText" inner-h-t-m-l="[[getZeroStateMessage_()]]"></div>
-    </div>
+    <google-photos-zero-state id="zeroState"></google-photos-zero-state>
   </template>
 </main>

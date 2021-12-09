@@ -1,0 +1,29 @@
+<style include="trusted-style common-style">
+  :host {
+    overflow: hidden;
+  }
+
+  iron-list {
+    height: 100%;
+    width: 100%;
+  }
+
+  .album {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: center;
+  }
+</style>
+<iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
+  <template>
+      <wallpaper-grid-item>
+        <template is="dom-if" if="[[album]]">
+          <div class="album" tabindex$="[[tabIndex]]"
+            on-click="onAlbumSelected_" on-keypress="onAlbumSelected_">
+            [[album.name]]
+          </div>
+        </template>
+      </wallpaper-grid-item>
+  </template>
+</iron-list>

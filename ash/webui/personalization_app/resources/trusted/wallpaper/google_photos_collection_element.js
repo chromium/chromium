@@ -16,7 +16,6 @@ import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalize
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeGooglePhotosData} from './wallpaper_controller.js';
@@ -32,9 +31,9 @@ const Tab = {
 };
 
 /** @polymer */
-export class GooglePhotos extends WithPersonalizationStore {
+export class GooglePhotosCollection extends WithPersonalizationStore {
   static get is() {
-    return 'google-photos';
+    return 'google-photos-collection';
   }
 
   static get template() {
@@ -60,15 +59,6 @@ export class GooglePhotos extends WithPersonalizationStore {
        */
       albums_: {
         type: Array,
-      },
-
-      /**
-       * Whether the list of albums is currently loading.
-       * @type {boolean}
-       * @private
-       */
-      albumsLoading_: {
-        type: Boolean,
       },
 
       /**
@@ -154,24 +144,11 @@ export class GooglePhotos extends WithPersonalizationStore {
     this.addEventListener('iron-resize', this.onResized_.bind(this));
 
     this.watch('albums_', state => state.googlePhotos.albums);
-    this.watch('albumsLoading_', state => state.loading.googlePhotos.albums);
     this.watch('photos_', state => state.googlePhotos.photos);
     this.watch('photosLoading_', state => state.loading.googlePhotos.photos);
     this.updateFromStore();
 
     initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
-  }
-
-  /**
-   * Invoked on selection of an album.
-   * @param {!Event} e
-   * @private
-   */
-  onAlbumSelected_(e) {
-    assert(e.model.album);
-    if (isSelectionEvent(e)) {
-      PersonalizationRouter.instance().selectGooglePhotosAlbum(e.model.album);
-    }
   }
 
   /**
@@ -314,19 +291,6 @@ export class GooglePhotos extends WithPersonalizationStore {
   }
 
   /**
-   * Creates the html for the Google Photos link in zero state.
-   * @return {string}
-   * @private
-   */
-  getZeroStateMessage_() {
-    return this.i18nAdvanced('googlePhotosZeroStateMessage', {
-      substitutions: [
-        '<a target="_blank" href="https://photos.google.com">photos.google.com</a>'
-      ]
-    });
-  }
-
-  /**
    * Invalidates the grid for the currently selected tab to force relayout.
    * @private
    */
@@ -383,4 +347,4 @@ export class GooglePhotos extends WithPersonalizationStore {
   }
 }
 
-customElements.define(GooglePhotos.is, GooglePhotos);
+customElements.define(GooglePhotosCollection.is, GooglePhotosCollection);

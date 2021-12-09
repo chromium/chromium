@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import '../../mojo_webui_test_support.js';
 
-import {GooglePhotosTest} from './google_photos_element_test.js';
+import {GooglePhotosCollectionTest} from './google_photos_collection_element_test.js';
 import {LocalImagesTest} from './local_images_element_test.js';
 import {PersonalizationBreadcrumbTest} from './personalization_breadcrumb_element_test.js';
 import {PersonalizationRouterTest} from './personalization_router_element_test.js';
@@ -20,7 +20,7 @@ import {WallpaperSelectedTest} from './wallpaper_selected_element_test.js';
 window.console.warn = () => {};
 
 const testCases = [
-  GooglePhotosTest,
+  GooglePhotosCollectionTest,
   LocalImagesTest,
   PersonalizationBreadcrumbTest,
   PersonalizationRouterTest,
