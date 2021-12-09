@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -76,7 +76,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   ReadyState getReadyState() const { return state_; }
   DOMException* error() { return error_; }
   V8UnionArrayBufferOrString* result() const;
-  probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -131,7 +131,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
   scoped_refptr<BlobDataHandle> blob_data_handle_;
   FileReaderLoader::ReadType read_type_;
   String encoding_;
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
 
   std::unique_ptr<FileReaderLoader> loader_;
   Member<DOMException> error_;
