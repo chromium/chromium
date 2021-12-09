@@ -676,6 +676,9 @@ third_party/rust/cxx/v1/crate/book 1 1
 third_party/rust/cxx/v1/crate/book/src 3 1
 third_party/rust/cxx/v1/crate/.github/workflows 2 2
 third_party/rust/cxx/v1/crate/src 4 1
+third_party/rust/itoa/v0_4/crate 2 1
+third_party/rust/itoa/v0_4/crate/.github/workflows 1 1
+third_party/rust/itoa/v0_4/crate/src 1 1
 third_party/rust/libc/v0_2/crate 7 1
 third_party/rust/libc/v0_2/crate/src/unix/bsd/apple 2 1
 third_party/rust/libc/v0_2/crate/src/unix/bsd/freebsdlike 1 1
@@ -693,6 +696,11 @@ third_party/rust/proc_macro2/v1/crate 1 1
 third_party/rust/proc_macro2/v1/crate/.github/workflows 1 1
 third_party/rust/quote/v1/crate 1 1
 third_party/rust/quote/v1/crate/.github/workflows 1 1
+third_party/rust/ryu/v1/crate 1 1
+third_party/rust/ryu/v1/crate/.github/workflows 1 1
+third_party/rust/serde_derive/v1/crate 1 1
+third_party/rust/serde/v1/crate 1 1
+third_party/rust/serde/v1/crate/src 1 1
 third_party/rust/strsim/v0_8/crate 3 1
 third_party/rust/syn/v1/crate 1 1
 third_party/rust/syn/v1/crate/src 4 2

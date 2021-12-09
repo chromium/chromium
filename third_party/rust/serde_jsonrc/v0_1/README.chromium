@@ -1,0 +1,6 @@
+Name: serde_jsonrc
+URL: https://crates.io/crates/serde_jsonrc
+Description: A lenient JSON serialization file format
+Version: 0.1.0
+Security Critical: yes
+License: Apache 2.0

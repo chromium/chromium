@@ -510,6 +510,9 @@ deps = {
     'condition': '(host_os == "linux")',
   },
 
+  'src/third_party/rust/serde_jsonrc/v0_1/crate':
+    Var('chromium_git') + '/external/github.com/serde-rs/json' + '@' + 'd757abec5c716d7fdee1727fc442dbf8852369bc',
+
   'src/android_webview/tools/cts_archive': {
       'packages': [
           {
