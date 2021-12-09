@@ -635,6 +635,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.ConsecutiveDidFinishLaunchingWithoutLaunch"
+    units="count" expires_after="2022-09-30">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    [IOS] The number of time [UIApplicationDelegate
+    application:didFinishLaynching] was called but no scene was activated.
+    Recorded when first scene is becomes active.
+  </summary>
+</histogram>
+
 <histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
     expires_after="2022-09-30">
   <owner>olivierrobin@chromium.org</owner>

@@ -176,6 +176,8 @@ void DumpEnvironment(id<StartupInformation> startup_information) {
 
 namespace metrics_mediator {
 NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
+NSString* const kAppDidFinishLaunchingConsecutiveCallsKey =
+    @"kAppDidFinishLaunchingConsecutiveCallsKey";
 
 void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
   using base::SysNSStringToUTF8;
@@ -247,6 +249,7 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
 }  // namespace metrics_mediator
 
 using metrics_mediator::kAppEnteredBackgroundDateKey;
+using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
 @interface MetricsMediator ()
 // Starts or stops metrics recording.
@@ -298,6 +301,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   int consecutiveLoads = [defaults integerForKey:kLoadTimePreferenceKey];
   [defaults removeObjectForKey:kLoadTimePreferenceKey];
+  int consecutiveDidFinishLaunching =
+      [defaults integerForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
+  [defaults removeObjectForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
 
   base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTimeV2",
                           processStartToNowTime);
@@ -312,6 +318,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
                           processStartToNowTime - sceneConnectionToNowTime);
   base::UmaHistogramCounts100("Startup.ConsecutiveLoadsWithoutLaunch",
                               consecutiveLoads);
+  base::UmaHistogramCounts100(
+      "Startup.ConsecutiveDidFinishLaunchingWithoutLaunch",
+      consecutiveDidFinishLaunching);
 
   if ([connectionInformation startupParameters]) {
     base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",

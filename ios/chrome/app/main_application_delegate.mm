@@ -92,6 +92,13 @@ const int kMainIntentCheckDelay = 1;
   self.didFinishLaunching = YES;
 
   _appState.startupInformation.didFinishLaunchingTime = base::TimeTicks::Now();
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults
+      setInteger:[defaults integerForKey:
+                               metrics_mediator::
+                                   kAppDidFinishLaunchingConsecutiveCallsKey] +
+                 1
+          forKey:metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey];
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
   BOOL requiresHandling =

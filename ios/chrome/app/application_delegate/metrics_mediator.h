@@ -18,6 +18,10 @@ namespace metrics_mediator {
 // handler was called.
 extern NSString* const kAppEnteredBackgroundDateKey;
 
+// The key to a NSUserDefaults entry logging the number of times application
+// didFinishLaunching is called before a scene is attached.
+extern NSString* const kAppDidFinishLaunchingConsecutiveCallsKey;
+
 // Struct containing histogram names and number of buckets. Used for recording
 // histograms fired in extensions.
 struct HistogramNameCountPair {
