@@ -12,7 +12,7 @@
 // observers on change.
 @interface PasswordAutoFillStatusManager : NSObject
 
-// Designated initializer for PasswordAutofillStatusManager.
+// The shared instance PasswordAutofillStatusManager.
 + (PasswordAutoFillStatusManager*)sharedManager;
 
 // Adds observer that registers auto-fill status updates.

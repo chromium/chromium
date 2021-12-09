@@ -16,6 +16,9 @@ extern NSString* const kPasswordsInOtherAppsTitleAccessibilityIdentifier;
 // A11y Identifier for subtitle label.
 extern NSString* const kPasswordsInOtherAppsSubtitleAccessibilityIdentifier;
 
+// A11y Identifier for banner image.
+extern NSString* const kPasswordsInOtherAppsImageAccessibilityIdentifier;
+
 // A11y Identifier for the action button.
 extern NSString* const kPasswordsInOtherAppsActionAccessibilityIdentifier;
 

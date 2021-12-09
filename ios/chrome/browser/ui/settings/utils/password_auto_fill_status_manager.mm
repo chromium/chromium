@@ -45,9 +45,9 @@
 }
 
 - (void)addObserver:(id<PasswordAutoFillStatusObserver>)observer {
-  [_observers addObject:observer];
+  [self.observers addObject:observer];
   [self checkAndUpdatePasswordAutoFillStatus];
-  if (_observers.count == 1) {
+  if (self.observers.count == 1) {
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(applicationWillEnterForeground:)
@@ -57,9 +57,9 @@
 }
 
 - (void)removeObserver:(id<PasswordAutoFillStatusObserver>)observer {
-  [_observers removeObject:observer];
-  if (_observers.count == 0) {
-    _ready = NO;
+  [self.observers removeObject:observer];
+  if (self.observers.count == 0) {
+    self.ready = NO;
     [[NSNotificationCenter defaultCenter]
         removeObserver:self
                   name:UIApplicationWillEnterForegroundNotification

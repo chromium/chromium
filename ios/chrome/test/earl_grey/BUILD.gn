@@ -144,6 +144,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/settings/language:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/password:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/settings/password/passwords_in_other_apps:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",

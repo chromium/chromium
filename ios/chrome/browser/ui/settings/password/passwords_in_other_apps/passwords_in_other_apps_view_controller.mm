@@ -324,6 +324,8 @@ CGFloat const kButtonHorizontalMargin = 4;
         [[UIImageView alloc] initWithImage:[self createOrUpdateImage:nil]];
     _imageView.clipsToBounds = YES;
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _imageView.accessibilityIdentifier =
+        kPasswordsInOtherAppsImageAccessibilityIdentifier;
   }
   return _imageView;
 }

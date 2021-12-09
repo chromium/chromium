@@ -69,3 +69,54 @@ source_set("unit_tests") {
     "//testing/gtest:gtest",
   ]
 }
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "passwords_in_other_apps_app_interface.h",
+    "passwords_in_other_apps_app_interface.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "passwords_in_other_apps_app_interface.h",
+    "passwords_in_other_apps_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "passwords_in_other_apps_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
