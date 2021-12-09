@@ -385,10 +385,11 @@ void TaskManagerView::RetrieveSavedAlwaysOnTopState() {
   if (!g_browser_process->local_state())
     return;
 
-  const base::DictionaryValue* dictionary =
-      g_browser_process->local_state()->GetDictionary(GetWindowName());
-  if (dictionary)
-    dictionary->GetBoolean("always_on_top", &is_always_on_top_);
+  if (const base::DictionaryValue* dictionary =
+          g_browser_process->local_state()->GetDictionary(GetWindowName())) {
+    is_always_on_top_ =
+        dictionary->FindBoolKey("always_on_top").value_or(false);
+  }
 }
 
 BEGIN_METADATA(TaskManagerView, views::DialogDelegateView)

@@ -129,9 +129,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
 
   bounds->SetRect(*left, *top, *right - *left, *bottom - *top);
 
-  bool maximized = false;
-  if (dictionary)
-    dictionary->GetBoolean("maximized", &maximized);
+  const bool maximized = dictionary->FindBoolKey("maximized").value_or(false);
   *show_state = maximized ? ui::SHOW_STATE_MAXIMIZED : ui::SHOW_STATE_NORMAL;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
