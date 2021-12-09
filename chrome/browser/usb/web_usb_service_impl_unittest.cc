@@ -145,27 +145,20 @@ class MockDeviceManagerClient : public UsbDeviceManagerClient {
 
 void GetDevicesBlocking(blink::mojom::WebUsbService* service,
                         const std::set<std::string>& expected_guids) {
-  base::RunLoop run_loop;
-  service->GetDevices(
-      base::BindLambdaForTesting([&](std::vector<UsbDeviceInfoPtr> devices) {
-        EXPECT_EQ(expected_guids.size(), devices.size());
-        std::set<std::string> actual_guids;
-        for (const auto& device : devices)
-          actual_guids.insert(device->guid);
-        EXPECT_EQ(expected_guids, actual_guids);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<std::vector<UsbDeviceInfoPtr>> get_devices_future;
+  service->GetDevices(get_devices_future.GetCallback());
+  ASSERT_TRUE(get_devices_future.Wait());
+  EXPECT_EQ(expected_guids.size(), get_devices_future.Get().size());
+  std::set<std::string> actual_guids;
+  for (const auto& device : get_devices_future.Get())
+    actual_guids.insert(device->guid);
+  EXPECT_EQ(expected_guids, actual_guids);
 }
 
 void OpenDeviceBlocking(device::mojom::UsbDevice* device) {
-  base::RunLoop run_loop;
-  device->Open(
-      base::BindLambdaForTesting([&](device::mojom::UsbOpenDeviceError error) {
-        EXPECT_EQ(device::mojom::UsbOpenDeviceError::OK, error);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<device::mojom::UsbOpenDeviceError> open_future;
+  device->Open(open_future.GetCallback());
+  EXPECT_EQ(open_future.Get(), device::mojom::UsbOpenDeviceError::OK);
 }
 
 scoped_refptr<FakeUsbDeviceInfo> CreateFakeHidDeviceInfo() {
@@ -511,34 +504,18 @@ TEST_P(WebUsbServiceImplProtectedInterfaceTest, BlockProtectedInterface) {
 
   OpenDeviceBlocking(device.get());
 
-  {
-    base::RunLoop loop;
-    device->SetConfiguration(1, base::BindLambdaForTesting([&](bool success) {
-                               EXPECT_TRUE(success);
-                               loop.Quit();
-                             }));
-    loop.Run();
-  }
+  base::test::TestFuture<bool> set_configuration_future;
+  device->SetConfiguration(1, set_configuration_future.GetCallback());
+  EXPECT_TRUE(set_configuration_future.Get());
 
-  {
-    base::RunLoop loop;
-    device->ClaimInterface(
-        0, base::BindLambdaForTesting([&](UsbClaimInterfaceResult result) {
-          EXPECT_EQ(result, UsbClaimInterfaceResult::kProtectedClass);
-          loop.Quit();
-        }));
-    loop.Run();
-  }
+  base::test::TestFuture<UsbClaimInterfaceResult> claim_interface0_future;
+  device->ClaimInterface(0, claim_interface0_future.GetCallback());
+  EXPECT_EQ(claim_interface0_future.Get(),
+            UsbClaimInterfaceResult::kProtectedClass);
 
-  {
-    base::RunLoop loop;
-    device->ClaimInterface(
-        1, base::BindLambdaForTesting([&](UsbClaimInterfaceResult result) {
-          EXPECT_EQ(result, UsbClaimInterfaceResult::kSuccess);
-          loop.Quit();
-        }));
-    loop.Run();
-  }
+  base::test::TestFuture<UsbClaimInterfaceResult> claim_interface1_future;
+  device->ClaimInterface(1, claim_interface1_future.GetCallback());
+  EXPECT_EQ(claim_interface1_future.Get(), UsbClaimInterfaceResult::kSuccess);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -599,24 +576,13 @@ TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
 
   OpenDeviceBlocking(device.get());
 
-  {
-    base::RunLoop loop;
-    device->SetConfiguration(1, base::BindLambdaForTesting([&](bool success) {
-                               EXPECT_TRUE(success);
-                               loop.Quit();
-                             }));
-    loop.Run();
-  }
+  base::test::TestFuture<bool> set_configuration_future;
+  device->SetConfiguration(1, set_configuration_future.GetCallback());
+  EXPECT_TRUE(set_configuration_future.Get());
 
-  {
-    base::RunLoop loop;
-    device->ClaimInterface(
-        1, base::BindLambdaForTesting([&](UsbClaimInterfaceResult result) {
-          EXPECT_EQ(result, UsbClaimInterfaceResult::kSuccess);
-          loop.Quit();
-        }));
-    loop.Run();
-  }
+  base::test::TestFuture<UsbClaimInterfaceResult> claim_interface_future;
+  device->ClaimInterface(1, claim_interface_future.GetCallback());
+  EXPECT_EQ(claim_interface_future.Get(), UsbClaimInterfaceResult::kSuccess);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
