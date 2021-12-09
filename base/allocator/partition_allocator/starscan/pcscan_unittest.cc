@@ -10,7 +10,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
+#include "base/cpu.h"
 #include "base/logging.h"
+#include "base/memory/tagging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,9 +46,9 @@ struct DisableStackScanningScope final {
 };
 }  // namespace
 
-class PartitionAllocPCScanTest : public testing::Test {
+class PartitionAllocPCScanTestBase : public testing::Test {
  public:
-  PartitionAllocPCScanTest() {
+  PartitionAllocPCScanTestBase() {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit GigaCage, therefore
     // we need to make sure that the card table is recommitted for each run.
@@ -64,7 +66,8 @@ class PartitionAllocPCScanTest : public testing::Test {
 
     PCScan::RegisterScannableRoot(allocator_.root());
   }
-  ~PartitionAllocPCScanTest() override {
+
+  ~PartitionAllocPCScanTestBase() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                    PartitionPurgeDiscardUnusedSystemPages);
     PartitionAllocGlobalUninitForTesting();
@@ -98,6 +101,18 @@ class PartitionAllocPCScanTest : public testing::Test {
 
  private:
   PartitionAllocator<ThreadSafe> allocator_;
+};
+
+// The test that expects free() being quarantined only when tag overflow occurs.
+class PartitionAllocPCScanWithMTETest : public PartitionAllocPCScanTestBase {};
+
+// The test that expects every free() being quarantined.
+class PartitionAllocPCScanTest : public PartitionAllocPCScanTestBase {
+ public:
+  PartitionAllocPCScanTest() { root().SetQuarantineAlwaysForTesting(true); }
+  ~PartitionAllocPCScanTest() override {
+    root().SetQuarantineAlwaysForTesting(false);
+  }
 };
 
 namespace {
@@ -472,7 +487,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingInterPartitionReference) {
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
+  source_root.SetQuarantineAlwaysForTesting(true);
   PCScan::RegisterScannableRoot(&value_root);
+  value_root.SetQuarantineAlwaysForTesting(true);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -505,7 +522,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceToNonScannablePartition) {
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterScannableRoot(&source_root);
+  source_root.SetQuarantineAlwaysForTesting(true);
   PCScan::RegisterNonScannableRoot(&value_root);
+  value_root.SetQuarantineAlwaysForTesting(true);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -538,7 +557,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
   value_root.UncapEmptySlotSpanMemoryForTesting();
 
   PCScan::RegisterNonScannableRoot(&source_root);
+  value_root.SetQuarantineAlwaysForTesting(true);
   PCScan::RegisterScannableRoot(&value_root);
+  source_root.SetQuarantineAlwaysForTesting(true);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -782,6 +803,48 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
 
   TestDanglingReference(*this, source, value);
 }
+
+#if HAS_MEMORY_TAGGING
+TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
+  using ListType = List<64>;
+
+  if (!CPU::GetInstanceNoAllocation().has_mte())
+    return;
+
+  {
+    auto* obj1 = ListType::Create(root());
+    ListType::Destroy(root(), obj1);
+    auto* obj2 = ListType::Create(root());
+    // The test relies on unrandomized freelist! If the slot was not moved to
+    // quarantine, assert that the obj2 is the same as obj1 and the tags are
+    // different.
+    if (!HasOverflowTag(reinterpret_cast<uintptr_t>(memory::RemaskPtr(obj1)))) {
+      // Assert that the pointer is the same.
+      ASSERT_EQ(memory::UnmaskPtr(obj1), memory::UnmaskPtr(obj2));
+      // Assert that the tag is different.
+      ASSERT_NE(obj1, obj2);
+    }
+  }
+
+  for (size_t i = 0; i < 16; ++i) {
+    auto* obj = ListType::Create(root());
+    ListType::Destroy(root(), obj);
+    // Get the current tag of the slot.
+    obj = memory::RemaskPtr(obj);
+    // Check if the tag overflows. If so, the object must be in quarantine.
+    if (HasOverflowTag(reinterpret_cast<uintptr_t>(obj))) {
+      EXPECT_TRUE(IsInQuarantine(obj));
+      EXPECT_FALSE(IsInFreeList(obj));
+      return;
+    } else {
+      EXPECT_FALSE(IsInQuarantine(obj));
+      EXPECT_TRUE(IsInFreeList(obj));
+    }
+  }
+
+  EXPECT_FALSE(true && "Should never be reached");
+}
+#endif  // HAS_MEMORY_TAGGING
 
 }  // namespace internal
 }  // namespace base

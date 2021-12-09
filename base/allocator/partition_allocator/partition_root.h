@@ -59,6 +59,7 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
+#include "base/memory/tagging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -351,6 +352,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   uintptr_t inverted_self = 0;
   std::atomic<int> thread_caches_being_constructed_{0};
 
+  bool quarantine_always_for_testing = false;
+
   PartitionRoot() = default;
   explicit PartitionRoot(PartitionOptions opts) { Init(opts); }
   ~PartitionRoot();
@@ -541,6 +544,24 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
   ALWAYS_INLINE bool IsQuarantineEnabled() const {
     return quarantine_mode == QuarantineMode::kEnabled;
+  }
+
+  ALWAYS_INLINE bool ShouldQuarantine(void* slot_start) const {
+    if (UNLIKELY(quarantine_mode != QuarantineMode::kEnabled))
+      return false;
+#if HAS_MEMORY_TAGGING
+    if (UNLIKELY(quarantine_always_for_testing))
+      return true;
+    // If quarantine is enabled and tag overflows, move slot to quarantine, to
+    // prevent the attacker from exploiting a pointer that has old tag.
+    return HasOverflowTag(reinterpret_cast<uintptr_t>(slot_start));
+#else
+    return true;
+#endif
+  }
+
+  ALWAYS_INLINE void SetQuarantineAlwaysForTesting(bool value) {
+    quarantine_always_for_testing = value;
   }
 
   ALWAYS_INLINE bool IsScanEnabled() const {
@@ -1066,7 +1087,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
   // default.
-  if (UNLIKELY(root->IsQuarantineEnabled())) {
+  if (UNLIKELY(root->ShouldQuarantine(slot_start))) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
     if (LIKELY(internal::IsManagedByNormalBuckets(

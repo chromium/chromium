@@ -231,6 +231,18 @@ static constexpr internal::pool_handle kConfigurablePoolHandle = 3;
 // PROT_MTE.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
+#if HAS_MEMORY_TAGGING
+// Returns whether the tag of a pointer/slot overflowed and slot needs to be
+// moved to quarantine.
+constexpr ALWAYS_INLINE bool HasOverflowTag(uintptr_t ptr) {
+  // The tag with which the slot is put to quarantine.
+  constexpr uintptr_t kOverflowTag = 0x0f00000000000000uLL;
+  static_assert((kOverflowTag & ~kMemTagUnmask) != 0,
+                "Overflow tag must be in tag bits");
+  return (ptr & ~kMemTagUnmask) == kOverflowTag;
+}
+#endif  // HAS_MEMORY_TAGGING
+
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 NumPartitionPagesPerSuperPage() {
   return kSuperPageSize >> PartitionPageShift();
