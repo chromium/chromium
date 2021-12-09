@@ -226,6 +226,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
                 mSceneCoordinator.getNbReactionsAdded(), mSceneCoordinator.getNbTypeChange(),
                 mSceneCoordinator.getNbRotateScale(), mSceneCoordinator.getNbDuplicate(),
                 mSceneCoordinator.getNbDelete(), mSceneCoordinator.getNbMove());
+        LightweightReactionsMetrics.recordReactionsUsed(mSceneCoordinator.getReactions());
 
         GifGeneratorHost gifHost = new GifGeneratorHost() {
             @Override

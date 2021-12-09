@@ -10,10 +10,13 @@ import android.content.res.Configuration;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.content_creation.reactions.scene.ReactionLayout;
 import org.chromium.chrome.browser.share.share_sheet.ChromeProvidedSharingOptionsProvider;
+import org.chromium.components.content_creation.reactions.ReactionType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -212,6 +215,18 @@ public final class LightweightReactionsMetrics {
                 newOrientation == Configuration.ORIENTATION_PORTRAIT ? DeviceOrientation.PORTRAIT
                                                                      : DeviceOrientation.LANDSCAPE,
                 DeviceOrientation.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the types of the reactions that were used in the final GIF.
+     *
+     * @param reactions The set of reactions added to the scene.
+     */
+    public static void recordReactionsUsed(Set<ReactionLayout> reactions) {
+        for (ReactionLayout rl : reactions) {
+            RecordHistogram.recordEnumeratedHistogram("LightweightReactions.ReactionsUsed",
+                    rl.getReaction().getMetadata().type, ReactionType.MAX_VALUE + 1);
+        }
     }
 
     /**

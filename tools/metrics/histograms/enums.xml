@@ -73321,6 +73321,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Border clear"/>
 </enum>
 
+<enum name="ReactionType">
+  <int value="0" label="Clap"/>
+  <int value="1" label="Emotional"/>
+  <int value="2" label="Eyes"/>
+  <int value="3" label="Fire"/>
+  <int value="4" label="Grin"/>
+  <int value="5" label="Surprise"/>
+  <int value="6" label="Thanks"/>
+  <int value="7" label="Unsure"/>
+  <int value="8" label="Heart"/>
+</enum>
+
 <enum name="ReadDynamicRulesJSONStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kFileDoesNotExist"/>

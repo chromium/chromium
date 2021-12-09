@@ -241,6 +241,13 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         return mNbMove;
     }
 
+    /**
+     * Returns the reactions currently in the scene.
+     */
+    public Set<ReactionLayout> getReactions() {
+        return mReactionLayouts;
+    }
+
     // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {

@@ -38,6 +38,7 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/content_creation/reactions/android:java",
+    "//components/content_creation/reactions/android:reaction_types_java",
     "//components/image_fetcher:java",
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

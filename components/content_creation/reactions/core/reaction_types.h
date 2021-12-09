@@ -9,6 +9,8 @@ namespace content_creation {
 
 // All supported reaction types. Corresponding |@IntDef| definitions are
 // generated on the Java side at build time.
+// Keep in sync with the enums.xml equivalent at
+//     tools/metrics/histograms/enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.content_creation.reactions)
 enum class ReactionType {

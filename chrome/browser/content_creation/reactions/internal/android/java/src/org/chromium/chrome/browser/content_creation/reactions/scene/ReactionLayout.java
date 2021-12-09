@@ -19,7 +19,10 @@ import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawabl
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
-class ReactionLayout extends RelativeLayout {
+/**
+ * A Layout holding a Lightweight Reaction.
+ */
+public class ReactionLayout extends RelativeLayout {
     private final int mReactionPadding;
     private final Context mContext;
 
@@ -83,7 +86,7 @@ class ReactionLayout extends RelativeLayout {
         }
     }
 
-    ReactionGifDrawable getReaction() {
+    public ReactionGifDrawable getReaction() {
         return mDrawable;
     }
 

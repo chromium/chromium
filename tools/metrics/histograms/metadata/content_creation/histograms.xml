@@ -152,6 +152,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LightweightReactions.ReactionsUsed" enum="ReactionType"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records which reactions have been used in a generated GIF. This is recorded
+    each time the user taps the Done button in the Lightweight Reactions dialog.
+    Each reaction is recorded as a separate sample in this histogram (e.g. if a
+    user generates a GIF with 5 reactions, 5 reaction types will be recorded in
+    this histogram).
+  </summary>
+</histogram>
+
 <histogram name="LightweightReactions.ShareDestination"
     enum="NoteShareDestination" expires_after="2022-07-31">
   <owner>gujen@google.com</owner>
