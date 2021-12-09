@@ -251,6 +251,7 @@ js_library("viewport") {
   deps = [
     ":constants",
     ":gesture_detector",
+    ":internal_plugin",
     ":zoom_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:event_tracker.m",
